@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T02:11:00.290Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T02:10:45.388Z
 - branch: codex/retrieval-source-button-labels
 - commit: 42d83678be39f839a803b1b315ee647ab293d6b8

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Retrieval Source Button Labels
+
+- added source/artifact-aware title and aria-label metadata to retrieval source focus chips, retrieval source link copy buttons, active source clear buttons, and retrieval evidence open buttons
+- kept retrieval source URL state, source focus routing, artifact open routing, copied-state labels, and visible button text unchanged
+- extended UI agent blueprints smoke coverage for the retrieval source and retrieval evidence button accessibility rendering contract
+
 ## 2026-06-06 Release Evidence Link Labels
 
 - added document/artifact-aware title and aria-label metadata to release evidence doc links, production blocker evidence links, handoff artifact open links, and handoff preview new-tab links

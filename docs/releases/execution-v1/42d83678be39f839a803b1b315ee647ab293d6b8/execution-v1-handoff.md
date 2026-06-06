@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-06T02:11:00.290Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-06T02:10:58.938Z
 - localDate: 2026-06-06
 - branch: codex/retrieval-source-button-labels
 - commit: 42d83678be39f839a803b1b315ee647ab293d6b8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/42d83678be39f839a803b1b315ee647ab293d6b8](releases/execution-v1/42d83678be39f839a803b1b315ee647ab293d6b8)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/42d83678be39f839a803b1b315ee647ab293d6b8/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/42d83678be39f839a803b1b315ee647ab293d6b8/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/42d83678be39f839a803b1b315ee647ab293d6b8](docs/releases/execution-v1/42d83678be39f839a803b1b315ee647ab293d6b8)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/retrieval-source-button-labels not found
 
