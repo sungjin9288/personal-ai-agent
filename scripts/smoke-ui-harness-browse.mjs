@@ -244,6 +244,10 @@ try {
   assert.equal(rootHtml.includes('recoverable-provider-failure-only'), true);
   assert.equal(appJs.includes('renderHarnessFilterChips'), true);
   assert.equal(appJs.includes('refreshSelectedMissionContext'), true);
+  assert.equal(appJs.includes('emptyActionLabel'), true);
+  assert.equal(appJs.includes('actionValue ? `${actionLabel}: ${actionValue}` : actionLabel'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(emptyActionLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(emptyActionLabel)}"'), true);
   assert.equal(appJs.includes('fallbackProvider'), true);
   assert.equal(appJs.includes('fallbackPolicy'), true);
   assert.equal(appJs.includes('legacyDevlogMigrationLabel'), true);

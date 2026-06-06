@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Empty State Action Button Labels
+
+- added action-aware title and aria-label metadata to the shared empty state quick action button template
+- kept open-create, jump-step, jump-section, switch-tab quick action routing and visible empty state button text unchanged
+- extended UI harness browse smoke coverage for the shared empty state action accessibility rendering contract
+
 ## 2026-06-06 Stage Navigation Action Button Labels
 
 - added mission/stage-aware title and aria-label metadata to mission summary setup jumps, selection bridge step jumps, and setup harness primary/secondary navigation actions
