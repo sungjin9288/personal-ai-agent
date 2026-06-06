@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-06T03:26:10.362Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-06T03:26:01.648Z
 - branch: codex/mission-session-selector-labels
 - commit: ba49da001f939a60f6ed4b015fa8027186d57ca2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ba49da001f939a60f6ed4b015fa8027186d57ca2/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

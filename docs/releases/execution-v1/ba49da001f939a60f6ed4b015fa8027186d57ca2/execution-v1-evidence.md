@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T03:26:10.362Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T03:25:56.334Z
 - branch: codex/mission-session-selector-labels
 - commit: ba49da001f939a60f6ed4b015fa8027186d57ca2
