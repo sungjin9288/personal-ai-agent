@@ -12265,10 +12265,13 @@ function renderMissionList() {
         mission.objective,
         latestSession?.reviewerSummary || snapshot.nextAction.replace(/^다음:\s*/, ''),
       );
+      const missionSelectionLabel = active
+        ? `현재 미션 선택됨: ${mission.title} · ${snapshot.stage}`
+        : `미션 선택: ${mission.title} · ${snapshot.stage}`;
       const showExpandedAction = active;
       return `
         <div class="mission-row ${active}">
-          <button type="button" data-mission-id="${escapeHtml(mission.id)}">
+          <button type="button" data-mission-id="${escapeHtml(mission.id)}" aria-label="${escapeHtml(missionSelectionLabel)}" title="${escapeHtml(missionSelectionLabel)}">
             <div class="mission-row-topline">
               <div class="mission-row-topline-main">
                 <span class="mission-row-stage">${escapeHtml(snapshot.stage)}</span>
@@ -18576,9 +18579,13 @@ function renderSessionList() {
     .map((session) => {
       const active = session.id === state.selectedSessionId ? 'is-active' : '';
       const providerUiLabel = getDisplayLabel(session.provider || '미정', session.provider || '미정');
+      const sessionTitle = `${formatDate(session.startedAt)} 실행`;
+      const sessionSelectionLabel = active
+        ? `현재 세션 선택됨: ${sessionTitle} · ${providerUiLabel}`
+        : `세션 선택: ${sessionTitle} · ${providerUiLabel}`;
       return `
         <div class="session-row ${active}">
-          <button type="button" data-session-id="${escapeHtml(session.id)}">
+          <button type="button" data-session-id="${escapeHtml(session.id)}" aria-label="${escapeHtml(sessionSelectionLabel)}" title="${escapeHtml(sessionSelectionLabel)}">
             <div class="status-row">
               <span class="status-badge ${getStatusClass(session.status)}">${escapeHtml(getDisplayLabel(session.status))}</span>
               <span class="mini-badge ${getStatusClass(session.provider || '')}">${escapeHtml(providerUiLabel)}</span>
@@ -18656,9 +18663,13 @@ function renderSessionDetail(sessionPayload) {
     .reverse()
     .map((artifact) => {
       const active = artifact.id === state.selectedArtifactId ? 'is-active' : '';
+      const artifactTitle = artifact.title || artifact.fileName || artifact.id;
+      const artifactSelectionLabel = active
+        ? `현재 산출물 선택됨: ${artifactTitle}`
+        : `산출물 선택: ${artifactTitle}`;
       return `
         <div class="artifact-link ${active}">
-          <button type="button" data-artifact-id="${escapeHtml(artifact.id)}">
+          <button type="button" data-artifact-id="${escapeHtml(artifact.id)}" aria-label="${escapeHtml(artifactSelectionLabel)}" title="${escapeHtml(artifactSelectionLabel)}">
             <div class="status-row">
               <span class="mini-badge ${getStatusClass(artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(artifact.kind, artifact.kind || 'artifact'))}</span>
             </div>
@@ -18795,9 +18806,13 @@ function renderTimeline() {
     .slice()
     .reverse()
     .slice(0, 32)
-    .map(
-      (item) => `
-        <button type="button" class="timeline-event" ${item.sessionId ? `data-session-id="${escapeHtml(item.sessionId)}"` : ''}>
+    .map((item) => {
+      const timelineEventTitle = `${getTimelineKindLabel(item.kind)} · ${formatDate(item.at)}`;
+      const timelineEventLabel = item.sessionId
+        ? `세션 타임라인 이벤트 열기: ${timelineEventTitle}`
+        : `타임라인 이벤트 보기: ${timelineEventTitle}`;
+      return `
+        <button type="button" class="timeline-event" ${item.sessionId ? `data-session-id="${escapeHtml(item.sessionId)}"` : ''} aria-label="${escapeHtml(timelineEventLabel)}" title="${escapeHtml(timelineEventLabel)}">
           <div class="timeline-time">${escapeHtml(formatDate(item.at))}</div>
           <div class="timeline-kind">${escapeHtml(getTimelineKindLabel(item.kind))}</div>
           <div class="item-title">${escapeHtml(item.detail || '')}</div>
@@ -18808,8 +18823,8 @@ function renderTimeline() {
             ),
           )}</div>
         </button>
-      `,
-    )
+      `;
+    })
     .join('');
 
   elements.timelineList.querySelectorAll('[data-session-id]').forEach((button) => {

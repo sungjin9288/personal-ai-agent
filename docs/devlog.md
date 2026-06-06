@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Mission Session Timeline Selector Button Labels
+
+- added mission/session/artifact/timeline-aware title and aria-label metadata to mission list rows, session history rows, artifact selector rows, and timeline event rows
+- kept mission selection, session selection, artifact selection, timeline session routing, active-state classes, and visible row text unchanged
+- extended UI harness browse smoke coverage for the mission/session/artifact/timeline selector accessibility rendering contract
+
 ## 2026-06-06 Provider Fallback Event Control Labels
 
 - added policy/stop-reason-aware title and aria-label metadata to provider fallback event audit filters, reset, and audit package copy controls
