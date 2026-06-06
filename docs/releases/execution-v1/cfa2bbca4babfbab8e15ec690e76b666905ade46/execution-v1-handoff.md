@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-06T03:49:02.831Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-06T03:49:01.423Z
 - localDate: 2026-06-06
 - branch: codex/stage-navigation-action-labels
 - commit: cfa2bbca4babfbab8e15ec690e76b666905ade46
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/cfa2bbca4babfbab8e15ec690e76b666905ade46](releases/execution-v1/cfa2bbca4babfbab8e15ec690e76b666905ade46)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cfa2bbca4babfbab8e15ec690e76b666905ade46/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/cfa2bbca4babfbab8e15ec690e76b666905ade46/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/cfa2bbca4babfbab8e15ec690e76b666905ade46](docs/releases/execution-v1/cfa2bbca4babfbab8e15ec690e76b666905ade46)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/stage-navigation-action-labels not found
 
