@@ -253,6 +253,22 @@ try {
   assert.equal(appJs.includes('data-provider-fallback-policy-count'), true);
   assert.equal(appJs.includes('data-provider-fallback-stop-reason-count'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-package'), true);
+  assert.equal(appJs.includes('fallbackPolicyFilterLabel'), true);
+  assert.equal(appJs.includes('fallbackStopReasonFilterLabel'), true);
+  assert.equal(appJs.includes('fallbackEventResetLabel'), true);
+  assert.equal(appJs.includes('fallbackEventPackageLabel'), true);
+  assert.equal(appJs.includes('fallback policy 필터 변경: 현재 ${state.providerEventFallbackPolicyFilter}'), true);
+  assert.equal(appJs.includes('fallback stop reason 필터 변경: 현재 ${state.providerEventFallbackStopReasonFilter}'), true);
+  assert.equal(appJs.includes('provider fallback event 필터 초기화: ${fallbackEventFilterSummary}'), true);
+  assert.equal(appJs.includes('provider fallback event audit package 복사: ${fallbackEventFilterSummary}'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(fallbackPolicyFilterLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(fallbackPolicyFilterLabel)}"'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(fallbackStopReasonFilterLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(fallbackStopReasonFilterLabel)}"'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(fallbackEventResetLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(fallbackEventResetLabel)}"'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(fallbackEventPackageLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(fallbackEventPackageLabel)}"'), true);
   assert.equal(appJs.includes('buildProviderFallbackEventAuditPackageText'), true);
   assert.equal(appJs.includes('Provider fallback event audit package'), true);
   assert.equal(
