@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T00:43:59.851Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T00:43:46.121Z
 - branch: codex/release-provider-action-labels
 - commit: 04adff5f0d2efa5ef68a29f0022759a06854274a
