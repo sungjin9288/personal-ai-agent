@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T01:54:56.057Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T01:54:40.299Z
 - branch: codex/release-evidence-link-labels
 - commit: aeeb97e200860a21edfb7892a55592efb522a51a
