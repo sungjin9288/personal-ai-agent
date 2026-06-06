@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T03:37:54.625Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T03:37:39.681Z
 - branch: codex/harness-source-action-labels
 - commit: 793c44a1b47eec00e8d474b12a6c16b4487b8a99

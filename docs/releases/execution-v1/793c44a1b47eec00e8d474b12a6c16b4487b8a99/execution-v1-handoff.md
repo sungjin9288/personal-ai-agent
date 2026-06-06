@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-06T03:37:54.625Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-06T03:37:53.337Z
 - localDate: 2026-06-06
 - branch: codex/harness-source-action-labels
 - commit: 793c44a1b47eec00e8d474b12a6c16b4487b8a99
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/793c44a1b47eec00e8d474b12a6c16b4487b8a99](releases/execution-v1/793c44a1b47eec00e8d474b12a6c16b4487b8a99)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/793c44a1b47eec00e8d474b12a6c16b4487b8a99/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/793c44a1b47eec00e8d474b12a6c16b4487b8a99/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/793c44a1b47eec00e8d474b12a6c16b4487b8a99](docs/releases/execution-v1/793c44a1b47eec00e8d474b12a6c16b4487b8a99)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/harness-source-action-labels not found
 
