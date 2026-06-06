@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Release Provider Action Button Labels
+
+- added provider-aware title and aria-label metadata to release recommendation provider actions, focused provider actions, and provider-card release actions including preflight, live validation, package copy, blocker handoff, flow focus/link, provider link, and triage link controls
+- kept existing provider ids, action ids, command values, focus/filter/link routing, confirmation flow, disabled-state rules, and visible button copy unchanged
+- extended UI harness browse smoke coverage for the release provider action button accessibility rendering contract
+
 ## 2026-06-06 Release Surface Action Button Labels
 
 - added release-aware title and aria-label metadata to release status refresh, aggregate preflight, command copy, current surface regeneration, release snapshot, stage navigation, and readiness package buttons
