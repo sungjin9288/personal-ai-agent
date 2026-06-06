@@ -94,6 +94,13 @@ try {
   assert.equal(appJs.includes('retrieval preview 비어 있음'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
   assert.equal(appJs.includes('engineering-full-spectrum'), true);
+  assert.equal(appJs.includes('템플릿 적용: ${template.title}'), true);
+  assert.equal(appJs.includes('현재 플레이북 선택됨: ${playbook.title}'), true);
+  assert.equal(appJs.includes('플레이북 선택: ${playbook.title}'), true);
+  assert.equal(appJs.includes('현재 AI 구성 의도: ${intent.label}'), true);
+  assert.equal(appJs.includes('AI 구성 의도 선택: ${intent.label}'), true);
+  assert.equal(appJs.includes('현재 AI 구성 카드: ${blueprint.title}'), true);
+  assert.equal(appJs.includes('AI 구성 카드 선택: ${blueprint.title}'), true);
 
   assert.equal(stylesCss.includes('.surface-ai-compose'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-grid'), true);
