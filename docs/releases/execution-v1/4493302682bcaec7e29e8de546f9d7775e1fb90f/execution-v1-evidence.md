@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-06T02:36:39.072Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-06T02:36:22.502Z
 - branch: codex/flow-status-action-labels
 - commit: 4493302682bcaec7e29e8de546f9d7775e1fb90f
