@@ -1909,6 +1909,10 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-focus-command'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-evidence-doc'), true);
   assert.equal(appJs.includes('data-release-evidence-doc-href'), true);
+  assert.equal(appJs.includes('const evidenceDocOpenLabel = `근거 문서 열기: ${docPath || docLabel} · blocker ${focusedBlockerId}`'), true);
+  assert.equal(appJs.includes('const evidenceDocOpenLabel = `근거 문서 열기: ${docPath || docLabel} · blocker ${actionId}`'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(evidenceDocOpenLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(evidenceDocOpenLabel)}"'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-command'), true);
   assert.equal(appJs.includes('focus-release-blocker'), true);
   assert.equal(appJs.includes('copy-release-blocker-link'), true);
@@ -1929,6 +1933,10 @@ try {
   assert.equal(appJs.includes('Release blocker package'), true);
   assert.equal(appJs.includes('buildReleaseBlockerClosureChecklistText(blockerAction)'), true);
   assert.equal(appJs.includes('copy-release-evidence-doc-link'), true);
+  assert.equal(appJs.includes('근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${focusedProductionBlockerOrdinal}'), true);
+  assert.equal(appJs.includes('근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${index + 1}'), true);
+  assert.equal(appJs.includes("handoff artifact 열기: ${item.label || item.id || item.path || 'artifact'}"), true);
+  assert.equal(appJs.includes("handoff preview 새 탭 열기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}"), true);
   assert.equal(appJs.includes('clear-release-blocker-focus'), true);
   assert.equal(appJs.includes("if (!item || typeof item !== 'object')"), true);
   assert.equal(rootHtml.includes('<option value="hermes">Hermes</option>'), true);

@@ -15682,6 +15682,7 @@ function renderReleaseStatus() {
                                 const docHref = String(doc.href || '').trim();
                                 const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
                                 const docPath = String(doc.path || '').trim();
+                                const evidenceDocOpenLabel = `근거 문서 열기: ${docPath || docLabel} · blocker ${focusedBlockerId}`;
                                 return `
                                   <span
                                     class="release-evidence-doc-chip"
@@ -15697,6 +15698,8 @@ function renderReleaseStatus() {
                                             rel="noreferrer"
                                             data-release-evidence-doc-href="${escapeHtml(docHref)}"
                                             data-release-evidence-doc-path="${escapeHtml(docPath)}"
+                                            aria-label="${escapeHtml(evidenceDocOpenLabel)}"
+                                            title="${escapeHtml(evidenceDocOpenLabel)}"
                                           >${escapeHtml(docPath || docLabel)}</a>
                                         `
                                       : `<span class="mini-badge status-running">${escapeHtml(docPath || docLabel)}</span>`}
@@ -15788,6 +15791,7 @@ function renderReleaseStatus() {
                                       const docHref = String(doc.href || '').trim();
                                       const docLabel = String(doc.label || doc.path || 'evidence doc').trim();
                                       const docPath = String(doc.path || '').trim();
+                                      const evidenceDocOpenLabel = `근거 문서 열기: ${docPath || docLabel} · blocker ${actionId}`;
                                       return `
                                         <span class="release-evidence-doc-chip" data-release-current-open-blocker-evidence-doc="${escapeHtml(actionId)}">
                                           ${docHref
@@ -15799,6 +15803,8 @@ function renderReleaseStatus() {
                                                   rel="noreferrer"
                                                   data-release-evidence-doc-href="${escapeHtml(docHref)}"
                                                   data-release-evidence-doc-path="${escapeHtml(docPath)}"
+                                                  aria-label="${escapeHtml(evidenceDocOpenLabel)}"
+                                                  title="${escapeHtml(evidenceDocOpenLabel)}"
                                                 >${escapeHtml(docPath || docLabel)}</a>
                                               `
                                             : `<span class="mini-badge status-running">${escapeHtml(docPath || docLabel)}</span>`}
@@ -15916,6 +15922,8 @@ function renderReleaseStatus() {
                         rel="noreferrer"
                         data-release-production-blocker-evidence-doc="${escapeHtml(focusedProductionBlockerIndex)}"
                         data-release-production-blocker-evidence-doc-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                        aria-label="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${focusedProductionBlockerOrdinal}`)}"
+                        title="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${focusedProductionBlockerOrdinal}`)}"
                       >근거 문서 열기</a>
                       <button
                         class="ghost-button"
@@ -15985,6 +15993,8 @@ function renderReleaseStatus() {
                             rel="noreferrer"
                             data-release-production-blocker-evidence-doc="${escapeHtml(String(index))}"
                             data-release-production-blocker-evidence-doc-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
+                            aria-label="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${index + 1}`)}"
+                            title="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${index + 1}`)}"
                           >근거 문서</a>
                           <button
                             class="ghost-button"
@@ -16796,6 +16806,8 @@ function renderReleaseStatus() {
                                         href="${escapeHtml(item.href)}"
                                         rel="noreferrer"
                                         target="_blank"
+                                        aria-label="${escapeHtml(`handoff artifact 열기: ${item.label || item.id || item.path || 'artifact'}`)}"
+                                        title="${escapeHtml(`handoff artifact 열기: ${item.label || item.id || item.path || 'artifact'}`)}"
                                       >열기</a>
                                     `
                                   : ''}
@@ -16835,6 +16847,8 @@ function renderReleaseStatus() {
                                         href="${escapeHtml(handoffPreviewArtifact.href)}"
                                         rel="noreferrer"
                                         target="_blank"
+                                        aria-label="${escapeHtml(`handoff preview 새 탭 열기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
+                                        title="${escapeHtml(`handoff preview 새 탭 열기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
                                       >새 탭 열기</a>
                                     `
                                   : ''}

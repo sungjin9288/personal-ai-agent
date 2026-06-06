@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-06 Release Evidence Link Labels
+
+- added document/artifact-aware title and aria-label metadata to release evidence doc links, production blocker evidence links, handoff artifact open links, and handoff preview new-tab links
+- kept link hrefs, target behavior, copy button routing, release blocker focus state, and visible link copy unchanged
+- extended UI harness browse smoke coverage for the release evidence and handoff link accessibility rendering contract
+
 ## 2026-06-06 Release Triage Action Button Labels
 
 - added a release action button label pass that fills missing title and aria-label metadata for release triage, target evidence, provider-only slice, production blocker, and current blocker controls
