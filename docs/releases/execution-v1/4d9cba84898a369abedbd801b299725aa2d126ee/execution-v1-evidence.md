@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T17:23:25.159Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T17:23:16.730Z
 - branch: codex/output-toggle-expanded-metadata
 - commit: 4d9cba84898a369abedbd801b299725aa2d126ee

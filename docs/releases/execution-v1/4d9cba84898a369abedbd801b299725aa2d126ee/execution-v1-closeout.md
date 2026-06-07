@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T17:23:25.159Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T17:23:16.887Z
 - branch: codex/output-toggle-expanded-metadata
 - commit: 4d9cba84898a369abedbd801b299725aa2d126ee
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4d9cba84898a369abedbd801b299725aa2d126ee/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
