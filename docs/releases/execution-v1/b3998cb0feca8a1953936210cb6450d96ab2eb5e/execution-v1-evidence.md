@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T15:24:42.211Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T15:24:33.317Z
 - branch: codex/memory-filter-input-labels
 - commit: b3998cb0feca8a1953936210cb6450d96ab2eb5e
