@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T13:14:01.767Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T13:13:53.297Z
 - branch: codex/blocker-triage-control-labels
 - commit: 4f4752d4520be14058426681aa6f24dfa37d1d4c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4f4752d4520be14058426681aa6f24dfa37d1d4c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
