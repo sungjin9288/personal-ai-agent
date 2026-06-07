@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Timeline Selector Pressed Metadata
+
+- added aria-pressed metadata and selected-state label copy to session-backed timeline event buttons
+- kept non-session timeline events, session timeline routing, selected session state, and visible Korean event copy unchanged
+- extended UI harness browse smoke coverage for timeline selector pressed-state contracts
+
 ## 2026-06-08 Mission Session Selector Pressed Metadata
 
 - added aria-pressed metadata to mission row, session row, and artifact selector buttons
