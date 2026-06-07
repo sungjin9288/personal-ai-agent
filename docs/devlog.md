@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-07 Blocker Detail Control Labels
+
+- added focused/current blocker and production blocker detail title and aria-label metadata to release blocker row, focus, evidence, command, package, handoff, link, clear, and list toggle controls
+- kept current blocker focus routing, production blocker focus routing, evidence doc links, copy payload generation, and release blocker filter behavior unchanged
+- extended UI harness browse smoke coverage for blocker detail control accessibility rendering contracts
+
 ## 2026-06-07 Target Evidence Control Labels
 
 - added target-evidence and provider-only target-evidence title and aria-label metadata to release blocker intake copy controls
