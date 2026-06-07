@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T18:21:59.594Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T18:21:58.220Z
 - localDate: 2026-06-08
 - branch: codex/timeline-selector-pressed-metadata
 - commit: e2dad0641e1450011af7f2646ed63d4afa13b44c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e2dad0641e1450011af7f2646ed63d4afa13b44c](releases/execution-v1/e2dad0641e1450011af7f2646ed63d4afa13b44c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e2dad0641e1450011af7f2646ed63d4afa13b44c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e2dad0641e1450011af7f2646ed63d4afa13b44c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e2dad0641e1450011af7f2646ed63d4afa13b44c](docs/releases/execution-v1/e2dad0641e1450011af7f2646ed63d4afa13b44c)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/timeline-selector-pressed-metadata not found
 

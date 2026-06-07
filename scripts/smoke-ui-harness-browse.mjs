@@ -234,6 +234,7 @@ try {
 
   const rootHtml = await fetchText(baseUrl);
   const appJs = await fetchText(`${baseUrl}/app.js`);
+  const stylesCss = await fetchText(`${baseUrl}/styles.css`);
 
   assertStaticAccessibleMetadata({ appJs, rootHtml });
   assertStaticStateMetadata({ appJs, rootHtml });
@@ -271,8 +272,11 @@ try {
   assert.equal(appJs.includes('세션 선택: ${sessionTitle} · ${providerUiLabel}'), true);
   assert.equal(appJs.includes('현재 산출물 선택됨: ${artifactTitle}'), true);
   assert.equal(appJs.includes('산출물 선택: ${artifactTitle}'), true);
+  assert.equal(appJs.includes('isActiveSessionEvent'), true);
+  assert.equal(appJs.includes('현재 세션 타임라인 이벤트 선택됨: ${timelineEventTitle}'), true);
   assert.equal(appJs.includes('세션 타임라인 이벤트 열기: ${timelineEventTitle}'), true);
   assert.equal(appJs.includes('타임라인 이벤트 보기: ${timelineEventTitle}'), true);
+  assert.equal(stylesCss.includes('.timeline-event.is-active'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(missionSelectionLabel)}"'), true);
   assert.equal(appJs.includes('data-mission-id="${escapeHtml(mission.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(missionSelectionLabel)}"'), true);
@@ -283,6 +287,7 @@ try {
   assert.equal(appJs.includes('data-artifact-id="${escapeHtml(artifact.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(artifactSelectionLabel)}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(timelineEventLabel)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${isActiveSessionEvent ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(timelineEventLabel)}"'), true);
   assert.equal(appJs.includes('loadProviderEvents'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-audit'), true);

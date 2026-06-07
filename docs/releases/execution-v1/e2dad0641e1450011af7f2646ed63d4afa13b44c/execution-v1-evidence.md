@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T18:21:59.594Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T18:21:50.035Z
 - branch: codex/timeline-selector-pressed-metadata
 - commit: e2dad0641e1450011af7f2646ed63d4afa13b44c

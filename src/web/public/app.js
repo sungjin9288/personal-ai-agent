@@ -19046,11 +19046,17 @@ function renderTimeline() {
     .slice(0, 32)
     .map((item) => {
       const timelineEventTitle = `${getTimelineKindLabel(item.kind)} · ${formatDate(item.at)}`;
+      const isActiveSessionEvent = Boolean(item.sessionId && item.sessionId === state.selectedSessionId);
       const timelineEventLabel = item.sessionId
-        ? `세션 타임라인 이벤트 열기: ${timelineEventTitle}`
+        ? isActiveSessionEvent
+          ? `현재 세션 타임라인 이벤트 선택됨: ${timelineEventTitle}`
+          : `세션 타임라인 이벤트 열기: ${timelineEventTitle}`
         : `타임라인 이벤트 보기: ${timelineEventTitle}`;
+      const timelineSessionAttributes = item.sessionId
+        ? `data-session-id="${escapeHtml(item.sessionId)}" aria-pressed="${isActiveSessionEvent ? 'true' : 'false'}"`
+        : '';
       return `
-        <button type="button" class="timeline-event" ${item.sessionId ? `data-session-id="${escapeHtml(item.sessionId)}"` : ''} aria-label="${escapeHtml(timelineEventLabel)}" title="${escapeHtml(timelineEventLabel)}">
+        <button type="button" class="timeline-event ${isActiveSessionEvent ? 'is-active' : ''}" ${timelineSessionAttributes} aria-label="${escapeHtml(timelineEventLabel)}" title="${escapeHtml(timelineEventLabel)}">
           <div class="timeline-time">${escapeHtml(formatDate(item.at))}</div>
           <div class="timeline-kind">${escapeHtml(getTimelineKindLabel(item.kind))}</div>
           <div class="item-title">${escapeHtml(item.detail || '')}</div>

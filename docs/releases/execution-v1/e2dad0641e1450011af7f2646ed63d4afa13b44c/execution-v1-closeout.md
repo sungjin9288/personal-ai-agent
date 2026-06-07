@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T18:21:59.594Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T18:21:50.223Z
 - branch: codex/timeline-selector-pressed-metadata
 - commit: e2dad0641e1450011af7f2646ed63d4afa13b44c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e2dad0641e1450011af7f2646ed63d4afa13b44c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

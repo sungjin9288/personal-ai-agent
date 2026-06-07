@@ -1986,7 +1986,8 @@ button:disabled {
 .playbook-card.is-active,
 .mission-row.is-active,
 .session-row.is-active,
-.artifact-link.is-active {
+.artifact-link.is-active,
+.timeline-event.is-active {
   border-color: var(--line-strong);
   box-shadow: inset 3px 0 0 var(--accent);
 }
