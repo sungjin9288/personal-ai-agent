@@ -2064,6 +2064,8 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-provider-only-commands'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-command'), true);
   assert.equal(appJs.includes('provider-only slice 명령 복사'), true);
+  assert.equal(appJs.includes('slice 명령 복사: ${blockerTriageFilterActionLabel}'), true);
+  assert.equal(appJs.includes('provider-only slice 명령 복사: ${blockerTriageProviderOnlyActionLabel}'), true);
   assert.equal(appJs.includes('provider-only release blocker slice commands'), true);
   assert.equal(appJs.includes('Release blocker slice commands'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-evidence'), true);
@@ -2072,6 +2074,12 @@ try {
   assert.equal(appJs.includes('copy-release-blocker-provider-only-evidence'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-evidence'), true);
   assert.equal(appJs.includes('provider-only slice 근거 복사'), true);
+  assert.equal(appJs.includes('slice 근거 복사: ${blockerTriageFilterActionLabel}'), true);
+  assert.equal(appJs.includes('provider-only slice 근거 복사: ${blockerTriageProviderOnlyActionLabel}'), true);
+  assert.equal(appJs.includes('empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}'), true);
+  assert.equal(appJs.includes('empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}'), true);
+  assert.equal(appJs.includes('empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}'), true);
+  assert.equal(appJs.includes("${hasEmptyBlockerFilter ? 'empty blocker filter 조합 해제' : 'blocker 필터 해제'}: ${blockerFilterLabel}"), true);
   assert.equal(appJs.includes('provider-only release blocker slice evidence'), true);
   assert.equal(appJs.includes('Release blocker slice evidence'), true);
   assert.equal(appJs.includes('releaseFocusedBlockerId'), true);

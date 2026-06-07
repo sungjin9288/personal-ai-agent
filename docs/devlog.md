@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-07 Blocker Filter Control Labels
+
+- added slice command/evidence and provider-only slice command/evidence title and aria-label metadata to release blocker filter copy controls
+- added empty-filter category, owner, provider retain, and filter clear title and aria-label metadata while keeping filter routing unchanged
+- extended UI harness browse smoke coverage for blocker filter and slice command/evidence accessibility rendering contracts
+
 ## 2026-06-07 Blocker Detail Control Labels
 
 - added focused/current blocker and production blocker detail title and aria-label metadata to release blocker row, focus, evidence, command, package, handoff, link, clear, and list toggle controls
