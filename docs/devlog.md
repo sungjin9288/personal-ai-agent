@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Selection Button Pressed Metadata
+
+- added aria-pressed metadata to retrieval source focus chips, playbook cards, agent intent pills, and agent blueprint cards
+- kept retrieval focus routing, playbook autofill, blueprint selection, selected-state classes, and visible Korean copy unchanged
+- extended UI agent blueprints smoke coverage for selection button pressed-state accessibility contracts
+
 ## 2026-06-08 Output Toggle Expanded Metadata
 
 - added aria-expanded metadata to workspace form, output rail, mission summary, support panel, primary/secondary tab list, tool list, and artifact path toggles

@@ -7866,7 +7866,7 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
     );
     return `
       <span class="retrieval-source-chip">
-        <button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}" aria-label="${escapeHtml(sourceFocusLabel)}" title="${escapeHtml(sourceFocusLabel)}">${escapeHtml(isActive ? '현재 · ' : prefixLabel)}${escapeHtml(entry.label)}</button>
+        <button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}" aria-pressed="${isActive ? 'true' : 'false'}" aria-label="${escapeHtml(sourceFocusLabel)}" title="${escapeHtml(sourceFocusLabel)}">${escapeHtml(isActive ? '현재 · ' : prefixLabel)}${escapeHtml(entry.label)}</button>
         <button class="tag tag-ghost retrieval-source-copy-button ${isCopied ? 'is-copied' : ''}" type="button" data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(entry.sourceType)}" data-ui-source-label="${escapeHtml(entry.sourceLabel)}" data-retrieval-source-copy="true" aria-label="${escapeHtml(sourceCopyLabel)}" title="${escapeHtml(sourceCopyLabel)}">${escapeHtml(isCopied ? '복사됨' : '링크')}</button>
       </span>
     `;
@@ -11534,7 +11534,7 @@ function renderPlaybooks() {
   elements.playbookList.innerHTML = missionPlaybooks
     .map(
       (playbook) => `
-        <button type="button" class="playbook-card ${playbook.id === state.selectedPlaybookId ? 'is-active' : ''}" data-playbook-id="${escapeHtml(playbook.id)}" aria-label="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}" title="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}">
+        <button type="button" class="playbook-card ${playbook.id === state.selectedPlaybookId ? 'is-active' : ''}" data-playbook-id="${escapeHtml(playbook.id)}" aria-pressed="${playbook.id === state.selectedPlaybookId ? 'true' : 'false'}" aria-label="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}" title="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}">
           <div class="status-row">
             <span class="mini-badge">${escapeHtml(playbook.origin)}</span>
           </div>
@@ -11643,6 +11643,7 @@ function renderAgentBlueprintBuilder() {
                 type="button"
                 class="agent-intent-pill ${active ? 'is-active' : ''}"
                 data-agent-blueprint-id="${escapeHtml(intent.blueprintId)}"
+                aria-pressed="${active ? 'true' : 'false'}"
                 aria-label="${escapeHtml(active ? `현재 AI 구성 의도: ${intent.label}` : `AI 구성 의도 선택: ${intent.label}`)}"
                 title="${escapeHtml(active ? `현재 AI 구성 의도: ${intent.label}` : `AI 구성 의도 선택: ${intent.label}`)}"
               >
@@ -11693,6 +11694,7 @@ function renderAgentBlueprintBuilder() {
                 type="button"
                 class="agent-blueprint-card ${blueprint.id === selectedBlueprint?.id ? 'is-active' : ''}"
                 data-agent-blueprint-id="${escapeHtml(blueprint.id)}"
+                aria-pressed="${blueprint.id === selectedBlueprint?.id ? 'true' : 'false'}"
                 aria-label="${escapeHtml(blueprint.id === selectedBlueprint?.id ? `현재 AI 구성 카드: ${blueprint.title}` : `AI 구성 카드 선택: ${blueprint.title}`)}"
                 title="${escapeHtml(blueprint.id === selectedBlueprint?.id ? `현재 AI 구성 카드: ${blueprint.title}` : `AI 구성 카드 선택: ${blueprint.title}`)}"
               >

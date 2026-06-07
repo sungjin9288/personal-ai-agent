@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T17:41:05.584Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T17:41:04.259Z
 - localDate: 2026-06-08
 - branch: codex/selection-button-pressed-metadata
 - commit: 866b00871190f4a582ff506e31dbefa40e95b145
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/866b00871190f4a582ff506e31dbefa40e95b145](releases/execution-v1/866b00871190f4a582ff506e31dbefa40e95b145)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/866b00871190f4a582ff506e31dbefa40e95b145/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/866b00871190f4a582ff506e31dbefa40e95b145/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/866b00871190f4a582ff506e31dbefa40e95b145](docs/releases/execution-v1/866b00871190f4a582ff506e31dbefa40e95b145)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/selection-button-pressed-metadata not found
 
