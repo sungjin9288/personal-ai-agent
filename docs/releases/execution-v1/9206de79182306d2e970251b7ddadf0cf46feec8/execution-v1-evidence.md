@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T14:40:28.220Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T14:40:17.588Z
 - branch: codex/release-history-control-labels
 - commit: 9206de79182306d2e970251b7ddadf0cf46feec8
