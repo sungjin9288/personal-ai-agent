@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T14:10:16.147Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T14:09:48.441Z
 - branch: codex/blocker-detail-control-labels
 - commit: 7bbf7b45bcd8f7f07a04e0adeee50c0d872a5485
