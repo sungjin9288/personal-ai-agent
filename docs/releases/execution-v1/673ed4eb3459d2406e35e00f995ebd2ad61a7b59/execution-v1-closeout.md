@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T16:23:20.998Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T16:23:11.515Z
 - branch: codex/static-shell-accessible-labels
 - commit: 673ed4eb3459d2406e35e00f995ebd2ad61a7b59
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/673ed4eb3459d2406e35e00f995ebd2ad61a7b59/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
