@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T12:57:43.159Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T12:57:27.589Z
 - branch: codex/provider-action-control-labels
 - commit: b1c750dc86db91967e0aa09e4ef39ed1f81307be
