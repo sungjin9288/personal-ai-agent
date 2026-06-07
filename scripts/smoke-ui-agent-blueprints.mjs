@@ -80,6 +80,7 @@ try {
   assert.equal(appJs.includes('retrieval source 링크 복사됨'), true);
   assert.equal(appJs.includes('retrieval source focus 해제'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(sourceFocusLabel)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${isActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(sourceFocusLabel)}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(sourceCopyLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(sourceCopyLabel)}"'), true);
@@ -97,10 +98,13 @@ try {
   assert.equal(appJs.includes('템플릿 적용: ${template.title}'), true);
   assert.equal(appJs.includes('현재 플레이북 선택됨: ${playbook.title}'), true);
   assert.equal(appJs.includes('플레이북 선택: ${playbook.title}'), true);
+  assert.equal(appJs.includes('aria-pressed="${playbook.id === state.selectedPlaybookId ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('현재 AI 구성 의도: ${intent.label}'), true);
   assert.equal(appJs.includes('AI 구성 의도 선택: ${intent.label}'), true);
+  assert.equal(appJs.includes('aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('현재 AI 구성 카드: ${blueprint.title}'), true);
   assert.equal(appJs.includes('AI 구성 카드 선택: ${blueprint.title}'), true);
+  assert.equal(appJs.includes('aria-pressed="${blueprint.id === selectedBlueprint?.id ? \'true\' : \'false\'}"'), true);
 
   assert.equal(stylesCss.includes('.surface-ai-compose'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-grid'), true);
