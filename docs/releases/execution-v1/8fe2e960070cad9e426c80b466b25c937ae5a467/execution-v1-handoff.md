@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T16:58:01.208Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T16:57:59.848Z
 - localDate: 2026-06-08
 - branch: codex/static-tab-state-metadata
 - commit: 8fe2e960070cad9e426c80b466b25c937ae5a467
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/8fe2e960070cad9e426c80b466b25c937ae5a467](releases/execution-v1/8fe2e960070cad9e426c80b466b25c937ae5a467)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8fe2e960070cad9e426c80b466b25c937ae5a467/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/8fe2e960070cad9e426c80b466b25c937ae5a467/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/8fe2e960070cad9e426c80b466b25c937ae5a467](docs/releases/execution-v1/8fe2e960070cad9e426c80b466b25c937ae5a467)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/static-tab-state-metadata not found
 
