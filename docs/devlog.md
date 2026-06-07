@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-07 Target Evidence Control Labels
+
+- added target-evidence and provider-only target-evidence title and aria-label metadata to release blocker intake copy controls
+- kept target evidence summary, capture template, required commands, production gap, exception, risk, provider refs, residual blockers, closure, submission, sanitized, boundary, command log, decision, disposition, refresh, packet, and handoff copy routing unchanged
+- extended UI harness browse smoke coverage for target evidence control accessibility rendering contracts
+
 ## 2026-06-07 Blocker Triage Control Labels
 
 - added production-blocker and current-open-blocker slice-aware title and aria-label metadata to release blocker triage controls
