@@ -14114,12 +14114,12 @@ function renderHarnessPanel() {
     <div class="harness-searchbar">
       <label class="compact-label">
         메모 검색
-        <input id="harness-memory-search" type="search" value="${escapeHtml(String(memoryBrowse.filters?.query || ''))}" placeholder="내용 또는 kind 검색" />
+        <input id="harness-memory-search" type="search" value="${escapeHtml(String(memoryBrowse.filters?.query || ''))}" placeholder="내용 또는 kind 검색" aria-label="${escapeHtml(`메모 검색: ${memoryFilterLabel}`)}" />
       </label>
       <div class="harness-filter-row">
         <label class="compact-label">
           범위
-          <select id="harness-memory-scope-filter">
+          <select id="harness-memory-scope-filter" aria-label="${escapeHtml(`메모 범위 필터: ${memoryFilterLabel}`)}">
             <option value="all" ${String(memoryBrowse.filters?.scope || 'all') === 'all' ? 'selected' : ''}>전체</option>
             <option value="mission" ${String(memoryBrowse.filters?.scope || 'all') === 'mission' ? 'selected' : ''}>미션 메모</option>
             <option value="workspace" ${String(memoryBrowse.filters?.scope || 'all') === 'workspace' ? 'selected' : ''}>워크스페이스 메모</option>
@@ -14127,7 +14127,7 @@ function renderHarnessPanel() {
         </label>
         <label class="compact-label">
           종류
-          <select id="harness-memory-kind-filter">
+          <select id="harness-memory-kind-filter" aria-label="${escapeHtml(`메모 종류 필터: ${memoryFilterLabel}`)}">
             <option value="all" ${String(memoryBrowse.filters?.kind || 'all') === 'all' ? 'selected' : ''}>전체</option>
             <option value="fact" ${String(memoryBrowse.filters?.kind || 'all') === 'fact' ? 'selected' : ''}>사실</option>
             <option value="decision" ${String(memoryBrowse.filters?.kind || 'all') === 'decision' ? 'selected' : ''}>결정</option>
@@ -14147,7 +14147,7 @@ function renderHarnessPanel() {
         <div class="inline-actions">
           <label class="compact-label">
             메모 정렬
-            <select id="harness-memory-sort">
+            <select id="harness-memory-sort" aria-label="${escapeHtml(`메모 정렬: ${memoryFilterLabel}`)}">
               <option value="latest" ${state.harnessMemorySort === 'latest' ? 'selected' : ''}>최신순</option>
               <option value="oldest" ${state.harnessMemorySort === 'oldest' ? 'selected' : ''}>오래된 순</option>
               <option value="kind" ${state.harnessMemorySort === 'kind' ? 'selected' : ''}>종류순</option>
@@ -14155,7 +14155,7 @@ function renderHarnessPanel() {
           </label>
           <label class="compact-label">
             페이지 크기
-            <select id="harness-memory-limit">
+            <select id="harness-memory-limit" aria-label="${escapeHtml(`메모 페이지 크기: ${memoryFilterLabel}`)}">
               <option value="12" ${Number(state.harnessMemoryVisibleCount || 12) === 12 ? 'selected' : ''}>12건</option>
               <option value="24" ${Number(state.harnessMemoryVisibleCount || 12) === 24 ? 'selected' : ''}>24건</option>
               <option value="48" ${Number(state.harnessMemoryVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T15:24:42.211Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T15:24:40.824Z
 - localDate: 2026-06-08
 - branch: codex/memory-filter-input-labels
 - commit: b3998cb0feca8a1953936210cb6450d96ab2eb5e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b3998cb0feca8a1953936210cb6450d96ab2eb5e](releases/execution-v1/b3998cb0feca8a1953936210cb6450d96ab2eb5e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b3998cb0feca8a1953936210cb6450d96ab2eb5e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b3998cb0feca8a1953936210cb6450d96ab2eb5e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b3998cb0feca8a1953936210cb6450d96ab2eb5e](docs/releases/execution-v1/b3998cb0feca8a1953936210cb6450d96ab2eb5e)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/memory-filter-input-labels not found
 

@@ -1876,6 +1876,11 @@ try {
   assert.equal(appJs.includes('data-document-action="next-page"'), true);
   assert.equal(appJs.includes('다음 문서 ${documentPageSize}건'), true);
   assert.equal(appJs.includes('harness-memory-search'), true);
+  assert.equal(appJs.includes('메모 검색: ${memoryFilterLabel}'), true);
+  assert.equal(appJs.includes('메모 범위 필터: ${memoryFilterLabel}'), true);
+  assert.equal(appJs.includes('메모 종류 필터: ${memoryFilterLabel}'), true);
+  assert.equal(appJs.includes('메모 정렬: ${memoryFilterLabel}'), true);
+  assert.equal(appJs.includes('메모 페이지 크기: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('data-memory-action="reset-browse"'), true);
   assert.equal(appJs.includes('메모리 필터 초기화: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);

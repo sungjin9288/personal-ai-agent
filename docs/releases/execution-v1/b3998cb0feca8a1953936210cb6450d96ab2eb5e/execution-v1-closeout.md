@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T15:24:42.211Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T15:24:33.513Z
 - branch: codex/memory-filter-input-labels
 - commit: b3998cb0feca8a1953936210cb6450d96ab2eb5e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b3998cb0feca8a1953936210cb6450d96ab2eb5e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

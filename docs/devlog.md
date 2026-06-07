@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Memory Browse Input Labels
+
+- added filter-aware aria-label metadata to memory search, scope, kind, sort, and page-size controls
+- kept memory browse filtering, sorting, pagination, reset, load, and delete routing unchanged
+- extended UI harness browse smoke coverage for memory browse input and select accessibility rendering contracts
+
 ## 2026-06-07 Release History Control Labels
 
 - added focused release history, history row focus, detail toggle, history link, flow link, attention/scope/provider filter, and filter clear title and aria-label metadata
