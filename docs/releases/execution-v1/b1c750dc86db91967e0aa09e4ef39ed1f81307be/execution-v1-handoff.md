@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T12:57:43.159Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T12:57:41.743Z
 - localDate: 2026-06-07
 - branch: codex/provider-action-control-labels
 - commit: b1c750dc86db91967e0aa09e4ef39ed1f81307be
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b1c750dc86db91967e0aa09e4ef39ed1f81307be](releases/execution-v1/b1c750dc86db91967e0aa09e4ef39ed1f81307be)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b1c750dc86db91967e0aa09e4ef39ed1f81307be/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b1c750dc86db91967e0aa09e4ef39ed1f81307be/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b1c750dc86db91967e0aa09e4ef39ed1f81307be](docs/releases/execution-v1/b1c750dc86db91967e0aa09e4ef39ed1f81307be)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-action-control-labels not found
 

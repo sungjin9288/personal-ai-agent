@@ -14967,6 +14967,13 @@ function renderReleaseStatus() {
                       const recommendationProviderFocusLabel = sameProviderFocused
                         ? `현재 provider 카드: ${recommendationProviderActionLabel}`
                         : `provider 카드 보기: ${recommendationProviderActionLabel}`;
+                      const recommendationActionTargetLabel = item.label || item.action || recommendationProviderActionLabel || '권장 액션';
+                      const latestActionTargetLabel = latestAction
+                        ? `${getReleaseActionLabel(latestAction.action)} · ${latestAction.provider || 'provider 미지정'} · ${latestAction.id || latestAction.scope || '최근 기록'}`
+                        : '';
+                      const latestAttentionActionTargetLabel = latestAttentionAction
+                        ? `${getReleaseActionLabel(latestAttentionAction.action)} · ${latestAttentionAction.provider || latestAction?.provider || 'provider 미지정'} · ${latestAttentionAction.id || latestAttentionAction.scope || latestAction?.scope || '최근 문제'}`
+                        : '';
                       const { sameFlowActive, attentionFlowActive } = latestAction
                         ? isRecommendationFlowActive({
                           attentionAction: latestAttentionAction,
@@ -15025,12 +15032,16 @@ function renderReleaseStatus() {
                                     type="button"
                                     data-ui-action="focus-release-history"
                                     data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                    aria-label="${escapeHtml(`최근 기록 보기: ${latestActionTargetLabel}`)}"
+                                    title="${escapeHtml(`최근 기록 보기: ${latestActionTargetLabel}`)}"
                                   >최근 기록 보기</button>
                                   <button
                                     class="ghost-button"
                                     type="button"
                                     data-ui-action="copy-release-history-link"
                                     data-ui-value="${escapeHtml(latestAction.id || '')}"
+                                    aria-label="${escapeHtml(`기록 링크 복사: ${latestActionTargetLabel}`)}"
+                                    title="${escapeHtml(`기록 링크 복사: ${latestActionTargetLabel}`)}"
                                   >기록 링크 복사</button>
                                   ${latestAttentionAction && latestAttentionAction.id !== latestAction.id
                                     ? `
@@ -15039,12 +15050,16 @@ function renderReleaseStatus() {
                                           type="button"
                                           data-ui-action="focus-release-history"
                                           data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
+                                          aria-label="${escapeHtml(`최근 문제 보기: ${latestAttentionActionTargetLabel}`)}"
+                                          title="${escapeHtml(`최근 문제 보기: ${latestAttentionActionTargetLabel}`)}"
                                         >최근 문제 보기</button>
                                         <button
                                           class="ghost-button"
                                           type="button"
                                           data-ui-action="copy-release-history-link"
                                           data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
+                                          aria-label="${escapeHtml(`문제 기록 링크 복사: ${latestAttentionActionTargetLabel}`)}"
+                                          title="${escapeHtml(`문제 기록 링크 복사: ${latestAttentionActionTargetLabel}`)}"
                                         >문제 기록 링크 복사</button>
                                       `
                                     : ''}
@@ -15056,6 +15071,8 @@ function renderReleaseStatus() {
                                     data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}"
                                     data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
                                     data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
+                                    aria-label="${escapeHtml(sameFlowActive ? `현재 flow: ${latestActionTargetLabel}` : `같은 flow 보기: ${latestActionTargetLabel}`)}"
+                                    title="${escapeHtml(sameFlowActive ? `현재 flow: ${latestActionTargetLabel}` : `같은 flow 보기: ${latestActionTargetLabel}`)}"
                                     ${sameFlowActive ? 'disabled' : ''}
                                   >${sameFlowActive ? '현재 flow' : '같은 flow 보기'}</button>
                                   <button
@@ -15066,6 +15083,8 @@ function renderReleaseStatus() {
                                     data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}"
                                     data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
                                     data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
+                                    aria-label="${escapeHtml(`flow 링크 복사: ${latestActionTargetLabel}`)}"
+                                    title="${escapeHtml(`flow 링크 복사: ${latestActionTargetLabel}`)}"
                                   >flow 링크 복사</button>
                                   ${latestAttentionAction
                                     ? `
@@ -15077,6 +15096,8 @@ function renderReleaseStatus() {
                                           data-ui-outcome="attention"
                                           data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}"
                                           data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"
+                                          aria-label="${escapeHtml(attentionFlowActive ? `현재 문제 흐름: ${latestAttentionActionTargetLabel}` : `같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}`)}"
+                                          title="${escapeHtml(attentionFlowActive ? `현재 문제 흐름: ${latestAttentionActionTargetLabel}` : `같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}`)}"
                                           ${attentionFlowActive ? 'disabled' : ''}
                                         >${attentionFlowActive ? '현재 문제 흐름' : '같은 문제 흐름 보기'}</button>
                                         <button
@@ -15087,6 +15108,8 @@ function renderReleaseStatus() {
                                           data-ui-outcome="attention"
                                           data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}"
                                           data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"
+                                          aria-label="${escapeHtml(`문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}`)}"
+                                          title="${escapeHtml(`문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}`)}"
                                         >문제 흐름 링크 복사</button>
                                       `
                                     : ''}
@@ -15134,6 +15157,8 @@ function renderReleaseStatus() {
                                     type="button"
                                     data-ui-action="${escapeHtml(item.action)}"
                                     ${item.actionProvider ? `data-ui-provider="${escapeHtml(item.actionProvider)}"` : ''}
+                                    aria-label="${escapeHtml(`권장 액션 실행: ${recommendationActionTargetLabel}`)}"
+                                    title="${escapeHtml(`권장 액션 실행: ${recommendationActionTargetLabel}`)}"
                                   >실행</button>
                                   ${recommendationCommand
                                     ? `

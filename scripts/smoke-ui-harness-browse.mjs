@@ -1745,6 +1745,18 @@ try {
   assert.equal(appJs.includes('providerFocusButtonLabel'), true);
   assert.equal(appJs.includes('recommendationProviderActionLabel'), true);
   assert.equal(appJs.includes('recommendationProviderFocusLabel'), true);
+  assert.equal(appJs.includes('recommendationActionTargetLabel'), true);
+  assert.equal(appJs.includes('latestActionTargetLabel'), true);
+  assert.equal(appJs.includes('latestAttentionActionTargetLabel'), true);
+  assert.equal(appJs.includes('최근 기록 보기: ${latestActionTargetLabel}'), true);
+  assert.equal(appJs.includes('기록 링크 복사: ${latestActionTargetLabel}'), true);
+  assert.equal(appJs.includes('최근 문제 보기: ${latestAttentionActionTargetLabel}'), true);
+  assert.equal(appJs.includes('문제 기록 링크 복사: ${latestAttentionActionTargetLabel}'), true);
+  assert.equal(appJs.includes('같은 flow 보기: ${latestActionTargetLabel}'), true);
+  assert.equal(appJs.includes('flow 링크 복사: ${latestActionTargetLabel}'), true);
+  assert.equal(appJs.includes('같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}'), true);
+  assert.equal(appJs.includes('문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}'), true);
+  assert.equal(appJs.includes('권장 액션 실행: ${recommendationActionTargetLabel}'), true);
   assert.equal(appJs.includes('${recommendationCommand.buttonLabel}: ${recommendationCommand.label}'), true);
   assert.equal(appJs.includes('현재 provider 카드: ${recommendationProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider 카드 보기: ${recommendationProviderActionLabel}'), true);
