@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Static Tab State Metadata
+
+- added aria-current, aria-selected, aria-hidden, tablist, tab, and tabpanel metadata to static flow and detail navigation state
+- synchronized active step, detail tab, and output toolbar tab ARIA state with existing class toggles without changing routing or visible copy
+- extended UI harness browse smoke coverage for served root/app state metadata contracts
+
 ## 2026-06-08 Static Shell Accessible Labels
 
 - added aria-label and title metadata to the static workspace, mission, run, detail tab, document, and memory shell controls

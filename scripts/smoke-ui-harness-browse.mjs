@@ -236,6 +236,7 @@ try {
   const appJs = await fetchText(`${baseUrl}/app.js`);
 
   assertStaticAccessibleMetadata({ appJs, rootHtml });
+  assertStaticStateMetadata({ appJs, rootHtml });
   assertProviderOnlyCopyScopeSource(appJs);
 
   assert.equal(rootHtml.includes('data-detail-tab="harness"'), true);
@@ -3124,6 +3125,35 @@ function getMissingStaticAccessibleMetadata({ source, regex, isValid }) {
 
 function hasAccessibleName(element) {
   return /\baria-label=/.test(element) || /\baria-labelledby=/.test(element);
+}
+
+function assertStaticStateMetadata({ appJs, rootHtml }) {
+  assert.equal(rootHtml.includes('aria-current="step"'), true);
+  assert.equal(rootHtml.includes('role="tablist"'), true);
+
+  const rootDetailTabs = Array.from(rootHtml.matchAll(/<button\b[^>]*\bdata-detail-tab="([^"]+)"[^>]*>/g));
+  assert.equal(rootDetailTabs.length, 6, 'root detail tab buttons must remain discoverable');
+  for (const [, tabId] of rootDetailTabs) {
+    const tabMarkup = rootDetailTabs.find((match) => match[1] === tabId)?.[0] || '';
+    assert.equal(tabMarkup.includes('role="tab"'), true, `${tabId} detail tab must expose role=tab`);
+    assert.equal(tabMarkup.includes('aria-selected='), true, `${tabId} detail tab must expose aria-selected`);
+    assert.equal(tabMarkup.includes(`aria-controls="detail-${tabId}"`), true, `${tabId} detail tab must target its panel`);
+  }
+
+  const rootDetailPanels = Array.from(rootHtml.matchAll(/<article\b[^>]*\bid="detail-([^"]+)"[^>]*>/g));
+  assert.equal(rootDetailPanels.length, 6, 'root detail panels must remain discoverable');
+  for (const [, tabId] of rootDetailPanels) {
+    const panelMarkup = rootDetailPanels.find((match) => match[1] === tabId)?.[0] || '';
+    assert.equal(panelMarkup.includes('role="tabpanel"'), true, `${tabId} detail panel must expose role=tabpanel`);
+    assert.equal(panelMarkup.includes(`aria-labelledby="detail-tab-${tabId}"`), true, `${tabId} detail panel must reference its tab`);
+    assert.equal(panelMarkup.includes('aria-hidden='), true, `${tabId} detail panel must expose hidden state`);
+  }
+
+  assertSourceIncludes(appJs, "button.setAttribute('aria-current', 'step')", 'active step state sync');
+  assertSourceIncludes(appJs, "button.removeAttribute('aria-current')", 'inactive step state sync');
+  assertSourceIncludes(appJs, "panel.setAttribute('aria-hidden', active ? 'false' : 'true')", 'panel hidden state sync');
+  assertSourceIncludes(appJs, "button.setAttribute('aria-selected', active ? 'true' : 'false')", 'detail tab selected state sync');
+  assertSourceIncludes(appJs, 'aria-pressed="${tab.isActive ? \'true\' : \'false\'}"', 'output toolbar tab pressed state');
 }
 
 function getUniqueSortedMatches(source, regex) {

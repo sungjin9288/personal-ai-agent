@@ -9036,10 +9036,18 @@ function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode =
   state.activeStep = stepId;
   syncStepViewMode();
   elements.stepButtons.forEach((button) => {
-    button.classList.toggle('is-active', button.dataset.stepTarget === stepId);
+    const active = button.dataset.stepTarget === stepId;
+    button.classList.toggle('is-active', active);
+    if (active) {
+      button.setAttribute('aria-current', 'step');
+    } else {
+      button.removeAttribute('aria-current');
+    }
   });
   elements.stepPanels.forEach((panel) => {
-    panel.classList.toggle('is-active', panel.id === stepId);
+    const active = panel.id === stepId;
+    panel.classList.toggle('is-active', active);
+    panel.setAttribute('aria-hidden', active ? 'false' : 'true');
   });
 
   if (syncDetailTab) {
@@ -9193,10 +9201,14 @@ function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {})
     state.outputSecondaryTabsExpanded = true;
   }
   elements.detailTabButtons.forEach((button) => {
-    button.classList.toggle('is-active', button.dataset.detailTab === tabId);
+    const active = button.dataset.detailTab === tabId;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-selected', active ? 'true' : 'false');
   });
   elements.detailPanels.forEach((panel) => {
-    panel.classList.toggle('is-active', panel.id === `detail-${tabId}`);
+    const active = panel.id === `detail-${tabId}`;
+    panel.classList.toggle('is-active', active);
+    panel.setAttribute('aria-hidden', active ? 'false' : 'true');
   });
   renderDetailTabLabels();
   renderDetailContextbar();
@@ -9271,6 +9283,7 @@ function renderDetailToolbarActions() {
               class="detail-primary-nav-button${tab.isActive ? ' is-active' : ''}"
               type="button"
               data-output-primary-tab="${escapeHtml(tab.id)}"
+              aria-pressed="${tab.isActive ? 'true' : 'false'}"
               aria-label="${escapeHtml(`결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
               title="${escapeHtml(`결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
             >
@@ -9335,6 +9348,7 @@ function renderDetailToolbarActions() {
                     class="detail-secondary-nav-button${tab.isActive ? ' is-active' : ''}"
                     type="button"
                     data-output-secondary-tab="${escapeHtml(tab.id)}"
+                    aria-pressed="${tab.isActive ? 'true' : 'false'}"
                     aria-label="${escapeHtml(`결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
                     title="${escapeHtml(`결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
                   >
