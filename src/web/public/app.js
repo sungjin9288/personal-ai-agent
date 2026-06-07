@@ -1198,6 +1198,7 @@ function setWorkspaceFormOpen(isOpen, { focus = false } = {}) {
   const open = Boolean(isOpen);
   elements.workspaceForm.hidden = !open;
   elements.toggleWorkspaceFormButton.textContent = open ? '추가 닫기' : '워크스페이스 추가';
+  elements.toggleWorkspaceFormButton.setAttribute('aria-expanded', open ? 'true' : 'false');
 
   if (!open) {
     elements.workspaceForm.reset();
@@ -9297,27 +9298,27 @@ function renderDetailToolbarActions() {
       ${
         supportCollapsed
           ? `
-            <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
+            <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-expanded="${state.outputSupportExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
               패널
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-primary-tabs" aria-label="${escapeHtml(outputPrimaryTabsToggleLabel)}" title="${escapeHtml(outputPrimaryTabsToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-primary-tabs" aria-expanded="${state.outputPrimaryTabsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputPrimaryTabsToggleLabel)}" title="${escapeHtml(outputPrimaryTabsToggleLabel)}">
               ${escapeHtml(state.outputPrimaryTabsExpanded ? '탭 닫기' : '탭')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-tools" aria-label="${escapeHtml(outputToolbarToolsToggleLabel)}" title="${escapeHtml(outputToolbarToolsToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-tools" aria-expanded="${state.outputToolbarToolsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputToolbarToolsToggleLabel)}" title="${escapeHtml(outputToolbarToolsToggleLabel)}">
               ${escapeHtml(state.outputToolbarToolsExpanded ? '도구 닫기' : '도구')}
             </button>
           `
           : `
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-expanded="${state.outputRailCollapsed ? 'false' : 'true'}" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
               ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(outputMissionSummaryToggleLabel)}" title="${escapeHtml(outputMissionSummaryToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="${state.outputMissionSummaryExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputMissionSummaryToggleLabel)}" title="${escapeHtml(outputMissionSummaryToggleLabel)}">
               ${escapeHtml(state.outputMissionSummaryExpanded ? '요약 접기' : '요약 펼치기')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-expanded="${state.outputSecondaryTabsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
               ${escapeHtml(state.outputSecondaryTabsExpanded ? '보조 탭 숨기기' : '보조 탭 보기')}
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-support" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-support" aria-expanded="${state.outputSupportExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
               지원 패널 접기
             </button>
           `
@@ -9327,10 +9328,10 @@ function renderDetailToolbarActions() {
       supportCollapsed && state.outputToolbarToolsExpanded
         ? `
           <div class="detail-toolbar-aux">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-expanded="${state.outputSecondaryTabsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
               보조 탭
             </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-expanded="${state.outputRailCollapsed ? 'false' : 'true'}" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
               사이드바
             </button>
           </div>
@@ -11399,7 +11400,7 @@ function renderFlowState() {
           ${
             isOutputFocus
               ? `
-                <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-label="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}" title="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}">
+                <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-expanded="${state.outputRailCollapsed ? 'false' : 'true'}" aria-label="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}" title="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}">
                   ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
                 </button>
               `
@@ -12701,7 +12702,7 @@ function renderMissionSummary() {
               .join('')}
           </div>
           <div class="action-row">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="false" aria-label="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}">
               요약 펼치기
             </button>
             <button class="secondary-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup" aria-label="${escapeHtml(missionSummarySetupLabel)}" title="${escapeHtml(missionSummarySetupLabel)}">
@@ -12728,7 +12729,7 @@ function renderMissionSummary() {
             <p class="summary-note">입력값과 전체 플레이북을 반복하지 않고, 이번 단계에서 바로 필요한 상태만 남겼습니다.</p>
           </div>
           <div class="action-row action-row-compact">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-label="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}">
+            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="true" aria-label="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}">
               요약 접기
             </button>
             <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup" aria-label="${escapeHtml(missionSummarySetupLabel)}" title="${escapeHtml(missionSummarySetupLabel)}">
@@ -13357,7 +13358,7 @@ function renderOutputStageSummary() {
           <span>${escapeHtml(`검토 · ${flow.blocker}`)}</span>
         </div>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-label="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}">지원 패널 펼치기</button>
+          <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-expanded="false" aria-label="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}">지원 패널 펼치기</button>
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
           ${
             latestRetrievalArtifact
@@ -18964,7 +18965,7 @@ function renderArtifact(payload) {
           <strong>${escapeHtml(artifactTitle)}</strong>
           <div class="artifact-meta-row artifact-meta-row-compact">
             <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
-            <button class="ghost-button artifact-meta-toggle" type="button" data-ui-action="toggle-output-artifact-meta" aria-label="${escapeHtml(artifactMetaToggleLabel)}" title="${escapeHtml(artifactMetaToggleLabel)}">
+            <button class="ghost-button artifact-meta-toggle" type="button" data-ui-action="toggle-output-artifact-meta" aria-expanded="${state.outputArtifactMetaExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(artifactMetaToggleLabel)}" title="${escapeHtml(artifactMetaToggleLabel)}">
               ${escapeHtml(state.outputArtifactMetaExpanded ? '경로 닫기' : '경로')}
             </button>
           </div>
