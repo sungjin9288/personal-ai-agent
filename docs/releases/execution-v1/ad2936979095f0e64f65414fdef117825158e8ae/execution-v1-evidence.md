@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T15:50:15.640Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T15:50:05.270Z
 - branch: codex/document-attachment-input-labels
 - commit: ad2936979095f0e64f65414fdef117825158e8ae

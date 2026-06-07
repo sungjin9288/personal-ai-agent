@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T15:50:15.640Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T15:50:14.070Z
 - localDate: 2026-06-08
 - branch: codex/document-attachment-input-labels
 - commit: ad2936979095f0e64f65414fdef117825158e8ae
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ad2936979095f0e64f65414fdef117825158e8ae](releases/execution-v1/ad2936979095f0e64f65414fdef117825158e8ae)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ad2936979095f0e64f65414fdef117825158e8ae/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ad2936979095f0e64f65414fdef117825158e8ae/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ad2936979095f0e64f65414fdef117825158e8ae](docs/releases/execution-v1/ad2936979095f0e64f65414fdef117825158e8ae)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/document-attachment-input-labels not found
 
