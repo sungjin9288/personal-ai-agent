@@ -12289,7 +12289,7 @@ function renderMissionList() {
       const showExpandedAction = active;
       return `
         <div class="mission-row ${active}">
-          <button type="button" data-mission-id="${escapeHtml(mission.id)}" aria-label="${escapeHtml(missionSelectionLabel)}" title="${escapeHtml(missionSelectionLabel)}">
+          <button type="button" data-mission-id="${escapeHtml(mission.id)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(missionSelectionLabel)}" title="${escapeHtml(missionSelectionLabel)}">
             <div class="mission-row-topline">
               <div class="mission-row-topline-main">
                 <span class="mission-row-stage">${escapeHtml(snapshot.stage)}</span>
@@ -18820,7 +18820,7 @@ function renderSessionList() {
         : `세션 선택: ${sessionTitle} · ${providerUiLabel}`;
       return `
         <div class="session-row ${active}">
-          <button type="button" data-session-id="${escapeHtml(session.id)}" aria-label="${escapeHtml(sessionSelectionLabel)}" title="${escapeHtml(sessionSelectionLabel)}">
+          <button type="button" data-session-id="${escapeHtml(session.id)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(sessionSelectionLabel)}" title="${escapeHtml(sessionSelectionLabel)}">
             <div class="status-row">
               <span class="status-badge ${getStatusClass(session.status)}">${escapeHtml(getDisplayLabel(session.status))}</span>
               <span class="mini-badge ${getStatusClass(session.provider || '')}">${escapeHtml(providerUiLabel)}</span>
@@ -18904,7 +18904,7 @@ function renderSessionDetail(sessionPayload) {
         : `산출물 선택: ${artifactTitle}`;
       return `
         <div class="artifact-link ${active}">
-          <button type="button" data-artifact-id="${escapeHtml(artifact.id)}" aria-label="${escapeHtml(artifactSelectionLabel)}" title="${escapeHtml(artifactSelectionLabel)}">
+          <button type="button" data-artifact-id="${escapeHtml(artifact.id)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(artifactSelectionLabel)}" title="${escapeHtml(artifactSelectionLabel)}">
             <div class="status-row">
               <span class="mini-badge ${getStatusClass(artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(artifact.kind, artifact.kind || 'artifact'))}</span>
             </div>

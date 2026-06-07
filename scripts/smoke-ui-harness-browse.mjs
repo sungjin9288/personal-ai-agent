@@ -274,10 +274,13 @@ try {
   assert.equal(appJs.includes('세션 타임라인 이벤트 열기: ${timelineEventTitle}'), true);
   assert.equal(appJs.includes('타임라인 이벤트 보기: ${timelineEventTitle}'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(missionSelectionLabel)}"'), true);
+  assert.equal(appJs.includes('data-mission-id="${escapeHtml(mission.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(missionSelectionLabel)}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(sessionSelectionLabel)}"'), true);
+  assert.equal(appJs.includes('data-session-id="${escapeHtml(session.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(sessionSelectionLabel)}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(artifactSelectionLabel)}"'), true);
+  assert.equal(appJs.includes('data-artifact-id="${escapeHtml(artifact.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(artifactSelectionLabel)}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(timelineEventLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(timelineEventLabel)}"'), true);
