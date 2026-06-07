@@ -14534,6 +14534,8 @@ function renderReleaseStatus() {
   const productionBlockerActionLabel = `${productionBlockerCount} production blockers · ${productionReadyStopReason || 'stop reason not recorded'}`;
   const blockerTriageFilterActionLabel = `current open blocker slice · ${blockerFilterLabel}`;
   const blockerTriageProviderOnlyActionLabel = `provider-only ${blockerProviderLabel} · ${blockerFilterLabel}`;
+  const targetEvidenceActionLabel = `target evidence intake · ${blockerTriageFilterActionLabel}`;
+  const targetEvidenceProviderOnlyActionLabel = `provider-only target evidence · ${blockerTriageProviderOnlyActionLabel}`;
   const focusedBlockerLabel = focusedBlockerEntry
     ? `${focusedBlockerId || 'blocker'} · ${focusedBlockerEntry.blocker || focusedBlockerEntry.stopReason || 'current open blocker'}`
     : focusedBlockerId || '';
@@ -15483,7 +15485,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-intake-summary="true"
                   data-ui-action="copy-release-target-evidence-intake-summary"
-                >target evidence summary 복사</button>
+                  aria-label="${escapeHtml(`target evidence summary 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target evidence summary 복사: ${targetEvidenceActionLabel}`)}">target evidence summary 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15491,7 +15494,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-intake-summary="true"
                       data-ui-action="copy-release-target-evidence-provider-only-intake-summary"
-                    >provider-only target summary 복사</button>
+                      aria-label="${escapeHtml(`provider-only target summary 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only target summary 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only target summary 복사</button>
                   `
                   : ''}
                 <button
@@ -15499,7 +15503,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-capture-template="true"
                   data-ui-action="copy-release-target-evidence-capture-template"
-                >target capture template 복사</button>
+                  aria-label="${escapeHtml(`target capture template 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target capture template 복사: ${targetEvidenceActionLabel}`)}">target capture template 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15507,7 +15512,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-capture-template="true"
                       data-ui-action="copy-release-target-evidence-provider-only-capture-template"
-                    >provider-only capture template 복사</button>
+                      aria-label="${escapeHtml(`provider-only capture template 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only capture template 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only capture template 복사</button>
                   `
                   : ''}
                 <button
@@ -15515,7 +15521,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-required-commands="true"
                   data-ui-action="copy-release-target-evidence-required-commands"
-                >target required commands 복사</button>
+                  aria-label="${escapeHtml(`target required commands 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target required commands 복사: ${targetEvidenceActionLabel}`)}">target required commands 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15523,7 +15530,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-required-commands="true"
                       data-ui-action="copy-release-target-evidence-provider-only-required-commands"
-                    >provider-only commands 복사</button>
+                      aria-label="${escapeHtml(`provider-only commands 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only commands 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only commands 복사</button>
                   `
                   : ''}
                 <button
@@ -15531,7 +15539,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-production-gap="true"
                   data-ui-action="copy-release-target-evidence-production-gap"
-                >target production gap 복사</button>
+                  aria-label="${escapeHtml(`target production gap 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target production gap 복사: ${targetEvidenceActionLabel}`)}">target production gap 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15539,7 +15548,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-production-gap="true"
                       data-ui-action="copy-release-target-evidence-provider-only-production-gap"
-                    >provider-only gap 복사</button>
+                      aria-label="${escapeHtml(`provider-only gap 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only gap 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only gap 복사</button>
                   `
                   : ''}
                 <button
@@ -15547,7 +15557,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-exception-register="true"
                   data-ui-action="copy-release-target-evidence-exception-register"
-                >target exception register 복사</button>
+                  aria-label="${escapeHtml(`target exception register 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target exception register 복사: ${targetEvidenceActionLabel}`)}">target exception register 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15555,7 +15566,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-exception-register="true"
                       data-ui-action="copy-release-target-evidence-provider-only-exception-register"
-                    >provider-only exception 복사</button>
+                      aria-label="${escapeHtml(`provider-only exception 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only exception 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only exception 복사</button>
                   `
                   : ''}
                 <button
@@ -15563,7 +15575,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-risk-decision-register="true"
                   data-ui-action="copy-release-target-evidence-risk-decision-register"
-                >target risk decision 복사</button>
+                  aria-label="${escapeHtml(`target risk decision 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target risk decision 복사: ${targetEvidenceActionLabel}`)}">target risk decision 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15571,7 +15584,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-risk-decision-register="true"
                       data-ui-action="copy-release-target-evidence-provider-only-risk-decision-register"
-                    >provider-only risk 복사</button>
+                      aria-label="${escapeHtml(`provider-only risk 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only risk 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only risk 복사</button>
                   `
                   : ''}
                 <button
@@ -15579,7 +15593,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-provider-references="true"
                   data-ui-action="copy-release-target-evidence-provider-references"
-                >target provider refs 복사</button>
+                  aria-label="${escapeHtml(`target provider refs 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target provider refs 복사: ${targetEvidenceActionLabel}`)}">target provider refs 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15587,7 +15602,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-provider-references="true"
                       data-ui-action="copy-release-target-evidence-provider-only-provider-references"
-                    >provider-only refs 복사</button>
+                      aria-label="${escapeHtml(`provider-only refs 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only refs 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only refs 복사</button>
                   `
                   : ''}
                 <button
@@ -15595,7 +15611,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-residual-blockers="true"
                   data-ui-action="copy-release-target-evidence-residual-blockers"
-                >target residual blockers 복사</button>
+                  aria-label="${escapeHtml(`target residual blockers 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target residual blockers 복사: ${targetEvidenceActionLabel}`)}">target residual blockers 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15603,7 +15620,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-residual-blockers="true"
                       data-ui-action="copy-release-target-evidence-provider-only-residual-blockers"
-                    >provider-only residual 복사</button>
+                      aria-label="${escapeHtml(`provider-only residual 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only residual 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only residual 복사</button>
                   `
                   : ''}
                 <button
@@ -15611,7 +15629,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-closure-rules="true"
                   data-ui-action="copy-release-target-evidence-closure-rules"
-                >target closure rules 복사</button>
+                  aria-label="${escapeHtml(`target closure rules 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target closure rules 복사: ${targetEvidenceActionLabel}`)}">target closure rules 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15619,7 +15638,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-closure-rules="true"
                       data-ui-action="copy-release-target-evidence-provider-only-closure-rules"
-                    >provider-only closure 복사</button>
+                      aria-label="${escapeHtml(`provider-only closure 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only closure 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only closure 복사</button>
                   `
                   : ''}
                 <button
@@ -15627,7 +15647,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-submission-manifest="true"
                   data-ui-action="copy-release-target-evidence-submission-manifest"
-                >target submission manifest 복사</button>
+                  aria-label="${escapeHtml(`target submission manifest 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target submission manifest 복사: ${targetEvidenceActionLabel}`)}">target submission manifest 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15635,7 +15656,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-submission-manifest="true"
                       data-ui-action="copy-release-target-evidence-provider-only-submission-manifest"
-                    >provider-only manifest 복사</button>
+                      aria-label="${escapeHtml(`provider-only manifest 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only manifest 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only manifest 복사</button>
                   `
                   : ''}
                 <button
@@ -15643,7 +15665,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-sanitized-register="true"
                   data-ui-action="copy-release-target-evidence-sanitized-register"
-                >target sanitized register 복사</button>
+                  aria-label="${escapeHtml(`target sanitized register 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target sanitized register 복사: ${targetEvidenceActionLabel}`)}">target sanitized register 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15651,7 +15674,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-sanitized-register="true"
                       data-ui-action="copy-release-target-evidence-provider-only-sanitized-register"
-                    >provider-only sanitized 복사</button>
+                      aria-label="${escapeHtml(`provider-only sanitized 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only sanitized 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only sanitized 복사</button>
                   `
                   : ''}
                 <button
@@ -15659,7 +15683,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-boundary-map="true"
                   data-ui-action="copy-release-target-evidence-boundary-map"
-                >target boundary map 복사</button>
+                  aria-label="${escapeHtml(`target boundary map 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target boundary map 복사: ${targetEvidenceActionLabel}`)}">target boundary map 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15667,7 +15692,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-boundary-map="true"
                       data-ui-action="copy-release-target-evidence-provider-only-boundary-map"
-                    >provider-only boundary 복사</button>
+                      aria-label="${escapeHtml(`provider-only boundary 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only boundary 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only boundary 복사</button>
                   `
                   : ''}
                 <button
@@ -15675,7 +15701,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-command-rerun-log="true"
                   data-ui-action="copy-release-target-evidence-command-rerun-log"
-                >target command log 복사</button>
+                  aria-label="${escapeHtml(`target command log 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target command log 복사: ${targetEvidenceActionLabel}`)}">target command log 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15683,7 +15710,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-command-rerun-log="true"
                       data-ui-action="copy-release-target-evidence-provider-only-command-rerun-log"
-                    >provider-only command log 복사</button>
+                      aria-label="${escapeHtml(`provider-only command log 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only command log 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only command log 복사</button>
                   `
                   : ''}
                 <button
@@ -15691,7 +15719,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-decision-record="true"
                   data-ui-action="copy-release-target-evidence-decision-record"
-                >target decision record 복사</button>
+                  aria-label="${escapeHtml(`target decision record 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target decision record 복사: ${targetEvidenceActionLabel}`)}">target decision record 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15699,7 +15728,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-decision-record="true"
                       data-ui-action="copy-release-target-evidence-provider-only-decision-record"
-                    >provider-only decision 복사</button>
+                      aria-label="${escapeHtml(`provider-only decision 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only decision 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only decision 복사</button>
                   `
                   : ''}
                 <button
@@ -15707,7 +15737,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-blocker-disposition="true"
                   data-ui-action="copy-release-target-evidence-blocker-disposition"
-                >target disposition register 복사</button>
+                  aria-label="${escapeHtml(`target disposition register 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target disposition register 복사: ${targetEvidenceActionLabel}`)}">target disposition register 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15715,7 +15746,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-blocker-disposition="true"
                       data-ui-action="copy-release-target-evidence-provider-only-blocker-disposition"
-                    >provider-only disposition 복사</button>
+                      aria-label="${escapeHtml(`provider-only disposition 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only disposition 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only disposition 복사</button>
                   `
                   : ''}
                 <button
@@ -15723,7 +15755,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-release-refresh="true"
                   data-ui-action="copy-release-target-evidence-release-refresh"
-                >target refresh evidence 복사</button>
+                  aria-label="${escapeHtml(`target refresh evidence 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target refresh evidence 복사: ${targetEvidenceActionLabel}`)}">target refresh evidence 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15731,7 +15764,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-release-refresh="true"
                       data-ui-action="copy-release-target-evidence-provider-only-release-refresh"
-                    >provider-only refresh 복사</button>
+                      aria-label="${escapeHtml(`provider-only refresh 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only refresh 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only refresh 복사</button>
                   `
                   : ''}
                 <button
@@ -15739,7 +15773,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-target-evidence-intake-packet="true"
                   data-ui-action="copy-release-target-evidence-intake-packet"
-                >target evidence packet 복사</button>
+                  aria-label="${escapeHtml(`target evidence packet 복사: ${targetEvidenceActionLabel}`)}"
+                  title="${escapeHtml(`target evidence packet 복사: ${targetEvidenceActionLabel}`)}">target evidence packet 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15747,7 +15782,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-target-evidence-provider-only-intake-packet="true"
                       data-ui-action="copy-release-target-evidence-provider-only-intake-packet"
-                    >provider-only target packet 복사</button>
+                      aria-label="${escapeHtml(`provider-only target packet 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only target packet 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only target packet 복사</button>
                   `
                   : ''}
                 <button
@@ -15755,7 +15791,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-current-open-blocker-filter-handoff="true"
                   data-ui-action="copy-release-blocker-filter-handoff"
-                >slice handoff 복사</button>
+                  aria-label="${escapeHtml(`slice handoff 복사: ${blockerTriageFilterActionLabel}`)}"
+                  title="${escapeHtml(`slice handoff 복사: ${blockerTriageFilterActionLabel}`)}">slice handoff 복사</button>
                 ${blockerProviderFilter
                   ? `
                     <button
@@ -15763,7 +15800,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-current-open-blocker-provider-only-handoff="true"
                       data-ui-action="copy-release-blocker-provider-only-handoff"
-                    >provider-only handoff 복사</button>
+                      aria-label="${escapeHtml(`provider-only handoff 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only handoff 복사: ${blockerTriageProviderOnlyActionLabel}`)}">provider-only handoff 복사</button>
                   `
                   : ''}
                 <button
