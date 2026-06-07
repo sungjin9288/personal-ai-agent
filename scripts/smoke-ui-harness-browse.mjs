@@ -237,6 +237,7 @@ try {
 
   assertStaticAccessibleMetadata({ appJs, rootHtml });
   assertStaticStateMetadata({ appJs, rootHtml });
+  assertToggleExpandedMetadata({ appJs, rootHtml });
   assertProviderOnlyCopyScopeSource(appJs);
 
   assert.equal(rootHtml.includes('data-detail-tab="harness"'), true);
@@ -3154,6 +3155,42 @@ function assertStaticStateMetadata({ appJs, rootHtml }) {
   assertSourceIncludes(appJs, "panel.setAttribute('aria-hidden', active ? 'false' : 'true')", 'panel hidden state sync');
   assertSourceIncludes(appJs, "button.setAttribute('aria-selected', active ? 'true' : 'false')", 'detail tab selected state sync');
   assertSourceIncludes(appJs, 'aria-pressed="${tab.isActive ? \'true\' : \'false\'}"', 'output toolbar tab pressed state');
+}
+
+function assertToggleExpandedMetadata({ appJs, rootHtml }) {
+  const workspaceToggle = rootHtml.match(/<button\b[^>]*\bid="toggle-workspace-form-button"[^>]*>/)?.[0] || '';
+  assert.equal(workspaceToggle.includes('aria-expanded="false"'), true, 'workspace form toggle must declare initial expanded state');
+  assertSourceIncludes(
+    appJs,
+    "elements.toggleWorkspaceFormButton.setAttribute('aria-expanded', open ? 'true' : 'false')",
+    'workspace form expanded state sync',
+  );
+
+  const outputToggleContracts = [
+    ['toggle-output-support', 'aria-expanded="${state.outputSupportExpanded ? \'true\' : \'false\'}"'],
+    ['toggle-output-primary-tabs', 'aria-expanded="${state.outputPrimaryTabsExpanded ? \'true\' : \'false\'}"'],
+    ['toggle-output-tools', 'aria-expanded="${state.outputToolbarToolsExpanded ? \'true\' : \'false\'}"'],
+    ['toggle-output-rail', 'aria-expanded="${state.outputRailCollapsed ? \'false\' : \'true\'}"'],
+    ['toggle-output-mission-summary', 'aria-expanded="${state.outputMissionSummaryExpanded ? \'true\' : \'false\'}"'],
+    ['toggle-output-secondary-tabs', 'aria-expanded="${state.outputSecondaryTabsExpanded ? \'true\' : \'false\'}"'],
+    ['toggle-output-artifact-meta', 'aria-expanded="${state.outputArtifactMetaExpanded ? \'true\' : \'false\'}"'],
+  ];
+  for (const [action, expandedContract] of outputToggleContracts) {
+    assertSourceIncludes(appJs, `data-ui-action="${action}"`, `${action} output toggle action`);
+    assertSourceIncludes(appJs, expandedContract, `${action} expanded state`);
+  }
+
+  assertSourceIncludes(appJs, 'data-ui-action="toggle-output-support" aria-expanded="false"', 'collapsed output support expand button');
+  assertSourceIncludes(
+    appJs,
+    'data-ui-action="toggle-output-mission-summary" aria-expanded="false"',
+    'collapsed output mission summary expand button',
+  );
+  assertSourceIncludes(
+    appJs,
+    'data-ui-action="toggle-output-mission-summary" aria-expanded="true"',
+    'expanded output mission summary collapse button',
+  );
 }
 
 function getUniqueSortedMatches(source, regex) {

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Output Toggle Expanded Metadata
+
+- added aria-expanded metadata to workspace form, output rail, mission summary, support panel, primary/secondary tab list, tool list, and artifact path toggles
+- synchronized toggle expanded state with existing output state variables while preserving data-ui-action routing and visible Korean copy
+- extended UI harness browse smoke coverage for served root/app toggle expanded-state contracts
+
 ## 2026-06-08 Static Tab State Metadata
 
 - added aria-current, aria-selected, aria-hidden, tablist, tab, and tabpanel metadata to static flow and detail navigation state
