@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T13:50:00.362Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T13:49:58.924Z
 - localDate: 2026-06-07
 - branch: codex/target-evidence-control-labels
 - commit: a95a69ac87084e2c5c5a1c773953476e814445ca
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a95a69ac87084e2c5c5a1c773953476e814445ca](releases/execution-v1/a95a69ac87084e2c5c5a1c773953476e814445ca)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a95a69ac87084e2c5c5a1c773953476e814445ca/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a95a69ac87084e2c5c5a1c773953476e814445ca/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a95a69ac87084e2c5c5a1c773953476e814445ca](docs/releases/execution-v1/a95a69ac87084e2c5c5a1c773953476e814445ca)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/target-evidence-control-labels not found
 

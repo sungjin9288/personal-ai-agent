@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T13:50:00.362Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T13:49:42.025Z
 - branch: codex/target-evidence-control-labels
 - commit: a95a69ac87084e2c5c5a1c773953476e814445ca
