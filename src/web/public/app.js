@@ -16361,14 +16361,14 @@ function renderReleaseStatus() {
             ${focusedHistoryId
               ? `
                   <div class="harness-callout release-history-focus-callout">
-                    <strong>현재 포커스된 release action</strong>
-                    <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
-                    <div class="release-history-focus-actions">
-                      <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus">포커스 해제</button>
-                      <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link">현재 triage 링크 복사</button>
-                      ${historyFilterOutcome || historyFilterScope || historyFilterProvider
-                        ? '<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter">필터 해제</button>'
-                        : ''}
+                      <strong>현재 포커스된 release action</strong>
+                      <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
+                      <div class="release-history-focus-actions">
+                        <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus" aria-label="${escapeHtml(`release history 포커스 해제: ${focusedHistoryId}`)}" title="${escapeHtml(`release history 포커스 해제: ${focusedHistoryId}`)}">포커스 해제</button>
+                        <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link" aria-label="${escapeHtml(`현재 triage 링크 복사: focused release history ${focusedHistoryId}`)}" title="${escapeHtml(`현재 triage 링크 복사: focused release history ${focusedHistoryId}`)}">현재 triage 링크 복사</button>
+                        ${historyFilterOutcome || historyFilterScope || historyFilterProvider
+                          ? `<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter" aria-label="${escapeHtml(`release history 필터 해제: ${releaseActionLabel}`)}" title="${escapeHtml(`release history 필터 해제: ${releaseActionLabel}`)}">필터 해제</button>`
+                          : ''}
                     </div>
                     ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
                       ? `
@@ -16386,11 +16386,12 @@ function renderReleaseStatus() {
               ${orderedReleaseActionHistory.length
                 ? orderedReleaseActionHistory
                   .map(
-                    (item) => {
-                      const itemId = String(item.id || '').trim();
-                      const isFocused = Boolean(focusedHistoryId && itemId === focusedHistoryId);
-                      const isExpanded = Boolean(expandedHistoryId && itemId === expandedHistoryId);
-                      return `
+                      (item) => {
+                        const itemId = String(item.id || '').trim();
+                        const isFocused = Boolean(focusedHistoryId && itemId === focusedHistoryId);
+                        const isExpanded = Boolean(expandedHistoryId && itemId === expandedHistoryId);
+                        const historyActionLabel = `${itemId || 'release action'} · ${getReleaseActionLabel(item.action)} · ${item.outcome || 'unknown'} · ${getReleaseActionScopeLabel(item.scope)}${item.provider ? ` · ${item.provider}` : ''}`;
+                        return `
                       <article class="release-snapshot-card ${isFocused ? 'is-highlighted' : ''} ${isExpanded ? 'is-expanded' : ''}" data-release-history-id="${escapeHtml(itemId)}">
                         <div class="release-provider-meta">
                           <div>
@@ -16403,24 +16404,30 @@ function renderReleaseStatus() {
                               ? `
                                   <button
                                     class="ghost-button"
-                                    type="button"
-                                    data-ui-action="clear-release-history-focus"
-                                  >포커스 해제</button>
+                                      type="button"
+                                      data-ui-action="clear-release-history-focus"
+                                      aria-label="${escapeHtml(`release history 포커스 해제: ${historyActionLabel}`)}"
+                                      title="${escapeHtml(`release history 포커스 해제: ${historyActionLabel}`)}"
+                                    >포커스 해제</button>
                                 `
                               : `
                                   <button
                                     class="ghost-button"
-                                    type="button"
-                                    data-ui-action="focus-release-history"
-                                    data-ui-value="${escapeHtml(itemId)}"
-                                  >이 기록 고정</button>
+                                      type="button"
+                                      data-ui-action="focus-release-history"
+                                      data-ui-value="${escapeHtml(itemId)}"
+                                      aria-label="${escapeHtml(`release history 기록 고정: ${historyActionLabel}`)}"
+                                      title="${escapeHtml(`release history 기록 고정: ${historyActionLabel}`)}"
+                                    >이 기록 고정</button>
                                 `}
                             <button
                               class="ghost-button"
-                              type="button"
-                              data-ui-action="toggle-release-history"
-                              data-ui-value="${escapeHtml(itemId)}"
-                            >${isExpanded ? '상세 닫기' : '상세 보기'}</button>
+                                type="button"
+                                data-ui-action="toggle-release-history"
+                                data-ui-value="${escapeHtml(itemId)}"
+                                aria-label="${escapeHtml(`release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`)}"
+                                title="${escapeHtml(`release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`)}"
+                              >${isExpanded ? '상세 닫기' : '상세 보기'}</button>
                           </div>
                         </div>
                         <div class="item-meta">${escapeHtml(item.summary || 'release action summary가 없습니다.')}</div>
@@ -16435,44 +16442,54 @@ function renderReleaseStatus() {
                                 <div class="release-history-filter-actions">
                                   <button
                                     class="ghost-button"
-                                    type="button"
-                                    data-ui-action="copy-release-history-link"
-                                    data-ui-value="${escapeHtml(itemId)}"
-                                  >이 기록 링크 복사</button>
+                                      type="button"
+                                      data-ui-action="copy-release-history-link"
+                                      data-ui-value="${escapeHtml(itemId)}"
+                                      aria-label="${escapeHtml(`release history 링크 복사: ${historyActionLabel}`)}"
+                                      title="${escapeHtml(`release history 링크 복사: ${historyActionLabel}`)}"
+                                    >이 기록 링크 복사</button>
                                   <button
                                     class="ghost-button"
                                     type="button"
                                     data-ui-action="copy-release-flow-link"
                                     data-ui-value="${escapeHtml(itemId)}"
-                                    data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(item.outcome) ? 'attention' : '')}"
-                                    data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
-                                    data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
-                                  >이 flow 링크 복사</button>
+                                      data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(item.outcome) ? 'attention' : '')}"
+                                      data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
+                                      data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
+                                      aria-label="${escapeHtml(`release flow 링크 복사: ${historyActionLabel}`)}"
+                                      title="${escapeHtml(`release flow 링크 복사: ${historyActionLabel}`)}"
+                                    >이 flow 링크 복사</button>
                                   <button
                                     class="ghost-button"
-                                    type="button"
-                                    data-ui-action="filter-release-history-attention"
-                                    data-ui-outcome="attention"
-                                  >주의 상태만</button>
+                                      type="button"
+                                      data-ui-action="filter-release-history-attention"
+                                      data-ui-outcome="attention"
+                                      aria-label="${escapeHtml(`release history 주의 상태만 보기: ${historyActionLabel}`)}"
+                                      title="${escapeHtml(`release history 주의 상태만 보기: ${historyActionLabel}`)}"
+                                    >주의 상태만</button>
                                   <button
                                     class="ghost-button"
-                                    type="button"
-                                    data-ui-action="filter-release-history-scope"
-                                    data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
-                                  >같은 scope 보기</button>
+                                      type="button"
+                                      data-ui-action="filter-release-history-scope"
+                                      data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
+                                      aria-label="${escapeHtml(`release history 같은 scope 보기: ${historyActionLabel}`)}"
+                                      title="${escapeHtml(`release history 같은 scope 보기: ${historyActionLabel}`)}"
+                                    >같은 scope 보기</button>
                                   ${item.provider
                                     ? `
                                         <button
                                           class="ghost-button"
-                                          type="button"
-                                          data-ui-action="filter-release-history-provider"
-                                          data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
-                                        >같은 provider 보기</button>
+                                            type="button"
+                                            data-ui-action="filter-release-history-provider"
+                                            data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
+                                            aria-label="${escapeHtml(`release history 같은 provider 보기: ${historyActionLabel}`)}"
+                                            title="${escapeHtml(`release history 같은 provider 보기: ${historyActionLabel}`)}"
+                                          >같은 provider 보기</button>
                                       `
                                     : ''}
-                                  ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
-                                    ? '<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter">필터 해제</button>'
-                                    : ''}
+                                    ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
+                                      ? `<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter" aria-label="${escapeHtml(`release history 필터 해제: ${historyActionLabel}`)}" title="${escapeHtml(`release history 필터 해제: ${historyActionLabel}`)}">필터 해제</button>`
+                                      : ''}
                                 </div>
                                 <div class="release-history-detail-grid">
                                   <div>

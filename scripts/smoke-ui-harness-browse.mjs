@@ -1748,6 +1748,18 @@ try {
   assert.equal(appJs.includes('recommendationActionTargetLabel'), true);
   assert.equal(appJs.includes('latestActionTargetLabel'), true);
   assert.equal(appJs.includes('latestAttentionActionTargetLabel'), true);
+  assert.equal(appJs.includes('release history 포커스 해제: ${focusedHistoryId}'), true);
+  assert.equal(appJs.includes('현재 triage 링크 복사: focused release history ${focusedHistoryId}'), true);
+  assert.equal(appJs.includes('release history 필터 해제: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes("const historyActionLabel = `${itemId || 'release action'} · ${getReleaseActionLabel(item.action)} · ${item.outcome || 'unknown'} · ${getReleaseActionScopeLabel(item.scope)}${item.provider ? ` · ${item.provider}` : ''}`"), true);
+  assert.equal(appJs.includes('release history 기록 고정: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes("release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}"), true);
+  assert.equal(appJs.includes('release history 링크 복사: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes('release flow 링크 복사: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes('release history 주의 상태만 보기: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes('release history 같은 scope 보기: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes('release history 같은 provider 보기: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes('release history 필터 해제: ${historyActionLabel}'), true);
   assert.equal(appJs.includes('최근 기록 보기: ${latestActionTargetLabel}'), true);
   assert.equal(appJs.includes('기록 링크 복사: ${latestActionTargetLabel}'), true);
   assert.equal(appJs.includes('최근 문제 보기: ${latestAttentionActionTargetLabel}'), true);
