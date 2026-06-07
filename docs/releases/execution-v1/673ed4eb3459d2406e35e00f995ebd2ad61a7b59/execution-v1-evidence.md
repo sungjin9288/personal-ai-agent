@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T16:23:20.998Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T16:23:11.300Z
 - branch: codex/static-shell-accessible-labels
 - commit: 673ed4eb3459d2406e35e00f995ebd2ad61a7b59
