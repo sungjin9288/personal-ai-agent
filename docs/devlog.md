@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-07 Provider Recommendation Action Labels
+
+- added action/history/flow-aware title and aria-label metadata to release provider recommendation controls
+- kept focus-release-history, copy-release-history-link, focus-release-flow, copy-release-flow-link, provider focus, command copy, and fallback action routing unchanged
+- extended UI harness browse smoke coverage for provider recommendation action accessibility rendering contracts
+
 ## 2026-06-06 Remaining Action Button Labels
 
 - added target-aware title and aria-label metadata to output closeout tab jumps, release handoff preview/copy controls, and compact artifact path toggles
