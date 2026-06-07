@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T14:31:52.186Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T14:31:41.936Z
 - branch: main
 - commit: 02f0fdb7609b055e40b5aac94f4e535b62f9d674
