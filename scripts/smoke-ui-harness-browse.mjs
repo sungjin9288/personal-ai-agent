@@ -1865,6 +1865,9 @@ try {
   assert.equal(appJs.includes('provider 링크 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('provider live 검증 취소: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('document-log-search'), true);
+  assert.equal(appJs.includes('미션 첨부 파일 추가: 총 ${attachmentSummary.total || 0}건 · 누적 ${attachmentSummary.totalChars || 0} chars'), true);
+  assert.equal(appJs.includes('문서 정렬: ${documentFilterLabel}'), true);
+  assert.equal(appJs.includes('문서 페이지 크기: ${documentFilterLabel}'), true);
   assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
   assert.equal(appJs.includes('문서 필터 초기화: ${documentFilterLabel}'), true);
   assert.equal(appJs.includes('data-document-action="edit"'), true);
