@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T17:41:05.584Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T17:40:56.758Z
 - branch: codex/selection-button-pressed-metadata
 - commit: 866b00871190f4a582ff506e31dbefa40e95b145

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T17:41:05.584Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T17:40:56.934Z
 - branch: codex/selection-button-pressed-metadata
 - commit: 866b00871190f4a582ff506e31dbefa40e95b145
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/866b00871190f4a582ff506e31dbefa40e95b145/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
