@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Mission Session Selector Pressed Metadata
+
+- added aria-pressed metadata to mission row, session row, and artifact selector buttons
+- kept mission selection, session selection, artifact selection routing, selected-state classes, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for mission/session/artifact selector pressed-state contracts
+
 ## 2026-06-08 Selection Button Pressed Metadata
 
 - added aria-pressed metadata to retrieval source focus chips, playbook cards, agent intent pills, and agent blueprint cards
