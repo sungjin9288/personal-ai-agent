@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-07 Blocker Triage Control Labels
+
+- added production-blocker and current-open-blocker slice-aware title and aria-label metadata to release blocker triage controls
+- kept production summary copy, release-readiness link copy, blocker filters, shared provider scope toggle, slice/provider-only copy, API, package, and closure routing unchanged
+- extended UI harness browse smoke coverage for blocker triage control accessibility rendering contracts
+
 ## 2026-06-07 Provider Recommendation Action Labels
 
 - added action/history/flow-aware title and aria-label metadata to release provider recommendation controls
