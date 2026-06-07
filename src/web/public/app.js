@@ -14539,6 +14539,10 @@ function renderReleaseStatus() {
   const focusedBlockerLabel = focusedBlockerEntry
     ? `${focusedBlockerId || 'blocker'} · ${focusedBlockerEntry.blocker || focusedBlockerEntry.stopReason || 'current open blocker'}`
     : focusedBlockerId || '';
+  const focusedProductionBlockerActionLabel =
+    focusedProductionBlockerIndex !== ''
+      ? `production blocker #${focusedProductionBlockerOrdinal} · ${focusedProductionBlocker || 'production-ready blocker'}`
+      : '';
   const baseline = release.baseline || null;
   const docStatuses = release.docStatuses || [];
   const artifactStateLabel =
@@ -15930,6 +15934,8 @@ function renderReleaseStatus() {
                                             data-ui-action="copy-release-evidence-doc-link"
                                             data-ui-href="${escapeHtml(docHref)}"
                                             data-ui-label="${escapeHtml(docLabel)}"
+                                            aria-label="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
+                                            title="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
                                           >문서 링크 복사</button>
                                         `
                                       : ''}
@@ -15947,6 +15953,8 @@ function renderReleaseStatus() {
                         data-release-current-open-blocker-handoff="${escapeHtml(focusedBlockerId)}"
                         data-ui-action="copy-release-blocker-handoff"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                        aria-label="${escapeHtml(`focused blocker handoff 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
+                        title="${escapeHtml(`focused blocker handoff 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                       >handoff 복사</button>
                       <button
                         class="ghost-button"
@@ -15954,6 +15962,8 @@ function renderReleaseStatus() {
                         data-release-current-open-blocker-closure-checklist="${escapeHtml(focusedBlockerId)}"
                         data-ui-action="copy-release-blocker-closure-checklist"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                        aria-label="${escapeHtml(`focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
+                        title="${escapeHtml(`focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                       >closure 체크리스트 복사</button>
                       <button
                         class="ghost-button"
@@ -15961,12 +15971,16 @@ function renderReleaseStatus() {
                         data-release-current-open-blocker-package="${escapeHtml(focusedBlockerId)}"
                         data-ui-action="copy-release-blocker-package"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                        aria-label="${escapeHtml(`focused blocker package 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
+                        title="${escapeHtml(`focused blocker package 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                       >package 복사</button>
                       <button
                         class="ghost-button"
                         type="button"
                         data-ui-action="copy-release-blocker-link"
                         data-ui-blocker="${escapeHtml(focusedBlockerId)}"
+                        aria-label="${escapeHtml(`focused blocker 링크 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
+                        title="${escapeHtml(`focused blocker 링크 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                       >blocker 링크 복사</button>
                       ${focusedBlockerCommands
                         .map(
@@ -15979,11 +15993,13 @@ function renderReleaseStatus() {
                               data-ui-action="copy-release-command"
                               data-ui-label="${escapeHtml(command.label || 'blocker command')}"
                               data-ui-value="${escapeHtml(command.command || '')}"
+                              aria-label="${escapeHtml(`focused blocker 명령 복사: ${command.label || 'blocker command'} · ${focusedBlockerLabel || focusedBlockerId}`)}"
+                              title="${escapeHtml(`focused blocker 명령 복사: ${command.label || 'blocker command'} · ${focusedBlockerLabel || focusedBlockerId}`)}"
                             >${escapeHtml(command.label || 'command 복사')}</button>
                           `,
                         )
                         .join('')}
-                      <button class="ghost-button" type="button" data-ui-action="clear-release-blocker-focus">포커스 해제</button>
+                      <button class="ghost-button" type="button" data-ui-action="clear-release-blocker-focus" aria-label="${escapeHtml(`focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}`)}" title="${escapeHtml(`focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}`)}">포커스 해제</button>
                     </div>
                   </div>
                 `
@@ -15997,6 +16013,7 @@ function renderReleaseStatus() {
                       const evidenceDocs = Array.isArray(item.evidenceDocs) ? item.evidenceDocs.slice(0, 3) : [];
                       const actionId = String(item.id || '').trim();
                       const isFocusedBlocker = Boolean(actionId) && actionId === focusedBlockerId;
+                      const blockerActionLabel = `${actionId || 'blocker'} · ${item.blocker || item.stopReason || 'current open blocker'}`;
                       return `
                       <div class="harness-row ${isFocusedBlocker ? 'is-focused-blocker' : ''}" data-release-current-open-blocker-row="true" data-release-current-open-blocker-action-row="${escapeHtml(actionId)}">
                         <div>
@@ -16035,6 +16052,8 @@ function renderReleaseStatus() {
                                                   data-ui-action="copy-release-evidence-doc-link"
                                                   data-ui-href="${escapeHtml(docHref)}"
                                                   data-ui-label="${escapeHtml(docLabel)}"
+                                                  aria-label="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
+                                                  title="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
                                                 >문서 링크 복사</button>
                                               `
                                             : ''}
@@ -16058,6 +16077,8 @@ function renderReleaseStatus() {
                             type="button"
                             data-ui-action="focus-release-blocker"
                             data-ui-blocker="${escapeHtml(actionId)}"
+                            aria-label="${escapeHtml(`${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`)}"
+                            title="${escapeHtml(`${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`)}"
                             ${isFocusedBlocker ? 'disabled' : ''}
                           >${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}</button>
                           <button
@@ -16066,6 +16087,8 @@ function renderReleaseStatus() {
                             data-release-current-open-blocker-handoff="${escapeHtml(actionId)}"
                             data-ui-action="copy-release-blocker-handoff"
                             data-ui-blocker="${escapeHtml(actionId)}"
+                            aria-label="${escapeHtml(`blocker handoff 복사: ${blockerActionLabel}`)}"
+                            title="${escapeHtml(`blocker handoff 복사: ${blockerActionLabel}`)}"
                           >handoff 복사</button>
                           <button
                             class="ghost-button"
@@ -16073,6 +16096,8 @@ function renderReleaseStatus() {
                             data-release-current-open-blocker-closure-checklist="${escapeHtml(actionId)}"
                             data-ui-action="copy-release-blocker-closure-checklist"
                             data-ui-blocker="${escapeHtml(actionId)}"
+                            aria-label="${escapeHtml(`blocker closure 체크리스트 복사: ${blockerActionLabel}`)}"
+                            title="${escapeHtml(`blocker closure 체크리스트 복사: ${blockerActionLabel}`)}"
                           >closure 체크리스트 복사</button>
                           <button
                             class="ghost-button"
@@ -16080,12 +16105,16 @@ function renderReleaseStatus() {
                             data-release-current-open-blocker-package="${escapeHtml(actionId)}"
                             data-ui-action="copy-release-blocker-package"
                             data-ui-blocker="${escapeHtml(actionId)}"
+                            aria-label="${escapeHtml(`blocker package 복사: ${blockerActionLabel}`)}"
+                            title="${escapeHtml(`blocker package 복사: ${blockerActionLabel}`)}"
                           >package 복사</button>
                           <button
                             class="ghost-button"
                             type="button"
                             data-ui-action="copy-release-blocker-link"
                             data-ui-blocker="${escapeHtml(actionId)}"
+                            aria-label="${escapeHtml(`blocker 링크 복사: ${blockerActionLabel}`)}"
+                            title="${escapeHtml(`blocker 링크 복사: ${blockerActionLabel}`)}"
                           >blocker 링크 복사</button>
                           ${commands
                             .map(
@@ -16097,6 +16126,8 @@ function renderReleaseStatus() {
                                   data-ui-action="copy-release-command"
                                   data-ui-label="${escapeHtml(command.label || 'blocker command')}"
                                   data-ui-value="${escapeHtml(command.command || '')}"
+                                  aria-label="${escapeHtml(`blocker 명령 복사: ${command.label || 'blocker command'} · ${blockerActionLabel}`)}"
+                                  title="${escapeHtml(`blocker 명령 복사: ${command.label || 'blocker command'} · ${blockerActionLabel}`)}"
                                 >${escapeHtml(command.label || 'command 복사')}</button>
                               `,
                             )
@@ -16126,6 +16157,8 @@ function renderReleaseStatus() {
                         data-release-production-blocker-handoff="${escapeHtml(focusedProductionBlockerIndex)}"
                         data-ui-action="copy-release-production-blocker-handoff"
                         data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
+                        aria-label="${escapeHtml(`focused production blocker handoff 복사: ${focusedProductionBlockerActionLabel}`)}"
+                        title="${escapeHtml(`focused production blocker handoff 복사: ${focusedProductionBlockerActionLabel}`)}"
                       >handoff 복사</button>
                       <button
                         class="ghost-button"
@@ -16133,6 +16166,8 @@ function renderReleaseStatus() {
                         data-release-production-blocker-link="${escapeHtml(focusedProductionBlockerIndex)}"
                         data-ui-action="copy-release-production-blocker-link"
                         data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
+                        aria-label="${escapeHtml(`focused production blocker 링크 복사: ${focusedProductionBlockerActionLabel}`)}"
+                        title="${escapeHtml(`focused production blocker 링크 복사: ${focusedProductionBlockerActionLabel}`)}"
                       >blocker 링크 복사</button>
                       <a
                         class="ghost-button"
@@ -16151,6 +16186,8 @@ function renderReleaseStatus() {
                         data-ui-action="copy-release-evidence-doc-link"
                         data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
                         data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
+                        aria-label="${escapeHtml(`focused production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${focusedProductionBlockerActionLabel}`)}"
+                        title="${escapeHtml(`focused production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${focusedProductionBlockerActionLabel}`)}"
                       >근거 링크 복사</button>
                       <button
                         class="ghost-button"
@@ -16158,6 +16195,8 @@ function renderReleaseStatus() {
                         data-release-production-blocker-commands="${escapeHtml(focusedProductionBlockerIndex)}"
                         data-ui-action="copy-release-production-blocker-commands"
                         data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
+                        aria-label="${escapeHtml(`focused production blocker 검증 명령 복사: ${focusedProductionBlockerActionLabel}`)}"
+                        title="${escapeHtml(`focused production blocker 검증 명령 복사: ${focusedProductionBlockerActionLabel}`)}"
                       >검증 명령 복사</button>
                       <button
                         class="ghost-button"
@@ -16165,8 +16204,10 @@ function renderReleaseStatus() {
                         data-release-production-blocker-package="${escapeHtml(focusedProductionBlockerIndex)}"
                         data-ui-action="copy-release-production-blocker-package"
                         data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
+                        aria-label="${escapeHtml(`focused production blocker package 복사: ${focusedProductionBlockerActionLabel}`)}"
+                        title="${escapeHtml(`focused production blocker package 복사: ${focusedProductionBlockerActionLabel}`)}"
                       >package 복사</button>
-                      <button class="ghost-button" type="button" data-ui-action="clear-release-production-blocker-focus">포커스 해제</button>
+                      <button class="ghost-button" type="button" data-ui-action="clear-release-production-blocker-focus" aria-label="${escapeHtml(`focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`)}" title="${escapeHtml(`focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`)}">포커스 해제</button>
                     </div>
                   </div>
                 `
@@ -16182,6 +16223,7 @@ function renderReleaseStatus() {
                   .map(
                     (item, index) => {
                       const isFocusedProductionBlocker = index === focusedProductionBlockerIndexNumber;
+                      const productionBlockerRowActionLabel = `production blocker #${index + 1} · ${item || 'production-ready blocker'}`;
                       return `
                       <div class="harness-row ${isFocusedProductionBlocker ? 'is-focused-blocker' : ''}" data-release-production-blocker-row="true" data-release-production-blocker-row-index="${escapeHtml(String(index))}" data-release-production-blocker-focused="${isFocusedProductionBlocker ? 'true' : 'false'}">
                         <div>
@@ -16196,6 +16238,8 @@ function renderReleaseStatus() {
                             type="button"
                             data-ui-action="focus-release-production-blocker"
                             data-ui-index="${escapeHtml(String(index))}"
+                            aria-label="${escapeHtml(`${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`)}"
+                            title="${escapeHtml(`${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`)}"
                             ${isFocusedProductionBlocker ? 'disabled' : ''}
                           >${isFocusedProductionBlocker ? '포커스됨' : '포커스'}</button>
                           <button
@@ -16204,6 +16248,8 @@ function renderReleaseStatus() {
                             data-release-production-blocker-link="${escapeHtml(String(index))}"
                             data-ui-action="copy-release-production-blocker-link"
                             data-ui-index="${escapeHtml(String(index))}"
+                            aria-label="${escapeHtml(`production blocker 링크 복사: ${productionBlockerRowActionLabel}`)}"
+                            title="${escapeHtml(`production blocker 링크 복사: ${productionBlockerRowActionLabel}`)}"
                           >링크 복사</button>
                           <a
                             class="ghost-button"
@@ -16222,6 +16268,8 @@ function renderReleaseStatus() {
                             data-ui-action="copy-release-evidence-doc-link"
                             data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
                             data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
+                            aria-label="${escapeHtml(`production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${productionBlockerRowActionLabel}`)}"
+                            title="${escapeHtml(`production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${productionBlockerRowActionLabel}`)}"
                           >근거 링크 복사</button>
                           <button
                             class="ghost-button"
@@ -16229,6 +16277,8 @@ function renderReleaseStatus() {
                             data-release-production-blocker-commands="${escapeHtml(String(index))}"
                             data-ui-action="copy-release-production-blocker-commands"
                             data-ui-index="${escapeHtml(String(index))}"
+                            aria-label="${escapeHtml(`production blocker 검증 명령 복사: ${productionBlockerRowActionLabel}`)}"
+                            title="${escapeHtml(`production blocker 검증 명령 복사: ${productionBlockerRowActionLabel}`)}"
                           >검증 명령 복사</button>
                           <button
                             class="ghost-button"
@@ -16236,6 +16286,8 @@ function renderReleaseStatus() {
                             data-release-production-blocker-package="${escapeHtml(String(index))}"
                             data-ui-action="copy-release-production-blocker-package"
                             data-ui-index="${escapeHtml(String(index))}"
+                            aria-label="${escapeHtml(`production blocker package 복사: ${productionBlockerRowActionLabel}`)}"
+                            title="${escapeHtml(`production blocker package 복사: ${productionBlockerRowActionLabel}`)}"
                           >package 복사</button>
                           <button
                             class="ghost-button"
@@ -16243,6 +16295,8 @@ function renderReleaseStatus() {
                             data-release-production-blocker-handoff="${escapeHtml(String(index))}"
                             data-ui-action="copy-release-production-blocker-handoff"
                             data-ui-index="${escapeHtml(String(index))}"
+                            aria-label="${escapeHtml(`production blocker handoff 복사: ${productionBlockerRowActionLabel}`)}"
+                            title="${escapeHtml(`production blocker handoff 복사: ${productionBlockerRowActionLabel}`)}"
                           >blocker handoff 복사</button>
                         </div>
                       </div>
@@ -16270,6 +16324,8 @@ function renderReleaseStatus() {
                           type="button"
                           data-release-production-blocker-toggle="${productionBlockersExpanded ? 'collapse' : 'expand'}"
                           data-ui-action="toggle-release-production-blockers"
+                          aria-label="${escapeHtml(`production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`)}"
+                          title="${escapeHtml(`production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`)}"
                         >${productionBlockersExpanded ? '8개만 보기' : '전체 보기'}</button>
                       </div>
                     </div>
