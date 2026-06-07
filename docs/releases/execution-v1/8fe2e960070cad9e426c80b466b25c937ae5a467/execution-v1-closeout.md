@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T16:58:01.208Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T16:57:52.892Z
 - branch: codex/static-tab-state-metadata
 - commit: 8fe2e960070cad9e426c80b466b25c937ae5a467
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8fe2e960070cad9e426c80b466b25c937ae5a467/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

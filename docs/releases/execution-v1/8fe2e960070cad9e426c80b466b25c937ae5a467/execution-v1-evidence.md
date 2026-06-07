@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T16:58:01.208Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T16:57:52.684Z
 - branch: codex/static-tab-state-metadata
 - commit: 8fe2e960070cad9e426c80b466b25c937ae5a467

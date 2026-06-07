@@ -142,6 +142,7 @@
                 type="button"
                 data-step-target="step-setup"
                 aria-label="진행 단계 열기: 1단계 미션 정하기"
+                aria-current="step"
                 title="진행 단계 열기: 1단계 미션 정하기"
               >
                 <span class="flow-step-no">01</span>
@@ -202,7 +203,7 @@
           </section>
 
           <section class="stage-shell">
-            <article id="step-setup" class="step-panel is-active">
+            <article id="step-setup" class="step-panel is-active" aria-hidden="false">
             <div class="panel-head">
               <div>
                 <p class="section-kicker">1단계</p>
@@ -349,7 +350,7 @@
             </div>
             </article>
 
-            <article id="step-run" class="step-panel">
+            <article id="step-run" class="step-panel" aria-hidden="true">
             <div class="panel-head">
               <div>
                 <p class="section-kicker">2단계</p>
@@ -436,7 +437,7 @@
             </div>
             </article>
 
-            <article id="step-review" class="step-panel">
+            <article id="step-review" class="step-panel" aria-hidden="true">
             <div class="panel-head">
               <div>
                 <p class="section-kicker">3단계</p>
@@ -470,7 +471,7 @@
             </div>
             </article>
 
-            <article id="step-output" class="step-panel">
+            <article id="step-output" class="step-panel" aria-hidden="true">
             <div class="panel-head">
               <div>
                 <p class="section-kicker">4단계</p>
@@ -516,53 +517,77 @@
             </div>
             <div id="detail-contextbar" class="detail-contextbar"></div>
 
-            <nav class="detail-tabs" aria-label="세부 정보 탭">
+            <nav class="detail-tabs" aria-label="세부 정보 탭" role="tablist">
               <button
+                id="detail-tab-artifacts"
                 class="detail-tab is-active"
                 type="button"
                 data-detail-tab="artifacts"
+                role="tab"
+                aria-selected="true"
+                aria-controls="detail-artifacts"
                 aria-label="세부 정보 탭 열기: 결과물"
                 title="세부 정보 탭 열기: 결과물"
               >결과물</button>
               <button
+                id="detail-tab-runs"
                 class="detail-tab"
                 type="button"
                 data-detail-tab="runs"
+                role="tab"
+                aria-selected="false"
+                aria-controls="detail-runs"
                 aria-label="세부 정보 탭 열기: 실행 기록"
                 title="세부 정보 탭 열기: 실행 기록"
               >실행 기록</button>
               <button
+                id="detail-tab-reviews"
                 class="detail-tab"
                 type="button"
                 data-detail-tab="reviews"
+                role="tab"
+                aria-selected="false"
+                aria-controls="detail-reviews"
                 aria-label="세부 정보 탭 열기: 검토 이력"
                 title="세부 정보 탭 열기: 검토 이력"
               >검토 이력</button>
               <button
+                id="detail-tab-config"
                 class="detail-tab"
                 type="button"
                 data-detail-tab="config"
+                role="tab"
+                aria-selected="false"
+                aria-controls="detail-config"
                 aria-label="세부 정보 탭 열기: 입력값과 설정"
                 title="세부 정보 탭 열기: 입력값과 설정"
               >입력값과 설정</button>
               <button
+                id="detail-tab-harness"
                 class="detail-tab"
                 type="button"
                 data-detail-tab="harness"
+                role="tab"
+                aria-selected="false"
+                aria-controls="detail-harness"
                 aria-label="세부 정보 탭 열기: 하네스"
                 title="세부 정보 탭 열기: 하네스"
               >하네스</button>
               <button
+                id="detail-tab-release"
                 class="detail-tab"
                 type="button"
                 data-detail-tab="release"
+                role="tab"
+                aria-selected="false"
+                aria-controls="detail-release"
                 aria-label="세부 정보 탭 열기: v1 마감 상태"
                 title="세부 정보 탭 열기: v1 마감 상태"
               >v1 마감 상태</button>
             </nav>
             <div id="detail-toolbar-actions" class="detail-toolbar-actions"></div>
 
-            <article id="detail-artifacts" class="detail-panel is-active">
+            <article id="detail-artifacts" class="detail-panel is-active" role="tabpanel" aria-labelledby="detail-tab-artifacts" aria-hidden="false">
             <div class="detail-grid detail-grid-artifacts">
               <section class="surface surface-result-main">
                 <div class="mini-head">
@@ -589,7 +614,7 @@
             </div>
             </article>
 
-            <article id="detail-runs" class="detail-panel">
+            <article id="detail-runs" class="detail-panel" role="tabpanel" aria-labelledby="detail-tab-runs" aria-hidden="true">
             <div class="detail-grid detail-grid-two">
               <section class="surface">
                 <div class="mini-head">
@@ -613,7 +638,7 @@
             </div>
             </article>
 
-            <article id="detail-reviews" class="detail-panel">
+            <article id="detail-reviews" class="detail-panel" role="tabpanel" aria-labelledby="detail-tab-reviews" aria-hidden="true">
             <div class="detail-grid detail-grid-three">
               <section class="surface surface-review-primary">
                 <div class="mini-head">
@@ -650,7 +675,7 @@
             </div>
             </article>
 
-            <article id="detail-config" class="detail-panel">
+            <article id="detail-config" class="detail-panel" role="tabpanel" aria-labelledby="detail-tab-config" aria-hidden="true">
             <div class="detail-grid detail-grid-two">
               <section class="surface">
                 <div class="mini-head">
@@ -674,7 +699,7 @@
             </div>
             </article>
 
-            <article id="detail-harness" class="detail-panel">
+            <article id="detail-harness" class="detail-panel" role="tabpanel" aria-labelledby="detail-tab-harness" aria-hidden="true">
             <div class="detail-grid detail-grid-three">
               <section class="surface">
                 <div class="mini-head">
@@ -861,7 +886,7 @@
             </div>
             </article>
 
-            <article id="detail-release" class="detail-panel">
+            <article id="detail-release" class="detail-panel" role="tabpanel" aria-labelledby="detail-tab-release" aria-hidden="true">
             <div class="detail-grid detail-grid-release">
               <section class="surface">
                 <div class="mini-head">
