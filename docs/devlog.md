@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Document Attachment Input Labels
+
+- added aria-label metadata to mission attachment file input, document sort, and document page-size controls
+- kept attachment upload, document browse sorting, pagination, reset, load, and delete routing unchanged
+- extended UI harness browse smoke coverage for document and attachment input/select accessibility rendering contracts
+
 ## 2026-06-08 Memory Browse Input Labels
 
 - added filter-aware aria-label metadata to memory search, scope, kind, sort, and page-size controls

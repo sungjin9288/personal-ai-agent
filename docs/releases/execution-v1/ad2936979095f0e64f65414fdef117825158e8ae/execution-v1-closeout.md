@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T15:50:15.640Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T15:50:05.466Z
 - branch: codex/document-attachment-input-labels
 - commit: ad2936979095f0e64f65414fdef117825158e8ae
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ad2936979095f0e64f65414fdef117825158e8ae/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

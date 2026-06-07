@@ -13905,6 +13905,7 @@ function renderHarnessPanel() {
             type="file"
             multiple
             accept=".md,.txt,.json,.csv,.yaml,.yml,.log,.js,.mjs,.ts,.tsx,.jsx,.py,.html,.css,.xml,.sql,text/*,application/json,application/xml"
+            aria-label="${escapeHtml(`미션 첨부 파일 추가: 총 ${attachmentSummary.total || 0}건 · 누적 ${attachmentSummary.totalChars || 0} chars`)}"
           />
         </label>
         <div class="action-row">
@@ -13967,7 +13968,7 @@ function renderHarnessPanel() {
         <div class="inline-actions">
           <label class="compact-label">
             문서 정렬
-            <select id="document-log-sort">
+            <select id="document-log-sort" aria-label="${escapeHtml(`문서 정렬: ${documentFilterLabel}`)}">
               <option value="latest" ${state.harnessDocumentSort === 'latest' ? 'selected' : ''}>최신순</option>
               <option value="oldest" ${state.harnessDocumentSort === 'oldest' ? 'selected' : ''}>오래된 순</option>
               <option value="title" ${state.harnessDocumentSort === 'title' ? 'selected' : ''}>제목순</option>
@@ -13976,7 +13977,7 @@ function renderHarnessPanel() {
           </label>
           <label class="compact-label">
             페이지 크기
-            <select id="document-log-limit">
+            <select id="document-log-limit" aria-label="${escapeHtml(`문서 페이지 크기: ${documentFilterLabel}`)}">
               <option value="12" ${Number(state.harnessDocumentVisibleCount || 12) === 12 ? 'selected' : ''}>12건</option>
               <option value="24" ${Number(state.harnessDocumentVisibleCount || 12) === 24 ? 'selected' : ''}>24건</option>
               <option value="48" ${Number(state.harnessDocumentVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
