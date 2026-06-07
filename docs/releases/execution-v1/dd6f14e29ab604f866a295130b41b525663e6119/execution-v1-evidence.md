@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T17:50:33.202Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T17:50:22.325Z
 - branch: codex/mission-session-selector-pressed-metadata
 - commit: dd6f14e29ab604f866a295130b41b525663e6119
