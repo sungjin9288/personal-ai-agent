@@ -15813,6 +15813,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-current-open-blocker-filter-command="true"
                   data-ui-action="copy-release-blocker-filter-commands"
+                  aria-label="${escapeHtml(`slice 명령 복사: ${blockerTriageFilterActionLabel}`)}"
+                  title="${escapeHtml(`slice 명령 복사: ${blockerTriageFilterActionLabel}`)}"
                 >slice 명령 복사</button>
                 ${blockerProviderFilter
                   ? `
@@ -15821,6 +15823,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-current-open-blocker-provider-only-command="true"
                       data-ui-action="copy-release-blocker-provider-only-commands"
+                      aria-label="${escapeHtml(`provider-only slice 명령 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only slice 명령 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
                     >provider-only slice 명령 복사</button>
                   `
                   : ''}
@@ -15829,6 +15833,8 @@ function renderReleaseStatus() {
                   type="button"
                   data-release-current-open-blocker-filter-evidence="true"
                   data-ui-action="copy-release-blocker-filter-evidence"
+                  aria-label="${escapeHtml(`slice 근거 복사: ${blockerTriageFilterActionLabel}`)}"
+                  title="${escapeHtml(`slice 근거 복사: ${blockerTriageFilterActionLabel}`)}"
                 >slice 근거 복사</button>
                 ${blockerProviderFilter
                   ? `
@@ -15837,6 +15843,8 @@ function renderReleaseStatus() {
                       type="button"
                       data-release-current-open-blocker-provider-only-evidence="true"
                       data-ui-action="copy-release-blocker-provider-only-evidence"
+                      aria-label="${escapeHtml(`provider-only slice 근거 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
+                      title="${escapeHtml(`provider-only slice 근거 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
                     >provider-only slice 근거 복사</button>
                   `
                   : ''}
@@ -15850,6 +15858,8 @@ function renderReleaseStatus() {
                       data-ui-category="${escapeHtml(blockerCategoryFilter)}"
                       data-ui-owner=""
                       data-ui-provider=""
+                      aria-label="${escapeHtml(`empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}`)}"
+                      title="${escapeHtml(`empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}`)}"
                     >category만 유지</button>
                     <button
                       class="ghost-button"
@@ -15859,6 +15869,8 @@ function renderReleaseStatus() {
                       data-ui-category=""
                       data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
                       data-ui-provider=""
+                      aria-label="${escapeHtml(`empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}`)}"
+                      title="${escapeHtml(`empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}`)}"
                     >owner만 유지</button>
                     ${blockerProviderFilter
                       ? `
@@ -15870,6 +15882,8 @@ function renderReleaseStatus() {
                           data-ui-category=""
                           data-ui-owner=""
                           data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                          aria-label="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
+                          title="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
                         >provider만 유지</button>
                       `
                       : ''}
@@ -15884,11 +15898,13 @@ function renderReleaseStatus() {
                         data-ui-category=""
                         data-ui-owner=""
                         data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                        aria-label="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
+                        title="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
                       >provider만 유지</button>
                     `
                     : ''}
                 ${hasBlockerFilter
-                  ? `<button class="ghost-button" type="button" data-release-current-open-blocker-filter-empty-clear="${hasEmptyBlockerFilter ? 'true' : 'false'}" data-ui-action="clear-release-blocker-filter">${hasEmptyBlockerFilter ? '조합 해제' : '필터 해제'}</button>`
+                  ? `<button class="ghost-button" type="button" data-release-current-open-blocker-filter-empty-clear="${hasEmptyBlockerFilter ? 'true' : 'false'}" data-ui-action="clear-release-blocker-filter" aria-label="${escapeHtml(`${hasEmptyBlockerFilter ? 'empty blocker filter 조합 해제' : 'blocker 필터 해제'}: ${blockerFilterLabel}`)}" title="${escapeHtml(`${hasEmptyBlockerFilter ? 'empty blocker filter 조합 해제' : 'blocker 필터 해제'}: ${blockerFilterLabel}`)}">${hasEmptyBlockerFilter ? '조합 해제' : '필터 해제'}</button>`
                   : ''}
               </div>
             </div>

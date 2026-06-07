@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T14:28:34.017Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T14:28:25.274Z
 - branch: codex/blocker-filter-control-labels
 - commit: 3d1cbbcaed9db7f90d052d8f6544ae2ac3518491

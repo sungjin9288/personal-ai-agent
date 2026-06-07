@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-07T14:28:34.017Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-07T14:28:25.458Z
 - branch: codex/blocker-filter-control-labels
 - commit: 3d1cbbcaed9db7f90d052d8f6544ae2ac3518491
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3d1cbbcaed9db7f90d052d8f6544ae2ac3518491/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

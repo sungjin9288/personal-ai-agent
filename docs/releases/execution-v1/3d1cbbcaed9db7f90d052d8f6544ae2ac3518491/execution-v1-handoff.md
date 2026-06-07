@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T14:28:34.017Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T14:28:32.688Z
 - localDate: 2026-06-07
 - branch: codex/blocker-filter-control-labels
 - commit: 3d1cbbcaed9db7f90d052d8f6544ae2ac3518491
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3d1cbbcaed9db7f90d052d8f6544ae2ac3518491](releases/execution-v1/3d1cbbcaed9db7f90d052d8f6544ae2ac3518491)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3d1cbbcaed9db7f90d052d8f6544ae2ac3518491/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/3d1cbbcaed9db7f90d052d8f6544ae2ac3518491/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/3d1cbbcaed9db7f90d052d8f6544ae2ac3518491](docs/releases/execution-v1/3d1cbbcaed9db7f90d052d8f6544ae2ac3518491)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/blocker-filter-control-labels not found
 
