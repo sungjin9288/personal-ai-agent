@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-07 Release History Control Labels
+
+- added focused release history, history row focus, detail toggle, history link, flow link, attention/scope/provider filter, and filter clear title and aria-label metadata
+- kept release history focus routing, triage link copy, flow link copy, and filter state transitions unchanged
+- extended UI harness browse smoke coverage for release history control accessibility rendering contracts
+
 ## 2026-06-07 Blocker Filter Control Labels
 
 - added slice command/evidence and provider-only slice command/evidence title and aria-label metadata to release blocker filter copy controls
