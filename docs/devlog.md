@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Static Shell Accessible Labels
+
+- added aria-label and title metadata to the static workspace, mission, run, detail tab, document, and memory shell controls
+- kept static control ids, form names, data-ui-action routing, disabled/hidden state, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage with served root/app static metadata scans for button, form control, and link accessibility contracts
+
 ## 2026-06-08 Document Attachment Input Labels
 
 - added aria-label metadata to mission attachment file input, document sort, and document page-size controls

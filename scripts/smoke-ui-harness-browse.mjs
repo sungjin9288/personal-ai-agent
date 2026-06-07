@@ -235,6 +235,7 @@ try {
   const rootHtml = await fetchText(baseUrl);
   const appJs = await fetchText(`${baseUrl}/app.js`);
 
+  assertStaticAccessibleMetadata({ appJs, rootHtml });
   assertProviderOnlyCopyScopeSource(appJs);
 
   assert.equal(rootHtml.includes('data-detail-tab="harness"'), true);
@@ -3060,6 +3061,69 @@ function getFunctionSource(source, functionName) {
 
 function assertSourceIncludes(source, expected, label) {
   assert.equal(source.includes(expected), true, `${label} must include ${expected}`);
+}
+
+function assertStaticAccessibleMetadata({ appJs, rootHtml }) {
+  const checks = [
+    {
+      label: 'root HTML buttons',
+      source: rootHtml,
+      regex: /<button\b[^>]*>/g,
+      isValid: (element) => hasAccessibleName(element) && /\btitle=/.test(element),
+    },
+    {
+      label: 'root HTML form controls',
+      source: rootHtml,
+      regex: /<(input|select|textarea)\b[^>]*>/g,
+      isValid: hasAccessibleName,
+    },
+    {
+      label: 'served app buttons',
+      source: appJs,
+      regex: /<button\b[^>]*>/g,
+      isValid: (element) => hasAccessibleName(element) && /\btitle=/.test(element),
+    },
+    {
+      label: 'served app form controls',
+      source: appJs,
+      regex: /<(input|select|textarea)\b[^>]*>/g,
+      isValid: hasAccessibleName,
+    },
+    {
+      label: 'served app links',
+      source: appJs,
+      regex: /<a\b[^>]*>/g,
+      isValid: (element) => hasAccessibleName(element) && /\btitle=/.test(element),
+    },
+  ];
+
+  for (const check of checks) {
+    const missing = getMissingStaticAccessibleMetadata(check);
+    assert.equal(
+      missing.length,
+      0,
+      `${check.label} must include accessible metadata: ${JSON.stringify(missing.slice(0, 10))}`,
+    );
+  }
+}
+
+function getMissingStaticAccessibleMetadata({ source, regex, isValid }) {
+  const missing = [];
+  let match;
+  while ((match = regex.exec(source))) {
+    const element = match[0];
+    if (!isValid(element)) {
+      missing.push({
+        line: source.slice(0, match.index).split('\n').length,
+        element: element.replace(/\s+/g, ' ').slice(0, 180),
+      });
+    }
+  }
+  return missing;
+}
+
+function hasAccessibleName(element) {
+  return /\baria-label=/.test(element) || /\baria-labelledby=/.test(element);
 }
 
 function getUniqueSortedMatches(source, regex) {

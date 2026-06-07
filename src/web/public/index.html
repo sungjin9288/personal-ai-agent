@@ -23,11 +23,23 @@
           <div class="rail-control-stack">
             <label class="compact-label compact-label-tight">
               워크스페이스
-              <select name="workspaceId" id="workspace-select"></select>
+              <select name="workspaceId" id="workspace-select" aria-label="워크스페이스 선택"></select>
             </label>
             <div class="rail-inline-actions">
-              <button id="toggle-workspace-form-button" class="secondary-button" type="button">워크스페이스 추가</button>
-              <button id="toggle-create-button" class="primary-button" type="button">새 미션 시작</button>
+              <button
+                id="toggle-workspace-form-button"
+                class="secondary-button"
+                type="button"
+                aria-label="워크스페이스 추가 폼 열기"
+                title="워크스페이스 추가 폼 열기"
+              >워크스페이스 추가</button>
+              <button
+                id="toggle-create-button"
+                class="primary-button"
+                type="button"
+                aria-label="새 미션 작성 영역 열기"
+                title="새 미션 작성 영역 열기"
+              >새 미션 시작</button>
             </div>
           </div>
           <form id="workspace-form" class="workspace-form" hidden>
@@ -38,6 +50,7 @@
                 type="text"
                 name="workspacePath"
                 placeholder="/path/to/trusted-workspace"
+                aria-label="추가할 워크스페이스 경로"
                 required
               />
             </label>
@@ -48,11 +61,23 @@
                 type="text"
                 name="name"
                 placeholder="표시 이름 (선택)"
+                aria-label="추가할 워크스페이스 표시 이름"
               />
             </label>
             <div class="action-row action-row-compact">
-              <button class="secondary-button" type="submit">추가</button>
-              <button id="cancel-workspace-form-button" class="ghost-button" type="button">취소</button>
+              <button
+                class="secondary-button"
+                type="submit"
+                aria-label="워크스페이스 추가 저장"
+                title="워크스페이스 추가 저장"
+              >추가</button>
+              <button
+                id="cancel-workspace-form-button"
+                class="ghost-button"
+                type="button"
+                aria-label="워크스페이스 추가 취소"
+                title="워크스페이스 추가 취소"
+              >취소</button>
             </div>
             <p id="workspace-form-status" class="field-hint field-hint-rail">
               새 repo 경로를 추가하면 바로 이 화면에서 선택할 수 있습니다.
@@ -71,7 +96,13 @@
             </div>
           </div>
           <div id="mission-queue-summary" class="queue-summary"></div>
-          <input id="mission-filter" class="mission-filter" type="search" placeholder="미션명, 상태, 제공자 검색" />
+          <input
+            id="mission-filter"
+            class="mission-filter"
+            type="search"
+            placeholder="미션명, 상태, 제공자 검색"
+            aria-label="미션 큐 검색"
+          />
           <div id="mission-list" class="mission-list"></div>
         </section>
       </aside>
@@ -106,7 +137,13 @@
               <p class="flow-shell-copy">현재 단계는 선명하게, 다음 단계는 준비 상태로 이어집니다.</p>
             </div>
             <nav class="flow-nav" aria-label="진행 흐름">
-              <button class="flow-step is-active" type="button" data-step-target="step-setup">
+              <button
+                class="flow-step is-active"
+                type="button"
+                data-step-target="step-setup"
+                aria-label="진행 단계 열기: 1단계 미션 정하기"
+                title="진행 단계 열기: 1단계 미션 정하기"
+              >
                 <span class="flow-step-no">01</span>
                 <span class="flow-step-copy">
                   <strong>미션 정하기</strong>
@@ -114,7 +151,13 @@
                 </span>
               </button>
 
-              <button class="flow-step" type="button" data-step-target="step-run">
+              <button
+                class="flow-step"
+                type="button"
+                data-step-target="step-run"
+                aria-label="진행 단계 열기: 2단계 실행하기"
+                title="진행 단계 열기: 2단계 실행하기"
+              >
                 <span class="flow-step-no">02</span>
                 <span class="flow-step-copy">
                   <strong>실행하기</strong>
@@ -122,7 +165,13 @@
                 </span>
               </button>
 
-              <button class="flow-step" type="button" data-step-target="step-review">
+              <button
+                class="flow-step"
+                type="button"
+                data-step-target="step-review"
+                aria-label="진행 단계 열기: 3단계 검토하기"
+                title="진행 단계 열기: 3단계 검토하기"
+              >
                 <span class="flow-step-no">03</span>
                 <span class="flow-step-copy">
                   <strong>검토하기</strong>
@@ -130,7 +179,13 @@
                 </span>
               </button>
 
-              <button class="flow-step" type="button" data-step-target="step-output">
+              <button
+                class="flow-step"
+                type="button"
+                data-step-target="step-output"
+                aria-label="진행 단계 열기: 4단계 결과 보기"
+                title="진행 단계 열기: 4단계 결과 보기"
+              >
                 <span class="flow-step-no">04</span>
                 <span class="flow-step-copy">
                   <strong>결과 보기</strong>
@@ -212,7 +267,7 @@
                   <div class="form-grid">
                     <label class="compact-label">
                       작업 모드
-                      <select name="mode">
+                      <select name="mode" aria-label="새 미션 작업 모드 선택">
                         <option value="knowledge">지식 작업</option>
                         <option value="engineering">엔지니어링 작업</option>
                       </select>
@@ -220,7 +275,7 @@
 
                     <label class="compact-label">
                       산출물 형식
-                      <select name="deliverableType">
+                      <select name="deliverableType" aria-label="새 미션 산출물 형식 선택">
                         <option value="prd">PRD</option>
                         <option value="implementation-proposal">구현 제안서</option>
                         <option value="decision-memo">의사결정 메모</option>
@@ -230,7 +285,13 @@
 
                   <label class="compact-label">
                     미션 제목
-                    <input type="text" name="title" placeholder="예: 신규 기능 PRD 초안" required />
+                    <input
+                      type="text"
+                      name="title"
+                      placeholder="예: 신규 기능 PRD 초안"
+                      aria-label="새 미션 제목"
+                      required
+                    />
                   </label>
 
                   <label class="compact-label">
@@ -239,6 +300,7 @@
                       name="objective"
                       rows="4"
                       placeholder="예: 문제 정의부터 실행 가능한 PRD 초안까지 구조화"
+                      aria-label="새 미션 목표"
                     ></textarea>
                   </label>
 
@@ -248,6 +310,7 @@
                       name="constraints"
                       rows="3"
                       placeholder="한 줄에 하나씩 입력&#10;예: 성공 기준을 테스트 가능하게 작성&#10;예: 다음 액션의 담당자와 기한 포함"
+                      aria-label="새 미션 추가 운영 규칙"
                     ></textarea>
                     <span class="field-hint">AI 구성 카드를 고르면 orchestration directive는 자동으로 포함됩니다. 여기는 추가 운영 규칙만 적으면 됩니다.</span>
                   </label>
@@ -260,13 +323,26 @@
                       name="attachments"
                       multiple
                       accept=".md,.txt,.json,.csv,.yaml,.yml,.log,.js,.mjs,.ts,.tsx,.jsx,.py,.html,.css,.xml,.sql,text/*,application/json,application/xml"
+                      aria-label="새 미션 첨부 파일 추가"
                     />
                     <span class="field-hint">텍스트 기반 파일만 지원합니다. 업로드된 내용은 미션 입력으로 저장되고 다음 실행 prompt에 반영됩니다.</span>
                   </label>
 
                   <div class="action-row">
-                    <button type="submit" class="primary-button">미션 생성</button>
-                    <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="config">입력값 요약 보기</button>
+                    <button
+                      type="submit"
+                      class="primary-button"
+                      aria-label="새 미션 생성"
+                      title="새 미션 생성"
+                    >미션 생성</button>
+                    <button
+                      class="ghost-button"
+                      type="button"
+                      data-ui-action="switch-tab"
+                      data-ui-value="config"
+                      aria-label="입력값과 설정 탭 열기"
+                      title="입력값과 설정 탭 열기"
+                    >입력값 요약 보기</button>
                   </div>
                 </form>
               </section>
@@ -294,7 +370,7 @@
                   <p>선택한 미션을 기본 제공자 정책 또는 지정한 제공자로 실행합니다.</p>
                 </div>
                 <div class="dispatch-controls">
-                  <select id="run-provider-select">
+                  <select id="run-provider-select" aria-label="미션 실행 제공자 선택">
                     <option value="">기본 제공자 정책</option>
                     <option value="openai">OpenAI</option>
                     <option value="anthropic">Anthropic</option>
@@ -302,7 +378,7 @@
                     <option value="local">Local</option>
                     <option value="hermes">Hermes</option>
                   </select>
-                  <select id="run-fallback-provider-select">
+                  <select id="run-fallback-provider-select" aria-label="미션 실행 fallback 제공자 선택">
                     <option value="">Fallback 없음</option>
                     <option value="stub">Fallback · Stub</option>
                     <option value="openai">Fallback · OpenAI</option>
@@ -310,11 +386,17 @@
                     <option value="local">Fallback · Local</option>
                     <option value="hermes">Fallback · Hermes</option>
                   </select>
-                  <select id="run-fallback-policy-select" disabled>
+                  <select id="run-fallback-policy-select" aria-label="미션 실행 fallback policy 선택" disabled>
                     <option value="provider-failure-only">Fallback policy · provider failure only</option>
                     <option value="recoverable-provider-failure-only">Fallback policy · recoverable provider failure only</option>
                   </select>
-                  <button id="run-mission-button" class="primary-button" disabled>실행 시작</button>
+                  <button
+                    id="run-mission-button"
+                    class="primary-button"
+                    aria-label="선택한 미션 실행 시작"
+                    title="선택한 미션 실행 시작"
+                    disabled
+                  >실행 시작</button>
                 </div>
               </section>
 
@@ -435,12 +517,48 @@
             <div id="detail-contextbar" class="detail-contextbar"></div>
 
             <nav class="detail-tabs" aria-label="세부 정보 탭">
-              <button class="detail-tab is-active" type="button" data-detail-tab="artifacts">결과물</button>
-              <button class="detail-tab" type="button" data-detail-tab="runs">실행 기록</button>
-              <button class="detail-tab" type="button" data-detail-tab="reviews">검토 이력</button>
-              <button class="detail-tab" type="button" data-detail-tab="config">입력값과 설정</button>
-              <button class="detail-tab" type="button" data-detail-tab="harness">하네스</button>
-              <button class="detail-tab" type="button" data-detail-tab="release">v1 마감 상태</button>
+              <button
+                class="detail-tab is-active"
+                type="button"
+                data-detail-tab="artifacts"
+                aria-label="세부 정보 탭 열기: 결과물"
+                title="세부 정보 탭 열기: 결과물"
+              >결과물</button>
+              <button
+                class="detail-tab"
+                type="button"
+                data-detail-tab="runs"
+                aria-label="세부 정보 탭 열기: 실행 기록"
+                title="세부 정보 탭 열기: 실행 기록"
+              >실행 기록</button>
+              <button
+                class="detail-tab"
+                type="button"
+                data-detail-tab="reviews"
+                aria-label="세부 정보 탭 열기: 검토 이력"
+                title="세부 정보 탭 열기: 검토 이력"
+              >검토 이력</button>
+              <button
+                class="detail-tab"
+                type="button"
+                data-detail-tab="config"
+                aria-label="세부 정보 탭 열기: 입력값과 설정"
+                title="세부 정보 탭 열기: 입력값과 설정"
+              >입력값과 설정</button>
+              <button
+                class="detail-tab"
+                type="button"
+                data-detail-tab="harness"
+                aria-label="세부 정보 탭 열기: 하네스"
+                title="세부 정보 탭 열기: 하네스"
+              >하네스</button>
+              <button
+                class="detail-tab"
+                type="button"
+                data-detail-tab="release"
+                aria-label="세부 정보 탭 열기: v1 마감 상태"
+                title="세부 정보 탭 열기: v1 마감 상태"
+              >v1 마감 상태</button>
             </nav>
             <div id="detail-toolbar-actions" class="detail-toolbar-actions"></div>
 
@@ -573,11 +691,12 @@
                       id="document-log-file"
                       type="file"
                       accept=".md,.txt,.json,text/markdown,text/plain,application/json"
+                      aria-label="문서 하네스 외부 문서 파일 불러오기"
                     />
                   </label>
                   <label class="compact-label">
                     기록 위치
-                    <select name="type">
+                    <select name="type" aria-label="문서 하네스 기록 위치 선택">
                       <option value="reference">참고 레포 기록</option>
                       <option value="devlog">개발 로그</option>
                       <option value="incident">인시던트 기록</option>
@@ -585,7 +704,12 @@
                   </label>
                   <label class="compact-label">
                     문서 제목
-                    <input type="text" name="title" placeholder="예: Strategy framing A/B - source note" />
+                    <input
+                      type="text"
+                      name="title"
+                      placeholder="예: Strategy framing A/B - source note"
+                      aria-label="문서 하네스 문서 제목"
+                    />
                   </label>
                   <label class="compact-label">
                     Markdown 본문
@@ -593,21 +717,40 @@
                       name="content"
                       rows="4"
                       placeholder="예: 외부 문서를 Markdown 작업본으로 옮긴 뒤 이 미션의 source-of-record로 사용한다."
+                      aria-label="문서 하네스 Markdown 본문"
                     ></textarea>
                   </label>
                   <div class="action-row">
-                    <button id="document-log-submit-button" class="primary-button" type="submit">문서 기록 저장</button>
-                    <button id="document-log-cancel-button" class="ghost-button" type="button" hidden>수정 취소</button>
+                    <button
+                      id="document-log-submit-button"
+                      class="primary-button"
+                      type="submit"
+                      aria-label="문서 하네스 기록 저장"
+                      title="문서 하네스 기록 저장"
+                    >문서 기록 저장</button>
+                    <button
+                      id="document-log-cancel-button"
+                      class="ghost-button"
+                      type="button"
+                      aria-label="문서 하네스 수정 취소"
+                      title="문서 하네스 수정 취소"
+                      hidden
+                    >수정 취소</button>
                   </div>
                 </form>
                 <div class="harness-searchbar">
                   <label class="compact-label">
                     기록 검색
-                    <input id="document-log-search" type="search" placeholder="제목, 본문, 경로 검색" />
+                    <input
+                      id="document-log-search"
+                      type="search"
+                      placeholder="제목, 본문, 경로 검색"
+                      aria-label="문서 하네스 기록 검색"
+                    />
                   </label>
                   <label class="compact-label">
                     기록 위치 필터
-                    <select id="document-log-filter">
+                    <select id="document-log-filter" aria-label="문서 하네스 기록 위치 필터">
                       <option value="all">전체</option>
                       <option value="reference">참고 레포 기록</option>
                       <option value="devlog">개발 로그</option>
@@ -631,7 +774,7 @@
                     <p id="memory-form-status" class="item-meta">현재 실행 문맥에 필요한 사실, 결정, 선호를 저장합니다.</p>
                     <label class="compact-label">
                       메모 유형
-                      <select name="kind">
+                      <select name="kind" aria-label="미션 메모 유형 선택">
                         <option value="fact">사실</option>
                         <option value="decision">결정</option>
                         <option value="preference">선호</option>
@@ -643,11 +786,25 @@
                         name="content"
                         rows="3"
                         placeholder="예: 이번 미션에서는 의사결정 주기를 주간 cadence로 고정한다."
+                        aria-label="미션 메모 내용"
                       ></textarea>
                     </label>
                     <div class="action-row">
-                      <button id="memory-submit-button" class="primary-button" type="submit">미션 메모 저장</button>
-                      <button id="memory-cancel-button" class="ghost-button" type="button" hidden>수정 취소</button>
+                      <button
+                        id="memory-submit-button"
+                        class="primary-button"
+                        type="submit"
+                        aria-label="미션 메모 저장"
+                        title="미션 메모 저장"
+                      >미션 메모 저장</button>
+                      <button
+                        id="memory-cancel-button"
+                        class="ghost-button"
+                        type="button"
+                        aria-label="미션 메모 수정 취소"
+                        title="미션 메모 수정 취소"
+                        hidden
+                      >수정 취소</button>
                     </div>
                   </form>
                   <form id="workspace-memory-form" class="memory-form">
@@ -655,7 +812,7 @@
                     <p id="workspace-memory-form-status" class="item-meta">장기 운영 규칙과 팀 공통 선호를 저장합니다.</p>
                     <label class="compact-label">
                       메모 유형
-                      <select name="kind">
+                      <select name="kind" aria-label="워크스페이스 메모 유형 선택">
                         <option value="fact">사실</option>
                         <option value="decision">결정</option>
                         <option value="preference">선호</option>
@@ -667,11 +824,25 @@
                         name="content"
                         rows="3"
                         placeholder="예: 이 워크스페이스는 한국어 UI와 명시적 승인 흐름을 기본값으로 유지한다."
+                        aria-label="워크스페이스 메모 내용"
                       ></textarea>
                     </label>
                     <div class="action-row">
-                      <button id="workspace-memory-submit-button" class="primary-button" type="submit">워크스페이스 메모 저장</button>
-                      <button id="workspace-memory-cancel-button" class="ghost-button" type="button" hidden>수정 취소</button>
+                      <button
+                        id="workspace-memory-submit-button"
+                        class="primary-button"
+                        type="submit"
+                        aria-label="워크스페이스 메모 저장"
+                        title="워크스페이스 메모 저장"
+                      >워크스페이스 메모 저장</button>
+                      <button
+                        id="workspace-memory-cancel-button"
+                        class="ghost-button"
+                        type="button"
+                        aria-label="워크스페이스 메모 수정 취소"
+                        title="워크스페이스 메모 수정 취소"
+                        hidden
+                      >수정 취소</button>
                     </div>
                   </form>
                 </div>
