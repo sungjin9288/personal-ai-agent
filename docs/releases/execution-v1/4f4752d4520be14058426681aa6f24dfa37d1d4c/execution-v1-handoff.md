@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-07T13:14:01.767Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-07T13:14:00.263Z
 - localDate: 2026-06-07
 - branch: codex/blocker-triage-control-labels
 - commit: 4f4752d4520be14058426681aa6f24dfa37d1d4c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4f4752d4520be14058426681aa6f24dfa37d1d4c](releases/execution-v1/4f4752d4520be14058426681aa6f24dfa37d1d4c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4f4752d4520be14058426681aa6f24dfa37d1d4c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4f4752d4520be14058426681aa6f24dfa37d1d4c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4f4752d4520be14058426681aa6f24dfa37d1d4c](docs/releases/execution-v1/4f4752d4520be14058426681aa6f24dfa37d1d4c)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/blocker-triage-control-labels not found
 

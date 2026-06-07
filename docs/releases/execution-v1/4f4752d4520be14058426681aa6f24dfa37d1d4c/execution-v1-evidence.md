@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-07T13:14:01.767Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-07T13:13:40.518Z
 - branch: codex/blocker-triage-control-labels
 - commit: 4f4752d4520be14058426681aa6f24dfa37d1d4c
