@@ -287,6 +287,7 @@ try {
   assert.equal(appJs.includes('data-artifact-id="${escapeHtml(artifact.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(artifactSelectionLabel)}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(timelineEventLabel)}"'), true);
+  assert.equal(appJs.includes('data-session-id="${escapeHtml(item.sessionId)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${isActiveSessionEvent ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(timelineEventLabel)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${sameFlowActive ? \'true\' : \'false\'}"'), true);

@@ -19091,10 +19091,10 @@ function renderTimeline() {
           : `세션 타임라인 이벤트 열기: ${timelineEventTitle}`
         : `타임라인 이벤트 보기: ${timelineEventTitle}`;
       const timelineSessionAttributes = item.sessionId
-        ? `data-session-id="${escapeHtml(item.sessionId)}" aria-pressed="${isActiveSessionEvent ? 'true' : 'false'}"`
+        ? `data-session-id="${escapeHtml(item.sessionId)}"`
         : '';
       return `
-        <button type="button" class="timeline-event ${isActiveSessionEvent ? 'is-active' : ''}" ${timelineSessionAttributes} aria-label="${escapeHtml(timelineEventLabel)}" title="${escapeHtml(timelineEventLabel)}">
+        <button type="button" class="timeline-event ${isActiveSessionEvent ? 'is-active' : ''}" ${timelineSessionAttributes} aria-pressed="${isActiveSessionEvent ? 'true' : 'false'}" aria-label="${escapeHtml(timelineEventLabel)}" title="${escapeHtml(timelineEventLabel)}">
           <div class="timeline-time">${escapeHtml(formatDate(item.at))}</div>
           <div class="timeline-kind">${escapeHtml(getTimelineKindLabel(item.kind))}</div>
           <div class="item-title">${escapeHtml(item.detail || '')}</div>
