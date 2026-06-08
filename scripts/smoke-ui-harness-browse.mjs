@@ -289,6 +289,10 @@ try {
   assert.equal(appJs.includes('aria-label="${escapeHtml(timelineEventLabel)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${isActiveSessionEvent ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(timelineEventLabel)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${sameFlowActive ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${attentionFlowActive ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${focusedProviderFlowActive ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${focusedProviderAttentionFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('loadProviderEvents'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-audit'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-policy-filter'), true);
