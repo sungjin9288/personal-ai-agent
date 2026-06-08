@@ -252,6 +252,11 @@ try {
   assert.equal(appJs.includes('actionValue ? `${actionLabel}: ${actionValue}` : actionLabel'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(emptyActionLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(emptyActionLabel)}"'), true);
+  assert.equal(appJs.includes('markCopiedCurrentViewLink'), true);
+  assert.equal(appJs.includes('currentViewLinkCopied'), true);
+  assert.equal(appJs.includes('현재 보기 링크 복사됨: ${flowActionTargetLabel}'), true);
+  assert.equal(appJs.includes('class="ghost-button ${flowCopyViewCopied ? \'is-copied\' : \'\'}"'), true);
+  assert.equal(appJs.includes('data-ui-action="copy-view-link" aria-pressed="${flowCopyViewCopied ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('fallbackProvider'), true);
   assert.equal(appJs.includes('fallbackPolicy'), true);
   assert.equal(appJs.includes('legacyDevlogMigrationLabel'), true);

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-08T12:07:40.323Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-08T12:07:38.884Z
 - localDate: 2026-06-08
 - branch: codex/flow-view-link-copy-pressed-metadata
 - commit: f682529289f687f528b052d1d4b3bf78d1170efb
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f682529289f687f528b052d1d4b3bf78d1170efb](releases/execution-v1/f682529289f687f528b052d1d4b3bf78d1170efb)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f682529289f687f528b052d1d4b3bf78d1170efb/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f682529289f687f528b052d1d4b3bf78d1170efb/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f682529289f687f528b052d1d4b3bf78d1170efb](docs/releases/execution-v1/f682529289f687f528b052d1d4b3bf78d1170efb)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/flow-view-link-copy-pressed-metadata not found
 
