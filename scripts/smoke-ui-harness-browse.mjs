@@ -1677,6 +1677,7 @@ try {
   assert.equal(appJs.includes('data-ui-action="execution-start"'), true);
   assert.equal(appJs.includes('실행 시작: ${executionMissionLabel}'), true);
   assert.equal(appJs.includes('승인 대기 중: ${executionMissionLabel}'), true);
+  assert.equal(appJs.includes('aria-disabled="true" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}"'), true);
   assert.equal(appJs.includes('data-ui-action="execution-preflight"'), true);
   assert.equal(appJs.includes('실행 승인 요청: ${executionMissionLabel}'), true);
   assert.equal(appJs.includes('preflight 새로고침: ${executionMissionLabel}'), true);

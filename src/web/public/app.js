@@ -13135,7 +13135,7 @@ function renderExecutionConsole() {
   const primaryAction = execution?.currentLease
     ? `<button class="primary-button" type="button" data-ui-action="execution-start" aria-label="${escapeHtml(`실행 시작: ${executionMissionLabel}`)}" title="${escapeHtml(`실행 시작: ${executionMissionLabel}`)}">실행 시작</button>`
     : execution?.latestApproval?.status === 'pending'
-      ? `<button class="secondary-button" type="button" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" title="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" disabled>승인 대기 중</button>`
+      ? `<button class="secondary-button" type="button" aria-disabled="true" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" title="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" disabled>승인 대기 중</button>`
       : `<button class="primary-button" type="button" data-ui-action="execution-preflight" data-ui-value="request-approval" aria-label="${escapeHtml(`실행 승인 요청: ${executionMissionLabel}`)}" title="${escapeHtml(`실행 승인 요청: ${executionMissionLabel}`)}">실행 승인 요청</button>`;
   const secondaryAction = executionSession?.status === 'running'
     ? `<button class="ghost-button" type="button" data-ui-action="execution-stop" aria-label="${escapeHtml(`실행 중단: ${executionSessionLabel}`)}" title="${escapeHtml(`실행 중단: ${executionSessionLabel}`)}">실행 중단</button>`

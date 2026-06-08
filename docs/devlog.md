@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Execution Approval Disabled Metadata
+
+- added aria-disabled metadata to the execution approval pending control
+- kept native disabled behavior, approval pending copy, execution start routing, and preflight request routing unchanged
+- extended UI harness browse smoke coverage for execution approval disabled-state contracts
+
 ## 2026-06-08 Release Snapshot Disabled Metadata
 
 - added aria-disabled metadata to the release snapshot freeze confirmation control
