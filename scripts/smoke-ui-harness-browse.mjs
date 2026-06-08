@@ -1755,6 +1755,8 @@ try {
   assert.equal(appJs.includes('release snapshot 고정: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('release snapshot 고정 확인: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('release snapshot 고정 취소: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('aria-pressed="${regenerationConfirmArmed ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${snapshotConfirmArmed ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('하네스 보기: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('전체 readiness package 복사: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('focusedProviderActionLabel'), true);
@@ -1805,6 +1807,8 @@ try {
   assert.equal(appJs.includes('provider live 검증 실행: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider live 검증 확인: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider env 필요: ${focusedProviderActionLabel}'), true);
+  assert.equal(appJs.includes('aria-pressed="${liveConfirmProvider === focusedProviderEntry.provider ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${liveConfirmArmed ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('provider live 명령 복사: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider package 복사: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider blocker 보기: ${focusedProviderActionLabel}'), true);

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T06:45:52.741Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T06:45:36.163Z
 - branch: codex/release-confirm-pressed-metadata
 - commit: 537e01c9590bb6cab9806876f98757a5d732ad0b

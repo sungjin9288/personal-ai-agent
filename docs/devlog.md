@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Confirm Pressed Metadata
+
+- added aria-pressed metadata to current surface regeneration, release snapshot freeze, and provider live validation confirmation buttons
+- kept two-step confirmation routing, cancel actions, disabled eligibility behavior, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for release confirmation pressed-state contracts
+
 ## 2026-06-08 Release History Focus Pressed Metadata
 
 - added aria-pressed metadata to release recommendation, release history row, and provider-scoped history focus buttons
