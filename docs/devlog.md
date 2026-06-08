@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Blocker Filter Pressed Metadata
+
+- added aria-pressed metadata to current open blocker category, owner, provider, and shared provider ops filter buttons
+- kept blocker filter routing, disabled current-filter behavior, shared provider ops toggle behavior, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for release blocker filter pressed-state contracts
+
 ## 2026-06-08 Release Confirm Pressed Metadata
 
 - added aria-pressed metadata to current surface regeneration, release snapshot freeze, and provider live validation confirmation buttons

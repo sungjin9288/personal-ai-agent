@@ -15345,6 +15345,7 @@ function renderReleaseStatus() {
                                   data-ui-category="${escapeHtml(category)}"
                                   data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
                                   data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                                  aria-pressed="${blockerCategoryFilter === category ? 'true' : 'false'}"
                                   aria-label="${escapeHtml(`blocker category 필터: ${category} ${count}건 · ${blockerFilterLabel}`)}"
                                   title="${escapeHtml(`blocker category 필터: ${category} ${count}건 · ${blockerFilterLabel}`)}"
                                   ${blockerCategoryFilter === category ? 'disabled' : ''}
@@ -15365,6 +15366,7 @@ function renderReleaseStatus() {
                                   data-ui-category="${escapeHtml(blockerCategoryFilter)}"
                                   data-ui-owner="${escapeHtml(owner)}"
                                   data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                                  aria-pressed="${blockerOwnerFilter === owner ? 'true' : 'false'}"
                                   aria-label="${escapeHtml(`blocker owner 필터: ${owner} ${count}건 · ${blockerFilterLabel}`)}"
                                   title="${escapeHtml(`blocker owner 필터: ${owner} ${count}건 · ${blockerFilterLabel}`)}"
                                   ${blockerOwnerFilter === owner ? 'disabled' : ''}
@@ -15385,6 +15387,7 @@ function renderReleaseStatus() {
                                   data-ui-category="${escapeHtml(blockerCategoryFilter)}"
                                   data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
                                   data-ui-provider="${escapeHtml(provider)}"
+                                  aria-pressed="${blockerProviderFilter === provider ? 'true' : 'false'}"
                                   aria-label="${escapeHtml(`blocker provider 필터: ${provider} ${count}건 · ${blockerFilterLabel}`)}"
                                   title="${escapeHtml(`blocker provider 필터: ${provider} ${count}건 · ${blockerFilterLabel}`)}"
                                   ${blockerProviderFilter === provider ? 'disabled' : ''}
@@ -15406,6 +15409,7 @@ function renderReleaseStatus() {
                           data-ui-include-shared="${blockerIncludeSharedProviderOperations ? 'false' : 'true'}"
                           data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
                           data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                          aria-pressed="${blockerIncludeSharedProviderOperations ? 'true' : 'false'}"
                           aria-label="${escapeHtml(blockerIncludeSharedProviderOperations ? `shared provider ops 제외: ${blockerTriageFilterActionLabel}` : `shared provider ops 포함: ${blockerTriageFilterActionLabel}`)}"
                           title="${escapeHtml(blockerIncludeSharedProviderOperations ? `shared provider ops 제외: ${blockerTriageFilterActionLabel}` : `shared provider ops 포함: ${blockerTriageFilterActionLabel}`)}"
                         >${blockerIncludeSharedProviderOperations ? 'shared provider ops 제외' : 'shared provider ops 포함'}</button>
