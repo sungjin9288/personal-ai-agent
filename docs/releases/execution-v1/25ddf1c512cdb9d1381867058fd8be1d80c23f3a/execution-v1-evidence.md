@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T07:06:26.420Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T07:06:10.353Z
 - branch: codex/release-blocker-filter-pressed-metadata
 - commit: 25ddf1c512cdb9d1381867058fd8be1d80c23f3a
