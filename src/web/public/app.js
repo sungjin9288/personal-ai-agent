@@ -41,6 +41,8 @@ const state = {
   providerEventFallbackStopReasonFilter: '',
   providerEvents: null,
   providers: [],
+  releaseCommandCopiedKey: '',
+  releaseCommandCopiedTimer: null,
   releaseHandoffCopiedPreviewLinkId: '',
   releaseHandoffCopiedPreviewLinkTimer: null,
   releaseHandoffCopiedSummaryId: '',
@@ -1083,6 +1085,38 @@ function isCopiedReleaseHandoffSummaryStableLine(artifactId = '', detailKey = ''
   return state.releaseHandoffCopiedSummaryStableLineKey === getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId, detailKey, lineIndex);
 }
 
+function getReleaseCommandCopyKey(command = '', label = '') {
+  const normalizedCommand = normalizeUiParam(command);
+  const normalizedLabel = normalizeUiParam(label);
+  if (!normalizedCommand) {
+    return '';
+  }
+  return `${normalizedLabel || 'release command'}:${normalizedCommand}`;
+}
+
+function isCopiedReleaseCommand(command = '', label = '') {
+  return state.releaseCommandCopiedKey === getReleaseCommandCopyKey(command, label);
+}
+
+function markCopiedReleaseCommand(command = '', label = '') {
+  const nextKey = getReleaseCommandCopyKey(command, label);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseCommandCopiedKey = nextKey;
+  if (state.releaseCommandCopiedTimer) {
+    window.clearTimeout(state.releaseCommandCopiedTimer);
+    state.releaseCommandCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseCommandCopiedTimer = window.setTimeout(() => {
+    state.releaseCommandCopiedKey = '';
+    state.releaseCommandCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1101,6 +1135,20 @@ function renderRetrievalSourceSurfaces() {
   renderAgentBlueprintBuilder();
   renderHarnessPanel();
   renderOutputStageSummary();
+}
+
+function renderReleaseCommandCopyButton({
+  actionLabel = 'release command 복사',
+  attributes = '',
+  buttonText = '명령 복사',
+  className = 'ghost-button',
+  command = '',
+  label = 'release command',
+} = {}) {
+  const copied = isCopiedReleaseCommand(command, label);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-command" data-ui-label="${escapeHtml(label)}" data-ui-value="${escapeHtml(command)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -8695,10 +8743,9 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-command') {
-        void copyPlainTextValue(value || '', {
-          promptMessage: `${button.dataset.uiLabel || 'release command'}를 복사하세요.`,
-          shownNotice: `${button.dataset.uiLabel || 'release command'}를 표시했습니다.`,
-          successNotice: `${button.dataset.uiLabel || 'release command'}를 복사했습니다.`,
+        void copyReleaseCommand({
+          command: value || '',
+          label: button.dataset.uiLabel || 'release command',
         });
         return;
       }
@@ -9512,6 +9559,21 @@ async function copyPlainTextValue(value, {
     const prompted = showCopyPromptFallback(promptMessage, normalizedValue);
     setUiNotice(prompted ? shownNotice : unavailableNotice);
     return { method: prompted ? 'prompt' : 'unavailable' };
+  }
+}
+
+async function copyReleaseCommand({
+  command = '',
+  label = 'release command',
+} = {}) {
+  const normalizedLabel = String(label || 'release command').trim() || 'release command';
+  const result = await copyPlainTextValue(command, {
+    promptMessage: `${normalizedLabel}를 복사하세요.`,
+    shownNotice: `${normalizedLabel}를 표시했습니다.`,
+    successNotice: `${normalizedLabel}를 복사했습니다.`,
+  });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseCommand(command, normalizedLabel);
   }
 }
 
@@ -14800,7 +14862,12 @@ function renderReleaseStatus() {
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}" title="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}">상태 다시 읽기</button>
           <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}">전체 preflight 실행</button>
-          <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all" aria-label="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}">전체 preflight 명령 복사</button>
+          ${renderReleaseCommandCopyButton({
+            actionLabel: `전체 preflight 명령 복사: ${releaseActionLabel}`,
+            buttonText: '전체 preflight 명령 복사',
+            command: 'npm run preflight:execution-v1:all',
+            label: '전체 preflight 명령',
+          })}
           <button class="${regenerationConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="regenerate-release-surface" aria-pressed="${regenerationConfirmArmed ? 'true' : 'false'}" aria-label="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}" title="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}">${regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성'}</button>
           ${regenerationConfirmArmed
             ? `<button class="ghost-button" type="button" data-ui-action="cancel-regenerate-release-surface" aria-label="${escapeHtml(`current surface 재생성 취소: ${releaseActionLabel}`)}" title="${escapeHtml(`current surface 재생성 취소: ${releaseActionLabel}`)}">현재 재생성 취소</button>`
@@ -15168,15 +15235,12 @@ function renderReleaseStatus() {
                                     : ''}
                                   ${recommendationCommand
                                     ? `
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="copy-release-command"
-                                          data-ui-label="${escapeHtml(recommendationCommand.label)}"
-                                          data-ui-value="${escapeHtml(recommendationCommand.command)}"
-                                          aria-label="${escapeHtml(`${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`)}"
-                                          title="${escapeHtml(`${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`)}"
-                                        >${escapeHtml(recommendationCommand.buttonLabel)}</button>
+                                        ${renderReleaseCommandCopyButton({
+                                          actionLabel: `${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`,
+                                          buttonText: recommendationCommand.buttonLabel,
+                                          command: recommendationCommand.command,
+                                          label: recommendationCommand.label,
+                                        })}
                                       `
                                     : ''}
                                   ${recommendationProviderId
@@ -15216,15 +15280,12 @@ function renderReleaseStatus() {
                                   >실행</button>
                                   ${recommendationCommand
                                     ? `
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="copy-release-command"
-                                          data-ui-label="${escapeHtml(recommendationCommand.label)}"
-                                          data-ui-value="${escapeHtml(recommendationCommand.command)}"
-                                          aria-label="${escapeHtml(`${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`)}"
-                                          title="${escapeHtml(`${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`)}"
-                                        >${escapeHtml(recommendationCommand.buttonLabel)}</button>
+                                        ${renderReleaseCommandCopyButton({
+                                          actionLabel: `${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`,
+                                          buttonText: recommendationCommand.buttonLabel,
+                                          command: recommendationCommand.command,
+                                          label: recommendationCommand.label,
+                                        })}
                                       `
                                     : ''}
                                   ${recommendationProviderId
@@ -15257,15 +15318,12 @@ function renderReleaseStatus() {
                                       <span class="item-meta mono">${escapeHtml(item.envKey)}</span>
                                       ${recommendationCommand
                                         ? `
-                                            <button
-                                              class="ghost-button"
-                                              type="button"
-                                              data-ui-action="copy-release-command"
-                                              data-ui-label="${escapeHtml(recommendationCommand.label)}"
-                                              data-ui-value="${escapeHtml(recommendationCommand.command)}"
-                                              aria-label="${escapeHtml(`${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`)}"
-                                              title="${escapeHtml(`${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`)}"
-                                            >${escapeHtml(recommendationCommand.buttonLabel)}</button>
+                                            ${renderReleaseCommandCopyButton({
+                                              actionLabel: `${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`,
+                                              buttonText: recommendationCommand.buttonLabel,
+                                              command: recommendationCommand.command,
+                                              label: recommendationCommand.label,
+                                            })}
                                       `
                                         : ''}
                                       ${recommendationProviderId
@@ -16055,19 +16113,13 @@ function renderReleaseStatus() {
                       >blocker 링크 복사</button>
                       ${focusedBlockerCommands
                         .map(
-                          (command) => `
-                            <button
-                              class="ghost-button"
-                              type="button"
-                              data-release-current-open-blocker-command="${escapeHtml(focusedBlockerId)}"
-                              data-release-current-open-blocker-focus-command="${escapeHtml(focusedBlockerId)}"
-                              data-ui-action="copy-release-command"
-                              data-ui-label="${escapeHtml(command.label || 'blocker command')}"
-                              data-ui-value="${escapeHtml(command.command || '')}"
-                              aria-label="${escapeHtml(`focused blocker 명령 복사: ${command.label || 'blocker command'} · ${focusedBlockerLabel || focusedBlockerId}`)}"
-                              title="${escapeHtml(`focused blocker 명령 복사: ${command.label || 'blocker command'} · ${focusedBlockerLabel || focusedBlockerId}`)}"
-                            >${escapeHtml(command.label || 'command 복사')}</button>
-                          `,
+                          (command) => renderReleaseCommandCopyButton({
+                            actionLabel: `focused blocker 명령 복사: ${command.label || 'blocker command'} · ${focusedBlockerLabel || focusedBlockerId}`,
+                            attributes: `data-release-current-open-blocker-command="${escapeHtml(focusedBlockerId)}" data-release-current-open-blocker-focus-command="${escapeHtml(focusedBlockerId)}"`,
+                            buttonText: command.label || 'command 복사',
+                            command: command.command || '',
+                            label: command.label || 'blocker command',
+                          }),
                         )
                         .join('')}
                       <button class="ghost-button" type="button" data-ui-action="clear-release-blocker-focus" aria-label="${escapeHtml(`focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}`)}" title="${escapeHtml(`focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}`)}">포커스 해제</button>
@@ -16190,18 +16242,13 @@ function renderReleaseStatus() {
                           >blocker 링크 복사</button>
                           ${commands
                             .map(
-                              (command) => `
-                                <button
-                                  class="ghost-button"
-                                  type="button"
-                                  data-release-current-open-blocker-command="${escapeHtml(actionId)}"
-                                  data-ui-action="copy-release-command"
-                                  data-ui-label="${escapeHtml(command.label || 'blocker command')}"
-                                  data-ui-value="${escapeHtml(command.command || '')}"
-                                  aria-label="${escapeHtml(`blocker 명령 복사: ${command.label || 'blocker command'} · ${blockerActionLabel}`)}"
-                                  title="${escapeHtml(`blocker 명령 복사: ${command.label || 'blocker command'} · ${blockerActionLabel}`)}"
-                                >${escapeHtml(command.label || 'command 복사')}</button>
-                              `,
+                              (command) => renderReleaseCommandCopyButton({
+                                actionLabel: `blocker 명령 복사: ${command.label || 'blocker command'} · ${blockerActionLabel}`,
+                                attributes: `data-release-current-open-blocker-command="${escapeHtml(actionId)}"`,
+                                buttonText: command.label || 'command 복사',
+                                command: command.command || '',
+                                label: command.label || 'blocker command',
+                              }),
                             )
                             .join('')}
                         </div>
@@ -16659,9 +16706,19 @@ function renderReleaseStatus() {
                       ${focusedProviderEntry
                         ? `
                             <button class="ghost-button" type="button" data-ui-action="run-release-preflight" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" aria-label="${escapeHtml(`provider preflight 실행: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider preflight 실행: ${focusedProviderActionLabel}`)}">preflight 실행</button>
-                            <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} preflight 명령`)}" data-ui-value="${escapeHtml(focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`)}" aria-label="${escapeHtml(`provider preflight 명령 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider preflight 명령 복사: ${focusedProviderActionLabel}`)}">preflight 명령 복사</button>
+                            ${renderReleaseCommandCopyButton({
+                              actionLabel: `provider preflight 명령 복사: ${focusedProviderActionLabel}`,
+                              buttonText: 'preflight 명령 복사',
+                              command: focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`,
+                              label: `${focusedProviderEntry.label} preflight 명령`,
+                            })}
                             <button class="${liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="refresh-release-status-live" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" aria-pressed="${liveConfirmProvider === focusedProviderEntry.provider ? 'true' : 'false'}" aria-disabled="${focusedProviderEntry.ready ? 'false' : 'true'}" aria-label="${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? `provider live 검증 확인: ${focusedProviderActionLabel}` : `provider live 검증 실행: ${focusedProviderActionLabel}`) : `provider env 필요: ${focusedProviderActionLabel}`)}" title="${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? `provider live 검증 확인: ${focusedProviderActionLabel}` : `provider live 검증 실행: ${focusedProviderActionLabel}`) : `provider env 필요: ${focusedProviderActionLabel}`)}" ${focusedProviderEntry.ready ? '' : 'disabled'}>${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
-                            <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="${escapeHtml(`${focusedProviderEntry.label} live 명령`)}" data-ui-value="${escapeHtml(getProviderLiveCommand(focusedProviderEntry, focusedProviderPreflight))}" aria-label="${escapeHtml(`provider live 명령 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider live 명령 복사: ${focusedProviderActionLabel}`)}">live 명령 복사</button>
+                            ${renderReleaseCommandCopyButton({
+                              actionLabel: `provider live 명령 복사: ${focusedProviderActionLabel}`,
+                              buttonText: 'live 명령 복사',
+                              command: getProviderLiveCommand(focusedProviderEntry, focusedProviderPreflight),
+                              label: `${focusedProviderEntry.label} live 명령`,
+                            })}
                             <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" data-release-provider-readiness-package="true" aria-label="${escapeHtml(`provider package 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider package 복사: ${focusedProviderActionLabel}`)}">provider package 복사</button>
                           `
                         : ''}
@@ -16705,7 +16762,12 @@ function renderReleaseStatus() {
               </div>
               <div class="release-history-focus-actions">
                 <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}">전체 preflight 실행</button>
-                <button class="ghost-button" type="button" data-ui-action="copy-release-command" data-ui-label="전체 preflight 명령" data-ui-value="npm run preflight:execution-v1:all" aria-label="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 명령 복사: ${releaseActionLabel}`)}">전체 preflight 명령 복사</button>
+                ${renderReleaseCommandCopyButton({
+                  actionLabel: `전체 preflight 명령 복사: ${releaseActionLabel}`,
+                  buttonText: '전체 preflight 명령 복사',
+                  command: 'npm run preflight:execution-v1:all',
+                  label: '전체 preflight 명령',
+                })}
                 <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-release-provider-readiness-package="true" aria-label="${escapeHtml(`전체 readiness package 복사: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 readiness package 복사: ${releaseActionLabel}`)}">전체 readiness package 복사</button>
               </div>
             </div>
@@ -16775,15 +16837,12 @@ function renderReleaseStatus() {
                           aria-label="${escapeHtml(`provider preflight 실행: ${providerActionLabel}`)}"
                           title="${escapeHtml(`provider preflight 실행: ${providerActionLabel}`)}"
                         >preflight 실행</button>
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-ui-action="copy-release-command"
-                          data-ui-label="${escapeHtml(`${item.label} preflight 명령`)}"
-                          data-ui-value="${escapeHtml(item.preflightCommand || `npm run preflight:execution-v1:${item.provider}`)}"
-                          aria-label="${escapeHtml(`provider preflight 명령 복사: ${providerActionLabel}`)}"
-                          title="${escapeHtml(`provider preflight 명령 복사: ${providerActionLabel}`)}"
-                        >preflight 명령 복사</button>
+                        ${renderReleaseCommandCopyButton({
+                          actionLabel: `provider preflight 명령 복사: ${providerActionLabel}`,
+                          buttonText: 'preflight 명령 복사',
+                          command: item.preflightCommand || `npm run preflight:execution-v1:${item.provider}`,
+                          label: `${item.label} preflight 명령`,
+                        })}
                         <button
                           class="${liveConfirmArmed ? 'primary-button' : 'ghost-button'}"
                           type="button"
@@ -16795,15 +16854,12 @@ function renderReleaseStatus() {
                           title="${escapeHtml(providerLiveButtonLabel)}"
                           ${item.ready ? '' : 'disabled'}
                         >${escapeHtml(item.ready ? (liveConfirmArmed ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-ui-action="copy-release-command"
-                          data-ui-label="${escapeHtml(`${item.label} live 명령`)}"
-                          data-ui-value="${escapeHtml(liveCommand)}"
-                          aria-label="${escapeHtml(`provider live 명령 복사: ${providerActionLabel}`)}"
-                          title="${escapeHtml(`provider live 명령 복사: ${providerActionLabel}`)}"
-                        >live 명령 복사</button>
+                        ${renderReleaseCommandCopyButton({
+                          actionLabel: `provider live 명령 복사: ${providerActionLabel}`,
+                          buttonText: 'live 명령 복사',
+                          command: liveCommand,
+                          label: `${item.label} live 명령`,
+                        })}
                         <button
                           class="secondary-button"
                           type="button"
@@ -17206,15 +17262,12 @@ function renderReleaseStatus() {
                                       >열기</a>
                                     `
                                   : ''}
-                                <button
-                                  class="ghost-button"
-                                  type="button"
-                                  data-ui-action="copy-release-command"
-                                  data-ui-label="${escapeHtml(`${item.label || 'artifact'} 경로`)}"
-                                  data-ui-value="${escapeHtml(item.path || '')}"
-                                  aria-label="${escapeHtml(`handoff artifact 경로 복사: ${handoffActionTargetLabel}`)}"
-                                  title="${escapeHtml(`handoff artifact 경로 복사: ${handoffActionTargetLabel}`)}"
-                                >경로 복사</button>
+                                ${renderReleaseCommandCopyButton({
+                                  actionLabel: `handoff artifact 경로 복사: ${handoffActionTargetLabel}`,
+                                  buttonText: '경로 복사',
+                                  command: item.path || '',
+                                  label: `${item.label || 'artifact'} 경로`,
+                                })}
                               </div>
                             </article>
                           `;
