@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-08 Release Command Copy Pressed Metadata
+
+- consolidated release command copy controls behind a shared copied-state renderer
+- added aria-pressed metadata and copied-state styling to release command copy buttons
+- kept command text generation, clipboard fallback prompts, provider command routing, and release evidence copy behavior unchanged
+- extended UI harness browse smoke coverage for release command copy-state contracts
+
 ## 2026-06-08 Flow View Link Copy Pressed Metadata
 
 - added aria-pressed metadata and copied-state styling to the current view link copy control
