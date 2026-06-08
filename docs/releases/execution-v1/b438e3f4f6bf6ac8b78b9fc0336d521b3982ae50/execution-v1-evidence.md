@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T17:49:51.123Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T17:49:35.839Z
 - branch: codex/release-triage-link-copy-pressed-metadata
 - commit: b438e3f4f6bf6ac8b78b9fc0336d521b3982ae50
