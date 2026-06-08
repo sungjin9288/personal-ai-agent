@@ -297,6 +297,10 @@ try {
   assert.equal(appJs.includes('aria-pressed="${historyFilterScope === String(item.scope || \'\').trim() ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${historyFilterProvider === String(item.provider || \'\').trim() ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${historyFilterProvider === focusedProvider ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${blockerCategoryFilter === category ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${blockerOwnerFilter === owner ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${blockerProviderFilter === provider ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${blockerIncludeSharedProviderOperations ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('loadProviderEvents'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-audit'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-policy-filter'), true);
