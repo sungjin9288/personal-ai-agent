@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Provider Live Disabled Metadata
+
+- added aria-disabled metadata to focused provider live validation and provider list live validation controls
+- kept native disabled behavior, confirmation pressed state, provider env labels, and live validation routing unchanged
+- extended UI harness browse smoke coverage for provider live disabled-state contracts
+
 ## 2026-06-08 Provider Flow Disabled Metadata
 
 - added aria-disabled metadata to focused provider flow and provider attention flow controls
