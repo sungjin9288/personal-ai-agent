@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Memory Browse Disabled Metadata
+
+- added aria-disabled metadata to memory browse reset, previous page, and next page controls
+- kept native disabled behavior, memory filter labels, pagination routing, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for memory browse disabled-state contracts
+
 ## 2026-06-08 Document Browse Disabled Metadata
 
 - added aria-disabled metadata to document browse reset, previous page, and next page controls
