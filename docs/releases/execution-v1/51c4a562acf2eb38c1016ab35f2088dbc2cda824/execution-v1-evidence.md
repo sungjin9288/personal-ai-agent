@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T08:43:28.793Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T08:43:14.133Z
 - branch: codex/provider-live-disabled-metadata
 - commit: 51c4a562acf2eb38c1016ab35f2088dbc2cda824

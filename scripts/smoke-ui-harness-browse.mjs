@@ -1826,6 +1826,7 @@ try {
   assert.equal(appJs.includes('provider live 검증 확인: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider env 필요: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('aria-pressed="${liveConfirmProvider === focusedProviderEntry.provider ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-disabled="${focusedProviderEntry.ready ? \'false\' : \'true\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${liveConfirmArmed ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('provider live 명령 복사: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider package 복사: ${focusedProviderActionLabel}'), true);
@@ -1907,6 +1908,7 @@ try {
   assert.equal(appJs.includes('provider live 검증 실행: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('provider live 검증 확인: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('provider env 필요: ${providerActionLabel}'), true);
+  assert.equal(appJs.includes('aria-disabled="${item.ready ? \'false\' : \'true\'}"'), true);
   assert.equal(appJs.includes('provider live 명령 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('provider package 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('provider blocker 보기: ${providerActionLabel}'), true);

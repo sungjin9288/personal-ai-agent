@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-08T08:43:28.793Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-08T08:43:20.299Z
 - branch: codex/provider-live-disabled-metadata
 - commit: 51c4a562acf2eb38c1016ab35f2088dbc2cda824
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51c4a562acf2eb38c1016ab35f2088dbc2cda824/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
