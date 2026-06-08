@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Handoff Copy Pressed Metadata
+
+- added aria-pressed metadata to release handoff summary line, stable line, overview, preview link, open link, and current preview copy buttons
+- kept handoff copy routing, copied-state styling, success notices, preview routing, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for release handoff copy pressed-state contracts
+
 ## 2026-06-08 Release Empty Blocker Filter Pressed Metadata
 
 - added aria-pressed metadata to empty blocker filter category-only, owner-only, and provider-only retain buttons
