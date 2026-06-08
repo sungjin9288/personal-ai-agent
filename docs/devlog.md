@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Snapshot Disabled Metadata
+
+- added aria-disabled metadata to the release snapshot freeze confirmation control
+- kept native disabled behavior, eligibility gating, confirmation pressed state, and snapshot routing unchanged
+- extended UI harness browse smoke coverage for release snapshot disabled-state contracts
+
 ## 2026-06-08 Provider Live Disabled Metadata
 
 - added aria-disabled metadata to focused provider live validation and provider list live validation controls
