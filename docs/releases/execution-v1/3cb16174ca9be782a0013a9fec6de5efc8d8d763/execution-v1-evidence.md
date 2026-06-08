@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T08:01:18.218Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T08:01:01.206Z
 - branch: codex/action-inbox-disabled-metadata
 - commit: 3cb16174ca9be782a0013a9fec6de5efc8d8d763
