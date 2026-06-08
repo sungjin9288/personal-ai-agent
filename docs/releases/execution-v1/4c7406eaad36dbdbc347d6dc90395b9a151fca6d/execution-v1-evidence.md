@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T06:28:31.419Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T06:28:15.523Z
 - branch: codex/release-history-focus-pressed-metadata
 - commit: 4c7406eaad36dbdbc347d6dc90395b9a151fca6d

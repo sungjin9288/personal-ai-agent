@@ -1771,8 +1771,13 @@ try {
   assert.equal(appJs.includes('release history 포커스 해제: ${focusedHistoryId}'), true);
   assert.equal(appJs.includes('현재 triage 링크 복사: focused release history ${focusedHistoryId}'), true);
   assert.equal(appJs.includes('release history 필터 해제: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('aria-pressed="${String(latestAction.id || \'\').trim() === focusedHistoryId ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${String(latestAttentionAction.id || \'\').trim() === focusedHistoryId ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes("const historyActionLabel = `${itemId || 'release action'} · ${getReleaseActionLabel(item.action)} · ${item.outcome || 'unknown'} · ${getReleaseActionScopeLabel(item.scope)}${item.provider ? ` · ${item.provider}` : ''}`"), true);
   assert.equal(appJs.includes('release history 기록 고정: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes('aria-pressed="${isFocused ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${String(focusedProviderLatestAction.id || \'\').trim() === focusedHistoryId ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${String(focusedProviderLatestAttentionAction.id || \'\').trim() === focusedHistoryId ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes("release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}"), true);
   assert.equal(appJs.includes('aria-expanded="${isExpanded ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('release history 링크 복사: ${historyActionLabel}'), true);

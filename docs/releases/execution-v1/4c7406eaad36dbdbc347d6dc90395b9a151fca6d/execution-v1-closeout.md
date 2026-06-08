@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-08T06:28:31.419Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-08T06:28:22.730Z
 - branch: codex/release-history-focus-pressed-metadata
 - commit: 4c7406eaad36dbdbc347d6dc90395b9a151fca6d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4c7406eaad36dbdbc347d6dc90395b9a151fca6d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
