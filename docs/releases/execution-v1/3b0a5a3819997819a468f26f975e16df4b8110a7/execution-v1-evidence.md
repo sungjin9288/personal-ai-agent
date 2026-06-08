@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T08:27:13.669Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T08:26:58.286Z
 - branch: codex/memory-browse-disabled-metadata
 - commit: 3b0a5a3819997819a468f26f975e16df4b8110a7

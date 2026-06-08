@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-08T08:27:13.669Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-08T08:27:12.015Z
 - localDate: 2026-06-08
 - branch: codex/memory-browse-disabled-metadata
 - commit: 3b0a5a3819997819a468f26f975e16df4b8110a7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3b0a5a3819997819a468f26f975e16df4b8110a7](releases/execution-v1/3b0a5a3819997819a468f26f975e16df4b8110a7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3b0a5a3819997819a468f26f975e16df4b8110a7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/3b0a5a3819997819a468f26f975e16df4b8110a7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/3b0a5a3819997819a468f26f975e16df4b8110a7](docs/releases/execution-v1/3b0a5a3819997819a468f26f975e16df4b8110a7)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/memory-browse-disabled-metadata not found
 

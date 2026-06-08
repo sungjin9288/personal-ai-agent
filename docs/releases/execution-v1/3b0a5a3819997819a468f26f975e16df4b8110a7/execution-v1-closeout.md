@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-08T08:27:13.669Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-08T08:27:04.625Z
 - branch: codex/memory-browse-disabled-metadata
 - commit: 3b0a5a3819997819a468f26f975e16df4b8110a7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3b0a5a3819997819a468f26f975e16df4b8110a7/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
