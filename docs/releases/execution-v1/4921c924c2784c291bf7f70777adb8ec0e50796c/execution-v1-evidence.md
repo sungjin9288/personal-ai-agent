@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T05:13:18.805Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T05:13:02.671Z
 - branch: codex/release-flow-pressed-metadata
 - commit: 4921c924c2784c291bf7f70777adb8ec0e50796c
