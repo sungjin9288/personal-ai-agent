@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T06:11:49.414Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T06:11:26.292Z
 - branch: codex/release-blocker-focus-pressed-metadata
 - commit: 251c2c8407b113a0cf5bc94e6b8dd7c1e1cf5235
