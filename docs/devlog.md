@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Document Browse Disabled Metadata
+
+- added aria-disabled metadata to document browse reset, previous page, and next page controls
+- kept native disabled behavior, document filter labels, pagination routing, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for document browse disabled-state contracts
+
 ## 2026-06-08 Action Inbox Disabled Metadata
 
 - added aria-disabled metadata to action inbox fallback stop reset, clear-all filters, and current action link copy buttons

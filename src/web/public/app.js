@@ -14000,7 +14000,7 @@ function renderHarnessPanel() {
               <option value="48" ${Number(state.harnessDocumentVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
             </select>
           </label>
-          <button class="ghost-button" type="button" data-document-action="reset-browse" aria-label="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" title="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" ${isDocumentBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
+          <button class="ghost-button" type="button" data-document-action="reset-browse" aria-disabled="${isDocumentBrowseDirty ? 'false' : 'true'}" aria-label="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" title="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" ${isDocumentBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
         </div>
       </div>
       ${
@@ -14037,8 +14037,8 @@ function renderHarnessPanel() {
                       <strong>${escapeHtml(documentPageLabel)} · ${escapeHtml(documentRangeLabel)}</strong>
                       <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건</p>
                       <div class="inline-actions">
-                        <button class="ghost-button" type="button" data-document-action="prev-page" aria-label="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(documentPageSize))}건</button>
-                        <button class="ghost-button" type="button" data-document-action="next-page" aria-label="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(documentPageSize))}건</button>
+                        <button class="ghost-button" type="button" data-document-action="prev-page" aria-disabled="${documentBrowse.summary?.hasPrev ? 'false' : 'true'}" aria-label="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(documentPageSize))}건</button>
+                        <button class="ghost-button" type="button" data-document-action="next-page" aria-disabled="${documentBrowse.summary?.hasNext ? 'false' : 'true'}" aria-label="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(documentPageSize))}건</button>
                       </div>
                     </div>`
                   : ''
