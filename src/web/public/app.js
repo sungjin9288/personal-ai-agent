@@ -4,6 +4,8 @@ const state = {
   approvals: [],
   artifactsById: new Map(),
   currentSessionPayload: null,
+  currentViewLinkCopied: false,
+  currentViewLinkCopiedTimer: null,
   executionLogs: null,
   executionPollTimer: null,
   executionStatus: null,
@@ -1079,6 +1081,20 @@ function getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId = '', de
 
 function isCopiedReleaseHandoffSummaryStableLine(artifactId = '', detailKey = '', lineIndex = -1) {
   return state.releaseHandoffCopiedSummaryStableLineKey === getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId, detailKey, lineIndex);
+}
+
+function markCopiedCurrentViewLink() {
+  state.currentViewLinkCopied = true;
+  if (state.currentViewLinkCopiedTimer) {
+    window.clearTimeout(state.currentViewLinkCopiedTimer);
+    state.currentViewLinkCopiedTimer = null;
+  }
+  renderFlowState();
+  state.currentViewLinkCopiedTimer = window.setTimeout(() => {
+    state.currentViewLinkCopied = false;
+    state.currentViewLinkCopiedTimer = null;
+    renderFlowState();
+  }, 1800);
 }
 
 function renderRetrievalSourceSurfaces() {
@@ -9431,11 +9447,14 @@ async function handleWorkspaceCreate(event) {
 
 async function copyCurrentViewLink() {
   const currentUrl = `${window.location.origin}${buildUiStateUrl()}`;
-  await copyUiLink(currentUrl, {
+  const result = await copyUiLink(currentUrl, {
     promptMessage: '현재 작업면 링크를 복사하세요.',
     shownNotice: '현재 작업면 링크를 표시했습니다.',
     successNotice: '현재 작업면 링크를 복사했습니다.',
   });
+  if (result.method !== 'unavailable') {
+    markCopiedCurrentViewLink();
+  }
 }
 
 async function copyUiLink(url, {
@@ -11356,7 +11375,10 @@ function renderFlowState() {
   const flowHarnessActionLabel = topHarnessAction
     ? `${topHarnessAction.label}: ${flowActionTargetLabel}`
     : '';
-  const flowCopyViewLabel = `현재 보기 링크 복사: ${flowActionTargetLabel}`;
+  const flowCopyViewCopied = state.currentViewLinkCopied;
+  const flowCopyViewLabel = flowCopyViewCopied
+    ? `현재 보기 링크 복사됨: ${flowActionTargetLabel}`
+    : `현재 보기 링크 복사: ${flowActionTargetLabel}`;
   const flowResetViewLabel = hasMissionSelection
     ? `보기 초기화: ${flowActionTargetLabel}`
     : '초기 상태로 되돌리기';
@@ -11389,8 +11411,8 @@ function renderFlowState() {
             isOutputFocus
               ? ''
               : `
-                <button class="ghost-button" type="button" data-ui-action="copy-view-link" aria-label="${escapeHtml(flowCopyViewLabel)}" title="${escapeHtml(flowCopyViewLabel)}">
-                  현재 링크 복사
+                <button class="ghost-button ${flowCopyViewCopied ? 'is-copied' : ''}" type="button" data-ui-action="copy-view-link" aria-pressed="${flowCopyViewCopied ? 'true' : 'false'}" aria-label="${escapeHtml(flowCopyViewLabel)}" title="${escapeHtml(flowCopyViewLabel)}">
+                  ${escapeHtml(flowCopyViewCopied ? '복사됨' : '현재 링크 복사')}
                 </button>
                 <button class="ghost-button" type="button" data-ui-action="reset-view" aria-label="${escapeHtml(flowResetViewLabel)}" title="${escapeHtml(flowResetViewLabel)}">
                   ${escapeHtml(hasMissionSelection ? '보기 초기화' : '초기 상태로')}

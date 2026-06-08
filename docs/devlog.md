@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Flow View Link Copy Pressed Metadata
+
+- added aria-pressed metadata and copied-state styling to the current view link copy control
+- kept current view URL generation, fallback prompt behavior, notice copy, and reset-view routing unchanged
+- extended UI harness browse smoke coverage for flow toolbar copy-state contracts
+
 ## 2026-06-08 Timeline Event Pressed Metadata
 
 - moved timeline event aria-pressed metadata onto every timeline event button
