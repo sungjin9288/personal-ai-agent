@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Timeline Event Pressed Metadata
+
+- moved timeline event aria-pressed metadata onto every timeline event button
+- kept session-id routing, active session highlighting, timeline labels, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for timeline event pressed-state contracts
+
 ## 2026-06-08 Execution Approval Disabled Metadata
 
 - added aria-disabled metadata to the execution approval pending control

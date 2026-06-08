@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T11:54:19.188Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T11:54:03.214Z
 - branch: codex/timeline-event-pressed-metadata
 - commit: 85aa0ddd9ec79f39376340c67e3b1e3aa6480fe9
