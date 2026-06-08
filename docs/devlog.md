@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Action Inbox Disabled Metadata
+
+- added aria-disabled metadata to action inbox fallback stop reset, clear-all filters, and current action link copy buttons
+- kept native disabled behavior, contextual labels, URL-state filters, copy routing, and visible Korean copy unchanged
+- extended UI learning promotion smoke coverage for action inbox disabled-state contracts
+
 ## 2026-06-08 Retrieval Source Copy Pressed Metadata
 
 - added aria-pressed metadata to retrieval source copy buttons in compare chips, active focus callout, attachment focus, and memory focus panels
