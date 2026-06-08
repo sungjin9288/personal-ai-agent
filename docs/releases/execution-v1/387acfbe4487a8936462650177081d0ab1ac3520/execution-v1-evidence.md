@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T07:23:00.990Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T07:22:43.553Z
 - branch: codex/release-empty-blocker-filter-pressed-metadata
 - commit: 387acfbe4487a8936462650177081d0ab1ac3520
