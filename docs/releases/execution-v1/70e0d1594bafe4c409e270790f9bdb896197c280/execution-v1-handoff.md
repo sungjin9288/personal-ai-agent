@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-08T03:53:19.990Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-08T03:53:18.650Z
 - localDate: 2026-06-08
 - branch: codex/release-toggle-expanded-metadata
 - commit: 70e0d1594bafe4c409e270790f9bdb896197c280
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/70e0d1594bafe4c409e270790f9bdb896197c280](releases/execution-v1/70e0d1594bafe4c409e270790f9bdb896197c280)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/70e0d1594bafe4c409e270790f9bdb896197c280/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/70e0d1594bafe4c409e270790f9bdb896197c280/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/70e0d1594bafe4c409e270790f9bdb896197c280](docs/releases/execution-v1/70e0d1594bafe4c409e270790f9bdb896197c280)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-toggle-expanded-metadata not found
 
