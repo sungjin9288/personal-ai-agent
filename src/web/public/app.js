@@ -18353,9 +18353,9 @@ function renderMissionActions() {
         <option value="">${escapeHtml(fallbackStopReasonPlaceholder)}</option>
         ${fallbackStopReasonOptions}
       </select>
-      <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true" aria-label="${escapeHtml(fallbackStopResetTitle)}" title="${escapeHtml(fallbackStopResetTitle)}" ${fallbackStopReasonFilter ? '' : 'disabled'}>stop 필터 초기화</button>
-      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
-      <button class="ghost-button" type="button" data-action-inbox-copy-link="true" aria-label="${escapeHtml(copyLinkTitle)}" title="${escapeHtml(copyLinkTitle)}" ${hasSelectedMission ? '' : 'disabled'}>현재 action 링크 복사</button>
+      <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true" aria-disabled="${fallbackStopReasonFilter ? 'false' : 'true'}" aria-label="${escapeHtml(fallbackStopResetTitle)}" title="${escapeHtml(fallbackStopResetTitle)}" ${fallbackStopReasonFilter ? '' : 'disabled'}>stop 필터 초기화</button>
+      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" aria-disabled="${hasActiveFilter ? 'false' : 'true'}" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
+      <button class="ghost-button" type="button" data-action-inbox-copy-link="true" aria-disabled="${hasSelectedMission ? 'false' : 'true'}" aria-label="${escapeHtml(copyLinkTitle)}" title="${escapeHtml(copyLinkTitle)}" ${hasSelectedMission ? '' : 'disabled'}>현재 action 링크 복사</button>
     </div>
   `;
   const fallbackStopSelect = elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]');
