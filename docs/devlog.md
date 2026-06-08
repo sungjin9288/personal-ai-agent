@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Retrieval Source Copy Pressed Metadata
+
+- added aria-pressed metadata to retrieval source copy buttons in compare chips, active focus callout, attachment focus, and memory focus panels
+- kept retrieval source copy routing, copied-state styling, focus clearing, URL state, and visible Korean copy unchanged
+- extended UI agent blueprints smoke coverage for retrieval source copy pressed-state contracts
+
 ## 2026-06-08 Release Handoff Copy Pressed Metadata
 
 - added aria-pressed metadata to release handoff summary line, stable line, overview, preview link, open link, and current preview copy buttons

@@ -82,10 +82,16 @@ try {
   assert.equal(appJs.includes('aria-label="${escapeHtml(sourceFocusLabel)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${isActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(sourceFocusLabel)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${isCopied ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(sourceCopyLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(sourceCopyLabel)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(activeFocusCopyLabel)}"'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(activeFocusClearLabel)}"'), true);
+  assert.equal(
+    appJs.includes('aria-pressed="${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? \'true\' : \'false\'}"'),
+    true,
+  );
   assert.equal(appJs.includes('aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}"'), true);
   assert.equal(appJs.includes('is-active-focus'), true);
   assert.equal(appJs.includes('hstype'), true);
