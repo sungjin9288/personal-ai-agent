@@ -447,6 +447,13 @@ try {
   assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes("${escapeHtml(copied ? '복사됨' : buttonText)}"), true);
   assert.equal(appJs.includes('provider live 명령 복사: ${providerActionLabel}'), true);
+  assert.equal(appJs.includes('renderReleaseLinkCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseLink'), true);
+  assert.equal(appJs.includes('releaseLinkCopiedKey'), true);
+  assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(value)}"'), true);
+  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || \'\''), true);
+  assert.equal(appJs.includes('release flow 링크 복사: ${historyActionLabel}'), true);
+  assert.equal(appJs.includes('provider 링크 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('OpenAI account ownership proof'), true);
   assert.equal(appJs.includes('billing and quota proof'), true);
   assert.equal(appJs.includes('API key and secret injection proof'), true);

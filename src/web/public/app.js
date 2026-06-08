@@ -51,6 +51,8 @@ const state = {
   releaseHandoffCopiedSummaryStableLineKey: '',
   releaseHandoffCopiedSummaryStableLineTimer: null,
   releaseHandoffCopiedSummaryTimer: null,
+  releaseLinkCopiedKey: '',
+  releaseLinkCopiedTimer: null,
   retrievalCopiedSourceKey: '',
   retrievalCopiedSourceTimer: null,
   retrievalSourceFocusLabel: '',
@@ -1117,6 +1119,38 @@ function markCopiedReleaseCommand(command = '', label = '') {
   }, 1800);
 }
 
+function getReleaseLinkCopyKey(action = '', value = '') {
+  const normalizedAction = normalizeUiParam(action);
+  const normalizedValue = normalizeUiParam(value);
+  if (!normalizedAction || !normalizedValue) {
+    return '';
+  }
+  return `${normalizedAction}:${normalizedValue}`;
+}
+
+function isCopiedReleaseLink(action = '', value = '') {
+  return state.releaseLinkCopiedKey === getReleaseLinkCopyKey(action, value);
+}
+
+function markCopiedReleaseLink(action = '', value = '') {
+  const nextKey = getReleaseLinkCopyKey(action, value);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseLinkCopiedKey = nextKey;
+  if (state.releaseLinkCopiedTimer) {
+    window.clearTimeout(state.releaseLinkCopiedTimer);
+    state.releaseLinkCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseLinkCopiedTimer = window.setTimeout(() => {
+    state.releaseLinkCopiedKey = '';
+    state.releaseLinkCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1149,6 +1183,20 @@ function renderReleaseCommandCopyButton({
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-command" data-ui-label="${escapeHtml(label)}" data-ui-value="${escapeHtml(command)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseLinkCopyButton({
+  action = 'copy-release-triage-link',
+  actionLabel = 'release 링크 복사',
+  attributes = '',
+  buttonText = '링크 복사',
+  className = 'ghost-button',
+  value = '',
+} = {}) {
+  const copied = isCopiedReleaseLink(action, value);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(value)}" data-ui-value="${escapeHtml(value)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -8396,12 +8444,17 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-triage-link') {
-        void copyReleaseTriageLink();
+        void copyReleaseTriageLink({
+          copyAction: action,
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-history-link') {
         void copyReleaseTriageLink({
+          copyAction: action,
+          copyKey: button.dataset.uiCopyKey || '',
           focusedBlockerId: '',
           focusedProductionBlockerIndex: '',
           focusedProvider: '',
@@ -8822,6 +8875,8 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-flow-link') {
         void copyReleaseTriageLink({
+          copyAction: action,
+          copyKey: button.dataset.uiCopyKey || '',
           focusedBlockerId: '',
           focusedProductionBlockerIndex: '',
           focusedProvider: '',
@@ -8836,6 +8891,8 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-provider-link') {
         void copyReleaseTriageLink({
+          copyAction: action,
+          copyKey: button.dataset.uiCopyKey || '',
           focusedBlockerId: '',
           focusedProductionBlockerIndex: '',
           focusedProvider: button.dataset.uiProvider || value || '',
@@ -9612,6 +9669,8 @@ async function copyReleaseTriageLink({
   blockerCategory = state.releaseBlockerCategoryFilter,
   blockerOwner = state.releaseBlockerOwnerFilter,
   blockerProvider = state.releaseBlockerProviderFilter,
+  copyAction = 'copy-release-triage-link',
+  copyKey = '',
   focusedBlockerId = state.releaseFocusedBlockerId,
   focusedProductionBlockerIndex = state.releaseFocusedProductionBlockerIndex,
   focusedProvider = state.releaseFocusedProvider,
@@ -9634,11 +9693,14 @@ async function copyReleaseTriageLink({
     releaseHistoryProvider: historyProvider,
     releaseHistoryScope: historyScope,
   })}`;
-  await copyUiLink(triageUrl, {
+  const result = await copyUiLink(triageUrl, {
     promptMessage: '현재 release triage 링크를 복사하세요.',
     shownNotice: '현재 release triage 링크를 표시했습니다.',
     successNotice,
   });
+  if (result.method !== 'unavailable') {
+    markCopiedReleaseLink(copyAction, copyKey || triageUrl);
+  }
 }
 
 async function copyReleaseBlockerLink({
@@ -15152,14 +15214,12 @@ function renderReleaseStatus() {
                                     aria-label="${escapeHtml(`최근 기록 보기: ${latestActionTargetLabel}`)}"
                                     title="${escapeHtml(`최근 기록 보기: ${latestActionTargetLabel}`)}"
                                   >최근 기록 보기</button>
-                                  <button
-                                    class="ghost-button"
-                                    type="button"
-                                    data-ui-action="copy-release-history-link"
-                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
-                                    aria-label="${escapeHtml(`기록 링크 복사: ${latestActionTargetLabel}`)}"
-                                    title="${escapeHtml(`기록 링크 복사: ${latestActionTargetLabel}`)}"
-                                  >기록 링크 복사</button>
+                                  ${renderReleaseLinkCopyButton({
+                                    action: 'copy-release-history-link',
+                                    actionLabel: `기록 링크 복사: ${latestActionTargetLabel}`,
+                                    buttonText: '기록 링크 복사',
+                                    value: latestAction.id || '',
+                                  })}
                                   ${latestAttentionAction && latestAttentionAction.id !== latestAction.id
                                     ? `
                                         <button
@@ -15171,14 +15231,12 @@ function renderReleaseStatus() {
                                           aria-label="${escapeHtml(`최근 문제 보기: ${latestAttentionActionTargetLabel}`)}"
                                           title="${escapeHtml(`최근 문제 보기: ${latestAttentionActionTargetLabel}`)}"
                                         >최근 문제 보기</button>
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="copy-release-history-link"
-                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
-                                          aria-label="${escapeHtml(`문제 기록 링크 복사: ${latestAttentionActionTargetLabel}`)}"
-                                          title="${escapeHtml(`문제 기록 링크 복사: ${latestAttentionActionTargetLabel}`)}"
-                                        >문제 기록 링크 복사</button>
+                                        ${renderReleaseLinkCopyButton({
+                                          action: 'copy-release-history-link',
+                                          actionLabel: `문제 기록 링크 복사: ${latestAttentionActionTargetLabel}`,
+                                          buttonText: '문제 기록 링크 복사',
+                                          value: latestAttentionAction.id || '',
+                                        })}
                                       `
                                     : ''}
                                   <button
@@ -15194,17 +15252,13 @@ function renderReleaseStatus() {
                                     title="${escapeHtml(sameFlowActive ? `현재 flow: ${latestActionTargetLabel}` : `같은 flow 보기: ${latestActionTargetLabel}`)}"
                                     ${sameFlowActive ? 'disabled' : ''}
                                   >${sameFlowActive ? '현재 flow' : '같은 flow 보기'}</button>
-                                  <button
-                                    class="ghost-button"
-                                    type="button"
-                                    data-ui-action="copy-release-flow-link"
-                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
-                                    data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}"
-                                    data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
-                                    data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
-                                    aria-label="${escapeHtml(`flow 링크 복사: ${latestActionTargetLabel}`)}"
-                                    title="${escapeHtml(`flow 링크 복사: ${latestActionTargetLabel}`)}"
-                                  >flow 링크 복사</button>
+                                  ${renderReleaseLinkCopyButton({
+                                    action: 'copy-release-flow-link',
+                                    actionLabel: `flow 링크 복사: ${latestActionTargetLabel}`,
+                                    attributes: `data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"`,
+                                    buttonText: 'flow 링크 복사',
+                                    value: latestAction.id || '',
+                                  })}
                                   ${latestAttentionAction
                                     ? `
                                         <button
@@ -15220,17 +15274,13 @@ function renderReleaseStatus() {
                                           title="${escapeHtml(attentionFlowActive ? `현재 문제 흐름: ${latestAttentionActionTargetLabel}` : `같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}`)}"
                                           ${attentionFlowActive ? 'disabled' : ''}
                                         >${attentionFlowActive ? '현재 문제 흐름' : '같은 문제 흐름 보기'}</button>
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="copy-release-flow-link"
-                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
-                                          data-ui-outcome="attention"
-                                          data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}"
-                                          data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"
-                                          aria-label="${escapeHtml(`문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}`)}"
-                                          title="${escapeHtml(`문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}`)}"
-                                        >문제 흐름 링크 복사</button>
+                                        ${renderReleaseLinkCopyButton({
+                                          action: 'copy-release-flow-link',
+                                          actionLabel: `문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}`,
+                                          attributes: `data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"`,
+                                          buttonText: '문제 흐름 링크 복사',
+                                          value: latestAttentionAction.id || '',
+                                        })}
                                       `
                                     : ''}
                                   ${recommendationCommand
@@ -15255,14 +15305,13 @@ function renderReleaseStatus() {
                                           title="${escapeHtml(recommendationProviderFocusLabel)}"
                                           ${sameProviderFocused ? 'disabled' : ''}
                                         >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="copy-release-provider-link"
-                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
-                                          aria-label="${escapeHtml(`provider 링크 복사: ${recommendationProviderActionLabel}`)}"
-                                          title="${escapeHtml(`provider 링크 복사: ${recommendationProviderActionLabel}`)}"
-                                        >provider 링크 복사</button>
+                                        ${renderReleaseLinkCopyButton({
+                                          action: 'copy-release-provider-link',
+                                          actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
+                                          attributes: `data-ui-provider="${escapeHtml(recommendationProviderId)}"`,
+                                          buttonText: 'provider 링크 복사',
+                                          value: recommendationProviderId,
+                                        })}
                                       `
                                     : ''}
                                 </div>
@@ -15300,14 +15349,13 @@ function renderReleaseStatus() {
                                           title="${escapeHtml(recommendationProviderFocusLabel)}"
                                           ${sameProviderFocused ? 'disabled' : ''}
                                         >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="copy-release-provider-link"
-                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
-                                          aria-label="${escapeHtml(`provider 링크 복사: ${recommendationProviderActionLabel}`)}"
-                                          title="${escapeHtml(`provider 링크 복사: ${recommendationProviderActionLabel}`)}"
-                                        >provider 링크 복사</button>
+                                        ${renderReleaseLinkCopyButton({
+                                          action: 'copy-release-provider-link',
+                                          actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
+                                          attributes: `data-ui-provider="${escapeHtml(recommendationProviderId)}"`,
+                                          buttonText: 'provider 링크 복사',
+                                          value: recommendationProviderId,
+                                        })}
                                       `
                                     : ''}
                                 </div>
@@ -15338,14 +15386,13 @@ function renderReleaseStatus() {
                                               title="${escapeHtml(recommendationProviderFocusLabel)}"
                                               ${sameProviderFocused ? 'disabled' : ''}
                                             >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
-                                            <button
-                                              class="ghost-button"
-                                              type="button"
-                                              data-ui-action="copy-release-provider-link"
-                                              data-ui-provider="${escapeHtml(recommendationProviderId)}"
-                                              aria-label="${escapeHtml(`provider 링크 복사: ${recommendationProviderActionLabel}`)}"
-                                              title="${escapeHtml(`provider 링크 복사: ${recommendationProviderActionLabel}`)}"
-                                            >provider 링크 복사</button>
+                                            ${renderReleaseLinkCopyButton({
+                                              action: 'copy-release-provider-link',
+                                              actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
+                                              attributes: `data-ui-provider="${escapeHtml(recommendationProviderId)}"`,
+                                              buttonText: 'provider 링크 복사',
+                                              value: recommendationProviderId,
+                                            })}
                                           `
                                         : ''}
                                     </div>
@@ -16470,7 +16517,11 @@ function renderReleaseStatus() {
                       <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
                       <div class="release-history-focus-actions">
                         <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus" aria-label="${escapeHtml(`release history 포커스 해제: ${focusedHistoryId}`)}" title="${escapeHtml(`release history 포커스 해제: ${focusedHistoryId}`)}">포커스 해제</button>
-                        <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link" aria-label="${escapeHtml(`현재 triage 링크 복사: focused release history ${focusedHistoryId}`)}" title="${escapeHtml(`현재 triage 링크 복사: focused release history ${focusedHistoryId}`)}">현재 triage 링크 복사</button>
+                        ${renderReleaseLinkCopyButton({
+                          actionLabel: `현재 triage 링크 복사: focused release history ${focusedHistoryId}`,
+                          buttonText: '현재 triage 링크 복사',
+                          value: `focused-history:${focusedHistoryId}`,
+                        })}
                         ${historyFilterOutcome || historyFilterScope || historyFilterProvider
                           ? `<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter" aria-label="${escapeHtml(`release history 필터 해제: ${releaseActionLabel}`)}" title="${escapeHtml(`release history 필터 해제: ${releaseActionLabel}`)}">필터 해제</button>`
                           : ''}
@@ -16548,25 +16599,19 @@ function renderReleaseStatus() {
                           ? `
                               <div class="release-history-detail">
                                 <div class="release-history-filter-actions">
-                                  <button
-                                    class="ghost-button"
-                                      type="button"
-                                      data-ui-action="copy-release-history-link"
-                                      data-ui-value="${escapeHtml(itemId)}"
-                                      aria-label="${escapeHtml(`release history 링크 복사: ${historyActionLabel}`)}"
-                                      title="${escapeHtml(`release history 링크 복사: ${historyActionLabel}`)}"
-                                    >이 기록 링크 복사</button>
-                                  <button
-                                    class="ghost-button"
-                                    type="button"
-                                    data-ui-action="copy-release-flow-link"
-                                    data-ui-value="${escapeHtml(itemId)}"
-                                      data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(item.outcome) ? 'attention' : '')}"
-                                      data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
-                                      data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
-                                      aria-label="${escapeHtml(`release flow 링크 복사: ${historyActionLabel}`)}"
-                                      title="${escapeHtml(`release flow 링크 복사: ${historyActionLabel}`)}"
-                                    >이 flow 링크 복사</button>
+                                  ${renderReleaseLinkCopyButton({
+                                    action: 'copy-release-history-link',
+                                    actionLabel: `release history 링크 복사: ${historyActionLabel}`,
+                                    buttonText: '이 기록 링크 복사',
+                                    value: itemId,
+                                  })}
+                                  ${renderReleaseLinkCopyButton({
+                                    action: 'copy-release-flow-link',
+                                    actionLabel: `release flow 링크 복사: ${historyActionLabel}`,
+                                    attributes: `data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(item.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(item.scope || '').trim())}" data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"`,
+                                    buttonText: '이 flow 링크 복사',
+                                    value: itemId,
+                                  })}
                                   <button
                                     class="ghost-button"
                                       type="button"
@@ -16733,7 +16778,13 @@ function renderReleaseStatus() {
                             <button class="ghost-button" type="button" data-ui-action="focus-release-history" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || '').trim())}" aria-pressed="${String(focusedProviderLatestAction.id || '').trim() === focusedHistoryId ? 'true' : 'false'}" aria-label="${escapeHtml(`최근 provider 기록 보기: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`)}" title="${escapeHtml(`최근 provider 기록 보기: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`)}">최근 provider 기록 보기</button>
                             <button class="ghost-button" type="button" data-ui-action="filter-release-history-provider" data-ui-provider="${escapeHtml(focusedProvider)}" aria-pressed="${historyFilterProvider === focusedProvider ? 'true' : 'false'}" aria-label="${escapeHtml(`같은 provider 기록만 보기: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`같은 provider 기록만 보기: ${focusedProviderActionLabel}`)}">같은 provider 기록만 보기</button>
                             <button class="ghost-button" type="button" data-ui-action="focus-release-flow" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || '').trim())}" data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(focusedProviderLatestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(focusedProviderLatestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAction.provider || '').trim())}" aria-pressed="${focusedProviderFlowActive ? 'true' : 'false'}" aria-disabled="${focusedProviderFlowActive ? 'true' : 'false'}" aria-label="${escapeHtml(focusedProviderFlowActive ? `현재 provider flow: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}` : `같은 provider flow 보기: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`)}" title="${escapeHtml(focusedProviderFlowActive ? `현재 provider flow: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}` : `같은 provider flow 보기: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`)}" ${focusedProviderFlowActive ? 'disabled' : ''}>${focusedProviderFlowActive ? '현재 provider flow' : '같은 provider flow 보기'}</button>
-                            <button class="ghost-button" type="button" data-ui-action="copy-release-flow-link" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || '').trim())}" data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(focusedProviderLatestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(focusedProviderLatestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAction.provider || '').trim())}" aria-label="${escapeHtml(`provider flow 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`)}" title="${escapeHtml(`provider flow 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`)}">provider flow 링크 복사</button>
+                            ${renderReleaseLinkCopyButton({
+                              action: 'copy-release-flow-link',
+                              actionLabel: `provider flow 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`,
+                              attributes: `data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(focusedProviderLatestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(focusedProviderLatestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAction.provider || '').trim())}"`,
+                              buttonText: 'provider flow 링크 복사',
+                              value: String(focusedProviderLatestAction.id || '').trim(),
+                            })}
                           `
                         : ''}
                       ${focusedProviderLatestAttentionAction
@@ -16741,12 +16792,28 @@ function renderReleaseStatus() {
                             <button class="ghost-button" type="button" data-ui-action="focus-release-history" data-ui-value="${escapeHtml(String(focusedProviderLatestAttentionAction.id || '').trim())}" aria-pressed="${String(focusedProviderLatestAttentionAction.id || '').trim() === focusedHistoryId ? 'true' : 'false'}" aria-label="${escapeHtml(`최근 provider 문제 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`)}" title="${escapeHtml(`최근 provider 문제 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`)}">최근 provider 문제 보기</button>
                             <button class="ghost-button" type="button" data-ui-action="filter-release-history-attention" data-ui-outcome="attention" aria-pressed="${historyFilterOutcome === 'attention' ? 'true' : 'false'}" aria-label="${escapeHtml(`주의 상태만 보기: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`주의 상태만 보기: ${focusedProviderActionLabel}`)}">주의 상태만</button>
                             <button class="ghost-button" type="button" data-ui-action="focus-release-flow" data-ui-value="${escapeHtml(String(focusedProviderLatestAttentionAction.id || '').trim())}" data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(focusedProviderLatestAttentionAction.scope || focusedProviderLatestAction?.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAttentionAction.provider || focusedProviderLatestAction?.provider || '').trim())}" aria-pressed="${focusedProviderAttentionFlowActive ? 'true' : 'false'}" aria-disabled="${focusedProviderAttentionFlowActive ? 'true' : 'false'}" aria-label="${escapeHtml(focusedProviderAttentionFlowActive ? `현재 provider 문제 흐름: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}` : `같은 provider 문제 흐름 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`)}" title="${escapeHtml(focusedProviderAttentionFlowActive ? `현재 provider 문제 흐름: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}` : `같은 provider 문제 흐름 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`)}" ${focusedProviderAttentionFlowActive ? 'disabled' : ''}>${focusedProviderAttentionFlowActive ? '현재 provider 문제 흐름' : '같은 provider 문제 흐름 보기'}</button>
-                            <button class="ghost-button" type="button" data-ui-action="copy-release-flow-link" data-ui-value="${escapeHtml(String(focusedProviderLatestAttentionAction.id || '').trim())}" data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(focusedProviderLatestAttentionAction.scope || focusedProviderLatestAction?.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAttentionAction.provider || focusedProviderLatestAction?.provider || '').trim())}" aria-label="${escapeHtml(`provider 문제 흐름 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`)}" title="${escapeHtml(`provider 문제 흐름 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`)}">provider 문제 흐름 링크 복사</button>
+                            ${renderReleaseLinkCopyButton({
+                              action: 'copy-release-flow-link',
+                              actionLabel: `provider 문제 흐름 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`,
+                              attributes: `data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(focusedProviderLatestAttentionAction.scope || focusedProviderLatestAction?.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAttentionAction.provider || focusedProviderLatestAction?.provider || '').trim())}"`,
+                              buttonText: 'provider 문제 흐름 링크 복사',
+                              value: String(focusedProviderLatestAttentionAction.id || '').trim(),
+                            })}
                           `
                         : ''}
                       <button class="ghost-button" type="button" data-ui-action="clear-release-provider-focus" aria-label="${escapeHtml(`provider 포커스 해제: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider 포커스 해제: ${focusedProviderActionLabel}`)}">provider 포커스 해제</button>
-                      <button class="ghost-button" type="button" data-ui-action="copy-release-provider-link" data-ui-provider="${escapeHtml(focusedProvider)}" aria-label="${escapeHtml(`provider 링크 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider 링크 복사: ${focusedProviderActionLabel}`)}">provider 링크 복사</button>
-                      <button class="ghost-button" type="button" data-ui-action="copy-release-triage-link" aria-label="${escapeHtml(`현재 triage 링크 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`현재 triage 링크 복사: ${focusedProviderActionLabel}`)}">현재 triage 링크 복사</button>
+                      ${renderReleaseLinkCopyButton({
+                        action: 'copy-release-provider-link',
+                        actionLabel: `provider 링크 복사: ${focusedProviderActionLabel}`,
+                        attributes: `data-ui-provider="${escapeHtml(focusedProvider)}"`,
+                        buttonText: 'provider 링크 복사',
+                        value: focusedProvider,
+                      })}
+                      ${renderReleaseLinkCopyButton({
+                        actionLabel: `현재 triage 링크 복사: ${focusedProviderActionLabel}`,
+                        buttonText: '현재 triage 링크 복사',
+                        value: `focused-provider:${focusedProvider}`,
+                      })}
                     </div>
                   </div>
                 `
@@ -16902,14 +16969,13 @@ function renderReleaseStatus() {
                           aria-label="${escapeHtml(providerFocusButtonLabel)}"
                           title="${escapeHtml(providerFocusButtonLabel)}"
                         >${escapeHtml(isFocusedProvider ? 'provider 포커스 해제' : '이 provider 카드 보기')}</button>
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-ui-action="copy-release-provider-link"
-                          data-ui-provider="${escapeHtml(item.provider)}"
-                          aria-label="${escapeHtml(`provider 링크 복사: ${providerActionLabel}`)}"
-                          title="${escapeHtml(`provider 링크 복사: ${providerActionLabel}`)}"
-                        >provider 링크 복사</button>
+                        ${renderReleaseLinkCopyButton({
+                          action: 'copy-release-provider-link',
+                          actionLabel: `provider 링크 복사: ${providerActionLabel}`,
+                          attributes: `data-ui-provider="${escapeHtml(item.provider)}"`,
+                          buttonText: 'provider 링크 복사',
+                          value: item.provider,
+                        })}
                         ${liveConfirmArmed
                           ? `
                               <button
