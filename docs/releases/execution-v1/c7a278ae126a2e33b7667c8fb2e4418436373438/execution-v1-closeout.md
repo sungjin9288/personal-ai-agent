@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-08T07:32:47.221Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-08T07:32:38.964Z
 - branch: codex/release-handoff-copy-pressed-metadata
 - commit: c7a278ae126a2e33b7667c8fb2e4418436373438
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c7a278ae126a2e33b7667c8fb2e4418436373438/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
