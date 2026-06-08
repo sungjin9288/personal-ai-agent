@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T10:58:30.594Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T10:58:12.763Z
 - branch: codex/release-snapshot-disabled-metadata
 - commit: c49391623b61bc0b81a8d967142aeacaa99f1775
