@@ -16358,6 +16358,7 @@ function renderReleaseStatus() {
                           type="button"
                           data-release-production-blocker-toggle="${productionBlockersExpanded ? 'collapse' : 'expand'}"
                           data-ui-action="toggle-release-production-blockers"
+                          aria-expanded="${productionBlockersExpanded ? 'true' : 'false'}"
                           aria-label="${escapeHtml(`production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`)}"
                           title="${escapeHtml(`production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`)}"
                         >${productionBlockersExpanded ? '8개만 보기' : '전체 보기'}</button>
@@ -16443,6 +16444,7 @@ function renderReleaseStatus() {
                                 type="button"
                                 data-ui-action="toggle-release-history"
                                 data-ui-value="${escapeHtml(itemId)}"
+                                aria-expanded="${isExpanded ? 'true' : 'false'}"
                                 aria-label="${escapeHtml(`release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`)}"
                                 title="${escapeHtml(`release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`)}"
                               >${isExpanded ? '상세 닫기' : '상세 보기'}</button>
