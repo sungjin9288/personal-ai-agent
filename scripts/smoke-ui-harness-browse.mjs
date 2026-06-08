@@ -292,7 +292,9 @@ try {
   assert.equal(appJs.includes('aria-pressed="${sameFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${attentionFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${focusedProviderFlowActive ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-disabled="${focusedProviderFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${focusedProviderAttentionFlowActive ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-disabled="${focusedProviderAttentionFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${historyFilterOutcome === \'attention\' ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${historyFilterScope === String(item.scope || \'\').trim() ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${historyFilterProvider === String(item.provider || \'\').trim() ? \'true\' : \'false\'}"'), true);

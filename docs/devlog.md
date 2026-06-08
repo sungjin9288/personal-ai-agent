@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Provider Flow Disabled Metadata
+
+- added aria-disabled metadata to focused provider flow and provider attention flow controls
+- kept native disabled behavior, aria-pressed state, flow routing, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for provider flow disabled-state contracts
+
 ## 2026-06-08 Memory Browse Disabled Metadata
 
 - added aria-disabled metadata to memory browse reset, previous page, and next page controls
