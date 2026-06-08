@@ -301,6 +301,9 @@ try {
   assert.equal(appJs.includes('aria-pressed="${blockerOwnerFilter === owner ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${blockerProviderFilter === provider ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${blockerIncludeSharedProviderOperations ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${blockerCategoryFilter ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${blockerOwnerFilter ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${blockerProviderFilter ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('loadProviderEvents'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-audit'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-policy-filter'), true);
