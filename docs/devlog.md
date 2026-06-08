@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release History Filter Pressed Metadata
+
+- added aria-pressed metadata to release history attention, scope, and provider filter buttons
+- kept release history filter routing, provider focus callout filter actions, filter clear behavior, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for release history filter pressed-state contracts
+
 ## 2026-06-08 Release Flow Pressed Metadata
 
 - added aria-pressed metadata to release recommendation flow buttons and provider-scoped flow buttons

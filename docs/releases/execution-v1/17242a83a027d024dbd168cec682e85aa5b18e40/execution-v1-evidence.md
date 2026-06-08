@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T05:40:48.133Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T05:40:30.483Z
 - branch: codex/release-history-filter-pressed-metadata
 - commit: 17242a83a027d024dbd168cec682e85aa5b18e40

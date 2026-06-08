@@ -293,6 +293,10 @@ try {
   assert.equal(appJs.includes('aria-pressed="${attentionFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${focusedProviderFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${focusedProviderAttentionFlowActive ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${historyFilterOutcome === \'attention\' ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${historyFilterScope === String(item.scope || \'\').trim() ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${historyFilterProvider === String(item.provider || \'\').trim() ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${historyFilterProvider === focusedProvider ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('loadProviderEvents'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-audit'), true);
   assert.equal(appJs.includes('data-provider-fallback-event-policy-filter'), true);
