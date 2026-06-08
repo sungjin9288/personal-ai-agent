@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-08T08:43:28.793Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-08T08:43:27.403Z
 - localDate: 2026-06-08
 - branch: codex/provider-live-disabled-metadata
 - commit: 51c4a562acf2eb38c1016ab35f2088dbc2cda824
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/51c4a562acf2eb38c1016ab35f2088dbc2cda824](releases/execution-v1/51c4a562acf2eb38c1016ab35f2088dbc2cda824)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/51c4a562acf2eb38c1016ab35f2088dbc2cda824/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/51c4a562acf2eb38c1016ab35f2088dbc2cda824/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/51c4a562acf2eb38c1016ab35f2088dbc2cda824](docs/releases/execution-v1/51c4a562acf2eb38c1016ab35f2088dbc2cda824)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-live-disabled-metadata not found
 
