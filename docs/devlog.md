@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Handoff Preview Expanded Metadata
+
+- added aria-expanded metadata to release handoff preview toggle buttons so the active inline preview state is exposed beyond card styling
+- kept release handoff preview open/close routing, deep-link copy actions, loading retry state, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for the handoff preview expanded-state contract
+
 ## 2026-06-08 Timeline Selector Pressed Metadata
 
 - added aria-pressed metadata and selected-state label copy to session-backed timeline event buttons

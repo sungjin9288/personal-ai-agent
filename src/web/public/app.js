@@ -17107,6 +17107,7 @@ function renderReleaseStatus() {
                                         data-release-handoff-preview-trigger="${escapeHtml(item.id || '')}"
                                         data-ui-action="toggle-release-handoff-preview"
                                         data-ui-value="${escapeHtml(item.id || '')}"
+                                        aria-expanded="${previewActive ? 'true' : 'false'}"
                                         aria-label="${escapeHtml(`${previewButtonLabel}: ${handoffActionTargetLabel}`)}"
                                         title="${escapeHtml(`${previewButtonLabel}: ${handoffActionTargetLabel}`)}"
                                         ${previewActive && handoffPreviewStatus === 'loading' ? 'disabled' : ''}
