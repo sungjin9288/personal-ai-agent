@@ -16116,6 +16116,7 @@ function renderReleaseStatus() {
                             type="button"
                             data-ui-action="focus-release-blocker"
                             data-ui-blocker="${escapeHtml(actionId)}"
+                            aria-pressed="${isFocusedBlocker ? 'true' : 'false'}"
                             aria-label="${escapeHtml(`${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`)}"
                             title="${escapeHtml(`${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`)}"
                             ${isFocusedBlocker ? 'disabled' : ''}
@@ -16277,6 +16278,7 @@ function renderReleaseStatus() {
                             type="button"
                             data-ui-action="focus-release-production-blocker"
                             data-ui-index="${escapeHtml(String(index))}"
+                            aria-pressed="${isFocusedProductionBlocker ? 'true' : 'false'}"
                             aria-label="${escapeHtml(`${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`)}"
                             title="${escapeHtml(`${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`)}"
                             ${isFocusedProductionBlocker ? 'disabled' : ''}
@@ -16631,7 +16633,7 @@ function renderReleaseStatus() {
                         : ''}
                       ${focusedProviderTopBlocker
                         ? `
-                            <button class="ghost-button" type="button" data-ui-action="focus-release-blocker" data-ui-blocker="${escapeHtml(focusedProviderTopBlockerId)}" data-ui-provider="${escapeHtml(focusedProvider)}" aria-label="${escapeHtml(`provider blocker 보기: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider blocker 보기: ${focusedProviderActionLabel}`)}">provider blocker 보기</button>
+                            <button class="ghost-button" type="button" data-ui-action="focus-release-blocker" data-ui-blocker="${escapeHtml(focusedProviderTopBlockerId)}" data-ui-provider="${escapeHtml(focusedProvider)}" aria-pressed="${focusedProviderTopBlockerId === focusedBlockerId ? 'true' : 'false'}" aria-label="${escapeHtml(`provider blocker 보기: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider blocker 보기: ${focusedProviderActionLabel}`)}">provider blocker 보기</button>
                             <button class="ghost-button" type="button" data-ui-action="copy-release-blocker-package" data-ui-blocker="${escapeHtml(focusedProviderTopBlockerId)}" data-ui-provider="${escapeHtml(focusedProvider)}" data-release-provider-blocker-package="true" aria-label="${escapeHtml(`provider blocker package 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider blocker package 복사: ${focusedProviderActionLabel}`)}">provider blocker package 복사</button>
                           `
                         : ''}
@@ -16783,6 +16785,7 @@ function renderReleaseStatus() {
                                 data-ui-action="focus-release-blocker"
                                 data-ui-blocker="${escapeHtml(providerTopBlockerId)}"
                                 data-ui-provider="${escapeHtml(item.provider)}"
+                                aria-pressed="${providerTopBlockerId === focusedBlockerId ? 'true' : 'false'}"
                                 aria-label="${escapeHtml(`provider blocker 보기: ${providerActionLabel}`)}"
                                 title="${escapeHtml(`provider blocker 보기: ${providerActionLabel}`)}"
                               >provider blocker 보기</button>

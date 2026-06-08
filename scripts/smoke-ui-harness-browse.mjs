@@ -2148,6 +2148,9 @@ try {
   assert.equal(appJs.includes('focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}'), true);
   assert.equal(appJs.includes("const blockerActionLabel = `${actionId || 'blocker'} · ${item.blocker || item.stopReason || 'current open blocker'}`"), true);
   assert.equal(appJs.includes("${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}"), true);
+  assert.equal(appJs.includes('aria-pressed="${isFocusedBlocker ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${focusedProviderTopBlockerId === focusedBlockerId ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${providerTopBlockerId === focusedBlockerId ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('blocker handoff 복사: ${blockerActionLabel}'), true);
   assert.equal(appJs.includes('blocker closure 체크리스트 복사: ${blockerActionLabel}'), true);
   assert.equal(appJs.includes('blocker package 복사: ${blockerActionLabel}'), true);
@@ -2184,6 +2187,7 @@ try {
   assert.equal(appJs.includes('focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}'), true);
   assert.equal(appJs.includes("const productionBlockerRowActionLabel = `production blocker #${index + 1} · ${item || 'production-ready blocker'}`"), true);
   assert.equal(appJs.includes("${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}"), true);
+  assert.equal(appJs.includes('aria-pressed="${isFocusedProductionBlocker ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('production blocker 링크 복사: ${productionBlockerRowActionLabel}'), true);
   assert.equal(appJs.includes('production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${productionBlockerRowActionLabel}'), true);
   assert.equal(appJs.includes('production blocker 검증 명령 복사: ${productionBlockerRowActionLabel}'), true);

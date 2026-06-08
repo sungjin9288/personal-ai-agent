@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Blocker Focus Pressed Metadata
+
+- added aria-pressed metadata to current open blocker, production blocker, and provider-scoped blocker focus buttons
+- kept blocker focus routing, disabled current-blocker behavior, provider blocker shortcuts, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for release blocker focus pressed-state contracts
+
 ## 2026-06-08 Release History Filter Pressed Metadata
 
 - added aria-pressed metadata to release history attention, scope, and provider filter buttons
