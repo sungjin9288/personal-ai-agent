@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T04:56:33.863Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T04:56:22.034Z
 - branch: codex/release-provider-focus-pressed-metadata
 - commit: 29aaf82994d52834db1ee69002c5bdacd1154712

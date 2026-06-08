@@ -1785,6 +1785,7 @@ try {
   assert.equal(appJs.includes('${recommendationCommand.buttonLabel}: ${recommendationCommand.label}'), true);
   assert.equal(appJs.includes('현재 provider 카드: ${recommendationProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider 카드 보기: ${recommendationProviderActionLabel}'), true);
+  assert.equal(appJs.includes('aria-pressed="${sameProviderFocused ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('provider 링크 복사: ${recommendationProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider preflight 실행: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider preflight 명령 복사: ${focusedProviderActionLabel}'), true);
@@ -1806,6 +1807,7 @@ try {
   assert.equal(appJs.includes('같은 provider 문제 흐름 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}'), true);
   assert.equal(appJs.includes('provider 문제 흐름 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}'), true);
   assert.equal(appJs.includes('provider 포커스 해제: ${focusedProviderActionLabel}'), true);
+  assert.equal(appJs.includes('aria-pressed="${isFocusedProvider ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('provider 링크 복사: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('현재 triage 링크 복사: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('productionBlockerActionLabel'), true);

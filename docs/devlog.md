@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Provider Focus Pressed Metadata
+
+- added aria-pressed metadata to release recommendation provider focus buttons and provider card focus toggles
+- kept provider focus routing, provider card disabled current-state behavior, release history filters, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for release provider focus pressed-state contracts
+
 ## 2026-06-08 Release Toggle Expanded Metadata
 
 - added aria-expanded metadata to production blocker list and release history detail toggle buttons
