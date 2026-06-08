@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-09 Release Link Copy Pressed Metadata
+
+- consolidated release triage, history, flow, and provider link copy controls behind a shared copied-state renderer
+- added aria-pressed metadata and copied-state styling to release link copy buttons
+- kept release URL generation, filter/focus routing, provider spotlight routing, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release link copy-state contracts
+
 ## 2026-06-08 Release Command Copy Pressed Metadata
 
 - consolidated release command copy controls behind a shared copied-state renderer
