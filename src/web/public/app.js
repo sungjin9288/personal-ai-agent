@@ -17056,6 +17056,7 @@ function renderReleaseStatus() {
                                                           data-ui-detail-key="${escapeHtml(detail.key || '')}"
                                                           data-ui-success-notice="${escapeHtml(`${item.label || 'handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`)}"
                                                           data-ui-value="${escapeHtml(item.id || '')}"
+                                                          aria-pressed="${isCopiedReleaseHandoffSummaryDetail(item.id, detail.key) ? 'true' : 'false'}"
                                                           aria-label="${escapeHtml(`handoff summary line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'}`)}"
                                                           title="${escapeHtml(`handoff summary line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'}`)}"
                                                         >${escapeHtml(isCopiedReleaseHandoffSummaryDetail(item.id, detail.key) ? '복사됨' : 'line 복사')}</button>
@@ -17079,6 +17080,7 @@ function renderReleaseStatus() {
                                                                         data-ui-line-index="${escapeHtml(String(lineIndex))}"
                                                                         data-ui-success-notice="${escapeHtml(`${item.label || 'handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`)}"
                                                                         data-ui-value="${escapeHtml(item.id || '')}"
+                                                                        aria-pressed="${isCopiedReleaseHandoffSummaryStableLine(item.id, detail.key, lineIndex) ? 'true' : 'false'}"
                                                                         aria-label="${escapeHtml(`handoff summary stable line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
                                                                         title="${escapeHtml(`handoff summary stable line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
                                                                       >${escapeHtml(isCopiedReleaseHandoffSummaryStableLine(item.id, detail.key, lineIndex) ? '복사됨' : 'stable line 복사')}</button>
@@ -17109,6 +17111,7 @@ function renderReleaseStatus() {
                                                 data-ui-action="copy-release-handoff-structured-summary"
                                                 data-ui-success-notice="${escapeHtml(`${item.label || 'handoff summary'} overview line을 복사했습니다.`)}"
                                                 data-ui-value="${escapeHtml(item.id || '')}"
+                                                aria-pressed="${structuredSummaryCopied ? 'true' : 'false'}"
                                                 aria-label="${escapeHtml(`handoff summary overview 복사: ${handoffActionTargetLabel}`)}"
                                                 title="${escapeHtml(`handoff summary overview 복사: ${handoffActionTargetLabel}`)}"
                                               >${escapeHtml(structuredSummaryCopied ? '복사됨' : 'overview 복사')}</button>
@@ -17146,6 +17149,7 @@ function renderReleaseStatus() {
                                         data-ui-action="copy-release-handoff-preview-link"
                                         data-ui-success-notice="${escapeHtml(`${item.label || 'handoff preview'} 링크를 복사했습니다.`)}"
                                         data-ui-value="${escapeHtml(item.id || '')}"
+                                        aria-pressed="${previewLinkCopied ? 'true' : 'false'}"
                                         aria-label="${escapeHtml(`handoff preview 링크 복사: ${handoffActionTargetLabel}`)}"
                                         title="${escapeHtml(`handoff preview 링크 복사: ${handoffActionTargetLabel}`)}"
                                       >${escapeHtml(previewLinkCopied ? '복사됨' : '링크')}</button>
@@ -17162,6 +17166,7 @@ function renderReleaseStatus() {
                                               data-ui-action="copy-release-handoff-open-link"
                                               data-ui-success-notice="${escapeHtml(`${item.label || 'handoff artifact'} 열기 링크를 복사했습니다.`)}"
                                               data-ui-value="${escapeHtml(item.id || '')}"
+                                              aria-pressed="${openLinkCopied ? 'true' : 'false'}"
                                               aria-label="${escapeHtml(`handoff artifact 열기 링크 복사: ${handoffActionTargetLabel}`)}"
                                               title="${escapeHtml(`handoff artifact 열기 링크 복사: ${handoffActionTargetLabel}`)}"
                                             >${escapeHtml(openLinkCopied ? '복사됨' : '링크')}</button>
@@ -17228,6 +17233,7 @@ function renderReleaseStatus() {
                                   data-ui-action="copy-release-handoff-preview-link"
                                   data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff preview'} 링크를 복사했습니다.`)}"
                                   data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
+                                  aria-pressed="${isCopiedReleaseHandoffPreviewLink(handoffPreviewArtifact.id) ? 'true' : 'false'}"
                                   aria-label="${escapeHtml(`현재 handoff preview 링크 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
                                   title="${escapeHtml(`현재 handoff preview 링크 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
                                 >${escapeHtml(
@@ -17275,6 +17281,7 @@ function renderReleaseStatus() {
                                                         data-ui-detail-key="${escapeHtml(detail.key || '')}"
                                                         data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`)}"
                                                         data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
+                                                        aria-pressed="${isCopiedReleaseHandoffSummaryDetail(handoffPreviewArtifact.id, detail.key) ? 'true' : 'false'}"
                                                         aria-label="${escapeHtml(`현재 handoff summary line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'}`)}"
                                                         title="${escapeHtml(`현재 handoff summary line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'}`)}"
                                                       >${escapeHtml(
@@ -17302,6 +17309,7 @@ function renderReleaseStatus() {
                                                                       data-ui-line-index="${escapeHtml(String(lineIndex))}"
                                                                       data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`)}"
                                                                       data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
+                                                                      aria-pressed="${isCopiedReleaseHandoffSummaryStableLine(handoffPreviewArtifact.id, detail.key, lineIndex) ? 'true' : 'false'}"
                                                                       aria-label="${escapeHtml(`현재 handoff summary stable line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
                                                                       title="${escapeHtml(`현재 handoff summary stable line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
                                                                     >${escapeHtml(
@@ -17336,6 +17344,7 @@ function renderReleaseStatus() {
                                               data-ui-action="copy-release-handoff-structured-summary"
                                               data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff summary'} overview line을 복사했습니다.`)}"
                                               data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
+                                              aria-pressed="${isCopiedReleaseHandoffSummary(handoffPreviewArtifact.id) ? 'true' : 'false'}"
                                               aria-label="${escapeHtml(`현재 handoff summary overview 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
                                               title="${escapeHtml(`현재 handoff summary overview 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
                                             >${escapeHtml(
