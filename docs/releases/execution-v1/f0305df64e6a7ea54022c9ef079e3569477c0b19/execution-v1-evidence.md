@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T08:16:08.851Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T08:15:53.073Z
 - branch: codex/document-browse-disabled-metadata
 - commit: f0305df64e6a7ea54022c9ef079e3569477c0b19
