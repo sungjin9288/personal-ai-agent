@@ -1772,6 +1772,7 @@ try {
   assert.equal(appJs.includes('current surface 재생성 취소: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('release snapshot 고정: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('release snapshot 고정 확인: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('aria-disabled="${!snapshotConfirmArmed && !snapshotEligibility.allowed ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('release snapshot 고정 취소: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('aria-pressed="${regenerationConfirmArmed ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${snapshotConfirmArmed ? \'true\' : \'false\'}"'), true);
