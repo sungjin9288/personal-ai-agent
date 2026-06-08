@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T12:07:40.323Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T12:07:26.595Z
 - branch: codex/flow-view-link-copy-pressed-metadata
 - commit: f682529289f687f528b052d1d4b3bf78d1170efb
