@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-08T08:34:45.974Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-08T08:34:44.512Z
 - localDate: 2026-06-08
 - branch: codex/provider-flow-disabled-metadata
 - commit: 2c99a5143a887fac53fe7b984221ebf2c34f946c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2c99a5143a887fac53fe7b984221ebf2c34f946c](releases/execution-v1/2c99a5143a887fac53fe7b984221ebf2c34f946c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2c99a5143a887fac53fe7b984221ebf2c34f946c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2c99a5143a887fac53fe7b984221ebf2c34f946c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2c99a5143a887fac53fe7b984221ebf2c34f946c](docs/releases/execution-v1/2c99a5143a887fac53fe7b984221ebf2c34f946c)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/provider-flow-disabled-metadata not found
 

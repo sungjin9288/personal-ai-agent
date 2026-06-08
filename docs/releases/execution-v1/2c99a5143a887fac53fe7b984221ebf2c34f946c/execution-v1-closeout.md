@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-08T08:34:45.974Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-08T08:34:36.739Z
 - branch: codex/provider-flow-disabled-metadata
 - commit: 2c99a5143a887fac53fe7b984221ebf2c34f946c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2c99a5143a887fac53fe7b984221ebf2c34f946c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

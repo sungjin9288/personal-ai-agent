@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T08:34:45.974Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T08:34:30.938Z
 - branch: codex/provider-flow-disabled-metadata
 - commit: 2c99a5143a887fac53fe7b984221ebf2c34f946c
