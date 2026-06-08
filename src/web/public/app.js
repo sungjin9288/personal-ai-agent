@@ -15160,6 +15160,7 @@ function renderReleaseStatus() {
                                           type="button"
                                           data-ui-action="focus-release-provider"
                                           data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                          aria-pressed="${sameProviderFocused ? 'true' : 'false'}"
                                           aria-label="${escapeHtml(recommendationProviderFocusLabel)}"
                                           title="${escapeHtml(recommendationProviderFocusLabel)}"
                                           ${sameProviderFocused ? 'disabled' : ''}
@@ -15207,6 +15208,7 @@ function renderReleaseStatus() {
                                           type="button"
                                           data-ui-action="focus-release-provider"
                                           data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                          aria-pressed="${sameProviderFocused ? 'true' : 'false'}"
                                           aria-label="${escapeHtml(recommendationProviderFocusLabel)}"
                                           title="${escapeHtml(recommendationProviderFocusLabel)}"
                                           ${sameProviderFocused ? 'disabled' : ''}
@@ -15247,6 +15249,7 @@ function renderReleaseStatus() {
                                               type="button"
                                               data-ui-action="focus-release-provider"
                                               data-ui-provider="${escapeHtml(recommendationProviderId)}"
+                                              aria-pressed="${sameProviderFocused ? 'true' : 'false'}"
                                               aria-label="${escapeHtml(recommendationProviderFocusLabel)}"
                                               title="${escapeHtml(recommendationProviderFocusLabel)}"
                                               ${sameProviderFocused ? 'disabled' : ''}
@@ -16795,6 +16798,7 @@ function renderReleaseStatus() {
                           type="button"
                           data-ui-action="${escapeHtml(isFocusedProvider ? 'clear-release-provider-focus' : 'focus-release-provider')}"
                           data-ui-provider="${escapeHtml(item.provider)}"
+                          aria-pressed="${isFocusedProvider ? 'true' : 'false'}"
                           aria-label="${escapeHtml(providerFocusButtonLabel)}"
                           title="${escapeHtml(providerFocusButtonLabel)}"
                         >${escapeHtml(isFocusedProvider ? 'provider 포커스 해제' : '이 provider 카드 보기')}</button>
