@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Empty Blocker Filter Pressed Metadata
+
+- added aria-pressed metadata to empty blocker filter category-only, owner-only, and provider-only retain buttons
+- kept empty blocker filter recovery routing, retained filter values, clear behavior, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for empty blocker filter pressed-state contracts
+
 ## 2026-06-08 Release Blocker Filter Pressed Metadata
 
 - added aria-pressed metadata to current open blocker category, owner, provider, and shared provider ops filter buttons

@@ -15887,6 +15887,7 @@ function renderReleaseStatus() {
                       data-ui-category="${escapeHtml(blockerCategoryFilter)}"
                       data-ui-owner=""
                       data-ui-provider=""
+                      aria-pressed="${blockerCategoryFilter ? 'true' : 'false'}"
                       aria-label="${escapeHtml(`empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}`)}"
                       title="${escapeHtml(`empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}`)}"
                     >category만 유지</button>
@@ -15898,6 +15899,7 @@ function renderReleaseStatus() {
                       data-ui-category=""
                       data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
                       data-ui-provider=""
+                      aria-pressed="${blockerOwnerFilter ? 'true' : 'false'}"
                       aria-label="${escapeHtml(`empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}`)}"
                       title="${escapeHtml(`empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}`)}"
                     >owner만 유지</button>
@@ -15911,6 +15913,7 @@ function renderReleaseStatus() {
                           data-ui-category=""
                           data-ui-owner=""
                           data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                          aria-pressed="${blockerProviderFilter ? 'true' : 'false'}"
                           aria-label="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
                           title="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
                         >provider만 유지</button>
@@ -15927,6 +15930,7 @@ function renderReleaseStatus() {
                         data-ui-category=""
                         data-ui-owner=""
                         data-ui-provider="${escapeHtml(blockerProviderFilter)}"
+                        aria-pressed="${blockerProviderFilter ? 'true' : 'false'}"
                         aria-label="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
                         title="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
                       >provider만 유지</button>
