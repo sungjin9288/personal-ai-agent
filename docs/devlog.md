@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-08 Release Toggle Expanded Metadata
+
+- added aria-expanded metadata to production blocker list and release history detail toggle buttons
+- kept production blocker overflow routing, release history detail routing, focused history state, and visible Korean copy unchanged
+- extended UI harness browse smoke coverage for release toggle expanded-state contracts
+
 ## 2026-06-08 Release Handoff Preview Expanded Metadata
 
 - added aria-expanded metadata to release handoff preview toggle buttons so the active inline preview state is exposed beyond card styling

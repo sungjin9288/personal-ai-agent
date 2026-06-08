@@ -1766,6 +1766,7 @@ try {
   assert.equal(appJs.includes("const historyActionLabel = `${itemId || 'release action'} · ${getReleaseActionLabel(item.action)} · ${item.outcome || 'unknown'} · ${getReleaseActionScopeLabel(item.scope)}${item.provider ? ` · ${item.provider}` : ''}`"), true);
   assert.equal(appJs.includes('release history 기록 고정: ${historyActionLabel}'), true);
   assert.equal(appJs.includes("release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}"), true);
+  assert.equal(appJs.includes('aria-expanded="${isExpanded ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('release history 링크 복사: ${historyActionLabel}'), true);
   assert.equal(appJs.includes('release flow 링크 복사: ${historyActionLabel}'), true);
   assert.equal(appJs.includes('release history 주의 상태만 보기: ${historyActionLabel}'), true);
@@ -1946,6 +1947,7 @@ try {
   assert.equal(appJs.includes('data-release-production-blocker-overflow'), true);
   assert.equal(appJs.includes('data-release-production-blocker-toggle'), true);
   assert.equal(appJs.includes('toggle-release-production-blockers'), true);
+  assert.equal(appJs.includes('aria-expanded="${productionBlockersExpanded ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('buildReleaseProductionBlockerHandoffText'), true);
   assert.equal(appJs.includes('data-release-production-blocker-row-index'), true);
   assert.equal(appJs.includes('data-release-production-blocker-handoff'), true);
