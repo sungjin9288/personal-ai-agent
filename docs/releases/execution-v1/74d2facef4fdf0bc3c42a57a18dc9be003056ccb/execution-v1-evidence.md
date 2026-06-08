@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-08T11:06:46.077Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-08T11:06:25.800Z
 - branch: codex/execution-approval-disabled-metadata
 - commit: 74d2facef4fdf0bc3c42a57a18dc9be003056ccb
