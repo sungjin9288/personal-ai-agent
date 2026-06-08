@@ -14179,7 +14179,7 @@ function renderHarnessPanel() {
               <option value="48" ${Number(state.harnessMemoryVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
             </select>
           </label>
-          <button class="ghost-button" type="button" data-memory-action="reset-browse" aria-label="${escapeHtml(isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음')}" title="${escapeHtml(isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음')}" ${isMemoryBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
+          <button class="ghost-button" type="button" data-memory-action="reset-browse" aria-disabled="${isMemoryBrowseDirty ? 'false' : 'true'}" aria-label="${escapeHtml(isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음')}" title="${escapeHtml(isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음')}" ${isMemoryBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
         </div>
       </div>
       <div class="harness-list">
@@ -14238,8 +14238,8 @@ function renderHarnessPanel() {
             <strong>${escapeHtml(memoryPageLabel)} · ${escapeHtml(memoryRangeLabel)}</strong>
             <p>남은 메모 ${escapeHtml(String(memoryBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-memory-action="prev-page" aria-label="${escapeHtml(memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" title="${escapeHtml(memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" ${memoryBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(memoryPageSize))}건</button>
-              <button class="ghost-button" type="button" data-memory-action="next-page" aria-label="${escapeHtml(memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" title="${escapeHtml(memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" ${memoryBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(memoryPageSize))}건</button>
+              <button class="ghost-button" type="button" data-memory-action="prev-page" aria-disabled="${memoryBrowse.summary?.hasPrev ? 'false' : 'true'}" aria-label="${escapeHtml(memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" title="${escapeHtml(memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" ${memoryBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(memoryPageSize))}건</button>
+              <button class="ghost-button" type="button" data-memory-action="next-page" aria-disabled="${memoryBrowse.summary?.hasNext ? 'false' : 'true'}" aria-label="${escapeHtml(memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" title="${escapeHtml(memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`)}" ${memoryBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(memoryPageSize))}건</button>
             </div>
           </div>`
         : ''

@@ -1936,6 +1936,7 @@ try {
   assert.equal(appJs.includes('메모 정렬: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 페이지 크기: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('data-memory-action="reset-browse"'), true);
+  assert.equal(appJs.includes('aria-disabled="${isMemoryBrowseDirty ? \'false\' : \'true\'}"'), true);
   assert.equal(appJs.includes('메모리 필터 초기화: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);
   assert.equal(appJs.includes('미션 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}'), true);
@@ -1944,8 +1945,10 @@ try {
   assert.equal(appJs.includes('미션 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}'), true);
   assert.equal(appJs.includes('워크스페이스 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}'), true);
   assert.equal(appJs.includes('data-memory-action="prev-page"'), true);
+  assert.equal(appJs.includes('aria-disabled="${memoryBrowse.summary?.hasPrev ? \'false\' : \'true\'}"'), true);
   assert.equal(appJs.includes('이전 메모리 ${memoryPageSize}건'), true);
   assert.equal(appJs.includes('data-memory-action="next-page"'), true);
+  assert.equal(appJs.includes('aria-disabled="${memoryBrowse.summary?.hasNext ? \'false\' : \'true\'}"'), true);
   assert.equal(appJs.includes('다음 메모리 ${memoryPageSize}건'), true);
   assert.equal(appJs.includes('loadRuntimeRequests'), true);
   assert.equal(appJs.includes('loadRuntimeJobs'), true);
