@@ -1700,6 +1700,7 @@ try {
   assert.equal(appJs.includes('handoff summary stable line 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('handoff summary overview 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('${previewButtonLabel}: ${handoffActionTargetLabel}'), true);
+  assert.equal(appJs.includes('aria-expanded="${previewActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('handoff preview 링크 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('handoff artifact 경로 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('handoff preview 닫기: ${handoffPreviewArtifact.label'), true);
