@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-09 Release Evidence Doc Link Copy Pressed Metadata
+
+- moved release evidence document link copy controls onto the shared release link copied-state renderer
+- added aria-pressed metadata and copied-state styling to release evidence doc link copy buttons
+- kept evidence doc URL generation, production blocker doc routing, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release evidence doc link copy-state contracts
+
 ## 2026-06-09 Release Link Copy Pressed Metadata
 
 - consolidated release triage, history, flow, and provider link copy controls behind a shared copied-state renderer

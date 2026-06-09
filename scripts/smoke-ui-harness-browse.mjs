@@ -454,6 +454,11 @@ try {
   assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || \'\''), true);
   assert.equal(appJs.includes('release flow 링크 복사: ${historyActionLabel}'), true);
   assert.equal(appJs.includes('provider 링크 복사: ${providerActionLabel}'), true);
+  assert.equal(appJs.includes('copyReleaseEvidenceDocLink'), true);
+  assert.equal(appJs.includes('copyAction = \'copy-release-evidence-doc-link\''), true);
+  assert.equal(appJs.includes('action: \'copy-release-evidence-doc-link\''), true);
+  assert.equal(appJs.includes('data-ui-href="${escapeHtml(docHref)}" data-ui-label="${escapeHtml(docLabel)}"'), true);
+  assert.equal(appJs.includes('focused production blocker 근거 링크 복사'), true);
   assert.equal(appJs.includes('OpenAI account ownership proof'), true);
   assert.equal(appJs.includes('billing and quota proof'), true);
   assert.equal(appJs.includes('API key and secret injection proof'), true);
