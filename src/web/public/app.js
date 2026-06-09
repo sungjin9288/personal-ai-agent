@@ -8789,6 +8789,8 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-evidence-doc-link') {
         void copyReleaseEvidenceDocLink({
+          copyAction: action,
+          copyKey: button.dataset.uiCopyKey || button.dataset.uiHref || value || '',
           href: button.dataset.uiHref || value || '',
           label: button.dataset.uiLabel || '',
         });
@@ -11136,6 +11138,8 @@ async function copyReleaseBlockerProviderOnlyEvidence({
 }
 
 async function copyReleaseEvidenceDocLink({
+  copyAction = 'copy-release-evidence-doc-link',
+  copyKey = '',
   href = '',
   label = '',
 } = {}) {
@@ -11147,11 +11151,14 @@ async function copyReleaseEvidenceDocLink({
   }
 
   const docUrl = getAbsoluteReleaseUrl(normalizedHref);
-  await copyUiLink(docUrl, {
+  const result = await copyUiLink(docUrl, {
     promptMessage: `${normalizedLabel} 링크를 복사하세요.`,
     shownNotice: `${normalizedLabel} 링크를 표시했습니다.`,
     successNotice: `${normalizedLabel} 링크를 복사했습니다.`,
   });
+  if (result.method !== 'unavailable') {
+    markCopiedReleaseLink(copyAction, copyKey || normalizedHref);
+  }
 }
 
 async function copyReleaseHandoffPreviewLink({
@@ -15426,16 +15433,13 @@ function renderReleaseStatus() {
                           title="${escapeHtml(`production blocker summary 복사: ${productionBlockerActionLabel}`)}"
                           ${productionBlockers.length ? '' : 'disabled'}
                         >production summary 복사</button>
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-release-production-blocker-release-doc="true"
-                          data-ui-action="copy-release-evidence-doc-link"
-                          data-ui-href="/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md"
-                          data-ui-label="release-readiness"
-                          aria-label="${escapeHtml(`release-readiness 링크 복사: ${productionBlockerActionLabel}`)}"
-                          title="${escapeHtml(`release-readiness 링크 복사: ${productionBlockerActionLabel}`)}"
-                        >release-readiness 링크 복사</button>
+                        ${renderReleaseLinkCopyButton({
+                          action: 'copy-release-evidence-doc-link',
+                          actionLabel: `release-readiness 링크 복사: ${productionBlockerActionLabel}`,
+                          attributes: 'data-release-production-blocker-release-doc="true" data-ui-href="/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md" data-ui-label="release-readiness"',
+                          buttonText: 'release-readiness 링크 복사',
+                          value: '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md',
+                        })}
               </div>
             </div>
             <div class="harness-callout" data-release-current-open-blocker-triage="true">
@@ -16104,15 +16108,14 @@ function renderReleaseStatus() {
                                       : `<span class="mini-badge status-running">${escapeHtml(docPath || docLabel)}</span>`}
                                     ${docHref
                                       ? `
-                                          <button
-                                            class="ghost-button release-evidence-doc-copy"
-                                            type="button"
-                                            data-ui-action="copy-release-evidence-doc-link"
-                                            data-ui-href="${escapeHtml(docHref)}"
-                                            data-ui-label="${escapeHtml(docLabel)}"
-                                            aria-label="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
-                                            title="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
-                                          >문서 링크 복사</button>
+                                          ${renderReleaseLinkCopyButton({
+                                            action: 'copy-release-evidence-doc-link',
+                                            actionLabel: `문서 링크 복사: ${evidenceDocOpenLabel}`,
+                                            attributes: `data-ui-href="${escapeHtml(docHref)}" data-ui-label="${escapeHtml(docLabel)}"`,
+                                            buttonText: '문서 링크 복사',
+                                            className: 'ghost-button release-evidence-doc-copy',
+                                            value: docHref,
+                                          })}
                                         `
                                       : ''}
                                   </span>
@@ -16216,15 +16219,14 @@ function renderReleaseStatus() {
                                             : `<span class="mini-badge status-running">${escapeHtml(docPath || docLabel)}</span>`}
                                           ${docHref
                                             ? `
-                                                <button
-                                                  class="ghost-button release-evidence-doc-copy"
-                                                  type="button"
-                                                  data-ui-action="copy-release-evidence-doc-link"
-                                                  data-ui-href="${escapeHtml(docHref)}"
-                                                  data-ui-label="${escapeHtml(docLabel)}"
-                                                  aria-label="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
-                                                  title="${escapeHtml(`문서 링크 복사: ${evidenceDocOpenLabel}`)}"
-                                                >문서 링크 복사</button>
+                                                ${renderReleaseLinkCopyButton({
+                                                  action: 'copy-release-evidence-doc-link',
+                                                  actionLabel: `문서 링크 복사: ${evidenceDocOpenLabel}`,
+                                                  attributes: `data-ui-href="${escapeHtml(docHref)}" data-ui-label="${escapeHtml(docLabel)}"`,
+                                                  buttonText: '문서 링크 복사',
+                                                  className: 'ghost-button release-evidence-doc-copy',
+                                                  value: docHref,
+                                                })}
                                               `
                                             : ''}
                                         </span>
@@ -16345,16 +16347,13 @@ function renderReleaseStatus() {
                         aria-label="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${focusedProductionBlockerOrdinal}`)}"
                         title="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${focusedProductionBlockerOrdinal}`)}"
                       >근거 문서 열기</a>
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-production-blocker-evidence-doc-copy="${escapeHtml(focusedProductionBlockerIndex)}"
-                        data-ui-action="copy-release-evidence-doc-link"
-                        data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
-                        data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
-                        aria-label="${escapeHtml(`focused production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${focusedProductionBlockerActionLabel}`)}"
-                        title="${escapeHtml(`focused production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${focusedProductionBlockerActionLabel}`)}"
-                      >근거 링크 복사</button>
+                      ${renderReleaseLinkCopyButton({
+                        action: 'copy-release-evidence-doc-link',
+                        actionLabel: `focused production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${focusedProductionBlockerActionLabel}`,
+                        attributes: `data-release-production-blocker-evidence-doc-copy="${escapeHtml(focusedProductionBlockerIndex)}" data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}" data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"`,
+                        buttonText: '근거 링크 복사',
+                        value: productionBlockerEvidenceDocHref,
+                      })}
                       <button
                         class="ghost-button"
                         type="button"
@@ -16428,16 +16427,13 @@ function renderReleaseStatus() {
                             aria-label="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${index + 1}`)}"
                             title="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${index + 1}`)}"
                           >근거 문서</a>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-production-blocker-evidence-doc-copy="${escapeHtml(String(index))}"
-                            data-ui-action="copy-release-evidence-doc-link"
-                            data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
-                            data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"
-                            aria-label="${escapeHtml(`production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${productionBlockerRowActionLabel}`)}"
-                            title="${escapeHtml(`production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${productionBlockerRowActionLabel}`)}"
-                          >근거 링크 복사</button>
+                          ${renderReleaseLinkCopyButton({
+                            action: 'copy-release-evidence-doc-link',
+                            actionLabel: `production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${productionBlockerRowActionLabel}`,
+                            attributes: `data-release-production-blocker-evidence-doc-copy="${escapeHtml(String(index))}" data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}" data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"`,
+                            buttonText: '근거 링크 복사',
+                            value: productionBlockerEvidenceDocHref,
+                          })}
                           <button
                             class="ghost-button"
                             type="button"
