@@ -362,6 +362,12 @@ try {
   assert.equal(appJs.includes('copyProviderFallbackEventAuditPackage'), true);
   assert.equal(appJs.includes('data-release-provider-readiness-package'), true);
   assert.equal(appJs.includes('copy-release-provider-readiness-package'), true);
+  assert.equal(appJs.includes('renderReleaseProviderReadinessPackageCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseProviderReadinessPackage'), true);
+  assert.equal(appJs.includes('releaseProviderReadinessPackageCopiedKey'), true);
+  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiProvider || value || \'\''), true);
+  assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
+  assert.equal(appJs.includes('provider package 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('buildReleaseProviderReadinessPackageText'), true);
   assert.equal(appJs.includes('Provider readiness handoff package'), true);
   assert.equal(appJs.includes('Target provider evidence intake'), true);

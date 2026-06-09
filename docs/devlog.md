@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-09 Release Provider Readiness Package Copy Pressed Metadata
+
+- moved provider readiness package copy controls onto a shared copied-state renderer
+- added aria-pressed metadata and copied-state styling to provider readiness package copy buttons
+- kept provider readiness package text generation, provider scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for provider readiness package copy-state contracts
+
 ## 2026-06-09 Release Evidence Doc Link Copy Pressed Metadata
 
 - moved release evidence document link copy controls onto the shared release link copied-state renderer
