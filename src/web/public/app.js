@@ -43,6 +43,8 @@ const state = {
   providers: [],
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
+  releaseProviderReadinessPackageCopiedKey: '',
+  releaseProviderReadinessPackageCopiedTimer: null,
   releaseHandoffCopiedPreviewLinkId: '',
   releaseHandoffCopiedPreviewLinkTimer: null,
   releaseHandoffCopiedSummaryId: '',
@@ -1151,6 +1153,33 @@ function markCopiedReleaseLink(action = '', value = '') {
   }, 1800);
 }
 
+function getReleaseProviderReadinessPackageCopyKey(provider = '') {
+  return normalizeUiParam(provider) || 'all-providers';
+}
+
+function isCopiedReleaseProviderReadinessPackage(provider = '') {
+  return state.releaseProviderReadinessPackageCopiedKey === getReleaseProviderReadinessPackageCopyKey(provider);
+}
+
+function markCopiedReleaseProviderReadinessPackage(provider = '') {
+  const nextKey = getReleaseProviderReadinessPackageCopyKey(provider);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseProviderReadinessPackageCopiedKey = nextKey;
+  if (state.releaseProviderReadinessPackageCopiedTimer) {
+    window.clearTimeout(state.releaseProviderReadinessPackageCopiedTimer);
+    state.releaseProviderReadinessPackageCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseProviderReadinessPackageCopiedTimer = window.setTimeout(() => {
+    state.releaseProviderReadinessPackageCopiedKey = '';
+    state.releaseProviderReadinessPackageCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1197,6 +1226,23 @@ function renderReleaseLinkCopyButton({
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(value)}" data-ui-value="${escapeHtml(value)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseProviderReadinessPackageCopyButton({
+  actionLabel = 'provider readiness package 복사',
+  attributes = '',
+  buttonText = 'provider package 복사',
+  className = 'secondary-button',
+  provider = '',
+} = {}) {
+  const copyKey = getReleaseProviderReadinessPackageCopyKey(provider);
+  const copied = isCopiedReleaseProviderReadinessPackage(copyKey);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  const providerAttribute = normalizeUiParam(provider)
+    ? `data-ui-provider="${escapeHtml(provider)}"`
+    : '';
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-provider-readiness-package" ${providerAttribute} data-ui-copy-key="${escapeHtml(copyKey)}" data-release-provider-readiness-package="true" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -8532,6 +8578,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-provider-readiness-package') {
         void copyReleaseProviderReadinessPackage({
+          copyKey: button.dataset.uiCopyKey || button.dataset.uiProvider || value || '',
           provider: button.dataset.uiProvider || value || '',
         });
         return;
@@ -9870,22 +9917,27 @@ async function copyReleaseProductionBlockerPackage({
 }
 
 async function copyReleaseProviderReadinessPackage({
+  copyKey = '',
   provider = '',
 } = {}) {
   const normalizedProvider = String(provider || '').trim();
+  const normalizedCopyKey = String(copyKey || normalizedProvider || '').trim();
   const packageText = buildReleaseProviderReadinessPackageText({ provider: normalizedProvider });
   if (!packageText) {
     setUiNotice('복사할 provider readiness handoff package가 없습니다.');
     return;
   }
 
-  await copyPlainTextValue(packageText, {
+  const result = await copyPlainTextValue(packageText, {
     promptMessage: 'provider readiness handoff package를 복사하세요.',
     shownNotice: 'provider readiness handoff package를 표시했습니다.',
     successNotice: normalizedProvider
       ? `${normalizedProvider} provider readiness handoff package를 복사했습니다.`
       : '전체 provider readiness handoff package를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseProviderReadinessPackage(normalizedCopyKey);
+  }
 }
 
 async function copyReleaseBlockerFilterSummary({
@@ -16760,7 +16812,11 @@ function renderReleaseStatus() {
                               command: getProviderLiveCommand(focusedProviderEntry, focusedProviderPreflight),
                               label: `${focusedProviderEntry.label} live 명령`,
                             })}
-                            <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" data-release-provider-readiness-package="true" aria-label="${escapeHtml(`provider package 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider package 복사: ${focusedProviderActionLabel}`)}">provider package 복사</button>
+                            ${renderReleaseProviderReadinessPackageCopyButton({
+                              actionLabel: `provider package 복사: ${focusedProviderActionLabel}`,
+                              buttonText: 'provider package 복사',
+                              provider: focusedProviderEntry.provider,
+                            })}
                           `
                         : ''}
                       ${focusedProviderTopBlocker
@@ -16831,7 +16887,10 @@ function renderReleaseStatus() {
                   command: 'npm run preflight:execution-v1:all',
                   label: '전체 preflight 명령',
                 })}
-                <button class="secondary-button" type="button" data-ui-action="copy-release-provider-readiness-package" data-release-provider-readiness-package="true" aria-label="${escapeHtml(`전체 readiness package 복사: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 readiness package 복사: ${releaseActionLabel}`)}">전체 readiness package 복사</button>
+                ${renderReleaseProviderReadinessPackageCopyButton({
+                  actionLabel: `전체 readiness package 복사: ${releaseActionLabel}`,
+                  buttonText: '전체 readiness package 복사',
+                })}
               </div>
             </div>
             <div class="release-provider-grid">
@@ -16923,15 +16982,11 @@ function renderReleaseStatus() {
                           command: liveCommand,
                           label: `${item.label} live 명령`,
                         })}
-                        <button
-                          class="secondary-button"
-                          type="button"
-                          data-ui-action="copy-release-provider-readiness-package"
-                          data-ui-provider="${escapeHtml(item.provider)}"
-                          data-release-provider-readiness-package="true"
-                          aria-label="${escapeHtml(`provider package 복사: ${providerActionLabel}`)}"
-                          title="${escapeHtml(`provider package 복사: ${providerActionLabel}`)}"
-                        >provider package 복사</button>
+                        ${renderReleaseProviderReadinessPackageCopyButton({
+                          actionLabel: `provider package 복사: ${providerActionLabel}`,
+                          buttonText: 'provider package 복사',
+                          provider: item.provider,
+                        })}
                         ${providerTopBlocker
                           ? `
                               <button
