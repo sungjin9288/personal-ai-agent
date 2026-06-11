@@ -1564,6 +1564,9 @@ try {
   assert.equal(appJs.includes('Production gap rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceExceptionRegisterText'), true);
   assert.equal(appJs.includes('Target evidence accepted-scope exception register'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceExceptionRegisterCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceExceptionRegister'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceExceptionRegisterCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-exception-register'), true);
   assert.equal(appJs.includes('data-release-target-evidence-exception-register'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyExceptionRegister'), true);
@@ -3048,6 +3051,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceProductionGapCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceExceptionRegisterCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));

@@ -67,6 +67,8 @@ const state = {
   releaseTargetEvidenceRequiredCommandsCopiedTimer: null,
   releaseTargetEvidenceProductionGapCopiedKey: '',
   releaseTargetEvidenceProductionGapCopiedTimer: null,
+  releaseTargetEvidenceExceptionRegisterCopiedKey: '',
+  releaseTargetEvidenceExceptionRegisterCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -1835,6 +1837,55 @@ function markCopiedReleaseTargetEvidenceProductionGap(options = {}) {
   }, 1800);
 }
 
+function getReleaseTargetEvidenceExceptionRegisterCopyKey({
+  action = 'copy-release-target-evidence-exception-register',
+  category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
+}
+
+function isCopiedReleaseTargetEvidenceExceptionRegister(options = {}) {
+  return state.releaseTargetEvidenceExceptionRegisterCopiedKey
+    === getReleaseTargetEvidenceExceptionRegisterCopyKey(options);
+}
+
+function markCopiedReleaseTargetEvidenceExceptionRegister(options = {}) {
+  const nextKey = getReleaseTargetEvidenceExceptionRegisterCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseTargetEvidenceExceptionRegisterCopiedKey = nextKey;
+  if (state.releaseTargetEvidenceExceptionRegisterCopiedTimer) {
+    window.clearTimeout(state.releaseTargetEvidenceExceptionRegisterCopiedTimer);
+    state.releaseTargetEvidenceExceptionRegisterCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseTargetEvidenceExceptionRegisterCopiedTimer = window.setTimeout(() => {
+    state.releaseTargetEvidenceExceptionRegisterCopiedKey = '';
+    state.releaseTargetEvidenceExceptionRegisterCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -2134,6 +2185,25 @@ function renderReleaseTargetEvidenceProductionGapCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceProductionGapCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceProductionGap(copyOptions);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseTargetEvidenceExceptionRegisterCopyButton({
+  action = 'copy-release-target-evidence-exception-register',
+  actionLabel = 'target exception register 복사',
+  attributes = '',
+  buttonText = 'target exception register 복사',
+  category = state.releaseBlockerCategoryFilter,
+  className = 'ghost-button',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyOptions = { action, category, includeShared, owner, provider };
+  const copyKey = getReleaseTargetEvidenceExceptionRegisterCopyKey(copyOptions);
+  const copied = isCopiedReleaseTargetEvidenceExceptionRegister(copyOptions);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
@@ -9645,12 +9715,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-target-evidence-exception-register') {
-        void copyReleaseTargetEvidenceExceptionRegister();
+        void copyReleaseTargetEvidenceExceptionRegister({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-target-evidence-provider-only-exception-register') {
-        void copyReleaseTargetEvidenceProviderOnlyExceptionRegister();
+        void copyReleaseTargetEvidenceProviderOnlyExceptionRegister({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -11617,6 +11691,7 @@ async function copyReleaseTargetEvidenceProviderOnlyProductionGap({
 
 async function copyReleaseTargetEvidenceExceptionRegister({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11627,15 +11702,26 @@ async function copyReleaseTargetEvidenceExceptionRegister({
     return;
   }
 
-  await copyPlainTextValue(registerText, {
+  const result = await copyPlainTextValue(registerText, {
     promptMessage: 'target evidence exception register를 복사하세요.',
     shownNotice: 'target evidence exception register를 표시했습니다.',
     successNotice: 'target evidence exception register를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceExceptionRegister({
+      action: 'copy-release-target-evidence-exception-register',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProviderOnlyExceptionRegister({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11657,11 +11743,21 @@ async function copyReleaseTargetEvidenceProviderOnlyExceptionRegister({
     return;
   }
 
-  await copyPlainTextValue(registerText, {
+  const result = await copyPlainTextValue(registerText, {
     promptMessage: 'provider-only target evidence exception register를 복사하세요.',
     shownNotice: 'provider-only target evidence exception register를 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only target evidence exception register를 복사했습니다.`,
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceExceptionRegister({
+      action: 'copy-release-target-evidence-provider-only-exception-register',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceRiskDecisionRegister({
@@ -17090,22 +17186,28 @@ function renderReleaseStatus() {
                     })}
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-target-evidence-exception-register="true"
-                  data-ui-action="copy-release-target-evidence-exception-register"
-                  aria-label="${escapeHtml(`target exception register 복사: ${targetEvidenceActionLabel}`)}"
-                  title="${escapeHtml(`target exception register 복사: ${targetEvidenceActionLabel}`)}">target exception register 복사</button>
+                ${renderReleaseTargetEvidenceExceptionRegisterCopyButton({
+                  action: 'copy-release-target-evidence-exception-register',
+                  actionLabel: `target exception register 복사: ${targetEvidenceActionLabel}`,
+                  attributes: 'data-release-target-evidence-exception-register="true"',
+                  buttonText: 'target exception register 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-target-evidence-provider-only-exception-register="true"
-                      data-ui-action="copy-release-target-evidence-provider-only-exception-register"
-                      aria-label="${escapeHtml(`provider-only exception 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only exception 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only exception 복사</button>
+                    ${renderReleaseTargetEvidenceExceptionRegisterCopyButton({
+                      action: 'copy-release-target-evidence-provider-only-exception-register',
+                      actionLabel: `provider-only exception 복사: ${targetEvidenceProviderOnlyActionLabel}`,
+                      attributes: 'data-release-target-evidence-provider-only-exception-register="true"',
+                      buttonText: 'provider-only exception 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button
