@@ -445,6 +445,9 @@ try {
   assert.equal(appJs.includes('buildReleaseTargetEvidenceRequiredCommandsText'), true);
   assert.equal(appJs.includes('Target evidence required commands'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-required-commands'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceRequiredCommandsCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceRequiredCommands'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceRequiredCommandsCopiedKey'), true);
   assert.equal(appJs.includes('data-release-target-evidence-required-commands'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyRequiredCommands'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-provider-only-required-commands'), true);
@@ -3034,6 +3037,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceCaptureTemplateCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceRequiredCommandsCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));

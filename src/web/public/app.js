@@ -63,6 +63,8 @@ const state = {
   releaseTargetEvidenceIntakeSummaryCopiedTimer: null,
   releaseTargetEvidenceCaptureTemplateCopiedKey: '',
   releaseTargetEvidenceCaptureTemplateCopiedTimer: null,
+  releaseTargetEvidenceRequiredCommandsCopiedKey: '',
+  releaseTargetEvidenceRequiredCommandsCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -1733,6 +1735,55 @@ function markCopiedReleaseTargetEvidenceCaptureTemplate(options = {}) {
   }, 1800);
 }
 
+function getReleaseTargetEvidenceRequiredCommandsCopyKey({
+  action = 'copy-release-target-evidence-required-commands',
+  category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
+}
+
+function isCopiedReleaseTargetEvidenceRequiredCommands(options = {}) {
+  return state.releaseTargetEvidenceRequiredCommandsCopiedKey
+    === getReleaseTargetEvidenceRequiredCommandsCopyKey(options);
+}
+
+function markCopiedReleaseTargetEvidenceRequiredCommands(options = {}) {
+  const nextKey = getReleaseTargetEvidenceRequiredCommandsCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseTargetEvidenceRequiredCommandsCopiedKey = nextKey;
+  if (state.releaseTargetEvidenceRequiredCommandsCopiedTimer) {
+    window.clearTimeout(state.releaseTargetEvidenceRequiredCommandsCopiedTimer);
+    state.releaseTargetEvidenceRequiredCommandsCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseTargetEvidenceRequiredCommandsCopiedTimer = window.setTimeout(() => {
+    state.releaseTargetEvidenceRequiredCommandsCopiedKey = '';
+    state.releaseTargetEvidenceRequiredCommandsCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1994,6 +2045,25 @@ function renderReleaseTargetEvidenceCaptureTemplateCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceCaptureTemplateCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceCaptureTemplate(copyOptions);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseTargetEvidenceRequiredCommandsCopyButton({
+  action = 'copy-release-target-evidence-required-commands',
+  actionLabel = 'target required commands 복사',
+  attributes = '',
+  buttonText = 'target required commands 복사',
+  category = state.releaseBlockerCategoryFilter,
+  className = 'ghost-button',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyOptions = { action, category, includeShared, owner, provider };
+  const copyKey = getReleaseTargetEvidenceRequiredCommandsCopyKey(copyOptions);
+  const copied = isCopiedReleaseTargetEvidenceRequiredCommands(copyOptions);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
@@ -9477,12 +9547,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-target-evidence-required-commands') {
-        void copyReleaseTargetEvidenceRequiredCommands();
+        void copyReleaseTargetEvidenceRequiredCommands({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-target-evidence-provider-only-required-commands') {
-        void copyReleaseTargetEvidenceProviderOnlyRequiredCommands();
+        void copyReleaseTargetEvidenceProviderOnlyRequiredCommands({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -11327,6 +11401,7 @@ async function copyReleaseTargetEvidenceProviderOnlyCaptureTemplate({
 
 async function copyReleaseTargetEvidenceRequiredCommands({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11337,15 +11412,26 @@ async function copyReleaseTargetEvidenceRequiredCommands({
     return;
   }
 
-  await copyPlainTextValue(commandText, {
+  const result = await copyPlainTextValue(commandText, {
     promptMessage: 'target evidence required commands를 복사하세요.',
     shownNotice: 'target evidence required commands를 표시했습니다.',
     successNotice: 'target evidence required commands를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceRequiredCommands({
+      action: 'copy-release-target-evidence-required-commands',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProviderOnlyRequiredCommands({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11367,11 +11453,21 @@ async function copyReleaseTargetEvidenceProviderOnlyRequiredCommands({
     return;
   }
 
-  await copyPlainTextValue(commandText, {
+  const result = await copyPlainTextValue(commandText, {
     promptMessage: 'provider-only target evidence required commands를 복사하세요.',
     shownNotice: 'provider-only target evidence required commands를 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only target evidence required commands를 복사했습니다.`,
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceRequiredCommands({
+      action: 'copy-release-target-evidence-provider-only-required-commands',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProductionGap({
@@ -16850,22 +16946,28 @@ function renderReleaseStatus() {
                     })}
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-target-evidence-required-commands="true"
-                  data-ui-action="copy-release-target-evidence-required-commands"
-                  aria-label="${escapeHtml(`target required commands 복사: ${targetEvidenceActionLabel}`)}"
-                  title="${escapeHtml(`target required commands 복사: ${targetEvidenceActionLabel}`)}">target required commands 복사</button>
+                ${renderReleaseTargetEvidenceRequiredCommandsCopyButton({
+                  action: 'copy-release-target-evidence-required-commands',
+                  actionLabel: `target required commands 복사: ${targetEvidenceActionLabel}`,
+                  attributes: 'data-release-target-evidence-required-commands="true"',
+                  buttonText: 'target required commands 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-target-evidence-provider-only-required-commands="true"
-                      data-ui-action="copy-release-target-evidence-provider-only-required-commands"
-                      aria-label="${escapeHtml(`provider-only commands 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only commands 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only commands 복사</button>
+                    ${renderReleaseTargetEvidenceRequiredCommandsCopyButton({
+                      action: 'copy-release-target-evidence-provider-only-required-commands',
+                      actionLabel: `provider-only commands 복사: ${targetEvidenceProviderOnlyActionLabel}`,
+                      attributes: 'data-release-target-evidence-provider-only-required-commands="true"',
+                      buttonText: 'provider-only commands 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button
