@@ -2005,6 +2005,9 @@ try {
   assert.equal(appJs.includes('buildReleaseProductionBlockerSummaryText'), true);
   assert.equal(appJs.includes('data-release-production-blocker-summary-copy'), true);
   assert.equal(appJs.includes('copy-release-production-blocker-summary'), true);
+  assert.equal(appJs.includes('renderReleaseProductionBlockerSummaryCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseProductionBlockerSummary'), true);
+  assert.equal(appJs.includes('releaseProductionBlockerSummaryCopiedKey'), true);
   assert.equal(appJs.includes('Production-ready blocker summary'), true);
   assert.equal(appJs.includes('getReleaseActionButtonContext'), true);
   assert.equal(appJs.includes('applyReleaseActionButtonLabels'), true);
