@@ -1606,6 +1606,9 @@ try {
   assert.equal(appJs.includes('Provider evidence reference rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceResidualBlockersText'), true);
   assert.equal(appJs.includes('Target evidence residual production blocker guard'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceResidualBlockersCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceResidualBlockers'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceResidualBlockersCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-residual-blockers'), true);
   assert.equal(appJs.includes('data-release-target-evidence-residual-blockers'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyResidualBlockers'), true);
@@ -3069,6 +3072,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceProviderReferencesCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceResidualBlockersCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));

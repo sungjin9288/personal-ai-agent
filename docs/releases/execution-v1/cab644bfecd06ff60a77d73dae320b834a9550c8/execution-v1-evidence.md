@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T11:49:23.871Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T11:49:00.057Z
 - branch: codex/release-target-evidence-residual-blockers-copy-pressed-metadata
 - commit: cab644bfecd06ff60a77d73dae320b834a9550c8

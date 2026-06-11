@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-11T11:49:23.871Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-11T11:49:10.006Z
 - branch: codex/release-target-evidence-residual-blockers-copy-pressed-metadata
 - commit: cab644bfecd06ff60a77d73dae320b834a9550c8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cab644bfecd06ff60a77d73dae320b834a9550c8/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
