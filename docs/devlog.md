@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Required Commands Copy Pressed Metadata
+
+- moved target evidence required commands and provider-only required commands copy controls onto a shared target evidence required commands copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence required commands copy buttons
+- kept required commands text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence required commands copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Capture Template Copy Pressed Metadata
 
 - moved target evidence capture template and provider-only capture template copy controls onto a shared target evidence capture copied-state renderer
