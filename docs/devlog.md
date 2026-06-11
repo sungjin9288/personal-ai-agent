@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Slice Evidence Copy Pressed Metadata
+
+- moved release blocker slice evidence and provider-only evidence copy controls onto a shared blocker evidence copied-state renderer
+- added aria-pressed metadata and copied-state styling to blocker slice evidence copy buttons
+- kept evidence text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker slice evidence copy-state contracts
+
 ## 2026-06-11 Release Blocker Slice Commands Copy Pressed Metadata
 
 - moved release blocker slice commands and provider-only commands copy controls onto a shared blocker commands copied-state renderer

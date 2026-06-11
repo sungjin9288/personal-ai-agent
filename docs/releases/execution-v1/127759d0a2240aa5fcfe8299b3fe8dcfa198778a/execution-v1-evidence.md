@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T07:00:50.582Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T07:00:32.177Z
 - branch: codex/release-blocker-slice-evidence-copy-pressed-metadata
 - commit: 127759d0a2240aa5fcfe8299b3fe8dcfa198778a
