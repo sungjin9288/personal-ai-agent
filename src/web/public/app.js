@@ -1354,16 +1354,47 @@ function markCopiedReleaseBlockerClosureMatrix(options = {}) {
   }, 1800);
 }
 
-function getReleaseBlockerHandoffCopyKey(blockerId = '') {
-  return normalizeUiParam(blockerId);
+function getReleaseBlockerHandoffCopyKey(options = '') {
+  if (!options || typeof options !== 'object') {
+    return normalizeUiParam(options);
+  }
+
+  const {
+    action = 'copy-release-blocker-handoff',
+    blockerId = '',
+    category = state.releaseBlockerCategoryFilter,
+    copyKey = '',
+    includeShared = true,
+    owner = state.releaseBlockerOwnerFilter,
+    provider = state.releaseBlockerProviderFilter,
+  } = options;
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedBlockerId = normalizeUiParam(blockerId);
+  if (normalizedBlockerId) {
+    return normalizedBlockerId;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
 }
 
-function isCopiedReleaseBlockerHandoff(blockerId = '') {
-  return state.releaseBlockerHandoffCopiedKey === getReleaseBlockerHandoffCopyKey(blockerId);
+function isCopiedReleaseBlockerHandoff(options = '') {
+  return state.releaseBlockerHandoffCopiedKey === getReleaseBlockerHandoffCopyKey(options);
 }
 
-function markCopiedReleaseBlockerHandoff(blockerId = '') {
-  const nextKey = getReleaseBlockerHandoffCopyKey(blockerId);
+function markCopiedReleaseBlockerHandoff(options = '') {
+  const nextKey = getReleaseBlockerHandoffCopyKey(options);
   if (!nextKey) {
     return;
   }
@@ -1573,17 +1604,31 @@ function renderReleaseBlockerClosureMatrixCopyButton({
 }
 
 function renderReleaseBlockerHandoffCopyButton({
+  action = 'copy-release-blocker-handoff',
   actionLabel = 'release blocker handoff 복사',
   attributes = '',
   blockerId = '',
   buttonText = 'handoff 복사',
+  category = state.releaseBlockerCategoryFilter,
   className = 'ghost-button',
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = '',
 } = {}) {
-  const copyKey = getReleaseBlockerHandoffCopyKey(blockerId);
-  const copied = isCopiedReleaseBlockerHandoff(copyKey);
+  const nextCopyKey = getReleaseBlockerHandoffCopyKey({
+    action,
+    blockerId,
+    category,
+    copyKey,
+    includeShared,
+    owner,
+    provider,
+  });
+  const copied = isCopiedReleaseBlockerHandoff(nextCopyKey);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-blocker-handoff" data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function renderReleaseBlockerSummaryCopyButton({
@@ -9188,12 +9233,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-blocker-filter-handoff') {
-        void copyReleaseBlockerFilterHandoff();
+        void copyReleaseBlockerFilterHandoff({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-blocker-provider-only-handoff') {
-        void copyReleaseBlockerProviderOnlyHandoff();
+        void copyReleaseBlockerProviderOnlyHandoff({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -11538,6 +11587,7 @@ async function copyReleaseTargetEvidenceProviderOnlyIntakePacket({
 
 async function copyReleaseBlockerFilterHandoff({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11548,15 +11598,26 @@ async function copyReleaseBlockerFilterHandoff({
     return;
   }
 
-  await copyPlainTextValue(handoffText, {
+  const result = await copyPlainTextValue(handoffText, {
     promptMessage: 'release blocker slice handoff를 복사하세요.',
     shownNotice: 'release blocker slice handoff를 표시했습니다.',
     successNotice: 'release blocker slice handoff를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseBlockerHandoff({
+      action: 'copy-release-blocker-filter-handoff',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseBlockerProviderOnlyHandoff({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11578,11 +11639,21 @@ async function copyReleaseBlockerProviderOnlyHandoff({
     return;
   }
 
-  await copyPlainTextValue(handoffText, {
+  const result = await copyPlainTextValue(handoffText, {
     promptMessage: 'provider-only release blocker slice handoff를 복사하세요.',
     shownNotice: 'provider-only release blocker slice handoff를 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only release blocker slice handoff를 복사했습니다.`,
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseBlockerHandoff({
+      action: 'copy-release-blocker-provider-only-handoff',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseBlockerFilterCommands({
@@ -16520,22 +16591,28 @@ function renderReleaseStatus() {
                       title="${escapeHtml(`provider-only target packet 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only target packet 복사</button>
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-current-open-blocker-filter-handoff="true"
-                  data-ui-action="copy-release-blocker-filter-handoff"
-                  aria-label="${escapeHtml(`slice handoff 복사: ${blockerTriageFilterActionLabel}`)}"
-                  title="${escapeHtml(`slice handoff 복사: ${blockerTriageFilterActionLabel}`)}">slice handoff 복사</button>
+                ${renderReleaseBlockerHandoffCopyButton({
+                  action: 'copy-release-blocker-filter-handoff',
+                  actionLabel: `slice handoff 복사: ${blockerTriageFilterActionLabel}`,
+                  attributes: 'data-release-current-open-blocker-filter-handoff="true"',
+                  buttonText: 'slice handoff 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-current-open-blocker-provider-only-handoff="true"
-                      data-ui-action="copy-release-blocker-provider-only-handoff"
-                      aria-label="${escapeHtml(`provider-only handoff 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only handoff 복사: ${blockerTriageProviderOnlyActionLabel}`)}">provider-only handoff 복사</button>
+                    ${renderReleaseBlockerHandoffCopyButton({
+                      action: 'copy-release-blocker-provider-only-handoff',
+                      actionLabel: `provider-only handoff 복사: ${blockerTriageProviderOnlyActionLabel}`,
+                      attributes: 'data-release-current-open-blocker-provider-only-handoff="true"',
+                      buttonText: 'provider-only handoff 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Slice Handoff Copy Pressed Metadata
+
+- moved release blocker slice handoff and provider-only handoff copy controls onto the shared blocker handoff copied-state renderer
+- added aria-pressed metadata and copied-state styling to blocker slice handoff copy buttons
+- kept handoff text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker slice handoff copy-state contracts
+
 ## 2026-06-11 Release Blocker Closure Matrix Copy Pressed Metadata
 
 - moved release blocker closure matrix and provider-only closure matrix copy controls onto a shared closure matrix copied-state renderer
