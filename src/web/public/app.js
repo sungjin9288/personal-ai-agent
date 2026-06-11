@@ -65,6 +65,8 @@ const state = {
   releaseTargetEvidenceCaptureTemplateCopiedTimer: null,
   releaseTargetEvidenceRequiredCommandsCopiedKey: '',
   releaseTargetEvidenceRequiredCommandsCopiedTimer: null,
+  releaseTargetEvidenceProductionGapCopiedKey: '',
+  releaseTargetEvidenceProductionGapCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -1784,6 +1786,55 @@ function markCopiedReleaseTargetEvidenceRequiredCommands(options = {}) {
   }, 1800);
 }
 
+function getReleaseTargetEvidenceProductionGapCopyKey({
+  action = 'copy-release-target-evidence-production-gap',
+  category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
+}
+
+function isCopiedReleaseTargetEvidenceProductionGap(options = {}) {
+  return state.releaseTargetEvidenceProductionGapCopiedKey
+    === getReleaseTargetEvidenceProductionGapCopyKey(options);
+}
+
+function markCopiedReleaseTargetEvidenceProductionGap(options = {}) {
+  const nextKey = getReleaseTargetEvidenceProductionGapCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseTargetEvidenceProductionGapCopiedKey = nextKey;
+  if (state.releaseTargetEvidenceProductionGapCopiedTimer) {
+    window.clearTimeout(state.releaseTargetEvidenceProductionGapCopiedTimer);
+    state.releaseTargetEvidenceProductionGapCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseTargetEvidenceProductionGapCopiedTimer = window.setTimeout(() => {
+    state.releaseTargetEvidenceProductionGapCopiedKey = '';
+    state.releaseTargetEvidenceProductionGapCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -2064,6 +2115,25 @@ function renderReleaseTargetEvidenceRequiredCommandsCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceRequiredCommandsCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceRequiredCommands(copyOptions);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseTargetEvidenceProductionGapCopyButton({
+  action = 'copy-release-target-evidence-production-gap',
+  actionLabel = 'target production gap 복사',
+  attributes = '',
+  buttonText = 'target production gap 복사',
+  category = state.releaseBlockerCategoryFilter,
+  className = 'ghost-button',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyOptions = { action, category, includeShared, owner, provider };
+  const copyKey = getReleaseTargetEvidenceProductionGapCopyKey(copyOptions);
+  const copied = isCopiedReleaseTargetEvidenceProductionGap(copyOptions);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
@@ -9561,12 +9631,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-target-evidence-production-gap') {
-        void copyReleaseTargetEvidenceProductionGap();
+        void copyReleaseTargetEvidenceProductionGap({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-target-evidence-provider-only-production-gap') {
-        void copyReleaseTargetEvidenceProviderOnlyProductionGap();
+        void copyReleaseTargetEvidenceProviderOnlyProductionGap({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -11472,6 +11546,7 @@ async function copyReleaseTargetEvidenceProviderOnlyRequiredCommands({
 
 async function copyReleaseTargetEvidenceProductionGap({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11482,15 +11557,26 @@ async function copyReleaseTargetEvidenceProductionGap({
     return;
   }
 
-  await copyPlainTextValue(gapText, {
+  const result = await copyPlainTextValue(gapText, {
     promptMessage: 'target evidence production gap을 복사하세요.',
     shownNotice: 'target evidence production gap을 표시했습니다.',
     successNotice: 'target evidence production gap을 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceProductionGap({
+      action: 'copy-release-target-evidence-production-gap',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProviderOnlyProductionGap({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11512,11 +11598,21 @@ async function copyReleaseTargetEvidenceProviderOnlyProductionGap({
     return;
   }
 
-  await copyPlainTextValue(gapText, {
+  const result = await copyPlainTextValue(gapText, {
     promptMessage: 'provider-only target evidence production gap guard를 복사하세요.',
     shownNotice: 'provider-only target evidence production gap guard를 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only target evidence production gap guard를 복사했습니다.`,
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceProductionGap({
+      action: 'copy-release-target-evidence-provider-only-production-gap',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceExceptionRegister({
@@ -16970,22 +17066,28 @@ function renderReleaseStatus() {
                     })}
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-target-evidence-production-gap="true"
-                  data-ui-action="copy-release-target-evidence-production-gap"
-                  aria-label="${escapeHtml(`target production gap 복사: ${targetEvidenceActionLabel}`)}"
-                  title="${escapeHtml(`target production gap 복사: ${targetEvidenceActionLabel}`)}">target production gap 복사</button>
+                ${renderReleaseTargetEvidenceProductionGapCopyButton({
+                  action: 'copy-release-target-evidence-production-gap',
+                  actionLabel: `target production gap 복사: ${targetEvidenceActionLabel}`,
+                  attributes: 'data-release-target-evidence-production-gap="true"',
+                  buttonText: 'target production gap 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-target-evidence-provider-only-production-gap="true"
-                      data-ui-action="copy-release-target-evidence-provider-only-production-gap"
-                      aria-label="${escapeHtml(`provider-only gap 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only gap 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only gap 복사</button>
+                    ${renderReleaseTargetEvidenceProductionGapCopyButton({
+                      action: 'copy-release-target-evidence-provider-only-production-gap',
+                      actionLabel: `provider-only gap 복사: ${targetEvidenceProviderOnlyActionLabel}`,
+                      attributes: 'data-release-target-evidence-provider-only-production-gap="true"',
+                      buttonText: 'provider-only gap 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T08:31:04.434Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T08:30:46.279Z
 - branch: codex/release-target-evidence-production-gap-copy-pressed-metadata
 - commit: d3fa425ae8f78667f23ddb1b201c318d457ee6e9
