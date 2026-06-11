@@ -1578,6 +1578,9 @@ try {
   assert.equal(appJs.includes('Accepted-scope exception rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceRiskDecisionRegisterText'), true);
   assert.equal(appJs.includes('Target evidence accepted risk decision register'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceRiskDecisionRegisterCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceRiskDecisionRegister'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceRiskDecisionRegisterCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-risk-decision-register'), true);
   assert.equal(appJs.includes('data-release-target-evidence-risk-decision-register'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister'), true);
@@ -3055,6 +3058,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceExceptionRegisterCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceRiskDecisionRegisterCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
