@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-11T13:38:20.236Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-11T13:38:01.908Z
 - branch: codex/release-target-evidence-closure-rules-copy-pressed-metadata
 - commit: 53a0805291509d958c2c4bd2a92ca15c58771eff
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/53a0805291509d958c2c4bd2a92ca15c58771eff/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

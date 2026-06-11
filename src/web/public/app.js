@@ -75,6 +75,8 @@ const state = {
   releaseTargetEvidenceProviderReferencesCopiedTimer: null,
   releaseTargetEvidenceResidualBlockersCopiedKey: '',
   releaseTargetEvidenceResidualBlockersCopiedTimer: null,
+  releaseTargetEvidenceClosureRulesCopiedKey: '',
+  releaseTargetEvidenceClosureRulesCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -2039,6 +2041,55 @@ function markCopiedReleaseTargetEvidenceResidualBlockers(options = {}) {
   }, 1800);
 }
 
+function getReleaseTargetEvidenceClosureRulesCopyKey({
+  action = 'copy-release-target-evidence-closure-rules',
+  category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
+}
+
+function isCopiedReleaseTargetEvidenceClosureRules(options = {}) {
+  return state.releaseTargetEvidenceClosureRulesCopiedKey
+    === getReleaseTargetEvidenceClosureRulesCopyKey(options);
+}
+
+function markCopiedReleaseTargetEvidenceClosureRules(options = {}) {
+  const nextKey = getReleaseTargetEvidenceClosureRulesCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseTargetEvidenceClosureRulesCopiedKey = nextKey;
+  if (state.releaseTargetEvidenceClosureRulesCopiedTimer) {
+    window.clearTimeout(state.releaseTargetEvidenceClosureRulesCopiedTimer);
+    state.releaseTargetEvidenceClosureRulesCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseTargetEvidenceClosureRulesCopiedTimer = window.setTimeout(() => {
+    state.releaseTargetEvidenceClosureRulesCopiedKey = '';
+    state.releaseTargetEvidenceClosureRulesCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -2414,6 +2465,25 @@ function renderReleaseTargetEvidenceResidualBlockersCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceResidualBlockersCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceResidualBlockers(copyOptions);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseTargetEvidenceClosureRulesCopyButton({
+  action = 'copy-release-target-evidence-closure-rules',
+  actionLabel = 'target closure rules 복사',
+  attributes = '',
+  buttonText = 'target closure rules 복사',
+  category = state.releaseBlockerCategoryFilter,
+  className = 'ghost-button',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyOptions = { action, category, includeShared, owner, provider };
+  const copyKey = getReleaseTargetEvidenceClosureRulesCopyKey(copyOptions);
+  const copied = isCopiedReleaseTargetEvidenceClosureRules(copyOptions);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
@@ -9981,12 +10051,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-target-evidence-closure-rules') {
-        void copyReleaseTargetEvidenceClosureRules();
+        void copyReleaseTargetEvidenceClosureRules({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-target-evidence-provider-only-closure-rules') {
-        void copyReleaseTargetEvidenceProviderOnlyClosureRules();
+        void copyReleaseTargetEvidenceProviderOnlyClosureRules({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -12197,6 +12271,7 @@ async function copyReleaseTargetEvidenceProviderOnlyResidualBlockers({
 
 async function copyReleaseTargetEvidenceClosureRules({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -12207,15 +12282,26 @@ async function copyReleaseTargetEvidenceClosureRules({
     return;
   }
 
-  await copyPlainTextValue(rulesText, {
+  const result = await copyPlainTextValue(rulesText, {
     promptMessage: 'target evidence closure rules를 복사하세요.',
     shownNotice: 'target evidence closure rules를 표시했습니다.',
     successNotice: 'target evidence closure rules를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceClosureRules({
+      action: 'copy-release-target-evidence-closure-rules',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProviderOnlyClosureRules({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -12237,11 +12323,21 @@ async function copyReleaseTargetEvidenceProviderOnlyClosureRules({
     return;
   }
 
-  await copyPlainTextValue(rulesText, {
+  const result = await copyPlainTextValue(rulesText, {
     promptMessage: 'provider-only target evidence closure rules를 복사하세요.',
     shownNotice: 'provider-only target evidence closure rules를 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only target evidence closure rules를 복사했습니다.`,
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceClosureRules({
+      action: 'copy-release-target-evidence-provider-only-closure-rules',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceSubmissionManifest({
@@ -17570,22 +17666,28 @@ function renderReleaseStatus() {
                     })}
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-target-evidence-closure-rules="true"
-                  data-ui-action="copy-release-target-evidence-closure-rules"
-                  aria-label="${escapeHtml(`target closure rules 복사: ${targetEvidenceActionLabel}`)}"
-                  title="${escapeHtml(`target closure rules 복사: ${targetEvidenceActionLabel}`)}">target closure rules 복사</button>
+                ${renderReleaseTargetEvidenceClosureRulesCopyButton({
+                  action: 'copy-release-target-evidence-closure-rules',
+                  actionLabel: `target closure rules 복사: ${targetEvidenceActionLabel}`,
+                  attributes: 'data-release-target-evidence-closure-rules="true"',
+                  buttonText: 'target closure rules 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-target-evidence-provider-only-closure-rules="true"
-                      data-ui-action="copy-release-target-evidence-provider-only-closure-rules"
-                      aria-label="${escapeHtml(`provider-only closure 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only closure 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only closure 복사</button>
+                    ${renderReleaseTargetEvidenceClosureRulesCopyButton({
+                      action: 'copy-release-target-evidence-provider-only-closure-rules',
+                      actionLabel: `provider-only closure 복사: ${targetEvidenceProviderOnlyActionLabel}`,
+                      attributes: 'data-release-target-evidence-provider-only-closure-rules="true"',
+                      buttonText: 'provider-only closure 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button

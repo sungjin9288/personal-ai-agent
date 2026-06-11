@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Closure Rules Copy Pressed Metadata
+
+- moved target evidence closure rules and provider-only closure rules copy controls onto a shared target evidence closure rules copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence closure rules copy buttons
+- kept closure rules text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence closure rules copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Residual Blockers Copy Pressed Metadata
 
 - moved target evidence residual blockers and provider-only residual blockers copy controls onto a shared target evidence residual blockers copied-state renderer
