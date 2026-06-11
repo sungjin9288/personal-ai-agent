@@ -2101,6 +2101,11 @@ try {
   assert.equal(appJs.includes('buildReleaseBlockerSliceSummaryText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-summary-copy'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-summary'), true);
+  assert.equal(appJs.includes('renderReleaseBlockerSummaryCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseBlockerSummary'), true);
+  assert.equal(appJs.includes('releaseBlockerSummaryCopiedKey'), true);
+  assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
+  assert.equal(appJs.includes("includeShared: false"), true);
   assert.equal(appJs.includes('copyReleaseBlockerProviderOnlySummary'), true);
   assert.equal(appJs.includes('copy-release-blocker-provider-only-summary'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-summary-copy'), true);
@@ -2935,10 +2940,15 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     'releaseBlockerIncludeSharedProviderOperations: includeShared !== false',
     'release blocker slice URL builder',
   );
-  const renderedProviderOnlyActionNames = getUniqueSortedMatches(
-    appJs,
-    /data-ui-action="(copy-release-[^"]*provider-only[^"]*)"/g,
-  );
+  const renderedProviderOnlyActionNames = Array.from(
+    new Set([
+      ...getUniqueSortedMatches(appJs, /data-ui-action="(copy-release-[^"]*provider-only[^"]*)"/g),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseBlockerSummaryCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+    ]),
+  ).sort((left, right) => left.localeCompare(right));
   const dispatchedProviderOnlyActionNames = getUniqueSortedMatches(
     appJs,
     /if \(action === '(copy-release-[^']*provider-only[^']*)'\)/g,
@@ -2947,10 +2957,15 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     appJs,
     /\basync function (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(/g,
   );
-  const dispatchedProviderOnlyFunctionNames = getUniqueSortedMatches(
-    appJs,
-    /\bvoid (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(\);/g,
-  );
+  const dispatchedProviderOnlyFunctionNames = Array.from(
+    new Set([
+      ...getUniqueSortedMatches(appJs, /\bvoid (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(\);/g),
+      ...getUniqueSortedMatches(
+        appJs,
+        /\bvoid (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(\{\s*[\s\S]*?\n\s*\}\);/g,
+      ),
+    ]),
+  ).sort((left, right) => left.localeCompare(right));
 
   assert.deepEqual(
     expectedProviderOnlyActionNames,

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Summary Copy Pressed Metadata
+
+- moved release blocker slice and provider-only summary copy controls onto a shared copied-state renderer
+- added aria-pressed metadata and copied-state styling to blocker summary copy buttons
+- kept blocker summary text generation, filter scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker summary copy-state contracts
+
 ## 2026-06-11 Release Blocker Handoff Copy Pressed Metadata
 
 - moved release blocker handoff copy controls onto a shared copied-state renderer
