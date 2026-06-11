@@ -61,6 +61,8 @@ const state = {
   releaseProductionBlockerDetailCopiedTimer: null,
   releaseTargetEvidenceIntakeSummaryCopiedKey: '',
   releaseTargetEvidenceIntakeSummaryCopiedTimer: null,
+  releaseTargetEvidenceCaptureTemplateCopiedKey: '',
+  releaseTargetEvidenceCaptureTemplateCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -1682,6 +1684,55 @@ function markCopiedReleaseTargetEvidenceIntakeSummary(options = {}) {
   }, 1800);
 }
 
+function getReleaseTargetEvidenceCaptureTemplateCopyKey({
+  action = 'copy-release-target-evidence-capture-template',
+  category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
+}
+
+function isCopiedReleaseTargetEvidenceCaptureTemplate(options = {}) {
+  return state.releaseTargetEvidenceCaptureTemplateCopiedKey
+    === getReleaseTargetEvidenceCaptureTemplateCopyKey(options);
+}
+
+function markCopiedReleaseTargetEvidenceCaptureTemplate(options = {}) {
+  const nextKey = getReleaseTargetEvidenceCaptureTemplateCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseTargetEvidenceCaptureTemplateCopiedKey = nextKey;
+  if (state.releaseTargetEvidenceCaptureTemplateCopiedTimer) {
+    window.clearTimeout(state.releaseTargetEvidenceCaptureTemplateCopiedTimer);
+    state.releaseTargetEvidenceCaptureTemplateCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseTargetEvidenceCaptureTemplateCopiedTimer = window.setTimeout(() => {
+    state.releaseTargetEvidenceCaptureTemplateCopiedKey = '';
+    state.releaseTargetEvidenceCaptureTemplateCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1924,6 +1975,25 @@ function renderReleaseTargetEvidenceIntakeSummaryCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceIntakeSummaryCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceIntakeSummary(copyOptions);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseTargetEvidenceCaptureTemplateCopyButton({
+  action = 'copy-release-target-evidence-capture-template',
+  actionLabel = 'target capture template 복사',
+  attributes = '',
+  buttonText = 'target capture template 복사',
+  category = state.releaseBlockerCategoryFilter,
+  className = 'ghost-button',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyOptions = { action, category, includeShared, owner, provider };
+  const copyKey = getReleaseTargetEvidenceCaptureTemplateCopyKey(copyOptions);
+  const copied = isCopiedReleaseTargetEvidenceCaptureTemplate(copyOptions);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
@@ -9393,12 +9463,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-target-evidence-capture-template') {
-        void copyReleaseTargetEvidenceCaptureTemplate();
+        void copyReleaseTargetEvidenceCaptureTemplate({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-target-evidence-provider-only-capture-template') {
-        void copyReleaseTargetEvidenceProviderOnlyCaptureTemplate();
+        void copyReleaseTargetEvidenceProviderOnlyCaptureTemplate({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -11182,6 +11256,7 @@ async function copyReleaseTargetEvidenceProviderOnlyIntakeSummary({
 
 async function copyReleaseTargetEvidenceCaptureTemplate({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11192,15 +11267,26 @@ async function copyReleaseTargetEvidenceCaptureTemplate({
     return;
   }
 
-  await copyPlainTextValue(templateText, {
+  const result = await copyPlainTextValue(templateText, {
     promptMessage: 'target evidence capture template를 복사하세요.',
     shownNotice: 'target evidence capture template를 표시했습니다.',
     successNotice: 'target evidence capture template를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceCaptureTemplate({
+      action: 'copy-release-target-evidence-capture-template',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProviderOnlyCaptureTemplate({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -11222,11 +11308,21 @@ async function copyReleaseTargetEvidenceProviderOnlyCaptureTemplate({
     return;
   }
 
-  await copyPlainTextValue(templateText, {
+  const result = await copyPlainTextValue(templateText, {
     promptMessage: 'provider-only target evidence capture template를 복사하세요.',
     shownNotice: 'provider-only target evidence capture template를 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only target evidence capture template를 복사했습니다.`,
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceCaptureTemplate({
+      action: 'copy-release-target-evidence-provider-only-capture-template',
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceRequiredCommands({
@@ -16730,22 +16826,28 @@ function renderReleaseStatus() {
                     })}
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-target-evidence-capture-template="true"
-                  data-ui-action="copy-release-target-evidence-capture-template"
-                  aria-label="${escapeHtml(`target capture template 복사: ${targetEvidenceActionLabel}`)}"
-                  title="${escapeHtml(`target capture template 복사: ${targetEvidenceActionLabel}`)}">target capture template 복사</button>
+                ${renderReleaseTargetEvidenceCaptureTemplateCopyButton({
+                  action: 'copy-release-target-evidence-capture-template',
+                  actionLabel: `target capture template 복사: ${targetEvidenceActionLabel}`,
+                  attributes: 'data-release-target-evidence-capture-template="true"',
+                  buttonText: 'target capture template 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-target-evidence-provider-only-capture-template="true"
-                      data-ui-action="copy-release-target-evidence-provider-only-capture-template"
-                      aria-label="${escapeHtml(`provider-only capture template 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only capture template 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only capture template 복사</button>
+                    ${renderReleaseTargetEvidenceCaptureTemplateCopyButton({
+                      action: 'copy-release-target-evidence-provider-only-capture-template',
+                      actionLabel: `provider-only capture template 복사: ${targetEvidenceProviderOnlyActionLabel}`,
+                      attributes: 'data-release-target-evidence-provider-only-capture-template="true"',
+                      buttonText: 'provider-only capture template 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button
