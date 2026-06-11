@@ -1550,6 +1550,9 @@ try {
   assert.equal(appJs.includes('Command rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceProductionGapText'), true);
   assert.equal(appJs.includes('Target evidence production gap guard'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceProductionGapCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceProductionGap'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceProductionGapCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-production-gap'), true);
   assert.equal(appJs.includes('data-release-target-evidence-production-gap'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyProductionGap'), true);
@@ -3041,6 +3044,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceRequiredCommandsCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceProductionGapCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
