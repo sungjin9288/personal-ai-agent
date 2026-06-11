@@ -1636,6 +1636,9 @@ try {
   assert.equal(appJs.includes("return { method: prompted ? 'prompt' : 'unavailable' };"), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSubmissionManifestText'), true);
   assert.equal(appJs.includes('Target evidence submission manifest'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceSubmissionManifestCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceSubmissionManifest'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceSubmissionManifestCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);
   assert.equal(appJs.includes('data-release-target-evidence-submission-manifest'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlySubmissionManifest'), true);
@@ -3083,6 +3086,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceClosureRulesCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceSubmissionManifestCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Submission Manifest Copy Pressed Metadata
+
+- moved target evidence submission manifest and provider-only submission manifest copy controls onto a shared target evidence submission manifest copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence submission manifest copy buttons
+- kept submission manifest text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence submission manifest copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Closure Rules Copy Pressed Metadata
 
 - moved target evidence closure rules and provider-only closure rules copy controls onto a shared target evidence closure rules copied-state renderer
