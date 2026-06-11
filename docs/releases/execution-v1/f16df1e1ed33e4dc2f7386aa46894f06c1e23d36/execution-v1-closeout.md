@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-11T00:48:10.756Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-11T00:48:00.828Z
 - branch: codex/release-blocker-package-copy-pressed-metadata
 - commit: f16df1e1ed33e4dc2f7386aa46894f06c1e23d36
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f16df1e1ed33e4dc2f7386aa46894f06c1e23d36/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

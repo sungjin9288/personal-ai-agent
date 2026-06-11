@@ -41,6 +41,8 @@ const state = {
   providerEventFallbackStopReasonFilter: '',
   providerEvents: null,
   providers: [],
+  releaseBlockerPackageCopiedKey: '',
+  releaseBlockerPackageCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -1180,6 +1182,33 @@ function markCopiedReleaseProviderReadinessPackage(provider = '') {
   }, 1800);
 }
 
+function getReleaseBlockerPackageCopyKey(blockerId = '') {
+  return normalizeUiParam(blockerId);
+}
+
+function isCopiedReleaseBlockerPackage(blockerId = '') {
+  return state.releaseBlockerPackageCopiedKey === getReleaseBlockerPackageCopyKey(blockerId);
+}
+
+function markCopiedReleaseBlockerPackage(blockerId = '') {
+  const nextKey = getReleaseBlockerPackageCopyKey(blockerId);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseBlockerPackageCopiedKey = nextKey;
+  if (state.releaseBlockerPackageCopiedTimer) {
+    window.clearTimeout(state.releaseBlockerPackageCopiedTimer);
+    state.releaseBlockerPackageCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseBlockerPackageCopiedTimer = window.setTimeout(() => {
+    state.releaseBlockerPackageCopiedKey = '';
+    state.releaseBlockerPackageCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1243,6 +1272,24 @@ function renderReleaseProviderReadinessPackageCopyButton({
     ? `data-ui-provider="${escapeHtml(provider)}"`
     : '';
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-provider-readiness-package" ${providerAttribute} data-ui-copy-key="${escapeHtml(copyKey)}" data-release-provider-readiness-package="true" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseBlockerPackageCopyButton({
+  actionLabel = 'release blocker package 복사',
+  attributes = '',
+  blockerId = '',
+  buttonText = 'package 복사',
+  className = 'ghost-button',
+  provider = '',
+} = {}) {
+  const copyKey = getReleaseBlockerPackageCopyKey(blockerId);
+  const copied = isCopiedReleaseBlockerPackage(copyKey);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  const providerAttribute = normalizeUiParam(provider)
+    ? `data-ui-provider="${escapeHtml(provider)}"`
+    : '';
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-blocker-package" data-ui-blocker="${escapeHtml(blockerId)}" ${providerAttribute} data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -8545,6 +8592,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-blocker-package') {
         void copyReleaseBlockerPackage({
+          copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || '',
           blockerId: button.dataset.uiBlocker || value || '',
         });
         return;
@@ -9838,8 +9886,10 @@ async function copyReleaseBlockerClosureChecklist({
 
 async function copyReleaseBlockerPackage({
   blockerId = state.releaseFocusedBlockerId,
+  copyKey = '',
 } = {}) {
   const normalizedBlockerId = normalizeUiParam(blockerId);
+  const normalizedCopyKey = normalizeUiParam(copyKey || normalizedBlockerId);
   const blockerAction = getReleaseCurrentOpenBlockerAction(normalizedBlockerId);
   const packageText = buildReleaseBlockerPackageText(blockerAction);
   if (!packageText) {
@@ -9847,11 +9897,14 @@ async function copyReleaseBlockerPackage({
     return;
   }
 
-  await copyPlainTextValue(packageText, {
+  const result = await copyPlainTextValue(packageText, {
     promptMessage: 'release blocker package를 복사하세요.',
     shownNotice: 'release blocker package를 표시했습니다.',
     successNotice: 'release blocker package를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseBlockerPackage(normalizedCopyKey);
+  }
 }
 
 async function copyReleaseProductionBlockerSummary() {
@@ -16196,15 +16249,12 @@ function renderReleaseStatus() {
                         aria-label="${escapeHtml(`focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                         title="${escapeHtml(`focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                       >closure 체크리스트 복사</button>
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-current-open-blocker-package="${escapeHtml(focusedBlockerId)}"
-                        data-ui-action="copy-release-blocker-package"
-                        data-ui-blocker="${escapeHtml(focusedBlockerId)}"
-                        aria-label="${escapeHtml(`focused blocker package 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
-                        title="${escapeHtml(`focused blocker package 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
-                      >package 복사</button>
+                      ${renderReleaseBlockerPackageCopyButton({
+                        actionLabel: `focused blocker package 복사: ${focusedBlockerLabel || focusedBlockerId}`,
+                        attributes: `data-release-current-open-blocker-package="${escapeHtml(focusedBlockerId)}"`,
+                        blockerId: focusedBlockerId,
+                        buttonText: 'package 복사',
+                      })}
                       <button
                         class="ghost-button"
                         type="button"
@@ -16324,15 +16374,12 @@ function renderReleaseStatus() {
                             aria-label="${escapeHtml(`blocker closure 체크리스트 복사: ${blockerActionLabel}`)}"
                             title="${escapeHtml(`blocker closure 체크리스트 복사: ${blockerActionLabel}`)}"
                           >closure 체크리스트 복사</button>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-current-open-blocker-package="${escapeHtml(actionId)}"
-                            data-ui-action="copy-release-blocker-package"
-                            data-ui-blocker="${escapeHtml(actionId)}"
-                            aria-label="${escapeHtml(`blocker package 복사: ${blockerActionLabel}`)}"
-                            title="${escapeHtml(`blocker package 복사: ${blockerActionLabel}`)}"
-                          >package 복사</button>
+                          ${renderReleaseBlockerPackageCopyButton({
+                            actionLabel: `blocker package 복사: ${blockerActionLabel}`,
+                            attributes: `data-release-current-open-blocker-package="${escapeHtml(actionId)}"`,
+                            blockerId: actionId,
+                            buttonText: 'package 복사',
+                          })}
                           <button
                             class="ghost-button"
                             type="button"
@@ -16822,7 +16869,13 @@ function renderReleaseStatus() {
                       ${focusedProviderTopBlocker
                         ? `
                             <button class="ghost-button" type="button" data-ui-action="focus-release-blocker" data-ui-blocker="${escapeHtml(focusedProviderTopBlockerId)}" data-ui-provider="${escapeHtml(focusedProvider)}" aria-pressed="${focusedProviderTopBlockerId === focusedBlockerId ? 'true' : 'false'}" aria-label="${escapeHtml(`provider blocker 보기: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider blocker 보기: ${focusedProviderActionLabel}`)}">provider blocker 보기</button>
-                            <button class="ghost-button" type="button" data-ui-action="copy-release-blocker-package" data-ui-blocker="${escapeHtml(focusedProviderTopBlockerId)}" data-ui-provider="${escapeHtml(focusedProvider)}" data-release-provider-blocker-package="true" aria-label="${escapeHtml(`provider blocker package 복사: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider blocker package 복사: ${focusedProviderActionLabel}`)}">provider blocker package 복사</button>
+                            ${renderReleaseBlockerPackageCopyButton({
+                              actionLabel: `provider blocker package 복사: ${focusedProviderActionLabel}`,
+                              attributes: 'data-release-provider-blocker-package="true"',
+                              blockerId: focusedProviderTopBlockerId,
+                              buttonText: 'provider blocker package 복사',
+                              provider: focusedProvider,
+                            })}
                           `
                         : ''}
                       ${focusedProviderLatestAction
@@ -16999,16 +17052,13 @@ function renderReleaseStatus() {
                                 aria-label="${escapeHtml(`provider blocker 보기: ${providerActionLabel}`)}"
                                 title="${escapeHtml(`provider blocker 보기: ${providerActionLabel}`)}"
                               >provider blocker 보기</button>
-                              <button
-                                class="ghost-button"
-                                type="button"
-                                data-ui-action="copy-release-blocker-package"
-                                data-ui-blocker="${escapeHtml(providerTopBlockerId)}"
-                                data-ui-provider="${escapeHtml(item.provider)}"
-                                data-release-provider-blocker-package="true"
-                                aria-label="${escapeHtml(`provider blocker package 복사: ${providerActionLabel}`)}"
-                                title="${escapeHtml(`provider blocker package 복사: ${providerActionLabel}`)}"
-                              >blocker package 복사</button>
+                              ${renderReleaseBlockerPackageCopyButton({
+                                actionLabel: `provider blocker package 복사: ${providerActionLabel}`,
+                                attributes: 'data-release-provider-blocker-package="true"',
+                                blockerId: providerTopBlockerId,
+                                buttonText: 'blocker package 복사',
+                                provider: item.provider,
+                              })}
                             `
                           : ''}
                         <button
