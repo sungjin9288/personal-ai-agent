@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Exception Register Copy Pressed Metadata
+
+- moved target evidence exception register and provider-only exception register copy controls onto a shared target evidence exception register copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence exception register copy buttons
+- kept exception register text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence exception register copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Production Gap Copy Pressed Metadata
 
 - moved target evidence production gap and provider-only production gap copy controls onto a shared target evidence production gap copied-state renderer
