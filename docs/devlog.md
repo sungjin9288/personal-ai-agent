@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Provider References Copy Pressed Metadata
+
+- moved target evidence provider references and provider-only provider references copy controls onto a shared target evidence provider references copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence provider references copy buttons
+- kept provider references text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence provider references copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Risk Decision Register Copy Pressed Metadata
 
 - moved target evidence risk decision register and provider-only risk decision register copy controls onto a shared target evidence risk decision register copied-state renderer
