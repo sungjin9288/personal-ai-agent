@@ -2195,9 +2195,14 @@ try {
   assert.equal(appJs.includes('provider-only release blocker closure matrix package'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-handoff'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-handoff'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-filter-handoff'"), true);
+  assert.equal(appJs.includes('slice handoff 복사: ${blockerTriageFilterActionLabel}'), true);
   assert.equal(appJs.includes('copyReleaseBlockerProviderOnlyHandoff'), true);
   assert.equal(appJs.includes('copy-release-blocker-provider-only-handoff'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-provider-only-handoff'"), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-handoff'), true);
+  assert.equal(appJs.includes('provider-only handoff 복사: ${blockerTriageProviderOnlyActionLabel}'), true);
+  assert.equal(appJs.includes('markCopiedReleaseBlockerHandoff({'), true);
   assert.equal(appJs.includes('provider-only handoff 복사'), true);
   assert.equal(appJs.includes('provider-only release blocker slice handoff'), true);
   assert.equal(appJs.includes('Release blocker slice handoff'), true);
@@ -2987,6 +2992,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseBlockerClosureMatrixCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseBlockerHandoffCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
