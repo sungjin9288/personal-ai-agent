@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-11T15:09:03.145Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-11T15:08:47.132Z
 - branch: codex/release-target-evidence-boundary-map-copy-pressed-metadata
 - commit: 4946f72beebe4a213fd5d43e761ed033d65294c4
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4946f72beebe4a213fd5d43e761ed033d65294c4/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

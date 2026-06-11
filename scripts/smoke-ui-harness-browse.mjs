@@ -1664,6 +1664,9 @@ try {
   assert.equal(appJs.includes('Evidence register rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceBoundaryConsistencyMapText'), true);
   assert.equal(appJs.includes('Target evidence boundary consistency map'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceBoundaryMapCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceBoundaryMap'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceBoundaryMapCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-boundary-map'), true);
   assert.equal(appJs.includes('data-release-target-evidence-boundary-map'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyBoundaryMap'), true);
@@ -3097,6 +3100,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceSanitizedRegisterCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceBoundaryMapCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));

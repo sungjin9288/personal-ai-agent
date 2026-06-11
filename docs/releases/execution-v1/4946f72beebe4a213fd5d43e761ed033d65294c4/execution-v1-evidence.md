@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T15:09:03.145Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T15:08:38.427Z
 - branch: codex/release-target-evidence-boundary-map-copy-pressed-metadata
 - commit: 4946f72beebe4a213fd5d43e761ed033d65294c4

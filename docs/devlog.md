@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Boundary Map Copy Pressed Metadata
+
+- moved target evidence boundary map and provider-only boundary map copy controls onto a shared target evidence boundary map copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence boundary map copy buttons
+- kept boundary consistency map text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence boundary map copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Sanitized Register Copy Pressed Metadata
 
 - moved target evidence sanitized register and provider-only sanitized register copy controls onto a shared target evidence sanitized register copied-state renderer
