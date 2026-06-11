@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Capture Template Copy Pressed Metadata
+
+- moved target evidence capture template and provider-only capture template copy controls onto a shared target evidence capture copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence capture template copy buttons
+- kept capture template text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence capture template copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Intake Summary Copy Pressed Metadata
 
 - moved target evidence intake summary and provider-only intake summary copy controls onto a shared target evidence intake copied-state renderer
