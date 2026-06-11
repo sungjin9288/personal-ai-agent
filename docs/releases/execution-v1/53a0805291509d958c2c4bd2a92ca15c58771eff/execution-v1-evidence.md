@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T13:38:20.236Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T13:37:52.775Z
 - branch: codex/release-target-evidence-closure-rules-copy-pressed-metadata
 - commit: 53a0805291509d958c2c4bd2a92ca15c58771eff
