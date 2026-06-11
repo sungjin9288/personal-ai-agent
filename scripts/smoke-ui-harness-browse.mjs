@@ -2179,9 +2179,18 @@ try {
   assert.equal(appJs.includes('sameBoundaryRequired:'), true);
   assert.equal(appJs.includes('productionReadyClaimAllowed:'), true);
   assert.equal(appJs.includes('Artifact refresh: npm run refresh:execution-v1-artifacts'), true);
+  assert.equal(appJs.includes('renderReleaseBlockerClosureMatrixCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseBlockerClosureMatrix'), true);
+  assert.equal(appJs.includes('releaseBlockerClosureMatrixCopiedKey'), true);
+  assert.equal(appJs.includes('data-release-current-open-blocker-filter-closure-matrix'), true);
+  assert.equal(appJs.includes('copy-release-blocker-filter-closure-matrix'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-filter-closure-matrix'"), true);
+  assert.equal(appJs.includes('closure matrix 복사: ${blockerTriageFilterActionLabel}'), true);
   assert.equal(appJs.includes('copyReleaseBlockerProviderOnlyClosureMatrixPackage'), true);
   assert.equal(appJs.includes('copy-release-blocker-provider-only-closure-matrix'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-provider-only-closure-matrix'"), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-closure-matrix'), true);
+  assert.equal(appJs.includes('provider-only closure matrix 복사: ${blockerTriageProviderOnlyActionLabel}'), true);
   assert.equal(appJs.includes('provider-only closure matrix 복사'), true);
   assert.equal(appJs.includes('provider-only release blocker closure matrix package'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-handoff'), true);
@@ -2974,6 +2983,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseBlockerClosureChecklistCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseBlockerClosureMatrixCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));

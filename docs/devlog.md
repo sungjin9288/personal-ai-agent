@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Closure Matrix Copy Pressed Metadata
+
+- moved release blocker closure matrix and provider-only closure matrix copy controls onto a shared closure matrix copied-state renderer
+- added aria-pressed metadata and copied-state styling to blocker closure matrix copy buttons
+- kept closure matrix text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker closure matrix copy-state contracts
+
 ## 2026-06-11 Release Blocker Slice Closure Checklist Copy Pressed Metadata
 
 - moved release blocker slice closure checklist and provider-only closure checklist copy controls onto the shared blocker closure checklist copied-state renderer
