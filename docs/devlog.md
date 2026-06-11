@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Closure Checklist Copy Pressed Metadata
+
+- moved release blocker closure checklist copy controls onto a shared copied-state renderer
+- added aria-pressed metadata and copied-state styling to focused blocker and blocker row closure checklist copy buttons
+- kept closure checklist text generation, blocker scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker closure checklist copy-state contracts
+
 ## 2026-06-11 Release Blocker Package Copy Pressed Metadata
 
 - moved release blocker package copy controls onto a shared copied-state renderer
