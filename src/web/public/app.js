@@ -8804,12 +8804,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-blocker-api-link') {
-        void copyReleaseBlockerApiLink();
+        void copyReleaseBlockerApiLink({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-blocker-provider-only-api-link') {
-        void copyReleaseBlockerProviderOnlyApiLink();
+        void copyReleaseBlockerProviderOnlyApiLink({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -10237,6 +10241,8 @@ async function copyReleaseBlockerProviderOnlySummary({
 
 async function copyReleaseBlockerApiLink({
   category = state.releaseBlockerCategoryFilter,
+  copyAction = 'copy-release-blocker-api-link',
+  copyKey = '',
   includeShared = true,
   owner = state.releaseBlockerOwnerFilter,
   promptMessage = 'release blocker API 링크를 복사하세요.',
@@ -10250,15 +10256,19 @@ async function copyReleaseBlockerApiLink({
     return;
   }
 
-  await copyUiLink(apiUrl, {
+  const result = await copyUiLink(apiUrl, {
     promptMessage,
     shownNotice,
     successNotice,
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseLink(copyAction, copyKey || apiUrl);
+  }
 }
 
 async function copyReleaseBlockerProviderOnlyApiLink({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -10270,6 +10280,8 @@ async function copyReleaseBlockerProviderOnlyApiLink({
 
   await copyReleaseBlockerApiLink({
     category,
+    copyAction: 'copy-release-blocker-provider-only-api-link',
+    copyKey,
     includeShared: false,
     owner,
     promptMessage: 'provider-only release blocker API 링크를 복사하세요.',
@@ -15866,24 +15878,32 @@ function renderReleaseStatus() {
                             })}
                   `
                   : ''}
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-release-current-open-blocker-api-link="true"
-                          data-ui-action="copy-release-blocker-api-link"
-                          aria-label="${escapeHtml(`API 링크 복사: ${blockerTriageFilterActionLabel}`)}"
-                          title="${escapeHtml(`API 링크 복사: ${blockerTriageFilterActionLabel}`)}"
-                        >API 링크 복사</button>
+                        ${renderReleaseLinkCopyButton({
+                          action: 'copy-release-blocker-api-link',
+                          actionLabel: `API 링크 복사: ${blockerTriageFilterActionLabel}`,
+                          attributes: 'data-release-current-open-blocker-api-link="true"',
+                          buttonText: 'API 링크 복사',
+                          value: buildReleaseBlockerApiUrl({
+                            category: blockerCategoryFilter,
+                            includeShared: true,
+                            owner: blockerOwnerFilter,
+                            provider: blockerProviderFilter,
+                          }),
+                        })}
                 ${blockerProviderFilter
                   ? `
-                            <button
-                              class="ghost-button"
-                              type="button"
-                              data-release-current-open-blocker-provider-only-api-link="true"
-                              data-ui-action="copy-release-blocker-provider-only-api-link"
-                              aria-label="${escapeHtml(`provider-only API 링크 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
-                              title="${escapeHtml(`provider-only API 링크 복사: ${blockerTriageProviderOnlyActionLabel}`)}"
-                            >provider-only API 링크 복사</button>
+                            ${renderReleaseLinkCopyButton({
+                              action: 'copy-release-blocker-provider-only-api-link',
+                              actionLabel: `provider-only API 링크 복사: ${blockerTriageProviderOnlyActionLabel}`,
+                              attributes: 'data-release-current-open-blocker-provider-only-api-link="true"',
+                              buttonText: 'provider-only API 링크 복사',
+                              value: buildReleaseBlockerApiUrl({
+                                category: blockerCategoryFilter,
+                                includeShared: false,
+                                owner: blockerOwnerFilter,
+                                provider: blockerProviderFilter,
+                              }),
+                            })}
                   `
                   : ''}
                         <button
