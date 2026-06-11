@@ -2116,10 +2116,16 @@ try {
   assert.equal(appJs.includes('/api/execution-v1/release-blockers'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-api-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-api-link'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-api-link'"), true);
+  assert.equal(appJs.includes('API 링크 복사: ${blockerTriageFilterActionLabel}'), true);
   assert.equal(appJs.includes('includeShared'), true);
   assert.equal(appJs.includes("params.set('includeShared', 'false')"), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-api-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-provider-only-api-link'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-provider-only-api-link'"), true);
+  assert.equal(appJs.includes("copyAction: 'copy-release-blocker-provider-only-api-link'"), true);
+  assert.equal(appJs.includes('provider-only API 링크 복사: ${blockerTriageProviderOnlyActionLabel}'), true);
+  assert.equal(appJs.includes('markCopiedReleaseLink(copyAction, copyKey || apiUrl)'), true);
   assert.equal(appJs.includes('provider-only API 링크 복사'), true);
   assert.equal(appJs.includes('includeSharedProviderOperations:'), true);
   assert.equal(appJs.includes('sharedProviderOperationsScope:'), true);
@@ -2946,6 +2952,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseBlockerSummaryCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseLinkCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
