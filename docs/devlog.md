@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Package Copy Pressed Metadata
+
+- moved release blocker package copy controls onto a shared copied-state renderer
+- added aria-pressed metadata and copied-state styling to focused blocker, blocker row, and provider blocker package copy buttons
+- kept blocker package text generation, blocker/provider scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker package copy-state contracts
+
 ## 2026-06-09 Release Provider Readiness Package Copy Pressed Metadata
 
 - moved provider readiness package copy controls onto a shared copied-state renderer

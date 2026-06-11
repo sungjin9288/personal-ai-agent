@@ -2242,6 +2242,12 @@ try {
   assert.equal(appJs.includes('buildReleaseBlockerPackageText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-package'), true);
+  assert.equal(appJs.includes('renderReleaseBlockerPackageCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseBlockerPackage'), true);
+  assert.equal(appJs.includes('releaseBlockerPackageCopiedKey'), true);
+  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
+  assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('Release blocker package'), true);
   assert.equal(appJs.includes('buildReleaseBlockerClosureChecklistText(blockerAction)'), true);
   assert.equal(appJs.includes('copy-release-evidence-doc-link'), true);
