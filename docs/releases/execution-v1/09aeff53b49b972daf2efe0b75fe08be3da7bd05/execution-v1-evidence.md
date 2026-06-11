@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T03:55:48.847Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T03:55:31.748Z
 - branch: codex/release-blocker-handoff-copy-pressed-metadata
 - commit: 09aeff53b49b972daf2efe0b75fe08be3da7bd05

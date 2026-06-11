@@ -41,6 +41,8 @@ const state = {
   providerEventFallbackStopReasonFilter: '',
   providerEvents: null,
   providers: [],
+  releaseBlockerHandoffCopiedKey: '',
+  releaseBlockerHandoffCopiedTimer: null,
   releaseBlockerClosureChecklistCopiedKey: '',
   releaseBlockerClosureChecklistCopiedTimer: null,
   releaseBlockerPackageCopiedKey: '',
@@ -1238,6 +1240,33 @@ function markCopiedReleaseBlockerClosureChecklist(blockerId = '') {
   }, 1800);
 }
 
+function getReleaseBlockerHandoffCopyKey(blockerId = '') {
+  return normalizeUiParam(blockerId);
+}
+
+function isCopiedReleaseBlockerHandoff(blockerId = '') {
+  return state.releaseBlockerHandoffCopiedKey === getReleaseBlockerHandoffCopyKey(blockerId);
+}
+
+function markCopiedReleaseBlockerHandoff(blockerId = '') {
+  const nextKey = getReleaseBlockerHandoffCopyKey(blockerId);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseBlockerHandoffCopiedKey = nextKey;
+  if (state.releaseBlockerHandoffCopiedTimer) {
+    window.clearTimeout(state.releaseBlockerHandoffCopiedTimer);
+    state.releaseBlockerHandoffCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseBlockerHandoffCopiedTimer = window.setTimeout(() => {
+    state.releaseBlockerHandoffCopiedKey = '';
+    state.releaseBlockerHandoffCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1333,6 +1362,20 @@ function renderReleaseBlockerClosureChecklistCopyButton({
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-blocker-closure-checklist" data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseBlockerHandoffCopyButton({
+  actionLabel = 'release blocker handoff 복사',
+  attributes = '',
+  blockerId = '',
+  buttonText = 'handoff 복사',
+  className = 'ghost-button',
+} = {}) {
+  const copyKey = getReleaseBlockerHandoffCopyKey(blockerId);
+  const copied = isCopiedReleaseBlockerHandoff(copyKey);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-blocker-handoff" data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -8621,6 +8664,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-blocker-handoff') {
         void copyReleaseBlockerHandoff({
+          copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || '',
           blockerId: button.dataset.uiBlocker || value || '',
         });
         return;
@@ -9894,8 +9938,10 @@ async function copyReleaseProductionBlockerLink({
 
 async function copyReleaseBlockerHandoff({
   blockerId = state.releaseFocusedBlockerId,
+  copyKey = '',
 } = {}) {
   const normalizedBlockerId = normalizeUiParam(blockerId);
+  const normalizedCopyKey = normalizeUiParam(copyKey || normalizedBlockerId);
   const blockerAction = getReleaseCurrentOpenBlockerAction(normalizedBlockerId);
   const handoffText = buildReleaseBlockerHandoffText(blockerAction);
   if (!handoffText) {
@@ -9903,11 +9949,14 @@ async function copyReleaseBlockerHandoff({
     return;
   }
 
-  await copyPlainTextValue(handoffText, {
+  const result = await copyPlainTextValue(handoffText, {
     promptMessage: 'release blocker handoff를 복사하세요.',
     shownNotice: 'release blocker handoff를 표시했습니다.',
     successNotice: 'release blocker handoff를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseBlockerHandoff(normalizedCopyKey);
+  }
 }
 
 async function copyReleaseBlockerClosureChecklist({
@@ -16280,15 +16329,12 @@ function renderReleaseStatus() {
                         `
                       : ''}
                     <div class="release-history-focus-actions">
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-current-open-blocker-handoff="${escapeHtml(focusedBlockerId)}"
-                        data-ui-action="copy-release-blocker-handoff"
-                        data-ui-blocker="${escapeHtml(focusedBlockerId)}"
-                        aria-label="${escapeHtml(`focused blocker handoff 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
-                        title="${escapeHtml(`focused blocker handoff 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
-                      >handoff 복사</button>
+                      ${renderReleaseBlockerHandoffCopyButton({
+                        actionLabel: `focused blocker handoff 복사: ${focusedBlockerLabel || focusedBlockerId}`,
+                        attributes: `data-release-current-open-blocker-handoff="${escapeHtml(focusedBlockerId)}"`,
+                        blockerId: focusedBlockerId,
+                        buttonText: 'handoff 복사',
+                      })}
                       ${renderReleaseBlockerClosureChecklistCopyButton({
                         actionLabel: `focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`,
                         attributes: `data-release-current-open-blocker-closure-checklist="${escapeHtml(focusedBlockerId)}"`,
@@ -16402,15 +16448,12 @@ function renderReleaseStatus() {
                             title="${escapeHtml(`${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`)}"
                             ${isFocusedBlocker ? 'disabled' : ''}
                           >${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}</button>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-current-open-blocker-handoff="${escapeHtml(actionId)}"
-                            data-ui-action="copy-release-blocker-handoff"
-                            data-ui-blocker="${escapeHtml(actionId)}"
-                            aria-label="${escapeHtml(`blocker handoff 복사: ${blockerActionLabel}`)}"
-                            title="${escapeHtml(`blocker handoff 복사: ${blockerActionLabel}`)}"
-                          >handoff 복사</button>
+                          ${renderReleaseBlockerHandoffCopyButton({
+                            actionLabel: `blocker handoff 복사: ${blockerActionLabel}`,
+                            attributes: `data-release-current-open-blocker-handoff="${escapeHtml(actionId)}"`,
+                            blockerId: actionId,
+                            buttonText: 'handoff 복사',
+                          })}
                           ${renderReleaseBlockerClosureChecklistCopyButton({
                             actionLabel: `blocker closure 체크리스트 복사: ${blockerActionLabel}`,
                             attributes: `data-release-current-open-blocker-closure-checklist="${escapeHtml(actionId)}"`,
