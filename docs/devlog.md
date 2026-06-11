@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Sanitized Register Copy Pressed Metadata
+
+- moved target evidence sanitized register and provider-only sanitized register copy controls onto a shared target evidence sanitized register copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence sanitized register copy buttons
+- kept sanitized register text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence sanitized register copy-state contracts
+
 ## 2026-06-11 Release Target Evidence Submission Manifest Copy Pressed Metadata
 
 - moved target evidence submission manifest and provider-only submission manifest copy controls onto a shared target evidence submission manifest copied-state renderer

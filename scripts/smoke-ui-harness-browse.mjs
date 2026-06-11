@@ -1650,6 +1650,9 @@ try {
   assert.equal(appJs.includes('Manifest fields:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceSanitizedRegisterText'), true);
   assert.equal(appJs.includes('Target evidence sanitized register'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceSanitizedRegisterCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceSanitizedRegister'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceSanitizedRegisterCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-sanitized-register'), true);
   assert.equal(appJs.includes('data-release-target-evidence-sanitized-register'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlySanitizedRegister'), true);
@@ -3090,6 +3093,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceSubmissionManifestCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceSanitizedRegisterCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
