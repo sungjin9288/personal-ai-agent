@@ -81,6 +81,8 @@ const state = {
   releaseTargetEvidenceSubmissionManifestCopiedTimer: null,
   releaseTargetEvidenceSanitizedRegisterCopiedKey: '',
   releaseTargetEvidenceSanitizedRegisterCopiedTimer: null,
+  releaseTargetEvidenceBoundaryMapCopiedKey: '',
+  releaseTargetEvidenceBoundaryMapCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -2192,6 +2194,55 @@ function markCopiedReleaseTargetEvidenceSanitizedRegister(options = {}) {
   }, 1800);
 }
 
+function getReleaseTargetEvidenceBoundaryMapCopyKey({
+  action = 'copy-release-target-evidence-boundary-map',
+  category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
+}
+
+function isCopiedReleaseTargetEvidenceBoundaryMap(options = {}) {
+  return state.releaseTargetEvidenceBoundaryMapCopiedKey
+    === getReleaseTargetEvidenceBoundaryMapCopyKey(options);
+}
+
+function markCopiedReleaseTargetEvidenceBoundaryMap(options = {}) {
+  const nextKey = getReleaseTargetEvidenceBoundaryMapCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseTargetEvidenceBoundaryMapCopiedKey = nextKey;
+  if (state.releaseTargetEvidenceBoundaryMapCopiedTimer) {
+    window.clearTimeout(state.releaseTargetEvidenceBoundaryMapCopiedTimer);
+    state.releaseTargetEvidenceBoundaryMapCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseTargetEvidenceBoundaryMapCopiedTimer = window.setTimeout(() => {
+    state.releaseTargetEvidenceBoundaryMapCopiedKey = '';
+    state.releaseTargetEvidenceBoundaryMapCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -2624,6 +2675,25 @@ function renderReleaseTargetEvidenceSanitizedRegisterCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceSanitizedRegisterCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceSanitizedRegister(copyOptions);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseTargetEvidenceBoundaryMapCopyButton({
+  action = 'copy-release-target-evidence-boundary-map',
+  actionLabel = 'target boundary map 복사',
+  attributes = '',
+  buttonText = 'target boundary map 복사',
+  category = state.releaseBlockerCategoryFilter,
+  className = 'ghost-button',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyOptions = { action, category, includeShared, owner, provider };
+  const copyKey = getReleaseTargetEvidenceBoundaryMapCopyKey(copyOptions);
+  const copied = isCopiedReleaseTargetEvidenceBoundaryMap(copyOptions);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
@@ -10233,12 +10303,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-target-evidence-boundary-map') {
-        void copyReleaseTargetEvidenceBoundaryMap();
+        void copyReleaseTargetEvidenceBoundaryMap({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-target-evidence-provider-only-boundary-map') {
-        void copyReleaseTargetEvidenceProviderOnlyBoundaryMap();
+        void copyReleaseTargetEvidenceProviderOnlyBoundaryMap({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -12628,6 +12702,7 @@ async function copyReleaseTargetEvidenceProviderOnlySanitizedRegister({
 
 async function copyReleaseTargetEvidenceBoundaryMap({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -12638,15 +12713,25 @@ async function copyReleaseTargetEvidenceBoundaryMap({
     return;
   }
 
-  await copyPlainTextValue(mapText, {
+  const result = await copyPlainTextValue(mapText, {
     promptMessage: 'target evidence boundary map을 복사하세요.',
     shownNotice: 'target evidence boundary map을 표시했습니다.',
     successNotice: 'target evidence boundary map을 복사했습니다.',
   });
+  if (result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceBoundaryMap({
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProviderOnlyBoundaryMap({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -12668,11 +12753,20 @@ async function copyReleaseTargetEvidenceProviderOnlyBoundaryMap({
     return;
   }
 
-  await copyPlainTextValue(mapText, {
+  const result = await copyPlainTextValue(mapText, {
     promptMessage: 'provider-only target evidence boundary consistency map을 복사하세요.',
     shownNotice: 'provider-only target evidence boundary consistency map을 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only target evidence boundary consistency map을 복사했습니다.`,
   });
+  if (result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceBoundaryMap({
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceCommandRerunLog({
@@ -17926,22 +18020,28 @@ function renderReleaseStatus() {
                     })}
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-target-evidence-boundary-map="true"
-                  data-ui-action="copy-release-target-evidence-boundary-map"
-                  aria-label="${escapeHtml(`target boundary map 복사: ${targetEvidenceActionLabel}`)}"
-                  title="${escapeHtml(`target boundary map 복사: ${targetEvidenceActionLabel}`)}">target boundary map 복사</button>
+                ${renderReleaseTargetEvidenceBoundaryMapCopyButton({
+                  action: 'copy-release-target-evidence-boundary-map',
+                  actionLabel: `target boundary map 복사: ${targetEvidenceActionLabel}`,
+                  attributes: 'data-release-target-evidence-boundary-map="true"',
+                  buttonText: 'target boundary map 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-target-evidence-provider-only-boundary-map="true"
-                      data-ui-action="copy-release-target-evidence-provider-only-boundary-map"
-                      aria-label="${escapeHtml(`provider-only boundary 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only boundary 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only boundary 복사</button>
+                    ${renderReleaseTargetEvidenceBoundaryMapCopyButton({
+                      action: 'copy-release-target-evidence-provider-only-boundary-map',
+                      actionLabel: `provider-only boundary 복사: ${targetEvidenceProviderOnlyActionLabel}`,
+                      attributes: 'data-release-target-evidence-provider-only-boundary-map="true"',
+                      buttonText: 'provider-only boundary 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button
