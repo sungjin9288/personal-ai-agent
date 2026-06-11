@@ -2034,6 +2034,9 @@ try {
   assert.equal(appJs.includes('data-release-production-blocker-row-index'), true);
   assert.equal(appJs.includes('data-release-production-blocker-handoff'), true);
   assert.equal(appJs.includes('copy-release-production-blocker-handoff'), true);
+  assert.equal(appJs.includes('renderReleaseProductionBlockerDetailCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseProductionBlockerDetail'), true);
+  assert.equal(appJs.includes('releaseProductionBlockerDetailCopiedKey'), true);
   assert.equal(appJs.includes('Production-ready blocker handoff'), true);
   assert.equal(appJs.includes('releaseFocusedProductionBlockerIndex'), true);
   assert.equal(appJs.includes('rpblocker'), true);
