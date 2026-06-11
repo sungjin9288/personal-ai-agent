@@ -57,6 +57,8 @@ const state = {
   releaseBlockerPackageCopiedTimer: null,
   releaseProductionBlockerSummaryCopiedKey: '',
   releaseProductionBlockerSummaryCopiedTimer: null,
+  releaseProductionBlockerDetailCopiedKey: '',
+  releaseProductionBlockerDetailCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -1589,6 +1591,46 @@ function markCopiedReleaseProductionBlockerSummary(copyKey = '') {
   }, 1800);
 }
 
+function getReleaseProductionBlockerDetailCopyKey({
+  action = 'copy-release-production-blocker-handoff',
+  blockerIndex = state.releaseFocusedProductionBlockerIndex,
+  copyKey = '',
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  const normalizedIndex = String(blockerIndex ?? '').trim();
+  if (!normalizedAction || !normalizedIndex) {
+    return '';
+  }
+  return `${normalizedAction}:${normalizedIndex}`;
+}
+
+function isCopiedReleaseProductionBlockerDetail(options = {}) {
+  return state.releaseProductionBlockerDetailCopiedKey === getReleaseProductionBlockerDetailCopyKey(options);
+}
+
+function markCopiedReleaseProductionBlockerDetail(options = {}) {
+  const nextKey = getReleaseProductionBlockerDetailCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseProductionBlockerDetailCopiedKey = nextKey;
+  if (state.releaseProductionBlockerDetailCopiedTimer) {
+    window.clearTimeout(state.releaseProductionBlockerDetailCopiedTimer);
+    state.releaseProductionBlockerDetailCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseProductionBlockerDetailCopiedTimer = window.setTimeout(() => {
+    state.releaseProductionBlockerDetailCopiedKey = '';
+    state.releaseProductionBlockerDetailCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1830,6 +1872,23 @@ function renderReleaseProductionBlockerSummaryCopyButton({
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-production-blocker-summary" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}" ${disabled ? 'disabled' : ''}>${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseProductionBlockerDetailCopyButton({
+  action = 'copy-release-production-blocker-handoff',
+  actionLabel = 'production blocker detail 복사',
+  attributes = '',
+  blockerIndex = state.releaseFocusedProductionBlockerIndex,
+  buttonText = '복사',
+  className = 'ghost-button',
+  copyKey = '',
+} = {}) {
+  const copyOptions = { action, blockerIndex, copyKey };
+  const nextCopyKey = getReleaseProductionBlockerDetailCopyKey(copyOptions);
+  const copied = isCopiedReleaseProductionBlockerDetail({ action, blockerIndex, copyKey: nextCopyKey });
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-index="${escapeHtml(blockerIndex)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -9150,6 +9209,7 @@ function wireQuickActions(scope = document) {
       if (action === 'copy-release-production-blocker-handoff') {
         void copyReleaseProductionBlockerHandoff({
           blockerIndex: button.dataset.uiIndex || value || 0,
+          copyKey: button.dataset.uiCopyKey || '',
         });
         return;
       }
@@ -9157,6 +9217,7 @@ function wireQuickActions(scope = document) {
       if (action === 'copy-release-production-blocker-commands') {
         void copyReleaseProductionBlockerCommands({
           blockerIndex: button.dataset.uiIndex || value || 0,
+          copyKey: button.dataset.uiCopyKey || '',
         });
         return;
       }
@@ -9164,6 +9225,7 @@ function wireQuickActions(scope = document) {
       if (action === 'copy-release-production-blocker-package') {
         void copyReleaseProductionBlockerPackage({
           blockerIndex: button.dataset.uiIndex || value || 0,
+          copyKey: button.dataset.uiCopyKey || '',
         });
         return;
       }
@@ -10514,6 +10576,7 @@ async function copyReleaseProductionBlockerSummary({
 
 async function copyReleaseProductionBlockerHandoff({
   blockerIndex = 0,
+  copyKey = '',
 } = {}) {
   const handoffText = buildReleaseProductionBlockerHandoffText({ blockerIndex });
   if (!handoffText) {
@@ -10521,15 +10584,23 @@ async function copyReleaseProductionBlockerHandoff({
     return;
   }
 
-  await copyPlainTextValue(handoffText, {
+  const result = await copyPlainTextValue(handoffText, {
     promptMessage: 'production-ready blocker handoff를 복사하세요.',
     shownNotice: 'production-ready blocker handoff를 표시했습니다.',
     successNotice: 'production-ready blocker handoff를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseProductionBlockerDetail({
+      action: 'copy-release-production-blocker-handoff',
+      blockerIndex,
+      copyKey,
+    });
+  }
 }
 
 async function copyReleaseProductionBlockerCommands({
   blockerIndex = 0,
+  copyKey = '',
 } = {}) {
   const commandText = buildReleaseProductionBlockerCommandText({ blockerIndex });
   if (!commandText) {
@@ -10537,15 +10608,23 @@ async function copyReleaseProductionBlockerCommands({
     return;
   }
 
-  await copyPlainTextValue(commandText, {
+  const result = await copyPlainTextValue(commandText, {
     promptMessage: 'production-ready blocker 검증 명령을 복사하세요.',
     shownNotice: 'production-ready blocker 검증 명령을 표시했습니다.',
     successNotice: 'production-ready blocker 검증 명령을 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseProductionBlockerDetail({
+      action: 'copy-release-production-blocker-commands',
+      blockerIndex,
+      copyKey,
+    });
+  }
 }
 
 async function copyReleaseProductionBlockerPackage({
   blockerIndex = 0,
+  copyKey = '',
 } = {}) {
   const packageText = buildReleaseProductionBlockerPackageText({ blockerIndex });
   if (!packageText) {
@@ -10553,11 +10632,18 @@ async function copyReleaseProductionBlockerPackage({
     return;
   }
 
-  await copyPlainTextValue(packageText, {
+  const result = await copyPlainTextValue(packageText, {
     promptMessage: 'production-ready blocker package를 복사하세요.',
     shownNotice: 'production-ready blocker package를 표시했습니다.',
     successNotice: 'production-ready blocker package를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseProductionBlockerDetail({
+      action: 'copy-release-production-blocker-package',
+      blockerIndex,
+      copyKey,
+    });
+  }
 }
 
 async function copyReleaseProviderReadinessPackage({
@@ -17195,15 +17281,13 @@ function renderReleaseStatus() {
                     <strong>Focused production-ready blocker</strong>
                     <p>${escapeHtml(focusedProductionBlocker || `production-ready blocker #${focusedProductionBlockerOrdinal}`)}</p>
                     <div class="release-history-focus-actions">
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-production-blocker-handoff="${escapeHtml(focusedProductionBlockerIndex)}"
-                        data-ui-action="copy-release-production-blocker-handoff"
-                        data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
-                        aria-label="${escapeHtml(`focused production blocker handoff 복사: ${focusedProductionBlockerActionLabel}`)}"
-                        title="${escapeHtml(`focused production blocker handoff 복사: ${focusedProductionBlockerActionLabel}`)}"
-                      >handoff 복사</button>
+                      ${renderReleaseProductionBlockerDetailCopyButton({
+                        action: 'copy-release-production-blocker-handoff',
+                        actionLabel: `focused production blocker handoff 복사: ${focusedProductionBlockerActionLabel}`,
+                        attributes: `data-release-production-blocker-handoff="${escapeHtml(focusedProductionBlockerIndex)}"`,
+                        blockerIndex: focusedProductionBlockerIndex,
+                        buttonText: 'handoff 복사',
+                      })}
                       <button
                         class="ghost-button"
                         type="button"
@@ -17230,24 +17314,20 @@ function renderReleaseStatus() {
                         buttonText: '근거 링크 복사',
                         value: productionBlockerEvidenceDocHref,
                       })}
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-production-blocker-commands="${escapeHtml(focusedProductionBlockerIndex)}"
-                        data-ui-action="copy-release-production-blocker-commands"
-                        data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
-                        aria-label="${escapeHtml(`focused production blocker 검증 명령 복사: ${focusedProductionBlockerActionLabel}`)}"
-                        title="${escapeHtml(`focused production blocker 검증 명령 복사: ${focusedProductionBlockerActionLabel}`)}"
-                      >검증 명령 복사</button>
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-production-blocker-package="${escapeHtml(focusedProductionBlockerIndex)}"
-                        data-ui-action="copy-release-production-blocker-package"
-                        data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
-                        aria-label="${escapeHtml(`focused production blocker package 복사: ${focusedProductionBlockerActionLabel}`)}"
-                        title="${escapeHtml(`focused production blocker package 복사: ${focusedProductionBlockerActionLabel}`)}"
-                      >package 복사</button>
+                      ${renderReleaseProductionBlockerDetailCopyButton({
+                        action: 'copy-release-production-blocker-commands',
+                        actionLabel: `focused production blocker 검증 명령 복사: ${focusedProductionBlockerActionLabel}`,
+                        attributes: `data-release-production-blocker-commands="${escapeHtml(focusedProductionBlockerIndex)}"`,
+                        blockerIndex: focusedProductionBlockerIndex,
+                        buttonText: '검증 명령 복사',
+                      })}
+                      ${renderReleaseProductionBlockerDetailCopyButton({
+                        action: 'copy-release-production-blocker-package',
+                        actionLabel: `focused production blocker package 복사: ${focusedProductionBlockerActionLabel}`,
+                        attributes: `data-release-production-blocker-package="${escapeHtml(focusedProductionBlockerIndex)}"`,
+                        blockerIndex: focusedProductionBlockerIndex,
+                        buttonText: 'package 복사',
+                      })}
                       <button class="ghost-button" type="button" data-ui-action="clear-release-production-blocker-focus" aria-label="${escapeHtml(`focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`)}" title="${escapeHtml(`focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`)}">포커스 해제</button>
                     </div>
                   </div>
@@ -17310,33 +17390,27 @@ function renderReleaseStatus() {
                             buttonText: '근거 링크 복사',
                             value: productionBlockerEvidenceDocHref,
                           })}
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-production-blocker-commands="${escapeHtml(String(index))}"
-                            data-ui-action="copy-release-production-blocker-commands"
-                            data-ui-index="${escapeHtml(String(index))}"
-                            aria-label="${escapeHtml(`production blocker 검증 명령 복사: ${productionBlockerRowActionLabel}`)}"
-                            title="${escapeHtml(`production blocker 검증 명령 복사: ${productionBlockerRowActionLabel}`)}"
-                          >검증 명령 복사</button>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-production-blocker-package="${escapeHtml(String(index))}"
-                            data-ui-action="copy-release-production-blocker-package"
-                            data-ui-index="${escapeHtml(String(index))}"
-                            aria-label="${escapeHtml(`production blocker package 복사: ${productionBlockerRowActionLabel}`)}"
-                            title="${escapeHtml(`production blocker package 복사: ${productionBlockerRowActionLabel}`)}"
-                          >package 복사</button>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-production-blocker-handoff="${escapeHtml(String(index))}"
-                            data-ui-action="copy-release-production-blocker-handoff"
-                            data-ui-index="${escapeHtml(String(index))}"
-                            aria-label="${escapeHtml(`production blocker handoff 복사: ${productionBlockerRowActionLabel}`)}"
-                            title="${escapeHtml(`production blocker handoff 복사: ${productionBlockerRowActionLabel}`)}"
-                          >blocker handoff 복사</button>
+                          ${renderReleaseProductionBlockerDetailCopyButton({
+                            action: 'copy-release-production-blocker-commands',
+                            actionLabel: `production blocker 검증 명령 복사: ${productionBlockerRowActionLabel}`,
+                            attributes: `data-release-production-blocker-commands="${escapeHtml(String(index))}"`,
+                            blockerIndex: String(index),
+                            buttonText: '검증 명령 복사',
+                          })}
+                          ${renderReleaseProductionBlockerDetailCopyButton({
+                            action: 'copy-release-production-blocker-package',
+                            actionLabel: `production blocker package 복사: ${productionBlockerRowActionLabel}`,
+                            attributes: `data-release-production-blocker-package="${escapeHtml(String(index))}"`,
+                            blockerIndex: String(index),
+                            buttonText: 'package 복사',
+                          })}
+                          ${renderReleaseProductionBlockerDetailCopyButton({
+                            action: 'copy-release-production-blocker-handoff',
+                            actionLabel: `production blocker handoff 복사: ${productionBlockerRowActionLabel}`,
+                            attributes: `data-release-production-blocker-handoff="${escapeHtml(String(index))}"`,
+                            blockerIndex: String(index),
+                            buttonText: 'blocker handoff 복사',
+                          })}
                         </div>
                       </div>
                     `;

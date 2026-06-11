@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Production Blocker Detail Copy Pressed Metadata
+
+- moved production-ready blocker handoff, verification commands, and package copy controls onto a shared production blocker detail copied-state renderer
+- added aria-pressed metadata and copied-state styling to focused and row-level production blocker detail copy buttons
+- kept production blocker handoff, command, package text generation and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for production blocker detail copy-state contracts
+
 ## 2026-06-11 Release Production Blocker Summary Copy Pressed Metadata
 
 - moved the production-ready blocker summary copy control onto a dedicated copied-state renderer
