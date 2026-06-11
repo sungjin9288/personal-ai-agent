@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Handoff Copy Pressed Metadata
+
+- moved release blocker handoff copy controls onto a shared copied-state renderer
+- added aria-pressed metadata and copied-state styling to focused blocker and blocker row handoff copy buttons
+- kept handoff text generation, blocker scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker handoff copy-state contracts
+
 ## 2026-06-11 Release Blocker Closure Checklist Copy Pressed Metadata
 
 - moved release blocker closure checklist copy controls onto a shared copied-state renderer

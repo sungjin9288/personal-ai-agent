@@ -2229,6 +2229,12 @@ try {
   assert.equal(appJs.includes('focus-release-blocker'), true);
   assert.equal(appJs.includes('copy-release-blocker-link'), true);
   assert.equal(appJs.includes('copy-release-blocker-handoff'), true);
+  assert.equal(appJs.includes('renderReleaseBlockerHandoffCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseBlockerHandoff'), true);
+  assert.equal(appJs.includes('releaseBlockerHandoffCopiedKey'), true);
+  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
+  assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
+  assert.equal(appJs.includes('focused blocker handoff 복사'), true);
   assert.equal(appJs.includes('Release blocker handoff'), true);
   assert.equal(appJs.includes('buildReleaseBlockerClosureChecklistText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-closure-checklist'), true);
