@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T03:40:47.393Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T03:40:31.677Z
 - branch: codex/release-blocker-closure-checklist-copy-pressed-metadata
 - commit: e3df70dfa8b6df078129a98149f08a731170bc05

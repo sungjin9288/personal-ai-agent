@@ -2233,6 +2233,12 @@ try {
   assert.equal(appJs.includes('buildReleaseBlockerClosureChecklistText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-closure-checklist'), true);
   assert.equal(appJs.includes('copy-release-blocker-closure-checklist'), true);
+  assert.equal(appJs.includes('renderReleaseBlockerClosureChecklistCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseBlockerClosureChecklist'), true);
+  assert.equal(appJs.includes('releaseBlockerClosureChecklistCopiedKey'), true);
+  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
+  assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
+  assert.equal(appJs.includes('focused blocker closure 체크리스트 복사'), true);
   assert.equal(appJs.includes('Release blocker closure checklist'), true);
   assert.equal(appJs.includes('Closure requirements:'), true);
   assert.equal(appJs.includes('Closure rules:'), true);

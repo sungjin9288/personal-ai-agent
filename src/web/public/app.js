@@ -41,6 +41,8 @@ const state = {
   providerEventFallbackStopReasonFilter: '',
   providerEvents: null,
   providers: [],
+  releaseBlockerClosureChecklistCopiedKey: '',
+  releaseBlockerClosureChecklistCopiedTimer: null,
   releaseBlockerPackageCopiedKey: '',
   releaseBlockerPackageCopiedTimer: null,
   releaseCommandCopiedKey: '',
@@ -1209,6 +1211,33 @@ function markCopiedReleaseBlockerPackage(blockerId = '') {
   }, 1800);
 }
 
+function getReleaseBlockerClosureChecklistCopyKey(blockerId = '') {
+  return normalizeUiParam(blockerId);
+}
+
+function isCopiedReleaseBlockerClosureChecklist(blockerId = '') {
+  return state.releaseBlockerClosureChecklistCopiedKey === getReleaseBlockerClosureChecklistCopyKey(blockerId);
+}
+
+function markCopiedReleaseBlockerClosureChecklist(blockerId = '') {
+  const nextKey = getReleaseBlockerClosureChecklistCopyKey(blockerId);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseBlockerClosureChecklistCopiedKey = nextKey;
+  if (state.releaseBlockerClosureChecklistCopiedTimer) {
+    window.clearTimeout(state.releaseBlockerClosureChecklistCopiedTimer);
+    state.releaseBlockerClosureChecklistCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseBlockerClosureChecklistCopiedTimer = window.setTimeout(() => {
+    state.releaseBlockerClosureChecklistCopiedKey = '';
+    state.releaseBlockerClosureChecklistCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1290,6 +1319,20 @@ function renderReleaseBlockerPackageCopyButton({
     ? `data-ui-provider="${escapeHtml(provider)}"`
     : '';
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-blocker-package" data-ui-blocker="${escapeHtml(blockerId)}" ${providerAttribute} data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseBlockerClosureChecklistCopyButton({
+  actionLabel = 'release blocker closure checklist 복사',
+  attributes = '',
+  blockerId = '',
+  buttonText = 'closure 체크리스트 복사',
+  className = 'ghost-button',
+} = {}) {
+  const copyKey = getReleaseBlockerClosureChecklistCopyKey(blockerId);
+  const copied = isCopiedReleaseBlockerClosureChecklist(copyKey);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-blocker-closure-checklist" data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -8585,6 +8628,7 @@ function wireQuickActions(scope = document) {
 
       if (action === 'copy-release-blocker-closure-checklist') {
         void copyReleaseBlockerClosureChecklist({
+          copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || '',
           blockerId: button.dataset.uiBlocker || value || '',
         });
         return;
@@ -9868,8 +9912,10 @@ async function copyReleaseBlockerHandoff({
 
 async function copyReleaseBlockerClosureChecklist({
   blockerId = state.releaseFocusedBlockerId,
+  copyKey = '',
 } = {}) {
   const normalizedBlockerId = normalizeUiParam(blockerId);
+  const normalizedCopyKey = normalizeUiParam(copyKey || normalizedBlockerId);
   const blockerAction = getReleaseCurrentOpenBlockerAction(normalizedBlockerId);
   const checklistText = buildReleaseBlockerClosureChecklistText(blockerAction);
   if (!checklistText) {
@@ -9877,11 +9923,14 @@ async function copyReleaseBlockerClosureChecklist({
     return;
   }
 
-  await copyPlainTextValue(checklistText, {
+  const result = await copyPlainTextValue(checklistText, {
     promptMessage: 'release blocker closure checklist를 복사하세요.',
     shownNotice: 'release blocker closure checklist를 표시했습니다.',
     successNotice: 'release blocker closure checklist를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseBlockerClosureChecklist(normalizedCopyKey);
+  }
 }
 
 async function copyReleaseBlockerPackage({
@@ -16240,15 +16289,12 @@ function renderReleaseStatus() {
                         aria-label="${escapeHtml(`focused blocker handoff 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                         title="${escapeHtml(`focused blocker handoff 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
                       >handoff 복사</button>
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-current-open-blocker-closure-checklist="${escapeHtml(focusedBlockerId)}"
-                        data-ui-action="copy-release-blocker-closure-checklist"
-                        data-ui-blocker="${escapeHtml(focusedBlockerId)}"
-                        aria-label="${escapeHtml(`focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
-                        title="${escapeHtml(`focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`)}"
-                      >closure 체크리스트 복사</button>
+                      ${renderReleaseBlockerClosureChecklistCopyButton({
+                        actionLabel: `focused blocker closure 체크리스트 복사: ${focusedBlockerLabel || focusedBlockerId}`,
+                        attributes: `data-release-current-open-blocker-closure-checklist="${escapeHtml(focusedBlockerId)}"`,
+                        blockerId: focusedBlockerId,
+                        buttonText: 'closure 체크리스트 복사',
+                      })}
                       ${renderReleaseBlockerPackageCopyButton({
                         actionLabel: `focused blocker package 복사: ${focusedBlockerLabel || focusedBlockerId}`,
                         attributes: `data-release-current-open-blocker-package="${escapeHtml(focusedBlockerId)}"`,
@@ -16365,15 +16411,12 @@ function renderReleaseStatus() {
                             aria-label="${escapeHtml(`blocker handoff 복사: ${blockerActionLabel}`)}"
                             title="${escapeHtml(`blocker handoff 복사: ${blockerActionLabel}`)}"
                           >handoff 복사</button>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-current-open-blocker-closure-checklist="${escapeHtml(actionId)}"
-                            data-ui-action="copy-release-blocker-closure-checklist"
-                            data-ui-blocker="${escapeHtml(actionId)}"
-                            aria-label="${escapeHtml(`blocker closure 체크리스트 복사: ${blockerActionLabel}`)}"
-                            title="${escapeHtml(`blocker closure 체크리스트 복사: ${blockerActionLabel}`)}"
-                          >closure 체크리스트 복사</button>
+                          ${renderReleaseBlockerClosureChecklistCopyButton({
+                            actionLabel: `blocker closure 체크리스트 복사: ${blockerActionLabel}`,
+                            attributes: `data-release-current-open-blocker-closure-checklist="${escapeHtml(actionId)}"`,
+                            blockerId: actionId,
+                            buttonText: 'closure 체크리스트 복사',
+                          })}
                           ${renderReleaseBlockerPackageCopyButton({
                             actionLabel: `blocker package 복사: ${blockerActionLabel}`,
                             attributes: `data-release-current-open-blocker-package="${escapeHtml(actionId)}"`,
