@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-11T07:14:13.850Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-11T07:13:57.009Z
 - branch: codex/release-production-blocker-summary-copy-pressed-metadata
 - commit: efce1f6c84a086170731ce5da4833dfab4a9a2ae
