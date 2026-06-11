@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Production Blocker Summary Copy Pressed Metadata
+
+- moved the production-ready blocker summary copy control onto a dedicated copied-state renderer
+- added aria-pressed metadata and copied-state styling to the production blocker summary copy button
+- kept production blocker summary text generation and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for production blocker summary copy-state contracts
+
 ## 2026-06-11 Release Blocker Slice Evidence Copy Pressed Metadata
 
 - moved release blocker slice evidence and provider-only evidence copy controls onto a shared blocker evidence copied-state renderer

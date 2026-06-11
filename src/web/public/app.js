@@ -55,6 +55,8 @@ const state = {
   releaseBlockerEvidenceCopiedTimer: null,
   releaseBlockerPackageCopiedKey: '',
   releaseBlockerPackageCopiedTimer: null,
+  releaseProductionBlockerSummaryCopiedKey: '',
+  releaseProductionBlockerSummaryCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -1560,6 +1562,33 @@ function markCopiedReleaseBlockerSummary(options = {}) {
   }, 1800);
 }
 
+function getReleaseProductionBlockerSummaryCopyKey(copyKey = '') {
+  return normalizeUiParam(copyKey) || 'copy-release-production-blocker-summary';
+}
+
+function isCopiedReleaseProductionBlockerSummary(copyKey = '') {
+  return state.releaseProductionBlockerSummaryCopiedKey === getReleaseProductionBlockerSummaryCopyKey(copyKey);
+}
+
+function markCopiedReleaseProductionBlockerSummary(copyKey = '') {
+  const nextKey = getReleaseProductionBlockerSummaryCopyKey(copyKey);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseProductionBlockerSummaryCopiedKey = nextKey;
+  if (state.releaseProductionBlockerSummaryCopiedTimer) {
+    window.clearTimeout(state.releaseProductionBlockerSummaryCopiedTimer);
+    state.releaseProductionBlockerSummaryCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseProductionBlockerSummaryCopiedTimer = window.setTimeout(() => {
+    state.releaseProductionBlockerSummaryCopiedKey = '';
+    state.releaseProductionBlockerSummaryCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -1786,6 +1815,21 @@ function renderReleaseBlockerSummaryCopyButton({
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseProductionBlockerSummaryCopyButton({
+  actionLabel = 'production blocker summary 복사',
+  attributes = '',
+  buttonText = 'production summary 복사',
+  className = 'ghost-button',
+  copyKey = '',
+  disabled = false,
+} = {}) {
+  const nextCopyKey = getReleaseProductionBlockerSummaryCopyKey(copyKey);
+  const copied = isCopiedReleaseProductionBlockerSummary(nextCopyKey);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-production-blocker-summary" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}" ${disabled ? 'disabled' : ''}>${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
@@ -9097,7 +9141,9 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-production-blocker-summary') {
-        void copyReleaseProductionBlockerSummary();
+        void copyReleaseProductionBlockerSummary({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -10447,18 +10493,23 @@ async function copyReleaseBlockerPackage({
   }
 }
 
-async function copyReleaseProductionBlockerSummary() {
+async function copyReleaseProductionBlockerSummary({
+  copyKey = '',
+} = {}) {
   const summaryText = buildReleaseProductionBlockerSummaryText();
   if (!summaryText) {
     setUiNotice('복사할 production-ready blocker summary가 없습니다.');
     return;
   }
 
-  await copyPlainTextValue(summaryText, {
+  const result = await copyPlainTextValue(summaryText, {
     promptMessage: 'production-ready blocker summary를 복사하세요.',
     shownNotice: 'production-ready blocker summary를 표시했습니다.',
     successNotice: 'production-ready blocker summary를 복사했습니다.',
   });
+  if (result?.method && result.method !== 'unavailable') {
+    markCopiedReleaseProductionBlockerSummary(copyKey);
+  }
 }
 
 async function copyReleaseProductionBlockerHandoff({
@@ -16231,15 +16282,13 @@ function renderReleaseStatus() {
               <strong>Production-ready blocker ${escapeHtml(String(productionBlockerCount))}건</strong>
               <p>${escapeHtml(productionReadyStopReason || 'production-ready stop reason이 release readiness 문서에 아직 기록되지 않았습니다.')}</p>
                       <div class="release-history-filter-chips">
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-release-production-blocker-summary-copy="true"
-                          data-ui-action="copy-release-production-blocker-summary"
-                          aria-label="${escapeHtml(`production blocker summary 복사: ${productionBlockerActionLabel}`)}"
-                          title="${escapeHtml(`production blocker summary 복사: ${productionBlockerActionLabel}`)}"
-                          ${productionBlockers.length ? '' : 'disabled'}
-                        >production summary 복사</button>
+                        ${renderReleaseProductionBlockerSummaryCopyButton({
+                          actionLabel: `production blocker summary 복사: ${productionBlockerActionLabel}`,
+                          attributes: 'data-release-production-blocker-summary-copy="true"',
+                          buttonText: 'production summary 복사',
+                          copyKey: 'production-blocker-summary',
+                          disabled: !productionBlockers.length,
+                        })}
                         ${renderReleaseLinkCopyButton({
                           action: 'copy-release-evidence-doc-link',
                           actionLabel: `release-readiness 링크 복사: ${productionBlockerActionLabel}`,
