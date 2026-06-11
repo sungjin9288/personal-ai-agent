@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Blocker Slice Package Copy Pressed Metadata
+
+- moved release blocker slice package and provider-only package copy controls onto the shared blocker package copied-state renderer
+- added aria-pressed metadata and copied-state styling to blocker slice package copy buttons
+- kept package text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker slice package copy-state contracts
+
 ## 2026-06-11 Release Blocker API Link Copy Pressed Metadata
 
 - moved release blocker API link and provider-only API link copy controls onto the shared release link copied-state renderer

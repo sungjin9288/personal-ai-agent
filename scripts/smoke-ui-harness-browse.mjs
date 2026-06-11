@@ -2149,8 +2149,13 @@ try {
   assert.equal(appJs.includes('buildReleaseBlockerSlicePackageText'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-package'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-filter-package'"), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-provider-only-package'), true);
   assert.equal(appJs.includes('copy-release-blocker-provider-only-package'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-provider-only-package'"), true);
+  assert.equal(appJs.includes('slice package 복사: ${blockerTriageFilterActionLabel}'), true);
+  assert.equal(appJs.includes('provider-only package 복사: ${blockerTriageProviderOnlyActionLabel}'), true);
+  assert.equal(appJs.includes('markCopiedReleaseBlockerPackage({'), true);
   assert.equal(appJs.includes('provider-only package 복사'), true);
   assert.equal(appJs.includes('includeShared: false'), true);
   assert.equal(appJs.includes('Release blocker slice package'), true);
@@ -2956,6 +2961,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseLinkCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseBlockerPackageCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
