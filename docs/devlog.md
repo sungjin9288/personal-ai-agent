@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-11 Release Target Evidence Intake Summary Copy Pressed Metadata
+
+- moved target evidence intake summary and provider-only intake summary copy controls onto a shared target evidence intake copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence intake summary copy buttons
+- kept intake summary text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence intake summary copy-state contracts
+
 ## 2026-06-11 Release Production Blocker Detail Copy Pressed Metadata
 
 - moved production-ready blocker handoff, verification commands, and package copy controls onto a shared production blocker detail copied-state renderer
