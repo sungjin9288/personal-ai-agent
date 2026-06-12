@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T07:05:47.332Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T07:05:33.519Z
 - branch: codex/release-target-evidence-decision-base-renderer
 - commit: df9a6abef7d4a0133f66d6660883bf586812ffc9

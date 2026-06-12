@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Decision Base Renderer
+
+- moved target evidence command rerun log, reviewer decision record, and blocker disposition copy renderers onto the shared release copied-action button renderer
+- kept target evidence filter/provider-only scopes, copy-key generation, and click handler routing unchanged
+- reduced duplicated copied-state accessibility metadata in the target evidence decision copy renderer group
+- extended UI harness browse smoke coverage for target evidence decision base renderer delegation
+
 ## 2026-06-12 Release Target Evidence Manifest Base Renderer
 
 - moved target evidence submission manifest, sanitized register, and boundary map copy renderers onto the shared release copied-action button renderer
