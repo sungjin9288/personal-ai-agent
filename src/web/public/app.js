@@ -3098,6 +3098,37 @@ function renderReleaseHandoffLinkCopyButton({
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-success-notice="${escapeHtml(successNotice)}" data-ui-value="${escapeHtml(normalizedArtifactId)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? copiedText : buttonText)}</button>`;
 }
 
+function renderReleaseHandoffStructuredSummaryCopyButton({
+  action = 'copy-release-handoff-structured-summary',
+  actionLabel = 'handoff summary overview 복사',
+  artifactId = '',
+  attributes = '',
+  buttonText = 'overview 복사',
+  className = 'ghost-button',
+  copiedText = '복사됨',
+  detailKey = '',
+  lineIndex = -1,
+  successNotice = '',
+} = {}) {
+  const normalizedArtifactId = normalizeUiParam(artifactId);
+  const normalizedDetailKey = normalizeUiParam(detailKey);
+  const normalizedLineIndex = Number.isInteger(lineIndex) ? lineIndex : Number.parseInt(lineIndex, 10);
+  const copied = action === 'copy-release-handoff-structured-summary-detail'
+    ? isCopiedReleaseHandoffSummaryDetail(normalizedArtifactId, normalizedDetailKey)
+    : action === 'copy-release-handoff-structured-summary-stable-line'
+      ? isCopiedReleaseHandoffSummaryStableLine(normalizedArtifactId, normalizedDetailKey, normalizedLineIndex)
+      : isCopiedReleaseHandoffSummary(normalizedArtifactId);
+  const detailAttribute = normalizedDetailKey
+    ? `data-ui-detail-key="${escapeHtml(normalizedDetailKey)}"`
+    : '';
+  const lineIndexAttribute = Number.isInteger(normalizedLineIndex) && normalizedLineIndex >= 0
+    ? `data-ui-line-index="${escapeHtml(String(normalizedLineIndex))}"`
+    : '';
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" ${detailAttribute} ${lineIndexAttribute} data-ui-success-notice="${escapeHtml(successNotice)}" data-ui-value="${escapeHtml(normalizedArtifactId)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? copiedText : buttonText)}</button>`;
+}
+
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {
   const nextKey = getRetrievalSourceKey(sourceType, sourceLabel);
   if (!nextKey) {
@@ -19824,7 +19855,6 @@ function renderReleaseStatus() {
                         .map((item) => {
                           const previewable = isReleaseHandoffPreviewable(item);
                           const previewActive = handoffPreviewArtifactId === String(item.id || '').trim();
-                          const structuredSummaryCopied = isCopiedReleaseHandoffSummary(item.id);
                           const structuredSummaryRows = getReleaseHandoffStructuredSummaryRows(item);
                           const structuredSummaryDetails = getReleaseHandoffStructuredSummaryDetails(item);
                           const structuredSummaryOverviewLine = getReleaseHandoffStructuredSummaryOverviewLine(item);
@@ -19878,18 +19908,15 @@ function renderReleaseStatus() {
                                                     <div class="release-handoff-summary-detail" data-release-handoff-structured-summary-detail="${escapeHtml(item.id || '')}">
                                                       <div class="release-handoff-summary-detail-head">
                                                         <span class="item-title">${escapeHtml(detail.label)}</span>
-                                                        <button
-                                                          class="ghost-button ${isCopiedReleaseHandoffSummaryDetail(item.id, detail.key) ? 'is-copied' : ''}"
-                                                          type="button"
-                                                          data-release-handoff-structured-summary-detail-copy="${escapeHtml(`${item.id || ''}:${detail.key || ''}`)}"
-                                                          data-ui-action="copy-release-handoff-structured-summary-detail"
-                                                          data-ui-detail-key="${escapeHtml(detail.key || '')}"
-                                                          data-ui-success-notice="${escapeHtml(`${item.label || 'handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`)}"
-                                                          data-ui-value="${escapeHtml(item.id || '')}"
-                                                          aria-pressed="${isCopiedReleaseHandoffSummaryDetail(item.id, detail.key) ? 'true' : 'false'}"
-                                                          aria-label="${escapeHtml(`handoff summary line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'}`)}"
-                                                          title="${escapeHtml(`handoff summary line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'}`)}"
-                                                        >${escapeHtml(isCopiedReleaseHandoffSummaryDetail(item.id, detail.key) ? '복사됨' : 'line 복사')}</button>
+                                                        ${renderReleaseHandoffStructuredSummaryCopyButton({
+                                                          action: 'copy-release-handoff-structured-summary-detail',
+                                                          actionLabel: `handoff summary line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'}`,
+                                                          artifactId: item.id || '',
+                                                          attributes: `data-release-handoff-structured-summary-detail-copy="${escapeHtml(`${item.id || ''}:${detail.key || ''}`)}"`,
+                                                          buttonText: 'line 복사',
+                                                          detailKey: detail.key || '',
+                                                          successNotice: `${item.label || 'handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`,
+                                                        })}
                                                       </div>
                                                       <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
                                                       ${detail.stableLines?.length
@@ -19901,19 +19928,16 @@ function renderReleaseStatus() {
                                                                   (line, lineIndex) => `
                                                                     <div class="release-handoff-summary-stable-line-row">
                                                                       <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
-                                                                      <button
-                                                                        class="ghost-button ${isCopiedReleaseHandoffSummaryStableLine(item.id, detail.key, lineIndex) ? 'is-copied' : ''}"
-                                                                        type="button"
-                                                                        data-release-handoff-structured-summary-stable-line-copy="${escapeHtml(`${item.id || ''}:${detail.key || ''}:${lineIndex}`)}"
-                                                                        data-ui-action="copy-release-handoff-structured-summary-stable-line"
-                                                                        data-ui-detail-key="${escapeHtml(detail.key || '')}"
-                                                                        data-ui-line-index="${escapeHtml(String(lineIndex))}"
-                                                                        data-ui-success-notice="${escapeHtml(`${item.label || 'handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`)}"
-                                                                        data-ui-value="${escapeHtml(item.id || '')}"
-                                                                        aria-pressed="${isCopiedReleaseHandoffSummaryStableLine(item.id, detail.key, lineIndex) ? 'true' : 'false'}"
-                                                                        aria-label="${escapeHtml(`handoff summary stable line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
-                                                                        title="${escapeHtml(`handoff summary stable line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
-                                                                      >${escapeHtml(isCopiedReleaseHandoffSummaryStableLine(item.id, detail.key, lineIndex) ? '복사됨' : 'stable line 복사')}</button>
+                                                                      ${renderReleaseHandoffStructuredSummaryCopyButton({
+                                                                        action: 'copy-release-handoff-structured-summary-stable-line',
+                                                                        actionLabel: `handoff summary stable line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`,
+                                                                        artifactId: item.id || '',
+                                                                        attributes: `data-release-handoff-structured-summary-stable-line-copy="${escapeHtml(`${item.id || ''}:${detail.key || ''}:${lineIndex}`)}"`,
+                                                                        buttonText: 'stable line 복사',
+                                                                        detailKey: detail.key || '',
+                                                                        lineIndex,
+                                                                        successNotice: `${item.label || 'handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`,
+                                                                      })}
                                                                     </div>
                                                                   `,
                                                                 )
@@ -19934,17 +19958,14 @@ function renderReleaseStatus() {
                                               ${escapeHtml(structuredSummaryOverviewLine)}
                                             </div>
                                             <div class="release-handoff-summary-actions">
-                                              <button
-                                                class="ghost-button ${structuredSummaryCopied ? 'is-copied' : ''}"
-                                                type="button"
-                                                data-release-handoff-structured-summary-copy="${escapeHtml(item.id || '')}"
-                                                data-ui-action="copy-release-handoff-structured-summary"
-                                                data-ui-success-notice="${escapeHtml(`${item.label || 'handoff summary'} overview line을 복사했습니다.`)}"
-                                                data-ui-value="${escapeHtml(item.id || '')}"
-                                                aria-pressed="${structuredSummaryCopied ? 'true' : 'false'}"
-                                                aria-label="${escapeHtml(`handoff summary overview 복사: ${handoffActionTargetLabel}`)}"
-                                                title="${escapeHtml(`handoff summary overview 복사: ${handoffActionTargetLabel}`)}"
-                                              >${escapeHtml(structuredSummaryCopied ? '복사됨' : 'overview 복사')}</button>
+                                              ${renderReleaseHandoffStructuredSummaryCopyButton({
+                                                action: 'copy-release-handoff-structured-summary',
+                                                actionLabel: `handoff summary overview 복사: ${handoffActionTargetLabel}`,
+                                                artifactId: item.id || '',
+                                                attributes: `data-release-handoff-structured-summary-copy="${escapeHtml(item.id || '')}"`,
+                                                buttonText: 'overview 복사',
+                                                successNotice: `${item.label || 'handoff summary'} overview line을 복사했습니다.`,
+                                              })}
                                             </div>
                                           `
                                         : ''}
@@ -20088,22 +20109,16 @@ function renderReleaseStatus() {
                                                   <div class="release-handoff-summary-detail" data-release-handoff-preview-structured-summary-detail="true">
                                                     <div class="release-handoff-summary-detail-head">
                                                       <span class="item-title">${escapeHtml(detail.label)}</span>
-                                                      <button
-                                                        class="ghost-button ${isCopiedReleaseHandoffSummaryDetail(handoffPreviewArtifact.id, detail.key) ? 'is-copied' : ''}"
-                                                        type="button"
-                                                        data-release-handoff-current-preview-structured-summary-detail-copy="${escapeHtml(detail.key || '')}"
-                                                        data-ui-action="copy-release-handoff-structured-summary-detail"
-                                                        data-ui-detail-key="${escapeHtml(detail.key || '')}"
-                                                        data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`)}"
-                                                        data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
-                                                        aria-pressed="${isCopiedReleaseHandoffSummaryDetail(handoffPreviewArtifact.id, detail.key) ? 'true' : 'false'}"
-                                                        aria-label="${escapeHtml(`현재 handoff summary line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'}`)}"
-                                                        title="${escapeHtml(`현재 handoff summary line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'}`)}"
-                                                      >${escapeHtml(
-                                                        isCopiedReleaseHandoffSummaryDetail(handoffPreviewArtifact.id, detail.key)
-                                                          ? '현재 line 복사됨'
-                                                          : '현재 line 복사',
-                                                      )}</button>
+                                                      ${renderReleaseHandoffStructuredSummaryCopyButton({
+                                                        action: 'copy-release-handoff-structured-summary-detail',
+                                                        actionLabel: `현재 handoff summary line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'}`,
+                                                        artifactId: handoffPreviewArtifact.id || '',
+                                                        attributes: `data-release-handoff-current-preview-structured-summary-detail-copy="${escapeHtml(detail.key || '')}"`,
+                                                        buttonText: '현재 line 복사',
+                                                        copiedText: '현재 line 복사됨',
+                                                        detailKey: detail.key || '',
+                                                        successNotice: `${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`,
+                                                      })}
                                                     </div>
                                                     <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
                                                     ${detail.stableLines?.length
@@ -20115,23 +20130,17 @@ function renderReleaseStatus() {
                                                                 (line, lineIndex) => `
                                                                   <div class="release-handoff-summary-stable-line-row">
                                                                     <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
-                                                                    <button
-                                                                      class="ghost-button ${isCopiedReleaseHandoffSummaryStableLine(handoffPreviewArtifact.id, detail.key, lineIndex) ? 'is-copied' : ''}"
-                                                                      type="button"
-                                                                      data-release-handoff-current-preview-structured-summary-stable-line-copy="${escapeHtml(`${detail.key || ''}:${lineIndex}`)}"
-                                                                      data-ui-action="copy-release-handoff-structured-summary-stable-line"
-                                                                      data-ui-detail-key="${escapeHtml(detail.key || '')}"
-                                                                      data-ui-line-index="${escapeHtml(String(lineIndex))}"
-                                                                      data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`)}"
-                                                                      data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
-                                                                      aria-pressed="${isCopiedReleaseHandoffSummaryStableLine(handoffPreviewArtifact.id, detail.key, lineIndex) ? 'true' : 'false'}"
-                                                                      aria-label="${escapeHtml(`현재 handoff summary stable line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
-                                                                      title="${escapeHtml(`현재 handoff summary stable line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`)}"
-                                                                    >${escapeHtml(
-                                                                      isCopiedReleaseHandoffSummaryStableLine(handoffPreviewArtifact.id, detail.key, lineIndex)
-                                                                        ? '현재 stable line 복사됨'
-                                                                        : '현재 stable line 복사',
-                                                                    )}</button>
+                                                                    ${renderReleaseHandoffStructuredSummaryCopyButton({
+                                                                      action: 'copy-release-handoff-structured-summary-stable-line',
+                                                                      actionLabel: `현재 handoff summary stable line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`,
+                                                                      artifactId: handoffPreviewArtifact.id || '',
+                                                                      attributes: `data-release-handoff-current-preview-structured-summary-stable-line-copy="${escapeHtml(`${detail.key || ''}:${lineIndex}`)}"`,
+                                                                      buttonText: '현재 stable line 복사',
+                                                                      copiedText: '현재 stable line 복사됨',
+                                                                      detailKey: detail.key || '',
+                                                                      lineIndex,
+                                                                      successNotice: `${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`,
+                                                                    })}
                                                                   </div>
                                                                 `,
                                                               )
@@ -20152,21 +20161,15 @@ function renderReleaseStatus() {
                                             ${escapeHtml(handoffPreviewStructuredSummaryOverviewLine)}
                                           </div>
                                           <div class="release-handoff-summary-actions">
-                                            <button
-                                              class="ghost-button ${isCopiedReleaseHandoffSummary(handoffPreviewArtifact.id) ? 'is-copied' : ''}"
-                                              type="button"
-                                              data-release-handoff-current-preview-structured-summary-copy="true"
-                                              data-ui-action="copy-release-handoff-structured-summary"
-                                              data-ui-success-notice="${escapeHtml(`${handoffPreviewArtifact.label || '현재 handoff summary'} overview line을 복사했습니다.`)}"
-                                              data-ui-value="${escapeHtml(handoffPreviewArtifact.id || '')}"
-                                              aria-pressed="${isCopiedReleaseHandoffSummary(handoffPreviewArtifact.id) ? 'true' : 'false'}"
-                                              aria-label="${escapeHtml(`현재 handoff summary overview 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
-                                              title="${escapeHtml(`현재 handoff summary overview 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
-                                            >${escapeHtml(
-                                              isCopiedReleaseHandoffSummary(handoffPreviewArtifact.id)
-                                                ? '현재 요약 복사됨'
-                                                : '현재 요약 복사',
-                                            )}</button>
+                                            ${renderReleaseHandoffStructuredSummaryCopyButton({
+                                              action: 'copy-release-handoff-structured-summary',
+                                              actionLabel: `현재 handoff summary overview 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`,
+                                              artifactId: handoffPreviewArtifact.id || '',
+                                              attributes: 'data-release-handoff-current-preview-structured-summary-copy="true"',
+                                              buttonText: '현재 요약 복사',
+                                              copiedText: '현재 요약 복사됨',
+                                              successNotice: `${handoffPreviewArtifact.label || '현재 handoff summary'} overview line을 복사했습니다.`,
+                                            })}
                                           </div>
                                         `
                                       : ''}
