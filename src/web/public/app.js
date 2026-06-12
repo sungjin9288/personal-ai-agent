@@ -11663,29 +11663,51 @@ function renderDetailToolbarActions() {
       ${
         supportCollapsed
           ? `
-            <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-expanded="${state.outputSupportExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
-              패널
-            </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-primary-tabs" aria-expanded="${state.outputPrimaryTabsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputPrimaryTabsToggleLabel)}" title="${escapeHtml(outputPrimaryTabsToggleLabel)}">
-              ${escapeHtml(state.outputPrimaryTabsExpanded ? '탭 닫기' : '탭')}
-            </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-tools" aria-expanded="${state.outputToolbarToolsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputToolbarToolsToggleLabel)}" title="${escapeHtml(outputToolbarToolsToggleLabel)}">
-              ${escapeHtml(state.outputToolbarToolsExpanded ? '도구 닫기' : '도구')}
-            </button>
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-support',
+              actionLabel: outputSupportToggleLabel,
+              buttonText: '패널',
+              className: 'primary-button',
+              expanded: state.outputSupportExpanded,
+            })}
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-primary-tabs',
+              actionLabel: outputPrimaryTabsToggleLabel,
+              buttonText: state.outputPrimaryTabsExpanded ? '탭 닫기' : '탭',
+              expanded: state.outputPrimaryTabsExpanded,
+            })}
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-tools',
+              actionLabel: outputToolbarToolsToggleLabel,
+              buttonText: state.outputToolbarToolsExpanded ? '도구 닫기' : '도구',
+              expanded: state.outputToolbarToolsExpanded,
+            })}
           `
           : `
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-expanded="${state.outputRailCollapsed ? 'false' : 'true'}" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
-              ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
-            </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="${state.outputMissionSummaryExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputMissionSummaryToggleLabel)}" title="${escapeHtml(outputMissionSummaryToggleLabel)}">
-              ${escapeHtml(state.outputMissionSummaryExpanded ? '요약 접기' : '요약 펼치기')}
-            </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-expanded="${state.outputSecondaryTabsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
-              ${escapeHtml(state.outputSecondaryTabsExpanded ? '보조 탭 숨기기' : '보조 탭 보기')}
-            </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-support" aria-expanded="${state.outputSupportExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSupportToggleLabel)}" title="${escapeHtml(outputSupportToggleLabel)}">
-              지원 패널 접기
-            </button>
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-rail',
+              actionLabel: outputRailToggleLabel,
+              buttonText: state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기',
+              expanded: !state.outputRailCollapsed,
+            })}
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-mission-summary',
+              actionLabel: outputMissionSummaryToggleLabel,
+              buttonText: state.outputMissionSummaryExpanded ? '요약 접기' : '요약 펼치기',
+              expanded: state.outputMissionSummaryExpanded,
+            })}
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-secondary-tabs',
+              actionLabel: outputSecondaryTabsToggleLabel,
+              buttonText: state.outputSecondaryTabsExpanded ? '보조 탭 숨기기' : '보조 탭 보기',
+              expanded: state.outputSecondaryTabsExpanded,
+            })}
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-support',
+              actionLabel: outputSupportToggleLabel,
+              buttonText: '지원 패널 접기',
+              expanded: state.outputSupportExpanded,
+            })}
           `
       }
     </div>
@@ -11693,12 +11715,18 @@ function renderDetailToolbarActions() {
       supportCollapsed && state.outputToolbarToolsExpanded
         ? `
           <div class="detail-toolbar-aux">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-secondary-tabs" aria-expanded="${state.outputSecondaryTabsExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(outputSecondaryTabsToggleLabel)}" title="${escapeHtml(outputSecondaryTabsToggleLabel)}">
-              보조 탭
-            </button>
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-expanded="${state.outputRailCollapsed ? 'false' : 'true'}" aria-label="${escapeHtml(outputRailToggleLabel)}" title="${escapeHtml(outputRailToggleLabel)}">
-              사이드바
-            </button>
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-secondary-tabs',
+              actionLabel: outputSecondaryTabsToggleLabel,
+              buttonText: '보조 탭',
+              expanded: state.outputSecondaryTabsExpanded,
+            })}
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-rail',
+              actionLabel: outputRailToggleLabel,
+              buttonText: '사이드바',
+              expanded: !state.outputRailCollapsed,
+            })}
           </div>
         `
         : ''
@@ -21329,6 +21357,20 @@ function renderSelectableDetailButton({
   const classAttribute = className ? ` class="${escapeHtml(className)}"` : '';
   const dataAttributeMarkup = attributeName ? ` ${attributeName}="${escapeHtml(dataValue)}"` : '';
   return `<button type="button"${classAttribute}${dataAttributeMarkup} aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(selectionLabel)}" title="${escapeHtml(selectionLabel)}">${content}</button>`;
+}
+
+function renderOutputToolbarToggleButton({
+  action = '',
+  actionLabel = '',
+  buttonText = '',
+  className = 'ghost-button',
+  expanded = false,
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^[a-z0-9-]+$/.test(actionName)) {
+    return '';
+  }
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}" aria-expanded="${expanded ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {

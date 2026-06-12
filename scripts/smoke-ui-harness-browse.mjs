@@ -317,6 +317,16 @@ try {
   assert.equal(appJs.includes('selectionLabel: timelineEventLabel'), true);
   assert.equal(appJs.includes('const classAttribute = className ? ` class="${escapeHtml(className)}"` : \'\''), true);
   assert.equal(appJs.includes('const dataAttributeMarkup = attributeName ? ` ${attributeName}="${escapeHtml(dataValue)}"` : \'\''), true);
+  assert.equal(appJs.includes('renderOutputToolbarToggleButton'), true);
+  assert.equal(appJs.includes('action: \'toggle-output-primary-tabs\''), true);
+  assert.equal(appJs.includes('action: \'toggle-output-tools\''), true);
+  assert.equal(appJs.includes('action: \'toggle-output-secondary-tabs\''), true);
+  assert.equal(appJs.includes('buttonText: state.outputRailCollapsed ? \'사이드바 펼치기\' : \'사이드바 접기\''), true);
+  assert.equal(appJs.includes('expanded: !state.outputRailCollapsed'), true);
+  assert.equal(appJs.includes('aria-expanded="${expanded ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-expanded="${state.outputSupportExpanded'), false);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="toggle-output-primary-tabs" aria-expanded="${state.outputPrimaryTabsExpanded'), false);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="toggle-output-tools" aria-expanded="${state.outputToolbarToolsExpanded'), false);
   assert.equal(appJs.includes('aria-pressed="${sameFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${attentionFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${focusedProviderFlowActive ? \'true\' : \'false\'}"'), true);
@@ -3565,19 +3575,26 @@ function assertToggleExpandedMetadata({ appJs, rootHtml }) {
     'workspace form expanded state sync',
   );
 
-  const outputToggleContracts = [
-    ['toggle-output-support', 'aria-expanded="${state.outputSupportExpanded ? \'true\' : \'false\'}"'],
-    ['toggle-output-primary-tabs', 'aria-expanded="${state.outputPrimaryTabsExpanded ? \'true\' : \'false\'}"'],
-    ['toggle-output-tools', 'aria-expanded="${state.outputToolbarToolsExpanded ? \'true\' : \'false\'}"'],
-    ['toggle-output-rail', 'aria-expanded="${state.outputRailCollapsed ? \'false\' : \'true\'}"'],
-    ['toggle-output-mission-summary', 'aria-expanded="${state.outputMissionSummaryExpanded ? \'true\' : \'false\'}"'],
-    ['toggle-output-secondary-tabs', 'aria-expanded="${state.outputSecondaryTabsExpanded ? \'true\' : \'false\'}"'],
-    ['toggle-output-artifact-meta', 'aria-expanded="${state.outputArtifactMetaExpanded ? \'true\' : \'false\'}"'],
+  const outputToolbarToggleContracts = [
+    ['toggle-output-support', 'expanded: state.outputSupportExpanded'],
+    ['toggle-output-primary-tabs', 'expanded: state.outputPrimaryTabsExpanded'],
+    ['toggle-output-tools', 'expanded: state.outputToolbarToolsExpanded'],
+    ['toggle-output-rail', 'expanded: !state.outputRailCollapsed'],
+    ['toggle-output-mission-summary', 'expanded: state.outputMissionSummaryExpanded'],
+    ['toggle-output-secondary-tabs', 'expanded: state.outputSecondaryTabsExpanded'],
   ];
-  for (const [action, expandedContract] of outputToggleContracts) {
-    assertSourceIncludes(appJs, `data-ui-action="${action}"`, `${action} output toggle action`);
+  for (const [action, expandedContract] of outputToolbarToggleContracts) {
+    assertSourceIncludes(appJs, `action: '${action}'`, `${action} output toolbar toggle action`);
     assertSourceIncludes(appJs, expandedContract, `${action} expanded state`);
   }
+  assertSourceIncludes(appJs, 'data-ui-action="${escapeHtml(actionName)}"', 'shared output toolbar toggle action attribute');
+  assertSourceIncludes(appJs, 'aria-expanded="${expanded ? \'true\' : \'false\'}"', 'shared output toolbar expanded state');
+  assertSourceIncludes(appJs, 'data-ui-action="toggle-output-artifact-meta"', 'artifact meta output toggle action');
+  assertSourceIncludes(
+    appJs,
+    'aria-expanded="${state.outputArtifactMetaExpanded ? \'true\' : \'false\'}"',
+    'artifact meta expanded state',
+  );
 
   assertSourceIncludes(appJs, 'data-ui-action="toggle-output-support" aria-expanded="false"', 'collapsed output support expand button');
   assertSourceIncludes(
