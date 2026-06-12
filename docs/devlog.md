@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Handoff Structured Summary Copy Pressed Metadata
+
+- moved handoff structured summary overview, detail, and stable-line copy controls onto a shared copied-state renderer
+- added centralized aria-pressed metadata and copied-state styling to artifact list and current preview structured-summary copy buttons
+- kept structured summary text generation, detail/stable-line routing, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for structured summary copy-state renderer contracts
+
 ## 2026-06-12 Release Handoff Link Copy Pressed Metadata
 
 - moved handoff preview, open-link, and current preview link copy controls onto a shared release handoff link copied-state renderer
