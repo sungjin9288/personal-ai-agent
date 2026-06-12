@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T01:43:01.468Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T01:42:33.864Z
 - branch: codex/release-target-evidence-decision-record-copy-pressed-metadata
 - commit: ca547f290b2014969ba225ec858598d14c8d5f02

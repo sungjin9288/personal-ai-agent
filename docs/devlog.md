@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Decision Record Copy Pressed Metadata
+
+- moved target evidence decision record and provider-only decision record copy controls onto a shared target evidence decision record copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence decision record copy buttons
+- kept reviewer decision record text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence decision record copy-state contracts
+
 ## 2026-06-12 Release Target Evidence Command Rerun Log Copy Pressed Metadata
 
 - moved target evidence command rerun log and provider-only command rerun log copy controls onto a shared target evidence command rerun log copied-state renderer
