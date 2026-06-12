@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Command Rerun Log Copy Pressed Metadata
+
+- moved target evidence command rerun log and provider-only command rerun log copy controls onto a shared target evidence command rerun log copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence command rerun log copy buttons
+- kept command rerun log text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence command rerun log copy-state contracts
+
 ## 2026-06-12 Release Target Evidence Boundary Map Copy Pressed Metadata
 
 - moved target evidence boundary map and provider-only boundary map copy controls onto a shared target evidence boundary map copied-state renderer

@@ -83,6 +83,8 @@ const state = {
   releaseTargetEvidenceSanitizedRegisterCopiedTimer: null,
   releaseTargetEvidenceBoundaryMapCopiedKey: '',
   releaseTargetEvidenceBoundaryMapCopiedTimer: null,
+  releaseTargetEvidenceCommandRerunLogCopiedKey: '',
+  releaseTargetEvidenceCommandRerunLogCopiedTimer: null,
   releaseCommandCopiedKey: '',
   releaseCommandCopiedTimer: null,
   releaseProviderReadinessPackageCopiedKey: '',
@@ -2243,6 +2245,55 @@ function markCopiedReleaseTargetEvidenceBoundaryMap(options = {}) {
   }, 1800);
 }
 
+function getReleaseTargetEvidenceCommandRerunLogCopyKey({
+  action = 'copy-release-target-evidence-command-rerun-log',
+  category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const normalizedCopyKey = normalizeUiParam(copyKey);
+  if (normalizedCopyKey) {
+    return normalizedCopyKey;
+  }
+  const normalizedAction = normalizeUiParam(action);
+  if (!normalizedAction) {
+    return '';
+  }
+  return [
+    normalizedAction,
+    normalizeUiParam(category) || 'all-categories',
+    normalizeUiParam(owner) || 'all-owners',
+    normalizeUiParam(provider) || 'all-providers',
+    includeShared ? 'shared-included' : 'shared-excluded',
+  ].join(':');
+}
+
+function isCopiedReleaseTargetEvidenceCommandRerunLog(options = {}) {
+  return state.releaseTargetEvidenceCommandRerunLogCopiedKey
+    === getReleaseTargetEvidenceCommandRerunLogCopyKey(options);
+}
+
+function markCopiedReleaseTargetEvidenceCommandRerunLog(options = {}) {
+  const nextKey = getReleaseTargetEvidenceCommandRerunLogCopyKey(options);
+  if (!nextKey) {
+    return;
+  }
+
+  state.releaseTargetEvidenceCommandRerunLogCopiedKey = nextKey;
+  if (state.releaseTargetEvidenceCommandRerunLogCopiedTimer) {
+    window.clearTimeout(state.releaseTargetEvidenceCommandRerunLogCopiedTimer);
+    state.releaseTargetEvidenceCommandRerunLogCopiedTimer = null;
+  }
+  renderReleaseStatus();
+  state.releaseTargetEvidenceCommandRerunLogCopiedTimer = window.setTimeout(() => {
+    state.releaseTargetEvidenceCommandRerunLogCopiedKey = '';
+    state.releaseTargetEvidenceCommandRerunLogCopiedTimer = null;
+    renderReleaseStatus();
+  }, 1800);
+}
+
 function markCopiedCurrentViewLink() {
   state.currentViewLinkCopied = true;
   if (state.currentViewLinkCopiedTimer) {
@@ -2694,6 +2745,25 @@ function renderReleaseTargetEvidenceBoundaryMapCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceBoundaryMapCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceBoundaryMap(copyOptions);
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+}
+
+function renderReleaseTargetEvidenceCommandRerunLogCopyButton({
+  action = 'copy-release-target-evidence-command-rerun-log',
+  actionLabel = 'target command log 복사',
+  attributes = '',
+  buttonText = 'target command log 복사',
+  category = state.releaseBlockerCategoryFilter,
+  className = 'ghost-button',
+  includeShared = true,
+  owner = state.releaseBlockerOwnerFilter,
+  provider = state.releaseBlockerProviderFilter,
+} = {}) {
+  const copyOptions = { action, category, includeShared, owner, provider };
+  const copyKey = getReleaseTargetEvidenceCommandRerunLogCopyKey(copyOptions);
+  const copied = isCopiedReleaseTargetEvidenceCommandRerunLog(copyOptions);
   const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
   const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
@@ -10317,12 +10387,16 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-release-target-evidence-command-rerun-log') {
-        void copyReleaseTargetEvidenceCommandRerunLog();
+        void copyReleaseTargetEvidenceCommandRerunLog({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
       if (action === 'copy-release-target-evidence-provider-only-command-rerun-log') {
-        void copyReleaseTargetEvidenceProviderOnlyCommandRerunLog();
+        void copyReleaseTargetEvidenceProviderOnlyCommandRerunLog({
+          copyKey: button.dataset.uiCopyKey || '',
+        });
         return;
       }
 
@@ -12771,6 +12845,7 @@ async function copyReleaseTargetEvidenceProviderOnlyBoundaryMap({
 
 async function copyReleaseTargetEvidenceCommandRerunLog({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -12781,15 +12856,25 @@ async function copyReleaseTargetEvidenceCommandRerunLog({
     return;
   }
 
-  await copyPlainTextValue(rerunLogText, {
+  const result = await copyPlainTextValue(rerunLogText, {
     promptMessage: 'target evidence command rerun log를 복사하세요.',
     shownNotice: 'target evidence command rerun log를 표시했습니다.',
     successNotice: 'target evidence command rerun log를 복사했습니다.',
   });
+  if (result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceCommandRerunLog({
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceProviderOnlyCommandRerunLog({
   category = state.releaseBlockerCategoryFilter,
+  copyKey = '',
   owner = state.releaseBlockerOwnerFilter,
   provider = state.releaseBlockerProviderFilter,
 } = {}) {
@@ -12811,11 +12896,20 @@ async function copyReleaseTargetEvidenceProviderOnlyCommandRerunLog({
     return;
   }
 
-  await copyPlainTextValue(rerunLogText, {
+  const result = await copyPlainTextValue(rerunLogText, {
     promptMessage: 'provider-only target evidence command rerun log를 복사하세요.',
     shownNotice: 'provider-only target evidence command rerun log를 표시했습니다.',
     successNotice: `${normalizedProvider} provider-only target evidence command rerun log를 복사했습니다.`,
   });
+  if (result.method !== 'unavailable') {
+    markCopiedReleaseTargetEvidenceCommandRerunLog({
+      category: copyScope.category,
+      copyKey,
+      includeShared: copyScope.includeShared,
+      owner: copyScope.owner,
+      provider: copyScope.provider,
+    });
+  }
 }
 
 async function copyReleaseTargetEvidenceDecisionRecord({
@@ -18044,22 +18138,28 @@ function renderReleaseStatus() {
                     })}
                   `
                   : ''}
-                <button
-                  class="ghost-button"
-                  type="button"
-                  data-release-target-evidence-command-rerun-log="true"
-                  data-ui-action="copy-release-target-evidence-command-rerun-log"
-                  aria-label="${escapeHtml(`target command log 복사: ${targetEvidenceActionLabel}`)}"
-                  title="${escapeHtml(`target command log 복사: ${targetEvidenceActionLabel}`)}">target command log 복사</button>
+                ${renderReleaseTargetEvidenceCommandRerunLogCopyButton({
+                  action: 'copy-release-target-evidence-command-rerun-log',
+                  actionLabel: `target command log 복사: ${targetEvidenceActionLabel}`,
+                  attributes: 'data-release-target-evidence-command-rerun-log="true"',
+                  buttonText: 'target command log 복사',
+                  category: blockerCategoryFilter,
+                  includeShared: true,
+                  owner: blockerOwnerFilter,
+                  provider: blockerProviderFilter,
+                })}
                 ${blockerProviderFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-target-evidence-provider-only-command-rerun-log="true"
-                      data-ui-action="copy-release-target-evidence-provider-only-command-rerun-log"
-                      aria-label="${escapeHtml(`provider-only command log 복사: ${targetEvidenceProviderOnlyActionLabel}`)}"
-                      title="${escapeHtml(`provider-only command log 복사: ${targetEvidenceProviderOnlyActionLabel}`)}">provider-only command log 복사</button>
+                    ${renderReleaseTargetEvidenceCommandRerunLogCopyButton({
+                      action: 'copy-release-target-evidence-provider-only-command-rerun-log',
+                      actionLabel: `provider-only command log 복사: ${targetEvidenceProviderOnlyActionLabel}`,
+                      attributes: 'data-release-target-evidence-provider-only-command-rerun-log="true"',
+                      buttonText: 'provider-only command log 복사',
+                      category: blockerCategoryFilter,
+                      includeShared: false,
+                      owner: blockerOwnerFilter,
+                      provider: blockerProviderFilter,
+                    })}
                   `
                   : ''}
                 <button

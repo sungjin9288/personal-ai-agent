@@ -1678,6 +1678,9 @@ try {
   assert.equal(appJs.includes('Boundary consistency rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceCommandRerunLogText'), true);
   assert.equal(appJs.includes('Target evidence command rerun log'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceCommandRerunLogCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceCommandRerunLog'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceCommandRerunLogCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-command-rerun-log'), true);
   assert.equal(appJs.includes('data-release-target-evidence-command-rerun-log'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyCommandRerunLog'), true);
@@ -3104,6 +3107,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceBoundaryMapCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceCommandRerunLogCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));

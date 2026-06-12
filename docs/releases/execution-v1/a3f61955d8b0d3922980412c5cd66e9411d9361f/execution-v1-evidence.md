@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T00:14:11.294Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T00:13:49.256Z
 - branch: codex/release-target-evidence-command-rerun-log-copy-pressed-metadata
 - commit: a3f61955d8b0d3922980412c5cd66e9411d9361f
