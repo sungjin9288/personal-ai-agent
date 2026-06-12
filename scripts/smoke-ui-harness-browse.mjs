@@ -1692,6 +1692,9 @@ try {
   assert.equal(appJs.includes('Command rerun rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceReviewerDecisionRecordText'), true);
   assert.equal(appJs.includes('Target evidence reviewer decision record'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceDecisionRecordCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceDecisionRecord'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceDecisionRecordCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-decision-record'), true);
   assert.equal(appJs.includes('data-release-target-evidence-decision-record'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyDecisionRecord'), true);
@@ -3111,6 +3114,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceCommandRerunLogCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceDecisionRecordCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
