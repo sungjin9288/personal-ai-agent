@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Manifest Base Renderer
+
+- moved target evidence submission manifest, sanitized register, and boundary map copy renderers onto the shared release copied-action button renderer
+- kept target evidence filter/provider-only scopes, copy-key generation, and click handler routing unchanged
+- reduced duplicated copied-state accessibility metadata in the target evidence manifest copy renderer group
+- extended UI harness browse smoke coverage for target evidence manifest base renderer delegation
+
 ## 2026-06-12 Release Target Evidence Guard Base Renderer
 
 - moved target evidence provider references, residual blockers, and closure rules copy renderers onto the shared release copied-action button renderer

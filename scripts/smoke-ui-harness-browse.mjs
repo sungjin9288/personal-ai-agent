@@ -1653,6 +1653,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceSubmissionManifestCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceSubmissionManifest'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceSubmissionManifestCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-submission-manifest'), true);
   assert.equal(appJs.includes('data-release-target-evidence-submission-manifest'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlySubmissionManifest'), true);
@@ -1667,6 +1668,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceSanitizedRegisterCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceSanitizedRegister'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceSanitizedRegisterCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-sanitized-register'), true);
   assert.equal(appJs.includes('data-release-target-evidence-sanitized-register'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlySanitizedRegister'), true);
@@ -1681,6 +1683,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceBoundaryMapCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceBoundaryMap'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceBoundaryMapCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-boundary-map'), true);
   assert.equal(appJs.includes('data-release-target-evidence-boundary-map'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyBoundaryMap'), true);
