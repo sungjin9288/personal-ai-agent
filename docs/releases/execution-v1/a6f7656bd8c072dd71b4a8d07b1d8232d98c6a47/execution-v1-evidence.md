@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T11:50:14.083Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T11:34:42.650Z
 - branch: codex/action-inbox-reset-button-renderer
 - commit: a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47

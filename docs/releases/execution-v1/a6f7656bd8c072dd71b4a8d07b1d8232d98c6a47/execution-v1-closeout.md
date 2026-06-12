@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-12T11:50:14.083Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-12T11:34:47.481Z
 - branch: codex/action-inbox-reset-button-renderer
 - commit: a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

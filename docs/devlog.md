@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Action Inbox Reset Button Renderers
+
+- moved action inbox fallback-stop reset and clear-all filter buttons onto dedicated renderers
+- kept disabled filter states, aria-disabled metadata, title/label copy, and filter reset routing unchanged
+- reduced direct reset button markup inside the mission action summary renderer
+- extended UI learning promotion smoke coverage for action inbox reset renderer delegation
+
 ## 2026-06-12 Action Inbox Copy Link Renderer
 
 - moved the action inbox current-link copy control onto a dedicated renderer
