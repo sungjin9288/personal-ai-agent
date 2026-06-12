@@ -264,6 +264,13 @@ try {
   assert.equal(appJs.includes('현재 보기 링크 복사됨: ${flowActionTargetLabel}'), true);
   assert.equal(appJs.includes('class="ghost-button ${flowCopyViewCopied ? \'is-copied\' : \'\'}"'), true);
   assert.equal(appJs.includes('data-ui-action="copy-view-link" aria-pressed="${flowCopyViewCopied ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('renderRetrievalSourceCopyButton'), true);
+  assert.equal(countSourceOccurrences(appJs, 'data-ui-action="copy-retrieval-source-link"'), 1);
+  assert.equal(appJs.includes('data-retrieval-source-copy="true"'), true);
+  assert.equal(appJs.includes("className: 'tag tag-ghost retrieval-source-copy-button'"), true);
+  assert.equal(appJs.includes('class="tag tag-ghost retrieval-source-copy-button ${isCopied ?'), false);
+  assert.equal(appJs.includes('class="ghost-button ${isCopiedRetrievalSource(activeFocus.type'), false);
+  assert.equal(appJs.includes('class="ghost-button ${isCopiedRetrievalSource(activeRetrievalSourceFocus.type'), false);
   assert.equal(appJs.includes('fallbackProvider'), true);
   assert.equal(appJs.includes('fallbackPolicy'), true);
   assert.equal(appJs.includes('legacyDevlogMigrationLabel'), true);
@@ -473,14 +480,19 @@ try {
   assert.equal(appJs.includes("action: 'copy-release-command'"), true);
   assert.equal(appJs.includes('data-ui-action="copy-release-command"'), false);
   assert.equal(appJs.includes('data-ui-action="${escapeHtml(action)}"'), true);
-  assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('${escapeHtml(copied ? copiedText : buttonText)}'), true);
-  assert.equal(countSourceOccurrences(appJs, 'const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;'), 1);
-  assert.equal(countSourceOccurrences(appJs, "const nextClassName = `${className}${copied ? ' is-copied' : ''}`;"), 1);
-  assert.equal(countSourceOccurrences(appJs, 'aria-pressed="${copied ? \'true\' : \'false\'}"'), 1);
-  assert.equal(countSourceOccurrences(appJs, '${escapeHtml(copied ? copiedText : buttonText)}'), 1);
+  const releaseCopiedRendererSource = getSourceSlice(
+    appJs,
+    'function renderReleaseCopiedActionButton({',
+    'function renderReleaseCommandCopyButton({',
+  );
+  assert.equal(releaseCopiedRendererSource.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
+  assert.equal(releaseCopiedRendererSource.includes('${escapeHtml(copied ? copiedText : buttonText)}'), true);
+  assert.equal(countSourceOccurrences(releaseCopiedRendererSource, 'const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;'), 1);
+  assert.equal(countSourceOccurrences(releaseCopiedRendererSource, "const nextClassName = `${className}${copied ? ' is-copied' : ''}`;"), 1);
+  assert.equal(countSourceOccurrences(releaseCopiedRendererSource, 'aria-pressed="${copied ? \'true\' : \'false\'}"'), 1);
+  assert.equal(countSourceOccurrences(releaseCopiedRendererSource, '${escapeHtml(copied ? copiedText : buttonText)}'), 1);
   assert.equal(
-    countSourceOccurrences(appJs, 'return `<button class="${escapeHtml(nextClassName)}" type="button"'),
+    countSourceOccurrences(releaseCopiedRendererSource, 'return `<button class="${escapeHtml(nextClassName)}" type="button"'),
     1,
   );
   assert.equal(appJs.includes('provider live 명령 복사: ${providerActionLabel}'), true);

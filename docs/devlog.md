@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Retrieval Source Copy Base Renderer
+
+- moved retrieval source link copy buttons onto a shared copied-state renderer
+- kept source type/label attributes, focus routing, copied labels, and clipboard action behavior unchanged
+- reduced duplicated copied-state button markup across compare callout and harness focus panels
+- extended UI harness browse smoke coverage for retrieval source copy renderer delegation
+
 ## 2026-06-12 Release Copied Renderer Contract Guard
 
 - added a UI harness browse guard that keeps copied-state release button markup centralized in `renderReleaseCopiedActionButton`
