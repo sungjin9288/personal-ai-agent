@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Blocker Copy Base Renderer
+
+- moved release blocker commands, release blocker evidence, and release link copy renderers onto the shared release copied-action button renderer
+- kept blocker filter/provider-only copy keys, release link values, and click handler routing unchanged
+- reduced duplicated copied-state class, aria-pressed, aria-label, title, and button text generation in release blocker copy renderers
+- extended UI harness browse smoke coverage for blocker/link base renderer delegation
+
 ## 2026-06-12 Release Copy Action Base Renderer
 
 - added a shared release copied-action button renderer for remaining hard-coded release copy action markup

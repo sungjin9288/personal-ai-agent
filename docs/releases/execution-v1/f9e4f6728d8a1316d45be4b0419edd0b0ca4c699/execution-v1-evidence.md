@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T05:00:39.079Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T05:00:30.587Z
 - branch: codex/release-blocker-copy-base-renderer
 - commit: f9e4f6728d8a1316d45be4b0419edd0b0ca4c699

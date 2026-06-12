@@ -470,6 +470,7 @@ try {
   assert.equal(appJs.includes('markCopiedReleaseLink'), true);
   assert.equal(appJs.includes('releaseLinkCopiedKey'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(value)}"'), true);
+  assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(value)}" data-ui-value="${escapeHtml(value)}"'), true);
   assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || \'\''), true);
   assert.equal(appJs.includes('release flow 링크 복사: ${historyActionLabel}'), true);
   assert.equal(appJs.includes('provider 링크 복사: ${providerActionLabel}'), true);
@@ -2278,6 +2279,7 @@ try {
   assert.equal(appJs.includes('provider-only release blocker slice handoff'), true);
   assert.equal(appJs.includes('Release blocker slice handoff'), true);
   assert.equal(appJs.includes('renderReleaseBlockerCommandsCopyButton'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('markCopiedReleaseBlockerCommands'), true);
   assert.equal(appJs.includes('releaseBlockerCommandsCopiedKey'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-command'), true);
