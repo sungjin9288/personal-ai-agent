@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Blocker Link Copy Pressed Metadata
+
+- moved focused blocker and blocker row link copy controls onto the shared release link copied-state renderer
+- added aria-pressed metadata and copied-state styling to release blocker link copy buttons
+- kept blocker deep-link generation, focused blocker routing, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release blocker link copy-state contracts
+
 ## 2026-06-12 Release Target Evidence Intake Packet Copy Pressed Metadata
 
 - moved target evidence intake packet and provider-only intake packet copy controls onto a shared target evidence intake packet copied-state renderer

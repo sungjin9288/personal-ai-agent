@@ -2330,6 +2330,9 @@ try {
   assert.equal(appJs.includes('data-release-current-open-blocker-command'), true);
   assert.equal(appJs.includes('focus-release-blocker'), true);
   assert.equal(appJs.includes('copy-release-blocker-link'), true);
+  assert.equal(appJs.includes("action: 'copy-release-blocker-link'"), true);
+  assert.equal(appJs.includes("copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || ''"), true);
+  assert.equal(appJs.includes('data-ui-action="copy-release-blocker-link"'), false);
   assert.equal(appJs.includes('copy-release-blocker-handoff'), true);
   assert.equal(appJs.includes('renderReleaseBlockerHandoffCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseBlockerHandoff'), true);
