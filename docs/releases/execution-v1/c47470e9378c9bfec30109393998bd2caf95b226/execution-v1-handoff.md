@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-12T16:54:02.886Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-12T16:54:01.306Z
 - localDate: 2026-06-13
 - branch: codex/output-toolbar-toggle-button-renderer
 - commit: c47470e9378c9bfec30109393998bd2caf95b226
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c47470e9378c9bfec30109393998bd2caf95b226](releases/execution-v1/c47470e9378c9bfec30109393998bd2caf95b226)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c47470e9378c9bfec30109393998bd2caf95b226/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c47470e9378c9bfec30109393998bd2caf95b226/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c47470e9378c9bfec30109393998bd2caf95b226](docs/releases/execution-v1/c47470e9378c9bfec30109393998bd2caf95b226)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/output-toolbar-toggle-button-renderer not found
 

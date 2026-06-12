@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T16:54:02.886Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T16:53:40.810Z
 - branch: codex/output-toolbar-toggle-button-renderer
 - commit: c47470e9378c9bfec30109393998bd2caf95b226
