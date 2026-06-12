@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Release Refresh Copy Pressed Metadata
+
+- moved target evidence release refresh and provider-only release refresh copy controls onto a shared target evidence release refresh copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence release refresh copy buttons
+- kept release refresh evidence text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence release refresh copy-state contracts
+
 ## 2026-06-12 Release Target Evidence Blocker Disposition Copy Pressed Metadata
 
 - moved target evidence blocker disposition and provider-only blocker disposition copy controls onto a shared target evidence blocker disposition copied-state renderer
