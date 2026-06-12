@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T11:12:19.011Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T11:12:00.036Z
 - branch: codex/current-view-link-copy-base-renderer
 - commit: 5cb65efd81dbb4b18efa89288b2ae17e2f69f35c

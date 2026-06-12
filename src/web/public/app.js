@@ -2518,6 +2518,20 @@ function renderRetrievalSourceSurfaces() {
   renderOutputStageSummary();
 }
 
+function renderCurrentViewLinkCopyButton({
+  buttonText = '현재 링크 복사',
+  className = 'ghost-button',
+  copiedText = '복사됨',
+  targetLabel = '현재 흐름',
+} = {}) {
+  const copied = state.currentViewLinkCopied;
+  const actionLabel = copied
+    ? `현재 보기 링크 복사됨: ${targetLabel}`
+    : `현재 보기 링크 복사: ${targetLabel}`;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" data-ui-action="copy-view-link" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(copied ? copiedText : buttonText)}</button>`;
+}
+
 function renderRetrievalSourceCopyButton({
   actionLabel = 'retrieval source 링크 복사',
   attributes = '',
@@ -14308,10 +14322,6 @@ function renderFlowState() {
   const flowHarnessActionLabel = topHarnessAction
     ? `${topHarnessAction.label}: ${flowActionTargetLabel}`
     : '';
-  const flowCopyViewCopied = state.currentViewLinkCopied;
-  const flowCopyViewLabel = flowCopyViewCopied
-    ? `현재 보기 링크 복사됨: ${flowActionTargetLabel}`
-    : `현재 보기 링크 복사: ${flowActionTargetLabel}`;
   const flowResetViewLabel = hasMissionSelection
     ? `보기 초기화: ${flowActionTargetLabel}`
     : '초기 상태로 되돌리기';
@@ -14344,9 +14354,7 @@ function renderFlowState() {
             isOutputFocus
               ? ''
               : `
-                <button class="ghost-button ${flowCopyViewCopied ? 'is-copied' : ''}" type="button" data-ui-action="copy-view-link" aria-pressed="${flowCopyViewCopied ? 'true' : 'false'}" aria-label="${escapeHtml(flowCopyViewLabel)}" title="${escapeHtml(flowCopyViewLabel)}">
-                  ${escapeHtml(flowCopyViewCopied ? '복사됨' : '현재 링크 복사')}
-                </button>
+                ${renderCurrentViewLinkCopyButton({ targetLabel: flowActionTargetLabel })}
                 <button class="ghost-button" type="button" data-ui-action="reset-view" aria-label="${escapeHtml(flowResetViewLabel)}" title="${escapeHtml(flowResetViewLabel)}">
                   ${escapeHtml(hasMissionSelection ? '보기 초기화' : '초기 상태로')}
                 </button>

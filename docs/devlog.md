@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Current View Link Copy Base Renderer
+
+- moved the current view link copy control onto a dedicated copied-state renderer
+- kept copy-view-link routing, copied labels, reset-view pairing, and visible button text unchanged
+- reduced direct copied-state button markup inside the flow status renderer
+- extended UI harness browse smoke coverage for current view link copy renderer delegation
+
 ## 2026-06-12 Retrieval Source Copy Base Renderer
 
 - moved retrieval source link copy buttons onto a shared copied-state renderer
