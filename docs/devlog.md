@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Provider Attention Remediation Button Renderer
+
+- moved provider attention primary, fallback, and recoverable-fallback remediation buttons onto a dedicated renderer
+- kept remediation action ids, mode attributes, button labels, title/aria-label copy, and click routing unchanged
+- reduced direct provider remediation button markup inside the mission action list renderer
+- extended UI learning promotion smoke coverage for provider attention remediation renderer delegation
+
 ## 2026-06-12 Action Inbox Reset Button Renderers
 
 - moved action inbox fallback-stop reset and clear-all filter buttons onto dedicated renderers

@@ -21271,6 +21271,17 @@ function renderActionInboxClearFiltersButton({
   return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-clear-filters="true" aria-disabled="${hasActiveFilter ? 'false' : 'true'}" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
 }
 
+function renderProviderAttentionRemediationButton({
+  item = {},
+  mode = 'primary',
+  buttonText = '제공자 복구',
+  className = 'primary-button',
+  actionLabelPrefix = '제공자 복구',
+} = {}) {
+  const actionLabel = `${actionLabelPrefix}: ${item.title || item.actionId || item.id || item.missionId}`;
+  return `<button class="${escapeHtml(className)}" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="${escapeHtml(mode)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
   return (payload?.items || []).reduce((counts, item) => {
     Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
@@ -21501,17 +21512,29 @@ function renderMissionActions() {
             }
             ${
               item.actionType === 'provider-attention'
-                ? `<button class="primary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="primary" aria-label="${escapeHtml(`제공자 복구: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`제공자 복구: ${item.title || item.actionId || item.id || item.missionId}`)}">제공자 복구</button>`
+                ? renderProviderAttentionRemediationButton({ item })
                 : ''
             }
             ${
               item.actionType === 'provider-attention' && item.fallbackRecommendedCommand
-                ? `<button class="secondary-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="fallback" aria-label="${escapeHtml(`fallback 복구: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`fallback 복구: ${item.title || item.actionId || item.id || item.missionId}`)}">fallback 복구</button>`
+                ? renderProviderAttentionRemediationButton({
+                    actionLabelPrefix: 'fallback 복구',
+                    buttonText: 'fallback 복구',
+                    className: 'secondary-button',
+                    item,
+                    mode: 'fallback',
+                  })
                 : ''
             }
             ${
               item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand
-                ? `<button class="ghost-button" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="recoverable-fallback" aria-label="${escapeHtml(`복구성 fallback: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`복구성 fallback: ${item.title || item.actionId || item.id || item.missionId}`)}">복구성 fallback</button>`
+                ? renderProviderAttentionRemediationButton({
+                    actionLabelPrefix: '복구성 fallback',
+                    buttonText: '복구성 fallback',
+                    className: 'ghost-button',
+                    item,
+                    mode: 'recoverable-fallback',
+                  })
                 : ''
             }
             ${
