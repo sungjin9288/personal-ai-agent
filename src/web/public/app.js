@@ -2724,9 +2724,14 @@ function renderReleaseBlockerClosureMatrixCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseBlockerClosureMatrixCopyKey(copyOptions);
   const copied = isCopiedReleaseBlockerClosureMatrix(copyOptions);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-copy-key="${escapeHtml(copyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseBlockerHandoffCopyButton({
@@ -2776,9 +2781,14 @@ function renderReleaseBlockerSummaryCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseBlockerSummaryCopyKey(copyOptions);
   const copied = isCopiedReleaseBlockerSummary(copyOptions);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-copy-key="${escapeHtml(copyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseTargetEvidenceIntakeSummaryCopyButton({

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Blocker Summary Matrix Base Renderer
+
+- moved release blocker summary and closure matrix copy renderers onto the shared release copied-action button renderer
+- kept filter/provider-only copy scopes, copy-key generation, and click handler routing unchanged
+- reduced duplicated copied-state accessibility metadata in blocker summary and matrix copy controls
+- extended UI harness browse smoke coverage for summary and closure matrix base renderer delegation
+
 ## 2026-06-12 Release Blocker Package Handoff Base Renderer
 
 - moved release blocker package, closure checklist, and handoff copy renderers onto the shared release copied-action button renderer

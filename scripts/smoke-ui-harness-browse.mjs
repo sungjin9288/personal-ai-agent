@@ -2176,6 +2176,7 @@ try {
   assert.equal(appJs.includes('renderReleaseBlockerSummaryCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseBlockerSummary'), true);
   assert.equal(appJs.includes('releaseBlockerSummaryCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
   assert.equal(appJs.includes("includeShared: false"), true);
   assert.equal(appJs.includes('copyReleaseBlockerProviderOnlySummary'), true);
@@ -2254,6 +2255,7 @@ try {
   assert.equal(appJs.includes('renderReleaseBlockerClosureMatrixCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseBlockerClosureMatrix'), true);
   assert.equal(appJs.includes('releaseBlockerClosureMatrixCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('data-release-current-open-blocker-filter-closure-matrix'), true);
   assert.equal(appJs.includes('copy-release-blocker-filter-closure-matrix'), true);
   assert.equal(appJs.includes("action: 'copy-release-blocker-filter-closure-matrix'"), true);
