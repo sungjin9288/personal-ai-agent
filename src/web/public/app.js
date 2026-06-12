@@ -21314,6 +21314,20 @@ function renderApprovalActionButton({
   return `<button class="${escapeHtml(className)}" type="button" ${attributeName}="${escapeHtml(dataValue)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderSelectableDetailButton({
+  dataAttribute = '',
+  dataValue = '',
+  active = false,
+  selectionLabel = '',
+  content = '',
+} = {}) {
+  const attributeName = String(dataAttribute || '').trim();
+  if (!/^data-[a-z0-9-]+$/.test(attributeName)) {
+    return '';
+  }
+  return `<button type="button" ${attributeName}="${escapeHtml(dataValue)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(selectionLabel)}" title="${escapeHtml(selectionLabel)}">${content}</button>`;
+}
+
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
   return (payload?.items || []).reduce((counts, item) => {
     Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
@@ -21998,21 +22012,28 @@ function renderSessionList() {
       const sessionSelectionLabel = active
         ? `현재 세션 선택됨: ${sessionTitle} · ${providerUiLabel}`
         : `세션 선택: ${sessionTitle} · ${providerUiLabel}`;
+      const sessionButtonContent = `
+        <div class="status-row">
+          <span class="status-badge ${getStatusClass(session.status)}">${escapeHtml(getDisplayLabel(session.status))}</span>
+          <span class="mini-badge ${getStatusClass(session.provider || '')}">${escapeHtml(providerUiLabel)}</span>
+        </div>
+        <div class="item-title">${escapeHtml(formatDate(session.startedAt))} 실행</div>
+        <div class="item-meta">
+          단계 ${escapeHtml(getDisplayLabel(session.currentStage))} · 실행 ${escapeHtml(
+            String(session.agentRunCount || 0),
+          )}회
+        </div>
+        <div class="item-meta mono">${escapeHtml(session.id)}</div>
+      `;
       return `
         <div class="session-row ${active}">
-          <button type="button" data-session-id="${escapeHtml(session.id)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(sessionSelectionLabel)}" title="${escapeHtml(sessionSelectionLabel)}">
-            <div class="status-row">
-              <span class="status-badge ${getStatusClass(session.status)}">${escapeHtml(getDisplayLabel(session.status))}</span>
-              <span class="mini-badge ${getStatusClass(session.provider || '')}">${escapeHtml(providerUiLabel)}</span>
-            </div>
-            <div class="item-title">${escapeHtml(formatDate(session.startedAt))} 실행</div>
-            <div class="item-meta">
-              단계 ${escapeHtml(getDisplayLabel(session.currentStage))} · 실행 ${escapeHtml(
-                String(session.agentRunCount || 0),
-              )}회
-            </div>
-            <div class="item-meta mono">${escapeHtml(session.id)}</div>
-          </button>
+          ${renderSelectableDetailButton({
+            active: Boolean(active),
+            content: sessionButtonContent,
+            dataAttribute: 'data-session-id',
+            dataValue: session.id,
+            selectionLabel: sessionSelectionLabel,
+          })}
         </div>
       `;
     })
@@ -22082,15 +22103,22 @@ function renderSessionDetail(sessionPayload) {
       const artifactSelectionLabel = active
         ? `현재 산출물 선택됨: ${artifactTitle}`
         : `산출물 선택: ${artifactTitle}`;
+      const artifactButtonContent = `
+        <div class="status-row">
+          <span class="mini-badge ${getStatusClass(artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(artifact.kind, artifact.kind || 'artifact'))}</span>
+        </div>
+        <div class="item-title">${escapeHtml(artifact.title || artifact.fileName || artifact.id)}</div>
+        <div class="item-meta">${escapeHtml(artifact.fileName || '')}</div>
+      `;
       return `
         <div class="artifact-link ${active}">
-          <button type="button" data-artifact-id="${escapeHtml(artifact.id)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(artifactSelectionLabel)}" title="${escapeHtml(artifactSelectionLabel)}">
-            <div class="status-row">
-              <span class="mini-badge ${getStatusClass(artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(artifact.kind, artifact.kind || 'artifact'))}</span>
-            </div>
-            <div class="item-title">${escapeHtml(artifact.title || artifact.fileName || artifact.id)}</div>
-            <div class="item-meta">${escapeHtml(artifact.fileName || '')}</div>
-          </button>
+          ${renderSelectableDetailButton({
+            active: Boolean(active),
+            content: artifactButtonContent,
+            dataAttribute: 'data-artifact-id',
+            dataValue: artifact.id,
+            selectionLabel: artifactSelectionLabel,
+          })}
         </div>
       `;
     })
