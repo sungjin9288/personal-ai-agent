@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T17:08:48.199Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T17:08:28.256Z
 - branch: codex/retrieval-source-action-button-renderers
 - commit: d2023b7baa730ce29b7128d5de631ac7dd3efcc3

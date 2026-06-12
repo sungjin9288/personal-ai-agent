@@ -2551,6 +2551,47 @@ function renderRetrievalSourceCopyButton({
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-retrieval-source-link" data-ui-source-type="${escapeHtml(sourceType)}" data-ui-source-label="${escapeHtml(sourceLabel)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? copiedText : buttonText)}</button>`;
 }
 
+function renderRetrievalSourceFocusButton({
+  active = false,
+  buttonText = '',
+  className = 'tag tag-muted',
+  prefixLabel = '',
+  sourceLabel = '',
+  sourceType = '',
+} = {}) {
+  const sourceFocusLabel = getRetrievalSourceActionLabel(
+    active ? '현재 retrieval source 보기' : 'retrieval source 보기',
+    sourceType,
+    sourceLabel,
+  );
+  const nextClassName = `${className}${active ? ' is-active-focus' : ''}`;
+  const nextButtonText = `${active ? '현재 · ' : prefixLabel}${buttonText}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" data-retrieval-source-type="${escapeHtml(sourceType)}" data-retrieval-source-label="${escapeHtml(sourceLabel)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(sourceFocusLabel)}" title="${escapeHtml(sourceFocusLabel)}">${escapeHtml(nextButtonText)}</button>`;
+}
+
+function renderRetrievalArtifactOpenButton({
+  artifact = {},
+  buttonText = 'retrieval 근거 열기',
+  className = 'ghost-button',
+  openLabel = '',
+} = {}) {
+  const artifactId = String(artifact?.id || '').trim();
+  const sessionId = String(artifact?.sessionId || '').trim();
+  if (!artifactId || !sessionId) {
+    return '';
+  }
+  const actionLabel = openLabel || getRetrievalArtifactOpenLabel(artifact);
+  return `<button class="${escapeHtml(className)}" type="button" data-retrieval-artifact-open="${escapeHtml(artifactId)}" data-retrieval-session-id="${escapeHtml(sessionId)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
+function renderRetrievalSourceFocusClearButton({
+  actionLabel = '',
+  buttonText = 'focus 해제',
+  className = 'ghost-button',
+} = {}) {
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="clear-retrieval-source-focus" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCopiedActionButton({
   action = '',
   actionLabel = 'release copy',
@@ -10101,14 +10142,15 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
     .join('');
   const renderRetrievalSourceChip = (entry, prefixLabel) => {
     const isActive = activeFocus?.type === entry.sourceType && activeFocus?.label === entry.sourceLabel;
-    const sourceFocusLabel = getRetrievalSourceActionLabel(
-      isActive ? '현재 retrieval source 보기' : 'retrieval source 보기',
-      entry.sourceType,
-      entry.sourceLabel,
-    );
     return `
       <span class="retrieval-source-chip">
-        <button class="tag tag-muted ${isActive ? 'is-active-focus' : ''}" type="button" data-retrieval-source-type="${escapeHtml(entry.sourceType)}" data-retrieval-source-label="${escapeHtml(entry.sourceLabel)}" aria-pressed="${isActive ? 'true' : 'false'}" aria-label="${escapeHtml(sourceFocusLabel)}" title="${escapeHtml(sourceFocusLabel)}">${escapeHtml(isActive ? '현재 · ' : prefixLabel)}${escapeHtml(entry.label)}</button>
+        ${renderRetrievalSourceFocusButton({
+          active: isActive,
+          buttonText: entry.label,
+          prefixLabel,
+          sourceLabel: entry.sourceLabel,
+          sourceType: entry.sourceType,
+        })}
         ${renderRetrievalSourceCopyButton({
           attributes: 'data-retrieval-source-copy="true"',
           className: 'tag tag-ghost retrieval-source-copy-button',
@@ -10144,7 +10186,10 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
           ? `<div class="inline-actions">
               ${
                 includeAction
-                  ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestArtifact.sessionId)}" aria-label="${escapeHtml(latestArtifactOpenLabel)}" title="${escapeHtml(latestArtifactOpenLabel)}">retrieval 근거 열기</button>`
+                  ? renderRetrievalArtifactOpenButton({
+                      artifact: latestArtifact,
+                      openLabel: latestArtifactOpenLabel,
+                    })
                   : ''
               }
               ${
@@ -10156,7 +10201,10 @@ function renderRetrievalCompareCallout(retrieval = {}, { includeAction = false }
                       sourceLabel: activeFocus.label,
                       sourceType: activeFocus.type,
                     })}
-                     <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus" aria-label="${escapeHtml(activeFocusClearLabel)}" title="${escapeHtml(activeFocusClearLabel)}">현재 source 해제</button>`
+                     ${renderRetrievalSourceFocusClearButton({
+                       actionLabel: activeFocusClearLabel,
+                       buttonText: '현재 source 해제',
+                     })}`
                   : ''
               }
             </div>`
@@ -16355,7 +16403,11 @@ function renderOutputStageSummary() {
           <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
           ${
             latestRetrievalArtifact
-              ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}" aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}" title="${escapeHtml(latestRetrievalArtifactOpenLabel)}">retrieval 근거</button>`
+              ? renderRetrievalArtifactOpenButton({
+                  artifact: latestRetrievalArtifact,
+                  buttonText: 'retrieval 근거',
+                  openLabel: latestRetrievalArtifactOpenLabel,
+                })
               : ''
           }
         </div>
@@ -16448,7 +16500,10 @@ function renderOutputStageSummary() {
         <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}">검토 상태 보기</button>
         ${
           latestRetrievalArtifact
-            ? `<button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}" aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}" title="${escapeHtml(latestRetrievalArtifactOpenLabel)}">retrieval 근거 열기</button>`
+            ? renderRetrievalArtifactOpenButton({
+                artifact: latestRetrievalArtifact,
+                openLabel: latestRetrievalArtifactOpenLabel,
+              })
             : ''
         }
       </div>
@@ -16888,7 +16943,9 @@ function renderHarnessPanel() {
                 sourceLabel: activeRetrievalSourceFocus.label,
                 sourceType: activeRetrievalSourceFocus.type,
               })}
-              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus" aria-label="${escapeHtml(activeRetrievalSourceClearLabel)}" title="${escapeHtml(activeRetrievalSourceClearLabel)}">focus 해제</button>
+              ${renderRetrievalSourceFocusClearButton({
+                actionLabel: activeRetrievalSourceClearLabel,
+              })}
             </div>
           </div>`
         : ''
@@ -17065,7 +17122,9 @@ function renderHarnessPanel() {
                 sourceLabel: activeRetrievalSourceFocus.label,
                 sourceType: activeRetrievalSourceFocus.type,
               })}
-              <button class="ghost-button" type="button" data-ui-action="clear-retrieval-source-focus" aria-label="${escapeHtml(activeRetrievalSourceClearLabel)}" title="${escapeHtml(activeRetrievalSourceClearLabel)}">focus 해제</button>
+              ${renderRetrievalSourceFocusClearButton({
+                actionLabel: activeRetrievalSourceClearLabel,
+              })}
             </div>
           </div>`
         : ''
@@ -17081,7 +17140,10 @@ function renderHarnessPanel() {
               <strong>최근 실행 retrieval evidence</strong>
               <p>${escapeHtml(`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`)}</p>
               <div class="inline-actions">
-                <button class="ghost-button" type="button" data-retrieval-artifact-open="${escapeHtml(latestRetrievalArtifact.id)}" data-retrieval-session-id="${escapeHtml(latestRetrievalArtifact.sessionId)}" aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}" title="${escapeHtml(latestRetrievalArtifactOpenLabel)}">retrieval 근거 열기</button>
+                ${renderRetrievalArtifactOpenButton({
+                  artifact: latestRetrievalArtifact,
+                  openLabel: latestRetrievalArtifactOpenLabel,
+                })}
               </div>
             </div>`
           : ''

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-12T17:08:48.199Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-12T17:08:46.637Z
 - localDate: 2026-06-13
 - branch: codex/retrieval-source-action-button-renderers
 - commit: d2023b7baa730ce29b7128d5de631ac7dd3efcc3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d2023b7baa730ce29b7128d5de631ac7dd3efcc3](releases/execution-v1/d2023b7baa730ce29b7128d5de631ac7dd3efcc3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d2023b7baa730ce29b7128d5de631ac7dd3efcc3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d2023b7baa730ce29b7128d5de631ac7dd3efcc3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d2023b7baa730ce29b7128d5de631ac7dd3efcc3](docs/releases/execution-v1/d2023b7baa730ce29b7128d5de631ac7dd3efcc3)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/retrieval-source-action-button-renderers not found
 
