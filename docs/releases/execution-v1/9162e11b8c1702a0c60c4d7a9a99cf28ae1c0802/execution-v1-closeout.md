@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-12T19:51:27.918Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-12T19:51:18.889Z
 - branch: codex/flow-quick-action-button-renderer
 - commit: 9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

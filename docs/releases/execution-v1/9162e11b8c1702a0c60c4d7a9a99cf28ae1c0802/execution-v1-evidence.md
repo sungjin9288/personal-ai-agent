@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T19:51:27.918Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T19:51:12.314Z
 - branch: codex/flow-quick-action-button-renderer
 - commit: 9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802
