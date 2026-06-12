@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Handoff Link Base Renderer
+
+- moved release handoff link copy renderer onto the shared release copied-action button renderer
+- kept artifact id, success notice, preview/open-link actions, and copied text behavior unchanged
+- reduced duplicated copied-state accessibility metadata in handoff link copy controls
+- extended UI harness browse smoke coverage for handoff link base renderer delegation
+
 ## 2026-06-12 Release Production Blocker Detail Base Renderer
 
 - moved production blocker detail copy renderer onto the shared release copied-action button renderer
