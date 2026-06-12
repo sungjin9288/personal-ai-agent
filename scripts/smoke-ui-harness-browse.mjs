@@ -1806,12 +1806,14 @@ try {
   assert.equal(appJs.includes('${previewButtonLabel}: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('aria-expanded="${previewActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('handoff preview 링크 복사: ${handoffActionTargetLabel}'), true);
-  assert.equal(appJs.includes('aria-pressed="${previewLinkCopied ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('aria-pressed="${openLinkCopied ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('renderReleaseHandoffLinkCopyButton'), true);
+  assert.equal(appJs.includes("action: 'copy-release-handoff-preview-link'"), true);
+  assert.equal(appJs.includes("action: 'copy-release-handoff-open-link'"), true);
+  assert.equal(appJs.includes('data-ui-action="copy-release-handoff-preview-link"'), false);
+  assert.equal(appJs.includes('data-ui-action="copy-release-handoff-open-link"'), false);
   assert.equal(appJs.includes('handoff artifact 경로 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('handoff preview 닫기: ${handoffPreviewArtifact.label'), true);
   assert.equal(appJs.includes('현재 handoff summary overview 복사: ${handoffPreviewArtifact.label'), true);
-  assert.equal(appJs.includes('aria-pressed="${isCopiedReleaseHandoffPreviewLink(handoffPreviewArtifact.id) ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${isCopiedReleaseHandoffSummaryDetail(handoffPreviewArtifact.id, detail.key) ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${isCopiedReleaseHandoffSummaryStableLine(handoffPreviewArtifact.id, detail.key, lineIndex) ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${isCopiedReleaseHandoffSummary(handoffPreviewArtifact.id) ? \'true\' : \'false\'}"'), true);
