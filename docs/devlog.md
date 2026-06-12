@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Action Inbox Copy Link Renderer
+
+- moved the action inbox current-link copy control onto a dedicated renderer
+- kept disabled no-mission behavior, aria-disabled metadata, title/label copy, and copy helper routing unchanged
+- reduced direct button markup inside the mission action summary renderer
+- extended UI learning promotion smoke coverage for action inbox copy link renderer delegation
+
 ## 2026-06-12 Current View Link Copy Base Renderer
 
 - moved the current view link copy control onto a dedicated copied-state renderer
