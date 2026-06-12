@@ -467,7 +467,7 @@ try {
   assert.equal(appJs.includes('data-ui-action="copy-release-command"'), false);
   assert.equal(appJs.includes('data-ui-action="${escapeHtml(action)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes("${escapeHtml(copied ? '복사됨' : buttonText)}"), true);
+  assert.equal(appJs.includes('${escapeHtml(copied ? copiedText : buttonText)}'), true);
   assert.equal(appJs.includes('provider live 명령 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('renderReleaseLinkCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseLink'), true);
@@ -2117,6 +2117,7 @@ try {
   assert.equal(appJs.includes('renderReleaseProductionBlockerDetailCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseProductionBlockerDetail'), true);
   assert.equal(appJs.includes('releaseProductionBlockerDetailCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('Production-ready blocker handoff'), true);
   assert.equal(appJs.includes('releaseFocusedProductionBlockerIndex'), true);
   assert.equal(appJs.includes('rpblocker'), true);

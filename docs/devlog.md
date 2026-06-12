@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Production Blocker Detail Base Renderer
+
+- moved production blocker detail copy renderer onto the shared release copied-action button renderer
+- kept blocker index, copy-key generation, and handoff copy action routing unchanged
+- reduced duplicated copied-state accessibility metadata in the production blocker detail copy control
+- extended UI harness browse smoke coverage for production blocker detail base renderer delegation
+
 ## 2026-06-12 Release Target Evidence Packet Base Renderer
 
 - moved target evidence release refresh and intake packet copy renderers onto the shared release copied-action button renderer
