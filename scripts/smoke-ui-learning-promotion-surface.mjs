@@ -162,9 +162,14 @@ try {
   assert.equal(appJs.includes('data-action-rerun'), true);
   assert.equal(appJs.includes('권장 재실행: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('data-provider-attention-remediate'), true);
-  assert.equal(appJs.includes('제공자 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
-  assert.equal(appJs.includes('fallback 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
-  assert.equal(appJs.includes('복구성 fallback: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes('renderProviderAttentionRemediationButton'), true);
+  assert.equal(appJs.includes('renderProviderAttentionRemediationButton({ item })'), true);
+  assert.equal(appJs.includes('data-provider-attention-mode="${escapeHtml(mode)}"'), true);
+  assert.equal(appJs.includes('${actionLabelPrefix}: ${item.title || item.actionId || item.id || item.missionId}'), true);
+  assert.equal(appJs.includes("actionLabelPrefix: 'fallback 복구'"), true);
+  assert.equal(appJs.includes("mode: 'fallback'"), true);
+  assert.equal(appJs.includes("actionLabelPrefix: '복구성 fallback'"), true);
+  assert.equal(appJs.includes("mode: 'recoverable-fallback'"), true);
   assert.equal(appJs.includes('data-specialist-follow-up-remediate'), true);
   assert.equal(appJs.includes('전문가 복구: ${item.title || item.actionId || item.id || item.missionId}'), true);
   assert.equal(appJs.includes('data-action-resolve'), true);
