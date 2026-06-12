@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Flow Quick Action Button Renderer
+
+- moved core flow quick action buttons onto a shared renderer
+- kept jump-step, switch-tab, reset-view actions, optional values, aria labels, titles, and visible labels unchanged
+- reduced direct flow action button markup in flow status, mission summary, and selection bridge surfaces
+- extended UI harness browse smoke coverage for flow quick action renderer delegation
+
 ## 2026-06-13 Retrieval Source Action Button Renderers
 
 - moved retrieval source focus, retrieval artifact open, and source focus clear buttons onto dedicated renderers

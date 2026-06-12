@@ -264,8 +264,18 @@ try {
   assert.equal(appJs.includes('renderCurrentViewLinkCopyButton'), true);
   assert.equal(appJs.includes('현재 보기 링크 복사됨: ${targetLabel}'), true);
   assert.equal(appJs.includes('renderCurrentViewLinkCopyButton({ targetLabel: flowActionTargetLabel })'), true);
+  assert.equal(appJs.includes('renderFlowQuickActionButton'), true);
+  assert.equal(appJs.includes('valueAttribute = normalizedValue ? ` data-ui-value="${escapeHtml(normalizedValue)}"` : \'\''), true);
+  assert.equal(appJs.includes('actionLabel: flowPrimaryActionLabel'), true);
+  assert.equal(appJs.includes('actionLabel: flowSecondaryActionLabel'), true);
+  assert.equal(appJs.includes('actionLabel: flowHarnessActionLabel'), true);
+  assert.equal(appJs.includes('actionLabel: flowResetViewLabel'), true);
+  assert.equal(appJs.includes('actionLabel: selectionBridgeStepLabel'), true);
   assert.equal(appJs.includes('class="ghost-button ${flowCopyViewCopied ? \'is-copied\' : \'\'}"'), false);
   assert.equal(appJs.includes('data-ui-action="copy-view-link" aria-pressed="${flowCopyViewCopied ? \'true\' : \'false\'}"'), false);
+  assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}"'), false);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}"'), false);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="reset-view"'), false);
   assert.equal(appJs.includes('renderRetrievalSourceCopyButton'), true);
   assert.equal(appJs.includes('renderRetrievalSourceFocusButton'), true);
   assert.equal(appJs.includes('renderRetrievalArtifactOpenButton'), true);
@@ -1934,7 +1944,7 @@ try {
   assert.equal(appJs.includes('하네스 탭 열기: 하네스 준비 상태'), true);
   assert.equal(appJs.includes("${topRecommendation ? topHarnessAction.label : '2단계 실행 열기'}: 하네스 준비 상태"), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(missionSummarySetupLabel)}"'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(selectionBridgeStepLabel)}"'), true);
+  assert.equal(appJs.includes('actionLabel: selectionBridgeStepLabel'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(setupHarnessPrimaryLabel)}"'), true);
   assert.equal(appJs.includes('releaseActionLabel'), true);
   assert.equal(appJs.includes('상태 다시 읽기: ${releaseActionLabel}'), true);
