@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Production Blocker Link Copy Pressed Metadata
+
+- moved focused production blocker and production blocker row link copy controls onto the shared release link copied-state renderer
+- added aria-pressed metadata and copied-state styling to production blocker link copy buttons
+- kept production blocker deep-link generation, focused production blocker routing, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for production blocker link copy-state contracts
+
 ## 2026-06-12 Release Blocker Link Copy Pressed Metadata
 
 - moved focused blocker and blocker row link copy controls onto the shared release link copied-state renderer
