@@ -1561,6 +1561,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceProductionGapCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceProductionGap'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceProductionGapCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-production-gap'), true);
   assert.equal(appJs.includes('data-release-target-evidence-production-gap'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyProductionGap'), true);
@@ -1575,6 +1576,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceExceptionRegisterCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceExceptionRegister'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceExceptionRegisterCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-exception-register'), true);
   assert.equal(appJs.includes('data-release-target-evidence-exception-register'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyExceptionRegister'), true);
@@ -1589,6 +1591,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceRiskDecisionRegisterCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceRiskDecisionRegister'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceRiskDecisionRegisterCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-risk-decision-register'), true);
   assert.equal(appJs.includes('data-release-target-evidence-risk-decision-register'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister'), true);

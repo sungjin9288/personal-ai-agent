@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Register Base Renderer
+
+- moved target evidence production gap, exception register, and risk decision register copy renderers onto the shared release copied-action button renderer
+- kept target evidence filter/provider-only scopes, copy-key generation, and click handler routing unchanged
+- reduced duplicated copied-state accessibility metadata in the first target evidence register copy renderer group
+- extended UI harness browse smoke coverage for target evidence register base renderer delegation
+
 ## 2026-06-12 Release Target Evidence Intake Base Renderer
 
 - moved target evidence intake summary, capture template, and required commands copy renderers onto the shared release copied-action button renderer
