@@ -215,6 +215,8 @@ try {
   assert.equal(appJs.includes('clearFiltersTitle'), true);
   assert.equal(appJs.includes('초기화할 action inbox 필터가 없습니다'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(clearFiltersTitle)}"'), true);
+  assert.equal(appJs.includes('renderActionInboxCopyLinkButton'), true);
+  assert.equal(appJs.includes('renderActionInboxCopyLinkButton({ hasSelectedMission })'), true);
   assert.equal(appJs.includes("${hasSelectedMission ? '' : 'disabled'}"), true);
   assert.equal(appJs.includes('aria-disabled="${hasSelectedMission ? \'false\' : \'true\'}"'), true);
   assert.equal(appJs.includes('copyLinkTitle'), true);

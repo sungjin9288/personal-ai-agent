@@ -21238,6 +21238,17 @@ function renderMissionActionsFilterButton(filter, label, count) {
   return `<button class="${active ? 'primary-button' : 'ghost-button'}" type="button" data-action-inbox-filter="${escapeHtml(filter)}" aria-label="${escapeHtml(filterButtonTitle)}" aria-pressed="${active ? 'true' : 'false'}" title="${escapeHtml(filterButtonTitle)}">${escapeHtml(label)} ${escapeHtml(countLabel)}</button>`;
 }
 
+function renderActionInboxCopyLinkButton({
+  buttonText = '현재 action 링크 복사',
+  className = 'ghost-button',
+  hasSelectedMission = Boolean(state.selectedMissionId),
+} = {}) {
+  const copyLinkTitle = hasSelectedMission
+    ? '현재 action inbox 링크 복사'
+    : '선택된 mission이 없어 action inbox 링크를 복사할 수 없습니다';
+  return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-copy-link="true" aria-disabled="${hasSelectedMission ? 'false' : 'true'}" aria-label="${escapeHtml(copyLinkTitle)}" title="${escapeHtml(copyLinkTitle)}" ${hasSelectedMission ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
+}
+
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
   return (payload?.items || []).reduce((counts, item) => {
     Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
@@ -21353,9 +21364,6 @@ function renderMissionActions() {
   const clearFiltersTitle = hasActiveFilter
     ? 'action inbox 필터 전체 초기화'
     : '초기화할 action inbox 필터가 없습니다';
-  const copyLinkTitle = hasSelectedMission
-    ? '현재 action inbox 링크 복사'
-    : '선택된 mission이 없어 action inbox 링크를 복사할 수 없습니다';
   elements.actionSummary.innerHTML = `
     <div class="summary-chip"><span>전체 작업</span><strong>${escapeHtml(String(fullSummary.pendingActionCount ?? 0))}</strong></div>
     <div class="summary-chip"><span>표시 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
@@ -21372,7 +21380,7 @@ function renderMissionActions() {
       </select>
       <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true" aria-disabled="${fallbackStopReasonFilter ? 'false' : 'true'}" aria-label="${escapeHtml(fallbackStopResetTitle)}" title="${escapeHtml(fallbackStopResetTitle)}" ${fallbackStopReasonFilter ? '' : 'disabled'}>stop 필터 초기화</button>
       <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" aria-disabled="${hasActiveFilter ? 'false' : 'true'}" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
-      <button class="ghost-button" type="button" data-action-inbox-copy-link="true" aria-disabled="${hasSelectedMission ? 'false' : 'true'}" aria-label="${escapeHtml(copyLinkTitle)}" title="${escapeHtml(copyLinkTitle)}" ${hasSelectedMission ? '' : 'disabled'}>현재 action 링크 복사</button>
+      ${renderActionInboxCopyLinkButton({ hasSelectedMission })}
     </div>
   `;
   const fallbackStopSelect = elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]');
