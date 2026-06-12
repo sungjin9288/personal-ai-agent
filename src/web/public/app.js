@@ -15756,9 +15756,13 @@ function renderMissionSummary() {
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="false" aria-label="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}">
               요약 펼치기
             </button>
-            <button class="secondary-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup" aria-label="${escapeHtml(missionSummarySetupLabel)}" title="${escapeHtml(missionSummarySetupLabel)}">
-              입력 다시 보기
-            </button>
+            ${renderFlowQuickActionButton({
+              action: 'jump-step',
+              actionLabel: missionSummarySetupLabel,
+              buttonText: '입력 다시 보기',
+              className: 'secondary-button',
+              value: 'step-setup',
+            })}
           </div>
         </section>
       `;
@@ -15783,9 +15787,12 @@ function renderMissionSummary() {
             <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="true" aria-label="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}">
               요약 접기
             </button>
-            <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="step-setup" aria-label="${escapeHtml(missionSummarySetupLabel)}" title="${escapeHtml(missionSummarySetupLabel)}">
-              입력 다시 보기
-            </button>
+            ${renderFlowQuickActionButton({
+              action: 'jump-step',
+              actionLabel: missionSummarySetupLabel,
+              buttonText: '입력 다시 보기',
+              value: 'step-setup',
+            })}
           </div>
         </div>
         <div class="mission-summary-compact-grid">
@@ -16040,16 +16047,18 @@ function renderSetupHarnessSummary() {
         value: 'step-run',
       };
   const secondaryButton = topRecommendation?.code
-    ? `
-      <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.secondaryAction)}" data-ui-value="${escapeHtml(topHarnessAction.secondaryValue)}" aria-label="${escapeHtml(`${topHarnessAction.secondaryLabel}: 하네스 준비 상태`)}" title="${escapeHtml(`${topHarnessAction.secondaryLabel}: 하네스 준비 상태`)}">
-        ${escapeHtml(topHarnessAction.secondaryLabel)}
-      </button>
-    `
-    : `
-      <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness" aria-label="하네스 탭 열기: 하네스 준비 상태" title="하네스 탭 열기: 하네스 준비 상태">
-        하네스 탭 열기
-      </button>
-    `;
+    ? renderFlowQuickActionButton({
+        action: topHarnessAction.secondaryAction,
+        actionLabel: `${topHarnessAction.secondaryLabel}: 하네스 준비 상태`,
+        buttonText: topHarnessAction.secondaryLabel,
+        value: topHarnessAction.secondaryValue,
+      })
+    : renderFlowQuickActionButton({
+        action: 'switch-tab',
+        actionLabel: '하네스 탭 열기: 하네스 준비 상태',
+        buttonText: '하네스 탭 열기',
+        value: 'harness',
+      });
   const setupHarnessPrimaryLabel = `${topRecommendation ? topHarnessAction.label : '2단계 실행 열기'}: 하네스 준비 상태`;
 
   elements.setupHarnessSummary.innerHTML = `
@@ -16073,9 +16082,13 @@ function renderSetupHarnessSummary() {
         <p>${escapeHtml(topRecommendation?.title || '문서 source-of-record, memory, 운영 루프가 현재 안정 상태입니다. 실행 전 세부 기준만 마지막으로 확인하면 됩니다.')}</p>
       </div>
       <div class="action-row">
-        <button class="primary-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}" aria-label="${escapeHtml(setupHarnessPrimaryLabel)}" title="${escapeHtml(setupHarnessPrimaryLabel)}">
-          ${escapeHtml(topRecommendation ? topHarnessAction.label : '2단계 실행 열기')}
-        </button>
+        ${renderFlowQuickActionButton({
+          action: topHarnessAction.action,
+          actionLabel: setupHarnessPrimaryLabel,
+          buttonText: topRecommendation ? topHarnessAction.label : '2단계 실행 열기',
+          className: 'primary-button',
+          value: topHarnessAction.value,
+        })}
         ${secondaryButton}
       </div>
     </div>
@@ -16139,7 +16152,12 @@ function renderRunStageSummary() {
         }
       </div>
       <div class="action-row">
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${runStageMissionLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${runStageMissionLabel}`)}">실행 기록 보기</button>
+        ${renderFlowQuickActionButton({
+          action: 'switch-tab',
+          actionLabel: `실행 기록 보기: ${runStageMissionLabel}`,
+          buttonText: '실행 기록 보기',
+          value: 'runs',
+        })}
       </div>
     </div>
   `;
@@ -16348,9 +16366,26 @@ function renderReviewStageSummary() {
       <p class="summary-note review-priority-copy">${escapeHtml(decisionCopy)}</p>
       <p class="summary-note">${escapeHtml(latestExecutionSession?.verification?.summary || latestSession?.reviewerSummary || flow.copy)}</p>
       <div class="action-row">
-        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`승인 항목 보기: ${reviewStageMissionLabel}`)}" title="${escapeHtml(`승인 항목 보기: ${reviewStageMissionLabel}`)}">승인 항목 보기</button>
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`후속 작업 보기: ${reviewStageMissionLabel}`)}" title="${escapeHtml(`후속 작업 보기: ${reviewStageMissionLabel}`)}">후속 작업 보기</button>
-        <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${reviewStageMissionLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${reviewStageMissionLabel}`)}">실행 기록 보기</button>
+        ${renderFlowQuickActionButton({
+          action: 'switch-tab',
+          actionLabel: `승인 항목 보기: ${reviewStageMissionLabel}`,
+          buttonText: '승인 항목 보기',
+          className: 'primary-button',
+          value: 'reviews',
+        })}
+        ${renderFlowQuickActionButton({
+          action: 'switch-tab',
+          actionLabel: `후속 작업 보기: ${reviewStageMissionLabel}`,
+          buttonText: '후속 작업 보기',
+          value: 'reviews',
+        })}
+        ${renderFlowQuickActionButton({
+          action: 'switch-tab',
+          actionLabel: `실행 기록 보기: ${reviewStageMissionLabel}`,
+          buttonText: '실행 기록 보기',
+          className: 'secondary-button',
+          value: 'runs',
+        })}
       </div>
     </div>
   `;
@@ -16417,7 +16452,12 @@ function renderOutputStageSummary() {
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-expanded="false" aria-label="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}">지원 패널 펼치기</button>
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
+          ${renderFlowQuickActionButton({
+            action: 'switch-tab',
+            actionLabel: `결과물 열기: ${outputStageTargetLabel}`,
+            buttonText: '결과물 열기',
+            value: 'artifacts',
+          })}
           ${
             latestRetrievalArtifact
               ? renderRetrievalArtifactOpenButton({
@@ -16512,9 +16552,26 @@ function renderOutputStageSummary() {
       }
       ${renderRetrievalCompareCallout(retrieval, { includeAction: false })}
       <div class="action-row">
-        <button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}">결과물 열기</button>
-        <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${outputStageTargetLabel}`)}">실행 기록 보기</button>
-        <button class="secondary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`검토 상태 보기: ${outputStageTargetLabel}`)}">검토 상태 보기</button>
+        ${renderFlowQuickActionButton({
+          action: 'switch-tab',
+          actionLabel: `결과물 열기: ${outputStageTargetLabel}`,
+          buttonText: '결과물 열기',
+          className: 'primary-button',
+          value: 'artifacts',
+        })}
+        ${renderFlowQuickActionButton({
+          action: 'switch-tab',
+          actionLabel: `실행 기록 보기: ${outputStageTargetLabel}`,
+          buttonText: '실행 기록 보기',
+          value: 'runs',
+        })}
+        ${renderFlowQuickActionButton({
+          action: 'switch-tab',
+          actionLabel: `검토 상태 보기: ${outputStageTargetLabel}`,
+          buttonText: '검토 상태 보기',
+          className: 'secondary-button',
+          value: 'reviews',
+        })}
         ${
           latestRetrievalArtifact
             ? renderRetrievalArtifactOpenButton({
