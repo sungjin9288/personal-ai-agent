@@ -10361,6 +10361,7 @@ function wireQuickActions(scope = document) {
       if (action === 'copy-release-production-blocker-link') {
         void copyReleaseProductionBlockerLink({
           blockerIndex: button.dataset.uiIndex || value || 0,
+          copyKey: button.dataset.uiCopyKey || button.dataset.uiIndex || value || '',
           successNotice: '선택한 production-ready blocker 링크를 복사했습니다.',
         });
         return;
@@ -11725,6 +11726,7 @@ async function copyReleaseBlockerLink({
 
 async function copyReleaseProductionBlockerLink({
   blockerIndex = state.releaseFocusedProductionBlockerIndex,
+  copyKey = '',
   successNotice = '',
 } = {}) {
   const normalizedIndex = getValidReleaseProductionBlockerIndex(blockerIndex);
@@ -11736,6 +11738,7 @@ async function copyReleaseProductionBlockerLink({
   await copyReleaseTriageLink({
     blockerCategory: '',
     blockerOwner: '',
+    copyKey,
     focusedBlockerId: '',
     focusedProductionBlockerIndex: normalizedIndex,
     focusedProvider: '',
@@ -19007,15 +19010,13 @@ function renderReleaseStatus() {
                         blockerIndex: focusedProductionBlockerIndex,
                         buttonText: 'handoff 복사',
                       })}
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-production-blocker-link="${escapeHtml(focusedProductionBlockerIndex)}"
-                        data-ui-action="copy-release-production-blocker-link"
-                        data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"
-                        aria-label="${escapeHtml(`focused production blocker 링크 복사: ${focusedProductionBlockerActionLabel}`)}"
-                        title="${escapeHtml(`focused production blocker 링크 복사: ${focusedProductionBlockerActionLabel}`)}"
-                      >blocker 링크 복사</button>
+                      ${renderReleaseLinkCopyButton({
+                        action: 'copy-release-production-blocker-link',
+                        actionLabel: `focused production blocker 링크 복사: ${focusedProductionBlockerActionLabel}`,
+                        attributes: `data-release-production-blocker-link="${escapeHtml(focusedProductionBlockerIndex)}" data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"`,
+                        buttonText: 'blocker 링크 복사',
+                        value: focusedProductionBlockerIndex,
+                      })}
                       <a
                         class="ghost-button"
                         href="${escapeHtml(productionBlockerEvidenceDocHref)}"
@@ -19083,15 +19084,13 @@ function renderReleaseStatus() {
                             title="${escapeHtml(`${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`)}"
                             ${isFocusedProductionBlocker ? 'disabled' : ''}
                           >${isFocusedProductionBlocker ? '포커스됨' : '포커스'}</button>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-release-production-blocker-link="${escapeHtml(String(index))}"
-                            data-ui-action="copy-release-production-blocker-link"
-                            data-ui-index="${escapeHtml(String(index))}"
-                            aria-label="${escapeHtml(`production blocker 링크 복사: ${productionBlockerRowActionLabel}`)}"
-                            title="${escapeHtml(`production blocker 링크 복사: ${productionBlockerRowActionLabel}`)}"
-                          >링크 복사</button>
+                          ${renderReleaseLinkCopyButton({
+                            action: 'copy-release-production-blocker-link',
+                            actionLabel: `production blocker 링크 복사: ${productionBlockerRowActionLabel}`,
+                            attributes: `data-release-production-blocker-link="${escapeHtml(String(index))}" data-ui-index="${escapeHtml(String(index))}"`,
+                            buttonText: '링크 복사',
+                            value: String(index),
+                          })}
                           <a
                             class="ghost-button"
                             href="${escapeHtml(productionBlockerEvidenceDocHref)}"

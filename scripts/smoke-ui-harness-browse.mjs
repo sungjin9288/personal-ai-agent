@@ -2096,6 +2096,9 @@ try {
   assert.equal(appJs.includes('data-release-production-blocker-link'), true);
   assert.equal(appJs.includes('focus-release-production-blocker'), true);
   assert.equal(appJs.includes('copy-release-production-blocker-link'), true);
+  assert.equal(appJs.includes("action: 'copy-release-production-blocker-link'"), true);
+  assert.equal(appJs.includes("copyKey: button.dataset.uiCopyKey || button.dataset.uiIndex || value || ''"), true);
+  assert.equal(appJs.includes('data-ui-action="copy-release-production-blocker-link"'), false);
   assert.equal(appJs.includes('clear-release-production-blocker-focus'), true);
   assert.equal(appJs.includes('data-release-production-blocker-evidence-doc'), true);
   assert.equal(appJs.includes('data-release-production-blocker-evidence-doc-copy'), true);
