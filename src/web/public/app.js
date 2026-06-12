@@ -3291,9 +3291,15 @@ function renderReleaseHandoffStructuredSummaryCopyButton({
   const lineIndexAttribute = Number.isInteger(normalizedLineIndex) && normalizedLineIndex >= 0
     ? `data-ui-line-index="${escapeHtml(String(normalizedLineIndex))}"`
     : '';
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" ${detailAttribute} ${lineIndexAttribute} data-ui-success-notice="${escapeHtml(successNotice)}" data-ui-value="${escapeHtml(normalizedArtifactId)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? copiedText : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} ${detailAttribute} ${lineIndexAttribute} data-ui-success-notice="${escapeHtml(successNotice)}" data-ui-value="${escapeHtml(normalizedArtifactId)}"`,
+    buttonText,
+    className,
+    copied,
+    copiedText,
+  });
 }
 
 function markCopiedRetrievalSource(sourceType = '', sourceLabel = '') {

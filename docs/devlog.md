@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Handoff Structured Summary Base Renderer
+
+- moved release handoff structured summary copy renderer onto the shared release copied-action button renderer
+- kept overview/detail/stable-line actions, detail keys, line indexes, success notices, and copied text behavior unchanged
+- reduced duplicated copied-state accessibility metadata in structured summary copy controls
+- extended UI harness browse smoke coverage for structured summary base renderer delegation
+
 ## 2026-06-12 Release Handoff Link Base Renderer
 
 - moved release handoff link copy renderer onto the shared release copied-action button renderer
