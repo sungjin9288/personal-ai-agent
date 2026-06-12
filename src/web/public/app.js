@@ -2664,12 +2664,17 @@ function renderReleaseBlockerPackageCopyButton({
     provider,
   });
   const copied = isCopiedReleaseBlockerPackage(nextCopyKey);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   const providerAttribute = normalizeUiParam(provider)
     ? `data-ui-provider="${escapeHtml(provider)}"`
     : '';
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-blocker="${escapeHtml(blockerId)}" ${providerAttribute} data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-blocker="${escapeHtml(blockerId)}" ${providerAttribute} data-ui-copy-key="${escapeHtml(nextCopyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseBlockerClosureChecklistCopyButton({
@@ -2695,9 +2700,14 @@ function renderReleaseBlockerClosureChecklistCopyButton({
     provider,
   });
   const copied = isCopiedReleaseBlockerClosureChecklist(nextCopyKey);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseBlockerClosureMatrixCopyButton({
@@ -2742,9 +2752,14 @@ function renderReleaseBlockerHandoffCopyButton({
     provider,
   });
   const copied = isCopiedReleaseBlockerHandoff(nextCopyKey);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseBlockerSummaryCopyButton({

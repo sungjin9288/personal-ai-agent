@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Blocker Package Handoff Base Renderer
+
+- moved release blocker package, closure checklist, and handoff copy renderers onto the shared release copied-action button renderer
+- kept blocker ids, provider attributes, copy-key generation, and click handler routing unchanged
+- reduced duplicated copied-state accessibility metadata in blocker package and handoff copy controls
+- extended UI harness browse smoke coverage for blocker id and copy-key base renderer attributes
+
 ## 2026-06-12 Release Blocker Copy Base Renderer
 
 - moved release blocker commands, release blocker evidence, and release link copy renderers onto the shared release copied-action button renderer

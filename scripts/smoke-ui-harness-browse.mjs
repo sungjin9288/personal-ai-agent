@@ -2354,6 +2354,7 @@ try {
   assert.equal(appJs.includes('markCopiedReleaseBlockerHandoff'), true);
   assert.equal(appJs.includes('releaseBlockerHandoffCopiedKey'), true);
   assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
+  assert.equal(appJs.includes('data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}"'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
   assert.equal(appJs.includes('focused blocker handoff 복사'), true);
   assert.equal(appJs.includes('Release blocker handoff'), true);
@@ -2379,6 +2380,7 @@ try {
   assert.equal(appJs.includes('markCopiedReleaseBlockerPackage'), true);
   assert.equal(appJs.includes('releaseBlockerPackageCopiedKey'), true);
   assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
+  assert.equal(appJs.includes('data-ui-blocker="${escapeHtml(blockerId)}" ${providerAttribute} data-ui-copy-key="${escapeHtml(nextCopyKey)}"'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('Release blocker package'), true);
