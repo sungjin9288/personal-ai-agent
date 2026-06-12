@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Retrieval Source Action Button Renderers
+
+- moved retrieval source focus, retrieval artifact open, and source focus clear buttons onto dedicated renderers
+- kept retrieval source type/label attributes, artifact/session ids, clear action routing, aria metadata, and visible labels unchanged
+- reduced direct retrieval action button markup across compare callout, output summary, and harness source/memory panels
+- extended UI harness browse smoke coverage for retrieval source action renderer delegation
+
 ## 2026-06-13 Output Toolbar Toggle Button Renderer
 
 - moved output toolbar toggle buttons onto a shared renderer
