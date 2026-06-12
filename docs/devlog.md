@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Intake Packet Copy Pressed Metadata
+
+- moved target evidence intake packet and provider-only intake packet copy controls onto a shared target evidence intake packet copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence intake packet copy buttons
+- kept intake packet text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence intake packet copy-state contracts
+
 ## 2026-06-12 Release Target Evidence Release Refresh Copy Pressed Metadata
 
 - moved target evidence release refresh and provider-only release refresh copy controls onto a shared target evidence release refresh copied-state renderer

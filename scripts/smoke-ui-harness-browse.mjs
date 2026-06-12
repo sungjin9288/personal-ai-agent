@@ -1734,6 +1734,9 @@ try {
   assert.equal(appJs.includes('Release refresh artifact rows:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceIntakePacketText'), true);
   assert.equal(appJs.includes('Target environment evidence intake submission packet'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceIntakePacketCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceIntakePacket'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceIntakePacketCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-intake-packet'), true);
   assert.equal(appJs.includes('data-release-target-evidence-intake-packet'), true);
   assert.equal(appJs.includes('releaseBlockerApiLink:'), true);
@@ -3132,6 +3135,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceReleaseRefreshCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceIntakePacketCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
