@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Handoff Link Copy Pressed Metadata
+
+- moved handoff preview, open-link, and current preview link copy controls onto a shared release handoff link copied-state renderer
+- added aria-pressed metadata and copied-state styling to release handoff link copy buttons
+- kept handoff preview/open URL generation, artifact routing, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for release handoff link copy-state contracts
+
 ## 2026-06-12 Release Production Blocker Link Copy Pressed Metadata
 
 - moved focused production blocker and production blocker row link copy controls onto the shared release link copied-state renderer

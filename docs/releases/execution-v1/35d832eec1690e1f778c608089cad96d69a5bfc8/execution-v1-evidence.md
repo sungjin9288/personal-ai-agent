@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T03:43:04.779Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T03:42:55.891Z
 - branch: codex/release-handoff-link-copy-pressed-metadata
 - commit: 35d832eec1690e1f778c608089cad96d69a5bfc8
