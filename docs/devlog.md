@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Selectable Detail Button Renderer
+
+- moved session and artifact selection buttons onto a shared selectable detail renderer
+- kept selected-state aria-pressed metadata, selection labels, data ids, and click routing unchanged
+- reduced direct selectable row button markup inside session and artifact detail renderers
+- extended UI harness browse smoke coverage for selectable detail renderer delegation
+
 ## 2026-06-13 Approval Action Button Renderer
 
 - moved approval mission-open, approve, and reject buttons onto a dedicated approval action renderer

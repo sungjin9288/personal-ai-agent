@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-12T16:14:45.934Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-12T16:14:44.545Z
 - localDate: 2026-06-13
 - branch: codex/selectable-detail-button-renderer
 - commit: 78618a51d8e6d47b027920147a08b1105232e13a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/78618a51d8e6d47b027920147a08b1105232e13a](releases/execution-v1/78618a51d8e6d47b027920147a08b1105232e13a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/78618a51d8e6d47b027920147a08b1105232e13a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/78618a51d8e6d47b027920147a08b1105232e13a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/78618a51d8e6d47b027920147a08b1105232e13a](docs/releases/execution-v1/78618a51d8e6d47b027920147a08b1105232e13a)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/selectable-detail-button-renderer not found
 

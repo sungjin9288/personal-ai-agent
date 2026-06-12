@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T16:14:45.934Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T16:14:29.554Z
 - branch: codex/selectable-detail-button-renderer
 - commit: 78618a51d8e6d47b027920147a08b1105232e13a
