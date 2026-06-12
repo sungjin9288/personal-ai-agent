@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-12T11:50:14.083Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-12T11:50:13.983Z
 - localDate: 2026-06-12
 - branch: codex/action-inbox-reset-button-renderer
 - commit: a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47](releases/execution-v1/a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47](docs/releases/execution-v1/a6f7656bd8c072dd71b4a8d07b1d8232d98c6a47)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/action-inbox-reset-button-renderer not found
 
