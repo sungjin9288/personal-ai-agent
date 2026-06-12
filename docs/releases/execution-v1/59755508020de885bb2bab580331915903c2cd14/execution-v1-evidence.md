@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T06:18:46.870Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T06:18:32.306Z
 - branch: codex/release-target-evidence-register-base-renderer
 - commit: 59755508020de885bb2bab580331915903c2cd14
