@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T07:33:18.133Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T07:33:01.949Z
 - branch: codex/release-production-blocker-detail-base-renderer
 - commit: baa1437a3ccc332eb213569f52d1d470c71b523c

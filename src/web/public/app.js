@@ -3232,9 +3232,14 @@ function renderReleaseProductionBlockerDetailCopyButton({
   const copyOptions = { action, blockerIndex, copyKey };
   const nextCopyKey = getReleaseProductionBlockerDetailCopyKey(copyOptions);
   const copied = isCopiedReleaseProductionBlockerDetail({ action, blockerIndex, copyKey: nextCopyKey });
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-index="${escapeHtml(blockerIndex)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-index="${escapeHtml(blockerIndex)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseHandoffLinkCopyButton({
