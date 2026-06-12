@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T11:25:42.847Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T11:25:21.286Z
 - branch: codex/action-inbox-copy-link-renderer
 - commit: c905d679ca8e4ba9cc365a6077b2d87a6faafab0
