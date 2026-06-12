@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T08:18:14.487Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T08:18:00.007Z
 - branch: codex/release-copied-renderer-contract-guard
 - commit: 14c19b7c7c20993706d00b28e870f5265902b8d5

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-12T08:18:14.487Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-12T08:18:13.069Z
 - localDate: 2026-06-12
 - branch: codex/release-copied-renderer-contract-guard
 - commit: 14c19b7c7c20993706d00b28e870f5265902b8d5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/14c19b7c7c20993706d00b28e870f5265902b8d5](releases/execution-v1/14c19b7c7c20993706d00b28e870f5265902b8d5)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/14c19b7c7c20993706d00b28e870f5265902b8d5/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/14c19b7c7c20993706d00b28e870f5265902b8d5/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/14c19b7c7c20993706d00b28e870f5265902b8d5](docs/releases/execution-v1/14c19b7c7c20993706d00b28e870f5265902b8d5)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-copied-renderer-contract-guard not found
 
