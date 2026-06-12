@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T14:57:51.722Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T14:57:31.246Z
 - branch: codex/provider-attention-remediation-button-renderer
 - commit: 13d4d9adb794c39dc576e9482f2fb75315dbdb98
