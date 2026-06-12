@@ -2949,9 +2949,14 @@ function renderReleaseTargetEvidenceProviderReferencesCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceProviderReferencesCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceProviderReferences(copyOptions);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-copy-key="${escapeHtml(copyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseTargetEvidenceResidualBlockersCopyButton({
@@ -2968,9 +2973,14 @@ function renderReleaseTargetEvidenceResidualBlockersCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceResidualBlockersCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceResidualBlockers(copyOptions);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-copy-key="${escapeHtml(copyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseTargetEvidenceClosureRulesCopyButton({
@@ -2987,9 +2997,14 @@ function renderReleaseTargetEvidenceClosureRulesCopyButton({
   const copyOptions = { action, category, includeShared, owner, provider };
   const copyKey = getReleaseTargetEvidenceClosureRulesCopyKey(copyOptions);
   const copied = isCopiedReleaseTargetEvidenceClosureRules(copyOptions);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-copy-key="${escapeHtml(copyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-copy-key="${escapeHtml(copyKey)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseTargetEvidenceSubmissionManifestCopyButton({

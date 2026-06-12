@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T06:35:39.520Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T06:35:24.484Z
 - branch: codex/release-target-evidence-guard-base-renderer
 - commit: 09563d5ee0f86d572af4abf5fd95f5388e6e1b9a
