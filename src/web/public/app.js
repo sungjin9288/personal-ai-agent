@@ -21249,6 +21249,28 @@ function renderActionInboxCopyLinkButton({
   return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-copy-link="true" aria-disabled="${hasSelectedMission ? 'false' : 'true'}" aria-label="${escapeHtml(copyLinkTitle)}" title="${escapeHtml(copyLinkTitle)}" ${hasSelectedMission ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
 }
 
+function renderActionInboxFallbackStopResetButton({
+  buttonText = 'stop 필터 초기화',
+  className = 'ghost-button',
+  hasFallbackStopReason = Boolean(String(state.missionActionsFallbackStopReasonFilter || '').trim()),
+} = {}) {
+  const resetTitle = hasFallbackStopReason
+    ? 'fallback stop 필터 초기화'
+    : '초기화할 fallback stop 필터가 없습니다';
+  return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-fallback-stop-reset="true" aria-disabled="${hasFallbackStopReason ? 'false' : 'true'}" aria-label="${escapeHtml(resetTitle)}" title="${escapeHtml(resetTitle)}" ${hasFallbackStopReason ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
+}
+
+function renderActionInboxClearFiltersButton({
+  buttonText = '필터 전체 초기화',
+  className = 'ghost-button',
+  hasActiveFilter = hasActiveMissionActionsFilter(),
+} = {}) {
+  const clearFiltersTitle = hasActiveFilter
+    ? 'action inbox 필터 전체 초기화'
+    : '초기화할 action inbox 필터가 없습니다';
+  return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-clear-filters="true" aria-disabled="${hasActiveFilter ? 'false' : 'true'}" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
+}
+
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
   return (payload?.items || []).reduce((counts, item) => {
     Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
@@ -21358,12 +21380,6 @@ function renderMissionActions() {
   const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
   const hasActiveFilter = hasActiveMissionActionsFilter();
   const hasSelectedMission = Boolean(state.selectedMissionId);
-  const fallbackStopResetTitle = fallbackStopReasonFilter
-    ? 'fallback stop 필터 초기화'
-    : '초기화할 fallback stop 필터가 없습니다';
-  const clearFiltersTitle = hasActiveFilter
-    ? 'action inbox 필터 전체 초기화'
-    : '초기화할 action inbox 필터가 없습니다';
   elements.actionSummary.innerHTML = `
     <div class="summary-chip"><span>전체 작업</span><strong>${escapeHtml(String(fullSummary.pendingActionCount ?? 0))}</strong></div>
     <div class="summary-chip"><span>표시 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
@@ -21378,8 +21394,8 @@ function renderMissionActions() {
         <option value="">${escapeHtml(fallbackStopReasonPlaceholder)}</option>
         ${fallbackStopReasonOptions}
       </select>
-      <button class="ghost-button" type="button" data-action-inbox-fallback-stop-reset="true" aria-disabled="${fallbackStopReasonFilter ? 'false' : 'true'}" aria-label="${escapeHtml(fallbackStopResetTitle)}" title="${escapeHtml(fallbackStopResetTitle)}" ${fallbackStopReasonFilter ? '' : 'disabled'}>stop 필터 초기화</button>
-      <button class="ghost-button" type="button" data-action-inbox-clear-filters="true" aria-disabled="${hasActiveFilter ? 'false' : 'true'}" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>필터 전체 초기화</button>
+      ${renderActionInboxFallbackStopResetButton({ hasFallbackStopReason: Boolean(fallbackStopReasonFilter) })}
+      ${renderActionInboxClearFiltersButton({ hasActiveFilter })}
       ${renderActionInboxCopyLinkButton({ hasSelectedMission })}
     </div>
   `;
