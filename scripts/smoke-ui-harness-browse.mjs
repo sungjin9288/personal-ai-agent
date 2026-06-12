@@ -1606,6 +1606,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceProviderReferencesCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceProviderReferences'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceProviderReferencesCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-provider-references'), true);
   assert.equal(appJs.includes('data-release-target-evidence-provider-references'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences'), true);
@@ -1620,6 +1621,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceResidualBlockersCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceResidualBlockers'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceResidualBlockersCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-residual-blockers'), true);
   assert.equal(appJs.includes('data-release-target-evidence-residual-blockers'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyResidualBlockers'), true);
@@ -1634,6 +1636,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceClosureRulesCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceClosureRules'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceClosureRulesCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-closure-rules'), true);
   assert.equal(appJs.includes('data-release-target-evidence-closure-rules'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyClosureRules'), true);
