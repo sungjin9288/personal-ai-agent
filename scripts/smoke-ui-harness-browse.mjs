@@ -1706,6 +1706,9 @@ try {
   assert.equal(appJs.includes('Reviewer decision record template:'), true);
   assert.equal(appJs.includes('buildReleaseTargetEvidenceBlockerDispositionRegisterText'), true);
   assert.equal(appJs.includes('Target evidence blocker disposition register'), true);
+  assert.equal(appJs.includes('renderReleaseTargetEvidenceBlockerDispositionCopyButton'), true);
+  assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceBlockerDisposition'), true);
+  assert.equal(appJs.includes('releaseTargetEvidenceBlockerDispositionCopiedKey'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-blocker-disposition'), true);
   assert.equal(appJs.includes('data-release-target-evidence-blocker-disposition'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister'), true);
@@ -3118,6 +3121,10 @@ function assertProviderOnlyCopyScopeSource(appJs) {
       ...getUniqueSortedMatches(
         appJs,
         /renderReleaseTargetEvidenceDecisionRecordCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
+      ),
+      ...getUniqueSortedMatches(
+        appJs,
+        /renderReleaseTargetEvidenceBlockerDispositionCopyButton\(\{[\s\S]*?action: '(copy-release-[^']*provider-only[^']*)'/g,
       ),
     ]),
   ).sort((left, right) => left.localeCompare(right));
