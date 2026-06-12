@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Target Evidence Blocker Disposition Copy Pressed Metadata
+
+- moved target evidence blocker disposition and provider-only blocker disposition copy controls onto a shared target evidence blocker disposition copied-state renderer
+- added aria-pressed metadata and copied-state styling to target evidence blocker disposition copy buttons
+- kept blocker disposition register text generation, shared-provider scoping, provider-only scoping, and clipboard fallback prompts unchanged
+- extended UI harness browse smoke coverage for target evidence blocker disposition copy-state contracts
+
 ## 2026-06-12 Release Target Evidence Decision Record Copy Pressed Metadata
 
 - moved target evidence decision record and provider-only decision record copy controls onto a shared target evidence decision record copied-state renderer
