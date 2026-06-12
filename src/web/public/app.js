@@ -2518,6 +2518,21 @@ function renderRetrievalSourceSurfaces() {
   renderOutputStageSummary();
 }
 
+function renderReleaseCopiedActionButton({
+  action = '',
+  actionLabel = 'release copy',
+  attributes = '',
+  buttonText = '복사',
+  className = 'ghost-button',
+  copied = false,
+  copiedText = '복사됨',
+  disabled = false,
+} = {}) {
+  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
+  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
+  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}" ${disabled ? 'disabled' : ''}>${escapeHtml(copied ? copiedText : buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -2527,9 +2542,14 @@ function renderReleaseCommandCopyButton({
   label = 'release command',
 } = {}) {
   const copied = isCopiedReleaseCommand(command, label);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-command" data-ui-label="${escapeHtml(label)}" data-ui-value="${escapeHtml(command)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action: 'copy-release-command',
+    actionLabel,
+    attributes: `${attributes} data-ui-label="${escapeHtml(label)}" data-ui-value="${escapeHtml(command)}"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseBlockerCommandsCopyButton({
@@ -2593,12 +2613,17 @@ function renderReleaseProviderReadinessPackageCopyButton({
 } = {}) {
   const copyKey = getReleaseProviderReadinessPackageCopyKey(provider);
   const copied = isCopiedReleaseProviderReadinessPackage(copyKey);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
   const providerAttribute = normalizeUiParam(provider)
     ? `data-ui-provider="${escapeHtml(provider)}"`
     : '';
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-provider-readiness-package" ${providerAttribute} data-ui-copy-key="${escapeHtml(copyKey)}" data-release-provider-readiness-package="true" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action: 'copy-release-provider-readiness-package',
+    actionLabel,
+    attributes: `${attributes} ${providerAttribute} data-ui-copy-key="${escapeHtml(copyKey)}" data-release-provider-readiness-package="true"`,
+    buttonText,
+    className,
+    copied,
+  });
 }
 
 function renderReleaseBlockerPackageCopyButton({
@@ -3059,9 +3084,15 @@ function renderReleaseProductionBlockerSummaryCopyButton({
 } = {}) {
   const nextCopyKey = getReleaseProductionBlockerSummaryCopyKey(copyKey);
   const copied = isCopiedReleaseProductionBlockerSummary(nextCopyKey);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="copy-release-production-blocker-summary" data-ui-copy-key="${escapeHtml(nextCopyKey)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}" ${disabled ? 'disabled' : ''}>${escapeHtml(copied ? '복사됨' : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action: 'copy-release-production-blocker-summary',
+    actionLabel,
+    attributes: `${attributes} data-ui-copy-key="${escapeHtml(nextCopyKey)}"`,
+    buttonText,
+    className,
+    copied,
+    disabled,
+  });
 }
 
 function renderReleaseProductionBlockerDetailCopyButton({

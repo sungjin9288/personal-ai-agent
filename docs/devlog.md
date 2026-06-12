@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-12 Release Copy Action Base Renderer
+
+- added a shared release copied-action button renderer for remaining hard-coded release copy action markup
+- moved release command, provider readiness package, and production blocker summary copy buttons onto the base copied-state renderer
+- kept command copying, provider readiness package copying, and production blocker summary copying behavior unchanged
+- extended UI harness browse smoke coverage so those release copy actions are checked through dynamic renderer contracts
+
 ## 2026-06-12 Release Handoff Structured Summary Copy Pressed Metadata
 
 - moved handoff structured summary overview, detail, and stable-line copy controls onto a shared copied-state renderer

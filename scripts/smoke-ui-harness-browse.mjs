@@ -362,11 +362,13 @@ try {
   assert.equal(appJs.includes('copyProviderFallbackEventAuditPackage'), true);
   assert.equal(appJs.includes('data-release-provider-readiness-package'), true);
   assert.equal(appJs.includes('copy-release-provider-readiness-package'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton'), true);
   assert.equal(appJs.includes('renderReleaseProviderReadinessPackageCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseProviderReadinessPackage'), true);
   assert.equal(appJs.includes('releaseProviderReadinessPackageCopiedKey'), true);
   assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiProvider || value || \'\''), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
+  assert.equal(appJs.includes('data-ui-action="copy-release-provider-readiness-package"'), false);
   assert.equal(appJs.includes('provider package 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('buildReleaseProviderReadinessPackageText'), true);
   assert.equal(appJs.includes('Provider readiness handoff package'), true);
@@ -458,7 +460,9 @@ try {
   assert.equal(appJs.includes('copyReleaseCommand'), true);
   assert.equal(appJs.includes('markCopiedReleaseCommand'), true);
   assert.equal(appJs.includes('releaseCommandCopiedKey'), true);
-  assert.equal(appJs.includes('data-ui-action="copy-release-command"'), true);
+  assert.equal(appJs.includes("action: 'copy-release-command'"), true);
+  assert.equal(appJs.includes('data-ui-action="copy-release-command"'), false);
+  assert.equal(appJs.includes('data-ui-action="${escapeHtml(action)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes("${escapeHtml(copied ? '복사됨' : buttonText)}"), true);
   assert.equal(appJs.includes('provider live 명령 복사: ${providerActionLabel}'), true);
@@ -2065,6 +2069,7 @@ try {
   assert.equal(appJs.includes('renderReleaseProductionBlockerSummaryCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseProductionBlockerSummary'), true);
   assert.equal(appJs.includes('releaseProductionBlockerSummaryCopiedKey'), true);
+  assert.equal(appJs.includes('data-ui-action="copy-release-production-blocker-summary"'), false);
   assert.equal(appJs.includes('Production-ready blocker summary'), true);
   assert.equal(appJs.includes('getReleaseActionButtonContext'), true);
   assert.equal(appJs.includes('applyReleaseActionButtonLabels'), true);

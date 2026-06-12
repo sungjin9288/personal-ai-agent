@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T04:38:10.059Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T04:37:56.076Z
 - branch: codex/release-copy-action-base-renderer
 - commit: 7f242b38a27c36683caa6db391e56eea68e9dfa7
