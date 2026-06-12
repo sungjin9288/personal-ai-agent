@@ -414,6 +414,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceIntakeSummaryCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceIntakeSummary'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceIntakeSummaryCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('data-release-target-evidence-intake-summary'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyIntakeSummary'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-provider-only-intake-summary'), true);
@@ -435,6 +436,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceCaptureTemplateCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceCaptureTemplate'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceCaptureTemplateCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('data-release-target-evidence-capture-template'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyCaptureTemplate'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-provider-only-capture-template'), true);
@@ -450,6 +452,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceRequiredCommandsCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceRequiredCommands'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceRequiredCommandsCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('data-release-target-evidence-required-commands'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyRequiredCommands'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-provider-only-required-commands'), true);
