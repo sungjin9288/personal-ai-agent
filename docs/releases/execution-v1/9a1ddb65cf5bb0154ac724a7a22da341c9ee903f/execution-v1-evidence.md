@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T02:06:26.308Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T02:06:10.900Z
 - branch: codex/release-target-evidence-blocker-disposition-copy-pressed-metadata
 - commit: 9a1ddb65cf5bb0154ac724a7a22da341c9ee903f
