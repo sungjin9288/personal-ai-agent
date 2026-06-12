@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-12 Release Copied Renderer Contract Guard
+
+- added a UI harness browse guard that keeps copied-state release button markup centralized in `renderReleaseCopiedActionButton`
+- locked copied action label, class, aria-pressed, and copied text interpolation to one base renderer occurrence
+- kept runtime release copy UI behavior unchanged while preventing future direct markup regressions
+
 ## 2026-06-12 Release Handoff Structured Summary Base Renderer
 
 - moved release handoff structured summary copy renderer onto the shared release copied-action button renderer

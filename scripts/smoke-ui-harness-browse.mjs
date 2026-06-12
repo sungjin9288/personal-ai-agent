@@ -21,6 +21,13 @@ const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-ui-har
 const workspacePath = path.join(tempRoot, 'workspace');
 fs.mkdirSync(workspacePath, { recursive: true });
 
+function countSourceOccurrences(source = '', needle = '') {
+  if (!needle) {
+    return 0;
+  }
+  return source.split(needle).length - 1;
+}
+
 const workspace = runCli({
   rootDir: tempRoot,
   args: ['workspace', 'add', workspacePath, '--name', 'ui-harness-workspace'],
@@ -468,6 +475,14 @@ try {
   assert.equal(appJs.includes('data-ui-action="${escapeHtml(action)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('${escapeHtml(copied ? copiedText : buttonText)}'), true);
+  assert.equal(countSourceOccurrences(appJs, 'const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;'), 1);
+  assert.equal(countSourceOccurrences(appJs, "const nextClassName = `${className}${copied ? ' is-copied' : ''}`;"), 1);
+  assert.equal(countSourceOccurrences(appJs, 'aria-pressed="${copied ? \'true\' : \'false\'}"'), 1);
+  assert.equal(countSourceOccurrences(appJs, '${escapeHtml(copied ? copiedText : buttonText)}'), 1);
+  assert.equal(
+    countSourceOccurrences(appJs, 'return `<button class="${escapeHtml(nextClassName)}" type="button"'),
+    1,
+  );
   assert.equal(appJs.includes('provider live 명령 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('renderReleaseLinkCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseLink'), true);

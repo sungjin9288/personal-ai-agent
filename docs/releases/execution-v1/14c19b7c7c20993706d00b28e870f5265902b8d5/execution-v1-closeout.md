@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-12T08:18:14.487Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-12T08:18:05.738Z
 - branch: codex/release-copied-renderer-contract-guard
 - commit: 14c19b7c7c20993706d00b28e870f5265902b8d5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/14c19b7c7c20993706d00b28e870f5265902b8d5/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
