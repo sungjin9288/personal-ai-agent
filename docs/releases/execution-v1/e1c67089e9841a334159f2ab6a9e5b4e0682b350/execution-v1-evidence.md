@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T16:25:22.466Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T16:25:00.512Z
 - branch: codex/timeline-selectable-button-renderer
 - commit: e1c67089e9841a334159f2ab6a9e5b4e0682b350

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-12T16:25:22.466Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-12T16:25:09.521Z
 - branch: codex/timeline-selectable-button-renderer
 - commit: e1c67089e9841a334159f2ab6a9e5b4e0682b350
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e1c67089e9841a334159f2ab6a9e5b4e0682b350/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

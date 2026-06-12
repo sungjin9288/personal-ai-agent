@@ -311,10 +311,12 @@ try {
   assert.equal(appJs.includes('aria-label="${escapeHtml(selectionLabel)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(selectionLabel)}"'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(timelineEventLabel)}"'), true);
-  assert.equal(appJs.includes('data-session-id="${escapeHtml(item.sessionId)}"'), true);
-  assert.equal(appJs.includes('aria-pressed="${isActiveSessionEvent ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('title="${escapeHtml(timelineEventLabel)}"'), true);
+  assert.equal(appJs.includes('content: timelineEventContent'), true);
+  assert.equal(appJs.includes("className: `timeline-event ${isActiveSessionEvent ? 'is-active' : ''}`"), true);
+  assert.equal(appJs.includes("dataAttribute: item.sessionId ? 'data-session-id' : ''"), true);
+  assert.equal(appJs.includes('selectionLabel: timelineEventLabel'), true);
+  assert.equal(appJs.includes('const classAttribute = className ? ` class="${escapeHtml(className)}"` : \'\''), true);
+  assert.equal(appJs.includes('const dataAttributeMarkup = attributeName ? ` ${attributeName}="${escapeHtml(dataValue)}"` : \'\''), true);
   assert.equal(appJs.includes('aria-pressed="${sameFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${attentionFlowActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${focusedProviderFlowActive ? \'true\' : \'false\'}"'), true);

@@ -21315,6 +21315,7 @@ function renderApprovalActionButton({
 }
 
 function renderSelectableDetailButton({
+  className = '',
   dataAttribute = '',
   dataValue = '',
   active = false,
@@ -21322,10 +21323,12 @@ function renderSelectableDetailButton({
   content = '',
 } = {}) {
   const attributeName = String(dataAttribute || '').trim();
-  if (!/^data-[a-z0-9-]+$/.test(attributeName)) {
+  if (attributeName && !/^data-[a-z0-9-]+$/.test(attributeName)) {
     return '';
   }
-  return `<button type="button" ${attributeName}="${escapeHtml(dataValue)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(selectionLabel)}" title="${escapeHtml(selectionLabel)}">${content}</button>`;
+  const classAttribute = className ? ` class="${escapeHtml(className)}"` : '';
+  const dataAttributeMarkup = attributeName ? ` ${attributeName}="${escapeHtml(dataValue)}"` : '';
+  return `<button type="button"${classAttribute}${dataAttributeMarkup} aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(selectionLabel)}" title="${escapeHtml(selectionLabel)}">${content}</button>`;
 }
 
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
@@ -22260,21 +22263,26 @@ function renderTimeline() {
           ? `현재 세션 타임라인 이벤트 선택됨: ${timelineEventTitle}`
           : `세션 타임라인 이벤트 열기: ${timelineEventTitle}`
         : `타임라인 이벤트 보기: ${timelineEventTitle}`;
-      const timelineSessionAttributes = item.sessionId
-        ? `data-session-id="${escapeHtml(item.sessionId)}"`
-        : '';
+      const timelineEventContent = `
+        <div class="timeline-time">${escapeHtml(formatDate(item.at))}</div>
+        <div class="timeline-kind">${escapeHtml(getTimelineKindLabel(item.kind))}</div>
+        <div class="item-title">${escapeHtml(item.detail || '')}</div>
+        <div class="item-meta">${escapeHtml(
+          getDisplayLabel(
+            item.providerId || item.providerDisplayName || item.status || item.role || '',
+            item.providerId || item.providerDisplayName || item.status || item.role || '',
+          ),
+        )}</div>
+      `;
       return `
-        <button type="button" class="timeline-event ${isActiveSessionEvent ? 'is-active' : ''}" ${timelineSessionAttributes} aria-pressed="${isActiveSessionEvent ? 'true' : 'false'}" aria-label="${escapeHtml(timelineEventLabel)}" title="${escapeHtml(timelineEventLabel)}">
-          <div class="timeline-time">${escapeHtml(formatDate(item.at))}</div>
-          <div class="timeline-kind">${escapeHtml(getTimelineKindLabel(item.kind))}</div>
-          <div class="item-title">${escapeHtml(item.detail || '')}</div>
-          <div class="item-meta">${escapeHtml(
-            getDisplayLabel(
-              item.providerId || item.providerDisplayName || item.status || item.role || '',
-              item.providerId || item.providerDisplayName || item.status || item.role || '',
-            ),
-          )}</div>
-        </button>
+        ${renderSelectableDetailButton({
+          active: isActiveSessionEvent,
+          className: `timeline-event ${isActiveSessionEvent ? 'is-active' : ''}`,
+          content: timelineEventContent,
+          dataAttribute: item.sessionId ? 'data-session-id' : '',
+          dataValue: item.sessionId || '',
+          selectionLabel: timelineEventLabel,
+        })}
       `;
     })
     .join('');
