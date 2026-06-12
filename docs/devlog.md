@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Timeline Selectable Button Renderer
+
+- moved timeline event buttons onto the shared selectable detail renderer
+- kept session event ids, active timeline styling, aria-pressed metadata, labels, and click routing unchanged
+- extended the selectable detail renderer to support optional class and data attributes
+- extended UI harness browse smoke coverage for timeline selectable renderer delegation
+
 ## 2026-06-13 Selectable Detail Button Renderer
 
 - moved session and artifact selection buttons onto a shared selectable detail renderer
