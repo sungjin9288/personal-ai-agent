@@ -3254,9 +3254,15 @@ function renderReleaseHandoffLinkCopyButton({
 } = {}) {
   const normalizedArtifactId = normalizeUiParam(artifactId);
   const copied = isCopiedReleaseHandoffPreviewLink(normalizedArtifactId);
-  const nextActionLabel = copied ? `${actionLabel} · 복사됨` : actionLabel;
-  const nextClassName = `${className}${copied ? ' is-copied' : ''}`;
-  return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" data-ui-success-notice="${escapeHtml(successNotice)}" data-ui-value="${escapeHtml(normalizedArtifactId)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}">${escapeHtml(copied ? copiedText : buttonText)}</button>`;
+  return renderReleaseCopiedActionButton({
+    action,
+    actionLabel,
+    attributes: `${attributes} data-ui-success-notice="${escapeHtml(successNotice)}" data-ui-value="${escapeHtml(normalizedArtifactId)}"`,
+    buttonText,
+    className,
+    copied,
+    copiedText,
+  });
 }
 
 function renderReleaseHandoffStructuredSummaryCopyButton({

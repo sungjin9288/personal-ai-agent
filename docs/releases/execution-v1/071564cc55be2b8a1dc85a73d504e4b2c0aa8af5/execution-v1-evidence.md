@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T07:53:54.743Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T07:53:28.394Z
 - branch: codex/release-handoff-link-base-renderer
 - commit: 071564cc55be2b8a1dc85a73d504e4b2c0aa8af5

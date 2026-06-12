@@ -1833,6 +1833,7 @@ try {
   assert.equal(appJs.includes('aria-expanded="${previewActive ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('handoff preview 링크 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('renderReleaseHandoffLinkCopyButton'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes("action: 'copy-release-handoff-preview-link'"), true);
   assert.equal(appJs.includes("action: 'copy-release-handoff-open-link'"), true);
   assert.equal(appJs.includes('data-ui-action="copy-release-handoff-preview-link"'), false);
