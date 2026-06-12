@@ -1823,6 +1823,8 @@ try {
   assert.equal(appJs.includes('handoff summary stable line 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('handoff summary overview 복사: ${handoffActionTargetLabel}'), true);
   assert.equal(appJs.includes('renderReleaseHandoffStructuredSummaryCopyButton'), true);
+  assert.equal(appJs.includes('attributes: `${attributes} ${detailAttribute} ${lineIndexAttribute} data-ui-success-notice="${escapeHtml(successNotice)}" data-ui-value="${escapeHtml(normalizedArtifactId)}"`'), true);
+  assert.equal(appJs.includes('return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" ${detailAttribute} ${lineIndexAttribute} data-ui-success-notice='), false);
   assert.equal(appJs.includes("action: 'copy-release-handoff-structured-summary-detail'"), true);
   assert.equal(appJs.includes("action: 'copy-release-handoff-structured-summary-stable-line'"), true);
   assert.equal(appJs.includes("action: 'copy-release-handoff-structured-summary'"), true);
