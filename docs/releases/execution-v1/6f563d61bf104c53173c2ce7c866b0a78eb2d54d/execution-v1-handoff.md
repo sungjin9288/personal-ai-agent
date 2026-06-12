@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-12T15:42:57.812Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-12T15:42:56.422Z
 - localDate: 2026-06-13
 - branch: codex/approval-action-button-renderer
 - commit: 6f563d61bf104c53173c2ce7c866b0a78eb2d54d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6f563d61bf104c53173c2ce7c866b0a78eb2d54d](releases/execution-v1/6f563d61bf104c53173c2ce7c866b0a78eb2d54d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6f563d61bf104c53173c2ce7c866b0a78eb2d54d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6f563d61bf104c53173c2ce7c866b0a78eb2d54d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6f563d61bf104c53173c2ce7c866b0a78eb2d54d](docs/releases/execution-v1/6f563d61bf104c53173c2ce7c866b0a78eb2d54d)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/approval-action-button-renderer not found
 
