@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T20:23:06.891Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T20:22:51.069Z
 - branch: codex/stage-summary-quick-action-renderer
 - commit: 9ee68ccab8b559a62e5cff22b402bf93177fa254
