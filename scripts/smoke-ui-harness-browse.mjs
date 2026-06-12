@@ -1743,6 +1743,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceReleaseRefreshCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceReleaseRefresh'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceReleaseRefreshCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-release-refresh'), true);
   assert.equal(appJs.includes('data-release-target-evidence-release-refresh'), true);
   assert.equal(appJs.includes('copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence'), true);
@@ -1757,6 +1758,7 @@ try {
   assert.equal(appJs.includes('renderReleaseTargetEvidenceIntakePacketCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseTargetEvidenceIntakePacket'), true);
   assert.equal(appJs.includes('releaseTargetEvidenceIntakePacketCopiedKey'), true);
+  assert.equal(appJs.includes('renderReleaseCopiedActionButton({'), true);
   assert.equal(appJs.includes('copy-release-target-evidence-intake-packet'), true);
   assert.equal(appJs.includes('data-release-target-evidence-intake-packet'), true);
   assert.equal(appJs.includes('releaseBlockerApiLink:'), true);
