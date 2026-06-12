@@ -21282,6 +21282,22 @@ function renderProviderAttentionRemediationButton({
   return `<button class="${escapeHtml(className)}" type="button" data-provider-attention-remediate="${escapeHtml(item.actionId)}" data-provider-attention-mode="${escapeHtml(mode)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderMissionActionItemButton({
+  item = {},
+  dataAttribute = '',
+  dataValue = '',
+  actionLabelPrefix = '',
+  buttonText = '',
+  className = 'ghost-button',
+} = {}) {
+  const attributeName = String(dataAttribute || '').trim();
+  if (!/^data-[a-z0-9-]+$/.test(attributeName)) {
+    return '';
+  }
+  const actionLabel = `${actionLabelPrefix}: ${item.title || item.actionId || item.id || item.missionId}`;
+  return `<button class="${escapeHtml(className)}" type="button" ${attributeName}="${escapeHtml(dataValue)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
   return (payload?.items || []).reduce((counts, item) => {
     Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
@@ -21507,7 +21523,14 @@ function renderMissionActions() {
           <div class="action-row">
             ${
               item.missionId
-                ? `<button class="secondary-button" type="button" data-action-open="${escapeHtml(item.missionId)}" aria-label="${escapeHtml(`미션 열기: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`미션 열기: ${item.title || item.actionId || item.id || item.missionId}`)}">미션 열기</button>`
+                ? renderMissionActionItemButton({
+                    actionLabelPrefix: '미션 열기',
+                    buttonText: '미션 열기',
+                    className: 'secondary-button',
+                    dataAttribute: 'data-action-open',
+                    dataValue: item.missionId,
+                    item,
+                  })
                 : ''
             }
             ${
@@ -21539,18 +21562,38 @@ function renderMissionActions() {
             }
             ${
               item.actionType === 'specialist-follow-up'
-                ? `<button class="primary-button" type="button" data-specialist-follow-up-remediate="${escapeHtml(item.actionId)}" aria-label="${escapeHtml(`전문가 복구: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`전문가 복구: ${item.title || item.actionId || item.id || item.missionId}`)}">전문가 복구</button>`
+                ? renderMissionActionItemButton({
+                    actionLabelPrefix: '전문가 복구',
+                    buttonText: '전문가 복구',
+                    className: 'primary-button',
+                    dataAttribute: 'data-specialist-follow-up-remediate',
+                    dataValue: item.actionId,
+                    item,
+                  })
                 : ''
             }
             ${
               item.missionId && !['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)
-                ? `<button class="primary-button" type="button" data-action-rerun="${escapeHtml(item.actionId)}" aria-label="${escapeHtml(`권장 재실행: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`권장 재실행: ${item.title || item.actionId || item.id || item.missionId}`)}">권장 재실행</button>`
+                ? renderMissionActionItemButton({
+                    actionLabelPrefix: '권장 재실행',
+                    buttonText: '권장 재실행',
+                    className: 'primary-button',
+                    dataAttribute: 'data-action-rerun',
+                    dataValue: item.actionId,
+                    item,
+                  })
                 : ''
             }
             ${renderLearningPromotionActionButtons(item)}
             ${
               item.actionType === 'reviewer-follow-up'
-                ? `<button class="ghost-button" type="button" data-action-resolve="${escapeHtml(item.actionId)}" aria-label="${escapeHtml(`후속 요청 해소: ${item.title || item.actionId || item.id || item.missionId}`)}" title="${escapeHtml(`후속 요청 해소: ${item.title || item.actionId || item.id || item.missionId}`)}">후속 요청 해소</button>`
+                ? renderMissionActionItemButton({
+                    actionLabelPrefix: '후속 요청 해소',
+                    buttonText: '후속 요청 해소',
+                    dataAttribute: 'data-action-resolve',
+                    dataValue: item.actionId,
+                    item,
+                  })
                 : ''
             }
           </div>

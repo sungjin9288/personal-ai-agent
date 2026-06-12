@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Mission Action Item Button Renderer
+
+- moved mission open, specialist remediation, rerun, and reviewer follow-up resolve buttons onto a shared action-item renderer
+- kept action ids, mission ids, data attributes, title/aria-label copy, and click routing unchanged
+- reduced direct action button markup inside the mission action list renderer
+- extended UI learning promotion smoke coverage for mission action item renderer delegation
+
 ## 2026-06-12 Provider Attention Remediation Button Renderer
 
 - moved provider attention primary, fallback, and recoverable-fallback remediation buttons onto a dedicated renderer
