@@ -181,11 +181,15 @@ try {
   assert.equal(appJs.includes("dataAttribute: 'data-action-resolve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '후속 요청 해소'"), true);
   assert.equal(appJs.includes('data-approval-open'), true);
-  assert.equal(appJs.includes('미션 열기: ${item.missionTitle || item.title || item.missionId || item.approvalId}'), true);
+  assert.equal(appJs.includes('renderApprovalActionButton'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-approval-open'"), true);
+  assert.equal(appJs.includes('actionLabelValue: item.missionTitle || item.title || item.missionId || item.approvalId'), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
-  assert.equal(appJs.includes('승인: ${item.title || item.approvalId || item.missionId}'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
+  assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);
   assert.equal(appJs.includes('data-approval-reject'), true);
-  assert.equal(appJs.includes('반려: ${item.title || item.approvalId || item.missionId}'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-approval-reject'"), true);
+  assert.equal(appJs.includes("actionLabelPrefix: '반려'"), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);

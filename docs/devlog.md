@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Approval Action Button Renderer
+
+- moved approval mission-open, approve, and reject buttons onto a dedicated approval action renderer
+- kept approval ids, mission ids, data attributes, title/aria-label copy, and click routing unchanged
+- reduced direct approval button markup inside the approvals list renderer
+- extended UI learning promotion smoke coverage for approval action renderer delegation
+
 ## 2026-06-13 Mission Action Item Button Renderer
 
 - moved mission open, specialist remediation, rerun, and reviewer follow-up resolve buttons onto a shared action-item renderer
