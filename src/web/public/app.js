@@ -21298,6 +21298,22 @@ function renderMissionActionItemButton({
   return `<button class="${escapeHtml(className)}" type="button" ${attributeName}="${escapeHtml(dataValue)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderApprovalActionButton({
+  dataAttribute = '',
+  dataValue = '',
+  actionLabelPrefix = '',
+  actionLabelValue = '',
+  buttonText = '',
+  className = 'ghost-button',
+} = {}) {
+  const attributeName = String(dataAttribute || '').trim();
+  if (!/^data-[a-z0-9-]+$/.test(attributeName)) {
+    return '';
+  }
+  const actionLabel = `${actionLabelPrefix}: ${actionLabelValue}`;
+  return `<button class="${escapeHtml(className)}" type="button" ${attributeName}="${escapeHtml(dataValue)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
   return (payload?.items || []).reduce((counts, item) => {
     Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
@@ -21896,9 +21912,29 @@ function renderApprovals() {
           <div class="item-subtitle">${escapeHtml(item.missionTitle || item.missionId || '')}</div>
           <div class="item-meta">${escapeHtml(item.reason || '')}</div>
           <div class="action-row">
-            <button class="secondary-button" type="button" data-approval-open="${escapeHtml(item.missionId || '')}" aria-label="${escapeHtml(`미션 열기: ${item.missionTitle || item.title || item.missionId || item.approvalId}`)}" title="${escapeHtml(`미션 열기: ${item.missionTitle || item.title || item.missionId || item.approvalId}`)}">미션 열기</button>
-            <button class="primary-button" type="button" data-approval-approve="${escapeHtml(item.approvalId)}" aria-label="${escapeHtml(`승인: ${item.title || item.approvalId || item.missionId}`)}" title="${escapeHtml(`승인: ${item.title || item.approvalId || item.missionId}`)}">승인</button>
-            <button class="ghost-button" type="button" data-approval-reject="${escapeHtml(item.approvalId)}" aria-label="${escapeHtml(`반려: ${item.title || item.approvalId || item.missionId}`)}" title="${escapeHtml(`반려: ${item.title || item.approvalId || item.missionId}`)}">반려</button>
+            ${renderApprovalActionButton({
+              actionLabelPrefix: '미션 열기',
+              actionLabelValue: item.missionTitle || item.title || item.missionId || item.approvalId,
+              buttonText: '미션 열기',
+              className: 'secondary-button',
+              dataAttribute: 'data-approval-open',
+              dataValue: item.missionId || '',
+            })}
+            ${renderApprovalActionButton({
+              actionLabelPrefix: '승인',
+              actionLabelValue: item.title || item.approvalId || item.missionId,
+              buttonText: '승인',
+              className: 'primary-button',
+              dataAttribute: 'data-approval-approve',
+              dataValue: item.approvalId,
+            })}
+            ${renderApprovalActionButton({
+              actionLabelPrefix: '반려',
+              actionLabelValue: item.title || item.approvalId || item.missionId,
+              buttonText: '반려',
+              dataAttribute: 'data-approval-reject',
+              dataValue: item.approvalId,
+            })}
           </div>
         </div>
       `,

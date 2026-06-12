@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T15:42:57.812Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T15:42:41.740Z
 - branch: codex/approval-action-button-renderer
 - commit: 6f563d61bf104c53173c2ce7c866b0a78eb2d54d

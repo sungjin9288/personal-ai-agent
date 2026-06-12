@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-12T15:42:57.812Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-12T15:42:47.974Z
 - branch: codex/approval-action-button-renderer
 - commit: 6f563d61bf104c53173c2ce7c866b0a78eb2d54d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6f563d61bf104c53173c2ce7c866b0a78eb2d54d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
