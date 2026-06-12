@@ -1870,6 +1870,12 @@ try {
   assert.equal(appJs.includes('결과물 열기: ${outputStageTargetLabel}'), true);
   assert.equal(appJs.includes('실행 기록 보기: ${outputStageTargetLabel}'), true);
   assert.equal(appJs.includes('검토 상태 보기: ${outputStageTargetLabel}'), true);
+  assert.equal(appJs.includes('actionLabel: `실행 기록 보기: ${runStageMissionLabel}`'), true);
+  assert.equal(appJs.includes('actionLabel: `승인 항목 보기: ${reviewStageMissionLabel}`'), true);
+  assert.equal(appJs.includes('actionLabel: `결과물 열기: ${outputStageTargetLabel}`'), true);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${runStageMissionLabel}`)}"'), false);
+  assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`승인 항목 보기: ${reviewStageMissionLabel}`)}"'), false);
+  assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}"'), false);
   assert.equal(appJs.includes('outputToolbarTargetLabel'), true);
   assert.equal(appJs.includes('지원 패널 펼치기: ${outputToolbarTargetLabel}'), true);
   assert.equal(appJs.includes('지원 패널 접기: ${outputToolbarTargetLabel}'), true);
@@ -1943,9 +1949,9 @@ try {
   assert.equal(appJs.includes('${topHarnessAction.secondaryLabel}: 하네스 준비 상태'), true);
   assert.equal(appJs.includes('하네스 탭 열기: 하네스 준비 상태'), true);
   assert.equal(appJs.includes("${topRecommendation ? topHarnessAction.label : '2단계 실행 열기'}: 하네스 준비 상태"), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(missionSummarySetupLabel)}"'), true);
+  assert.equal(appJs.includes('actionLabel: missionSummarySetupLabel'), true);
   assert.equal(appJs.includes('actionLabel: selectionBridgeStepLabel'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(setupHarnessPrimaryLabel)}"'), true);
+  assert.equal(appJs.includes('actionLabel: setupHarnessPrimaryLabel'), true);
   assert.equal(appJs.includes('releaseActionLabel'), true);
   assert.equal(appJs.includes('상태 다시 읽기: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('전체 preflight 실행: ${releaseActionLabel}'), true);

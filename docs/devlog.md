@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Stage Summary Quick Action Renderer
+
+- moved stage summary jump-step and switch-tab buttons onto the shared flow quick action renderer
+- kept mission summary setup, harness, run, review, and output stage actions, values, labels, and routing unchanged
+- reduced direct quick action button markup across stage summary surfaces
+- extended UI harness browse smoke coverage for stage summary quick action renderer delegation
+
 ## 2026-06-13 Flow Quick Action Button Renderer
 
 - moved core flow quick action buttons onto a shared renderer

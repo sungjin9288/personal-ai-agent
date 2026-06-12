@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-12T20:23:06.891Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-12T20:22:57.417Z
 - branch: codex/stage-summary-quick-action-renderer
 - commit: 9ee68ccab8b559a62e5cff22b402bf93177fa254
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9ee68ccab8b559a62e5cff22b402bf93177fa254/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
