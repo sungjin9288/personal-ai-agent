@@ -14411,19 +14411,27 @@ function renderFlowState() {
           <p class="flow-status-copy">${escapeHtml(flow.copy)}</p>
         </div>
         <div class="flow-status-actions">
-          <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}" aria-label="${escapeHtml(flowPrimaryActionLabel)}" title="${escapeHtml(flowPrimaryActionLabel)}">
-            ${escapeHtml(flow.buttonLabel)}
-          </button>
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(flow.secondaryActionTab)}" aria-label="${escapeHtml(flowSecondaryActionLabel)}" title="${escapeHtml(flowSecondaryActionLabel)}">
-            ${escapeHtml(flow.secondaryActionLabel)}
-          </button>
+          ${renderFlowQuickActionButton({
+            action: 'jump-step',
+            actionLabel: flowPrimaryActionLabel,
+            buttonText: flow.buttonLabel,
+            className: 'primary-button',
+            value: flow.recommendedStep,
+          })}
+          ${renderFlowQuickActionButton({
+            action: 'switch-tab',
+            actionLabel: flowSecondaryActionLabel,
+            buttonText: flow.secondaryActionLabel,
+            value: flow.secondaryActionTab,
+          })}
           ${
             hasHarnessRecommendation
-              ? `
-                <button class="ghost-button" type="button" data-ui-action="${escapeHtml(topHarnessAction.action)}" data-ui-value="${escapeHtml(topHarnessAction.value)}" aria-label="${escapeHtml(flowHarnessActionLabel)}" title="${escapeHtml(flowHarnessActionLabel)}">
-                  ${escapeHtml(topHarnessAction.label)}
-                </button>
-              `
+              ? renderFlowQuickActionButton({
+                  action: topHarnessAction.action,
+                  actionLabel: flowHarnessActionLabel,
+                  buttonText: topHarnessAction.label,
+                  value: topHarnessAction.value,
+                })
               : ''
           }
           ${
@@ -14431,9 +14439,11 @@ function renderFlowState() {
               ? ''
               : `
                 ${renderCurrentViewLinkCopyButton({ targetLabel: flowActionTargetLabel })}
-                <button class="ghost-button" type="button" data-ui-action="reset-view" aria-label="${escapeHtml(flowResetViewLabel)}" title="${escapeHtml(flowResetViewLabel)}">
-                  ${escapeHtml(hasMissionSelection ? '보기 초기화' : '초기 상태로')}
-                </button>
+                ${renderFlowQuickActionButton({
+                  action: 'reset-view',
+                  actionLabel: flowResetViewLabel,
+                  buttonText: hasMissionSelection ? '보기 초기화' : '초기 상태로',
+                })}
               `
           }
           ${
@@ -15892,9 +15902,13 @@ function renderMissionSummary() {
         </div>
         <p class="summary-note">${escapeHtml(flow.copy)}</p>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}" aria-label="${escapeHtml(`${flow.buttonLabel}: ${mission.title || mission.id || state.selectedMissionId || '선택된 미션'}`)}" title="${escapeHtml(`${flow.buttonLabel}: ${mission.title || mission.id || state.selectedMissionId || '선택된 미션'}`)}">
-            ${escapeHtml(flow.buttonLabel)}
-          </button>
+          ${renderFlowQuickActionButton({
+            action: 'jump-step',
+            actionLabel: `${flow.buttonLabel}: ${mission.title || mission.id || state.selectedMissionId || '선택된 미션'}`,
+            buttonText: flow.buttonLabel,
+            className: 'primary-button',
+            value: flow.recommendedStep,
+          })}
         </div>
       </section>
     </div>
@@ -15965,9 +15979,12 @@ function renderSelectionBridge() {
       </div>
       <div class="selection-bridge-actions">
         <span class="mini-badge">${escapeHtml(latestExecutionLabel)}</span>
-        <button class="ghost-button" type="button" data-ui-action="jump-step" data-ui-value="${escapeHtml(flow.recommendedStep)}" aria-label="${escapeHtml(selectionBridgeStepLabel)}" title="${escapeHtml(selectionBridgeStepLabel)}">
-          ${escapeHtml(getStepLabel(flow.recommendedStep, { short: true }))}
-        </button>
+        ${renderFlowQuickActionButton({
+          action: 'jump-step',
+          actionLabel: selectionBridgeStepLabel,
+          buttonText: getStepLabel(flow.recommendedStep, { short: true }),
+          value: flow.recommendedStep,
+        })}
       </div>
     </div>
     <div class="selection-bridge-track selection-bridge-track-compact">
@@ -21433,6 +21450,22 @@ function renderOutputToolbarToggleButton({
     return '';
   }
   return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}" aria-expanded="${expanded ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
+function renderFlowQuickActionButton({
+  action = '',
+  actionLabel = '',
+  buttonText = '',
+  className = 'ghost-button',
+  value = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^[a-z0-9-]+$/.test(actionName)) {
+    return '';
+  }
+  const normalizedValue = String(value || '').trim();
+  const valueAttribute = normalizedValue ? ` data-ui-value="${escapeHtml(normalizedValue)}"` : '';
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}"${valueAttribute} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
 function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {

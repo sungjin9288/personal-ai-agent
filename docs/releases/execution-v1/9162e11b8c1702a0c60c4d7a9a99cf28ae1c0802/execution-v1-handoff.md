@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-12T19:51:27.918Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-12T19:51:26.479Z
 - localDate: 2026-06-13
 - branch: codex/flow-quick-action-button-renderer
 - commit: 9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802](releases/execution-v1/9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802](docs/releases/execution-v1/9162e11b8c1702a0c60c4d7a9a99cf28ae1c0802)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/flow-quick-action-button-renderer not found
 
