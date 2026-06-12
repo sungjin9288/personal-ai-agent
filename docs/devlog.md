@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Output Toolbar Toggle Button Renderer
+
+- moved output toolbar toggle buttons onto a shared renderer
+- kept output support, tab, tool, rail, and mission-summary toggle actions, aria-expanded state, labels, and click routing unchanged
+- reduced direct compact/expanded toolbar button markup inside the detail toolbar renderer
+- extended UI harness browse smoke coverage for output toolbar toggle renderer delegation
+
 ## 2026-06-13 Timeline Selectable Button Renderer
 
 - moved timeline event buttons onto the shared selectable detail renderer
