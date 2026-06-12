@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T15:13:00.193Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T15:12:36.874Z
 - branch: codex/mission-action-item-button-renderer
 - commit: 8a1080f3f35b18d774571a611b0687129882c90b
