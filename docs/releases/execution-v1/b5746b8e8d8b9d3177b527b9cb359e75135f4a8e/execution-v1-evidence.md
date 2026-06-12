@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-12T08:02:59.210Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-12T08:02:42.303Z
 - branch: codex/release-handoff-structured-summary-base-renderer
 - commit: b5746b8e8d8b9d3177b527b9cb359e75135f4a8e
