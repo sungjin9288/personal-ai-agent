@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T06:18:00.973Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T06:17:39.528Z
 - branch: codex/release-preflight-all-button-renderer
 - commit: 787315e11ff8e662427131d3eb4dc2d4cfa70b57
