@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T06:59:11.141Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T06:58:56.102Z
 - branch: codex/release-confirm-action-button-renderer
 - commit: 107815dde46f39a42e89fe974f7d15b452039050
