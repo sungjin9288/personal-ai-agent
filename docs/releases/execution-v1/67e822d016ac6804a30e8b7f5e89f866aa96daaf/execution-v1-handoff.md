@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-13T06:35:03.176Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-13T06:35:01.827Z
 - localDate: 2026-06-13
 - branch: codex/release-cancel-action-button-renderer
 - commit: 67e822d016ac6804a30e8b7f5e89f866aa96daaf
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/67e822d016ac6804a30e8b7f5e89f866aa96daaf](releases/execution-v1/67e822d016ac6804a30e8b7f5e89f866aa96daaf)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/67e822d016ac6804a30e8b7f5e89f866aa96daaf/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/67e822d016ac6804a30e8b7f5e89f866aa96daaf/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/67e822d016ac6804a30e8b7f5e89f866aa96daaf](docs/releases/execution-v1/67e822d016ac6804a30e8b7f5e89f866aa96daaf)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-cancel-action-button-renderer not found
 

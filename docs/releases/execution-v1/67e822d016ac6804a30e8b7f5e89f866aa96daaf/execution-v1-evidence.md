@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T06:35:03.176Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T06:34:46.050Z
 - branch: codex/release-cancel-action-button-renderer
 - commit: 67e822d016ac6804a30e8b7f5e89f866aa96daaf
