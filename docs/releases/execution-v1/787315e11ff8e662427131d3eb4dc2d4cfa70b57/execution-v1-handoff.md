@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-13T06:18:00.973Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-13T06:17:59.265Z
 - localDate: 2026-06-13
 - branch: codex/release-preflight-all-button-renderer
 - commit: 787315e11ff8e662427131d3eb4dc2d4cfa70b57
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/787315e11ff8e662427131d3eb4dc2d4cfa70b57](releases/execution-v1/787315e11ff8e662427131d3eb4dc2d4cfa70b57)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/787315e11ff8e662427131d3eb4dc2d4cfa70b57/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/787315e11ff8e662427131d3eb4dc2d4cfa70b57/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/787315e11ff8e662427131d3eb4dc2d4cfa70b57](docs/releases/execution-v1/787315e11ff8e662427131d3eb4dc2d4cfa70b57)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-preflight-all-button-renderer not found
 
