@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Release Action Quick Action Renderer
+
+- moved release action switch-tab buttons onto the shared flow quick action renderer
+- kept release action tab values, labels, titles, and routing unchanged
+- removed the remaining direct switch-tab button markup from the release action row
+- extended UI harness browse smoke coverage for release action quick action renderer delegation
+
 ## 2026-06-13 Output Closeout Quick Action Renderer
 
 - moved output closeout dynamic switch-tab buttons onto the shared flow quick action renderer

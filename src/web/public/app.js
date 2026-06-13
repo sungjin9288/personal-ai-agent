@@ -17925,8 +17925,18 @@ function renderReleaseStatus() {
           ${snapshotConfirmArmed
             ? `<button class="ghost-button" type="button" data-ui-action="cancel-archive-release-snapshot" aria-label="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}" title="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}">현재 snapshot 고정 취소</button>`
             : ''}
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${releaseActionLabel}`)}" title="${escapeHtml(`실행 기록 보기: ${releaseActionLabel}`)}">실행 기록 보기</button>
-          <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness" aria-label="${escapeHtml(`하네스 보기: ${releaseActionLabel}`)}" title="${escapeHtml(`하네스 보기: ${releaseActionLabel}`)}">하네스 보기</button>
+          ${renderFlowQuickActionButton({
+            action: 'switch-tab',
+            actionLabel: `실행 기록 보기: ${releaseActionLabel}`,
+            buttonText: '실행 기록 보기',
+            value: 'runs',
+          })}
+          ${renderFlowQuickActionButton({
+            action: 'switch-tab',
+            actionLabel: `하네스 보기: ${releaseActionLabel}`,
+            buttonText: '하네스 보기',
+            value: 'harness',
+          })}
         </div>
       </section>
 
