@@ -1969,6 +1969,14 @@ try {
   assert.equal(appJs.includes('release snapshot 고정 취소: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('aria-pressed="${regenerationConfirmArmed ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('aria-pressed="${snapshotConfirmArmed ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('actionLabel: `실행 기록 보기: ${releaseActionLabel}`'), true);
+  assert.equal(appJs.includes("buttonText: '실행 기록 보기'"), true);
+  assert.equal(appJs.includes("value: 'runs'"), true);
+  assert.equal(appJs.includes('actionLabel: `하네스 보기: ${releaseActionLabel}`'), true);
+  assert.equal(appJs.includes("buttonText: '하네스 보기'"), true);
+  assert.equal(appJs.includes("value: 'harness'"), true);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${releaseActionLabel}`)}"'), false);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="harness" aria-label="${escapeHtml(`하네스 보기: ${releaseActionLabel}`)}"'), false);
   assert.equal(appJs.includes('하네스 보기: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('전체 readiness package 복사: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('focusedProviderActionLabel'), true);
