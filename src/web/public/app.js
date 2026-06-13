@@ -2615,6 +2615,14 @@ function renderReleasePreflightAllButton({
   return `<button class="${escapeHtml(className)}" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseStatusRefreshButton({
+  actionLabel = '상태 다시 읽기',
+  buttonText = '상태 다시 읽기',
+  className = 'primary-button',
+} = {}) {
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -17917,7 +17925,9 @@ function renderReleaseStatus() {
             : ''}
         </div>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}" title="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}">상태 다시 읽기</button>
+          ${renderReleaseStatusRefreshButton({
+            actionLabel: `상태 다시 읽기: ${releaseActionLabel}`,
+          })}
           ${renderReleasePreflightAllButton({
             actionLabel: `전체 preflight 실행: ${releaseActionLabel}`,
           })}

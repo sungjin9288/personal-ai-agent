@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Release Status Refresh Button Renderer
+
+- moved the release status refresh action button onto a dedicated renderer
+- kept refresh-release-status action routing, primary styling, label, title, and visible copy unchanged
+- reduced direct release status action row button markup
+- extended UI harness browse smoke coverage for release status refresh renderer delegation
+
 ## 2026-06-13 Release Preflight All Button Renderer
 
 - moved repeated release preflight-all action buttons onto a dedicated renderer
