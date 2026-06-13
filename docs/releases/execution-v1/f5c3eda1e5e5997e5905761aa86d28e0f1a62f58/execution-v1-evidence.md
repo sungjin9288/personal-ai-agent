@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T20:39:07.825Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T20:38:52.792Z
 - branch: codex/release-clear-action-button-renderer
 - commit: f5c3eda1e5e5997e5905761aa86d28e0f1a62f58

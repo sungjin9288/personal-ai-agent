@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Clear Action Button Renderer
+
+- moved release blocker, history, provider, and handoff preview clear buttons onto a dedicated release clear action renderer
+- kept clear-release action ids, optional pressed state, data attributes, labels, titles, and visible copy unchanged
+- reduced direct clear button markup across release focus and filter surfaces
+- extended UI harness browse smoke coverage for release clear action renderer delegation
+
 ## 2026-06-13 Release Tab Action Button Renderer
 
 - moved release status runs and harness tab buttons onto a dedicated release tab action renderer

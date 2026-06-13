@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-13T20:39:07.825Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-13T20:39:06.458Z
 - localDate: 2026-06-14
 - branch: codex/release-clear-action-button-renderer
 - commit: f5c3eda1e5e5997e5905761aa86d28e0f1a62f58
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f5c3eda1e5e5997e5905761aa86d28e0f1a62f58](releases/execution-v1/f5c3eda1e5e5997e5905761aa86d28e0f1a62f58)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f5c3eda1e5e5997e5905761aa86d28e0f1a62f58/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f5c3eda1e5e5997e5905761aa86d28e0f1a62f58/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f5c3eda1e5e5997e5905761aa86d28e0f1a62f58](docs/releases/execution-v1/f5c3eda1e5e5997e5905761aa86d28e0f1a62f58)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-clear-action-button-renderer not found
 
