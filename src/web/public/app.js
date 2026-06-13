@@ -2678,6 +2678,23 @@ function renderReleaseTabActionButton({
   });
 }
 
+function renderReleaseClearActionButton({
+  action = '',
+  actionLabel = '',
+  attributes = '',
+  buttonText = '',
+  className = 'ghost-button',
+  pressed = null,
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^clear-release-[a-z0-9-]+$/.test(actionName)) {
+    return '';
+  }
+  const attributeMarkup = attributes ? ` ${attributes}` : '';
+  const pressedMarkup = pressed === true || pressed === false ? ` aria-pressed="${pressed ? 'true' : 'false'}"` : '';
+  return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}"${pressedMarkup} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -19294,7 +19311,12 @@ function renderReleaseStatus() {
                     `
                     : ''}
                 ${hasBlockerFilter
-                  ? `<button class="ghost-button" type="button" data-release-current-open-blocker-filter-empty-clear="${hasEmptyBlockerFilter ? 'true' : 'false'}" data-ui-action="clear-release-blocker-filter" aria-label="${escapeHtml(`${hasEmptyBlockerFilter ? 'empty blocker filter 조합 해제' : 'blocker 필터 해제'}: ${blockerFilterLabel}`)}" title="${escapeHtml(`${hasEmptyBlockerFilter ? 'empty blocker filter 조합 해제' : 'blocker 필터 해제'}: ${blockerFilterLabel}`)}">${hasEmptyBlockerFilter ? '조합 해제' : '필터 해제'}</button>`
+                  ? renderReleaseClearActionButton({
+                      action: 'clear-release-blocker-filter',
+                      actionLabel: `${hasEmptyBlockerFilter ? 'empty blocker filter 조합 해제' : 'blocker 필터 해제'}: ${blockerFilterLabel}`,
+                      attributes: `data-release-current-open-blocker-filter-empty-clear="${hasEmptyBlockerFilter ? 'true' : 'false'}"`,
+                      buttonText: hasEmptyBlockerFilter ? '조합 해제' : '필터 해제',
+                    })
                   : ''}
               </div>
             </div>
@@ -19388,7 +19410,11 @@ function renderReleaseStatus() {
                           }),
                         )
                         .join('')}
-                      <button class="ghost-button" type="button" data-ui-action="clear-release-blocker-focus" aria-label="${escapeHtml(`focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}`)}" title="${escapeHtml(`focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}`)}">포커스 해제</button>
+                      ${renderReleaseClearActionButton({
+                        action: 'clear-release-blocker-focus',
+                        actionLabel: `focused blocker 포커스 해제: ${focusedBlockerLabel || focusedBlockerId}`,
+                        buttonText: '포커스 해제',
+                      })}
                     </div>
                   </div>
                 `
@@ -19570,7 +19596,11 @@ function renderReleaseStatus() {
                         blockerIndex: focusedProductionBlockerIndex,
                         buttonText: 'package 복사',
                       })}
-                      <button class="ghost-button" type="button" data-ui-action="clear-release-production-blocker-focus" aria-label="${escapeHtml(`focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`)}" title="${escapeHtml(`focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`)}">포커스 해제</button>
+                      ${renderReleaseClearActionButton({
+                        action: 'clear-release-production-blocker-focus',
+                        actionLabel: `focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`,
+                        buttonText: '포커스 해제',
+                      })}
                     </div>
                   </div>
                 `
@@ -19702,14 +19732,22 @@ function renderReleaseStatus() {
                       <strong>현재 포커스된 release action</strong>
                       <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
                       <div class="release-history-focus-actions">
-                        <button class="ghost-button" type="button" data-ui-action="clear-release-history-focus" aria-label="${escapeHtml(`release history 포커스 해제: ${focusedHistoryId}`)}" title="${escapeHtml(`release history 포커스 해제: ${focusedHistoryId}`)}">포커스 해제</button>
+                        ${renderReleaseClearActionButton({
+                          action: 'clear-release-history-focus',
+                          actionLabel: `release history 포커스 해제: ${focusedHistoryId}`,
+                          buttonText: '포커스 해제',
+                        })}
                         ${renderReleaseLinkCopyButton({
                           actionLabel: `현재 triage 링크 복사: focused release history ${focusedHistoryId}`,
                           buttonText: '현재 triage 링크 복사',
                           value: `focused-history:${focusedHistoryId}`,
                         })}
                         ${historyFilterOutcome || historyFilterScope || historyFilterProvider
-                          ? `<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter" aria-label="${escapeHtml(`release history 필터 해제: ${releaseActionLabel}`)}" title="${escapeHtml(`release history 필터 해제: ${releaseActionLabel}`)}">필터 해제</button>`
+                          ? renderReleaseClearActionButton({
+                              action: 'clear-release-history-filter',
+                              actionLabel: `release history 필터 해제: ${releaseActionLabel}`,
+                              buttonText: '필터 해제',
+                            })
                           : ''}
                     </div>
                     ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
@@ -19744,14 +19782,12 @@ function renderReleaseStatus() {
                             <span class="mini-badge ${getReleaseStatusBadge(item.outcome)}">${escapeHtml(item.outcome || 'unknown')}</span>
                             ${isFocused
                               ? `
-                                  <button
-                                    class="ghost-button"
-                                      type="button"
-                                      data-ui-action="clear-release-history-focus"
-                                      aria-pressed="${isFocused ? 'true' : 'false'}"
-                                      aria-label="${escapeHtml(`release history 포커스 해제: ${historyActionLabel}`)}"
-                                      title="${escapeHtml(`release history 포커스 해제: ${historyActionLabel}`)}"
-                                    >포커스 해제</button>
+                                  ${renderReleaseClearActionButton({
+                                    action: 'clear-release-history-focus',
+                                    actionLabel: `release history 포커스 해제: ${historyActionLabel}`,
+                                    buttonText: '포커스 해제',
+                                    pressed: isFocused,
+                                  })}
                                 `
                               : `
                                   <button
@@ -19830,7 +19866,11 @@ function renderReleaseStatus() {
                                       `
                                     : ''}
                                     ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
-                                      ? `<button class="ghost-button" type="button" data-ui-action="clear-release-history-filter" aria-label="${escapeHtml(`release history 필터 해제: ${historyActionLabel}`)}" title="${escapeHtml(`release history 필터 해제: ${historyActionLabel}`)}">필터 해제</button>`
+                                      ? renderReleaseClearActionButton({
+                                          action: 'clear-release-history-filter',
+                                          actionLabel: `release history 필터 해제: ${historyActionLabel}`,
+                                          buttonText: '필터 해제',
+                                        })
                                       : ''}
                                 </div>
                                 <div class="release-history-detail-grid">
@@ -19997,7 +20037,11 @@ function renderReleaseStatus() {
                             })}
                           `
                         : ''}
-                      <button class="ghost-button" type="button" data-ui-action="clear-release-provider-focus" aria-label="${escapeHtml(`provider 포커스 해제: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider 포커스 해제: ${focusedProviderActionLabel}`)}">provider 포커스 해제</button>
+                      ${renderReleaseClearActionButton({
+                        action: 'clear-release-provider-focus',
+                        actionLabel: `provider 포커스 해제: ${focusedProviderActionLabel}`,
+                        buttonText: 'provider 포커스 해제',
+                      })}
                       ${renderReleaseLinkCopyButton({
                         action: 'copy-release-provider-link',
                         actionLabel: `provider 링크 복사: ${focusedProviderActionLabel}`,
@@ -20553,7 +20597,11 @@ function renderReleaseStatus() {
                                   copiedText: '현재 링크 복사됨',
                                   successNotice: `${handoffPreviewArtifact.label || '현재 handoff preview'} 링크를 복사했습니다.`,
                                 })}
-                                <button class="ghost-button" type="button" data-ui-action="clear-release-handoff-preview" aria-label="${escapeHtml(`handoff preview 닫기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}" title="${escapeHtml(`handoff preview 닫기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}">미리보기 닫기</button>
+                                ${renderReleaseClearActionButton({
+                                  action: 'clear-release-handoff-preview',
+                                  actionLabel: `handoff preview 닫기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`,
+                                  buttonText: '미리보기 닫기',
+                                })}
                               </div>
                             </div>
                             <div class="release-handoff-meta">
