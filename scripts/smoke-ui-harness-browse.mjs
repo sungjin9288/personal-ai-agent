@@ -1957,7 +1957,11 @@ try {
   assert.equal(appJs.includes('actionLabel: selectionBridgeStepLabel'), true);
   assert.equal(appJs.includes('actionLabel: setupHarnessPrimaryLabel'), true);
   assert.equal(appJs.includes('releaseActionLabel'), true);
+  assert.equal(appJs.includes('renderReleaseStatusRefreshButton'), true);
+  assert.equal(appJs.includes('function renderReleaseStatusRefreshButton({'), true);
+  assert.equal(appJs.includes('renderReleaseStatusRefreshButton({\n            actionLabel: `상태 다시 읽기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('상태 다시 읽기: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}"'), false);
   assert.equal(appJs.includes('renderReleasePreflightAllButton'), true);
   assert.equal(appJs.includes('function renderReleasePreflightAllButton({'), true);
   assert.equal(appJs.includes('renderReleasePreflightAllButton({\n            actionLabel: `전체 preflight 실행: ${releaseActionLabel}`'), true);

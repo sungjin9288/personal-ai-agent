@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T06:26:58.924Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T06:26:43.965Z
 - branch: codex/release-status-refresh-button-renderer
 - commit: 1e55c8d652496e8882be1585c447decdf4cb1376
