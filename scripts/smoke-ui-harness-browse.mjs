@@ -1873,9 +1873,13 @@ try {
   assert.equal(appJs.includes('actionLabel: `실행 기록 보기: ${runStageMissionLabel}`'), true);
   assert.equal(appJs.includes('actionLabel: `승인 항목 보기: ${reviewStageMissionLabel}`'), true);
   assert.equal(appJs.includes('actionLabel: `결과물 열기: ${outputStageTargetLabel}`'), true);
+  assert.equal(appJs.includes('actionLabel: `${item.actionLabel}: ${item.label || item.actionValue}`'), true);
+  assert.equal(appJs.includes('buttonText: item.actionLabel'), true);
+  assert.equal(appJs.includes('value: item.actionValue'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="runs" aria-label="${escapeHtml(`실행 기록 보기: ${runStageMissionLabel}`)}"'), false);
   assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="reviews" aria-label="${escapeHtml(`승인 항목 보기: ${reviewStageMissionLabel}`)}"'), false);
   assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="switch-tab" data-ui-value="artifacts" aria-label="${escapeHtml(`결과물 열기: ${outputStageTargetLabel}`)}"'), false);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(item.actionValue)}"'), false);
   assert.equal(appJs.includes('outputToolbarTargetLabel'), true);
   assert.equal(appJs.includes('지원 패널 펼치기: ${outputToolbarTargetLabel}'), true);
   assert.equal(appJs.includes('지원 패널 접기: ${outputToolbarTargetLabel}'), true);
