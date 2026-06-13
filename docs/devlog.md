@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Release Tab Action Button Renderer
+
+- moved release status runs and harness tab buttons onto a dedicated release tab action renderer
+- kept switch-tab action ids, tab values, labels, titles, and visible copy unchanged
+- reduced flow renderer coupling in the release status action row
+- extended UI harness browse smoke coverage for release tab action renderer delegation
+
 ## 2026-06-13 Release Confirm Action Button Renderer
 
 - moved release regeneration and snapshot confirm buttons onto a dedicated confirm action renderer

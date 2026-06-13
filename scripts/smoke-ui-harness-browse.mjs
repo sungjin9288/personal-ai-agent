@@ -1973,6 +1973,10 @@ try {
   assert.equal(appJs.includes('function renderReleaseSimpleActionButton({'), true);
   assert.equal(appJs.includes('renderReleaseConfirmActionButton'), true);
   assert.equal(appJs.includes('function renderReleaseConfirmActionButton({'), true);
+  assert.equal(appJs.includes('renderReleaseTabActionButton'), true);
+  assert.equal(appJs.includes('function renderReleaseTabActionButton({'), true);
+  assert.equal(appJs.includes("action: 'switch-tab'"), true);
+  assert.equal(appJs.includes('attributes: `data-ui-value="${escapeHtml(tabValue)}"`'), true);
   assert.equal(appJs.includes("action: 'regenerate-release-surface'"), true);
   assert.equal(appJs.includes('current surface 재생성: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('current surface 재생성 확인: ${releaseActionLabel}'), true);
@@ -2000,9 +2004,11 @@ try {
   assert.equal(appJs.includes('release snapshot 고정 취소: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="cancel-archive-release-snapshot" aria-label="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}"'), false);
   assert.equal(appJs.includes('aria-pressed="${pressed ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('renderReleaseTabActionButton({\n            actionLabel: `실행 기록 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('actionLabel: `실행 기록 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes("buttonText: '실행 기록 보기'"), true);
   assert.equal(appJs.includes("value: 'runs'"), true);
+  assert.equal(appJs.includes('renderReleaseTabActionButton({\n            actionLabel: `하네스 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('actionLabel: `하네스 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes("buttonText: '하네스 보기'"), true);
   assert.equal(appJs.includes("value: 'harness'"), true);

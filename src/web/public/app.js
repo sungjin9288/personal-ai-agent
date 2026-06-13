@@ -2659,6 +2659,25 @@ function renderReleaseConfirmActionButton({
   return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}" aria-pressed="${pressed ? 'true' : 'false'}"${disabledMarkup} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseTabActionButton({
+  actionLabel = '',
+  buttonText = '',
+  className = 'ghost-button',
+  value = '',
+} = {}) {
+  const tabValue = String(value || '').trim();
+  if (!/^[a-z0-9-]+$/.test(tabValue)) {
+    return '';
+  }
+  return renderReleaseSimpleActionButton({
+    action: 'switch-tab',
+    actionLabel,
+    attributes: `data-ui-value="${escapeHtml(tabValue)}"`,
+    buttonText,
+    className,
+  });
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -18006,14 +18025,12 @@ function renderReleaseStatus() {
                 buttonText: '현재 snapshot 고정 취소',
               })
             : ''}
-          ${renderFlowQuickActionButton({
-            action: 'switch-tab',
+          ${renderReleaseTabActionButton({
             actionLabel: `실행 기록 보기: ${releaseActionLabel}`,
             buttonText: '실행 기록 보기',
             value: 'runs',
           })}
-          ${renderFlowQuickActionButton({
-            action: 'switch-tab',
+          ${renderReleaseTabActionButton({
             actionLabel: `하네스 보기: ${releaseActionLabel}`,
             buttonText: '하네스 보기',
             value: 'harness',
