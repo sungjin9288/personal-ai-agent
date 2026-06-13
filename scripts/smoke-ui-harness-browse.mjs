@@ -1958,7 +1958,12 @@ try {
   assert.equal(appJs.includes('actionLabel: setupHarnessPrimaryLabel'), true);
   assert.equal(appJs.includes('releaseActionLabel'), true);
   assert.equal(appJs.includes('상태 다시 읽기: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('renderReleasePreflightAllButton'), true);
+  assert.equal(appJs.includes('function renderReleasePreflightAllButton({'), true);
+  assert.equal(appJs.includes('renderReleasePreflightAllButton({\n            actionLabel: `전체 preflight 실행: ${releaseActionLabel}`'), true);
+  assert.equal(appJs.includes('renderReleasePreflightAllButton({\n                  actionLabel: `전체 preflight 실행: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('전체 preflight 실행: ${releaseActionLabel}'), true);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}"'), false);
   assert.equal(appJs.includes('전체 preflight 명령 복사: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('current surface 재생성: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('current surface 재생성 확인: ${releaseActionLabel}'), true);

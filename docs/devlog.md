@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Release Preflight All Button Renderer
+
+- moved repeated release preflight-all action buttons onto a dedicated renderer
+- kept run-release-preflight-all action routing, labels, titles, and visible copy unchanged
+- reduced duplicate preflight-all button markup across release status actions and provider preflight callout
+- extended UI harness browse smoke coverage for release preflight-all renderer delegation
+
 ## 2026-06-13 Release Action Quick Action Renderer
 
 - moved release action switch-tab buttons onto the shared flow quick action renderer

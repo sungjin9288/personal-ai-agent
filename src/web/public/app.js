@@ -2607,6 +2607,14 @@ function renderReleaseCopiedActionButton({
   return `<button class="${escapeHtml(nextClassName)}" type="button" ${attributes} data-ui-action="${escapeHtml(action)}" aria-pressed="${copied ? 'true' : 'false'}" aria-label="${escapeHtml(nextActionLabel)}" title="${escapeHtml(nextActionLabel)}" ${disabled ? 'disabled' : ''}>${escapeHtml(copied ? copiedText : buttonText)}</button>`;
 }
 
+function renderReleasePreflightAllButton({
+  actionLabel = '전체 preflight 실행',
+  buttonText = '전체 preflight 실행',
+  className = 'ghost-button',
+} = {}) {
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -17910,7 +17918,9 @@ function renderReleaseStatus() {
         </div>
         <div class="action-row">
           <button class="primary-button" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}" title="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}">상태 다시 읽기</button>
-          <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}">전체 preflight 실행</button>
+          ${renderReleasePreflightAllButton({
+            actionLabel: `전체 preflight 실행: ${releaseActionLabel}`,
+          })}
           ${renderReleaseCommandCopyButton({
             actionLabel: `전체 preflight 명령 복사: ${releaseActionLabel}`,
             buttonText: '전체 preflight 명령 복사',
@@ -19926,7 +19936,9 @@ function renderReleaseStatus() {
                 <span class="mini-badge ${releaseAllPreflight?.blockedCount ? 'status-failed' : 'status-completed'}">${escapeHtml(aggregatePreflightBlockedLabel)}</span>
               </div>
               <div class="release-history-focus-actions">
-                <button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}" title="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}">전체 preflight 실행</button>
+                ${renderReleasePreflightAllButton({
+                  actionLabel: `전체 preflight 실행: ${releaseActionLabel}`,
+                })}
                 ${renderReleaseCommandCopyButton({
                   actionLabel: `전체 preflight 명령 복사: ${releaseActionLabel}`,
                   buttonText: '전체 preflight 명령 복사',
