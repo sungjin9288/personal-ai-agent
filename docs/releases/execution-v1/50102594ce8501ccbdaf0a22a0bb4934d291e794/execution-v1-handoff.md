@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-13T04:41:35.498Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-13T04:41:34.093Z
 - localDate: 2026-06-13
 - branch: codex/release-action-quick-action-renderer
 - commit: 50102594ce8501ccbdaf0a22a0bb4934d291e794
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/50102594ce8501ccbdaf0a22a0bb4934d291e794](releases/execution-v1/50102594ce8501ccbdaf0a22a0bb4934d291e794)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/50102594ce8501ccbdaf0a22a0bb4934d291e794/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/50102594ce8501ccbdaf0a22a0bb4934d291e794/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/50102594ce8501ccbdaf0a22a0bb4934d291e794](docs/releases/execution-v1/50102594ce8501ccbdaf0a22a0bb4934d291e794)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-action-quick-action-renderer not found
 

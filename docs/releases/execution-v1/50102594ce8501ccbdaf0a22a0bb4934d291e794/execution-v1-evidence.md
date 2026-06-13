@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T04:41:35.498Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T04:41:18.317Z
 - branch: codex/release-action-quick-action-renderer
 - commit: 50102594ce8501ccbdaf0a22a0bb4934d291e794
