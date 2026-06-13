@@ -2638,6 +2638,27 @@ function renderReleaseSimpleActionButton({
   return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseConfirmActionButton({
+  action = '',
+  actionLabel = '',
+  attributes = '',
+  buttonText = '',
+  className = 'ghost-button',
+  disabled = null,
+  pressed = false,
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^[a-z0-9-]+$/.test(actionName)) {
+    return '';
+  }
+  const attributeMarkup = attributes ? ` ${attributes}` : '';
+  const hasDisabledState = disabled === true || disabled === false;
+  const disabledMarkup = hasDisabledState
+    ? ` aria-disabled="${disabled ? 'true' : 'false'}"${disabled ? ' disabled' : ''}`
+    : '';
+  return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}" aria-pressed="${pressed ? 'true' : 'false'}"${disabledMarkup} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -17952,7 +17973,15 @@ function renderReleaseStatus() {
             command: 'npm run preflight:execution-v1:all',
             label: '전체 preflight 명령',
           })}
-          <button class="${regenerationConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="regenerate-release-surface" aria-pressed="${regenerationConfirmArmed ? 'true' : 'false'}" aria-label="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}" title="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}">${regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성'}</button>
+          ${renderReleaseConfirmActionButton({
+            action: 'regenerate-release-surface',
+            actionLabel: regenerationConfirmArmed
+              ? `current surface 재생성 확인: ${releaseActionLabel}`
+              : `current surface 재생성: ${releaseActionLabel}`,
+            buttonText: regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성',
+            className: regenerationConfirmArmed ? 'primary-button' : 'ghost-button',
+            pressed: regenerationConfirmArmed,
+          })}
           ${regenerationConfirmArmed
             ? renderReleaseSimpleActionButton({
                 action: 'cancel-regenerate-release-surface',
@@ -17960,7 +17989,16 @@ function renderReleaseStatus() {
                 buttonText: '현재 재생성 취소',
               })
             : ''}
-          <button class="${snapshotConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="archive-release-snapshot" aria-pressed="${snapshotConfirmArmed ? 'true' : 'false'}" aria-disabled="${!snapshotConfirmArmed && !snapshotEligibility.allowed ? 'true' : 'false'}" aria-label="${escapeHtml(snapshotConfirmArmed ? `release snapshot 고정 확인: ${releaseActionLabel}` : `release snapshot 고정: ${releaseActionLabel}`)}" title="${escapeHtml(snapshotConfirmArmed ? `release snapshot 고정 확인: ${releaseActionLabel}` : `release snapshot 고정: ${releaseActionLabel}`)}" ${!snapshotConfirmArmed && !snapshotEligibility.allowed ? 'disabled' : ''}>${snapshotConfirmArmed ? 'snapshot 고정 확인' : 'release snapshot 고정'}</button>
+          ${renderReleaseConfirmActionButton({
+            action: 'archive-release-snapshot',
+            actionLabel: snapshotConfirmArmed
+              ? `release snapshot 고정 확인: ${releaseActionLabel}`
+              : `release snapshot 고정: ${releaseActionLabel}`,
+            buttonText: snapshotConfirmArmed ? 'snapshot 고정 확인' : 'release snapshot 고정',
+            className: snapshotConfirmArmed ? 'primary-button' : 'ghost-button',
+            disabled: !snapshotConfirmArmed && !snapshotEligibility.allowed,
+            pressed: snapshotConfirmArmed,
+          })}
           ${snapshotConfirmArmed
             ? renderReleaseSimpleActionButton({
                 action: 'cancel-archive-release-snapshot',
