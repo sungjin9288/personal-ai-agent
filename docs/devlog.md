@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Release Cancel Action Button Renderer
+
+- moved release regeneration and snapshot cancel buttons onto a shared simple release action renderer
+- kept cancel action ids, labels, titles, and visible copy unchanged
+- reduced direct conditional cancel button markup in the release status action row
+- extended UI harness browse smoke coverage for release cancel action renderer delegation
+
 ## 2026-06-13 Release Status Refresh Button Renderer
 
 - moved the release status refresh action button onto a dedicated renderer

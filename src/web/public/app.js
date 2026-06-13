@@ -2623,6 +2623,21 @@ function renderReleaseStatusRefreshButton({
   return `<button class="${escapeHtml(className)}" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseSimpleActionButton({
+  action = '',
+  actionLabel = '',
+  attributes = '',
+  buttonText = '',
+  className = 'ghost-button',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^[a-z0-9-]+$/.test(actionName)) {
+    return '';
+  }
+  const attributeMarkup = attributes ? ` ${attributes}` : '';
+  return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -17939,11 +17954,19 @@ function renderReleaseStatus() {
           })}
           <button class="${regenerationConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="regenerate-release-surface" aria-pressed="${regenerationConfirmArmed ? 'true' : 'false'}" aria-label="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}" title="${escapeHtml(regenerationConfirmArmed ? `current surface 재생성 확인: ${releaseActionLabel}` : `current surface 재생성: ${releaseActionLabel}`)}">${regenerationConfirmArmed ? '재생성 확인' : 'current surface 재생성'}</button>
           ${regenerationConfirmArmed
-            ? `<button class="ghost-button" type="button" data-ui-action="cancel-regenerate-release-surface" aria-label="${escapeHtml(`current surface 재생성 취소: ${releaseActionLabel}`)}" title="${escapeHtml(`current surface 재생성 취소: ${releaseActionLabel}`)}">현재 재생성 취소</button>`
+            ? renderReleaseSimpleActionButton({
+                action: 'cancel-regenerate-release-surface',
+                actionLabel: `current surface 재생성 취소: ${releaseActionLabel}`,
+                buttonText: '현재 재생성 취소',
+              })
             : ''}
           <button class="${snapshotConfirmArmed ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="archive-release-snapshot" aria-pressed="${snapshotConfirmArmed ? 'true' : 'false'}" aria-disabled="${!snapshotConfirmArmed && !snapshotEligibility.allowed ? 'true' : 'false'}" aria-label="${escapeHtml(snapshotConfirmArmed ? `release snapshot 고정 확인: ${releaseActionLabel}` : `release snapshot 고정: ${releaseActionLabel}`)}" title="${escapeHtml(snapshotConfirmArmed ? `release snapshot 고정 확인: ${releaseActionLabel}` : `release snapshot 고정: ${releaseActionLabel}`)}" ${!snapshotConfirmArmed && !snapshotEligibility.allowed ? 'disabled' : ''}>${snapshotConfirmArmed ? 'snapshot 고정 확인' : 'release snapshot 고정'}</button>
           ${snapshotConfirmArmed
-            ? `<button class="ghost-button" type="button" data-ui-action="cancel-archive-release-snapshot" aria-label="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}" title="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}">현재 snapshot 고정 취소</button>`
+            ? renderReleaseSimpleActionButton({
+                action: 'cancel-archive-release-snapshot',
+                actionLabel: `release snapshot 고정 취소: ${releaseActionLabel}`,
+                buttonText: '현재 snapshot 고정 취소',
+              })
             : ''}
           ${renderFlowQuickActionButton({
             action: 'switch-tab',
