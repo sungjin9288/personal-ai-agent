@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Release Confirm Action Button Renderer
+
+- moved release regeneration and snapshot confirm buttons onto a dedicated confirm action renderer
+- kept confirm action ids, pressed state, disabled state, labels, titles, and visible copy unchanged
+- reduced direct confirmation button markup in the release status action row
+- extended UI harness browse smoke coverage for release confirm action renderer delegation
+
 ## 2026-06-13 Release Cancel Action Button Renderer
 
 - moved release regeneration and snapshot cancel buttons onto a shared simple release action renderer
