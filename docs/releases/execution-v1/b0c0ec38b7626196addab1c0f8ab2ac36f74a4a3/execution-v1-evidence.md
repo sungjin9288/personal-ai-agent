@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T07:19:53.692Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T07:19:37.520Z
 - branch: codex/release-tab-action-button-renderer
 - commit: b0c0ec38b7626196addab1c0f8ab2ac36f74a4a3
