@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-13 Output Closeout Quick Action Renderer
+
+- moved output closeout dynamic switch-tab buttons onto the shared flow quick action renderer
+- kept closeout action values, labels, titles, and routing unchanged
+- reduced direct dynamic closeout button markup
+- extended UI harness browse smoke coverage for output closeout quick action renderer delegation
+
 ## 2026-06-13 Stage Summary Quick Action Renderer
 
 - moved stage summary jump-step and switch-tab buttons onto the shared flow quick action renderer

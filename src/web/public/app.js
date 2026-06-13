@@ -16680,9 +16680,12 @@ function renderOutputCloseout() {
             <span class="status-badge ${item.ready ? 'status-completed' : 'status-pending'}">${escapeHtml(item.ready ? '준비됨' : '확인 필요')}</span>
           </div>
           <div class="closeout-actions">
-            <button class="ghost-button" type="button" data-ui-action="switch-tab" data-ui-value="${escapeHtml(item.actionValue)}" aria-label="${escapeHtml(`${item.actionLabel}: ${item.label || item.actionValue}`)}" title="${escapeHtml(`${item.actionLabel}: ${item.label || item.actionValue}`)}">
-              ${escapeHtml(item.actionLabel)}
-            </button>
+            ${renderFlowQuickActionButton({
+              action: 'switch-tab',
+              actionLabel: `${item.actionLabel}: ${item.label || item.actionValue}`,
+              buttonText: item.actionLabel,
+              value: item.actionValue,
+            })}
           </div>
         </div>
       `,
