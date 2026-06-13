@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-13T04:17:14.236Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-13T04:16:58.945Z
 - branch: codex/output-closeout-quick-action-renderer
 - commit: 264044d6a5a0ccfcfe41aa83bd154775a198ee6a
