@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Blocker Filter Button Renderer
+
+- moved current open blocker category, owner, provider, shared provider ops, and empty-filter keep buttons onto a dedicated release blocker filter renderer
+- kept `filter-release-blockers` action, category/owner/provider attributes, shared provider scope toggle, count markers, pressed state, active disabled state, labels, titles, and visible copy aligned with the existing UI contract
+- reduced direct blocker filter markup across current open blocker triage and empty-filter recovery surfaces
+- extended UI harness browse smoke coverage for blocker filter renderer delegation and direct markup removal
+
 ## 2026-06-14 Release History Focus Button Renderer
 
 - moved recommendation history/flow focus buttons and release history card pin button onto the existing release provider navigation renderer

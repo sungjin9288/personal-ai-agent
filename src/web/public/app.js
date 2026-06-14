@@ -2695,6 +2695,40 @@ function renderReleaseClearActionButton({
   return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}"${pressedMarkup} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseBlockerFilterButton({
+  actionLabel = '',
+  buttonText = '',
+  category = null,
+  className = 'ghost-button',
+  countAttributeName = '',
+  countAttributeValue = null,
+  disabled = false,
+  includeShared = null,
+  owner = null,
+  pressed = false,
+  provider = null,
+} = {}) {
+  const attributeList = [];
+  const countName = String(countAttributeName || '').trim();
+  if (/^data-release-current-open-blocker-[a-z-]+$/.test(countName) && countAttributeValue !== null) {
+    attributeList.push(`${countName}="${escapeHtml(String(countAttributeValue))}"`);
+  }
+  attributeList.push('data-ui-action="filter-release-blockers"');
+  if (category !== null) {
+    attributeList.push(`data-ui-category="${escapeHtml(String(category))}"`);
+  }
+  if (includeShared !== null) {
+    attributeList.push(`data-ui-include-shared="${includeShared ? 'true' : 'false'}"`);
+  }
+  if (owner !== null) {
+    attributeList.push(`data-ui-owner="${escapeHtml(String(owner))}"`);
+  }
+  if (provider !== null) {
+    attributeList.push(`data-ui-provider="${escapeHtml(String(provider))}"`);
+  }
+  return `<button class="${escapeHtml(className)}" type="button" ${attributeList.join(' ')} aria-pressed="${pressed ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${disabled ? ' disabled' : ''}>${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseProviderActionButton({
   action = '',
   actionLabel = '',
@@ -18644,19 +18678,17 @@ function renderReleaseStatus() {
                   ? currentOpenBlockerCategoryEntries
                     .map(
                       ([category, count]) => `
-                        <button
-                          class="ghost-button"
-                                  type="button"
-                                  data-release-current-open-blocker-category-count="${escapeHtml(category)}"
-                                  data-ui-action="filter-release-blockers"
-                                  data-ui-category="${escapeHtml(category)}"
-                                  data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
-                                  data-ui-provider="${escapeHtml(blockerProviderFilter)}"
-                                  aria-pressed="${blockerCategoryFilter === category ? 'true' : 'false'}"
-                                  aria-label="${escapeHtml(`blocker category 필터: ${category} ${count}건 · ${blockerFilterLabel}`)}"
-                                  title="${escapeHtml(`blocker category 필터: ${category} ${count}건 · ${blockerFilterLabel}`)}"
-                                  ${blockerCategoryFilter === category ? 'disabled' : ''}
-                                >${escapeHtml(category)} ${escapeHtml(String(count))}</button>
+                        ${renderReleaseBlockerFilterButton({
+                          actionLabel: `blocker category 필터: ${category} ${count}건 · ${blockerFilterLabel}`,
+                          buttonText: `${category} ${count}`,
+                          category,
+                          countAttributeName: 'data-release-current-open-blocker-category-count',
+                          countAttributeValue: category,
+                          disabled: blockerCategoryFilter === category,
+                          owner: blockerOwnerFilter,
+                          pressed: blockerCategoryFilter === category,
+                          provider: blockerProviderFilter,
+                        })}
                       `,
                     )
                     .join('')
@@ -18665,19 +18697,17 @@ function renderReleaseStatus() {
                   ? currentOpenBlockerOwnerEntries
                     .map(
                       ([owner, count]) => `
-                        <button
-                          class="ghost-button"
-                                  type="button"
-                                  data-release-current-open-blocker-owner-count="${escapeHtml(owner)}"
-                                  data-ui-action="filter-release-blockers"
-                                  data-ui-category="${escapeHtml(blockerCategoryFilter)}"
-                                  data-ui-owner="${escapeHtml(owner)}"
-                                  data-ui-provider="${escapeHtml(blockerProviderFilter)}"
-                                  aria-pressed="${blockerOwnerFilter === owner ? 'true' : 'false'}"
-                                  aria-label="${escapeHtml(`blocker owner 필터: ${owner} ${count}건 · ${blockerFilterLabel}`)}"
-                                  title="${escapeHtml(`blocker owner 필터: ${owner} ${count}건 · ${blockerFilterLabel}`)}"
-                                  ${blockerOwnerFilter === owner ? 'disabled' : ''}
-                                >${escapeHtml(owner)} ${escapeHtml(String(count))}</button>
+                        ${renderReleaseBlockerFilterButton({
+                          actionLabel: `blocker owner 필터: ${owner} ${count}건 · ${blockerFilterLabel}`,
+                          buttonText: `${owner} ${count}`,
+                          category: blockerCategoryFilter,
+                          countAttributeName: 'data-release-current-open-blocker-owner-count',
+                          countAttributeValue: owner,
+                          disabled: blockerOwnerFilter === owner,
+                          owner,
+                          pressed: blockerOwnerFilter === owner,
+                          provider: blockerProviderFilter,
+                        })}
                       `,
                     )
                     .join('')
@@ -18686,19 +18716,17 @@ function renderReleaseStatus() {
                   ? currentOpenBlockerProviderEntries
                     .map(
                       ([provider, count]) => `
-                        <button
-                          class="ghost-button"
-                                  type="button"
-                                  data-release-current-open-blocker-provider-count="${escapeHtml(provider)}"
-                                  data-ui-action="filter-release-blockers"
-                                  data-ui-category="${escapeHtml(blockerCategoryFilter)}"
-                                  data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
-                                  data-ui-provider="${escapeHtml(provider)}"
-                                  aria-pressed="${blockerProviderFilter === provider ? 'true' : 'false'}"
-                                  aria-label="${escapeHtml(`blocker provider 필터: ${provider} ${count}건 · ${blockerFilterLabel}`)}"
-                                  title="${escapeHtml(`blocker provider 필터: ${provider} ${count}건 · ${blockerFilterLabel}`)}"
-                                  ${blockerProviderFilter === provider ? 'disabled' : ''}
-                                >${escapeHtml(provider)} ${escapeHtml(String(count))}</button>
+                        ${renderReleaseBlockerFilterButton({
+                          actionLabel: `blocker provider 필터: ${provider} ${count}건 · ${blockerFilterLabel}`,
+                          buttonText: `${provider} ${count}`,
+                          category: blockerCategoryFilter,
+                          countAttributeName: 'data-release-current-open-blocker-provider-count',
+                          countAttributeValue: provider,
+                          disabled: blockerProviderFilter === provider,
+                          owner: blockerOwnerFilter,
+                          pressed: blockerProviderFilter === provider,
+                          provider,
+                        })}
                       `,
                     )
                     .join('')
@@ -18707,19 +18735,17 @@ function renderReleaseStatus() {
                   class="mini-badge ${blockerIncludeSharedProviderOperations ? 'status-running' : 'status-blocked'}"
                   data-release-current-open-blocker-shared-scope="${blockerIncludeSharedProviderOperations ? 'included' : 'excluded'}"
                 >shared provider ops ${blockerIncludeSharedProviderOperations ? 'included' : 'excluded'}</span>
-                <button
-                  class="ghost-button"
-                  type="button"
-                          data-release-current-open-blocker-shared-scope-toggle="true"
-                          data-ui-action="filter-release-blockers"
-                          data-ui-category="${escapeHtml(blockerCategoryFilter)}"
-                          data-ui-include-shared="${blockerIncludeSharedProviderOperations ? 'false' : 'true'}"
-                          data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
-                          data-ui-provider="${escapeHtml(blockerProviderFilter)}"
-                          aria-pressed="${blockerIncludeSharedProviderOperations ? 'true' : 'false'}"
-                          aria-label="${escapeHtml(blockerIncludeSharedProviderOperations ? `shared provider ops 제외: ${blockerTriageFilterActionLabel}` : `shared provider ops 포함: ${blockerTriageFilterActionLabel}`)}"
-                          title="${escapeHtml(blockerIncludeSharedProviderOperations ? `shared provider ops 제외: ${blockerTriageFilterActionLabel}` : `shared provider ops 포함: ${blockerTriageFilterActionLabel}`)}"
-                        >${blockerIncludeSharedProviderOperations ? 'shared provider ops 제외' : 'shared provider ops 포함'}</button>
+                ${renderReleaseBlockerFilterButton({
+                  actionLabel: blockerIncludeSharedProviderOperations ? `shared provider ops 제외: ${blockerTriageFilterActionLabel}` : `shared provider ops 포함: ${blockerTriageFilterActionLabel}`,
+                  buttonText: blockerIncludeSharedProviderOperations ? 'shared provider ops 제외' : 'shared provider ops 포함',
+                  category: blockerCategoryFilter,
+                  countAttributeName: 'data-release-current-open-blocker-shared-scope-toggle',
+                  countAttributeValue: 'true',
+                  includeShared: !blockerIncludeSharedProviderOperations,
+                  owner: blockerOwnerFilter,
+                  pressed: blockerIncludeSharedProviderOperations,
+                  provider: blockerProviderFilter,
+                })}
                         ${renderReleaseBlockerSummaryCopyButton({
                           action: 'copy-release-blocker-filter-summary',
                           actionLabel: `slice 요약 복사: ${blockerTriageFilterActionLabel}`,
@@ -19326,61 +19352,53 @@ function renderReleaseStatus() {
                   : ''}
                 ${hasEmptyBlockerFilter && blockerCategoryFilter && blockerOwnerFilter
                   ? `
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-current-open-blocker-filter-empty-category="true"
-                      data-ui-action="filter-release-blockers"
-                      data-ui-category="${escapeHtml(blockerCategoryFilter)}"
-                      data-ui-owner=""
-                      data-ui-provider=""
-                      aria-pressed="${blockerCategoryFilter ? 'true' : 'false'}"
-                      aria-label="${escapeHtml(`empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}`)}"
-                      title="${escapeHtml(`empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}`)}"
-                    >category만 유지</button>
-                    <button
-                      class="ghost-button"
-                      type="button"
-                      data-release-current-open-blocker-filter-empty-owner="true"
-                      data-ui-action="filter-release-blockers"
-                      data-ui-category=""
-                      data-ui-owner="${escapeHtml(blockerOwnerFilter)}"
-                      data-ui-provider=""
-                      aria-pressed="${blockerOwnerFilter ? 'true' : 'false'}"
-                      aria-label="${escapeHtml(`empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}`)}"
-                      title="${escapeHtml(`empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}`)}"
-                    >owner만 유지</button>
+                    ${renderReleaseBlockerFilterButton({
+                      actionLabel: `empty blocker filter category만 유지: ${blockerCategoryFilter} · ${blockerFilterLabel}`,
+                      buttonText: 'category만 유지',
+                      category: blockerCategoryFilter,
+                      countAttributeName: 'data-release-current-open-blocker-filter-empty-category',
+                      countAttributeValue: 'true',
+                      owner: '',
+                      pressed: Boolean(blockerCategoryFilter),
+                      provider: '',
+                    })}
+                    ${renderReleaseBlockerFilterButton({
+                      actionLabel: `empty blocker filter owner만 유지: ${blockerOwnerFilter} · ${blockerFilterLabel}`,
+                      buttonText: 'owner만 유지',
+                      category: '',
+                      countAttributeName: 'data-release-current-open-blocker-filter-empty-owner',
+                      countAttributeValue: 'true',
+                      owner: blockerOwnerFilter,
+                      pressed: Boolean(blockerOwnerFilter),
+                      provider: '',
+                    })}
                     ${blockerProviderFilter
                       ? `
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-release-current-open-blocker-filter-empty-provider="true"
-                          data-ui-action="filter-release-blockers"
-                          data-ui-category=""
-                          data-ui-owner=""
-                          data-ui-provider="${escapeHtml(blockerProviderFilter)}"
-                          aria-pressed="${blockerProviderFilter ? 'true' : 'false'}"
-                          aria-label="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
-                          title="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
-                        >provider만 유지</button>
+                        ${renderReleaseBlockerFilterButton({
+                          actionLabel: `empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`,
+                          buttonText: 'provider만 유지',
+                          category: '',
+                          countAttributeName: 'data-release-current-open-blocker-filter-empty-provider',
+                          countAttributeValue: 'true',
+                          owner: '',
+                          pressed: Boolean(blockerProviderFilter),
+                          provider: blockerProviderFilter,
+                        })}
                       `
                       : ''}
                   `
                   : hasEmptyBlockerFilter && blockerProviderFilter
                     ? `
-                      <button
-                        class="ghost-button"
-                        type="button"
-                        data-release-current-open-blocker-filter-empty-provider="true"
-                        data-ui-action="filter-release-blockers"
-                        data-ui-category=""
-                        data-ui-owner=""
-                        data-ui-provider="${escapeHtml(blockerProviderFilter)}"
-                        aria-pressed="${blockerProviderFilter ? 'true' : 'false'}"
-                        aria-label="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
-                        title="${escapeHtml(`empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`)}"
-                      >provider만 유지</button>
+                      ${renderReleaseBlockerFilterButton({
+                        actionLabel: `empty blocker filter provider만 유지: ${blockerProviderFilter} · ${blockerFilterLabel}`,
+                        buttonText: 'provider만 유지',
+                        category: '',
+                        countAttributeName: 'data-release-current-open-blocker-filter-empty-provider',
+                        countAttributeValue: 'true',
+                        owner: '',
+                        pressed: Boolean(blockerProviderFilter),
+                        provider: blockerProviderFilter,
+                      })}
                     `
                     : ''}
                 ${hasBlockerFilter
