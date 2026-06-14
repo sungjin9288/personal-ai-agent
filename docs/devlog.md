@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Provider Navigation Button Renderer
+
+- moved focused provider blocker, history, filter, and flow buttons onto a dedicated release provider navigation renderer
+- kept focus/filter action ids, value/provider/outcome/scope/blocker attributes, pressed state, disabled state, labels, titles, and visible copy unchanged
+- reduced direct provider navigation markup inside the focused provider action panel
+- extended UI harness browse smoke coverage for release provider navigation renderer delegation
+
 ## 2026-06-14 Release Provider Action Button Renderer
 
 - moved provider preflight and live validation buttons onto a dedicated release provider action renderer
