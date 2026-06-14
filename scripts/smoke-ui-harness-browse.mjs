@@ -255,10 +255,14 @@ try {
   assert.equal(rootHtml.includes('recoverable-provider-failure-only'), true);
   assert.equal(appJs.includes('renderHarnessFilterChips'), true);
   assert.equal(appJs.includes('refreshSelectedMissionContext'), true);
+  assert.equal(appJs.includes('renderEmptyStateActionButton'), true);
+  assert.equal(appJs.includes('function renderEmptyStateActionButton({'), true);
   assert.equal(appJs.includes('emptyActionLabel'), true);
   assert.equal(appJs.includes('actionValue ? `${actionLabel}: ${actionValue}` : actionLabel'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(emptyActionLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(emptyActionLabel)}"'), true);
+  assert.equal(appJs.includes('const emptyActionButton = renderEmptyStateActionButton({ action, actionLabel, actionValue });'), true);
+  assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="${escapeHtml(action)}" data-ui-value="${escapeHtml(actionValue)}" aria-label="${escapeHtml(emptyActionLabel)}" title="${escapeHtml(emptyActionLabel)}">\n                ${escapeHtml(actionLabel)}'), false);
   assert.equal(appJs.includes('markCopiedCurrentViewLink'), true);
   assert.equal(appJs.includes('currentViewLinkCopied'), true);
   assert.equal(appJs.includes('renderCurrentViewLinkCopyButton'), true);

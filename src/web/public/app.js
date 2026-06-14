@@ -10648,8 +10648,16 @@ function markdownToHtml(markdown = '') {
   return html.join('');
 }
 
-function emptyStateCard({ icon = '01', title, message, actionLabel = '', action = '', actionValue = '' }) {
+function renderEmptyStateActionButton({ action = '', actionLabel = '', actionValue = '' } = {}) {
+  if (!actionLabel) {
+    return '';
+  }
   const emptyActionLabel = actionValue ? `${actionLabel}: ${actionValue}` : actionLabel;
+  return `<button class="ghost-button" type="button" data-ui-action="${escapeHtml(action)}" data-ui-value="${escapeHtml(actionValue)}" aria-label="${escapeHtml(emptyActionLabel)}" title="${escapeHtml(emptyActionLabel)}">${escapeHtml(actionLabel)}</button>`;
+}
+
+function emptyStateCard({ icon = '01', title, message, actionLabel = '', action = '', actionValue = '' }) {
+  const emptyActionButton = renderEmptyStateActionButton({ action, actionLabel, actionValue });
   return `
     <div class="empty-card">
       <div class="empty-icon">${escapeHtml(icon)}</div>
@@ -10658,11 +10666,9 @@ function emptyStateCard({ icon = '01', title, message, actionLabel = '', action 
         <p class="empty-copy">${escapeHtml(message)}</p>
       </div>
       ${
-        actionLabel
+        emptyActionButton
           ? `<div class="empty-actions">
-              <button class="ghost-button" type="button" data-ui-action="${escapeHtml(action)}" data-ui-value="${escapeHtml(actionValue)}" aria-label="${escapeHtml(emptyActionLabel)}" title="${escapeHtml(emptyActionLabel)}">
-                ${escapeHtml(actionLabel)}
-              </button>
+              ${emptyActionButton}
             </div>`
           : ''
       }
