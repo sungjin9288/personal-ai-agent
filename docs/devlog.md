@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Provider Action Button Renderer
+
+- moved provider preflight and live validation buttons onto a dedicated release provider action renderer
+- kept provider action ids, provider attributes, pressed state, disabled state, labels, titles, and visible copy unchanged
+- moved provider live cancel onto the existing simple release action renderer
+- extended UI harness browse smoke coverage for release provider action renderer delegation
+
 ## 2026-06-14 Release Clear Action Button Renderer
 
 - moved release blocker, history, provider, and handoff preview clear buttons onto a dedicated release clear action renderer

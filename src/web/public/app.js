@@ -2695,6 +2695,29 @@ function renderReleaseClearActionButton({
   return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}"${pressedMarkup} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseProviderActionButton({
+  action = '',
+  actionLabel = '',
+  attributes = '',
+  buttonText = '',
+  className = 'ghost-button',
+  disabled = null,
+  pressed = null,
+  provider = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  const providerName = String(provider || '').trim();
+  if (!/^(run-release-preflight|refresh-release-status-live)$/.test(actionName) || !providerName) {
+    return '';
+  }
+  const attributeMarkup = attributes ? ` ${attributes}` : '';
+  const pressedMarkup = pressed === true || pressed === false ? ` aria-pressed="${pressed ? 'true' : 'false'}"` : '';
+  const disabledMarkup = disabled === true || disabled === false
+    ? ` aria-disabled="${disabled ? 'true' : 'false'}"${disabled ? ' disabled' : ''}`
+    : '';
+  return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}" data-ui-provider="${escapeHtml(providerName)}"${pressedMarkup}${disabledMarkup} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -19976,14 +19999,29 @@ function renderReleaseStatus() {
                     <div class="release-history-focus-actions">
                       ${focusedProviderEntry
                         ? `
-                            <button class="ghost-button" type="button" data-ui-action="run-release-preflight" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" aria-label="${escapeHtml(`provider preflight 실행: ${focusedProviderActionLabel}`)}" title="${escapeHtml(`provider preflight 실행: ${focusedProviderActionLabel}`)}">preflight 실행</button>
+                            ${renderReleaseProviderActionButton({
+                              action: 'run-release-preflight',
+                              actionLabel: `provider preflight 실행: ${focusedProviderActionLabel}`,
+                              buttonText: 'preflight 실행',
+                              provider: focusedProviderEntry.provider,
+                            })}
                             ${renderReleaseCommandCopyButton({
                               actionLabel: `provider preflight 명령 복사: ${focusedProviderActionLabel}`,
                               buttonText: 'preflight 명령 복사',
                               command: focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`,
                               label: `${focusedProviderEntry.label} preflight 명령`,
                             })}
-                            <button class="${liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button'}" type="button" data-ui-action="refresh-release-status-live" data-ui-provider="${escapeHtml(focusedProviderEntry.provider)}" aria-pressed="${liveConfirmProvider === focusedProviderEntry.provider ? 'true' : 'false'}" aria-disabled="${focusedProviderEntry.ready ? 'false' : 'true'}" aria-label="${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? `provider live 검증 확인: ${focusedProviderActionLabel}` : `provider live 검증 실행: ${focusedProviderActionLabel}`) : `provider env 필요: ${focusedProviderActionLabel}`)}" title="${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? `provider live 검증 확인: ${focusedProviderActionLabel}` : `provider live 검증 실행: ${focusedProviderActionLabel}`) : `provider env 필요: ${focusedProviderActionLabel}`)}" ${focusedProviderEntry.ready ? '' : 'disabled'}>${escapeHtml(focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
+                            ${renderReleaseProviderActionButton({
+                              action: 'refresh-release-status-live',
+                              actionLabel: focusedProviderEntry.ready
+                                ? (liveConfirmProvider === focusedProviderEntry.provider ? `provider live 검증 확인: ${focusedProviderActionLabel}` : `provider live 검증 실행: ${focusedProviderActionLabel}`)
+                                : `provider env 필요: ${focusedProviderActionLabel}`,
+                              buttonText: focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요',
+                              className: liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button',
+                              disabled: !focusedProviderEntry.ready,
+                              pressed: liveConfirmProvider === focusedProviderEntry.provider,
+                              provider: focusedProviderEntry.provider,
+                            })}
                             ${renderReleaseCommandCopyButton({
                               actionLabel: `provider live 명령 복사: ${focusedProviderActionLabel}`,
                               buttonText: 'live 명령 복사',
@@ -20141,31 +20179,27 @@ function renderReleaseStatus() {
                         >proofs ${escapeHtml(String(providerClosureSummary.requiredProofCount))}</span>
                       </div>
                       <div class="release-provider-meta">
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-ui-action="run-release-preflight"
-                          data-ui-provider="${escapeHtml(item.provider)}"
-                          aria-label="${escapeHtml(`provider preflight 실행: ${providerActionLabel}`)}"
-                          title="${escapeHtml(`provider preflight 실행: ${providerActionLabel}`)}"
-                        >preflight 실행</button>
+                        ${renderReleaseProviderActionButton({
+                          action: 'run-release-preflight',
+                          actionLabel: `provider preflight 실행: ${providerActionLabel}`,
+                          buttonText: 'preflight 실행',
+                          provider: item.provider,
+                        })}
                         ${renderReleaseCommandCopyButton({
                           actionLabel: `provider preflight 명령 복사: ${providerActionLabel}`,
                           buttonText: 'preflight 명령 복사',
                           command: item.preflightCommand || `npm run preflight:execution-v1:${item.provider}`,
                           label: `${item.label} preflight 명령`,
                         })}
-                        <button
-                          class="${liveConfirmArmed ? 'primary-button' : 'ghost-button'}"
-                          type="button"
-                          data-ui-action="refresh-release-status-live"
-                          data-ui-provider="${escapeHtml(item.provider)}"
-                          aria-pressed="${liveConfirmArmed ? 'true' : 'false'}"
-                          aria-disabled="${item.ready ? 'false' : 'true'}"
-                          aria-label="${escapeHtml(providerLiveButtonLabel)}"
-                          title="${escapeHtml(providerLiveButtonLabel)}"
-                          ${item.ready ? '' : 'disabled'}
-                        >${escapeHtml(item.ready ? (liveConfirmArmed ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요')}</button>
+                        ${renderReleaseProviderActionButton({
+                          action: 'refresh-release-status-live',
+                          actionLabel: providerLiveButtonLabel,
+                          buttonText: item.ready ? (liveConfirmArmed ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요',
+                          className: liveConfirmArmed ? 'primary-button' : 'ghost-button',
+                          disabled: !item.ready,
+                          pressed: liveConfirmArmed,
+                          provider: item.provider,
+                        })}
                         ${renderReleaseCommandCopyButton({
                           actionLabel: `provider live 명령 복사: ${providerActionLabel}`,
                           buttonText: 'live 명령 복사',
@@ -20215,15 +20249,11 @@ function renderReleaseStatus() {
                           value: item.provider,
                         })}
                         ${liveConfirmArmed
-                          ? `
-                              <button
-                                class="ghost-button"
-                                type="button"
-                                data-ui-action="cancel-refresh-release-status-live"
-                                aria-label="${escapeHtml(`provider live 검증 취소: ${providerActionLabel}`)}"
-                                title="${escapeHtml(`provider live 검증 취소: ${providerActionLabel}`)}"
-                              >현재 live 검증 취소</button>
-                            `
+                          ? renderReleaseSimpleActionButton({
+                              action: 'cancel-refresh-release-status-live',
+                              actionLabel: `provider live 검증 취소: ${providerActionLabel}`,
+                              buttonText: '현재 live 검증 취소',
+                            })
                           : ''}
                       </div>
                       <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다 · ${liveCommand}`)}</p>
