@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T18:21:54.265Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T18:21:40.306Z
 - branch: codex/empty-state-action-button-renderer
 - commit: ad505add707a7734cada5725b4cf06726540cffe
