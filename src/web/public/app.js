@@ -22790,9 +22790,13 @@ function renderArtifact(payload) {
           <strong>${escapeHtml(artifactTitle)}</strong>
           <div class="artifact-meta-row artifact-meta-row-compact">
             <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
-            <button class="ghost-button artifact-meta-toggle" type="button" data-ui-action="toggle-output-artifact-meta" aria-expanded="${state.outputArtifactMetaExpanded ? 'true' : 'false'}" aria-label="${escapeHtml(artifactMetaToggleLabel)}" title="${escapeHtml(artifactMetaToggleLabel)}">
-              ${escapeHtml(state.outputArtifactMetaExpanded ? '경로 닫기' : '경로')}
-            </button>
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-artifact-meta',
+              actionLabel: artifactMetaToggleLabel,
+              buttonText: state.outputArtifactMetaExpanded ? '경로 닫기' : '경로',
+              className: 'ghost-button artifact-meta-toggle',
+              expanded: state.outputArtifactMetaExpanded,
+            })}
           </div>
           ${
             state.outputArtifactMetaExpanded

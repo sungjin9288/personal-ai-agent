@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T17:08:01.279Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T17:07:59.957Z
 - localDate: 2026-06-15
 - branch: codex/output-artifact-meta-toggle-renderer
 - commit: 68ef83bc40cea7d879f15d53ce026fa48b3c68d6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/68ef83bc40cea7d879f15d53ce026fa48b3c68d6](releases/execution-v1/68ef83bc40cea7d879f15d53ce026fa48b3c68d6)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/68ef83bc40cea7d879f15d53ce026fa48b3c68d6/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/68ef83bc40cea7d879f15d53ce026fa48b3c68d6/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/68ef83bc40cea7d879f15d53ce026fa48b3c68d6](docs/releases/execution-v1/68ef83bc40cea7d879f15d53ce026fa48b3c68d6)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/output-artifact-meta-toggle-renderer not found
 

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Output Artifact Meta Toggle Renderer
+
+- moved the output artifact metadata path toggle onto the shared output toolbar toggle renderer
+- kept the artifact metadata action id, expanded state, compact style, label/title, and visible copy aligned with the existing UI contract
+- extended UI harness browse smoke coverage for artifact metadata renderer delegation and inline markup removal
+
 ## 2026-06-15 Execution Control Action Button Renderer
 
 - moved execution rollback preview, rollback, start, preflight, approval request, and stop buttons onto a dedicated execution control action renderer

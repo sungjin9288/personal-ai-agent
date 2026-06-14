@@ -3803,11 +3803,16 @@ function assertToggleExpandedMetadata({ appJs, rootHtml }) {
   }
   assertSourceIncludes(appJs, 'data-ui-action="${escapeHtml(actionName)}"', 'shared output toolbar toggle action attribute');
   assertSourceIncludes(appJs, 'aria-expanded="${expanded ? \'true\' : \'false\'}"', 'shared output toolbar expanded state');
-  assertSourceIncludes(appJs, 'data-ui-action="toggle-output-artifact-meta"', 'artifact meta output toggle action');
+  assertSourceIncludes(appJs, "action: 'toggle-output-artifact-meta'", 'artifact meta output toggle action');
+  assertSourceIncludes(appJs, 'actionLabel: artifactMetaToggleLabel', 'artifact meta output toggle label');
+  assertSourceIncludes(appJs, "className: 'ghost-button artifact-meta-toggle'", 'artifact meta output toggle style');
+  assertSourceIncludes(appJs, "buttonText: state.outputArtifactMetaExpanded ? '경로 닫기' : '경로'", 'artifact meta output toggle copy');
+  assertSourceIncludes(appJs, 'expanded: state.outputArtifactMetaExpanded', 'artifact meta expanded state');
+  assert.equal(appJs.includes('<button class="ghost-button artifact-meta-toggle" type="button" data-ui-action="toggle-output-artifact-meta"'), false);
   assertSourceIncludes(
     appJs,
-    'aria-expanded="${state.outputArtifactMetaExpanded ? \'true\' : \'false\'}"',
-    'artifact meta expanded state',
+    'aria-expanded="${expanded ? \'true\' : \'false\'}"',
+    'shared artifact meta expanded state',
   );
 
   assertSourceIncludes(appJs, 'actionLabel: `지원 패널 펼치기: ${outputStageTargetLabel}`', 'collapsed output support expand label');
