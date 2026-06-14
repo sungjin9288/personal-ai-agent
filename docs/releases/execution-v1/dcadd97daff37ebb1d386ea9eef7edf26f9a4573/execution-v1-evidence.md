@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T12:21:53.271Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T12:21:35.145Z
 - branch: codex/release-blocker-focus-button-renderer
 - commit: dcadd97daff37ebb1d386ea9eef7edf26f9a4573
