@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-14T15:45:31.679Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-14T15:45:22.982Z
 - branch: main
 - commit: 6fe3ba45eace0e4271085382007bbf21264b3d67
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6fe3ba45eace0e4271085382007bbf21264b3d67/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
