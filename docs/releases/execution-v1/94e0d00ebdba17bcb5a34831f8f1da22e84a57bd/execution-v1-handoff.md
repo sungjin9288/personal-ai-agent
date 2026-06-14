@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T14:54:16.413Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T14:54:15.095Z
 - localDate: 2026-06-14
 - branch: codex/release-recommendation-action-button-renderer
 - commit: 94e0d00ebdba17bcb5a34831f8f1da22e84a57bd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/94e0d00ebdba17bcb5a34831f8f1da22e84a57bd](releases/execution-v1/94e0d00ebdba17bcb5a34831f8f1da22e84a57bd)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/94e0d00ebdba17bcb5a34831f8f1da22e84a57bd/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/94e0d00ebdba17bcb5a34831f8f1da22e84a57bd/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/94e0d00ebdba17bcb5a34831f8f1da22e84a57bd](docs/releases/execution-v1/94e0d00ebdba17bcb5a34831f8f1da22e84a57bd)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/release-recommendation-action-button-renderer not found
 

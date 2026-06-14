@@ -2875,6 +2875,22 @@ function renderReleaseProviderFocusActionButton({
   return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}" data-ui-provider="${escapeHtml(providerName)}" aria-pressed="${pressed ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${disabled ? ' disabled' : ''}>${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseRecommendationActionButton({
+  action = '',
+  actionLabel = '',
+  buttonText = '실행',
+  className = 'ghost-button',
+  provider = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^[a-z0-9-]+$/.test(actionName)) {
+    return '';
+  }
+  const providerName = String(provider || '').trim();
+  const providerAttribute = providerName ? ` data-ui-provider="${escapeHtml(providerName)}"` : '';
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}"${providerAttribute} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -18600,14 +18616,11 @@ function renderReleaseStatus() {
                             : item.action
                               ? `
                                 <div class="release-recommendation-actions">
-                                  <button
-                                    class="ghost-button"
-                                    type="button"
-                                    data-ui-action="${escapeHtml(item.action)}"
-                                    ${item.actionProvider ? `data-ui-provider="${escapeHtml(item.actionProvider)}"` : ''}
-                                    aria-label="${escapeHtml(`권장 액션 실행: ${recommendationActionTargetLabel}`)}"
-                                    title="${escapeHtml(`권장 액션 실행: ${recommendationActionTargetLabel}`)}"
-                                  >실행</button>
+                                  ${renderReleaseRecommendationActionButton({
+                                    action: item.action,
+                                    actionLabel: `권장 액션 실행: ${recommendationActionTargetLabel}`,
+                                    provider: item.actionProvider,
+                                  })}
                                   ${recommendationCommand
                                     ? `
                                         ${renderReleaseCommandCopyButton({

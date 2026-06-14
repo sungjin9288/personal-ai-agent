@@ -2144,7 +2144,14 @@ try {
   assert.equal(appJs.includes('flow 링크 복사: ${latestActionTargetLabel}'), true);
   assert.equal(appJs.includes('같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}'), true);
   assert.equal(appJs.includes('문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}'), true);
+  assert.equal(appJs.includes('renderReleaseRecommendationActionButton'), true);
+  assert.equal(appJs.includes('function renderReleaseRecommendationActionButton({'), true);
+  assert.equal(appJs.includes('const providerAttribute = providerName ? ` data-ui-provider="${escapeHtml(providerName)}"` : \'\''), true);
   assert.equal(appJs.includes('권장 액션 실행: ${recommendationActionTargetLabel}'), true);
+  assert.equal(appJs.includes('action: item.action'), true);
+  assert.equal(appJs.includes('provider: item.actionProvider'), true);
+  assert.equal(appJs.includes('data-ui-action="${escapeHtml(item.action)}"'), false);
+  assert.equal(appJs.includes('${item.actionProvider ? `data-ui-provider="${escapeHtml(item.actionProvider)}"` : \'\'}'), false);
   assert.equal(appJs.includes('${recommendationCommand.buttonLabel}: ${recommendationCommand.label}'), true);
   assert.equal(appJs.includes('현재 provider 카드: ${recommendationProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider 카드 보기: ${recommendationProviderActionLabel}'), true);

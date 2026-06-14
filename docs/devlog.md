@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Recommendation Action Button Renderer
+
+- moved dynamic release recommendation action buttons onto a dedicated release recommendation action renderer
+- kept recommendation action ids, optional provider attribute, labels, titles, and visible copy aligned with the existing UI contract
+- reduced direct dynamic recommendation action markup in release recommendation cards
+- extended UI harness browse smoke coverage for recommendation action renderer delegation and direct markup removal
+
 ## 2026-06-14 Release History Filter Button Renderer
 
 - moved expanded release history attention, scope, and provider filter buttons onto the shared release provider navigation renderer

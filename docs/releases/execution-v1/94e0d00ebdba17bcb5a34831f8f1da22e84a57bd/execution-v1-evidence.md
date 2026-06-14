@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T14:54:16.413Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T14:54:07.603Z
 - branch: codex/release-recommendation-action-button-renderer
 - commit: 94e0d00ebdba17bcb5a34831f8f1da22e84a57bd
