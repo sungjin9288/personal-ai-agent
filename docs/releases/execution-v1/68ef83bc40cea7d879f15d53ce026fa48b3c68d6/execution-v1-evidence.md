@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T17:08:01.279Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T17:07:47.649Z
 - branch: codex/output-artifact-meta-toggle-renderer
 - commit: 68ef83bc40cea7d879f15d53ce026fa48b3c68d6
