@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T16:56:49.992Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T16:56:48.604Z
 - localDate: 2026-06-15
 - branch: codex/execution-control-action-button-renderer
 - commit: e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332](releases/execution-v1/e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332](docs/releases/execution-v1/e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/execution-control-action-button-renderer not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T16:56:49.992Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T16:56:35.142Z
 - branch: codex/execution-control-action-button-renderer
 - commit: e26d4c7a0d67a6d4d7aaa71b5c21b193b766d332
