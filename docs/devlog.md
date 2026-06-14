@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Toggle Action Button Renderer
+
+- moved production blocker overflow toggles, release history detail toggles, and handoff preview toggles onto a dedicated release toggle renderer
+- kept `toggle-release-production-blockers`, `toggle-release-history`, and `toggle-release-handoff-preview` action ids, value/trigger attributes, expanded state, loading disabled state, labels, titles, and visible copy aligned with the existing UI contract
+- reduced direct release toggle markup across production blocker, release history, and handoff preview surfaces
+- extended UI harness browse smoke coverage for release toggle renderer delegation and direct markup removal
+
 ## 2026-06-14 Release Blocker Focus Button Renderer
 
 - moved current open blocker focus buttons, production blocker focus buttons, and provider card top blocker focus buttons onto a dedicated release blocker focus renderer

@@ -2759,6 +2759,32 @@ function renderReleaseBlockerFocusButton({
   return `<button class="${escapeHtml(className)}" type="button" ${attributeList.join(' ')} aria-pressed="${pressed ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${disabled ? ' disabled' : ''}>${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseToggleActionButton({
+  action = '',
+  actionLabel = '',
+  attributes = '',
+  buttonText = '',
+  className = 'ghost-button',
+  disabled = false,
+  expanded = false,
+  value = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^(toggle-release-production-blockers|toggle-release-history|toggle-release-handoff-preview)$/.test(actionName)) {
+    return '';
+  }
+  const attributeList = [];
+  if (attributes) {
+    attributeList.push(attributes);
+  }
+  const valueName = String(value || '').trim();
+  if (valueName) {
+    attributeList.push(`data-ui-value="${escapeHtml(valueName)}"`);
+  }
+  const attributeMarkup = attributeList.length ? ` ${attributeList.join(' ')}` : '';
+  return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}" aria-expanded="${expanded ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${disabled ? ' disabled' : ''}>${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseProviderActionButton({
   action = '',
   actionLabel = '',
@@ -19818,15 +19844,13 @@ function renderReleaseStatus() {
                       </div>
                       <div class="harness-row-meta">
                         <span class="mini-badge status-running">${productionBlockersExpanded ? 'expanded' : 'summarized'}</span>
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-release-production-blocker-toggle="${productionBlockersExpanded ? 'collapse' : 'expand'}"
-                          data-ui-action="toggle-release-production-blockers"
-                          aria-expanded="${productionBlockersExpanded ? 'true' : 'false'}"
-                          aria-label="${escapeHtml(`production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`)}"
-                          title="${escapeHtml(`production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`)}"
-                        >${productionBlockersExpanded ? '8개만 보기' : '전체 보기'}</button>
+                        ${renderReleaseToggleActionButton({
+                          action: 'toggle-release-production-blockers',
+                          actionLabel: `production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`,
+                          attributes: `data-release-production-blocker-toggle="${productionBlockersExpanded ? 'collapse' : 'expand'}"`,
+                          buttonText: productionBlockersExpanded ? '8개만 보기' : '전체 보기',
+                          expanded: productionBlockersExpanded,
+                        })}
                       </div>
                     </div>
                   `
@@ -19914,15 +19938,13 @@ function renderReleaseStatus() {
                                     value: itemId,
                                   })}
                                 `}
-                            <button
-                              class="ghost-button"
-                                type="button"
-                                data-ui-action="toggle-release-history"
-                                data-ui-value="${escapeHtml(itemId)}"
-                                aria-expanded="${isExpanded ? 'true' : 'false'}"
-                                aria-label="${escapeHtml(`release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`)}"
-                                title="${escapeHtml(`release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`)}"
-                              >${isExpanded ? '상세 닫기' : '상세 보기'}</button>
+                            ${renderReleaseToggleActionButton({
+                              action: 'toggle-release-history',
+                              actionLabel: `release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`,
+                              buttonText: isExpanded ? '상세 닫기' : '상세 보기',
+                              expanded: isExpanded,
+                              value: itemId,
+                            })}
                           </div>
                         </div>
                         <div class="item-meta">${escapeHtml(item.summary || 'release action summary가 없습니다.')}</div>
@@ -20673,17 +20695,15 @@ function renderReleaseStatus() {
                               <div class="release-provider-meta">
                                 ${previewable
                                   ? `
-                                      <button
-                                        class="ghost-button"
-                                        type="button"
-                                        data-release-handoff-preview-trigger="${escapeHtml(item.id || '')}"
-                                        data-ui-action="toggle-release-handoff-preview"
-                                        data-ui-value="${escapeHtml(item.id || '')}"
-                                        aria-expanded="${previewActive ? 'true' : 'false'}"
-                                        aria-label="${escapeHtml(`${previewButtonLabel}: ${handoffActionTargetLabel}`)}"
-                                        title="${escapeHtml(`${previewButtonLabel}: ${handoffActionTargetLabel}`)}"
-                                        ${previewActive && handoffPreviewStatus === 'loading' ? 'disabled' : ''}
-                                      >${escapeHtml(previewButtonLabel)}</button>
+                                      ${renderReleaseToggleActionButton({
+                                        action: 'toggle-release-handoff-preview',
+                                        actionLabel: `${previewButtonLabel}: ${handoffActionTargetLabel}`,
+                                        attributes: `data-release-handoff-preview-trigger="${escapeHtml(item.id || '')}"`,
+                                        buttonText: previewButtonLabel,
+                                        disabled: previewActive && handoffPreviewStatus === 'loading',
+                                        expanded: previewActive,
+                                        value: item.id || '',
+                                      })}
                                       ${renderReleaseHandoffLinkCopyButton({
                                         action: 'copy-release-handoff-preview-link',
                                         actionLabel: `handoff preview 링크 복사: ${handoffActionTargetLabel}`,
