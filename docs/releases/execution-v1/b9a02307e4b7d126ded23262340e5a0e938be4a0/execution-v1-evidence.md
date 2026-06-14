@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T11:37:58.591Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T11:37:40.162Z
 - branch: codex/release-history-focus-button-renderer
 - commit: b9a02307e4b7d126ded23262340e5a0e938be4a0
