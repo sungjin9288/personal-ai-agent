@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T18:21:54.265Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T18:21:52.968Z
 - localDate: 2026-06-15
 - branch: codex/empty-state-action-button-renderer
 - commit: ad505add707a7734cada5725b4cf06726540cffe
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ad505add707a7734cada5725b4cf06726540cffe](releases/execution-v1/ad505add707a7734cada5725b4cf06726540cffe)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ad505add707a7734cada5725b4cf06726540cffe/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ad505add707a7734cada5725b4cf06726540cffe/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ad505add707a7734cada5725b4cf06726540cffe](docs/releases/execution-v1/ad505add707a7734cada5725b4cf06726540cffe)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/empty-state-action-button-renderer not found
 

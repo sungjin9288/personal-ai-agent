@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-14T18:21:54.265Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-14T18:21:45.581Z
 - branch: codex/empty-state-action-button-renderer
 - commit: ad505add707a7734cada5725b4cf06726540cffe
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ad505add707a7734cada5725b4cf06726540cffe/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

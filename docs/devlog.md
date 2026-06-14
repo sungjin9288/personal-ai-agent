@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Empty State Action Button Renderer
+
+- moved common empty-state action buttons onto a dedicated renderer
+- kept empty-state action ids, values, label/title text, and visible button copy aligned with the existing UI contract
+- extended UI harness browse smoke coverage for empty-state renderer delegation and direct markup removal
+
 ## 2026-06-15 Output Artifact Meta Toggle Renderer
 
 - moved the output artifact metadata path toggle onto the shared output toolbar toggle renderer
