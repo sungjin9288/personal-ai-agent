@@ -2768,6 +2768,23 @@ function renderReleaseProviderNavigationButton({
   return `<button class="${escapeHtml(className)}" type="button"${attributeMarkup} data-ui-action="${escapeHtml(actionName)}"${pressedMarkup}${disabledMarkup} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseProviderFocusActionButton({
+  action = 'focus-release-provider',
+  actionLabel = '',
+  buttonText = '',
+  className = 'ghost-button',
+  disabled = false,
+  pressed = false,
+  provider = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  const providerName = String(provider || '').trim();
+  if (!/^(focus-release-provider|clear-release-provider-focus)$/.test(actionName) || !providerName) {
+    return '';
+  }
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}" data-ui-provider="${escapeHtml(providerName)}" aria-pressed="${pressed ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${disabled ? ' disabled' : ''}>${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseCommandCopyButton({
   actionLabel = 'release command 복사',
   attributes = '',
@@ -18480,16 +18497,13 @@ function renderReleaseStatus() {
                                     : ''}
                                   ${recommendationProviderId
                                     ? `
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="focus-release-provider"
-                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
-                                          aria-pressed="${sameProviderFocused ? 'true' : 'false'}"
-                                          aria-label="${escapeHtml(recommendationProviderFocusLabel)}"
-                                          title="${escapeHtml(recommendationProviderFocusLabel)}"
-                                          ${sameProviderFocused ? 'disabled' : ''}
-                                        >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                        ${renderReleaseProviderFocusActionButton({
+                                          actionLabel: recommendationProviderFocusLabel,
+                                          buttonText: sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기',
+                                          disabled: sameProviderFocused,
+                                          pressed: sameProviderFocused,
+                                          provider: recommendationProviderId,
+                                        })}
                                         ${renderReleaseLinkCopyButton({
                                           action: 'copy-release-provider-link',
                                           actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
@@ -18524,16 +18538,13 @@ function renderReleaseStatus() {
                                     : ''}
                                   ${recommendationProviderId
                                     ? `
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="focus-release-provider"
-                                          data-ui-provider="${escapeHtml(recommendationProviderId)}"
-                                          aria-pressed="${sameProviderFocused ? 'true' : 'false'}"
-                                          aria-label="${escapeHtml(recommendationProviderFocusLabel)}"
-                                          title="${escapeHtml(recommendationProviderFocusLabel)}"
-                                          ${sameProviderFocused ? 'disabled' : ''}
-                                        >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                        ${renderReleaseProviderFocusActionButton({
+                                          actionLabel: recommendationProviderFocusLabel,
+                                          buttonText: sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기',
+                                          disabled: sameProviderFocused,
+                                          pressed: sameProviderFocused,
+                                          provider: recommendationProviderId,
+                                        })}
                                         ${renderReleaseLinkCopyButton({
                                           action: 'copy-release-provider-link',
                                           actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
@@ -18561,16 +18572,13 @@ function renderReleaseStatus() {
                                         : ''}
                                       ${recommendationProviderId
                                         ? `
-                                            <button
-                                              class="ghost-button"
-                                              type="button"
-                                              data-ui-action="focus-release-provider"
-                                              data-ui-provider="${escapeHtml(recommendationProviderId)}"
-                                              aria-pressed="${sameProviderFocused ? 'true' : 'false'}"
-                                              aria-label="${escapeHtml(recommendationProviderFocusLabel)}"
-                                              title="${escapeHtml(recommendationProviderFocusLabel)}"
-                                              ${sameProviderFocused ? 'disabled' : ''}
-                                            >${sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기'}</button>
+                                            ${renderReleaseProviderFocusActionButton({
+                                              actionLabel: recommendationProviderFocusLabel,
+                                              buttonText: sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기',
+                                              disabled: sameProviderFocused,
+                                              pressed: sameProviderFocused,
+                                              provider: recommendationProviderId,
+                                            })}
                                             ${renderReleaseLinkCopyButton({
                                               action: 'copy-release-provider-link',
                                               actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
@@ -20337,15 +20345,13 @@ function renderReleaseStatus() {
                               })}
                             `
                           : ''}
-                        <button
-                          class="ghost-button"
-                          type="button"
-                          data-ui-action="${escapeHtml(isFocusedProvider ? 'clear-release-provider-focus' : 'focus-release-provider')}"
-                          data-ui-provider="${escapeHtml(item.provider)}"
-                          aria-pressed="${isFocusedProvider ? 'true' : 'false'}"
-                          aria-label="${escapeHtml(providerFocusButtonLabel)}"
-                          title="${escapeHtml(providerFocusButtonLabel)}"
-                        >${escapeHtml(isFocusedProvider ? 'provider 포커스 해제' : '이 provider 카드 보기')}</button>
+                        ${renderReleaseProviderFocusActionButton({
+                          action: isFocusedProvider ? 'clear-release-provider-focus' : 'focus-release-provider',
+                          actionLabel: providerFocusButtonLabel,
+                          buttonText: isFocusedProvider ? 'provider 포커스 해제' : '이 provider 카드 보기',
+                          pressed: isFocusedProvider,
+                          provider: item.provider,
+                        })}
                         ${renderReleaseLinkCopyButton({
                           action: 'copy-release-provider-link',
                           actionLabel: `provider 링크 복사: ${providerActionLabel}`,

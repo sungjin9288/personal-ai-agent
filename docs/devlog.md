@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Provider Focus Button Renderer
+
+- moved recommendation provider focus buttons and provider card focus/clear toggle onto a dedicated release provider focus renderer
+- kept focus and clear action ids, provider attributes, pressed state, disabled recommendation state, labels, titles, and visible copy unchanged
+- reduced direct provider focus markup across recommendation and provider card surfaces
+- extended UI harness browse smoke coverage for release provider focus renderer delegation
+
 ## 2026-06-14 Release Provider Navigation Button Renderer
 
 - moved focused provider blocker, history, filter, and flow buttons onto a dedicated release provider navigation renderer
