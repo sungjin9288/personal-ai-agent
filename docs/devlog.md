@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release History Filter Button Renderer
+
+- moved expanded release history attention, scope, and provider filter buttons onto the shared release provider navigation renderer
+- kept `filter-release-history-attention`, `filter-release-history-scope`, and `filter-release-history-provider` action ids, outcome/scope/provider attributes, pressed state, labels, titles, and visible copy aligned with the existing UI contract
+- extended release provider navigation action validation to include `filter-release-history-scope`
+- extended UI harness browse smoke coverage for release history filter renderer delegation and direct markup removal
+
 ## 2026-06-14 Release Toggle Action Button Renderer
 
 - moved production blocker overflow toggles, release history detail toggles, and handoff preview toggles onto a dedicated release toggle renderer

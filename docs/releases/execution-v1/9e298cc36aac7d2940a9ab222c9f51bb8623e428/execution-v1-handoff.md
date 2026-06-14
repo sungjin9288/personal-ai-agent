@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T13:46:03.905Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T13:46:02.511Z
 - localDate: 2026-06-14
 - branch: codex/release-history-filter-button-renderer
 - commit: 9e298cc36aac7d2940a9ab222c9f51bb8623e428
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9e298cc36aac7d2940a9ab222c9f51bb8623e428](releases/execution-v1/9e298cc36aac7d2940a9ab222c9f51bb8623e428)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9e298cc36aac7d2940a9ab222c9f51bb8623e428/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9e298cc36aac7d2940a9ab222c9f51bb8623e428/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9e298cc36aac7d2940a9ab222c9f51bb8623e428](docs/releases/execution-v1/9e298cc36aac7d2940a9ab222c9f51bb8623e428)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/release-history-filter-button-renderer not found
 

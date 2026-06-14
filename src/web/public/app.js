@@ -2823,7 +2823,7 @@ function renderReleaseProviderNavigationButton({
   value = '',
 } = {}) {
   const actionName = String(action || '').trim();
-  if (!/^(focus-release-blocker|focus-release-history|filter-release-history-provider|filter-release-history-attention|focus-release-flow)$/.test(actionName)) {
+  if (!/^(focus-release-blocker|focus-release-history|filter-release-history-provider|filter-release-history-scope|filter-release-history-attention|focus-release-flow)$/.test(actionName)) {
     return '';
   }
   const attributeList = [];
@@ -19970,35 +19970,29 @@ function renderReleaseStatus() {
                                     buttonText: '이 flow 링크 복사',
                                     value: itemId,
                                   })}
-                                  <button
-                                    class="ghost-button"
-                                      type="button"
-                                      data-ui-action="filter-release-history-attention"
-                                      data-ui-outcome="attention"
-                                      aria-pressed="${historyFilterOutcome === 'attention' ? 'true' : 'false'}"
-                                      aria-label="${escapeHtml(`release history 주의 상태만 보기: ${historyActionLabel}`)}"
-                                      title="${escapeHtml(`release history 주의 상태만 보기: ${historyActionLabel}`)}"
-                                    >주의 상태만</button>
-                                  <button
-                                    class="ghost-button"
-                                      type="button"
-                                      data-ui-action="filter-release-history-scope"
-                                      data-ui-scope="${escapeHtml(String(item.scope || '').trim())}"
-                                      aria-pressed="${historyFilterScope === String(item.scope || '').trim() ? 'true' : 'false'}"
-                                      aria-label="${escapeHtml(`release history 같은 scope 보기: ${historyActionLabel}`)}"
-                                      title="${escapeHtml(`release history 같은 scope 보기: ${historyActionLabel}`)}"
-                                    >같은 scope 보기</button>
+                                  ${renderReleaseProviderNavigationButton({
+                                    action: 'filter-release-history-attention',
+                                    actionLabel: `release history 주의 상태만 보기: ${historyActionLabel}`,
+                                    buttonText: '주의 상태만',
+                                    outcome: 'attention',
+                                    pressed: historyFilterOutcome === 'attention',
+                                  })}
+                                  ${renderReleaseProviderNavigationButton({
+                                    action: 'filter-release-history-scope',
+                                    actionLabel: `release history 같은 scope 보기: ${historyActionLabel}`,
+                                    buttonText: '같은 scope 보기',
+                                    pressed: historyFilterScope === String(item.scope || '').trim(),
+                                    scope: String(item.scope || '').trim(),
+                                  })}
                                   ${item.provider
                                     ? `
-                                        <button
-                                          class="ghost-button"
-                                            type="button"
-                                            data-ui-action="filter-release-history-provider"
-                                            data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"
-                                            aria-pressed="${historyFilterProvider === String(item.provider || '').trim() ? 'true' : 'false'}"
-                                            aria-label="${escapeHtml(`release history 같은 provider 보기: ${historyActionLabel}`)}"
-                                            title="${escapeHtml(`release history 같은 provider 보기: ${historyActionLabel}`)}"
-                                          >같은 provider 보기</button>
+                                        ${renderReleaseProviderNavigationButton({
+                                          action: 'filter-release-history-provider',
+                                          actionLabel: `release history 같은 provider 보기: ${historyActionLabel}`,
+                                          buttonText: '같은 provider 보기',
+                                          pressed: historyFilterProvider === String(item.provider || '').trim(),
+                                          provider: String(item.provider || '').trim(),
+                                        })}
                                       `
                                     : ''}
                                     ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
