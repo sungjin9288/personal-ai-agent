@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-15 Execution Control Action Button Renderer
+
+- moved execution rollback preview, rollback, start, preflight, approval request, and stop buttons onto a dedicated execution control action renderer
+- kept execution action ids, optional request approval value, button styles, labels, titles, and visible copy aligned with the existing UI contract
+- left the approval-pending disabled status button unchanged because it has no `data-ui-action`
+- extended UI harness browse smoke coverage for execution control renderer delegation and direct markup removal
+
 ## 2026-06-15 Output Remaining Toggle Button Renderer
 
 - moved remaining output rail, mission summary, and support panel toggle buttons onto the shared output toolbar toggle renderer
