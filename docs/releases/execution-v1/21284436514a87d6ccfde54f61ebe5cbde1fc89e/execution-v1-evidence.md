@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T03:41:49.389Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T03:41:29.883Z
 - branch: codex/release-provider-navigation-button-renderer
 - commit: 21284436514a87d6ccfde54f61ebe5cbde1fc89e
