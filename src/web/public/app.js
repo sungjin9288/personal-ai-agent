@@ -18407,15 +18407,13 @@ function renderReleaseStatus() {
                           ${latestAction
                             ? `
                                 <div class="release-recommendation-actions">
-                                  <button
-                                    class="ghost-button"
-                                    type="button"
-                                    data-ui-action="focus-release-history"
-                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
-                                    aria-pressed="${String(latestAction.id || '').trim() === focusedHistoryId ? 'true' : 'false'}"
-                                    aria-label="${escapeHtml(`최근 기록 보기: ${latestActionTargetLabel}`)}"
-                                    title="${escapeHtml(`최근 기록 보기: ${latestActionTargetLabel}`)}"
-                                  >최근 기록 보기</button>
+                                  ${renderReleaseProviderNavigationButton({
+                                    action: 'focus-release-history',
+                                    actionLabel: `최근 기록 보기: ${latestActionTargetLabel}`,
+                                    buttonText: '최근 기록 보기',
+                                    pressed: String(latestAction.id || '').trim() === focusedHistoryId,
+                                    value: latestAction.id || '',
+                                  })}
                                   ${renderReleaseLinkCopyButton({
                                     action: 'copy-release-history-link',
                                     actionLabel: `기록 링크 복사: ${latestActionTargetLabel}`,
@@ -18424,15 +18422,13 @@ function renderReleaseStatus() {
                                   })}
                                   ${latestAttentionAction && latestAttentionAction.id !== latestAction.id
                                     ? `
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="focus-release-history"
-                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
-                                          aria-pressed="${String(latestAttentionAction.id || '').trim() === focusedHistoryId ? 'true' : 'false'}"
-                                          aria-label="${escapeHtml(`최근 문제 보기: ${latestAttentionActionTargetLabel}`)}"
-                                          title="${escapeHtml(`최근 문제 보기: ${latestAttentionActionTargetLabel}`)}"
-                                        >최근 문제 보기</button>
+                                        ${renderReleaseProviderNavigationButton({
+                                          action: 'focus-release-history',
+                                          actionLabel: `최근 문제 보기: ${latestAttentionActionTargetLabel}`,
+                                          buttonText: '최근 문제 보기',
+                                          pressed: String(latestAttentionAction.id || '').trim() === focusedHistoryId,
+                                          value: latestAttentionAction.id || '',
+                                        })}
                                         ${renderReleaseLinkCopyButton({
                                           action: 'copy-release-history-link',
                                           actionLabel: `문제 기록 링크 복사: ${latestAttentionActionTargetLabel}`,
@@ -18441,19 +18437,17 @@ function renderReleaseStatus() {
                                         })}
                                       `
                                     : ''}
-                                  <button
-                                    class="ghost-button"
-                                    type="button"
-                                    data-ui-action="focus-release-flow"
-                                    data-ui-value="${escapeHtml(latestAction.id || '')}"
-                                    data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}"
-                                    data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}"
-                                    data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"
-                                    aria-pressed="${sameFlowActive ? 'true' : 'false'}"
-                                    aria-label="${escapeHtml(sameFlowActive ? `현재 flow: ${latestActionTargetLabel}` : `같은 flow 보기: ${latestActionTargetLabel}`)}"
-                                    title="${escapeHtml(sameFlowActive ? `현재 flow: ${latestActionTargetLabel}` : `같은 flow 보기: ${latestActionTargetLabel}`)}"
-                                    ${sameFlowActive ? 'disabled' : ''}
-                                  >${sameFlowActive ? '현재 flow' : '같은 flow 보기'}</button>
+                                  ${renderReleaseProviderNavigationButton({
+                                    action: 'focus-release-flow',
+                                    actionLabel: sameFlowActive ? `현재 flow: ${latestActionTargetLabel}` : `같은 flow 보기: ${latestActionTargetLabel}`,
+                                    buttonText: sameFlowActive ? '현재 flow' : '같은 flow 보기',
+                                    disabled: sameFlowActive ? true : null,
+                                    outcome: isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '',
+                                    pressed: sameFlowActive,
+                                    provider: String(latestAction.provider || '').trim(),
+                                    scope: String(latestAction.scope || '').trim(),
+                                    value: latestAction.id || '',
+                                  })}
                                   ${renderReleaseLinkCopyButton({
                                     action: 'copy-release-flow-link',
                                     actionLabel: `flow 링크 복사: ${latestActionTargetLabel}`,
@@ -18463,19 +18457,17 @@ function renderReleaseStatus() {
                                   })}
                                   ${latestAttentionAction
                                     ? `
-                                        <button
-                                          class="ghost-button"
-                                          type="button"
-                                          data-ui-action="focus-release-flow"
-                                          data-ui-value="${escapeHtml(latestAttentionAction.id || '')}"
-                                          data-ui-outcome="attention"
-                                          data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}"
-                                          data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"
-                                          aria-pressed="${attentionFlowActive ? 'true' : 'false'}"
-                                          aria-label="${escapeHtml(attentionFlowActive ? `현재 문제 흐름: ${latestAttentionActionTargetLabel}` : `같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}`)}"
-                                          title="${escapeHtml(attentionFlowActive ? `현재 문제 흐름: ${latestAttentionActionTargetLabel}` : `같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}`)}"
-                                          ${attentionFlowActive ? 'disabled' : ''}
-                                        >${attentionFlowActive ? '현재 문제 흐름' : '같은 문제 흐름 보기'}</button>
+                                        ${renderReleaseProviderNavigationButton({
+                                          action: 'focus-release-flow',
+                                          actionLabel: attentionFlowActive ? `현재 문제 흐름: ${latestAttentionActionTargetLabel}` : `같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}`,
+                                          buttonText: attentionFlowActive ? '현재 문제 흐름' : '같은 문제 흐름 보기',
+                                          disabled: attentionFlowActive ? true : null,
+                                          outcome: 'attention',
+                                          pressed: attentionFlowActive,
+                                          provider: String(latestAttentionAction.provider || latestAction.provider || '').trim(),
+                                          scope: String(latestAttentionAction.scope || latestAction.scope || '').trim(),
+                                          value: latestAttentionAction.id || '',
+                                        })}
                                         ${renderReleaseLinkCopyButton({
                                           action: 'copy-release-flow-link',
                                           actionLabel: `문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}`,
@@ -19871,15 +19863,13 @@ function renderReleaseStatus() {
                                   })}
                                 `
                               : `
-                                  <button
-                                    class="ghost-button"
-                                      type="button"
-                                      data-ui-action="focus-release-history"
-                                      data-ui-value="${escapeHtml(itemId)}"
-                                      aria-pressed="${isFocused ? 'true' : 'false'}"
-                                      aria-label="${escapeHtml(`release history 기록 고정: ${historyActionLabel}`)}"
-                                      title="${escapeHtml(`release history 기록 고정: ${historyActionLabel}`)}"
-                                    >이 기록 고정</button>
+                                  ${renderReleaseProviderNavigationButton({
+                                    action: 'focus-release-history',
+                                    actionLabel: `release history 기록 고정: ${historyActionLabel}`,
+                                    buttonText: '이 기록 고정',
+                                    pressed: isFocused,
+                                    value: itemId,
+                                  })}
                                 `}
                             <button
                               class="ghost-button"

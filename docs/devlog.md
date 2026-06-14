@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release History Focus Button Renderer
+
+- moved recommendation history/flow focus buttons and release history card pin button onto the existing release provider navigation renderer
+- kept focus history and focus flow action ids, value attributes, outcome/scope/provider attributes, pressed state, disabled active-flow state, labels, titles, and visible copy aligned with the existing UI contract
+- reduced direct history/flow focus markup across recommendation and release history surfaces
+- extended UI harness browse smoke coverage for recommendation/history focus renderer delegation
+
 ## 2026-06-14 Release Provider Focus Button Renderer
 
 - moved recommendation provider focus buttons and provider card focus/clear toggle onto a dedicated release provider focus renderer
