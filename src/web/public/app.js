@@ -16457,6 +16457,22 @@ function renderRunStageSummary() {
   wireQuickActions(elements.runStageSummary);
 }
 
+function renderExecutionControlActionButton({
+  action = '',
+  actionLabel = '',
+  buttonText = '',
+  className = 'ghost-button',
+  value = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^(execution-rollback-preview|execution-rollback|execution-start|execution-preflight|execution-stop)$/.test(actionName)) {
+    return '';
+  }
+  const actionValue = String(value || '').trim();
+  const valueAttribute = actionValue ? ` data-ui-value="${escapeHtml(actionValue)}"` : '';
+  return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}"${valueAttribute} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function renderExecutionConsole() {
   if (!elements.executionConsole) {
     return;
@@ -16492,21 +16508,49 @@ function renderExecutionConsole() {
   const rollbackActions = rollbackAvailable
     ? `
       <div class="action-row">
-        <button class="ghost-button" type="button" data-ui-action="execution-rollback-preview" aria-label="${escapeHtml(`rollback preview: ${executionSessionLabel}`)}" title="${escapeHtml(`rollback preview: ${executionSessionLabel}`)}">rollback preview</button>
-        <button class="danger-button" type="button" data-ui-action="execution-rollback" aria-label="${escapeHtml(`rollback 실행: ${executionSessionLabel}`)}" title="${escapeHtml(`rollback 실행: ${executionSessionLabel}`)}">rollback 실행</button>
+        ${renderExecutionControlActionButton({
+          action: 'execution-rollback-preview',
+          actionLabel: `rollback preview: ${executionSessionLabel}`,
+          buttonText: 'rollback preview',
+        })}
+        ${renderExecutionControlActionButton({
+          action: 'execution-rollback',
+          actionLabel: `rollback 실행: ${executionSessionLabel}`,
+          buttonText: 'rollback 실행',
+          className: 'danger-button',
+        })}
       </div>
     `
     : rollback?.status
       ? `<p class="summary-note">${escapeHtml(rollback.summary || `rollback ${rollback.status}`)}</p>`
       : '';
   const primaryAction = execution?.currentLease
-    ? `<button class="primary-button" type="button" data-ui-action="execution-start" aria-label="${escapeHtml(`실행 시작: ${executionMissionLabel}`)}" title="${escapeHtml(`실행 시작: ${executionMissionLabel}`)}">실행 시작</button>`
+    ? renderExecutionControlActionButton({
+        action: 'execution-start',
+        actionLabel: `실행 시작: ${executionMissionLabel}`,
+        buttonText: '실행 시작',
+        className: 'primary-button',
+      })
     : execution?.latestApproval?.status === 'pending'
       ? `<button class="secondary-button" type="button" aria-disabled="true" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" title="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" disabled>승인 대기 중</button>`
-      : `<button class="primary-button" type="button" data-ui-action="execution-preflight" data-ui-value="request-approval" aria-label="${escapeHtml(`실행 승인 요청: ${executionMissionLabel}`)}" title="${escapeHtml(`실행 승인 요청: ${executionMissionLabel}`)}">실행 승인 요청</button>`;
+      : renderExecutionControlActionButton({
+          action: 'execution-preflight',
+          actionLabel: `실행 승인 요청: ${executionMissionLabel}`,
+          buttonText: '실행 승인 요청',
+          className: 'primary-button',
+          value: 'request-approval',
+        });
   const secondaryAction = executionSession?.status === 'running'
-    ? `<button class="ghost-button" type="button" data-ui-action="execution-stop" aria-label="${escapeHtml(`실행 중단: ${executionSessionLabel}`)}" title="${escapeHtml(`실행 중단: ${executionSessionLabel}`)}">실행 중단</button>`
-    : `<button class="ghost-button" type="button" data-ui-action="execution-preflight" aria-label="${escapeHtml(`preflight 새로고침: ${executionMissionLabel}`)}" title="${escapeHtml(`preflight 새로고침: ${executionMissionLabel}`)}">preflight 새로고침</button>`;
+    ? renderExecutionControlActionButton({
+        action: 'execution-stop',
+        actionLabel: `실행 중단: ${executionSessionLabel}`,
+        buttonText: '실행 중단',
+      })
+    : renderExecutionControlActionButton({
+        action: 'execution-preflight',
+        actionLabel: `preflight 새로고침: ${executionMissionLabel}`,
+        buttonText: 'preflight 새로고침',
+      });
   const manifestSteps = Array.isArray(execution?.manifest?.steps) ? execution.manifest.steps : [];
   const blockedList = (execution?.blockedReasons || []).slice(0, 3);
   const changedFiles = (executionSession?.changedFiles || []).slice(0, 5);
