@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T12:21:53.271Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T12:21:51.924Z
 - localDate: 2026-06-14
 - branch: codex/release-blocker-focus-button-renderer
 - commit: dcadd97daff37ebb1d386ea9eef7edf26f9a4573
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/dcadd97daff37ebb1d386ea9eef7edf26f9a4573](releases/execution-v1/dcadd97daff37ebb1d386ea9eef7edf26f9a4573)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dcadd97daff37ebb1d386ea9eef7edf26f9a4573/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/dcadd97daff37ebb1d386ea9eef7edf26f9a4573/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/dcadd97daff37ebb1d386ea9eef7edf26f9a4573](docs/releases/execution-v1/dcadd97daff37ebb1d386ea9eef7edf26f9a4573)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-blocker-focus-button-renderer not found
 

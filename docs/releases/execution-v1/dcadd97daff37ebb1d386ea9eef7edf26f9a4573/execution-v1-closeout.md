@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-14T12:21:53.271Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-14T12:21:43.643Z
 - branch: codex/release-blocker-focus-button-renderer
 - commit: dcadd97daff37ebb1d386ea9eef7edf26f9a4573
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/dcadd97daff37ebb1d386ea9eef7edf26f9a4573/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
