@@ -2729,6 +2729,36 @@ function renderReleaseBlockerFilterButton({
   return `<button class="${escapeHtml(className)}" type="button" ${attributeList.join(' ')} aria-pressed="${pressed ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${disabled ? ' disabled' : ''}>${escapeHtml(buttonText)}</button>`;
 }
 
+function renderReleaseBlockerFocusButton({
+  action = 'focus-release-blocker',
+  actionLabel = '',
+  blocker = '',
+  buttonText = '',
+  className = 'ghost-button',
+  disabled = false,
+  index = null,
+  pressed = false,
+  provider = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^(focus-release-blocker|focus-release-production-blocker)$/.test(actionName)) {
+    return '';
+  }
+  const attributeList = [`data-ui-action="${escapeHtml(actionName)}"`];
+  const blockerId = String(blocker || '').trim();
+  if (blockerId) {
+    attributeList.push(`data-ui-blocker="${escapeHtml(blockerId)}"`);
+  }
+  if (index !== null) {
+    attributeList.push(`data-ui-index="${escapeHtml(String(index))}"`);
+  }
+  const providerName = String(provider || '').trim();
+  if (providerName) {
+    attributeList.push(`data-ui-provider="${escapeHtml(providerName)}"`);
+  }
+  return `<button class="${escapeHtml(className)}" type="button" ${attributeList.join(' ')} aria-pressed="${pressed ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${disabled ? ' disabled' : ''}>${escapeHtml(buttonText)}</button>`;
+}
+
 function renderReleaseProviderActionButton({
   action = '',
   actionLabel = '',
@@ -19577,16 +19607,13 @@ function renderReleaseStatus() {
                             : ''}
                           <span class="item-meta">${escapeHtml(item.owner || 'release-owner')}</span>
                           <span class="mini-badge status-failed">stop-condition</span>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-ui-action="focus-release-blocker"
-                            data-ui-blocker="${escapeHtml(actionId)}"
-                            aria-pressed="${isFocusedBlocker ? 'true' : 'false'}"
-                            aria-label="${escapeHtml(`${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`)}"
-                            title="${escapeHtml(`${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`)}"
-                            ${isFocusedBlocker ? 'disabled' : ''}
-                          >${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}</button>
+                          ${renderReleaseBlockerFocusButton({
+                            actionLabel: `${isFocusedBlocker ? '현재 blocker' : 'blocker 보기'}: ${blockerActionLabel}`,
+                            blocker: actionId,
+                            buttonText: isFocusedBlocker ? '현재 blocker' : 'blocker 보기',
+                            disabled: isFocusedBlocker,
+                            pressed: isFocusedBlocker,
+                          })}
                           ${renderReleaseBlockerHandoffCopyButton({
                             actionLabel: `blocker handoff 복사: ${blockerActionLabel}`,
                             attributes: `data-release-current-open-blocker-handoff="${escapeHtml(actionId)}"`,
@@ -19717,16 +19744,14 @@ function renderReleaseStatus() {
                         <div class="harness-row-meta">
                           ${isFocusedProductionBlocker ? '<span class="mini-badge status-running">focused</span>' : ''}
                           <span class="mini-badge status-failed">blocked</span>
-                          <button
-                            class="ghost-button"
-                            type="button"
-                            data-ui-action="focus-release-production-blocker"
-                            data-ui-index="${escapeHtml(String(index))}"
-                            aria-pressed="${isFocusedProductionBlocker ? 'true' : 'false'}"
-                            aria-label="${escapeHtml(`${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`)}"
-                            title="${escapeHtml(`${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`)}"
-                            ${isFocusedProductionBlocker ? 'disabled' : ''}
-                          >${isFocusedProductionBlocker ? '포커스됨' : '포커스'}</button>
+                          ${renderReleaseBlockerFocusButton({
+                            action: 'focus-release-production-blocker',
+                            actionLabel: `${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`,
+                            buttonText: isFocusedProductionBlocker ? '포커스됨' : '포커스',
+                            disabled: isFocusedProductionBlocker,
+                            index,
+                            pressed: isFocusedProductionBlocker,
+                          })}
                           ${renderReleaseLinkCopyButton({
                             action: 'copy-release-production-blocker-link',
                             actionLabel: `production blocker 링크 복사: ${productionBlockerRowActionLabel}`,
@@ -20334,16 +20359,13 @@ function renderReleaseStatus() {
                         })}
                         ${providerTopBlocker
                           ? `
-                              <button
-                                class="ghost-button"
-                                type="button"
-                                data-ui-action="focus-release-blocker"
-                                data-ui-blocker="${escapeHtml(providerTopBlockerId)}"
-                                data-ui-provider="${escapeHtml(item.provider)}"
-                                aria-pressed="${providerTopBlockerId === focusedBlockerId ? 'true' : 'false'}"
-                                aria-label="${escapeHtml(`provider blocker 보기: ${providerActionLabel}`)}"
-                                title="${escapeHtml(`provider blocker 보기: ${providerActionLabel}`)}"
-                              >provider blocker 보기</button>
+                              ${renderReleaseBlockerFocusButton({
+                                actionLabel: `provider blocker 보기: ${providerActionLabel}`,
+                                blocker: providerTopBlockerId,
+                                buttonText: 'provider blocker 보기',
+                                pressed: providerTopBlockerId === focusedBlockerId,
+                                provider: item.provider,
+                              })}
                               ${renderReleaseBlockerPackageCopyButton({
                                 actionLabel: `provider blocker package 복사: ${providerActionLabel}`,
                                 attributes: 'data-release-provider-blocker-package="true"',

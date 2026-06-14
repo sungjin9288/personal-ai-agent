@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-14 Release Blocker Focus Button Renderer
+
+- moved current open blocker focus buttons, production blocker focus buttons, and provider card top blocker focus buttons onto a dedicated release blocker focus renderer
+- kept `focus-release-blocker` and `focus-release-production-blocker` action ids, blocker/index/provider attributes, pressed state, active disabled state, labels, titles, and visible copy aligned with the existing UI contract
+- reduced direct blocker focus markup across current blocker, production blocker, and provider card surfaces
+- extended UI harness browse smoke coverage for blocker focus renderer delegation and direct markup removal
+
 ## 2026-06-14 Release Blocker Filter Button Renderer
 
 - moved current open blocker category, owner, provider, shared provider ops, and empty-filter keep buttons onto a dedicated release blocker filter renderer
