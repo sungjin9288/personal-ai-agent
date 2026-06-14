@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T11:57:00.678Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T11:56:59.315Z
 - localDate: 2026-06-14
 - branch: codex/release-blocker-filter-button-renderer
 - commit: 0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b](releases/execution-v1/0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b](docs/releases/execution-v1/0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b)
 - visualArtifactSetSha256: 16cb088e7b34495e98af768d3c6dbdc6b21fdcfc36488fd05b462f85b53b9715
 - commitPushStatus: not pushed, origin/codex/release-blocker-filter-button-renderer not found
 
