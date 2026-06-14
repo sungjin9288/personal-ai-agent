@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T15:42:24.692Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T15:42:15.866Z
 - branch: codex/output-remaining-toggle-button-renderer
 - commit: f4bc04bac992af03184ce9e0f7a252c874212c6e
