@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T13:46:03.905Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T13:45:54.757Z
 - branch: codex/release-history-filter-button-renderer
 - commit: 9e298cc36aac7d2940a9ab222c9f51bb8623e428
