@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T03:08:25.438Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T03:08:09.579Z
 - branch: codex/release-provider-action-button-renderer
 - commit: aa97905dff5867929abd42d4baa62ad46f3bb188
