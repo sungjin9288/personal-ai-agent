@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T15:42:24.692Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T15:42:23.334Z
 - localDate: 2026-06-15
 - branch: codex/output-remaining-toggle-button-renderer
 - commit: f4bc04bac992af03184ce9e0f7a252c874212c6e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f4bc04bac992af03184ce9e0f7a252c874212c6e](releases/execution-v1/f4bc04bac992af03184ce9e0f7a252c874212c6e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f4bc04bac992af03184ce9e0f7a252c874212c6e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f4bc04bac992af03184ce9e0f7a252c874212c6e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f4bc04bac992af03184ce9e0f7a252c874212c6e](docs/releases/execution-v1/f4bc04bac992af03184ce9e0f7a252c874212c6e)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/output-remaining-toggle-button-renderer not found
 

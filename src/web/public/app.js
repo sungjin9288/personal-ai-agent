@@ -14733,9 +14733,12 @@ function renderFlowState() {
           ${
             isOutputFocus
               ? `
-                <button class="ghost-button" type="button" data-ui-action="toggle-output-rail" aria-expanded="${state.outputRailCollapsed ? 'false' : 'true'}" aria-label="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}" title="${escapeHtml(state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`)}">
-                  ${escapeHtml(state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기')}
-                </button>
+                ${renderOutputToolbarToggleButton({
+                  action: 'toggle-output-rail',
+                  actionLabel: state.outputRailCollapsed ? `결과 사이드바 펼치기: ${flowActionTargetLabel}` : `결과 사이드바 접기: ${flowActionTargetLabel}`,
+                  buttonText: state.outputRailCollapsed ? '사이드바 펼치기' : '사이드바 접기',
+                  expanded: !state.outputRailCollapsed,
+                })}
               `
               : ''
           }
@@ -16037,9 +16040,12 @@ function renderMissionSummary() {
               .join('')}
           </div>
           <div class="action-row">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="false" aria-label="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`)}">
-              요약 펼치기
-            </button>
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-mission-summary',
+              actionLabel: `결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`,
+              buttonText: '요약 펼치기',
+              expanded: false,
+            })}
             ${renderFlowQuickActionButton({
               action: 'jump-step',
               actionLabel: missionSummarySetupLabel,
@@ -16068,9 +16074,12 @@ function renderMissionSummary() {
             <p class="summary-note">입력값과 전체 플레이북을 반복하지 않고, 이번 단계에서 바로 필요한 상태만 남겼습니다.</p>
           </div>
           <div class="action-row action-row-compact">
-            <button class="ghost-button" type="button" data-ui-action="toggle-output-mission-summary" aria-expanded="true" aria-label="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}" title="${escapeHtml(`결과 미션 요약 접기: ${missionSummaryTargetLabel}`)}">
-              요약 접기
-            </button>
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-mission-summary',
+              actionLabel: `결과 미션 요약 접기: ${missionSummaryTargetLabel}`,
+              buttonText: '요약 접기',
+              expanded: true,
+            })}
             ${renderFlowQuickActionButton({
               action: 'jump-step',
               actionLabel: missionSummarySetupLabel,
@@ -16735,7 +16744,13 @@ function renderOutputStageSummary() {
           <span>${escapeHtml(`검토 · ${flow.blocker}`)}</span>
         </div>
         <div class="action-row">
-          <button class="primary-button" type="button" data-ui-action="toggle-output-support" aria-expanded="false" aria-label="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}" title="${escapeHtml(`지원 패널 펼치기: ${outputStageTargetLabel}`)}">지원 패널 펼치기</button>
+          ${renderOutputToolbarToggleButton({
+            action: 'toggle-output-support',
+            actionLabel: `지원 패널 펼치기: ${outputStageTargetLabel}`,
+            buttonText: '지원 패널 펼치기',
+            className: 'primary-button',
+            expanded: false,
+          })}
           ${renderFlowQuickActionButton({
             action: 'switch-tab',
             actionLabel: `결과물 열기: ${outputStageTargetLabel}`,

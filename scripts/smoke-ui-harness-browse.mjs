@@ -3801,17 +3801,17 @@ function assertToggleExpandedMetadata({ appJs, rootHtml }) {
     'artifact meta expanded state',
   );
 
-  assertSourceIncludes(appJs, 'data-ui-action="toggle-output-support" aria-expanded="false"', 'collapsed output support expand button');
-  assertSourceIncludes(
-    appJs,
-    'data-ui-action="toggle-output-mission-summary" aria-expanded="false"',
-    'collapsed output mission summary expand button',
-  );
-  assertSourceIncludes(
-    appJs,
-    'data-ui-action="toggle-output-mission-summary" aria-expanded="true"',
-    'expanded output mission summary collapse button',
-  );
+  assertSourceIncludes(appJs, 'actionLabel: `지원 패널 펼치기: ${outputStageTargetLabel}`', 'collapsed output support expand label');
+  assertSourceIncludes(appJs, "buttonText: '지원 패널 펼치기'", 'collapsed output support expand text');
+  assertSourceIncludes(appJs, "className: 'primary-button'", 'collapsed output support primary style');
+  assertSourceIncludes(appJs, 'actionLabel: `결과 미션 요약 펼치기: ${missionSummaryTargetLabel}`', 'collapsed output mission summary expand label');
+  assertSourceIncludes(appJs, "buttonText: '요약 펼치기'", 'collapsed output mission summary expand text');
+  assertSourceIncludes(appJs, 'actionLabel: `결과 미션 요약 접기: ${missionSummaryTargetLabel}`', 'expanded output mission summary collapse label');
+  assertSourceIncludes(appJs, "buttonText: '요약 접기'", 'expanded output mission summary collapse text');
+  assert.equal(appJs.includes('data-ui-action="toggle-output-support" aria-expanded="false"'), false);
+  assert.equal(appJs.includes('data-ui-action="toggle-output-mission-summary" aria-expanded="false"'), false);
+  assert.equal(appJs.includes('data-ui-action="toggle-output-mission-summary" aria-expanded="true"'), false);
+  assert.equal(appJs.includes('data-ui-action="toggle-output-rail" aria-expanded="${state.outputRailCollapsed ? \'false\' : \'true\'}"'), false);
 }
 
 function getUniqueSortedMatches(source, regex) {

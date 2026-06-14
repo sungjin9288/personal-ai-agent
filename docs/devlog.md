@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-15 Output Remaining Toggle Button Renderer
+
+- moved remaining output rail, mission summary, and support panel toggle buttons onto the shared output toolbar toggle renderer
+- kept `toggle-output-rail`, `toggle-output-mission-summary`, and `toggle-output-support` action ids, expanded state, labels, titles, button style, and visible copy aligned with the existing UI contract
+- reduced direct output toggle markup across flow status, mission summary, and compact result spotlight surfaces
+- extended UI harness browse smoke coverage for remaining output toggle renderer delegation and direct markup removal
+
 ## 2026-06-14 Release Recommendation Action Button Renderer
 
 - moved dynamic release recommendation action buttons onto a dedicated release recommendation action renderer
