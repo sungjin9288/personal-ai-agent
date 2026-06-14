@@ -2028,6 +2028,15 @@ try {
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="filter-release-history-provider" data-ui-provider="${escapeHtml(focusedProvider)}"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="focus-release-flow" data-ui-value="${escapeHtml(String(focusedProviderLatestAction.id || \'\').trim())}"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="filter-release-history-attention" data-ui-outcome="attention"'), false);
+  assert.equal(appJs.includes('renderReleaseProviderFocusActionButton'), true);
+  assert.equal(appJs.includes('function renderReleaseProviderFocusActionButton({'), true);
+  assert.equal(appJs.includes('/^(focus-release-provider|clear-release-provider-focus)$/.test(actionName)'), true);
+  assert.equal(appJs.includes('actionLabel: recommendationProviderFocusLabel'), true);
+  assert.equal(appJs.includes('provider: recommendationProviderId'), true);
+  assert.equal(appJs.includes("action: isFocusedProvider ? 'clear-release-provider-focus' : 'focus-release-provider'"), true);
+  assert.equal(appJs.includes('actionLabel: providerFocusButtonLabel'), true);
+  assert.equal(appJs.includes('<button\n                                          class="ghost-button"\n                                          type="button"\n                                          data-ui-action="focus-release-provider"'), false);
+  assert.equal(appJs.includes('data-ui-action="${escapeHtml(isFocusedProvider ? \'clear-release-provider-focus\' : \'focus-release-provider\')}"'), false);
   assert.equal(appJs.includes("action: 'regenerate-release-surface'"), true);
   assert.equal(appJs.includes('current surface 재생성: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('current surface 재생성 확인: ${releaseActionLabel}'), true);
@@ -2108,7 +2117,7 @@ try {
   assert.equal(appJs.includes('${recommendationCommand.buttonLabel}: ${recommendationCommand.label}'), true);
   assert.equal(appJs.includes('현재 provider 카드: ${recommendationProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider 카드 보기: ${recommendationProviderActionLabel}'), true);
-  assert.equal(appJs.includes('aria-pressed="${sameProviderFocused ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('pressed: sameProviderFocused'), true);
   assert.equal(appJs.includes('provider 링크 복사: ${recommendationProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider preflight 실행: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('provider preflight 명령 복사: ${focusedProviderActionLabel}'), true);
@@ -2132,7 +2141,7 @@ try {
   assert.equal(appJs.includes('같은 provider 문제 흐름 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}'), true);
   assert.equal(appJs.includes('provider 문제 흐름 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}'), true);
   assert.equal(appJs.includes('provider 포커스 해제: ${focusedProviderActionLabel}'), true);
-  assert.equal(appJs.includes('aria-pressed="${isFocusedProvider ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('pressed: isFocusedProvider'), true);
   assert.equal(appJs.includes('provider 링크 복사: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('현재 triage 링크 복사: ${focusedProviderActionLabel}'), true);
   assert.equal(appJs.includes('productionBlockerActionLabel'), true);
