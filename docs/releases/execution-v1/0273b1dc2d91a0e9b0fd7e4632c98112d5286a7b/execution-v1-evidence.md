@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T11:57:00.678Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T11:56:45.899Z
 - branch: codex/release-blocker-filter-button-renderer
 - commit: 0273b1dc2d91a0e9b0fd7e4632c98112d5286a7b
