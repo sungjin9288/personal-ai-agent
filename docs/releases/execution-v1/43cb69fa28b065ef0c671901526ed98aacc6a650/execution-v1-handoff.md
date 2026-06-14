@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-14T13:02:00.243Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-14T13:01:58.809Z
 - localDate: 2026-06-14
 - branch: codex/release-toggle-action-button-renderer
 - commit: 43cb69fa28b065ef0c671901526ed98aacc6a650
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/43cb69fa28b065ef0c671901526ed98aacc6a650](releases/execution-v1/43cb69fa28b065ef0c671901526ed98aacc6a650)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/43cb69fa28b065ef0c671901526ed98aacc6a650/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/43cb69fa28b065ef0c671901526ed98aacc6a650/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/43cb69fa28b065ef0c671901526ed98aacc6a650](docs/releases/execution-v1/43cb69fa28b065ef0c671901526ed98aacc6a650)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/release-toggle-action-button-renderer not found
 

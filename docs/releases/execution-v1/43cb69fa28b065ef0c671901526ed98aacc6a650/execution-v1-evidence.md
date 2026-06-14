@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-14T13:02:00.243Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-14T13:01:44.054Z
 - branch: codex/release-toggle-action-button-renderer
 - commit: 43cb69fa28b065ef0c671901526ed98aacc6a650

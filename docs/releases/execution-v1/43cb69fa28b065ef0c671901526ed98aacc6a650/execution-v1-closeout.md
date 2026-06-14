@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-14T13:02:00.243Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-14T13:01:51.947Z
 - branch: codex/release-toggle-action-button-renderer
 - commit: 43cb69fa28b065ef0c671901526ed98aacc6a650
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/43cb69fa28b065ef0c671901526ed98aacc6a650/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
