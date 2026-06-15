@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T09:34:20.032Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T09:34:07.678Z
 - branch: codex/agent-blueprint-card-button-renderer
 - commit: f1ba425a5d9adc58fea0aa64b757e1d9a575c624
