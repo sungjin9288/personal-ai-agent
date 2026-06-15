@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Item Status Renderer
+
+- moved action inbox item status and priority badge markup onto a dedicated renderer
+- kept action class and priority fallbacks, status class mapping, display labels, and escaping aligned with the existing action item contract
+- extended UI learning promotion smoke coverage for item status renderer delegation
+
 ## 2026-06-16 Action Inbox Callout Renderer
 
 - moved the action inbox list callout onto a dedicated renderer
