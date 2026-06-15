@@ -22275,6 +22275,13 @@ function renderActionInboxItemStatus(item = {}) {
           </div>`;
 }
 
+function renderActionInboxItemHeader(item = {}) {
+  return `
+          <div class="item-title">${escapeHtml(item.title || item.actionId || item.id)}</div>
+          <div class="item-subtitle">${escapeHtml(item.reason || '')}</div>
+          <div class="item-meta">담당 ${escapeHtml(item.recommendedOwner || '-')} · 기한 ${escapeHtml(formatDate(item.dueAt))}</div>`;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22404,9 +22411,7 @@ function renderMissionActions() {
       (item) => `
         <div class="action-item">
           ${renderActionInboxItemStatus(item)}
-          <div class="item-title">${escapeHtml(item.title || item.actionId || item.id)}</div>
-          <div class="item-subtitle">${escapeHtml(item.reason || '')}</div>
-          <div class="item-meta">담당 ${escapeHtml(item.recommendedOwner || '-')} · 기한 ${escapeHtml(formatDate(item.dueAt))}</div>
+          ${renderActionInboxItemHeader(item)}
           ${
             item.recommendedCommand
               ? `<div class="item-meta mono">${escapeHtml(item.recommendedCommand)}</div>`
