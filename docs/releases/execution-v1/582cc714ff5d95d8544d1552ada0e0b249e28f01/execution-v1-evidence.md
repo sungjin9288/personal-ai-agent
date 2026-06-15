@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T06:02:24.154Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T06:02:06.541Z
 - branch: codex/mission-attachment-upload-button-renderer
 - commit: 582cc714ff5d95d8544d1552ada0e0b249e28f01
