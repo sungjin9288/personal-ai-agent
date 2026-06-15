@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T11:33:15.583Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T11:33:05.532Z
 - branch: codex/learning-promotion-expire-button-renderer
 - commit: 7ef7ea43d012a1dc06d605c0fe935de1479fe00f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7ef7ea43d012a1dc06d605c0fe935de1479fe00f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

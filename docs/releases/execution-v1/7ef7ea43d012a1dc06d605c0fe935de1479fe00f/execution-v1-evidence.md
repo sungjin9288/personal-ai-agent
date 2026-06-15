@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T11:33:15.583Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T11:33:05.439Z
 - branch: codex/learning-promotion-expire-button-renderer
 - commit: 7ef7ea43d012a1dc06d605c0fe935de1479fe00f
