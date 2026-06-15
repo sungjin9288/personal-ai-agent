@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T16:10:30.483Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T16:10:22.303Z
 - branch: codex/action-inbox-item-header-renderer
 - commit: 40a87f23d5012acdd87f68909648c651ecc7833d

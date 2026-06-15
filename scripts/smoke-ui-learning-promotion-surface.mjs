@@ -258,6 +258,13 @@ try {
   assert.equal(appJs.includes("const priority = item.priority || 'medium'"), true);
   assert.equal(appJs.includes('status-badge ${getStatusClass(actionClass)}'), true);
   assert.equal(appJs.includes('mini-badge ${getStatusClass(priority)}'), true);
+  assert.equal(appJs.includes('renderActionInboxItemHeader'), true);
+  assert.equal(appJs.includes('function renderActionInboxItemHeader(item = {})'), true);
+  assert.equal(appJs.includes('renderActionInboxItemHeader(item)'), true);
+  assert.equal(appJs.includes('item-title">${escapeHtml(item.title || item.actionId || item.id)}</div>'), true);
+  assert.equal(appJs.includes("item-subtitle\">${escapeHtml(item.reason || '')}</div>"), true);
+  assert.equal(appJs.includes("담당 ${escapeHtml(item.recommendedOwner || '-')}"), true);
+  assert.equal(appJs.includes('기한 ${escapeHtml(formatDate(item.dueAt))}'), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);
   assert.equal(appJs.includes("${label} action 필터, ${countLabel}건"), true);
