@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T11:15:03.882Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T11:14:54.956Z
 - branch: codex/learning-promotion-resolve-button-renderer
 - commit: d099b0da6f374b818de113d8fad100b9120c1bde

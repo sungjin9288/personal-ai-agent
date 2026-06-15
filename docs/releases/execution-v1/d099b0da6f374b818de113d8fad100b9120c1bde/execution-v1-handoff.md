@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T11:15:03.882Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T11:15:02.022Z
 - localDate: 2026-06-15
 - branch: codex/learning-promotion-resolve-button-renderer
 - commit: d099b0da6f374b818de113d8fad100b9120c1bde
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d099b0da6f374b818de113d8fad100b9120c1bde](releases/execution-v1/d099b0da6f374b818de113d8fad100b9120c1bde)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d099b0da6f374b818de113d8fad100b9120c1bde/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d099b0da6f374b818de113d8fad100b9120c1bde/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d099b0da6f374b818de113d8fad100b9120c1bde](docs/releases/execution-v1/d099b0da6f374b818de113d8fad100b9120c1bde)
 - visualArtifactSetSha256: ca263f88b277459d24e0c187e998352baff85cec514256c24e96a5fc609b16f6
 - commitPushStatus: pushed to origin/codex/learning-promotion-resolve-button-renderer
 
