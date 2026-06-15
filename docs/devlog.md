@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Playbook Card Button Renderer
+
+- moved setup playbook card buttons onto a dedicated renderer
+- kept playbook id data attribute, active pressed state, label/title text, visible playbook metadata, and playbook apply click wiring aligned with the existing setup playbook contract
+- extended UI harness browse smoke coverage for playbook card renderer delegation and direct markup removal
+
 ## 2026-06-15 Template Chip Button Renderer
 
 - moved setup template chip buttons onto a dedicated renderer

@@ -14905,20 +14905,29 @@ function inferPlaybook(mission) {
   return missionPlaybooks.find((playbook) => playbook.id === state.selectedPlaybookId) || null;
 }
 
+function renderPlaybookCardButton({ playbook = {}, active = false } = {}) {
+  const playbookId = String(playbook.id || '');
+  const playbookTitle = String(playbook.title || '');
+  const playbookSubtitle = String(playbook.subtitle || '');
+  const playbookDescription = String(playbook.description || '');
+  const playbookOrigin = String(playbook.origin || '');
+  const selectionLabel = active ? `현재 플레이북 선택됨: ${playbookTitle}` : `플레이북 선택: ${playbookTitle}`;
+
+  return `
+    <button type="button" class="playbook-card ${active ? 'is-active' : ''}" data-playbook-id="${escapeHtml(playbookId)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(selectionLabel)}" title="${escapeHtml(selectionLabel)}">
+      <div class="status-row">
+        <span class="mini-badge">${escapeHtml(playbookOrigin)}</span>
+      </div>
+      <div class="item-title">${escapeHtml(playbookTitle)}</div>
+      <div class="item-subtitle">${escapeHtml(playbookSubtitle)}</div>
+      <div class="item-meta">${escapeHtml(playbookDescription)}</div>
+    </button>
+  `;
+}
+
 function renderPlaybooks() {
   elements.playbookList.innerHTML = missionPlaybooks
-    .map(
-      (playbook) => `
-        <button type="button" class="playbook-card ${playbook.id === state.selectedPlaybookId ? 'is-active' : ''}" data-playbook-id="${escapeHtml(playbook.id)}" aria-pressed="${playbook.id === state.selectedPlaybookId ? 'true' : 'false'}" aria-label="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}" title="${escapeHtml(playbook.id === state.selectedPlaybookId ? `현재 플레이북 선택됨: ${playbook.title}` : `플레이북 선택: ${playbook.title}`)}">
-          <div class="status-row">
-            <span class="mini-badge">${escapeHtml(playbook.origin)}</span>
-          </div>
-          <div class="item-title">${escapeHtml(playbook.title)}</div>
-          <div class="item-subtitle">${escapeHtml(playbook.subtitle)}</div>
-          <div class="item-meta">${escapeHtml(playbook.description)}</div>
-        </button>
-      `,
-    )
+    .map((playbook) => renderPlaybookCardButton({ playbook, active: playbook.id === state.selectedPlaybookId }))
     .join('');
 
   elements.playbookList.querySelectorAll('[data-playbook-id]').forEach((button) => {
