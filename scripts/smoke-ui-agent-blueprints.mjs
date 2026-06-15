@@ -77,22 +77,20 @@ try {
   assert.equal(appJs.includes('retrieval source 보기'), true);
   assert.equal(appJs.includes('현재 retrieval source 보기'), true);
   assert.equal(appJs.includes('retrieval source 링크 복사'), true);
-  assert.equal(appJs.includes('retrieval source 링크 복사됨'), true);
+  assert.equal(appJs.includes('copied ? `${actionLabel}됨` : actionLabel'), true);
   assert.equal(appJs.includes('retrieval source focus 해제'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(sourceFocusLabel)}"'), true);
-  assert.equal(appJs.includes('aria-pressed="${isActive ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${active ? \'true\' : \'false\'}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(sourceFocusLabel)}"'), true);
-  assert.equal(appJs.includes('aria-pressed="${isCopied ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(sourceCopyLabel)}"'), true);
-  assert.equal(appJs.includes('title="${escapeHtml(sourceCopyLabel)}"'), true);
-  assert.equal(appJs.includes('aria-pressed="${isCopiedRetrievalSource(activeFocus.type, activeFocus.label) ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(activeFocusCopyLabel)}"'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(activeFocusClearLabel)}"'), true);
-  assert.equal(
-    appJs.includes('aria-pressed="${isCopiedRetrievalSource(activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label) ? \'true\' : \'false\'}"'),
-    true,
-  );
-  assert.equal(appJs.includes('aria-label="${escapeHtml(latestRetrievalArtifactOpenLabel)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(nextActionLabel)}"'), true);
+  assert.equal(appJs.includes('title="${escapeHtml(nextActionLabel)}"'), true);
+  assert.equal(appJs.includes('sourceLabel: activeFocus.label'), true);
+  assert.equal(appJs.includes('sourceType: activeFocus.type'), true);
+  assert.equal(appJs.includes('actionLabel: activeFocusClearLabel'), true);
+  assert.equal(appJs.includes('sourceLabel: activeRetrievalSourceFocus.label'), true);
+  assert.equal(appJs.includes('sourceType: activeRetrievalSourceFocus.type'), true);
+  assert.equal(appJs.includes('openLabel: latestRetrievalArtifactOpenLabel'), true);
   assert.equal(appJs.includes('is-active-focus'), true);
   assert.equal(appJs.includes('hstype'), true);
   assert.equal(appJs.includes('hsource'), true);
@@ -101,16 +99,16 @@ try {
   assert.equal(appJs.includes('retrieval preview 비어 있음'), true);
   assert.equal(appJs.includes('Core 4 only'), true);
   assert.equal(appJs.includes('engineering-full-spectrum'), true);
-  assert.equal(appJs.includes('템플릿 적용: ${template.title}'), true);
-  assert.equal(appJs.includes('현재 플레이북 선택됨: ${playbook.title}'), true);
-  assert.equal(appJs.includes('플레이북 선택: ${playbook.title}'), true);
-  assert.equal(appJs.includes('aria-pressed="${playbook.id === state.selectedPlaybookId ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('현재 AI 구성 의도: ${intent.label}'), true);
-  assert.equal(appJs.includes('AI 구성 의도 선택: ${intent.label}'), true);
+  assert.equal(appJs.includes('const actionLabel = `템플릿 적용: ${templateTitle}`'), true);
+  assert.equal(appJs.includes('현재 플레이북 선택됨: ${playbookTitle}'), true);
+  assert.equal(appJs.includes('플레이북 선택: ${playbookTitle}'), true);
+  assert.equal(appJs.includes('renderPlaybookCardButton({ playbook, active: playbook.id === state.selectedPlaybookId })'), true);
+  assert.equal(appJs.includes('현재 AI 구성 의도: ${intentLabel}'), true);
+  assert.equal(appJs.includes('AI 구성 의도 선택: ${intentLabel}'), true);
   assert.equal(appJs.includes('aria-pressed="${active ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('현재 AI 구성 카드: ${blueprint.title}'), true);
-  assert.equal(appJs.includes('AI 구성 카드 선택: ${blueprint.title}'), true);
-  assert.equal(appJs.includes('aria-pressed="${blueprint.id === selectedBlueprint?.id ? \'true\' : \'false\'}"'), true);
+  assert.equal(appJs.includes('현재 AI 구성 카드: ${blueprintTitle}'), true);
+  assert.equal(appJs.includes('AI 구성 카드 선택: ${blueprintTitle}'), true);
+  assert.equal(appJs.includes('renderAgentBlueprintCardButton({ blueprint, active: blueprint.id === selectedBlueprint?.id })'), true);
 
   assert.equal(stylesCss.includes('.surface-ai-compose'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-grid'), true);

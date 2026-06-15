@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-06-15 Learning Promotion Resolve Button Renderer
+
+- moved learning promotion approve/reject buttons onto a dedicated resolve renderer
+- kept candidate id, decision data attribute, button class, label/title metadata, and approve/reject click wiring aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for resolve renderer delegation and decision attributes
+- aligned agent blueprint smoke expectations with existing retrieval source and blueprint renderer delegation contracts required by the reference-adoptions gate
+
 ## 2026-06-15 Learning Promotion Audit Copy Button Renderer
 
 - moved the learning promotion audit package copy button onto a dedicated renderer
