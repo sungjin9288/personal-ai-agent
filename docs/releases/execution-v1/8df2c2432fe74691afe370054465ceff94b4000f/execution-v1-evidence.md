@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T06:12:36.640Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T06:12:19.035Z
 - branch: codex/execution-approval-pending-button-renderer
 - commit: 8df2c2432fe74691afe370054465ceff94b4000f
