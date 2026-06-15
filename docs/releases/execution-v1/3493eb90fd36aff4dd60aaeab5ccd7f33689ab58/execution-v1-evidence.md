@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T15:13:00.761Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T15:12:50.563Z
 - branch: codex/action-inbox-callout-renderer
 - commit: 3493eb90fd36aff4dd60aaeab5ccd7f33689ab58
