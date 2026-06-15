@@ -245,6 +245,12 @@ try {
   assert.equal(appJs.includes("renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)"), true);
   assert.equal(appJs.includes("renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)"), true);
   assert.equal(appJs.includes("renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')"), true);
+  assert.equal(appJs.includes('renderActionInboxCallout'), true);
+  assert.equal(appJs.includes('function renderActionInboxCallout({'), true);
+  assert.equal(appJs.includes('renderActionInboxCallout({'), true);
+  assert.equal(appJs.includes('review-callout review-callout-action'), true);
+  assert.equal(appJs.includes('후속 작업 ${escapeHtml(String(count))}건'), true);
+  assert.equal(appJs.includes('전체 작업 수는 summary chip에서 유지됩니다.'), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);
   assert.equal(appJs.includes("${label} action 필터, ${countLabel}건"), true);

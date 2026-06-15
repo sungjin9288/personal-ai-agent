@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Callout Renderer
+
+- moved the action inbox list callout onto a dedicated renderer
+- kept review callout classes, action count text, filtered/unfiltered copy, and escaped message rendering aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for callout renderer delegation
+
 ## 2026-06-15 Action Inbox Summary Chip Renderer
 
 - moved repeated action inbox summary chips onto a dedicated renderer
