@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T15:49:00.751Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T15:48:47.767Z
 - branch: codex/action-inbox-item-status-renderer
 - commit: 5d2781361008d5ac471db7605bf38cf04fea34ea
