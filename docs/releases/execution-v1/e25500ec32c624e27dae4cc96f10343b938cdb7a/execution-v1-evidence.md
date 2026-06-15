@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T05:07:13.402Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T05:06:50.134Z
 - branch: codex/provider-fallback-event-action-renderer
 - commit: e25500ec32c624e27dae4cc96f10343b938cdb7a

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Provider Fallback Event Action Button Renderer
+
+- moved provider fallback event reset and audit package buttons onto a dedicated fallback event action renderer
+- kept fallback event reset/package data attributes, labels, titles, styles, and visible copy aligned with the existing provider audit UI contract
+- extended UI harness browse smoke coverage for fallback event action renderer delegation and direct markup removal
+
 ## 2026-06-15 Memory Browse Action Button Renderer
 
 - moved memory browse reset, edit, delete, previous page, and next page buttons onto a dedicated memory action renderer
