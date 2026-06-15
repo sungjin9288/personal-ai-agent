@@ -273,6 +273,16 @@ try {
   assert.equal(appJs.includes("item.actionType === 'specialist-follow-up' ? formatSpecialistFollowUpRoute(item) : ''"), true);
   assert.equal(appJs.includes("item.actionType === 'learning-promotion' ? formatLearningPromotionDetails(item) : ''"), true);
   assert.equal(appJs.includes('<div class="${escapeHtml(className)}">${escapeHtml(value)}</div>'), true);
+  assert.equal(appJs.includes('renderActionInboxItemActions'), true);
+  assert.equal(appJs.includes('function renderActionInboxItemActions(item = {})'), true);
+  assert.equal(appJs.includes('renderActionInboxItemActions(item)'), true);
+  assert.equal(appJs.includes('const actionButtons = ['), true);
+  assert.equal(appJs.includes("item.actionType === 'provider-attention' && item.fallbackRecommendedCommand"), true);
+  assert.equal(appJs.includes("item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand"), true);
+  assert.equal(appJs.includes("item.actionType === 'specialist-follow-up'"), true);
+  assert.equal(appJs.includes("!['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)"), true);
+  assert.equal(appJs.includes("item.actionType === 'reviewer-follow-up'"), true);
+  assert.equal(appJs.includes("actionButtons.filter(Boolean).join('')"), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);
   assert.equal(appJs.includes("${label} action 필터, ${countLabel}건"), true);

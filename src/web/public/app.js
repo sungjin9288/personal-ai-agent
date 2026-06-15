@@ -22307,6 +22307,76 @@ function renderActionInboxItemCommandMeta(item = {}) {
     .join('');
 }
 
+function renderActionInboxItemActions(item = {}) {
+  const actionButtons = [
+    item.missionId
+      ? renderMissionActionItemButton({
+          actionLabelPrefix: '미션 열기',
+          buttonText: '미션 열기',
+          className: 'secondary-button',
+          dataAttribute: 'data-action-open',
+          dataValue: item.missionId,
+          item,
+        })
+      : '',
+    item.actionType === 'provider-attention'
+      ? renderProviderAttentionRemediationButton({ item })
+      : '',
+    item.actionType === 'provider-attention' && item.fallbackRecommendedCommand
+      ? renderProviderAttentionRemediationButton({
+          actionLabelPrefix: 'fallback 복구',
+          buttonText: 'fallback 복구',
+          className: 'secondary-button',
+          item,
+          mode: 'fallback',
+        })
+      : '',
+    item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand
+      ? renderProviderAttentionRemediationButton({
+          actionLabelPrefix: '복구성 fallback',
+          buttonText: '복구성 fallback',
+          className: 'ghost-button',
+          item,
+          mode: 'recoverable-fallback',
+        })
+      : '',
+    item.actionType === 'specialist-follow-up'
+      ? renderMissionActionItemButton({
+          actionLabelPrefix: '전문가 복구',
+          buttonText: '전문가 복구',
+          className: 'primary-button',
+          dataAttribute: 'data-specialist-follow-up-remediate',
+          dataValue: item.actionId,
+          item,
+        })
+      : '',
+    item.missionId && !['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)
+      ? renderMissionActionItemButton({
+          actionLabelPrefix: '권장 재실행',
+          buttonText: '권장 재실행',
+          className: 'primary-button',
+          dataAttribute: 'data-action-rerun',
+          dataValue: item.actionId,
+          item,
+        })
+      : '',
+    renderLearningPromotionActionButtons(item),
+    item.actionType === 'reviewer-follow-up'
+      ? renderMissionActionItemButton({
+          actionLabelPrefix: '후속 요청 해소',
+          buttonText: '후속 요청 해소',
+          dataAttribute: 'data-action-resolve',
+          dataValue: item.actionId,
+          item,
+        })
+      : '',
+  ];
+  return `
+          <div class="action-row">
+            ${actionButtons.filter(Boolean).join('')}
+          </div>`;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22439,83 +22509,7 @@ function renderMissionActions() {
           ${renderActionInboxItemHeader(item)}
           ${renderActionInboxItemCommandMeta(item)}
           ${renderLearningPromotionCommandMeta(item)}
-          <div class="action-row">
-            ${
-              item.missionId
-                ? renderMissionActionItemButton({
-                    actionLabelPrefix: '미션 열기',
-                    buttonText: '미션 열기',
-                    className: 'secondary-button',
-                    dataAttribute: 'data-action-open',
-                    dataValue: item.missionId,
-                    item,
-                  })
-                : ''
-            }
-            ${
-              item.actionType === 'provider-attention'
-                ? renderProviderAttentionRemediationButton({ item })
-                : ''
-            }
-            ${
-              item.actionType === 'provider-attention' && item.fallbackRecommendedCommand
-                ? renderProviderAttentionRemediationButton({
-                    actionLabelPrefix: 'fallback 복구',
-                    buttonText: 'fallback 복구',
-                    className: 'secondary-button',
-                    item,
-                    mode: 'fallback',
-                  })
-                : ''
-            }
-            ${
-              item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand
-                ? renderProviderAttentionRemediationButton({
-                    actionLabelPrefix: '복구성 fallback',
-                    buttonText: '복구성 fallback',
-                    className: 'ghost-button',
-                    item,
-                    mode: 'recoverable-fallback',
-                  })
-                : ''
-            }
-            ${
-              item.actionType === 'specialist-follow-up'
-                ? renderMissionActionItemButton({
-                    actionLabelPrefix: '전문가 복구',
-                    buttonText: '전문가 복구',
-                    className: 'primary-button',
-                    dataAttribute: 'data-specialist-follow-up-remediate',
-                    dataValue: item.actionId,
-                    item,
-                  })
-                : ''
-            }
-            ${
-              item.missionId && !['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)
-                ? renderMissionActionItemButton({
-                    actionLabelPrefix: '권장 재실행',
-                    buttonText: '권장 재실행',
-                    className: 'primary-button',
-                    dataAttribute: 'data-action-rerun',
-                    dataValue: item.actionId,
-                    item,
-                  })
-                : ''
-            }
-            ${renderLearningPromotionActionButtons(item)}
-            ${
-              item.actionType === 'reviewer-follow-up'
-                ? renderMissionActionItemButton({
-                    actionLabelPrefix: '후속 요청 해소',
-                    buttonText: '후속 요청 해소',
-                    dataAttribute: 'data-action-resolve',
-                    dataValue: item.actionId,
-                    item,
-                  })
-                : ''
-            }
-          </div>
+          ${renderActionInboxItemActions(item)}
         </div>
       `,
     )

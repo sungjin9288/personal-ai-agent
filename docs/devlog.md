@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Item Actions Renderer
+
+- moved action inbox item action button grouping onto a dedicated renderer
+- kept mission open, provider remediation, fallback remediation, specialist recovery, rerun, learning promotion, and reviewer resolution buttons aligned with the existing action item contract
+- extended UI learning promotion smoke coverage for item action renderer delegation and conditional action composition
+
 ## 2026-06-16 Action Inbox Item Command Meta Renderer
 
 - moved action inbox item command and detail meta rows onto a dedicated renderer
