@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T16:43:31.897Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T16:43:22.257Z
 - branch: codex/action-inbox-item-command-meta-renderer
 - commit: 5d7842eae5fd510c26d048864b153603b7caa5da
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5d7842eae5fd510c26d048864b153603b7caa5da/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
