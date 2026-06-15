@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T05:50:41.733Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T05:50:19.848Z
 - branch: codex/mission-selection-button-renderer
 - commit: 750b791cdd82988eca68aa8f732b431b63a07c02

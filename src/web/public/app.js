@@ -15627,6 +15627,21 @@ function getSelectedMissionRecord() {
   return state.missions.find(({ mission }) => mission.id === state.selectedMissionId) || null;
 }
 
+function renderMissionSelectionButton({
+  active = false,
+  content = '',
+  mission = {},
+  missionSelectionLabel = '',
+} = {}) {
+  return renderSelectableDetailButton({
+    active: Boolean(active),
+    content,
+    dataAttribute: 'data-mission-id',
+    dataValue: mission.id,
+    selectionLabel: missionSelectionLabel,
+  });
+}
+
 function renderMissionList() {
   const missions = filteredMissions();
   const selectedFlow =
@@ -15673,7 +15688,11 @@ function renderMissionList() {
       const showExpandedAction = active;
       return `
         <div class="mission-row ${active}">
-          <button type="button" data-mission-id="${escapeHtml(mission.id)}" aria-pressed="${active ? 'true' : 'false'}" aria-label="${escapeHtml(missionSelectionLabel)}" title="${escapeHtml(missionSelectionLabel)}">
+          ${renderMissionSelectionButton({
+            active,
+            mission,
+            missionSelectionLabel,
+            content: `
             <div class="mission-row-topline">
               <div class="mission-row-topline-main">
                 <span class="mission-row-stage">${escapeHtml(snapshot.stage)}</span>
@@ -15719,7 +15738,8 @@ function renderMissionList() {
               <span>${escapeHtml(workspaceLabel)}</span>
               <span>${escapeHtml(contextLabel)}</span>
             </div>
-          </button>
+            `,
+          })}
         </div>
       `;
     })

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T05:50:41.733Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T05:50:30.618Z
 - branch: codex/mission-selection-button-renderer
 - commit: 750b791cdd82988eca68aa8f732b431b63a07c02
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/750b791cdd82988eca68aa8f732b431b63a07c02/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -325,9 +325,15 @@ try {
   assert.equal(appJs.includes('세션 타임라인 이벤트 열기: ${timelineEventTitle}'), true);
   assert.equal(appJs.includes('타임라인 이벤트 보기: ${timelineEventTitle}'), true);
   assert.equal(stylesCss.includes('.timeline-event.is-active'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(missionSelectionLabel)}"'), true);
-  assert.equal(appJs.includes('data-mission-id="${escapeHtml(mission.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('title="${escapeHtml(missionSelectionLabel)}"'), true);
+  assert.equal(appJs.includes('renderMissionSelectionButton'), true);
+  assert.equal(appJs.includes('function renderMissionSelectionButton({'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-mission-id'"), true);
+  assert.equal(appJs.includes('dataValue: mission.id'), true);
+  assert.equal(appJs.includes('selectionLabel: missionSelectionLabel'), true);
+  assert.equal(appJs.includes('active: Boolean(active)'), true);
+  assert.equal(appJs.includes('renderMissionSelectionButton({'), true);
+  assert.equal(appJs.includes('content: `'), true);
+  assert.equal(appJs.includes('data-mission-id="${escapeHtml(mission.id)}" aria-pressed="${active ? \'true\' : \'false\'}"'), false);
   assert.equal(appJs.includes('renderSelectableDetailButton'), true);
   assert.equal(appJs.includes('content: sessionButtonContent'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-session-id'"), true);
