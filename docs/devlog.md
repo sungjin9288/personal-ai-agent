@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Template Chip Button Renderer
+
+- moved setup template chip buttons onto a dedicated renderer
+- kept template index data attribute, label/title text, visible template title/subtitle copy, and template apply click wiring aligned with the existing setup template contract
+- extended UI harness browse smoke coverage for template chip renderer delegation and direct markup removal
+
 ## 2026-06-15 Execution Approval Pending Button Renderer
 
 - moved the execution approval-pending disabled status button onto a dedicated renderer

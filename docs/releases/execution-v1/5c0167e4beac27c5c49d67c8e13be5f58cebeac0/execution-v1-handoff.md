@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T06:21:54.217Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T06:21:52.665Z
 - localDate: 2026-06-15
 - branch: codex/template-chip-button-renderer
 - commit: 5c0167e4beac27c5c49d67c8e13be5f58cebeac0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5c0167e4beac27c5c49d67c8e13be5f58cebeac0](releases/execution-v1/5c0167e4beac27c5c49d67c8e13be5f58cebeac0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5c0167e4beac27c5c49d67c8e13be5f58cebeac0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5c0167e4beac27c5c49d67c8e13be5f58cebeac0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5c0167e4beac27c5c49d67c8e13be5f58cebeac0](docs/releases/execution-v1/5c0167e4beac27c5c49d67c8e13be5f58cebeac0)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/template-chip-button-renderer not found
 

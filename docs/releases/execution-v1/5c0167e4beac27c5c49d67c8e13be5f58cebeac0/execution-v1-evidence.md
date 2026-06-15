@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T06:21:54.217Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T06:21:42.813Z
 - branch: codex/template-chip-button-renderer
 - commit: 5c0167e4beac27c5c49d67c8e13be5f58cebeac0
