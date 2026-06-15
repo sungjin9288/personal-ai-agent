@@ -153,6 +153,15 @@ try {
   assert.equal(appJs.includes('copyLearningPromotionAuditPackage'), true);
   assert.equal(appJs.includes('buildLearningPromotionAuditPackageText'), true);
   assert.equal(appJs.includes('Learning promotion audit package'), true);
+  assert.equal(appJs.includes('renderLearningPromotionCommandMeta'), true);
+  assert.equal(appJs.includes('function renderLearningPromotionCommandMeta(item)'), true);
+  assert.equal(appJs.includes('renderLearningPromotionCommandMeta(item)'), true);
+  assert.equal(appJs.includes("['resolve', item.resolveCommand]"), true);
+  assert.equal(appJs.includes("['expire', item.expireCommand]"), true);
+  assert.equal(appJs.includes("['rollback', item.rollbackCommand]"), true);
+  assert.equal(appJs.includes("['stop-condition', item.stopConditionRejectCommand]"), true);
+  assert.equal(appJs.includes("['reminder', item.remindCommand]"), true);
+  assert.equal(appJs.includes('<div class="item-meta mono">${escapeHtml(label)}: ${escapeHtml(command)}</div>'), true);
   assert.equal(appJs.includes('providerFallbackPolicy'), true);
   assert.equal(appJs.includes('gatewayEventRoute'), true);
   assert.equal(appJs.includes('autoPromotionAllowed'), true);

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T13:04:44.319Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T13:04:34.258Z
 - branch: codex/learning-promotion-command-meta-renderer
 - commit: d0040e1afa526c6d2b04dc6b09d9895b409a7e7d

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T13:04:44.319Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T13:04:42.874Z
 - localDate: 2026-06-15
 - branch: codex/learning-promotion-command-meta-renderer
 - commit: d0040e1afa526c6d2b04dc6b09d9895b409a7e7d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d0040e1afa526c6d2b04dc6b09d9895b409a7e7d](releases/execution-v1/d0040e1afa526c6d2b04dc6b09d9895b409a7e7d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d0040e1afa526c6d2b04dc6b09d9895b409a7e7d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d0040e1afa526c6d2b04dc6b09d9895b409a7e7d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d0040e1afa526c6d2b04dc6b09d9895b409a7e7d](docs/releases/execution-v1/d0040e1afa526c6d2b04dc6b09d9895b409a7e7d)
 - visualArtifactSetSha256: 0e23d28d07a28a0be0a6296919d72f4d23b174af0bbe16e3778ba0bd2fe9f027
 - commitPushStatus: not pushed, origin/codex/learning-promotion-command-meta-renderer not found
 

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Learning Promotion Command Meta Renderer
+
+- moved learning promotion resolve, expire, rollback, stop-condition reject, and reminder command meta rows onto a dedicated renderer
+- kept command visibility, display order, mono item-meta styling, and command labels aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for command meta renderer delegation and command mapping
+
 ## 2026-06-15 Learning Promotion Rollback Button Renderer
 
 - moved the learning promotion rollback button onto a dedicated renderer

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T13:04:44.319Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T13:04:34.326Z
 - branch: codex/learning-promotion-command-meta-renderer
 - commit: d0040e1afa526c6d2b04dc6b09d9895b409a7e7d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d0040e1afa526c6d2b04dc6b09d9895b409a7e7d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
