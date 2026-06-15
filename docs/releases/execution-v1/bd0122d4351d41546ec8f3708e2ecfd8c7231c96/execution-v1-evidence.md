@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T09:01:39.299Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T09:01:27.610Z
 - branch: codex/agent-intent-pill-button-renderer
 - commit: bd0122d4351d41546ec8f3708e2ecfd8c7231c96
