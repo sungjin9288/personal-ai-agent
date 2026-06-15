@@ -22282,6 +22282,31 @@ function renderActionInboxItemHeader(item = {}) {
           <div class="item-meta">담당 ${escapeHtml(item.recommendedOwner || '-')} · 기한 ${escapeHtml(formatDate(item.dueAt))}</div>`;
 }
 
+function renderActionInboxItemCommandMeta(item = {}) {
+  const metaRows = [
+    [item.recommendedCommand, 'item-meta mono'],
+    [item.fallbackRecommendedCommand ? `fallback: ${item.fallbackRecommendedCommand}` : '', 'item-meta mono'],
+    [
+      item.recoverableFallbackRecommendedCommand
+        ? `recoverable-only: ${item.recoverableFallbackRecommendedCommand}`
+        : '',
+      'item-meta mono',
+    ],
+    [
+      item.actionType === 'specialist-follow-up' ? formatSpecialistFollowUpRoute(item) : '',
+      'item-meta mono',
+    ],
+    [
+      item.actionType === 'learning-promotion' ? formatLearningPromotionDetails(item) : '',
+      'item-meta',
+    ],
+  ];
+  return metaRows
+    .filter(([value]) => value)
+    .map(([value, className]) => `<div class="${escapeHtml(className)}">${escapeHtml(value)}</div>`)
+    .join('');
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22412,31 +22437,7 @@ function renderMissionActions() {
         <div class="action-item">
           ${renderActionInboxItemStatus(item)}
           ${renderActionInboxItemHeader(item)}
-          ${
-            item.recommendedCommand
-              ? `<div class="item-meta mono">${escapeHtml(item.recommendedCommand)}</div>`
-              : ''
-          }
-          ${
-            item.fallbackRecommendedCommand
-              ? `<div class="item-meta mono">fallback: ${escapeHtml(item.fallbackRecommendedCommand)}</div>`
-              : ''
-          }
-          ${
-            item.recoverableFallbackRecommendedCommand
-              ? `<div class="item-meta mono">recoverable-only: ${escapeHtml(item.recoverableFallbackRecommendedCommand)}</div>`
-              : ''
-          }
-          ${
-            item.actionType === 'specialist-follow-up' && formatSpecialistFollowUpRoute(item)
-              ? `<div class="item-meta mono">${escapeHtml(formatSpecialistFollowUpRoute(item))}</div>`
-              : ''
-          }
-          ${
-            item.actionType === 'learning-promotion' && formatLearningPromotionDetails(item)
-              ? `<div class="item-meta">${escapeHtml(formatLearningPromotionDetails(item))}</div>`
-              : ''
-          }
+          ${renderActionInboxItemCommandMeta(item)}
           ${renderLearningPromotionCommandMeta(item)}
           <div class="action-row">
             ${

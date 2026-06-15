@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Item Command Meta Renderer
+
+- moved action inbox item command and detail meta rows onto a dedicated renderer
+- kept recommended, fallback, recoverable-only, specialist route, and learning promotion detail rows aligned with the existing action item contract
+- extended UI learning promotion smoke coverage for item command meta renderer delegation
+
 ## 2026-06-16 Action Inbox Item Header Renderer
 
 - moved action inbox item title, subtitle, owner, and due date markup onto a dedicated renderer
