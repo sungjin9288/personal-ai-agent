@@ -21881,6 +21881,14 @@ function renderLearningPromotionActionButton({ attributes = '', buttonClass = 'g
   return `<button class="${escapeHtml(buttonClass)}" type="button" ${attributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(label)}</button>`;
 }
 
+function renderLearningPromotionAuditCopyButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-learning-promotion-audit-copy="${escapeHtml(candidateId)}"`,
+    candidateId,
+    label: 'audit package 복사',
+  });
+}
+
 function renderLearningPromotionActionButtons(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
@@ -21892,13 +21900,7 @@ function renderLearningPromotionActionButtons(item) {
   }
 
   const buttons = [];
-  buttons.push(
-    renderLearningPromotionActionButton({
-      attributes: `data-learning-promotion-audit-copy="${escapeHtml(candidateId)}"`,
-      candidateId,
-      label: 'audit package 복사',
-    }),
-  );
+  buttons.push(renderLearningPromotionAuditCopyButton({ candidateId }));
 
   if (item.promotionStatus === 'pending-review') {
     buttons.push(

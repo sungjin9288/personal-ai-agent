@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Learning Promotion Audit Copy Button Renderer
+
+- moved the learning promotion audit package copy button onto a dedicated renderer
+- kept candidate id data attribute, shared action label/title metadata, visible copy text, and audit package copy wiring aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for audit copy renderer delegation
+
 ## 2026-06-15 Agent Blueprint Card Button Renderer
 
 - moved agent blueprint card buttons onto a dedicated renderer
