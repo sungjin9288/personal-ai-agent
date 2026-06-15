@@ -4016,6 +4016,14 @@ function renderMemoryBrowseActionButton({
   return `<button class="${escapeHtml(className)}" type="button" data-memory-action="${escapeHtml(actionName)}"${memoryIdAttribute}${scopeAttribute}${disabledAttributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderMissionAttachmentUploadButton({
+  actionLabel = '',
+  buttonText = '첨부 업로드',
+  className = 'ghost-button',
+} = {}) {
+  return `<button class="${escapeHtml(className)}" type="submit" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function populateDocumentLogForm(entry) {
   if (!elements.documentLogForm || !entry) {
     return;
@@ -17463,7 +17471,9 @@ function renderHarnessPanel() {
           />
         </label>
         <div class="action-row">
-          <button class="ghost-button" type="submit" aria-label="${escapeHtml(missionAttachmentUploadLabel)}" title="${escapeHtml(missionAttachmentUploadLabel)}">첨부 업로드</button>
+          ${renderMissionAttachmentUploadButton({
+            actionLabel: missionAttachmentUploadLabel,
+          })}
         </div>
       </form>
       ${

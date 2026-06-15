@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Mission Attachment Upload Button Renderer
+
+- moved the mission harness attachment upload submit button onto a dedicated renderer
+- kept submit type, button style, label/title text, visible copy, and form submit behavior aligned with the existing attachment upload contract
+- extended UI harness browse smoke coverage for attachment upload renderer delegation and direct markup removal
+
 ## 2026-06-15 Mission Selection Button Renderer
 
 - moved mission list selection buttons onto a dedicated mission selection renderer
