@@ -3975,6 +3975,25 @@ function renderHarnessFilterChips(items = []) {
   `;
 }
 
+function renderDocumentBrowseActionButton({
+  action = '',
+  actionLabel = '',
+  buttonText = '',
+  className = 'ghost-button',
+  disabled = null,
+  documentId = '',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^(migrate-legacy|reset-browse|edit|delete|prev-page|next-page)$/.test(actionName)) {
+    return '';
+  }
+  const documentIdValue = String(documentId || '').trim();
+  const documentIdAttribute = documentIdValue ? ` data-document-id="${escapeHtml(documentIdValue)}"` : '';
+  const disabledState = disabled === null ? null : Boolean(disabled);
+  const disabledAttributes = disabledState === null ? '' : ` aria-disabled="${disabledState ? 'true' : 'false'}"${disabledState ? ' disabled' : ''}`;
+  return `<button class="${escapeHtml(className)}" type="button" data-document-action="${escapeHtml(actionName)}"${documentIdAttribute}${disabledAttributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function populateDocumentLogForm(entry) {
   if (!elements.documentLogForm || !entry) {
     return;
@@ -17339,7 +17358,11 @@ function renderHarnessPanel() {
             <strong>기존 개발 로그 ${escapeHtml(String(documentSummary.legacyDevlogCount || 0))}건이 아직 tracked entry가 아닙니다.</strong>
             <p>예전 append-only 섹션을 편집 가능한 문서 기록으로 한 번에 전환합니다. 전환 후에는 하네스에서 바로 수정/삭제할 수 있습니다.</p>
             <div class="inline-actions">
-              <button class="ghost-button" type="button" data-document-action="migrate-legacy" aria-label="${escapeHtml(legacyDevlogMigrationLabel)}" title="${escapeHtml(legacyDevlogMigrationLabel)}">기존 개발 로그 전환</button>
+              ${renderDocumentBrowseActionButton({
+                action: 'migrate-legacy',
+                actionLabel: legacyDevlogMigrationLabel,
+                buttonText: '기존 개발 로그 전환',
+              })}
             </div>
           </div>`
         : ''
@@ -17471,7 +17494,12 @@ function renderHarnessPanel() {
               <option value="48" ${Number(state.harnessDocumentVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
             </select>
           </label>
-          <button class="ghost-button" type="button" data-document-action="reset-browse" aria-disabled="${isDocumentBrowseDirty ? 'false' : 'true'}" aria-label="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" title="${escapeHtml(isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음')}" ${isDocumentBrowseDirty ? '' : 'disabled'}>필터 초기화</button>
+          ${renderDocumentBrowseActionButton({
+            action: 'reset-browse',
+            actionLabel: isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음',
+            buttonText: '필터 초기화',
+            disabled: !isDocumentBrowseDirty,
+          })}
         </div>
       </div>
       ${
@@ -17490,8 +17518,19 @@ function renderHarnessPanel() {
                           <div class="harness-row-meta">
                             <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
                             <div class="inline-actions">
-                              <button class="ghost-button" type="button" data-document-action="edit" data-document-id="${escapeHtml(entry.id)}" aria-label="${escapeHtml(`문서 불러오기: ${entry.title || entry.id || entry.path}`)}" title="${escapeHtml(`문서 불러오기: ${entry.title || entry.id || entry.path}`)}">불러오기</button>
-                              <button class="danger-button" type="button" data-document-action="delete" data-document-id="${escapeHtml(entry.id)}" aria-label="${escapeHtml(`문서 삭제: ${entry.title || entry.id || entry.path}`)}" title="${escapeHtml(`문서 삭제: ${entry.title || entry.id || entry.path}`)}">삭제</button>
+                              ${renderDocumentBrowseActionButton({
+                                action: 'edit',
+                                actionLabel: `문서 불러오기: ${entry.title || entry.id || entry.path}`,
+                                buttonText: '불러오기',
+                                documentId: entry.id,
+                              })}
+                              ${renderDocumentBrowseActionButton({
+                                action: 'delete',
+                                actionLabel: `문서 삭제: ${entry.title || entry.id || entry.path}`,
+                                buttonText: '삭제',
+                                className: 'danger-button',
+                                documentId: entry.id,
+                              })}
                             </div>
                           </div>
                         </div>
@@ -17508,8 +17547,18 @@ function renderHarnessPanel() {
                       <strong>${escapeHtml(documentPageLabel)} · ${escapeHtml(documentRangeLabel)}</strong>
                       <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건</p>
                       <div class="inline-actions">
-                        <button class="ghost-button" type="button" data-document-action="prev-page" aria-disabled="${documentBrowse.summary?.hasPrev ? 'false' : 'true'}" aria-label="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasPrev ? '' : 'disabled'}>이전 ${escapeHtml(String(documentPageSize))}건</button>
-                        <button class="ghost-button" type="button" data-document-action="next-page" aria-disabled="${documentBrowse.summary?.hasNext ? 'false' : 'true'}" aria-label="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" title="${escapeHtml(documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`)}" ${documentBrowse.summary?.hasNext ? '' : 'disabled'}>다음 ${escapeHtml(String(documentPageSize))}건</button>
+                        ${renderDocumentBrowseActionButton({
+                          action: 'prev-page',
+                          actionLabel: documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`,
+                          buttonText: `이전 ${String(documentPageSize)}건`,
+                          disabled: !documentBrowse.summary?.hasPrev,
+                        })}
+                        ${renderDocumentBrowseActionButton({
+                          action: 'next-page',
+                          actionLabel: documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`,
+                          buttonText: `다음 ${String(documentPageSize)}건`,
+                          disabled: !documentBrowse.summary?.hasNext,
+                        })}
                       </div>
                     </div>`
                   : ''

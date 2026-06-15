@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T04:03:15.627Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T04:02:58.966Z
 - branch: codex/document-browse-action-button-renderer
 - commit: 808715229c7b9167b79628859c173d1cd7f1d96a
