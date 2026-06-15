@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T08:36:40.658Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T08:36:25.736Z
 - branch: codex/playbook-card-button-renderer
 - commit: 285847e16d8b784f78ce128e86f0ff92a9515c1e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/285847e16d8b784f78ce128e86f0ff92a9515c1e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

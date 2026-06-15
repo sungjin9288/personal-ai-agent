@@ -264,6 +264,19 @@ try {
     appJs.includes('<button type="button" class="template-chip" data-template-index="${index}"'),
     false,
   );
+  assert.equal(appJs.includes('renderPlaybookCardButton'), true);
+  assert.equal(appJs.includes('function renderPlaybookCardButton({'), true);
+  assert.equal(appJs.includes('const selectionLabel = active ? `현재 플레이북 선택됨: ${playbookTitle}` : `플레이북 선택: ${playbookTitle}`'), true);
+  assert.equal(appJs.includes('data-playbook-id="${escapeHtml(playbookId)}"'), true);
+  assert.equal(appJs.includes('aria-pressed="${active ? \'true\' : \'false\'}"'), true);
+  assert.equal(
+    appJs.includes('renderPlaybookCardButton({ playbook, active: playbook.id === state.selectedPlaybookId })'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('<button type="button" class="playbook-card ${playbook.id === state.selectedPlaybookId ? \'is-active\' : \'\'}"'),
+    false,
+  );
   assert.equal(appJs.includes('renderEmptyStateActionButton'), true);
   assert.equal(appJs.includes('function renderEmptyStateActionButton({'), true);
   assert.equal(appJs.includes('emptyActionLabel'), true);
