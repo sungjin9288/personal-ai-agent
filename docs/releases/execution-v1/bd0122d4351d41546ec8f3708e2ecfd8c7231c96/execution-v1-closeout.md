@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T09:01:39.299Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T09:01:28.089Z
 - branch: codex/agent-intent-pill-button-renderer
 - commit: bd0122d4351d41546ec8f3708e2ecfd8c7231c96
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/bd0122d4351d41546ec8f3708e2ecfd8c7231c96/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

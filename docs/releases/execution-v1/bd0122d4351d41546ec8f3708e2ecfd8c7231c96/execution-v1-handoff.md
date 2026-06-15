@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T09:01:39.299Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T09:01:37.797Z
 - localDate: 2026-06-15
 - branch: codex/agent-intent-pill-button-renderer
 - commit: bd0122d4351d41546ec8f3708e2ecfd8c7231c96
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/bd0122d4351d41546ec8f3708e2ecfd8c7231c96](releases/execution-v1/bd0122d4351d41546ec8f3708e2ecfd8c7231c96)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/bd0122d4351d41546ec8f3708e2ecfd8c7231c96/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/bd0122d4351d41546ec8f3708e2ecfd8c7231c96/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/bd0122d4351d41546ec8f3708e2ecfd8c7231c96](docs/releases/execution-v1/bd0122d4351d41546ec8f3708e2ecfd8c7231c96)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/agent-intent-pill-button-renderer not found
 
