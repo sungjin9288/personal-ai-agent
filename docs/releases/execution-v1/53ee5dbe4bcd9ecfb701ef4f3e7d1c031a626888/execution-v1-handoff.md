@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T05:34:54.952Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T05:34:53.519Z
 - localDate: 2026-06-15
 - branch: codex/output-tab-button-renderer
 - commit: 53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888](releases/execution-v1/53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888](docs/releases/execution-v1/53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/output-tab-button-renderer not found
 

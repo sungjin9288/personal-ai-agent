@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T05:34:54.952Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T05:34:44.586Z
 - branch: codex/output-tab-button-renderer
 - commit: 53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T05:34:54.952Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T05:34:34.456Z
 - branch: codex/output-tab-button-renderer
 - commit: 53ee5dbe4bcd9ecfb701ef4f3e7d1c031a626888
