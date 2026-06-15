@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T11:56:48.726Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T11:56:47.271Z
 - localDate: 2026-06-15
 - branch: codex/learning-promotion-remind-button-renderer
 - commit: 3f5e1b16706b6690036aa40b1a2c1c12d866bdbd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3f5e1b16706b6690036aa40b1a2c1c12d866bdbd](releases/execution-v1/3f5e1b16706b6690036aa40b1a2c1c12d866bdbd)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3f5e1b16706b6690036aa40b1a2c1c12d866bdbd/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/3f5e1b16706b6690036aa40b1a2c1c12d866bdbd/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/3f5e1b16706b6690036aa40b1a2c1c12d866bdbd](docs/releases/execution-v1/3f5e1b16706b6690036aa40b1a2c1c12d866bdbd)
 - visualArtifactSetSha256: 65a4848b1a7c37323b3f95dda5a383f84dbb81612263a2bb302c5748c155d4da
 - commitPushStatus: pushed to origin/codex/learning-promotion-remind-button-renderer
 

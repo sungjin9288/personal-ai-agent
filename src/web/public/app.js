@@ -21912,6 +21912,15 @@ function renderLearningPromotionExpireButton({ candidateId = '' } = {}) {
   });
 }
 
+function renderLearningPromotionRemindButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-learning-promotion-remind="${escapeHtml(candidateId)}"`,
+    buttonClass: 'secondary-button',
+    candidateId,
+    label: 'stop-condition 재알림',
+  });
+}
+
 function renderLearningPromotionActionButtons(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
@@ -21949,12 +21958,7 @@ function renderLearningPromotionActionButtons(item) {
   if (item.promotionStatus === 'verification-blocked') {
     if (item.needsReminder) {
       buttons.push(
-        renderLearningPromotionActionButton({
-          attributes: `data-learning-promotion-remind="${escapeHtml(candidateId)}"`,
-          buttonClass: 'secondary-button',
-          candidateId,
-          label: 'stop-condition 재알림',
-        }),
+        renderLearningPromotionRemindButton({ candidateId }),
       );
     }
     buttons.push(

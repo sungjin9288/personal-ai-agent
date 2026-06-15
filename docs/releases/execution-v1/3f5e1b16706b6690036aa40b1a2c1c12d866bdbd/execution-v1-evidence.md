@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T11:56:48.726Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T11:56:39.274Z
 - branch: codex/learning-promotion-remind-button-renderer
 - commit: 3f5e1b16706b6690036aa40b1a2c1c12d866bdbd
