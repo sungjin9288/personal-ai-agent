@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Learning Promotion Remind Button Renderer
+
+- moved the learning promotion stop-condition reminder button onto a dedicated renderer
+- kept candidate id data attribute, secondary button class, label/title metadata, visible reminder text, and reminder click wiring aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for remind renderer delegation
+
 ## 2026-06-15 Learning Promotion Expire Button Renderer
 
 - moved the learning promotion pending-review expiration button onto a dedicated renderer

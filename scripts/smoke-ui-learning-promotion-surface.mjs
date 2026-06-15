@@ -214,6 +214,11 @@ try {
   assert.equal(appJs.includes('renderLearningPromotionExpireButton({ candidateId })'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire="${escapeHtml(candidateId)}"'), true);
   assert.equal(appJs.includes("label: '대기 만료'"), true);
+  assert.equal(appJs.includes('renderLearningPromotionRemindButton'), true);
+  assert.equal(appJs.includes('function renderLearningPromotionRemindButton({'), true);
+  assert.equal(appJs.includes('renderLearningPromotionRemindButton({ candidateId })'), true);
+  assert.equal(appJs.includes('data-learning-promotion-remind="${escapeHtml(candidateId)}"'), true);
+  assert.equal(appJs.includes("label: 'stop-condition 재알림'"), true);
   assert.equal(appJs.includes('${label}: learning candidate ${candidateId}'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(actionLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(actionLabel)}"'), true);
