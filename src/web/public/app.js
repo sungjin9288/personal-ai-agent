@@ -22055,6 +22055,10 @@ function hasActiveMissionActionsFilter() {
   );
 }
 
+function renderActionInboxSummaryChip(label, value) {
+  return `<div class="summary-chip"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value ?? 0))}</strong></div>`;
+}
+
 function renderMissionActionsFilterButton(filter, label, count) {
   const active = (state.missionActionsFilter || 'all') === filter;
   const countLabel = String(count ?? 0);
@@ -22326,11 +22330,11 @@ function renderMissionActions() {
   const hasActiveFilter = hasActiveMissionActionsFilter();
   const hasSelectedMission = Boolean(state.selectedMissionId);
   elements.actionSummary.innerHTML = `
-    <div class="summary-chip"><span>전체 작업</span><strong>${escapeHtml(String(fullSummary.pendingActionCount ?? 0))}</strong></div>
-    <div class="summary-chip"><span>표시 작업</span><strong>${escapeHtml(String(summary.pendingActionCount ?? 0))}</strong></div>
-    <div class="summary-chip"><span>재알림 필요</span><strong>${escapeHtml(String(fullSummary.reminderCounts?.needsReminder ?? 0))}</strong></div>
-    <div class="summary-chip"><span>기한 초과</span><strong>${escapeHtml(String(fullSummary.overdueCounts?.overdue ?? 0))}</strong></div>
-    <div class="summary-chip"><span>fallback stop</span><strong>${escapeHtml(fallbackStopReasonFilter || 'all')}</strong></div>
+    ${renderActionInboxSummaryChip('전체 작업', fullSummary.pendingActionCount)}
+    ${renderActionInboxSummaryChip('표시 작업', summary.pendingActionCount)}
+    ${renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)}
+    ${renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)}
+    ${renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')}
     <div class="action-row action-filter-row">
       ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
       ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}

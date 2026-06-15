@@ -237,6 +237,14 @@ try {
   assert.equal(appJs.includes('aria-label="${escapeHtml(actionLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(actionLabel)}"'), true);
   assert.equal(appJs.includes('data-action-inbox-filter'), true);
+  assert.equal(appJs.includes('renderActionInboxSummaryChip'), true);
+  assert.equal(appJs.includes('function renderActionInboxSummaryChip(label, value)'), true);
+  assert.equal(appJs.includes('<div class="summary-chip"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value ?? 0))}</strong></div>'), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('전체 작업', fullSummary.pendingActionCount)"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('표시 작업', summary.pendingActionCount)"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')"), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);
   assert.equal(appJs.includes("${label} action 필터, ${countLabel}건"), true);

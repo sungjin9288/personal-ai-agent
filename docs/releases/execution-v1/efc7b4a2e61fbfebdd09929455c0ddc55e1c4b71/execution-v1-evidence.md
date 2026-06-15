@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T14:41:35.005Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T14:41:26.419Z
 - branch: codex/action-inbox-summary-chip-renderer
 - commit: efc7b4a2e61fbfebdd09929455c0ddc55e1c4b71
