@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T10:18:36.057Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T10:18:19.329Z
 - branch: codex/learning-promotion-audit-copy-button-renderer
 - commit: 3cc227b85eae9a796f5652abf57ada6a1a6991f3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3cc227b85eae9a796f5652abf57ada6a1a6991f3/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

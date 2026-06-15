@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T10:18:36.057Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T10:18:34.281Z
 - localDate: 2026-06-15
 - branch: codex/learning-promotion-audit-copy-button-renderer
 - commit: 3cc227b85eae9a796f5652abf57ada6a1a6991f3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3cc227b85eae9a796f5652abf57ada6a1a6991f3](releases/execution-v1/3cc227b85eae9a796f5652abf57ada6a1a6991f3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3cc227b85eae9a796f5652abf57ada6a1a6991f3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/3cc227b85eae9a796f5652abf57ada6a1a6991f3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/3cc227b85eae9a796f5652abf57ada6a1a6991f3](docs/releases/execution-v1/3cc227b85eae9a796f5652abf57ada6a1a6991f3)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/learning-promotion-audit-copy-button-renderer not found
 
