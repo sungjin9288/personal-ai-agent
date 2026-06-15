@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T06:02:24.154Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T06:02:12.969Z
 - branch: codex/mission-attachment-upload-button-renderer
 - commit: 582cc714ff5d95d8544d1552ada0e0b249e28f01
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/582cc714ff5d95d8544d1552ada0e0b249e28f01/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

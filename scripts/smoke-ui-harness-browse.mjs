@@ -308,8 +308,15 @@ try {
   assert.equal(appJs.includes('첨부 업로드: ${selectedHarnessMissionLabel}'), true);
   assert.equal(appJs.includes('actionLabel: legacyDevlogMigrationLabel'), true);
   assert.equal(appJs.includes("buttonText: '기존 개발 로그 전환'"), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(missionAttachmentUploadLabel)}"'), true);
-  assert.equal(appJs.includes('title="${escapeHtml(missionAttachmentUploadLabel)}"'), true);
+  assert.equal(appJs.includes('renderMissionAttachmentUploadButton'), true);
+  assert.equal(appJs.includes('function renderMissionAttachmentUploadButton({'), true);
+  assert.equal(appJs.includes("buttonText = '첨부 업로드'"), true);
+  assert.equal(appJs.includes('type="submit" aria-label="${escapeHtml(actionLabel)}"'), true);
+  assert.equal(appJs.includes('actionLabel: missionAttachmentUploadLabel'), true);
+  assert.equal(
+    appJs.includes('<button class="ghost-button" type="submit" aria-label="${escapeHtml(missionAttachmentUploadLabel)}"'),
+    false,
+  );
   assert.equal(appJs.includes('missionSelectionLabel'), true);
   assert.equal(appJs.includes('sessionSelectionLabel'), true);
   assert.equal(appJs.includes('artifactSelectionLabel'), true);
