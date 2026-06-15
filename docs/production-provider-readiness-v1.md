@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-06-15T06:02:14.486Z
-- sourceBranch: codex/mission-attachment-upload-button-renderer
-- sourceCommit: 582cc714ff5d95d8544d1552ada0e0b249e28f01
+- generatedAt: 2026-06-15T06:04:49.160Z
+- sourceBranch: main
+- sourceCommit: 95cb8a8ab5486bc19a564e1a8031070422c37fd1
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 8005 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 7617 |
 
 ## Key Signals
 
