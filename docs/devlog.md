@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Learning Promotion Rollback Button Renderer
+
+- moved the learning promotion rollback button onto a dedicated renderer
+- kept candidate id data attribute, danger button class, label/title metadata, visible rollback text, and rollback click wiring aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for rollback renderer delegation
+
 ## 2026-06-15 Learning Promotion Remind Button Renderer
 
 - moved the learning promotion stop-condition reminder button onto a dedicated renderer
