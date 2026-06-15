@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T12:35:11.041Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T12:35:09.636Z
 - localDate: 2026-06-15
 - branch: codex/learning-promotion-rollback-button-renderer
 - commit: 70d8693a1d6919c2bf6951e3970efce24afebffe
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/70d8693a1d6919c2bf6951e3970efce24afebffe](releases/execution-v1/70d8693a1d6919c2bf6951e3970efce24afebffe)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/70d8693a1d6919c2bf6951e3970efce24afebffe/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/70d8693a1d6919c2bf6951e3970efce24afebffe/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/70d8693a1d6919c2bf6951e3970efce24afebffe](docs/releases/execution-v1/70d8693a1d6919c2bf6951e3970efce24afebffe)
 - visualArtifactSetSha256: e8344945c989529506e8b90a5343c24c8a7a2840826e4cfca7be364649aa5bf6
 - commitPushStatus: pushed to origin/codex/learning-promotion-rollback-button-renderer
 

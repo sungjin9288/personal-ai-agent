@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T12:35:11.041Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T12:35:00.305Z
 - branch: codex/learning-promotion-rollback-button-renderer
 - commit: 70d8693a1d6919c2bf6951e3970efce24afebffe
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/70d8693a1d6919c2bf6951e3970efce24afebffe/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
