@@ -277,6 +277,19 @@ try {
     appJs.includes('<button type="button" class="playbook-card ${playbook.id === state.selectedPlaybookId ? \'is-active\' : \'\'}"'),
     false,
   );
+  assert.equal(appJs.includes('renderAgentIntentPillButton'), true);
+  assert.equal(appJs.includes('function renderAgentIntentPillButton({'), true);
+  assert.equal(appJs.includes('const selectionLabel = active ? `현재 AI 구성 의도: ${intentLabel}` : `AI 구성 의도 선택: ${intentLabel}`'), true);
+  assert.equal(appJs.includes('data-agent-blueprint-id="${escapeHtml(blueprintId)}"'), true);
+  assert.equal(appJs.includes('renderAgentIntentPillButton({ intent, active })'), true);
+  assert.equal(
+    appJs.includes('class="agent-intent-pill ${active ? \'is-active\' : \'\'}"'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('class="agent-intent-pill ${active ? \'is-active\' : \'\'}"\n                data-agent-blueprint-id="${escapeHtml(intent.blueprintId)}"'),
+    false,
+  );
   assert.equal(appJs.includes('renderEmptyStateActionButton'), true);
   assert.equal(appJs.includes('function renderEmptyStateActionButton({'), true);
   assert.equal(appJs.includes('emptyActionLabel'), true);

@@ -14925,6 +14925,27 @@ function renderPlaybookCardButton({ playbook = {}, active = false } = {}) {
   `;
 }
 
+function renderAgentIntentPillButton({ intent = {}, active = false } = {}) {
+  const blueprintId = String(intent.blueprintId || '');
+  const intentLabel = String(intent.label || '');
+  const intentDescription = String(intent.description || '');
+  const selectionLabel = active ? `현재 AI 구성 의도: ${intentLabel}` : `AI 구성 의도 선택: ${intentLabel}`;
+
+  return `
+    <button
+      type="button"
+      class="agent-intent-pill ${active ? 'is-active' : ''}"
+      data-agent-blueprint-id="${escapeHtml(blueprintId)}"
+      aria-pressed="${active ? 'true' : 'false'}"
+      aria-label="${escapeHtml(selectionLabel)}"
+      title="${escapeHtml(selectionLabel)}"
+    >
+      <strong>${escapeHtml(intentLabel)}</strong>
+      <span>${escapeHtml(intentDescription)}</span>
+    </button>
+  `;
+}
+
 function renderPlaybooks() {
   elements.playbookList.innerHTML = missionPlaybooks
     .map((playbook) => renderPlaybookCardButton({ playbook, active: playbook.id === state.selectedPlaybookId }))
@@ -15022,19 +15043,7 @@ function renderAgentBlueprintBuilder() {
         ${intentCatalog
           .map((intent) => {
             const active = intent.blueprintId === selectedBlueprint?.id;
-            return `
-              <button
-                type="button"
-                class="agent-intent-pill ${active ? 'is-active' : ''}"
-                data-agent-blueprint-id="${escapeHtml(intent.blueprintId)}"
-                aria-pressed="${active ? 'true' : 'false'}"
-                aria-label="${escapeHtml(active ? `현재 AI 구성 의도: ${intent.label}` : `AI 구성 의도 선택: ${intent.label}`)}"
-                title="${escapeHtml(active ? `현재 AI 구성 의도: ${intent.label}` : `AI 구성 의도 선택: ${intent.label}`)}"
-              >
-                <strong>${escapeHtml(intent.label)}</strong>
-                <span>${escapeHtml(intent.description)}</span>
-              </button>
-            `;
+            return renderAgentIntentPillButton({ intent, active });
           })
           .join('')}
       </div>
