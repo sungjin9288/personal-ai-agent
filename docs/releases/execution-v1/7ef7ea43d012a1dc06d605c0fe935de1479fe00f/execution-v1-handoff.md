@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T11:33:15.583Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T11:33:14.152Z
 - localDate: 2026-06-15
 - branch: codex/learning-promotion-expire-button-renderer
 - commit: 7ef7ea43d012a1dc06d605c0fe935de1479fe00f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7ef7ea43d012a1dc06d605c0fe935de1479fe00f](releases/execution-v1/7ef7ea43d012a1dc06d605c0fe935de1479fe00f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7ef7ea43d012a1dc06d605c0fe935de1479fe00f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/7ef7ea43d012a1dc06d605c0fe935de1479fe00f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/7ef7ea43d012a1dc06d605c0fe935de1479fe00f](docs/releases/execution-v1/7ef7ea43d012a1dc06d605c0fe935de1479fe00f)
 - visualArtifactSetSha256: 026fc67a36b1b0208f55c312da7e4959760de08c886c4202bd633df5e4c930c4
 - commitPushStatus: pushed to origin/codex/learning-promotion-expire-button-renderer
 

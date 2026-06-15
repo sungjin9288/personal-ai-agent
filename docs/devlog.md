@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Learning Promotion Expire Button Renderer
+
+- moved the learning promotion pending-review expiration button onto a dedicated renderer
+- kept candidate id data attribute, danger button class, label/title metadata, visible expire text, and expire click wiring aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for expire renderer delegation
+
 ## 2026-06-15 Learning Promotion Resolve Button Renderer
 
 - moved learning promotion approve/reject buttons onto a dedicated resolve renderer

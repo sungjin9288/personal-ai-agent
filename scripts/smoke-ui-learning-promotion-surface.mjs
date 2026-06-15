@@ -209,6 +209,11 @@ try {
   assert.equal(appJs.includes("label: '학습 승인'"), true);
   assert.equal(appJs.includes("label: '학습 반려'"), true);
   assert.equal(appJs.includes("label: 'stop-condition 반려'"), true);
+  assert.equal(appJs.includes('renderLearningPromotionExpireButton'), true);
+  assert.equal(appJs.includes('function renderLearningPromotionExpireButton({'), true);
+  assert.equal(appJs.includes('renderLearningPromotionExpireButton({ candidateId })'), true);
+  assert.equal(appJs.includes('data-learning-promotion-expire="${escapeHtml(candidateId)}"'), true);
+  assert.equal(appJs.includes("label: '대기 만료'"), true);
   assert.equal(appJs.includes('${label}: learning candidate ${candidateId}'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(actionLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(actionLabel)}"'), true);
