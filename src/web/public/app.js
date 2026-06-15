@@ -14855,16 +14855,22 @@ function renderWorkspaceCurrent() {
   `;
 }
 
+function renderTemplateChipButton({ index = 0, template = {} } = {}) {
+  const templateTitle = String(template.title || '');
+  const templateSubtitle = String(template.subtitle || '');
+  const actionLabel = `템플릿 적용: ${templateTitle}`;
+
+  return `
+    <button type="button" class="template-chip" data-template-index="${escapeHtml(String(index))}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">
+      <strong>${escapeHtml(templateTitle)}</strong>
+      <span>${escapeHtml(templateSubtitle)}</span>
+    </button>
+  `;
+}
+
 function renderTemplates() {
   elements.templateList.innerHTML = missionTemplates
-    .map(
-      (template, index) => `
-        <button type="button" class="template-chip" data-template-index="${index}" aria-label="${escapeHtml(`템플릿 적용: ${template.title}`)}" title="${escapeHtml(`템플릿 적용: ${template.title}`)}">
-          <strong>${escapeHtml(template.title)}</strong>
-          <span>${escapeHtml(template.subtitle)}</span>
-        </button>
-      `,
-    )
+    .map((template, index) => renderTemplateChipButton({ index, template }))
     .join('');
 
   elements.templateList.querySelectorAll('[data-template-index]').forEach((button) => {

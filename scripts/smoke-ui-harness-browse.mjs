@@ -255,6 +255,15 @@ try {
   assert.equal(rootHtml.includes('recoverable-provider-failure-only'), true);
   assert.equal(appJs.includes('renderHarnessFilterChips'), true);
   assert.equal(appJs.includes('refreshSelectedMissionContext'), true);
+  assert.equal(appJs.includes('renderTemplateChipButton'), true);
+  assert.equal(appJs.includes('function renderTemplateChipButton({'), true);
+  assert.equal(appJs.includes('data-template-index="${escapeHtml(String(index))}"'), true);
+  assert.equal(appJs.includes('const actionLabel = `템플릿 적용: ${templateTitle}`'), true);
+  assert.equal(appJs.includes('renderTemplateChipButton({ index, template })'), true);
+  assert.equal(
+    appJs.includes('<button type="button" class="template-chip" data-template-index="${index}"'),
+    false,
+  );
   assert.equal(appJs.includes('renderEmptyStateActionButton'), true);
   assert.equal(appJs.includes('function renderEmptyStateActionButton({'), true);
   assert.equal(appJs.includes('emptyActionLabel'), true);
