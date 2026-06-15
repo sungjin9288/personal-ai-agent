@@ -22233,6 +22233,22 @@ function renderMissionActionsFallbackStopReasonOptions() {
     .join('');
 }
 
+function renderActionInboxFallbackStopFilterSelect({
+  hasFallbackStopReasonOptions = false,
+  options = '',
+  placeholder = 'fallback stop 없음',
+} = {}) {
+  const selectTitle = hasFallbackStopReasonOptions
+    ? 'fallback stop reason 필터 선택'
+    : '선택 가능한 fallback stop reason이 없습니다';
+  return `
+      <select data-action-inbox-fallback-stop-filter="true" aria-label="${escapeHtml(selectTitle)}" title="${escapeHtml(selectTitle)}" ${hasFallbackStopReasonOptions ? '' : 'disabled'}>
+        <option value="">${escapeHtml(placeholder)}</option>
+        ${options}
+      </select>
+    `;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22305,9 +22321,6 @@ function renderMissionActions() {
   const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
   const fallbackStopReasonOptions = renderMissionActionsFallbackStopReasonOptions();
   const hasFallbackStopReasonOptions = Boolean(fallbackStopReasonOptions.trim());
-  const fallbackStopReasonSelectTitle = hasFallbackStopReasonOptions
-    ? 'fallback stop reason 필터 선택'
-    : '선택 가능한 fallback stop reason이 없습니다';
   const fallbackStopReasonPlaceholder = hasFallbackStopReasonOptions ? 'fallback stop 전체' : 'fallback stop 없음';
   const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
   const hasActiveFilter = hasActiveMissionActionsFilter();
@@ -22322,10 +22335,11 @@ function renderMissionActions() {
       ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
       ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
       ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
-      <select data-action-inbox-fallback-stop-filter="true" aria-label="${escapeHtml(fallbackStopReasonSelectTitle)}" title="${escapeHtml(fallbackStopReasonSelectTitle)}" ${hasFallbackStopReasonOptions ? '' : 'disabled'}>
-        <option value="">${escapeHtml(fallbackStopReasonPlaceholder)}</option>
-        ${fallbackStopReasonOptions}
-      </select>
+      ${renderActionInboxFallbackStopFilterSelect({
+        hasFallbackStopReasonOptions,
+        options: fallbackStopReasonOptions,
+        placeholder: fallbackStopReasonPlaceholder,
+      })}
       ${renderActionInboxFallbackStopResetButton({ hasFallbackStopReason: Boolean(fallbackStopReasonFilter) })}
       ${renderActionInboxClearFiltersButton({ hasActiveFilter })}
       ${renderActionInboxCopyLinkButton({ hasSelectedMission })}

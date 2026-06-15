@@ -243,6 +243,13 @@ try {
   assert.equal(appJs.includes('aria-label="${escapeHtml(filterButtonTitle)}"'), true);
   assert.equal(appJs.includes('action 필터'), true);
   assert.equal(appJs.includes('data-action-inbox-fallback-stop-filter'), true);
+  assert.equal(appJs.includes('renderActionInboxFallbackStopFilterSelect'), true);
+  assert.equal(appJs.includes('function renderActionInboxFallbackStopFilterSelect({'), true);
+  assert.equal(appJs.includes('renderActionInboxFallbackStopFilterSelect({'), true);
+  assert.equal(appJs.includes('const selectTitle = hasFallbackStopReasonOptions'), true);
+  assert.equal(appJs.includes("'fallback stop reason 필터 선택'"), true);
+  assert.equal(appJs.includes('<option value="">${escapeHtml(placeholder)}</option>'), true);
+  assert.equal(appJs.includes('options: fallbackStopReasonOptions'), true);
   assert.equal(appJs.includes('data-action-inbox-fallback-stop-reset'), true);
   assert.equal(appJs.includes('data-action-inbox-clear-filters'), true);
   assert.equal(appJs.includes('data-action-inbox-copy-link'), true);
@@ -250,9 +257,9 @@ try {
   assert.equal(appJs.includes('providerFallbackStopReason'), true);
   assert.equal(appJs.includes('counts[activeReason] = 0'), true);
   assert.equal(appJs.includes("${hasFallbackStopReasonOptions ? '' : 'disabled'}"), true);
-  assert.equal(appJs.includes('fallbackStopReasonSelectTitle'), true);
+  assert.equal(appJs.includes('selectTitle'), true);
   assert.equal(appJs.includes('선택 가능한 fallback stop reason이 없습니다'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(fallbackStopReasonSelectTitle)}"'), true);
+  assert.equal(appJs.includes('aria-label="${escapeHtml(selectTitle)}"'), true);
   assert.equal(appJs.includes('fallbackStopReasonPlaceholder'), true);
   assert.equal(appJs.includes('fallback stop 전체'), true);
   assert.equal(appJs.includes('fallback stop 없음'), true);
