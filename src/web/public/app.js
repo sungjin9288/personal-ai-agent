@@ -22265,6 +22265,16 @@ function renderActionInboxCallout({ count = 0, hasActiveFilter = false, visibleF
   `;
 }
 
+function renderActionInboxItemStatus(item = {}) {
+  const actionClass = item.actionClass || 'open';
+  const priority = item.priority || 'medium';
+  return `
+          <div class="status-row">
+            <span class="status-badge ${getStatusClass(actionClass)}">${escapeHtml(getDisplayLabel(item.actionClass, actionClass))}</span>
+            <span class="mini-badge ${getStatusClass(priority)}">${escapeHtml(getDisplayLabel(item.priority, priority))}</span>
+          </div>`;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22393,10 +22403,7 @@ function renderMissionActions() {
     .map(
       (item) => `
         <div class="action-item">
-          <div class="status-row">
-            <span class="status-badge ${getStatusClass(item.actionClass || 'open')}">${escapeHtml(getDisplayLabel(item.actionClass, item.actionClass || 'open'))}</span>
-            <span class="mini-badge ${getStatusClass(item.priority || 'medium')}">${escapeHtml(getDisplayLabel(item.priority, item.priority || 'medium'))}</span>
-          </div>
+          ${renderActionInboxItemStatus(item)}
           <div class="item-title">${escapeHtml(item.title || item.actionId || item.id)}</div>
           <div class="item-subtitle">${escapeHtml(item.reason || '')}</div>
           <div class="item-meta">담당 ${escapeHtml(item.recommendedOwner || '-')} · 기한 ${escapeHtml(formatDate(item.dueAt))}</div>

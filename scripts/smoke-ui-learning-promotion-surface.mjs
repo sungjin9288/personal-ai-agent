@@ -251,6 +251,13 @@ try {
   assert.equal(appJs.includes('review-callout review-callout-action'), true);
   assert.equal(appJs.includes('후속 작업 ${escapeHtml(String(count))}건'), true);
   assert.equal(appJs.includes('전체 작업 수는 summary chip에서 유지됩니다.'), true);
+  assert.equal(appJs.includes('renderActionInboxItemStatus'), true);
+  assert.equal(appJs.includes('function renderActionInboxItemStatus(item = {})'), true);
+  assert.equal(appJs.includes('renderActionInboxItemStatus(item)'), true);
+  assert.equal(appJs.includes("const actionClass = item.actionClass || 'open'"), true);
+  assert.equal(appJs.includes("const priority = item.priority || 'medium'"), true);
+  assert.equal(appJs.includes('status-badge ${getStatusClass(actionClass)}'), true);
+  assert.equal(appJs.includes('mini-badge ${getStatusClass(priority)}'), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);
   assert.equal(appJs.includes("${label} action 필터, ${countLabel}건"), true);
