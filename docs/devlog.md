@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Action Inbox Fallback Stop Filter Select Renderer
+
+- moved the action inbox fallback stop reason select onto a dedicated renderer
+- kept select data attribute, enabled/disabled state, placeholder copy, aria/title metadata, option markup, and filter wiring aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for fallback stop select renderer delegation
+
 ## 2026-06-15 Learning Promotion Command Meta Renderer
 
 - moved learning promotion resolve, expire, rollback, stop-condition reject, and reminder command meta rows onto a dedicated renderer

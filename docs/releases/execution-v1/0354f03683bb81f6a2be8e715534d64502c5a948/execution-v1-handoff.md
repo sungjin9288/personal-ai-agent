@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T14:04:04.515Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T14:04:02.945Z
 - localDate: 2026-06-15
 - branch: codex/action-inbox-fallback-stop-select-renderer
 - commit: 0354f03683bb81f6a2be8e715534d64502c5a948
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0354f03683bb81f6a2be8e715534d64502c5a948](releases/execution-v1/0354f03683bb81f6a2be8e715534d64502c5a948)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0354f03683bb81f6a2be8e715534d64502c5a948/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0354f03683bb81f6a2be8e715534d64502c5a948/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0354f03683bb81f6a2be8e715534d64502c5a948](docs/releases/execution-v1/0354f03683bb81f6a2be8e715534d64502c5a948)
 - visualArtifactSetSha256: 0022d5663d695ecf0be1d11c67ec9d5fa6b836a8d9a08a1a39a043e3b1037f7a
 - commitPushStatus: not pushed, origin/codex/action-inbox-fallback-stop-select-renderer not found
 

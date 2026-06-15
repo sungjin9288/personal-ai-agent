@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T14:04:04.515Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T14:03:56.061Z
 - branch: codex/action-inbox-fallback-stop-select-renderer
 - commit: 0354f03683bb81f6a2be8e715534d64502c5a948
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0354f03683bb81f6a2be8e715534d64502c5a948/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T14:04:04.515Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T14:03:55.976Z
 - branch: codex/action-inbox-fallback-stop-select-renderer
 - commit: 0354f03683bb81f6a2be8e715534d64502c5a948
