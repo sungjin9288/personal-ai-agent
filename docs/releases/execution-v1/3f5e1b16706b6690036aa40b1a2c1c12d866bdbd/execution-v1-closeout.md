@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T11:56:48.726Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T11:56:39.370Z
 - branch: codex/learning-promotion-remind-button-renderer
 - commit: 3f5e1b16706b6690036aa40b1a2c1c12d866bdbd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3f5e1b16706b6690036aa40b1a2c1c12d866bdbd/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
