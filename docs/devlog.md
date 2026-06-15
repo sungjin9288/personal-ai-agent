@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Mission Selection Button Renderer
+
+- moved mission list selection buttons onto a dedicated mission selection renderer
+- kept mission id data attribute, active pressed state, labels, titles, row content, and selection click wiring aligned with the existing mission list contract
+- reused selectable detail button rendering and extended UI harness browse smoke coverage for mission selection renderer delegation and direct markup removal
+
 ## 2026-06-15 Output Tab Button Renderer
 
 - moved output primary and secondary tab buttons onto a dedicated output tab renderer
