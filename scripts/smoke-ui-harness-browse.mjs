@@ -290,6 +290,19 @@ try {
     appJs.includes('class="agent-intent-pill ${active ? \'is-active\' : \'\'}"\n                data-agent-blueprint-id="${escapeHtml(intent.blueprintId)}"'),
     false,
   );
+  assert.equal(appJs.includes('renderAgentBlueprintCardButton'), true);
+  assert.equal(appJs.includes('function renderAgentBlueprintCardButton({'), true);
+  assert.equal(appJs.includes('const selectionLabel = active ? `현재 AI 구성 카드: ${blueprintTitle}` : `AI 구성 카드 선택: ${blueprintTitle}`'), true);
+  assert.equal(appJs.includes('data-agent-blueprint-id="${escapeHtml(blueprintId)}"'), true);
+  assert.equal(appJs.includes('const specialistKinds = Array.isArray(blueprint.specialistKinds) ? blueprint.specialistKinds : []'), true);
+  assert.equal(
+    appJs.includes('renderAgentBlueprintCardButton({ blueprint, active: blueprint.id === selectedBlueprint?.id })'),
+    true,
+  );
+  assert.equal(
+    appJs.includes('class="agent-blueprint-card ${blueprint.id === selectedBlueprint?.id ? \'is-active\' : \'\'}"'),
+    false,
+  );
   assert.equal(appJs.includes('renderEmptyStateActionButton'), true);
   assert.equal(appJs.includes('function renderEmptyStateActionButton({'), true);
   assert.equal(appJs.includes('emptyActionLabel'), true);

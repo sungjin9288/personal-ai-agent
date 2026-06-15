@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T09:34:20.032Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T09:34:08.129Z
 - branch: codex/agent-blueprint-card-button-renderer
 - commit: f1ba425a5d9adc58fea0aa64b757e1d9a575c624
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f1ba425a5d9adc58fea0aa64b757e1d9a575c624/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
