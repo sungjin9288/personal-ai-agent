@@ -1905,7 +1905,15 @@ try {
   assert.equal(appJs.includes("action: 'execution-start'"), true);
   assert.equal(appJs.includes('실행 시작: ${executionMissionLabel}'), true);
   assert.equal(appJs.includes('승인 대기 중: ${executionMissionLabel}'), true);
-  assert.equal(appJs.includes('aria-disabled="true" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}"'), true);
+  assert.equal(appJs.includes('renderExecutionApprovalPendingButton'), true);
+  assert.equal(appJs.includes('function renderExecutionApprovalPendingButton({'), true);
+  assert.equal(appJs.includes("buttonText = '승인 대기 중'"), true);
+  assert.equal(appJs.includes('aria-disabled="true" aria-label="${escapeHtml(actionLabel)}"'), true);
+  assert.equal(appJs.includes('actionLabel: `승인 대기 중: ${executionMissionLabel}`'), true);
+  assert.equal(
+    appJs.includes('<button class="secondary-button" type="button" aria-disabled="true" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}"'),
+    false,
+  );
   assert.equal(appJs.includes("action: 'execution-preflight'"), true);
   assert.equal(appJs.includes("value: 'request-approval'"), true);
   assert.equal(appJs.includes('실행 승인 요청: ${executionMissionLabel}'), true);

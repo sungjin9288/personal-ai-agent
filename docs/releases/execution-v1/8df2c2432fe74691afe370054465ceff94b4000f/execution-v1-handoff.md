@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T06:12:36.640Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T06:12:35.185Z
 - localDate: 2026-06-15
 - branch: codex/execution-approval-pending-button-renderer
 - commit: 8df2c2432fe74691afe370054465ceff94b4000f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/8df2c2432fe74691afe370054465ceff94b4000f](releases/execution-v1/8df2c2432fe74691afe370054465ceff94b4000f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8df2c2432fe74691afe370054465ceff94b4000f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/8df2c2432fe74691afe370054465ceff94b4000f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/8df2c2432fe74691afe370054465ceff94b4000f](docs/releases/execution-v1/8df2c2432fe74691afe370054465ceff94b4000f)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/execution-approval-pending-button-renderer not found
 

@@ -16549,6 +16549,14 @@ function renderExecutionControlActionButton({
   return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}"${valueAttribute} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderExecutionApprovalPendingButton({
+  actionLabel = '',
+  buttonText = '승인 대기 중',
+  className = 'secondary-button',
+} = {}) {
+  return `<button class="${escapeHtml(className)}" type="button" aria-disabled="true" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}" disabled>${escapeHtml(buttonText)}</button>`;
+}
+
 function renderExecutionConsole() {
   if (!elements.executionConsole) {
     return;
@@ -16608,7 +16616,9 @@ function renderExecutionConsole() {
         className: 'primary-button',
       })
     : execution?.latestApproval?.status === 'pending'
-      ? `<button class="secondary-button" type="button" aria-disabled="true" aria-label="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" title="${escapeHtml(`승인 대기 중: ${executionMissionLabel}`)}" disabled>승인 대기 중</button>`
+      ? renderExecutionApprovalPendingButton({
+          actionLabel: `승인 대기 중: ${executionMissionLabel}`,
+        })
       : renderExecutionControlActionButton({
           action: 'execution-preflight',
           actionLabel: `실행 승인 요청: ${executionMissionLabel}`,
