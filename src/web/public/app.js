@@ -21921,6 +21921,15 @@ function renderLearningPromotionRemindButton({ candidateId = '' } = {}) {
   });
 }
 
+function renderLearningPromotionRollbackButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-learning-promotion-rollback="${escapeHtml(candidateId)}"`,
+    buttonClass: 'danger-button',
+    candidateId,
+    label: '학습 rollback',
+  });
+}
+
 function renderLearningPromotionActionButtons(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
@@ -21973,12 +21982,7 @@ function renderLearningPromotionActionButtons(item) {
 
   if (item.rollbackEligible) {
     buttons.push(
-      renderLearningPromotionActionButton({
-        attributes: `data-learning-promotion-rollback="${escapeHtml(candidateId)}"`,
-        buttonClass: 'danger-button',
-        candidateId,
-        label: '학습 rollback',
-      }),
+      renderLearningPromotionRollbackButton({ candidateId }),
     );
   }
 

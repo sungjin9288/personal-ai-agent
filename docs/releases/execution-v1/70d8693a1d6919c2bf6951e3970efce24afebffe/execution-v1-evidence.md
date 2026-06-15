@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T12:35:11.041Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T12:35:00.173Z
 - branch: codex/learning-promotion-rollback-button-renderer
 - commit: 70d8693a1d6919c2bf6951e3970efce24afebffe
