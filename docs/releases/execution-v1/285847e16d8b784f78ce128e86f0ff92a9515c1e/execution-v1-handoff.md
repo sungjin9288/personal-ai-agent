@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T08:36:40.658Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T08:36:38.991Z
 - localDate: 2026-06-15
 - branch: codex/playbook-card-button-renderer
 - commit: 285847e16d8b784f78ce128e86f0ff92a9515c1e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/285847e16d8b784f78ce128e86f0ff92a9515c1e](releases/execution-v1/285847e16d8b784f78ce128e86f0ff92a9515c1e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/285847e16d8b784f78ce128e86f0ff92a9515c1e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/285847e16d8b784f78ce128e86f0ff92a9515c1e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/285847e16d8b784f78ce128e86f0ff92a9515c1e](docs/releases/execution-v1/285847e16d8b784f78ce128e86f0ff92a9515c1e)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/playbook-card-button-renderer not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T08:36:40.658Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T08:36:25.371Z
 - branch: codex/playbook-card-button-renderer
 - commit: 285847e16d8b784f78ce128e86f0ff92a9515c1e
