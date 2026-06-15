@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Execution Approval Pending Button Renderer
+
+- moved the execution approval-pending disabled status button onto a dedicated renderer
+- kept disabled state, aria-disabled, button style, label/title text, and visible copy aligned with the existing execution control contract
+- extended UI harness browse smoke coverage for approval-pending renderer delegation and direct markup removal
+
 ## 2026-06-15 Mission Attachment Upload Button Renderer
 
 - moved the mission harness attachment upload submit button onto a dedicated renderer
