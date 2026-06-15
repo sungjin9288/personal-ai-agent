@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Output Tab Button Renderer
+
+- moved output primary and secondary tab buttons onto a dedicated output tab renderer
+- kept output tab data attributes, active pressed state, labels, titles, button classes, and visible copy aligned with the existing detail toolbar contract
+- reused selectable detail button rendering and extended UI harness browse smoke coverage for output tab renderer delegation and direct markup removal
+
 ## 2026-06-15 Provider Fallback Event Action Button Renderer
 
 - moved provider fallback event reset and audit package buttons onto a dedicated fallback event action renderer

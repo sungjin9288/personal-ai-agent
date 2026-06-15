@@ -345,6 +345,23 @@ try {
   assert.equal(appJs.includes('const classAttribute = className ? ` class="${escapeHtml(className)}"` : \'\''), true);
   assert.equal(appJs.includes('const dataAttributeMarkup = attributeName ? ` ${attributeName}="${escapeHtml(dataValue)}"` : \'\''), true);
   assert.equal(appJs.includes('renderOutputToolbarToggleButton'), true);
+  assert.equal(appJs.includes('renderOutputTabButton'), true);
+  assert.equal(appJs.includes('function renderOutputTabButton({'), true);
+  assert.equal(appJs.includes("tabType === 'secondary' ? 'secondary' : 'primary'"), true);
+  assert.equal(appJs.includes("dataAttribute: `data-output-${normalizedTabType}-tab`"), true);
+  assert.equal(appJs.includes("selectionLabel: `결과 ${tabTypeLabel} 탭 열기: ${tabLabel} · ${outputToolbarTargetLabel}`"), true);
+  assert.equal(
+    appJs.includes("renderOutputTabButton({ outputToolbarTargetLabel, tab, tabType: 'primary' })"),
+    true,
+  );
+  assert.equal(
+    appJs.includes("renderOutputTabButton({ outputToolbarTargetLabel, tab, tabType: 'secondary' })"),
+    true,
+  );
+  assert.equal(appJs.includes('class="detail-primary-nav-button${tab.isActive ? \' is-active\' : \'\'}"'), false);
+  assert.equal(appJs.includes('class="detail-secondary-nav-button${tab.isActive ? \' is-active\' : \'\'}"'), false);
+  assert.equal(appJs.includes('data-output-primary-tab="${escapeHtml(tab.id)}"'), false);
+  assert.equal(appJs.includes('data-output-secondary-tab="${escapeHtml(tab.id)}"'), false);
   assert.equal(appJs.includes('action: \'toggle-output-primary-tabs\''), true);
   assert.equal(appJs.includes('action: \'toggle-output-tools\''), true);
   assert.equal(appJs.includes('action: \'toggle-output-secondary-tabs\''), true);
@@ -1924,8 +1941,8 @@ try {
   assert.equal(appJs.includes('결과 사이드바 접기: ${outputToolbarTargetLabel}'), true);
   assert.equal(appJs.includes('결과 미션 요약 펼치기: ${outputToolbarTargetLabel}'), true);
   assert.equal(appJs.includes('결과 미션 요약 접기: ${outputToolbarTargetLabel}'), true);
-  assert.equal(appJs.includes('결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}'), true);
-  assert.equal(appJs.includes('결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}'), true);
+  assert.equal(appJs.includes("const tabTypeLabel = normalizedTabType === 'secondary' ? '보조' : '주';"), true);
+  assert.equal(appJs.includes('결과 ${tabTypeLabel} 탭 열기: ${tabLabel} · ${outputToolbarTargetLabel}'), true);
   assert.equal(appJs.includes('${item.actionLabel}: ${item.label || item.actionValue}'), true);
   assert.equal(appJs.includes('handoffActionTargetLabel'), true);
   assert.equal(appJs.includes('handoff summary line 복사: ${handoffActionTargetLabel}'), true);
@@ -3828,7 +3845,8 @@ function assertStaticStateMetadata({ appJs, rootHtml }) {
   assertSourceIncludes(appJs, "button.removeAttribute('aria-current')", 'inactive step state sync');
   assertSourceIncludes(appJs, "panel.setAttribute('aria-hidden', active ? 'false' : 'true')", 'panel hidden state sync');
   assertSourceIncludes(appJs, "button.setAttribute('aria-selected', active ? 'true' : 'false')", 'detail tab selected state sync');
-  assertSourceIncludes(appJs, 'aria-pressed="${tab.isActive ? \'true\' : \'false\'}"', 'output toolbar tab pressed state');
+  assertSourceIncludes(appJs, 'aria-pressed="${active ? \'true\' : \'false\'}"', 'selectable detail pressed state');
+  assertSourceIncludes(appJs, 'active: Boolean(tab.isActive)', 'output toolbar tab pressed state');
 }
 
 function assertToggleExpandedMetadata({ appJs, rootHtml }) {
