@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Document Browse Action Button Renderer
+
+- moved document browse migration, reset, edit, delete, previous page, and next page buttons onto a dedicated document action renderer
+- kept document action ids, optional document ids, disabled state, label/title text, and visible copy aligned with the existing harness UI contract
+- extended UI harness browse smoke coverage for document action renderer delegation and direct markup removal
+
 ## 2026-06-15 Empty State Action Button Renderer
 
 - moved common empty-state action buttons onto a dedicated renderer
