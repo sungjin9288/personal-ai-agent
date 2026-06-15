@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-15T04:47:31.842Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-15T04:47:17.637Z
 - branch: codex/memory-browse-action-button-renderer
 - commit: 7c77a42c71a642014d1edbfd3e7bd93b861807b8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7c77a42c71a642014d1edbfd3e7bd93b861807b8/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

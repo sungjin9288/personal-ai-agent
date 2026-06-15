@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-15T04:47:31.842Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-15T04:47:30.183Z
 - localDate: 2026-06-15
 - branch: codex/memory-browse-action-button-renderer
 - commit: 7c77a42c71a642014d1edbfd3e7bd93b861807b8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7c77a42c71a642014d1edbfd3e7bd93b861807b8](releases/execution-v1/7c77a42c71a642014d1edbfd3e7bd93b861807b8)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/7c77a42c71a642014d1edbfd3e7bd93b861807b8/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/7c77a42c71a642014d1edbfd3e7bd93b861807b8/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/7c77a42c71a642014d1edbfd3e7bd93b861807b8](docs/releases/execution-v1/7c77a42c71a642014d1edbfd3e7bd93b861807b8)
 - visualArtifactSetSha256: 38d43b8ee8fbdf89a22fdabc733757a41a7b36e47f549122e60fe19893d1d7ed
 - commitPushStatus: not pushed, origin/codex/memory-browse-action-button-renderer not found
 
