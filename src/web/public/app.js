@@ -15300,6 +15300,20 @@ function renderProviderFallbackEventCountChips(counts = {}, marker = '') {
     .join('');
 }
 
+function renderProviderFallbackEventActionButton({
+  action = '',
+  actionLabel = '',
+  buttonText = '',
+  className = 'ghost-button',
+} = {}) {
+  const actionName = String(action || '').trim();
+  if (!/^(reset|package)$/.test(actionName)) {
+    return '';
+  }
+  const actionAttribute = `data-provider-fallback-event-${actionName}`;
+  return `<button class="${escapeHtml(className)}" type="button" ${actionAttribute}="true" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
 function formatProviderFallbackEventCountLines(counts = {}, emptyLabel = 'none') {
   const entries = getReleaseCountRecordEntries(counts);
   if (!entries.length) {
@@ -15434,8 +15448,17 @@ function renderProviderFallbackEventAudit() {
             '모든 stop reason',
           )}
         </select>
-        <button class="ghost-button" type="button" data-provider-fallback-event-reset="true" aria-label="${escapeHtml(fallbackEventResetLabel)}" title="${escapeHtml(fallbackEventResetLabel)}">필터 초기화</button>
-        <button class="secondary-button" type="button" data-provider-fallback-event-package="true" aria-label="${escapeHtml(fallbackEventPackageLabel)}" title="${escapeHtml(fallbackEventPackageLabel)}">audit package 복사</button>
+        ${renderProviderFallbackEventActionButton({
+          action: 'reset',
+          actionLabel: fallbackEventResetLabel,
+          buttonText: '필터 초기화',
+        })}
+        ${renderProviderFallbackEventActionButton({
+          action: 'package',
+          actionLabel: fallbackEventPackageLabel,
+          buttonText: 'audit package 복사',
+          className: 'secondary-button',
+        })}
       </div>
       <div class="quick-actions provider-event-counts">
         <div class="summary-chip" data-provider-fallback-event-total="true">
