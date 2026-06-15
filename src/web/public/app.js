@@ -21876,6 +21876,23 @@ function formatLearningPromotionDetails(item) {
     .join(' · ');
 }
 
+function renderLearningPromotionCommandMeta(item) {
+  if (item?.actionType !== 'learning-promotion') {
+    return '';
+  }
+
+  return [
+    ['resolve', item.resolveCommand],
+    ['expire', item.expireCommand],
+    ['rollback', item.rollbackCommand],
+    ['stop-condition', item.stopConditionRejectCommand],
+    ['reminder', item.remindCommand],
+  ]
+    .filter(([, command]) => command)
+    .map(([label, command]) => `<div class="item-meta mono">${escapeHtml(label)}: ${escapeHtml(command)}</div>`)
+    .join('');
+}
+
 function renderLearningPromotionActionButton({ attributes = '', buttonClass = 'ghost-button', candidateId = '', label = '' } = {}) {
   const actionLabel = `${label}: learning candidate ${candidateId}`;
   return `<button class="${escapeHtml(buttonClass)}" type="button" ${attributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(label)}</button>`;
@@ -22383,31 +22400,7 @@ function renderMissionActions() {
               ? `<div class="item-meta">${escapeHtml(formatLearningPromotionDetails(item))}</div>`
               : ''
           }
-          ${
-            item.actionType === 'learning-promotion' && item.resolveCommand
-              ? `<div class="item-meta mono">resolve: ${escapeHtml(item.resolveCommand)}</div>`
-              : ''
-          }
-          ${
-            item.actionType === 'learning-promotion' && item.expireCommand
-              ? `<div class="item-meta mono">expire: ${escapeHtml(item.expireCommand)}</div>`
-              : ''
-          }
-          ${
-            item.actionType === 'learning-promotion' && item.rollbackCommand
-              ? `<div class="item-meta mono">rollback: ${escapeHtml(item.rollbackCommand)}</div>`
-              : ''
-          }
-          ${
-            item.actionType === 'learning-promotion' && item.stopConditionRejectCommand
-              ? `<div class="item-meta mono">stop-condition: ${escapeHtml(item.stopConditionRejectCommand)}</div>`
-              : ''
-          }
-          ${
-            item.actionType === 'learning-promotion' && item.remindCommand
-              ? `<div class="item-meta mono">reminder: ${escapeHtml(item.remindCommand)}</div>`
-              : ''
-          }
+          ${renderLearningPromotionCommandMeta(item)}
           <div class="action-row">
             ${
               item.missionId
