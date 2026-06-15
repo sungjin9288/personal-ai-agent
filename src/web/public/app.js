@@ -21903,6 +21903,15 @@ function renderLearningPromotionResolveButton({
   });
 }
 
+function renderLearningPromotionExpireButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-learning-promotion-expire="${escapeHtml(candidateId)}"`,
+    buttonClass: 'danger-button',
+    candidateId,
+    label: '대기 만료',
+  });
+}
+
 function renderLearningPromotionActionButtons(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
@@ -21933,12 +21942,7 @@ function renderLearningPromotionActionButtons(item) {
       }),
     );
     buttons.push(
-      renderLearningPromotionActionButton({
-        attributes: `data-learning-promotion-expire="${escapeHtml(candidateId)}"`,
-        buttonClass: 'danger-button',
-        candidateId,
-        label: '대기 만료',
-      }),
+      renderLearningPromotionExpireButton({ candidateId }),
     );
   }
 
