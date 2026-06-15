@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Memory Browse Action Button Renderer
+
+- moved memory browse reset, edit, delete, previous page, and next page buttons onto a dedicated memory action renderer
+- kept memory action ids, memory ids, scope attributes, disabled state, label/title text, and visible copy aligned with the existing harness UI contract
+- extended UI harness browse smoke coverage for memory action renderer delegation and direct markup removal
+
 ## 2026-06-15 Document Browse Action Button Renderer
 
 - moved document browse migration, reset, edit, delete, previous page, and next page buttons onto a dedicated document action renderer

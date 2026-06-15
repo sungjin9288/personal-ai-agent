@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-15T04:47:31.842Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-15T04:47:07.480Z
 - branch: codex/memory-browse-action-button-renderer
 - commit: 7c77a42c71a642014d1edbfd3e7bd93b861807b8
