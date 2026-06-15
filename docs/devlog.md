@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Agent Blueprint Card Button Renderer
+
+- moved agent blueprint card buttons onto a dedicated renderer
+- kept blueprint id data attribute, active pressed state, label/title text, visible blueprint metadata, recommended provider detail, specialist tags, and blueprint selection click wiring aligned with the existing agent blueprint contract
+- extended UI harness browse smoke coverage for agent blueprint card renderer delegation and direct markup removal
+
 ## 2026-06-15 Agent Intent Pill Button Renderer
 
 - moved agent blueprint intent pill buttons onto a dedicated renderer

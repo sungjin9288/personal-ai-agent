@@ -14946,6 +14946,55 @@ function renderAgentIntentPillButton({ intent = {}, active = false } = {}) {
   `;
 }
 
+function renderAgentBlueprintCardButton({ blueprint = {}, active = false } = {}) {
+  const blueprintId = String(blueprint.id || '');
+  const blueprintTitle = String(blueprint.title || '');
+  const blueprintDescription = String(blueprint.description || '');
+  const blueprintEmphasis = String(blueprint.emphasis || '');
+  const specialistKinds = Array.isArray(blueprint.specialistKinds) ? blueprint.specialistKinds : [];
+  const blueprintBestFor = String(blueprint.bestFor || '가볍게 시작할 때');
+  const blueprintOutcome = String(blueprint.outcome || '기본 실행 제안');
+  const recommendedProvider = String(blueprint.recommendedProvider || '');
+  const selectionLabel = active ? `현재 AI 구성 카드: ${blueprintTitle}` : `AI 구성 카드 선택: ${blueprintTitle}`;
+
+  return `
+    <button
+      type="button"
+      class="agent-blueprint-card ${active ? 'is-active' : ''}"
+      data-agent-blueprint-id="${escapeHtml(blueprintId)}"
+      aria-pressed="${active ? 'true' : 'false'}"
+      aria-label="${escapeHtml(selectionLabel)}"
+      title="${escapeHtml(selectionLabel)}"
+    >
+      <div class="agent-blueprint-card-top">
+        <span class="mini-badge">${escapeHtml(blueprintEmphasis)}</span>
+        <span class="agent-blueprint-card-count">${escapeHtml(`+${specialistKinds.length}`)}</span>
+      </div>
+      <strong>${escapeHtml(blueprintTitle)}</strong>
+      <p>${escapeHtml(blueprintDescription)}</p>
+      <div class="agent-blueprint-card-detail">
+        <span>추천 상황</span>
+        <strong>${escapeHtml(blueprintBestFor)}</strong>
+      </div>
+      <div class="agent-blueprint-card-detail">
+        <span>결과</span>
+        <strong>${escapeHtml(blueprintOutcome)}</strong>
+      </div>
+      ${
+        recommendedProvider
+          ? `<div class="agent-blueprint-card-detail">
+              <span>권장 provider</span>
+              <strong>${escapeHtml(recommendedProvider)}</strong>
+            </div>`
+          : ''
+      }
+      <div class="tag-list">
+        ${renderSpecialistTagList(specialistKinds)}
+      </div>
+    </button>
+  `;
+}
+
 function renderPlaybooks() {
   elements.playbookList.innerHTML = missionPlaybooks
     .map((playbook) => renderPlaybookCardButton({ playbook, active: playbook.id === state.selectedPlaybookId }))
@@ -15081,43 +15130,8 @@ function renderAgentBlueprintBuilder() {
 
       <div class="agent-blueprint-grid">
         ${catalog
-          .map(
-            (blueprint) => `
-              <button
-                type="button"
-                class="agent-blueprint-card ${blueprint.id === selectedBlueprint?.id ? 'is-active' : ''}"
-                data-agent-blueprint-id="${escapeHtml(blueprint.id)}"
-                aria-pressed="${blueprint.id === selectedBlueprint?.id ? 'true' : 'false'}"
-                aria-label="${escapeHtml(blueprint.id === selectedBlueprint?.id ? `현재 AI 구성 카드: ${blueprint.title}` : `AI 구성 카드 선택: ${blueprint.title}`)}"
-                title="${escapeHtml(blueprint.id === selectedBlueprint?.id ? `현재 AI 구성 카드: ${blueprint.title}` : `AI 구성 카드 선택: ${blueprint.title}`)}"
-              >
-                <div class="agent-blueprint-card-top">
-                  <span class="mini-badge">${escapeHtml(blueprint.emphasis)}</span>
-                  <span class="agent-blueprint-card-count">${escapeHtml(`+${blueprint.specialistKinds.length}`)}</span>
-                </div>
-                <strong>${escapeHtml(blueprint.title)}</strong>
-                <p>${escapeHtml(blueprint.description)}</p>
-                <div class="agent-blueprint-card-detail">
-                  <span>추천 상황</span>
-                  <strong>${escapeHtml(blueprint.bestFor || '가볍게 시작할 때')}</strong>
-                </div>
-                <div class="agent-blueprint-card-detail">
-                  <span>결과</span>
-                  <strong>${escapeHtml(blueprint.outcome || '기본 실행 제안')}</strong>
-                </div>
-                ${
-                  blueprint.recommendedProvider
-                    ? `<div class="agent-blueprint-card-detail">
-                        <span>권장 provider</span>
-                        <strong>${escapeHtml(blueprint.recommendedProvider)}</strong>
-                      </div>`
-                    : ''
-                }
-                <div class="tag-list">
-                  ${renderSpecialistTagList(blueprint.specialistKinds)}
-                </div>
-              </button>
-            `,
+          .map((blueprint) =>
+            renderAgentBlueprintCardButton({ blueprint, active: blueprint.id === selectedBlueprint?.id }),
           )
           .join('')}
       </div>
