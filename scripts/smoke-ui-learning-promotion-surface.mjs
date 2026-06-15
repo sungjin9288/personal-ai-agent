@@ -200,6 +200,15 @@ try {
   assert.equal(appJs.includes('renderLearningPromotionAuditCopyButton({ candidateId })'), true);
   assert.equal(appJs.includes('data-learning-promotion-audit-copy="${escapeHtml(candidateId)}"'), true);
   assert.equal(appJs.includes("label: 'audit package 복사'"), true);
+  assert.equal(appJs.includes('renderLearningPromotionResolveButton'), true);
+  assert.equal(appJs.includes('function renderLearningPromotionResolveButton({'), true);
+  assert.equal(appJs.includes('renderLearningPromotionResolveButton({'), true);
+  assert.equal(appJs.includes('data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="${escapeHtml(decision)}"'), true);
+  assert.equal(appJs.includes("decision: 'approve'"), true);
+  assert.equal(appJs.includes("decision: 'reject'"), true);
+  assert.equal(appJs.includes("label: '학습 승인'"), true);
+  assert.equal(appJs.includes("label: '학습 반려'"), true);
+  assert.equal(appJs.includes("label: 'stop-condition 반려'"), true);
   assert.equal(appJs.includes('${label}: learning candidate ${candidateId}'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(actionLabel)}"'), true);
   assert.equal(appJs.includes('title="${escapeHtml(actionLabel)}"'), true);

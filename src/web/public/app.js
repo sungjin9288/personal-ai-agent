@@ -21889,6 +21889,20 @@ function renderLearningPromotionAuditCopyButton({ candidateId = '' } = {}) {
   });
 }
 
+function renderLearningPromotionResolveButton({
+  buttonClass = 'ghost-button',
+  candidateId = '',
+  decision = '',
+  label = '',
+} = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="${escapeHtml(decision)}"`,
+    buttonClass,
+    candidateId,
+    label,
+  });
+}
+
 function renderLearningPromotionActionButtons(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
@@ -21904,17 +21918,17 @@ function renderLearningPromotionActionButtons(item) {
 
   if (item.promotionStatus === 'pending-review') {
     buttons.push(
-      renderLearningPromotionActionButton({
-        attributes: `data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="approve"`,
+      renderLearningPromotionResolveButton({
         buttonClass: 'primary-button',
         candidateId,
+        decision: 'approve',
         label: '학습 승인',
       }),
     );
     buttons.push(
-      renderLearningPromotionActionButton({
-        attributes: `data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="reject"`,
+      renderLearningPromotionResolveButton({
         candidateId,
+        decision: 'reject',
         label: '학습 반려',
       }),
     );
@@ -21940,10 +21954,10 @@ function renderLearningPromotionActionButtons(item) {
       );
     }
     buttons.push(
-      renderLearningPromotionActionButton({
-        attributes: `data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="reject"`,
+      renderLearningPromotionResolveButton({
         buttonClass: 'danger-button',
         candidateId,
+        decision: 'reject',
         label: 'stop-condition 반려',
       }),
     );
