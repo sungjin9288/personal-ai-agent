@@ -12023,18 +12023,7 @@ function renderDetailToolbarActions() {
     <div class="detail-primary-nav${supportCollapsed && state.outputPrimaryTabsExpanded ? ' is-expanded' : ''}" aria-label="주 탭">
       ${visiblePrimaryTabs
         .map(
-          (tab) => `
-            <button
-              class="detail-primary-nav-button${tab.isActive ? ' is-active' : ''}"
-              type="button"
-              data-output-primary-tab="${escapeHtml(tab.id)}"
-              aria-pressed="${tab.isActive ? 'true' : 'false'}"
-              aria-label="${escapeHtml(`결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
-              title="${escapeHtml(`결과 주 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
-            >
-              ${escapeHtml(tab.label)}
-            </button>
-          `,
+          (tab) => renderOutputTabButton({ outputToolbarTargetLabel, tab, tabType: 'primary' }),
         )
         .join('')}
     </div>
@@ -12116,18 +12105,7 @@ function renderDetailToolbarActions() {
           <div class="detail-secondary-nav" aria-label="보조 탭">
             ${secondaryTabs
               .map(
-                (tab) => `
-                  <button
-                    class="detail-secondary-nav-button${tab.isActive ? ' is-active' : ''}"
-                    type="button"
-                    data-output-secondary-tab="${escapeHtml(tab.id)}"
-                    aria-pressed="${tab.isActive ? 'true' : 'false'}"
-                    aria-label="${escapeHtml(`결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
-                    title="${escapeHtml(`결과 보조 탭 열기: ${tab.label} · ${outputToolbarTargetLabel}`)}"
-                  >
-                    ${escapeHtml(tab.label)}
-                  </button>
-                `,
+                (tab) => renderOutputTabButton({ outputToolbarTargetLabel, tab, tabType: 'secondary' }),
               )
               .join('')}
           </div>
@@ -22066,6 +22044,24 @@ function renderOutputToolbarToggleButton({
     return '';
   }
   return `<button class="${escapeHtml(className)}" type="button" data-ui-action="${escapeHtml(actionName)}" aria-expanded="${expanded ? 'true' : 'false'}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
+}
+
+function renderOutputTabButton({ outputToolbarTargetLabel = '', tab = {}, tabType = 'primary' } = {}) {
+  const tabId = String(tab.id || '').trim();
+  const tabLabel = String(tab.label || '').trim();
+  const normalizedTabType = tabType === 'secondary' ? 'secondary' : 'primary';
+  const tabTypeLabel = normalizedTabType === 'secondary' ? '보조' : '주';
+  if (!tabId || !tabLabel) {
+    return '';
+  }
+  return renderSelectableDetailButton({
+    active: Boolean(tab.isActive),
+    className: `detail-${normalizedTabType}-nav-button${tab.isActive ? ' is-active' : ''}`,
+    content: escapeHtml(tabLabel),
+    dataAttribute: `data-output-${normalizedTabType}-tab`,
+    dataValue: tabId,
+    selectionLabel: `결과 ${tabTypeLabel} 탭 열기: ${tabLabel} · ${outputToolbarTargetLabel}`,
+  });
 }
 
 function renderFlowQuickActionButton({
