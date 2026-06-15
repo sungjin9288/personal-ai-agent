@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-15 Action Inbox Summary Chip Renderer
+
+- moved repeated action inbox summary chips onto a dedicated renderer
+- kept summary labels, fallback stop value, numeric defaults, and escaped chip value markup aligned with the existing action inbox summary contract
+- extended UI learning promotion smoke coverage for summary chip renderer delegation
+
 ## 2026-06-15 Action Inbox Fallback Stop Filter Select Renderer
 
 - moved the action inbox fallback stop reason select onto a dedicated renderer
