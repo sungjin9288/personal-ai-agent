@@ -22253,6 +22253,18 @@ function renderActionInboxFallbackStopFilterSelect({
     `;
 }
 
+function renderActionInboxCallout({ count = 0, hasActiveFilter = false, visibleFilterLabel = '전체' } = {}) {
+  const message = !hasActiveFilter
+    ? '재실행 권장이나 reviewer follow-up 같은 열린 작업을 정리하면 검토 단계가 더 깔끔하게 닫힙니다.'
+    : `${visibleFilterLabel} 필터로 표시 중입니다. 전체 작업 수는 summary chip에서 유지됩니다.`;
+  return `
+    <div class="review-callout review-callout-action">
+      <strong>후속 작업 ${escapeHtml(String(count))}건</strong>
+      <p>${escapeHtml(message)}</p>
+    </div>
+  `;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22371,16 +22383,11 @@ function renderMissionActions() {
     return;
   }
 
-  const callout = `
-    <div class="review-callout review-callout-action">
-      <strong>후속 작업 ${escapeHtml(String(items.length))}건</strong>
-      <p>${escapeHtml(
-        !hasActiveFilter
-          ? '재실행 권장이나 reviewer follow-up 같은 열린 작업을 정리하면 검토 단계가 더 깔끔하게 닫힙니다.'
-          : `${visibleFilterLabel} 필터로 표시 중입니다. 전체 작업 수는 summary chip에서 유지됩니다.`,
-      )}</p>
-    </div>
-  `;
+  const callout = renderActionInboxCallout({
+    count: items.length,
+    hasActiveFilter,
+    visibleFilterLabel,
+  });
 
   elements.actionList.innerHTML = `${callout}${items
     .map(
