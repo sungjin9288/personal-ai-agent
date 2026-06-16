@@ -22558,6 +22558,46 @@ function wireActionInboxRerunButtons(items = []) {
   });
 }
 
+function wireActionInboxProviderAttentionButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-provider-attention-remediate]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const actionId = button.dataset.providerAttentionRemediate;
+      const mode = button.dataset.providerAttentionMode || 'primary';
+      const item = items.find((entry) => entry.actionId === actionId);
+      if (!item) {
+        return;
+      }
+
+      const payload = getProviderAttentionRemediationPayload(item, mode);
+      if (mode !== 'primary' && !payload.fallbackProvider) {
+        window.alert('fallback provider를 찾을 수 없습니다.');
+        return;
+      }
+
+      const confirmed = window.confirm(
+        mode === 'recoverable-fallback'
+          ? `${item.providerDisplayName || item.providerId || 'provider'} failure가 recoverable일 때만 fallback 복구를 실행할까요?`
+          : mode === 'fallback'
+            ? `${payload.fallbackProvider} fallback provider로 provider attention 복구를 실행할까요?`
+            : `${item.providerDisplayName || item.providerId || 'provider'} remediation을 실행할까요?`,
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      await api(`/api/actions/provider-attention/${encodeURIComponent(actionId)}/remediate`, {
+        body: JSON.stringify(payload),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22610,44 +22650,7 @@ function renderMissionActions() {
 
   wireActionInboxOpenButtons();
   wireActionInboxRerunButtons(items);
-
-  elements.actionList.querySelectorAll('[data-provider-attention-remediate]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const actionId = button.dataset.providerAttentionRemediate;
-      const mode = button.dataset.providerAttentionMode || 'primary';
-      const item = items.find((entry) => entry.actionId === actionId);
-      if (!item) {
-        return;
-      }
-
-      const payload = getProviderAttentionRemediationPayload(item, mode);
-      if (mode !== 'primary' && !payload.fallbackProvider) {
-        window.alert('fallback provider를 찾을 수 없습니다.');
-        return;
-      }
-
-      const confirmed = window.confirm(
-        mode === 'recoverable-fallback'
-          ? `${item.providerDisplayName || item.providerId || 'provider'} failure가 recoverable일 때만 fallback 복구를 실행할까요?`
-          : mode === 'fallback'
-            ? `${payload.fallbackProvider} fallback provider로 provider attention 복구를 실행할까요?`
-            : `${item.providerDisplayName || item.providerId || 'provider'} remediation을 실행할까요?`,
-      );
-      if (!confirmed) {
-        return;
-      }
-
-      await api(`/api/actions/provider-attention/${encodeURIComponent(actionId)}/remediate`, {
-        body: JSON.stringify(payload),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
+  wireActionInboxProviderAttentionButtons(items);
 
   elements.actionList.querySelectorAll('[data-specialist-follow-up-remediate]').forEach((button) => {
     button.addEventListener('click', async () => {
