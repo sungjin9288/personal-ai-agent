@@ -245,6 +245,14 @@ try {
   assert.equal(appJs.includes("renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)"), true);
   assert.equal(appJs.includes("renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)"), true);
   assert.equal(appJs.includes("renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')"), true);
+  assert.equal(appJs.includes('renderActionInboxSummary'), true);
+  assert.equal(appJs.includes('function renderActionInboxSummary({'), true);
+  assert.equal(appJs.includes('renderActionInboxSummary({'), true);
+  assert.equal(appJs.includes('fallbackStopReasonFilter,'), true);
+  assert.equal(appJs.includes('fallbackStopReasonOptions,'), true);
+  assert.equal(appJs.includes('fallbackStopReasonPlaceholder,'), true);
+  assert.equal(appJs.includes('hasFallbackStopReasonOptions,'), true);
+  assert.equal(appJs.includes('hasSelectedMission,'), true);
   assert.equal(appJs.includes('renderActionInboxCallout'), true);
   assert.equal(appJs.includes('function renderActionInboxCallout({'), true);
   assert.equal(appJs.includes('renderActionInboxCallout({'), true);

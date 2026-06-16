@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Summary Renderer
+
+- moved action inbox summary chips and filter row composition onto a dedicated renderer
+- kept summary counts, fallback stop select, reset, clear filters, and copy link controls aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for summary renderer delegation
+
 ## 2026-06-16 Action Inbox List Renderer
 
 - moved action inbox list composition onto a dedicated renderer
