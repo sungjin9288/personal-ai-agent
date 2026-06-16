@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T01:54:13.736Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T01:54:12.318Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-open-rerun-wiring
 - commit: 6a79a0239221294fbd84351128600e18a2096127
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6a79a0239221294fbd84351128600e18a2096127](releases/execution-v1/6a79a0239221294fbd84351128600e18a2096127)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6a79a0239221294fbd84351128600e18a2096127/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6a79a0239221294fbd84351128600e18a2096127/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6a79a0239221294fbd84351128600e18a2096127](docs/releases/execution-v1/6a79a0239221294fbd84351128600e18a2096127)
 - visualArtifactSetSha256: d3b11fbdf8595df477608bfba33ef9ac8e5f77cf4fe59f7cb7cf05cd6c2d27a1
 - commitPushStatus: not pushed, origin/codex/action-inbox-open-rerun-wiring not found
 

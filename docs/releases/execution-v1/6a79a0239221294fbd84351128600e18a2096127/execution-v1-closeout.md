@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-16T01:54:13.736Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-16T01:54:04.114Z
 - branch: codex/action-inbox-open-rerun-wiring
 - commit: 6a79a0239221294fbd84351128600e18a2096127
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6a79a0239221294fbd84351128600e18a2096127/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
