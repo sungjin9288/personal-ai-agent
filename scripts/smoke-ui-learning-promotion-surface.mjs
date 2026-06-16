@@ -187,6 +187,9 @@ try {
   assert.equal(appJs.includes("mode: 'fallback'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '복구성 fallback'"), true);
   assert.equal(appJs.includes("mode: 'recoverable-fallback'"), true);
+  assert.equal(appJs.includes('function wireActionInboxProviderAttentionButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxProviderAttentionButtons(items);'), true);
+  assert.equal(appJs.includes('/api/actions/provider-attention/${encodeURIComponent(actionId)}/remediate'), true);
   assert.equal(appJs.includes('data-specialist-follow-up-remediate'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-specialist-follow-up-remediate'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '전문가 복구'"), true);
