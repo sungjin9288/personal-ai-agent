@@ -22661,6 +22661,16 @@ function wireActionInboxLearningPromotionResolveButtons(items = []) {
   });
 }
 
+function wireActionInboxLearningPromotionAuditCopyButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-learning-promotion-audit-copy]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionAuditCopy;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      await copyLearningPromotionAuditPackage(item);
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22716,14 +22726,7 @@ function renderMissionActions() {
   wireActionInboxProviderAttentionButtons(items);
   wireActionInboxSpecialistFollowUpButtons(items);
   wireActionInboxLearningPromotionResolveButtons(items);
-
-  elements.actionList.querySelectorAll('[data-learning-promotion-audit-copy]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionAuditCopy;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      await copyLearningPromotionAuditPackage(item);
-    });
-  });
+  wireActionInboxLearningPromotionAuditCopyButtons(items);
 
   elements.actionList.querySelectorAll('[data-learning-promotion-expire]').forEach((button) => {
     button.addEventListener('click', async () => {

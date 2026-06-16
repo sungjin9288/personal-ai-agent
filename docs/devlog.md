@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Learning Promotion Audit Copy Wiring
+
+- moved action inbox learning promotion audit package copy click wiring onto a dedicated wiring helper
+- kept candidate lookup and audit package copy behavior aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for audit copy wiring delegation
+
 ## 2026-06-16 Action Inbox Learning Promotion Resolve Wiring
 
 - moved action inbox learning promotion approve/reject click wiring onto a dedicated wiring helper
