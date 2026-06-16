@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-16T01:36:07.745Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-16T01:35:59.162Z
 - branch: codex/action-inbox-unavailable-state-renderer
 - commit: c7665319ad9bb873bc22fa752bb0a7f77f3b738f
