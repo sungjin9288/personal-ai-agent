@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Unavailable State Renderer
+
+- moved action inbox unavailable summary and list empty states onto a dedicated renderer
+- kept no-mission summary copy, jump-step action, list empty copy, and quick action wiring aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for unavailable state renderer delegation
+
 ## 2026-06-16 Action Inbox Empty List Renderer
 
 - moved action inbox empty list state composition onto a dedicated renderer
