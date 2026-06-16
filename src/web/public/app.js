@@ -22516,6 +22516,48 @@ function wireMissionActionsFilterControls() {
   });
 }
 
+function wireActionInboxOpenButtons() {
+  elements.actionList.querySelectorAll('[data-action-open]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await selectMission(button.dataset.actionOpen, {
+        preferredDetailTab: 'reviews',
+        preferredStep: 'step-review',
+        urlMode: 'push',
+      });
+    });
+  });
+}
+
+function wireActionInboxRerunButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-action-rerun]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const item = items.find((entry) => entry.actionId === button.dataset.actionRerun);
+      if (!item?.missionId) {
+        return;
+      }
+      const provider = inferProviderFromCommand(item.recommendedCommand || item.commandHint || '');
+      const confirmed = window.confirm(
+        provider
+          ? `이 미션을 ${provider} 제공자로 다시 실행할까요?`
+          : '이 미션을 현재 기본 제공자 정책으로 다시 실행할까요?',
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      await api(`/api/missions/${encodeURIComponent(item.missionId)}/run`, {
+        body: JSON.stringify({ provider }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId === item.missionId) {
+        await selectMission(item.missionId, { urlMode: 'replace' });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22566,43 +22608,8 @@ function renderMissionActions() {
     visibleFilterLabel,
   });
 
-  elements.actionList.querySelectorAll('[data-action-open]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      await selectMission(button.dataset.actionOpen, {
-        preferredDetailTab: 'reviews',
-        preferredStep: 'step-review',
-        urlMode: 'push',
-      });
-    });
-  });
-
-  elements.actionList.querySelectorAll('[data-action-rerun]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const item = items.find((entry) => entry.actionId === button.dataset.actionRerun);
-      if (!item?.missionId) {
-        return;
-      }
-      const provider = inferProviderFromCommand(item.recommendedCommand || item.commandHint || '');
-      const confirmed = window.confirm(
-        provider
-          ? `이 미션을 ${provider} 제공자로 다시 실행할까요?`
-          : '이 미션을 현재 기본 제공자 정책으로 다시 실행할까요?',
-      );
-      if (!confirmed) {
-        return;
-      }
-
-      await api(`/api/missions/${encodeURIComponent(item.missionId)}/run`, {
-        body: JSON.stringify({ provider }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId === item.missionId) {
-        await selectMission(item.missionId, { urlMode: 'replace' });
-      }
-    });
-  });
+  wireActionInboxOpenButtons();
+  wireActionInboxRerunButtons(items);
 
   elements.actionList.querySelectorAll('[data-provider-attention-remediate]').forEach((button) => {
     button.addEventListener('click', async () => {

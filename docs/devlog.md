@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Open Rerun Wiring
+
+- moved action inbox mission open and recommended rerun click wiring onto dedicated wiring helpers
+- kept review tab navigation, provider inference, rerun confirmation, mission reload, approval reload, and selected mission refresh behavior aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for open and rerun wiring delegation
+
 ## 2026-06-16 Action Inbox Unavailable State Renderer
 
 - moved action inbox unavailable summary and list empty states onto a dedicated renderer
