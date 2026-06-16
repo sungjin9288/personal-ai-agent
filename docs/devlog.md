@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Empty List Renderer
+
+- moved action inbox empty list state composition onto a dedicated renderer
+- kept filtered and unfiltered empty messages, titles, and empty-state icon aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for empty list renderer delegation
+
 ## 2026-06-16 Action Inbox Summary Renderer
 
 - moved action inbox summary chips and filter row composition onto a dedicated renderer

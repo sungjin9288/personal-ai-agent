@@ -22434,6 +22434,23 @@ function renderActionInboxSummary({
   `;
 }
 
+function renderActionInboxEmptyList({
+  hasActiveFilter = false,
+  visibleFilterLabel = '전체',
+} = {}) {
+  return emptyStateCard({
+    icon: 'OK',
+    message:
+      !hasActiveFilter
+        ? '현재 이 미션에는 열린 후속 작업이 없습니다. 리뷰어 후속 요청과 승인 대기 항목이 모두 정리된 상태입니다.'
+        : `${visibleFilterLabel} 필터에 맞는 열린 후속 작업이 없습니다.`,
+    title:
+      !hasActiveFilter
+        ? '후속 작업 큐가 비어 있습니다'
+        : `${visibleFilterLabel} 항목이 없습니다`,
+  });
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22528,16 +22545,9 @@ function renderMissionActions() {
 
   const items = visibleActions.items || [];
   if (!items.length) {
-    elements.actionList.innerHTML = emptyStateCard({
-      icon: 'OK',
-      message:
-        !hasActiveFilter
-          ? '현재 이 미션에는 열린 후속 작업이 없습니다. 리뷰어 후속 요청과 승인 대기 항목이 모두 정리된 상태입니다.'
-          : `${visibleFilterLabel} 필터에 맞는 열린 후속 작업이 없습니다.`,
-      title:
-        !hasActiveFilter
-          ? '후속 작업 큐가 비어 있습니다'
-          : `${visibleFilterLabel} 항목이 없습니다`,
+    elements.actionList.innerHTML = renderActionInboxEmptyList({
+      hasActiveFilter,
+      visibleFilterLabel,
     });
     return;
   }

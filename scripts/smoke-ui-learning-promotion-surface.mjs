@@ -253,6 +253,12 @@ try {
   assert.equal(appJs.includes('fallbackStopReasonPlaceholder,'), true);
   assert.equal(appJs.includes('hasFallbackStopReasonOptions,'), true);
   assert.equal(appJs.includes('hasSelectedMission,'), true);
+  assert.equal(appJs.includes('renderActionInboxEmptyList'), true);
+  assert.equal(appJs.includes('function renderActionInboxEmptyList({'), true);
+  assert.equal(appJs.includes('renderActionInboxEmptyList({'), true);
+  assert.equal(appJs.includes('후속 작업 큐가 비어 있습니다'), true);
+  assert.equal(appJs.includes('${visibleFilterLabel} 항목이 없습니다'), true);
+  assert.equal(appJs.includes('${visibleFilterLabel} 필터에 맞는 열린 후속 작업이 없습니다.'), true);
   assert.equal(appJs.includes('renderActionInboxCallout'), true);
   assert.equal(appJs.includes('function renderActionInboxCallout({'), true);
   assert.equal(appJs.includes('renderActionInboxCallout({'), true);
