@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T06:47:37.263Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T06:47:35.787Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-learning-expire-wiring
 - commit: a690573cc05a0957092228d8284c6b6d92c83fdb
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a690573cc05a0957092228d8284c6b6d92c83fdb](releases/execution-v1/a690573cc05a0957092228d8284c6b6d92c83fdb)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a690573cc05a0957092228d8284c6b6d92c83fdb/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a690573cc05a0957092228d8284c6b6d92c83fdb/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a690573cc05a0957092228d8284c6b6d92c83fdb](docs/releases/execution-v1/a690573cc05a0957092228d8284c6b6d92c83fdb)
 - visualArtifactSetSha256: f0e1782b7553d81986c9fa8ced64960775f2a33a0c6e8d84797d0f6127e4489c
 - commitPushStatus: not pushed, origin/codex/action-inbox-learning-expire-wiring not found
 
