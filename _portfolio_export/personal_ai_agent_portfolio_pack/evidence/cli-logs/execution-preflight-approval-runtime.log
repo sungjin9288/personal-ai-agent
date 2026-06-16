@@ -1,0 +1,51 @@
+$ node src/cli.mjs mission execution preflight mission_20260609060035_b10cc9 --request-approval
+{
+  "approval": null,
+  "execution": {
+    "blockedReasons": [
+      "knowledge 모드는 문서/메모 중심이며 직접 실행을 지원하지 않습니다."
+    ],
+    "eligibility": "blocked",
+    "currentLease": null,
+    "latestLease": null,
+    "latestApproval": null,
+    "latestExecutionSession": null,
+    "manifest": null,
+    "manifestHash": "",
+    "mutationBundle": null,
+    "policy": {
+      "allowed": false,
+      "allowedCount": 0,
+      "blockedCount": 0,
+      "warningCount": 0,
+      "allowedItems": [],
+      "blockedItems": [],
+      "warningItems": []
+    },
+    "reviewSessionId": "session_20260609060035_ba6107",
+    "supported": false,
+    "workspacePath": "/Users/<user>/dev/personal/personal-ai-agent"
+  },
+  "mission": {
+    "id": "mission_20260609060035_b10cc9",
+    "workspaceId": "workspace_20260409013620_f6a7ec",
+    "mode": "knowledge",
+    "title": "Bootstrap dry run",
+    "objective": "Validate the local managed run flow.",
+    "constraints": [],
+    "deliverableType": "decision-memo",
+    "status": "completed",
+    "createdAt": "2026-06-09T06:00:35.570Z",
+    "updatedAt": "2026-06-09T06:00:35.673Z",
+    "gatewayEventId": "gatewayevent_20260609060035_e7ca33",
+    "gatewayEventSchemaVersion": "personal-ai-agent-gateway-event/v1"
+  },
+  "workspace": {
+    "id": "workspace_20260409013620_f6a7ec",
+    "name": "personal-ai-agent",
+    "path": "/Users/<user>/dev/personal/personal-ai-agent",
+    "createdAt": "2026-04-09T01:36:20.767Z"
+  }
+}
+
+exit_code=0

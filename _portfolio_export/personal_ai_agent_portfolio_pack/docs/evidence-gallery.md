@@ -1,0 +1,54 @@
+# Evidence Gallery
+
+## 1. CLI Evidence
+
+| Evidence | File | What It Shows |
+|---|---|---|
+| Base smoke | `evidence/cli-logs/npm-run-smoke.log` | local smoke flow, generated mission ids, approval id, `exit_code=0` |
+| Bootstrap mission run | `evidence/cli-logs/bootstrap-local-runtime.log` | mission/session creation, stub provider run, reviewer pass, artifact ids |
+| Mission show | `evidence/cli-logs/mission-show-runtime.log` | mission read model after run completion |
+| Session show | `evidence/cli-logs/session-show-runtime.log` | completed session lifecycle and persisted agent run ids |
+| Learning promotion gate | `evidence/cli-logs/learning-promotions-runtime.log` | human-approver review gate for generated learning candidate |
+| Execution preflight boundary | `evidence/cli-logs/execution-preflight-approval-runtime.log` | direct execution intentionally blocked for knowledge-mode mission |
+| Provider adapter structure | `evidence/cli-logs/provider-adapter-structure.log` | provider adapter exports, catalog fields, registry flow |
+| Provider list | `evidence/cli-logs/provider-list.log` | provider registry exposes implemented provider metadata |
+| Global overview | `evidence/cli-logs/overview-global.log` | local runtime read model can summarize workspaces/missions |
+| Hermes blocker handoff | `evidence/cli-logs/release-blockers-hermes.log` | provider production blockers are explicit rather than hidden |
+
+## 2. API Evidence
+
+| Evidence | File | What It Shows |
+|---|---|---|
+| Health endpoint | `evidence/api-responses/api-health.json` | local web server health and runtime status |
+| Meta endpoint | `evidence/api-responses/api-meta.json` | auth/RBAC/tenant mode metadata |
+| Providers endpoint | `evidence/api-responses/api-providers.json` | provider readiness and configuration metadata without secret values |
+| Execution v1 status | `evidence/api-responses/api-execution-v1-status.json` | release/evidence status surface |
+
+## 3. Screenshot Evidence
+
+| Evidence | File | What It Shows |
+|---|---|---|
+| Operator console home | `evidence/screenshots/operator-console-home.png` | local web operator console loaded through Playwright |
+
+## 4. Architecture Evidence
+
+| Evidence | File | What It Shows |
+|---|---|---|
+| Current architecture | `evidence/architecture/current-architecture.mmd` | CLI/web/service/harness/provider/store relationship |
+| Mission run sequence | `evidence/architecture/mission-run-sequence.mmd` | mission execution flow from operator to provider and store |
+| Provider adapter structure | `evidence/architecture/provider-adapter-structure.mmd` | provider catalog and adapter registry relationship |
+
+## 5. Output Artifact Evidence
+
+| Evidence | File | What It Shows |
+|---|---|---|
+| Execution evidence | `evidence/output-artifacts/execution-v1-evidence.md` | existing execution-v1 verification evidence |
+| Execution handoff | `evidence/output-artifacts/execution-v1-handoff.md` | existing operator handoff summary |
+| Release readiness | `evidence/output-artifacts/release-readiness-v1.md` | pilot-ready boundary and production blockers |
+| Runtime mission artifacts | `evidence/output-artifacts/runtime-mission-artifact-list.log` | prompt, plan, deliverable, reviewer, and learning candidate artifacts created by one mission run |
+
+## 6. Portfolio Usage Notes
+
+- Use CLI/API/screenshot evidence to support “implemented local-first agent harness” claims.
+- Use release blocker evidence to avoid risky claims such as production-ready, hosted SaaS ready, or all-provider live validated.
+- Use architecture diagrams in interviews to explain how CLI/web, mission service, runtime harness, provider registry, and local store interact.

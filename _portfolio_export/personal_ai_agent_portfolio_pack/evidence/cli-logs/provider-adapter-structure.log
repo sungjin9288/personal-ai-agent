@@ -1,0 +1,54 @@
+$ rg provider adapter structure
+src/harness/runtime-harness.mjs:11:export function createRuntimeHarness({ store }) {
+src/providers/stub-provider.mjs:485:export function createStubProvider({ rootDir }) {
+src/providers/stub-provider.mjs:545:        transport: 'deterministic-local',
+src/core/mission-service.mjs:73:import { createProviderRegistry } from '../providers/index.mjs';
+src/core/mission-service.mjs:4219:export function createMissionService({ store, rootDir = store.rootDir }) {
+src/core/mission-service.mjs:4222:  const providerRegistry = createProviderRegistry({ rootDir });
+src/core/mission-service.mjs:8373:      defaultProviderId: providerRegistry.getDefaultProviderId(),
+src/core/mission-service.mjs:8770:        transport: probe.transport || null,
+src/core/mission-service.mjs:9887:  async function probeProvider(providerId) {
+src/core/mission-service.mjs:9888:    const result = await providerRegistry.probeProvider(providerId);
+src/core/mission-service.mjs:9906:      transport: normalizeText(result.transport),
+src/core/mission-service.mjs:10541:    const primaryProviderId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
+src/core/mission-service.mjs:10699:    const providerId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
+src/core/mission-service.mjs:16041:      const probe = await probeProvider(attentionItem.providerId);
+src/core/mission-service.mjs:19632:    probeProvider,
+src/providers/provider-catalog.mjs:9:    requiredEnv: [],
+src/providers/provider-catalog.mjs:10:    transport: 'deterministic-local',
+src/providers/provider-catalog.mjs:13:    capabilities: Object.freeze({
+src/providers/provider-catalog.mjs:47:    requiredEnv: Object.freeze(['OPENAI_API_KEY']),
+src/providers/provider-catalog.mjs:48:    transport: 'responses-api',
+src/providers/provider-catalog.mjs:60:    capabilities: Object.freeze({
+src/providers/provider-catalog.mjs:130:    requiredEnv: Object.freeze(['ANTHROPIC_API_KEY']),
+src/providers/provider-catalog.mjs:131:    transport: 'messages-api',
+src/providers/provider-catalog.mjs:147:    capabilities: Object.freeze({
+src/providers/provider-catalog.mjs:217:    requiredEnv: Object.freeze(['LOCAL_PROVIDER_MODEL']),
+src/providers/provider-catalog.mjs:218:    transport: 'openai-compatible-chat-completions',
+src/providers/provider-catalog.mjs:231:    capabilities: Object.freeze({
+src/providers/provider-catalog.mjs:296:    requiredEnv: Object.freeze(['HERMES_PROVIDER_MODEL']),
+src/providers/provider-catalog.mjs:297:    transport: 'openai-compatible-hermes-chat-completions',
+src/providers/provider-catalog.mjs:312:    capabilities: Object.freeze({
+src/providers/provider-catalog.mjs:379:    capabilities: {
+src/providers/provider-catalog.mjs:387:    requiredEnv: [...spec.requiredEnv],
+src/providers/openai-provider.mjs:81:export function createOpenAIProvider({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
+src/providers/openai-provider.mjs:131:        transport: OPENAI_SPEC.transport,
+src/providers/anthropic-provider.mjs:82:export function createAnthropicProvider({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
+src/providers/anthropic-provider.mjs:133:        transport: ANTHROPIC_SPEC.transport,
+src/providers/local-provider.mjs:71:export function createLocalProvider({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
+src/providers/local-provider.mjs:125:        transport: LOCAL_SPEC.transport,
+src/providers/hermes-provider.mjs:100:export function createHermesProvider({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
+src/providers/hermes-provider.mjs:154:        transport: HERMES_SPEC.transport,
+src/providers/provider-runtime-utils.mjs:98:export function createProviderFailure(message, failure = {}) {
+src/providers/index.mjs:35:    capabilities: {
+src/providers/index.mjs:47:    requiredEnv: [...spec.requiredEnv],
+src/providers/index.mjs:49:    transport: spec.transport,
+src/providers/index.mjs:57:export function createProviderRegistry({ rootDir, env = process.env, fetchImpl = globalThis.fetch }) {
+src/providers/index.mjs:66:  function getDefaultProviderId() {
+src/providers/index.mjs:86:    getDefaultProviderId,
+src/providers/index.mjs:96:      const defaultProviderId = getDefaultProviderId();
+src/providers/index.mjs:109:        getDefaultProviderId(),
+src/providers/index.mjs:112:    async probeProvider(providerId) {
+src/providers/index.mjs:122:        getDefaultProviderId(),
+
+exit_code=0

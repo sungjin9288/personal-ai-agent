@@ -1,0 +1,10 @@
+$ node src/cli.mjs approval inbox --mission mission_20260609060035_b10cc9
+{
+  "items": [],
+  "summary": {
+    "pendingCount": 0,
+    "workspaceCounts": {}
+  }
+}
+
+exit_code=0

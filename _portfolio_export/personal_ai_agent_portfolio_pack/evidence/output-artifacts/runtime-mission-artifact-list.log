@@ -1,0 +1,12 @@
+$ find var/missions/mission_20260609060035_b10cc9 -maxdepth 4 -type f
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/decision-memo.md
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/executor-prompt.md
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/learning-candidate.json
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/manager-context.md
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/manager-prompt.md
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/planner-plan.md
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/planner-prompt.md
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/reviewer-prompt.md
+var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/reviewer-report.md
+
+exit_code=0

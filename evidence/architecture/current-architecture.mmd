@@ -1,0 +1,17 @@
+flowchart TD
+  Operator["Operator / Developer"] --> CLI["CLI: src/cli.mjs"]
+  Operator --> WebUI["Web UI: src/web/public/*"]
+  WebUI --> WebAPI["HTTP API: src/web/server.mjs"]
+  CLI --> MissionService["Mission Service: src/core/mission-service.mjs"]
+  WebAPI --> MissionService
+  MissionService --> Harness["Runtime Harness: src/harness/runtime-harness.mjs"]
+  MissionService --> Store["Local JSON Store: var/state.json"]
+  Harness --> Agents["Agent Roles: manager / planner / executor / reviewer / specialist"]
+  Harness --> Artifacts["Mission Artifacts: var/missions/**"]
+  Agents --> Providers["Provider Registry: src/providers/index.mjs"]
+  Providers --> Stub["Stub Provider"]
+  Providers --> OpenAI["OpenAI Adapter"]
+  Providers --> Anthropic["Anthropic Adapter"]
+  Providers --> LocalProvider["Local OpenAI-compatible Adapter"]
+  Providers --> Hermes["Hermes-compatible Adapter"]
+  MissionService --> Evidence["Release Evidence Docs and Smoke Scripts"]

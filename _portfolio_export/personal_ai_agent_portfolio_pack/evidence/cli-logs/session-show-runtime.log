@@ -1,0 +1,745 @@
+$ node src/cli.mjs session show mission_20260609060035_b10cc9 --session session_20260609060035_ba6107
+{
+  "agentRuns": [
+    {
+      "id": "agentrun_20260609060035_2b5b03",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "manager",
+      "status": "completed",
+      "inputSummary": "manager preparing decision-memo for mission mission_20260609060035_b10cc9 with provider stub.",
+      "outputSummary": "Session context established for Bootstrap dry run.",
+      "artifactIds": [
+        "artifact_20260609060035_7352aa",
+        "artifact_20260609060035_66de7c"
+      ],
+      "startedAt": "2026-06-09T06:00:35.592Z",
+      "endedAt": "2026-06-09T06:00:35.604Z",
+      "providerId": "stub",
+      "workflowRole": "manager",
+      "attemptCount": 1,
+      "attemptHistory": [],
+      "durationMs": null,
+      "estimatedCostUsd": null,
+      "providerResponseId": null,
+      "retryCount": 0,
+      "usageInputTokens": null,
+      "usageOutputTokens": null,
+      "usageTotalTokens": null,
+      "adaptationNotes": [],
+      "executionManifest": {},
+      "nextAction": "",
+      "planSteps": [],
+      "specialistHandoff": null,
+      "specialistRootRunId": null
+    },
+    {
+      "id": "agentrun_20260609060035_d4b88e",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "planner",
+      "status": "completed",
+      "inputSummary": "planner preparing decision-memo for mission mission_20260609060035_b10cc9 with provider stub.",
+      "outputSummary": "Planner produced 3 bounded steps for Bootstrap dry run.",
+      "artifactIds": [
+        "artifact_20260609060035_138bb1",
+        "artifact_20260609060035_e0cf1d"
+      ],
+      "startedAt": "2026-06-09T06:00:35.609Z",
+      "endedAt": "2026-06-09T06:00:35.621Z",
+      "providerId": "stub",
+      "workflowRole": "planner",
+      "attemptCount": 1,
+      "attemptHistory": [],
+      "durationMs": null,
+      "estimatedCostUsd": null,
+      "providerResponseId": null,
+      "retryCount": 0,
+      "usageInputTokens": null,
+      "usageOutputTokens": null,
+      "usageTotalTokens": null,
+      "adaptationNotes": [],
+      "executionManifest": {},
+      "nextAction": "",
+      "planSteps": [
+        "Collect only the context required for a bounded first draft.",
+        "Preserve the exact required section contract for the deliverable type.",
+        "End with one explicit next action that requires human ownership."
+      ],
+      "specialistHandoff": null,
+      "specialistRootRunId": null
+    },
+    {
+      "id": "agentrun_20260609060035_9ef018",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "executor",
+      "status": "completed",
+      "inputSummary": "executor preparing decision-memo for mission mission_20260609060035_b10cc9 with provider stub.",
+      "outputSummary": "Executor produced a decision-memo draft for Bootstrap dry run.",
+      "artifactIds": [
+        "artifact_20260609060035_c957e0",
+        "artifact_20260609060035_db0b8b"
+      ],
+      "startedAt": "2026-06-09T06:00:35.629Z",
+      "endedAt": "2026-06-09T06:00:35.642Z",
+      "providerId": "stub",
+      "workflowRole": "executor",
+      "attemptCount": 1,
+      "attemptHistory": [],
+      "durationMs": null,
+      "estimatedCostUsd": null,
+      "providerResponseId": null,
+      "retryCount": 0,
+      "usageInputTokens": null,
+      "usageOutputTokens": null,
+      "usageTotalTokens": null,
+      "adaptationNotes": [],
+      "executionManifest": {
+        "summary": "Bootstrap dry run에 대한 bounded execution manifest",
+        "steps": [
+          {
+            "command": "git status --short",
+            "cwd": ".",
+            "expectedOutputs": [
+              "현재 워크트리 변경 상태"
+            ],
+            "id": "step-01",
+            "kind": "inspect",
+            "reason": "실행 전에 현재 워크스페이스 변경 상태를 확인합니다.",
+            "riskClassification": "low",
+            "title": "현재 워크트리 상태 확인",
+            "verificationTarget": "실행 전 변경 범위를 기록합니다."
+          },
+          {
+            "command": "node --check src/cli.mjs",
+            "cwd": ".",
+            "expectedOutputs": [
+              "node --check success"
+            ],
+            "filePath": "",
+            "findText": "",
+            "id": "step-02",
+            "kind": "test",
+            "operation": "replace",
+            "reason": "최소 syntax smoke를 실행해 현재 워크스페이스의 기본 실행면을 검증합니다.",
+            "replaceText": "",
+            "riskClassification": "low",
+            "title": "Workspace syntax smoke",
+            "verificationTarget": "src/cli.mjs syntax parse must succeed."
+          }
+        ]
+      },
+      "nextAction": "Share the draft with the owner and collect follow-up decisions.",
+      "planSteps": [],
+      "specialistHandoff": null,
+      "specialistRootRunId": null
+    },
+    {
+      "id": "agentrun_20260609060035_44a3d9",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "reviewer",
+      "status": "completed",
+      "inputSummary": "reviewer preparing decision-memo for mission mission_20260609060035_b10cc9 with provider stub.",
+      "outputSummary": "Reviewer accepted the draft for Decision Memo.",
+      "artifactIds": [
+        "artifact_20260609060035_5f39f4",
+        "artifact_20260609060035_87888d"
+      ],
+      "startedAt": "2026-06-09T06:00:35.649Z",
+      "endedAt": "2026-06-09T06:00:35.661Z",
+      "providerId": "stub",
+      "workflowRole": "reviewer",
+      "attemptCount": 1,
+      "attemptHistory": [],
+      "durationMs": null,
+      "estimatedCostUsd": null,
+      "providerResponseId": null,
+      "retryCount": 0,
+      "usageInputTokens": null,
+      "usageOutputTokens": null,
+      "usageTotalTokens": null,
+      "adaptationNotes": [],
+      "executionManifest": {},
+      "nextAction": "",
+      "planSteps": [],
+      "specialistHandoff": null,
+      "specialistRootRunId": null
+    }
+  ],
+  "approvals": [],
+  "artifacts": [
+    {
+      "id": "artifact_20260609060035_7352aa",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "manager",
+      "kind": "prompt",
+      "title": "manager prompt",
+      "fileName": "manager-prompt.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/manager-prompt.md",
+      "createdAt": "2026-06-09T06:00:35.596Z"
+    },
+    {
+      "id": "artifact_20260609060035_66de7c",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "manager",
+      "kind": "agent-output",
+      "title": "Manager Context",
+      "fileName": "manager-context.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/manager-context.md",
+      "createdAt": "2026-06-09T06:00:35.600Z"
+    },
+    {
+      "id": "artifact_20260609060035_138bb1",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "planner",
+      "kind": "prompt",
+      "title": "planner prompt",
+      "fileName": "planner-prompt.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/planner-prompt.md",
+      "createdAt": "2026-06-09T06:00:35.613Z"
+    },
+    {
+      "id": "artifact_20260609060035_e0cf1d",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "planner",
+      "kind": "agent-output",
+      "title": "Planner Plan",
+      "fileName": "planner-plan.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/planner-plan.md",
+      "createdAt": "2026-06-09T06:00:35.616Z"
+    },
+    {
+      "id": "artifact_20260609060035_c957e0",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "executor",
+      "kind": "prompt",
+      "title": "executor prompt",
+      "fileName": "executor-prompt.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/executor-prompt.md",
+      "createdAt": "2026-06-09T06:00:35.633Z"
+    },
+    {
+      "id": "artifact_20260609060035_db0b8b",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "executor",
+      "kind": "deliverable",
+      "title": "Decision Memo",
+      "fileName": "decision-memo.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/decision-memo.md",
+      "createdAt": "2026-06-09T06:00:35.637Z"
+    },
+    {
+      "id": "artifact_20260609060035_5f39f4",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "reviewer",
+      "kind": "prompt",
+      "title": "reviewer prompt",
+      "fileName": "reviewer-prompt.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/reviewer-prompt.md",
+      "createdAt": "2026-06-09T06:00:35.653Z"
+    },
+    {
+      "id": "artifact_20260609060035_87888d",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "reviewer",
+      "kind": "agent-output",
+      "title": "Reviewer Report",
+      "fileName": "reviewer-report.md",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/reviewer-report.md",
+      "createdAt": "2026-06-09T06:00:35.657Z"
+    },
+    {
+      "id": "artifact_20260609060035_237097",
+      "missionId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "role": "reviewer",
+      "kind": "learning-candidate",
+      "title": "Learning Candidate",
+      "fileName": "learning-candidate.json",
+      "path": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/learning-candidate.json",
+      "createdAt": "2026-06-09T06:00:35.691Z"
+    }
+  ],
+  "gatewayEvents": [
+    {
+      "at": "2026-06-09T06:00:35.584Z",
+      "bindings": {
+        "missionId": "mission_20260609060035_b10cc9",
+        "providerId": "stub",
+        "sessionId": "session_20260609060035_ba6107",
+        "workspaceId": "workspace_20260409013620_f6a7ec"
+      },
+      "eventType": "mission-run",
+      "evidencePolicy": {
+        "artifactEligible": true,
+        "noRawCustomerPayloads": true,
+        "noRawSecrets": true,
+        "routeVisibleInTimeline": true
+      },
+      "id": "gatewayevent_20260609060035_432c2d",
+      "status": "recorded",
+      "identity": {
+        "actorType": "local-operator",
+        "identitySessionContextId": "gatewayevent_20260609060035_432c2d:identity-session",
+        "missionBound": true,
+        "sessionBound": true,
+        "startedBy": "local-operator",
+        "trustBoundary": "local-first-runtime",
+        "workspaceBound": true
+      },
+      "identitySessionContext": {
+        "actor": {
+          "actorType": "local-operator",
+          "startedBy": "local-operator",
+          "trustBoundary": "local-first-runtime"
+        },
+        "at": "2026-06-09T06:00:35.584Z",
+        "bindingStatus": "bound",
+        "bindings": {
+          "missionId": "mission_20260609060035_b10cc9",
+          "providerId": "stub",
+          "sessionId": "session_20260609060035_ba6107",
+          "workspaceId": "workspace_20260409013620_f6a7ec"
+        },
+        "evidencePolicy": {
+          "noRawCustomerPayloads": true,
+          "noRawSecrets": true,
+          "routeVisibleInTimeline": true
+        },
+        "id": "gatewayevent_20260609060035_432c2d:identity-session",
+        "policyId": "local-runtime-identity-session-policy/v1",
+        "route": {
+          "eventType": "mission-run",
+          "name": "mission.run"
+        },
+        "schemaVersion": "personal-ai-agent-identity-session-context/v1",
+        "scope": {
+          "crossScopePromotionAllowed": false,
+          "memoryLookupAfterBinding": true,
+          "memoryScope": "mission",
+          "sessionSeparationRequired": true
+        },
+        "source": {
+          "channel": "service",
+          "channelAdapterId": null,
+          "channelAdapterPolicyId": null,
+          "channelAdapterStatus": null,
+          "channelAdapterStopReason": null,
+          "externalMessagingEnabled": false,
+          "sourceType": "service",
+          "surface": "service"
+        },
+        "status": "recorded",
+        "subject": {
+          "missionBound": true,
+          "sessionBound": true,
+          "sessionRequired": true,
+          "workspaceBound": true
+        }
+      },
+      "permissionPolicy": {
+        "approvalRequired": false,
+        "decision": "allow",
+        "deniedCapabilities": [],
+        "permissionDecisionId": "gatewayevent_20260609060035_432c2d:permission",
+        "policyId": "local-runtime-gateway-permission/v1",
+        "reason": "local-runtime-gateway-event"
+      },
+      "permissionDecision": {
+        "action": {
+          "command": null,
+          "route": "mission.run",
+          "surface": "service",
+          "type": "mission-run"
+        },
+        "approvalRequired": false,
+        "at": "2026-06-09T06:00:35.584Z",
+        "bindings": {
+          "missionId": "mission_20260609060035_b10cc9",
+          "providerId": "stub",
+          "sessionId": "session_20260609060035_ba6107",
+          "workspaceId": "workspace_20260409013620_f6a7ec"
+        },
+        "capabilities": {
+          "allowedCapabilities": [
+            "gateway-route"
+          ],
+          "deniedCapabilities": []
+        },
+        "decision": "allow",
+        "evidencePolicy": {
+          "noRawCustomerPayloads": true,
+          "noRawSecrets": true,
+          "routeVisibleInTimeline": true
+        },
+        "id": "gatewayevent_20260609060035_432c2d:permission",
+        "metadata": {
+          "channel": "service",
+          "sourceType": "service"
+        },
+        "policyId": "local-runtime-gateway-permission/v1",
+        "reason": "local-runtime-gateway-event",
+        "resource": {
+          "id": "mission_20260609060035_b10cc9",
+          "type": "mission"
+        },
+        "schemaVersion": "personal-ai-agent-permission-decision/v1",
+        "status": "recorded"
+      },
+      "providerRoute": {
+        "fallbackAttempt": null,
+        "fallbackAttemptCount": null,
+        "fallbackProviderIds": [],
+        "fallbackRequested": false,
+        "policyId": null,
+        "primaryProviderId": null,
+        "providerId": "stub"
+      },
+      "route": {
+        "command": "",
+        "deliverableType": "decision-memo",
+        "mode": "knowledge",
+        "name": "mission.run",
+        "surface": "service"
+      },
+      "sandboxDecision": {
+        "action": {
+          "command": null,
+          "route": "mission.run",
+          "surface": "service",
+          "type": "mission-run"
+        },
+        "at": "2026-06-09T06:00:35.584Z",
+        "bindings": {
+          "missionId": "mission_20260609060035_b10cc9",
+          "providerId": "stub",
+          "sessionId": "session_20260609060035_ba6107",
+          "workspaceId": "workspace_20260409013620_f6a7ec"
+        },
+        "capabilities": {
+          "deniedCapabilities": []
+        },
+        "evidencePolicy": {
+          "noRawCustomerPayloads": true,
+          "noRawSecrets": true,
+          "routeVisibleInTimeline": true
+        },
+        "id": "gatewayevent_20260609060035_432c2d:sandbox",
+        "metadata": {
+          "channel": "service",
+          "sourceType": "service"
+        },
+        "mode": "local-runtime",
+        "policyId": "local-runtime-sandbox-policy/v1",
+        "reason": "default-local-runtime-boundary",
+        "resource": {
+          "id": "mission_20260609060035_b10cc9",
+          "type": "mission"
+        },
+        "schemaVersion": "personal-ai-agent-sandbox-decision/v1",
+        "status": "recorded"
+      },
+      "sandboxPolicy": {
+        "deniedCapabilities": [],
+        "mode": "local-runtime",
+        "policyId": "local-runtime-sandbox-policy/v1",
+        "reason": "default-local-runtime-boundary",
+        "sandboxDecisionId": "gatewayevent_20260609060035_432c2d:sandbox"
+      },
+      "schemaVersion": "personal-ai-agent-gateway-event/v1",
+      "source": {
+        "channel": "service",
+        "channelAdapterId": null,
+        "channelAdapterPolicyId": null,
+        "channelAdapterStatus": null,
+        "channelAdapterStopReason": null,
+        "command": "",
+        "externalMessagingEnabled": false,
+        "requestId": null,
+        "route": "mission.run",
+        "sourceType": "service",
+        "startedBy": "local-operator",
+        "surface": "service"
+      }
+    }
+  ],
+  "learningCandidates": [
+    {
+      "artifactId": "artifact_20260609060035_237097",
+      "artifactPath": "/Users/<user>/dev/personal/personal-ai-agent/var/missions/mission_20260609060035_b10cc9/sessions/session_20260609060035_ba6107/learning-candidate.json",
+      "autoPromotion": false,
+      "createdAt": "2026-06-09T06:00:35.687Z",
+      "evidence": {
+        "artifactIds": [
+          "artifact_20260609060035_7352aa",
+          "artifact_20260609060035_66de7c",
+          "artifact_20260609060035_138bb1",
+          "artifact_20260609060035_e0cf1d",
+          "artifact_20260609060035_c957e0",
+          "artifact_20260609060035_db0b8b",
+          "artifact_20260609060035_5f39f4",
+          "artifact_20260609060035_87888d"
+        ],
+        "artifactKinds": {
+          "prompt": 4,
+          "agent-output": 3,
+          "deliverable": 1
+        },
+        "gatewayEventId": "gatewayevent_20260609060035_432c2d",
+        "gatewayEventRoute": "mission.run",
+        "gatewayEventSchemaVersion": "personal-ai-agent-gateway-event/v1",
+        "gatewayEventType": "mission-run",
+        "providerFallbackPolicy": null,
+        "providerFallbackStopReasonCounts": {},
+        "providerFallbackSummary": null,
+        "providerFailure": null,
+        "providerId": "stub",
+        "reviewerVerdict": "pass",
+        "runIds": [
+          "agentrun_20260609060035_2b5b03",
+          "agentrun_20260609060035_d4b88e",
+          "agentrun_20260609060035_9ef018",
+          "agentrun_20260609060035_44a3d9"
+        ],
+        "runStatusCounts": {
+          "completed": 4
+        }
+      },
+      "id": "learningcandidate_20260609060035_c00fa4",
+      "missionId": "mission_20260609060035_b10cc9",
+      "missionStatus": "completed",
+      "promotionStatus": "pending-review",
+      "proposal": {
+        "action": "review-and-promote-manually",
+        "approvalRequired": true,
+        "autoPromotion": false,
+        "expiresAt": "2026-06-16T06:00:35.687Z",
+        "reviewTtlHours": 168,
+        "reviewerRequired": true,
+        "target": "template"
+      },
+      "recordType": "success-pattern",
+      "retention": {
+        "class": "mission-evidence",
+        "deleteWithMissionScope": true,
+        "expiresAt": "2026-06-16T06:00:35.687Z",
+        "policy": "pending-review-expires-unpromoted",
+        "reviewTtlHours": 168
+      },
+      "rollback": {
+        "action": "delete-or-ignore-learning-candidate",
+        "safeWithoutRuntimeMutation": true
+      },
+      "safety": {
+        "crossScopePromotionAllowed": false,
+        "noRawCustomerPayloads": true,
+        "noRawSecrets": true,
+        "promotionRequiresApproval": true,
+        "scopeLocked": true
+      },
+      "schemaVersion": "personal-ai-agent-learning-candidate/v1",
+      "scope": "mission",
+      "scopeId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "status": "proposed",
+      "summary": "Mission completed successfully.",
+      "title": "success-pattern candidate for Bootstrap dry run",
+      "updatedAt": "2026-06-09T06:00:35.696Z",
+      "workspaceId": "workspace_20260409013620_f6a7ec",
+      "workspaceName": "personal-ai-agent"
+    }
+  ],
+  "mission": {
+    "id": "mission_20260609060035_b10cc9",
+    "workspaceId": "workspace_20260409013620_f6a7ec",
+    "mode": "knowledge",
+    "title": "Bootstrap dry run",
+    "objective": "Validate the local managed run flow.",
+    "constraints": [],
+    "deliverableType": "decision-memo",
+    "status": "completed",
+    "createdAt": "2026-06-09T06:00:35.570Z",
+    "updatedAt": "2026-06-09T06:00:35.673Z",
+    "gatewayEventId": "gatewayevent_20260609060035_e7ca33",
+    "gatewayEventSchemaVersion": "personal-ai-agent-gateway-event/v1"
+  },
+  "summary": {
+    "agentRunCount": 4,
+    "approvalCount": 0,
+    "currentStage": "reviewer",
+    "endedAt": "2026-06-09T06:00:35.674Z",
+    "id": "session_20260609060035_ba6107",
+    "latestApprovalStatus": null,
+    "latestArtifactFileName": "learning-candidate.json",
+    "gatewayEventCount": 1,
+    "gatewayEventId": "gatewayevent_20260609060035_432c2d",
+    "gatewayEventType": "mission-run",
+    "identitySessionContextBindingStatusCounts": {
+      "bound": 1
+    },
+    "identitySessionContextCount": 1,
+    "identitySessionContextId": "gatewayevent_20260609060035_432c2d:identity-session",
+    "identitySessionContextPolicyCounts": {
+      "local-runtime-identity-session-policy/v1": 1
+    },
+    "latestIdentitySessionContext": {
+      "actor": {
+        "actorType": "local-operator",
+        "startedBy": "local-operator",
+        "trustBoundary": "local-first-runtime"
+      },
+      "at": "2026-06-09T06:00:35.584Z",
+      "bindingStatus": "bound",
+      "bindings": {
+        "missionId": "mission_20260609060035_b10cc9",
+        "providerId": "stub",
+        "sessionId": "session_20260609060035_ba6107",
+        "workspaceId": "workspace_20260409013620_f6a7ec"
+      },
+      "evidencePolicy": {
+        "noRawCustomerPayloads": true,
+        "noRawSecrets": true,
+        "routeVisibleInTimeline": true
+      },
+      "id": "gatewayevent_20260609060035_432c2d:identity-session",
+      "policyId": "local-runtime-identity-session-policy/v1",
+      "route": {
+        "eventType": "mission-run",
+        "name": "mission.run"
+      },
+      "schemaVersion": "personal-ai-agent-identity-session-context/v1",
+      "scope": {
+        "crossScopePromotionAllowed": false,
+        "memoryLookupAfterBinding": true,
+        "memoryScope": "mission",
+        "sessionSeparationRequired": true
+      },
+      "source": {
+        "channel": "service",
+        "channelAdapterId": null,
+        "channelAdapterPolicyId": null,
+        "channelAdapterStatus": null,
+        "channelAdapterStopReason": null,
+        "externalMessagingEnabled": false,
+        "sourceType": "service",
+        "surface": "service"
+      },
+      "status": "recorded",
+      "subject": {
+        "missionBound": true,
+        "sessionBound": true,
+        "sessionRequired": true,
+        "workspaceBound": true
+      }
+    },
+    "latestSandboxDecision": {
+      "action": {
+        "command": null,
+        "route": "mission.run",
+        "surface": "service",
+        "type": "mission-run"
+      },
+      "at": "2026-06-09T06:00:35.584Z",
+      "bindings": {
+        "missionId": "mission_20260609060035_b10cc9",
+        "providerId": "stub",
+        "sessionId": "session_20260609060035_ba6107",
+        "workspaceId": "workspace_20260409013620_f6a7ec"
+      },
+      "capabilities": {
+        "deniedCapabilities": []
+      },
+      "evidencePolicy": {
+        "noRawCustomerPayloads": true,
+        "noRawSecrets": true,
+        "routeVisibleInTimeline": true
+      },
+      "id": "gatewayevent_20260609060035_432c2d:sandbox",
+      "metadata": {
+        "channel": "service",
+        "sourceType": "service"
+      },
+      "mode": "local-runtime",
+      "policyId": "local-runtime-sandbox-policy/v1",
+      "reason": "default-local-runtime-boundary",
+      "resource": {
+        "id": "mission_20260609060035_b10cc9",
+        "type": "mission"
+      },
+      "schemaVersion": "personal-ai-agent-sandbox-decision/v1",
+      "status": "recorded"
+    },
+    "learningCandidateCount": 1,
+    "latestLearningCandidateId": "learningcandidate_20260609060035_c00fa4",
+    "latestLearningCandidateRecordType": "success-pattern",
+    "provider": "stub",
+    "sandboxDecisionCount": 1,
+    "sandboxDecisionModeCounts": {
+      "local-runtime": 1
+    },
+    "reviewerStatus": "completed",
+    "reviewerSummary": "Reviewer accepted the draft for Decision Memo.",
+    "startedAt": "2026-06-09T06:00:35.582Z",
+    "status": "completed"
+  },
+  "session": {
+    "id": "session_20260609060035_ba6107",
+    "missionId": "mission_20260609060035_b10cc9",
+    "currentStage": "reviewer",
+    "provider": "stub",
+    "sourceContext": {
+      "channel": "service",
+      "channelAdapterId": null,
+      "channelAdapterPolicyId": null,
+      "channelAdapterStatus": null,
+      "channelAdapterStopReason": null,
+      "command": "",
+      "externalMessagingEnabled": false,
+      "requestId": null,
+      "route": "mission.run",
+      "sourceType": "service",
+      "startedBy": "local-operator",
+      "surface": "service",
+      "gatewayEventId": "gatewayevent_20260609060035_432c2d",
+      "gatewayIdentitySessionContextId": "gatewayevent_20260609060035_432c2d:identity-session",
+      "gatewayPermissionDecisionId": "gatewayevent_20260609060035_432c2d:permission",
+      "gatewaySandboxDecisionId": "gatewayevent_20260609060035_432c2d:sandbox",
+      "gatewayEventSchemaVersion": "personal-ai-agent-gateway-event/v1",
+      "gatewayEventType": "mission-run",
+      "gatewayEventRoute": "mission.run"
+    },
+    "status": "completed",
+    "agentRunIds": [
+      "agentrun_20260609060035_2b5b03",
+      "agentrun_20260609060035_d4b88e",
+      "agentrun_20260609060035_9ef018",
+      "agentrun_20260609060035_44a3d9"
+    ],
+    "approvalIds": [],
+    "artifactIds": [
+      "artifact_20260609060035_7352aa",
+      "artifact_20260609060035_66de7c",
+      "artifact_20260609060035_138bb1",
+      "artifact_20260609060035_e0cf1d",
+      "artifact_20260609060035_c957e0",
+      "artifact_20260609060035_db0b8b",
+      "artifact_20260609060035_5f39f4",
+      "artifact_20260609060035_87888d",
+      "artifact_20260609060035_237097"
+    ],
+    "startedAt": "2026-06-09T06:00:35.582Z",
+    "endedAt": "2026-06-09T06:00:35.674Z"
+  }
+}
+
+exit_code=0

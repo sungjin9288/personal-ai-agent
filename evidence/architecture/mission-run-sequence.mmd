@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant Operator
+  participant CLI as CLI or Web API
+  participant Service as Mission Service
+  participant Harness as Runtime Harness
+  participant Provider as Provider Registry
+  participant Store as Local Store
+
+  Operator->>CLI: create/run mission
+  CLI->>Service: createMission or runMission
+  Service->>Store: save workspace, mission, session metadata
+  Service->>Harness: start session and agent runs
+  Harness->>Provider: execute role prompt through selected provider
+  Provider-->>Harness: structured role output or provider failure
+  Harness->>Store: persist agent run, approval, artifact evidence
+  Service-->>CLI: mission result, provider summary, action/approval state
+  CLI-->>Operator: output, follow-up, evidence path

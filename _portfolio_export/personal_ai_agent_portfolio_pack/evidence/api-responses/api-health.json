@@ -1,0 +1,44 @@
+$ curl -sS http://127.0.0.1:4510/api/health
+{
+  "ok": true,
+  "discoveryPath": "/Users/<user>/dev/personal/personal-ai-agent/var/server.json",
+  "generatedAt": "2026-06-09T05:10:39.690Z",
+  "host": "127.0.0.1",
+  "pid": 28196,
+  "port": 4510,
+  "requestedPort": 4510,
+  "jobs": {
+    "activeCount": 0,
+    "recentCount": 0,
+    "registryPath": "/Users/<user>/dev/personal/personal-ai-agent/var/runtime-jobs.json"
+  },
+  "requests": {
+    "activeCount": 1,
+    "recentCount": 200,
+    "registryPath": "/Users/<user>/dev/personal/personal-ai-agent/var/runtime-requests.json"
+  },
+  "rootDir": "/Users/<user>/dev/personal/personal-ai-agent",
+  "runtimeJobRegistryPath": "/Users/<user>/dev/personal/personal-ai-agent/var/runtime-jobs.json",
+  "runtimeRequestRegistryPath": "/Users/<user>/dev/personal/personal-ai-agent/var/runtime-requests.json",
+  "staleRuntimeJobCount": 0,
+  "staleRuntimeRequestCount": 0,
+  "runtime": {
+    "discoveryPath": "/Users/<user>/dev/personal/personal-ai-agent/var/server.json",
+    "host": "127.0.0.1",
+    "kind": "web-ui",
+    "pid": 28196,
+    "port": 4510,
+    "previousRuntime": null,
+    "requestedPort": 4510,
+    "rootDir": "/Users/<user>/dev/personal/personal-ai-agent",
+    "startedAt": "2026-06-09T05:10:26.874Z",
+    "state": "listening",
+    "status": "listening",
+    "url": "http://127.0.0.1:4510",
+    "path": "/Users/<user>/dev/personal/personal-ai-agent/var/runtime-status.json",
+    "updatedAt": "2026-06-09T05:10:26.881Z"
+  },
+  "runtimeStatusPath": "/Users/<user>/dev/personal/personal-ai-agent/var/runtime-status.json",
+  "url": "http://127.0.0.1:4510"
+}
+

@@ -1,0 +1,440 @@
+$ node src/cli.mjs overview release-blockers --provider hermes
+{
+  "filters": {
+    "category": null,
+    "includeSharedProviderOperations": true,
+    "owner": null,
+    "provider": "hermes",
+    "sharedProviderOperationsExcludedCount": 0,
+    "sharedProviderOperationsExcludedIds": [],
+    "sharedProviderOperationsIncludedCount": 1,
+    "sharedProviderOperationsScope": "included with provider hermes handoff scope"
+  },
+  "items": [
+    {
+      "blocker": "target provider operations evidence remains blocked until completed per-provider operations capture template, branch and commit, release label and deployment boundary, provider inventory proof with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer/workspace approval, account or architecture record, and operating decision, provider account approval proof with account owner proof, customer or workspace approval proof, billing and credit or quota state proof, provider terms proof, model access proof, and renewal owner proof, target secret injection proof with approved secret manager platform proof, secret owner proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage and redaction review proof, credential containment proof, and artifact hygiene result, target-boundary live validation proof with command, provider, model, endpoint alias, timeout, result, archived evidence commit, and operator owner, model and endpoint pinning proof with model id, endpoint/base URL alias, retry policy, concurrency limit, fallback route, and approval owner, quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route, fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, overview operator-timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop conditions, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof with provider blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, regenerated execution snapshot evidence, and refreshed release artifact references, provider telemetry proof with health signal, latency/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner, provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes, data and transcript handling proof with data classification, provider transcript policy, retention class, export/delete handling, redaction rule, and post-delete absence requirement, remediation and renewal review proof with billing and credit remediation proof, endpoint renewal proof, model access renewal proof, key rotation proof, provider terms review proof, accepted-risk owner proof, and next review date proof, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and provider failure containment plan are recorded from the approved target boundary",
+      "category": "provider-operations",
+      "commands": [
+        {
+          "command": "npm run smoke:target-provider-operations",
+          "kind": "verification",
+          "label": "Target provider operations gate"
+        },
+        {
+          "command": "npm run smoke:target-provider-evidence-intake",
+          "kind": "verification",
+          "label": "Target provider evidence intake gate"
+        },
+        {
+          "command": "npm run smoke:provider-fallback-policy",
+          "kind": "runtime-audit",
+          "label": "Provider fallback policy smoke"
+        },
+        {
+          "command": "npm run smoke:provider-events",
+          "kind": "runtime-audit",
+          "label": "Provider events fallback audit"
+        },
+        {
+          "command": "npm run smoke:provider-attention-remediation",
+          "kind": "runtime-audit",
+          "label": "Provider attention remediation fallback audit"
+        },
+        {
+          "command": "npm run smoke:mission-timeline",
+          "kind": "runtime-audit",
+          "label": "Mission timeline fallback audit"
+        },
+        {
+          "command": "npm run smoke:workspace-timeline",
+          "kind": "runtime-audit",
+          "label": "Workspace timeline fallback audit"
+        },
+        {
+          "command": "npm run smoke:operator-timeline",
+          "kind": "runtime-audit",
+          "label": "Operator timeline fallback audit"
+        },
+        {
+          "command": "npm run smoke:release-artifact-hygiene",
+          "kind": "verification",
+          "label": "Release artifact hygiene smoke"
+        }
+      ],
+      "evidenceDocs": [
+        {
+          "exists": true,
+          "href": "docs/target-provider-operations-v1.md",
+          "label": "Target provider operations",
+          "path": "docs/target-provider-operations-v1.md"
+        },
+        {
+          "exists": true,
+          "href": "docs/target-provider-evidence-intake-v1.md",
+          "label": "Target provider evidence intake",
+          "path": "docs/target-provider-evidence-intake-v1.md"
+        },
+        {
+          "exists": true,
+          "href": "docs/target-environment-evidence-intake-v1.md",
+          "label": "Target environment evidence intake",
+          "path": "docs/target-environment-evidence-intake-v1.md"
+        },
+        {
+          "exists": true,
+          "href": "docs/production-provider-readiness-v1.md",
+          "label": "Production provider readiness",
+          "path": "docs/production-provider-readiness-v1.md"
+        }
+      ],
+      "id": "target-provider-operations-evidence-remains-blocked-until-comple",
+      "nextEvidence": "Completed per-provider operations capture template, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, operator timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment plan, artifact hygiene result, production readiness gate result, residual risk, decision owner, and next review date from the approved target boundary.",
+      "owner": "provider-ops",
+      "priority": 3,
+      "status": "blocked",
+      "stopReason": "Target provider operations lacks same-boundary per-provider operations capture template proof, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof with fallback policy id, mission timeline chronology, workspace timeline chronology, operator timeline chronology, provider events family, attention remediation command, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop-condition proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment proof, artifact hygiene result, production readiness gate result, residual risk decision, decision owner proof, and next review date proof.",
+      "closureVerification": {
+        "acceptedDispositionValues": [
+          "keep-blocked",
+          "closed-after-evidence",
+          "accepted-with-narrow-scope",
+          "rejected"
+        ],
+        "artifactRequirements": {
+          "executionV1ArtifactRefresh": true,
+          "productionReadinessGate": true,
+          "releaseArtifactHygiene": true,
+          "snapshotRefresh": true
+        },
+        "blockerId": "target-provider-operations-evidence-remains-blocked-until-comple",
+        "category": "provider-operations",
+        "closureRules": [
+          "Close only with accepted evidence from the same approved target boundary.",
+          "Keep productionReadyClaim=false while any mandatory target stop-condition remains open.",
+          "Rerun every listed command after attaching closure evidence.",
+          "Refresh execution-v1 artifacts after source-of-record or live evidence changes.",
+          "Reject stale, ownerless, unreviewed, or secret-bearing evidence."
+        ],
+        "currentState": "blocked",
+        "defaultDisposition": "keep-blocked",
+        "forbiddenEvidence": [
+          "raw API keys or tokens",
+          "private endpoint credentials",
+          "customer personal data",
+          "tenant payloads",
+          "billing identifiers",
+          "private account identifiers",
+          "machine-local absolute paths"
+        ],
+        "id": "target-provider-operations-evidence-remains-blocked-until-comple-closure-verification",
+        "owner": "provider-ops",
+        "productionReadyClaimAllowed": false,
+        "productionReadyClaimRule": "productionReadyClaim remains false until every mandatory target control is closed by accepted same-boundary evidence and final gates pass.",
+        "provider": "",
+        "requiredClosingEvidence": "Completed per-provider operations capture template, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, operator timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment plan, artifact hygiene result, production readiness gate result, residual risk, decision owner, and next review date from the approved target boundary.",
+        "requiredCommands": [
+          {
+            "command": "npm run smoke:target-provider-operations",
+            "kind": "verification",
+            "label": "Target provider operations gate"
+          },
+          {
+            "command": "npm run smoke:target-provider-evidence-intake",
+            "kind": "verification",
+            "label": "Target provider evidence intake gate"
+          },
+          {
+            "command": "npm run smoke:provider-fallback-policy",
+            "kind": "runtime-audit",
+            "label": "Provider fallback policy smoke"
+          },
+          {
+            "command": "npm run smoke:provider-events",
+            "kind": "runtime-audit",
+            "label": "Provider events fallback audit"
+          },
+          {
+            "command": "npm run smoke:provider-attention-remediation",
+            "kind": "runtime-audit",
+            "label": "Provider attention remediation fallback audit"
+          },
+          {
+            "command": "npm run smoke:mission-timeline",
+            "kind": "runtime-audit",
+            "label": "Mission timeline fallback audit"
+          },
+          {
+            "command": "npm run smoke:workspace-timeline",
+            "kind": "runtime-audit",
+            "label": "Workspace timeline fallback audit"
+          },
+          {
+            "command": "npm run smoke:operator-timeline",
+            "kind": "runtime-audit",
+            "label": "Operator timeline fallback audit"
+          },
+          {
+            "command": "npm run smoke:release-artifact-hygiene",
+            "kind": "verification",
+            "label": "Release artifact hygiene smoke"
+          }
+        ],
+        "requiredDecisionFields": [
+          "decisionOwner",
+          "evidenceOwner",
+          "reviewer",
+          "reviewDate",
+          "nextReviewDate",
+          "allowedClaimText",
+          "releaseReadinessNote"
+        ],
+        "requiredEvidenceDocs": [
+          {
+            "exists": true,
+            "href": "docs/target-provider-operations-v1.md",
+            "label": "Target provider operations",
+            "path": "docs/target-provider-operations-v1.md"
+          },
+          {
+            "exists": true,
+            "href": "docs/target-provider-evidence-intake-v1.md",
+            "label": "Target provider evidence intake",
+            "path": "docs/target-provider-evidence-intake-v1.md"
+          },
+          {
+            "exists": true,
+            "href": "docs/target-environment-evidence-intake-v1.md",
+            "label": "Target environment evidence intake",
+            "path": "docs/target-environment-evidence-intake-v1.md"
+          },
+          {
+            "exists": true,
+            "href": "docs/production-provider-readiness-v1.md",
+            "label": "Production provider readiness",
+            "path": "docs/production-provider-readiness-v1.md"
+          }
+        ],
+        "requiredProofs": [
+          "same-boundary target evidence packet proof",
+          "blocker disposition proof with accountable decision owner",
+          "target-boundary command rerun proof",
+          "release artifact hygiene pass proof",
+          "regenerated execution-v1 artifact snapshot proof",
+          "production readiness gate proof",
+          "per-provider operations capture template proof",
+          "provider fallback runtime audit proof",
+          "provider telemetry and incident triage proof",
+          "provider failure containment proof"
+        ],
+        "sameBoundaryRequired": true,
+        "status": "blocked",
+        "stopConditionId": "target-provider-operations-evidence-remains-blocked-until-comple",
+        "stopReason": "Target provider operations lacks same-boundary per-provider operations capture template proof, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof with fallback policy id, mission timeline chronology, workspace timeline chronology, operator timeline chronology, provider events family, attention remediation command, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop-condition proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment proof, artifact hygiene result, production readiness gate result, residual risk decision, decision owner proof, and next review date proof.",
+        "targetBoundaryRequired": true
+      }
+    },
+    {
+      "blocker": "Hermes live validation is blocked until target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot is recorded",
+      "category": "provider-architecture",
+      "commands": [
+        {
+          "command": "npm run smoke:target-hermes-provider-architecture",
+          "kind": "verification",
+          "label": "Target Hermes provider architecture gate"
+        },
+        {
+          "command": "export HERMES_PROVIDER_MODEL=\"...\" && npm run live:execution-v1:hermes",
+          "kind": "live-validation",
+          "label": "Hermes live validation"
+        },
+        {
+          "command": "npm run rehearsal:production-provider-readiness",
+          "kind": "verification",
+          "label": "Provider readiness rehearsal"
+        }
+      ],
+      "evidenceDocs": [
+        {
+          "exists": true,
+          "href": "docs/target-hermes-provider-architecture-v1.md",
+          "label": "Target Hermes provider architecture",
+          "path": "docs/target-hermes-provider-architecture-v1.md"
+        },
+        {
+          "exists": true,
+          "href": "docs/production-provider-readiness-v1.md",
+          "label": "Production provider readiness",
+          "path": "docs/production-provider-readiness-v1.md"
+        },
+        {
+          "exists": true,
+          "href": "docs/target-provider-operations-v1.md",
+          "label": "Target provider operations",
+          "path": "docs/target-provider-operations-v1.md"
+        }
+      ],
+      "id": "hermes-live-validation-is-blocked-until-target-hermes-provider-a",
+      "nextEvidence": "Endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene result, and regenerated execution snapshot evidence.",
+      "owner": "provider-ops",
+      "priority": 5,
+      "status": "blocked",
+      "stopReason": "Target Hermes provider architecture lacks endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene result, and regenerated execution snapshot proof.",
+      "provider": "hermes",
+      "closureVerification": {
+        "acceptedDispositionValues": [
+          "keep-blocked",
+          "closed-after-evidence",
+          "accepted-with-narrow-scope",
+          "rejected"
+        ],
+        "artifactRequirements": {
+          "executionV1ArtifactRefresh": true,
+          "productionReadinessGate": true,
+          "releaseArtifactHygiene": true,
+          "snapshotRefresh": true
+        },
+        "blockerId": "hermes-live-validation-is-blocked-until-target-hermes-provider-a",
+        "category": "provider-architecture",
+        "closureRules": [
+          "Close only with accepted evidence from the same approved target boundary.",
+          "Keep productionReadyClaim=false while any mandatory target stop-condition remains open.",
+          "Rerun every listed command after attaching closure evidence.",
+          "Refresh execution-v1 artifacts after source-of-record or live evidence changes.",
+          "Reject stale, ownerless, unreviewed, or secret-bearing evidence."
+        ],
+        "currentState": "blocked",
+        "defaultDisposition": "keep-blocked",
+        "forbiddenEvidence": [
+          "raw API keys or tokens",
+          "private endpoint credentials",
+          "customer personal data",
+          "tenant payloads",
+          "billing identifiers",
+          "private account identifiers",
+          "machine-local absolute paths"
+        ],
+        "id": "hermes-live-validation-is-blocked-until-target-hermes-provider-a-closure-verification",
+        "owner": "provider-ops",
+        "productionReadyClaimAllowed": false,
+        "productionReadyClaimRule": "productionReadyClaim remains false until every mandatory target control is closed by accepted same-boundary evidence and final gates pass.",
+        "provider": "hermes",
+        "requiredClosingEvidence": "Endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene result, and regenerated execution snapshot evidence.",
+        "requiredCommands": [
+          {
+            "command": "npm run smoke:target-hermes-provider-architecture",
+            "kind": "verification",
+            "label": "Target Hermes provider architecture gate"
+          },
+          {
+            "command": "export HERMES_PROVIDER_MODEL=\"...\" && npm run live:execution-v1:hermes",
+            "kind": "live-validation",
+            "label": "Hermes live validation"
+          },
+          {
+            "command": "npm run rehearsal:production-provider-readiness",
+            "kind": "verification",
+            "label": "Provider readiness rehearsal"
+          }
+        ],
+        "requiredDecisionFields": [
+          "decisionOwner",
+          "evidenceOwner",
+          "reviewer",
+          "reviewDate",
+          "nextReviewDate",
+          "allowedClaimText",
+          "releaseReadinessNote"
+        ],
+        "requiredEvidenceDocs": [
+          {
+            "exists": true,
+            "href": "docs/target-hermes-provider-architecture-v1.md",
+            "label": "Target Hermes provider architecture",
+            "path": "docs/target-hermes-provider-architecture-v1.md"
+          },
+          {
+            "exists": true,
+            "href": "docs/production-provider-readiness-v1.md",
+            "label": "Production provider readiness",
+            "path": "docs/production-provider-readiness-v1.md"
+          },
+          {
+            "exists": true,
+            "href": "docs/target-provider-operations-v1.md",
+            "label": "Target provider operations",
+            "path": "docs/target-provider-operations-v1.md"
+          }
+        ],
+        "requiredProofs": [
+          "same-boundary target evidence packet proof",
+          "blocker disposition proof with accountable decision owner",
+          "target-boundary command rerun proof",
+          "release artifact hygiene pass proof",
+          "regenerated execution-v1 artifact snapshot proof",
+          "production readiness gate proof",
+          "provider endpoint or model architecture approval proof",
+          "runtime lifecycle and provenance proof",
+          "target-boundary provider live validation proof",
+          "provider fallback policy and stop reason proof"
+        ],
+        "sameBoundaryRequired": true,
+        "status": "blocked",
+        "stopConditionId": "hermes-live-validation-is-blocked-until-target-hermes-provider-a",
+        "stopReason": "Target Hermes provider architecture lacks endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation pass, release artifact hygiene result, and regenerated execution snapshot proof.",
+        "targetBoundaryRequired": true
+      }
+    }
+  ],
+  "releaseReadiness": {
+    "currentOpenBlockerActionCount": 7,
+    "currentOpenBlockerCount": 7,
+    "decision": "pilot-ready only for OpenAI-backed bounded self-hosted/local-first operation; do not claim production-ready",
+    "localDate": "2026-05-04",
+    "path": "/Users/<user>/dev/personal/personal-ai-agent/docs/release-readiness-v1.md",
+    "productionBlockerCount": 24,
+    "productionReadyBlocked": true,
+    "productionReadyClaimAllowed": false,
+    "productionReadyStatus": "blocked",
+    "productionReadyStopReason": "provider live validation completion evidence for Anthropic and Hermes is incomplete, and production provider live validation evidence for Anthropic billing and credit remediation, ANTHROPIC_API_KEY target secret injection, ANTHROPIC_MODEL access, npm run live:execution-v1:anthropic result, Hermes target provider architecture approval, HERMES_PROVIDER_MODEL model pinning proof, Hermes endpoint ownership proof and target secret injection proof, npm run live:execution-v1:hermes result, mission id, execution session id, provider response status, retry lineage, artifact provenance, telemetry probe result, failureKind taxonomy, fallback or disable decision, remediation owner, next review date, release artifact hygiene result, and regenerated execution snapshot is not generated from the approved production-like or hosted target environment",
+    "releaseLabel": "provider-scoped pilot ready for OpenAI-backed local-first path"
+  },
+  "summary": {
+    "actionCount": 2,
+    "categoryCounts": {
+      "provider-architecture": 1,
+      "provider-operations": 1
+    },
+    "closureVerificationCommandCount": 12,
+    "closureVerificationCount": 2,
+    "closureVerificationEvidenceDocCount": 7,
+    "closureVerificationProductionReadyBlockedCount": 2,
+    "closureVerificationTargetBoundaryCount": 2,
+    "commandCount": 12,
+    "commandKindCounts": {
+      "runtime-audit": 6,
+      "verification": 5,
+      "live-validation": 1
+    },
+    "evidenceDocCount": 7,
+    "ownerCounts": {
+      "provider-ops": 2
+    },
+    "providerActionCount": 1,
+    "providerCounts": {
+      "hermes": 1
+    },
+    "runtimeAuditCommandCount": 6,
+    "statusCounts": {
+      "blocked": 2
+    },
+    "topPriorityBlocker": "target provider operations evidence remains blocked until completed per-provider operations capture template, branch and commit, release label and deployment boundary, provider inventory proof with OpenAI, Anthropic, local, and Hermes inclusion state, owner, customer/workspace approval, account or architecture record, and operating decision, provider account approval proof with account owner proof, customer or workspace approval proof, billing and credit or quota state proof, provider terms proof, model access proof, and renewal owner proof, target secret injection proof with approved secret manager platform proof, secret owner proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage and redaction review proof, credential containment proof, and artifact hygiene result, target-boundary live validation proof with command, provider, model, endpoint alias, timeout, result, archived evidence commit, and operator owner, model and endpoint pinning proof with model id, endpoint/base URL alias, retry policy, concurrency limit, fallback route, and approval owner, quota, cost, and resource guard proof with spend owner, usage envelope, timeout, retry cap, concurrency cap, local resource envelope, alert threshold, and escalation route, fallback and disable proof with fallback provider or stop condition, disable switch, degradation mode, customer impact rule, rollback owner, and accepted-risk decision, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, overview operator-timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop conditions, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof with provider blocker state, next verification command, required closing evidence, stop-condition id, release artifact hygiene result, regenerated execution snapshot evidence, and refreshed release artifact references, provider telemetry proof with health signal, latency/error metrics, token or resource usage, quota alert, fallback event, retention period, and telemetry owner, provider incident triage proof with account failure, missing env, live runtime failure, provider outage, quota exhaustion, customer communication, incident review, and remediation owner routes, data and transcript handling proof with data classification, provider transcript policy, retention class, export/delete handling, redaction rule, and post-delete absence requirement, remediation and renewal review proof with billing and credit remediation proof, endpoint renewal proof, model access renewal proof, key rotation proof, provider terms review proof, accepted-risk owner proof, and next review date proof, artifact hygiene and production readiness gate result, residual risk, decision owner, next review date, and provider failure containment plan are recorded from the approved target boundary",
+    "topPriorityBlockerId": "target-provider-operations-evidence-remains-blocked-until-comple",
+    "topPriorityCategory": "provider-operations",
+    "topPriorityNextEvidence": "Completed per-provider operations capture template, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof with mission run --fallback-provider --fallback-policy, mission timeline, workspace timeline, operator timeline, provider events --family fallback, action remediate-provider-attention --fallback-provider --fallback-policy, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop conditions, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment plan, artifact hygiene result, production readiness gate result, residual risk, decision owner, and next review date from the approved target boundary.",
+    "topPriorityOwner": "provider-ops",
+    "topPriorityProvider": null,
+    "topPriorityStopReason": "Target provider operations lacks same-boundary per-provider operations capture template proof, provider inventory proof, provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable proof, provider fallback runtime audit proof with fallback policy id, mission timeline chronology, workspace timeline chronology, operator timeline chronology, provider events family, attention remediation command, provider-failure-only failover, recoverable-provider-failure-only stop reason, selected fallback provider, and deterministic stop-condition proof, target blocker closure verification proof, provider telemetry proof, provider incident triage proof, data and transcript handling proof, remediation and renewal review proof, evidence retention proof, provider failure containment proof, artifact hygiene result, production readiness gate result, residual risk decision, decision owner proof, and next review date proof."
+  }
+}
+
+exit_code=0

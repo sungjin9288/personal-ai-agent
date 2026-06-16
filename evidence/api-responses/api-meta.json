@@ -1,0 +1,21 @@
+$ curl -sS http://127.0.0.1:4510/api/meta
+{
+  "generatedAt": "2026-06-09T05:10:39.714Z",
+  "host": "127.0.0.1",
+  "port": 4510,
+  "rbac": {
+    "mode": "off"
+  },
+  "webAuth": {
+    "mode": "off",
+    "required": false,
+    "roleClaim": ""
+  },
+  "tenant": {
+    "claim": "",
+    "mode": "off",
+    "required": false
+  },
+  "rootDir": "/Users/<user>/dev/personal/personal-ai-agent"
+}
+

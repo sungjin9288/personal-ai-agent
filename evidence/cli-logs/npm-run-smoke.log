@@ -1,0 +1,18 @@
+$ npm run smoke
+
+> personal-ai-agent@0.1.0 smoke
+> node scripts/smoke.mjs
+
+{
+  "ok": true,
+  "mode": "personal-ai-agent-smoke",
+  "workspaceId": "workspace_20260609051009_36626e",
+  "completedMissionIds": [
+    "mission_20260609051009_706e14",
+    "mission_20260609051009_265593",
+    "mission_20260609051010_46c882"
+  ],
+  "approvalId": "approval_20260609051010_379e93"
+}
+
+exit_code=0

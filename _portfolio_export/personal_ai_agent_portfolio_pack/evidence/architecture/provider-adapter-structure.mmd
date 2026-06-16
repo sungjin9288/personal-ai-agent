@@ -1,0 +1,11 @@
+flowchart LR
+  Catalog["provider-catalog.mjs\nprovider specs, env requirements, capabilities"] --> Registry["providers/index.mjs\ncreateProviderRegistry"]
+  Registry --> Stub["stub-provider.mjs\ndeterministic local"]
+  Registry --> OpenAI["openai-provider.mjs\nResponses API"]
+  Registry --> Anthropic["anthropic-provider.mjs\nMessages API"]
+  Registry --> Local["local-provider.mjs\nOpenAI-compatible chat completions"]
+  Registry --> Hermes["hermes-provider.mjs\nHermes-compatible chat completions"]
+  Registry --> Status["provider status\nconfigured / implemented / missingEnv"]
+  Registry --> Probe["probeProvider\nreadiness check"]
+  Mission["mission-service.mjs\nrunMission"] --> Registry
+  Mission --> Fallback["provider fallback / attention / telemetry"]

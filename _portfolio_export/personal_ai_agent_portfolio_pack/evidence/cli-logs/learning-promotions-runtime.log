@@ -1,0 +1,135 @@
+$ node src/cli.mjs action learning-promotions --mission mission_20260609060035_b10cc9
+{
+  "filters": {
+    "missionId": "mission_20260609060035_b10cc9",
+    "providerFallbackStopReason": null,
+    "recordType": null,
+    "scope": null,
+    "status": "pending-review",
+    "target": null,
+    "workspaceId": null
+  },
+  "items": [
+    {
+      "actionClass": "awaiting-human-decision",
+      "actionId": "learning-promotion:learningcandidate_20260609060035_c00fa4",
+      "actionType": "learning-promotion",
+      "approvalRequired": true,
+      "artifactCount": 8,
+      "artifactKinds": {
+        "prompt": 4,
+        "agent-output": 3,
+        "deliverable": 1
+      },
+      "autoPromotion": false,
+      "autoPromotionAllowed": false,
+      "createdAt": "2026-06-09T06:00:35.687Z",
+      "evidencePolicy": {
+        "crossScopePromotionAllowed": false,
+        "noRawCustomerPayloads": true,
+        "noRawSecrets": true,
+        "promotionRequiresApproval": true,
+        "rawPayloadIncluded": false,
+        "scopeLocked": true
+      },
+      "expirationPolicy": {
+        "expired": false,
+        "expiredAt": null,
+        "expiresAt": "2026-06-16T06:00:35.687Z",
+        "policyId": "pending-review-expires-unpromoted",
+        "reviewTtlHours": 168,
+        "status": "active"
+      },
+      "expireCommand": "node src/cli.mjs action expire-learning-promotions --mission mission_20260609060035_b10cc9 --before 2026-06-16T06:00:35.687Z --note \"<note>\"",
+      "gatewayEventId": "gatewayevent_20260609060035_432c2d",
+      "gatewayEventRoute": "mission.run",
+      "gatewayEventSchemaVersion": "personal-ai-agent-gateway-event/v1",
+      "gatewayEventType": "mission-run",
+      "learningCandidateId": "learningcandidate_20260609060035_c00fa4",
+      "missionId": "mission_20260609060035_b10cc9",
+      "missionStatus": "completed",
+      "missionTitle": "Bootstrap dry run",
+      "mode": "knowledge",
+      "lastReminderAt": null,
+      "needsReminder": false,
+      "nextReminderAt": null,
+      "promotionStatus": "pending-review",
+      "promotionStopCondition": null,
+      "promotionStopReason": null,
+      "promotionVerificationId": null,
+      "promotionVerificationStatus": null,
+      "promotionVerificationStopReason": null,
+      "proposalTarget": "template",
+      "providerFallbackPolicy": null,
+      "providerFallbackPrimaryProviderId": null,
+      "providerFallbackSelectedProviderId": null,
+      "providerFallbackStopReasonCounts": {},
+      "providerFallbackUsed": false,
+      "providerFailureKind": null,
+      "providerFailureRecoverable": null,
+      "providerId": "stub",
+      "reason": "Mission completed successfully.",
+      "recordType": "success-pattern",
+      "remindCommand": "node src/cli.mjs action remind-learning-promotion-stop-conditions --mission mission_20260609060035_b10cc9 --due --note \"<note>\"",
+      "reminderCadenceHours": null,
+      "reminderCount": 0,
+      "reminderHistory": [],
+      "resolveCommand": "node src/cli.mjs action resolve-learning-promotion learningcandidate_20260609060035_c00fa4 --decision <approve|reject> --target template --scope mission --note \"<note>\"",
+      "reviewerRequired": true,
+      "reviewerVerdict": "pass",
+      "rollbackCommand": "node src/cli.mjs action rollback-learning-promotion learningcandidate_20260609060035_c00fa4 --note \"<note>\"",
+      "rollbackEligible": false,
+      "runCount": 4,
+      "runStatusCounts": {
+        "completed": 4
+      },
+      "scope": "mission",
+      "scopeId": "mission_20260609060035_b10cc9",
+      "sessionId": "session_20260609060035_ba6107",
+      "status": "proposed",
+      "stopConditionRejectCommand": "node src/cli.mjs action resolve-learning-promotion learningcandidate_20260609060035_c00fa4 --decision reject --target template --scope mission --note \"<note>\"",
+      "title": "success-pattern candidate for Bootstrap dry run",
+      "workspaceId": "workspace_20260409013620_f6a7ec",
+      "workspaceName": "personal-ai-agent",
+      "commandHint": "node src/cli.mjs action resolve-learning-promotion learningcandidate_20260609060035_c00fa4 --decision <approve|reject> --target template --scope mission --note \"<note>\"",
+      "priority": "low",
+      "recommendedCommand": "node src/cli.mjs action resolve-learning-promotion learningcandidate_20260609060035_c00fa4 --decision <approve|reject> --target template --scope mission --note \"<note>\"",
+      "recommendedOwner": "human-approver",
+      "dueAt": "2026-06-12T06:00:35.687Z",
+      "escalationRule": "If overdue, expire the candidate or request an explicit approve or reject decision.",
+      "isOverdue": false,
+      "slaHours": 72
+    }
+  ],
+  "summary": {
+    "expirationCounts": {
+      "active": 1,
+      "expired": 0,
+      "notConfigured": 0,
+      "overdueForExpiration": 0,
+      "total": 1
+    },
+    "pendingCount": 1,
+    "priorityCounts": {
+      "low": 1
+    },
+    "recordTypeCounts": {
+      "success-pattern": 1
+    },
+    "scopeCounts": {
+      "mission": 1
+    },
+    "statusCounts": {
+      "pending-review": 1
+    },
+    "targetCounts": {
+      "template": 1
+    },
+    "total": 1,
+    "workspaceCounts": {
+      "workspace_20260409013620_f6a7ec": 1
+    }
+  }
+}
+
+exit_code=0

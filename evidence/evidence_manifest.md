@@ -1,0 +1,96 @@
+# Evidence Manifest
+
+## Summary
+
+- Project: Personal AI Agent
+- Generated at: 2026-06-09
+- Project type: PoC / MVP 구현
+- Evidence scope: document-only implementation evidence for portfolio review
+- Source code modified: no
+- New feature development: no
+
+## Generated Evidence Files
+
+### CLI Logs
+
+- `evidence/cli-logs/npm-run-smoke.log`
+- `evidence/cli-logs/bootstrap-local-runtime.log`
+- `evidence/cli-logs/mission-show-runtime.log`
+- `evidence/cli-logs/session-show-runtime.log`
+- `evidence/cli-logs/approval-inbox-runtime.log`
+- `evidence/cli-logs/learning-promotions-runtime.log`
+- `evidence/cli-logs/execution-preflight-approval-runtime.log`
+- `evidence/cli-logs/provider-adapter-structure.log`
+- `evidence/cli-logs/provider-list.log`
+- `evidence/cli-logs/overview-global.log`
+- `evidence/cli-logs/release-blockers-hermes.log`
+
+### API Responses
+
+- `evidence/api-responses/api-health.json`
+- `evidence/api-responses/api-meta.json`
+- `evidence/api-responses/api-providers.json`
+- `evidence/api-responses/api-execution-v1-status.json`
+
+### Screenshots
+
+- `evidence/screenshots/operator-console-home.png`
+
+### Output Artifacts
+
+- `evidence/output-artifacts/execution-v1-evidence.md`
+- `evidence/output-artifacts/execution-v1-handoff.md`
+- `evidence/output-artifacts/release-readiness-v1.md`
+- `evidence/output-artifacts/runtime-mission-artifact-list.log`
+
+### Architecture
+
+- `evidence/architecture/current-architecture.mmd`
+- `evidence/architecture/mission-run-sequence.mmd`
+- `evidence/architecture/provider-adapter-structure.mmd`
+
+### Documentation
+
+- `docs/implementation-evidence.md`
+- `docs/evidence-checklist.md`
+- `docs/evidence-gallery.md`
+- `docs/agent-runtime-evidence.md`
+
+## Verified Features
+
+- CLI smoke flow: verified with `npm run smoke`
+- Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
+- Session-scoped artifact generation: verified with runtime mission artifact list
+- Approval/review gate: verified with learning promotion queue and execution preflight boundary
+- Provider adapter structure: verified with provider source map and provider registry status
+- Provider registry/status: verified with CLI and `/api/providers`
+- Global overview: verified with CLI
+- Release blocker handoff: verified with CLI
+- Web API health/meta/providers/execution status: verified with `curl`
+- Web operator console: verified with Playwright screenshot
+- Architecture/sequence evidence: generated from inspected code structure
+
+## Verification Needed
+
+- Anthropic live validation
+- Hermes live validation
+- Hosted SaaS production readiness
+- Hosted tenant isolation
+- Production secret manager and observability/SLO operations
+- Public demo URL
+
+## Sensitive Information Check
+
+- `.env` included: no
+- API key pattern found in evidence text files: no
+- private key pattern found in evidence text files: no
+- `node_modules/` included: no
+- `.git/` included: no
+- source folders such as `src/`, `app/`, `backend/`, `frontend/` included in evidence package: no
+- local user path handling: text evidence files were sanitized to `/Users/<user>`
+
+## Portfolio Zip
+
+- Updated zip path: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
+- Expected package root: `personal_ai_agent_portfolio_pack/`
+- Evidence included in zip: yes
