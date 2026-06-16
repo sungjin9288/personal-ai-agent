@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Item Card Renderer
+
+- moved action inbox item card composition onto a dedicated renderer
+- kept status, header, command meta, learning promotion command meta, and action button renderer delegation aligned with the existing action item contract
+- extended UI learning promotion smoke coverage for item card renderer delegation
+
 ## 2026-06-16 Action Inbox Item Actions Renderer
 
 - moved action inbox item action button grouping onto a dedicated renderer

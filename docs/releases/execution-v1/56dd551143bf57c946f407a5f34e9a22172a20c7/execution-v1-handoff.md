@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T00:23:16.284Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T00:23:14.818Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-item-card-renderer
 - commit: 56dd551143bf57c946f407a5f34e9a22172a20c7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/56dd551143bf57c946f407a5f34e9a22172a20c7](releases/execution-v1/56dd551143bf57c946f407a5f34e9a22172a20c7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/56dd551143bf57c946f407a5f34e9a22172a20c7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/56dd551143bf57c946f407a5f34e9a22172a20c7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/56dd551143bf57c946f407a5f34e9a22172a20c7](docs/releases/execution-v1/56dd551143bf57c946f407a5f34e9a22172a20c7)
 - visualArtifactSetSha256: d11ea7d445eb7681ae0cb32d6a781b017171d2441f92909205c0c24652e78a2b
 - commitPushStatus: not pushed, origin/codex/action-inbox-item-card-renderer not found
 

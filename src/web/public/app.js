@@ -22377,6 +22377,18 @@ function renderActionInboxItemActions(item = {}) {
           </div>`;
 }
 
+function renderActionInboxItem(item = {}) {
+  return `
+        <div class="action-item">
+          ${renderActionInboxItemStatus(item)}
+          ${renderActionInboxItemHeader(item)}
+          ${renderActionInboxItemCommandMeta(item)}
+          ${renderLearningPromotionCommandMeta(item)}
+          ${renderActionInboxItemActions(item)}
+        </div>
+      `;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22501,19 +22513,7 @@ function renderMissionActions() {
     visibleFilterLabel,
   });
 
-  elements.actionList.innerHTML = `${callout}${items
-    .map(
-      (item) => `
-        <div class="action-item">
-          ${renderActionInboxItemStatus(item)}
-          ${renderActionInboxItemHeader(item)}
-          ${renderActionInboxItemCommandMeta(item)}
-          ${renderLearningPromotionCommandMeta(item)}
-          ${renderActionInboxItemActions(item)}
-        </div>
-      `,
-    )
-    .join('')}`;
+  elements.actionList.innerHTML = `${callout}${items.map((item) => renderActionInboxItem(item)).join('')}`;
 
   elements.actionList.querySelectorAll('[data-action-open]').forEach((button) => {
     button.addEventListener('click', async () => {

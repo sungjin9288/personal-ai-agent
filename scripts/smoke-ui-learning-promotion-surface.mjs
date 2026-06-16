@@ -283,6 +283,12 @@ try {
   assert.equal(appJs.includes("!['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)"), true);
   assert.equal(appJs.includes("item.actionType === 'reviewer-follow-up'"), true);
   assert.equal(appJs.includes("actionButtons.filter(Boolean).join('')"), true);
+  assert.equal(appJs.includes('renderActionInboxItem'), true);
+  assert.equal(appJs.includes('function renderActionInboxItem(item = {})'), true);
+  assert.equal(appJs.includes('items.map((item) => renderActionInboxItem(item)).join'), true);
+  assert.equal(appJs.includes('<div class="action-item">'), true);
+  assert.equal(appJs.includes('renderLearningPromotionCommandMeta(item)'), true);
+  assert.equal(appJs.includes('renderActionInboxItemActions(item)'), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);
   assert.equal(appJs.includes("${label} action 필터, ${countLabel}건"), true);
