@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-16T02:54:48.244Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-16T02:54:39.041Z
 - branch: codex/action-inbox-provider-wiring
 - commit: 6db7703b25bbead5e2c6f0f19e2e99d4335b17a6

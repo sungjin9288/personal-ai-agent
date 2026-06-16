@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T02:54:48.244Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T02:54:46.848Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-provider-wiring
 - commit: 6db7703b25bbead5e2c6f0f19e2e99d4335b17a6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6db7703b25bbead5e2c6f0f19e2e99d4335b17a6](releases/execution-v1/6db7703b25bbead5e2c6f0f19e2e99d4335b17a6)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6db7703b25bbead5e2c6f0f19e2e99d4335b17a6/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6db7703b25bbead5e2c6f0f19e2e99d4335b17a6/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6db7703b25bbead5e2c6f0f19e2e99d4335b17a6](docs/releases/execution-v1/6db7703b25bbead5e2c6f0f19e2e99d4335b17a6)
 - visualArtifactSetSha256: 2f07034974b4c4dd3fd6f8e927fafbb60b265b35413ec2c9d835f705687cc5ef
 - commitPushStatus: not pushed, origin/codex/action-inbox-provider-wiring not found
 
