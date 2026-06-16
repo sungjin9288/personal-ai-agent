@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-16T03:36:49.671Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-16T03:36:39.396Z
 - branch: codex/action-inbox-learning-resolve-wiring
 - commit: d867e1009d7f3ef68622e8fb5841127e185147b6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d867e1009d7f3ef68622e8fb5841127e185147b6/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

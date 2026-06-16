@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-16T03:36:49.671Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-16T03:36:39.292Z
 - branch: codex/action-inbox-learning-resolve-wiring
 - commit: d867e1009d7f3ef68622e8fb5841127e185147b6

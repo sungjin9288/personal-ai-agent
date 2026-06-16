@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T03:36:49.671Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T03:36:48.368Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-learning-resolve-wiring
 - commit: d867e1009d7f3ef68622e8fb5841127e185147b6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d867e1009d7f3ef68622e8fb5841127e185147b6](releases/execution-v1/d867e1009d7f3ef68622e8fb5841127e185147b6)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d867e1009d7f3ef68622e8fb5841127e185147b6/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d867e1009d7f3ef68622e8fb5841127e185147b6/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d867e1009d7f3ef68622e8fb5841127e185147b6](docs/releases/execution-v1/d867e1009d7f3ef68622e8fb5841127e185147b6)
 - visualArtifactSetSha256: c1c099b6c57b9c4d24a5423d7e880bf4ff2984025331fb01750fd12f770e62d2
 - commitPushStatus: not pushed, origin/codex/action-inbox-learning-resolve-wiring not found
 
