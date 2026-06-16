@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-16T03:53:15.881Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-16T03:52:59.246Z
 - branch: codex/action-inbox-learning-audit-copy-wiring
 - commit: 60d248edc9d65f2ca5048523cb0bba2d4509236f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/60d248edc9d65f2ca5048523cb0bba2d4509236f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
