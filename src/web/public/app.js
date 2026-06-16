@@ -22402,6 +22402,38 @@ function renderActionInboxList({
   return `${callout}${items.map((item) => renderActionInboxItem(item)).join('')}`;
 }
 
+function renderActionInboxSummary({
+  fallbackStopReasonFilter = '',
+  fallbackStopReasonOptions = '',
+  fallbackStopReasonPlaceholder = 'fallback stop 없음',
+  fullSummary = {},
+  hasActiveFilter = false,
+  hasFallbackStopReasonOptions = false,
+  hasSelectedMission = false,
+  summary = {},
+} = {}) {
+  return `
+    ${renderActionInboxSummaryChip('전체 작업', fullSummary.pendingActionCount)}
+    ${renderActionInboxSummaryChip('표시 작업', summary.pendingActionCount)}
+    ${renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)}
+    ${renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)}
+    ${renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')}
+    <div class="action-row action-filter-row">
+      ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
+      ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
+      ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
+      ${renderActionInboxFallbackStopFilterSelect({
+        hasFallbackStopReasonOptions,
+        options: fallbackStopReasonOptions,
+        placeholder: fallbackStopReasonPlaceholder,
+      })}
+      ${renderActionInboxFallbackStopResetButton({ hasFallbackStopReason: Boolean(fallbackStopReasonFilter) })}
+      ${renderActionInboxClearFiltersButton({ hasActiveFilter })}
+      ${renderActionInboxCopyLinkButton({ hasSelectedMission })}
+    </div>
+  `;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22478,26 +22510,16 @@ function renderMissionActions() {
   const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
   const hasActiveFilter = hasActiveMissionActionsFilter();
   const hasSelectedMission = Boolean(state.selectedMissionId);
-  elements.actionSummary.innerHTML = `
-    ${renderActionInboxSummaryChip('전체 작업', fullSummary.pendingActionCount)}
-    ${renderActionInboxSummaryChip('표시 작업', summary.pendingActionCount)}
-    ${renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)}
-    ${renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)}
-    ${renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')}
-    <div class="action-row action-filter-row">
-      ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
-      ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
-      ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
-      ${renderActionInboxFallbackStopFilterSelect({
-        hasFallbackStopReasonOptions,
-        options: fallbackStopReasonOptions,
-        placeholder: fallbackStopReasonPlaceholder,
-      })}
-      ${renderActionInboxFallbackStopResetButton({ hasFallbackStopReason: Boolean(fallbackStopReasonFilter) })}
-      ${renderActionInboxClearFiltersButton({ hasActiveFilter })}
-      ${renderActionInboxCopyLinkButton({ hasSelectedMission })}
-    </div>
-  `;
+  elements.actionSummary.innerHTML = renderActionInboxSummary({
+    fallbackStopReasonFilter,
+    fallbackStopReasonOptions,
+    fallbackStopReasonPlaceholder,
+    fullSummary,
+    hasActiveFilter,
+    hasFallbackStopReasonOptions,
+    hasSelectedMission,
+    summary,
+  });
   const fallbackStopSelect = elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]');
   if (fallbackStopSelect) {
     fallbackStopSelect.value = fallbackStopReasonFilter;

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-16T00:59:09.109Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-16T00:59:00.329Z
 - branch: codex/action-inbox-summary-renderer
 - commit: b8da81f18b7b4a567d43f2e61eaf0c1c4b369cee
