@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T03:17:12.742Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T03:17:11.327Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-specialist-wiring
 - commit: b3f113230e794319bee0e04fdd609b878a4e4fff
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b3f113230e794319bee0e04fdd609b878a4e4fff](releases/execution-v1/b3f113230e794319bee0e04fdd609b878a4e4fff)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b3f113230e794319bee0e04fdd609b878a4e4fff/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b3f113230e794319bee0e04fdd609b878a4e4fff/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b3f113230e794319bee0e04fdd609b878a4e4fff](docs/releases/execution-v1/b3f113230e794319bee0e04fdd609b878a4e4fff)
 - visualArtifactSetSha256: b00bc33fc5da769d4f4ab98499daf3d21a694933d442ad2538c5e46a6dbfbc30
 - commitPushStatus: not pushed, origin/codex/action-inbox-specialist-wiring not found
 

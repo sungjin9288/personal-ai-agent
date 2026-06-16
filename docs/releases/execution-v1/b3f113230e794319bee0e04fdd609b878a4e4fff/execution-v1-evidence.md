@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-16T03:17:12.742Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-16T03:17:04.359Z
 - branch: codex/action-inbox-specialist-wiring
 - commit: b3f113230e794319bee0e04fdd609b878a4e4fff
