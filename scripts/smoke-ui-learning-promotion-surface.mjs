@@ -239,6 +239,10 @@ try {
   assert.equal(appJs.includes('function renderLearningPromotionExpireButton({'), true);
   assert.equal(appJs.includes('renderLearningPromotionExpireButton({ candidateId })'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire="${escapeHtml(candidateId)}"'), true);
+  assert.equal(appJs.includes('function wireActionInboxLearningPromotionExpireButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxLearningPromotionExpireButtons(items);'), true);
+  assert.equal(appJs.includes("await api('/api/actions/learning-promotions/expire'"), true);
+  assert.equal(appJs.includes('before: item.expirationPolicy?.expiresAt || new Date().toISOString()'), true);
   assert.equal(appJs.includes("label: '대기 만료'"), true);
   assert.equal(appJs.includes('renderLearningPromotionRemindButton'), true);
   assert.equal(appJs.includes('function renderLearningPromotionRemindButton({'), true);
