@@ -22671,6 +22671,46 @@ function wireActionInboxLearningPromotionAuditCopyButtons(items = []) {
   });
 }
 
+function wireActionInboxLearningPromotionExpireButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-learning-promotion-expire]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionExpire;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const confirmed = window.confirm('이 pending learning promotion을 만료 처리할까요?');
+      if (!confirmed) {
+        return;
+      }
+
+      const note = window.prompt('만료 메모를 입력하세요.', 'UI에서 pending learning promotion 만료');
+      if (!note) {
+        return;
+      }
+
+      await api('/api/actions/learning-promotions/expire', {
+        body: JSON.stringify({
+          before: item.expirationPolicy?.expiresAt || new Date().toISOString(),
+          missionId: item.missionId || '',
+          note,
+          recordType: item.recordType || '',
+          scope: item.scope || '',
+          target: item.proposalTarget || '',
+          workspaceId: item.workspaceId || '',
+        }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22727,44 +22767,7 @@ function renderMissionActions() {
   wireActionInboxSpecialistFollowUpButtons(items);
   wireActionInboxLearningPromotionResolveButtons(items);
   wireActionInboxLearningPromotionAuditCopyButtons(items);
-
-  elements.actionList.querySelectorAll('[data-learning-promotion-expire]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionExpire;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
-
-      const confirmed = window.confirm('이 pending learning promotion을 만료 처리할까요?');
-      if (!confirmed) {
-        return;
-      }
-
-      const note = window.prompt('만료 메모를 입력하세요.', 'UI에서 pending learning promotion 만료');
-      if (!note) {
-        return;
-      }
-
-      await api('/api/actions/learning-promotions/expire', {
-        body: JSON.stringify({
-          before: item.expirationPolicy?.expiresAt || new Date().toISOString(),
-          missionId: item.missionId || '',
-          note,
-          recordType: item.recordType || '',
-          scope: item.scope || '',
-          target: item.proposalTarget || '',
-          workspaceId: item.workspaceId || '',
-        }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
+  wireActionInboxLearningPromotionExpireButtons(items);
 
   elements.actionList.querySelectorAll('[data-learning-promotion-rollback]').forEach((button) => {
     button.addEventListener('click', async () => {
