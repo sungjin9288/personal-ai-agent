@@ -223,6 +223,10 @@ try {
   assert.equal(appJs.includes('function renderLearningPromotionResolveButton({'), true);
   assert.equal(appJs.includes('renderLearningPromotionResolveButton({'), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve="${escapeHtml(candidateId)}" data-learning-promotion-decision="${escapeHtml(decision)}"'), true);
+  assert.equal(appJs.includes('function wireActionInboxLearningPromotionResolveButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxLearningPromotionResolveButtons(items);'), true);
+  assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve'), true);
+  assert.equal(appJs.includes("target: item.proposalTarget || 'memory'"), true);
   assert.equal(appJs.includes("decision: 'approve'"), true);
   assert.equal(appJs.includes("decision: 'reject'"), true);
   assert.equal(appJs.includes("label: '학습 승인'"), true);
