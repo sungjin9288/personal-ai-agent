@@ -22625,6 +22625,42 @@ function wireActionInboxSpecialistFollowUpButtons(items = []) {
   });
 }
 
+function wireActionInboxLearningPromotionResolveButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-learning-promotion-resolve]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionResolve;
+      const decision = button.dataset.learningPromotionDecision || 'approve';
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const note = window.prompt(
+        decision === 'approve' ? '학습 승인 메모를 입력하세요.' : '학습 반려 메모를 입력하세요.',
+        decision === 'approve' ? 'UI에서 검토 후 scoped learning promotion 승인' : 'UI에서 검토 후 learning promotion 반려',
+      );
+      if (!note) {
+        return;
+      }
+
+      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve`, {
+        body: JSON.stringify({
+          decision,
+          note,
+          scope: item.scope || 'mission',
+          target: item.proposalTarget || 'memory',
+        }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22679,40 +22715,7 @@ function renderMissionActions() {
   wireActionInboxRerunButtons(items);
   wireActionInboxProviderAttentionButtons(items);
   wireActionInboxSpecialistFollowUpButtons(items);
-
-  elements.actionList.querySelectorAll('[data-learning-promotion-resolve]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionResolve;
-      const decision = button.dataset.learningPromotionDecision || 'approve';
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
-
-      const note = window.prompt(
-        decision === 'approve' ? '학습 승인 메모를 입력하세요.' : '학습 반려 메모를 입력하세요.',
-        decision === 'approve' ? 'UI에서 검토 후 scoped learning promotion 승인' : 'UI에서 검토 후 learning promotion 반려',
-      );
-      if (!note) {
-        return;
-      }
-
-      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve`, {
-        body: JSON.stringify({
-          decision,
-          note,
-          scope: item.scope || 'mission',
-          target: item.proposalTarget || 'memory',
-        }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
+  wireActionInboxLearningPromotionResolveButtons(items);
 
   elements.actionList.querySelectorAll('[data-learning-promotion-audit-copy]').forEach((button) => {
     button.addEventListener('click', async () => {

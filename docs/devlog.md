@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Learning Promotion Resolve Wiring
+
+- moved action inbox learning promotion approve/reject click wiring onto a dedicated wiring helper
+- kept decision selection, approval/rejection prompt copy, scoped payload construction, mission reload, approval reload, and selected mission refresh behavior aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for resolve wiring delegation
+
 ## 2026-06-16 Action Inbox Specialist Follow-Up Wiring
 
 - moved action inbox specialist follow-up remediation click wiring onto a dedicated wiring helper
