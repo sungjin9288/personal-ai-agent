@@ -193,6 +193,9 @@ try {
   assert.equal(appJs.includes('data-specialist-follow-up-remediate'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-specialist-follow-up-remediate'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '전문가 복구'"), true);
+  assert.equal(appJs.includes('function wireActionInboxSpecialistFollowUpButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxSpecialistFollowUpButtons(items);'), true);
+  assert.equal(appJs.includes('/api/actions/specialist-follow-ups/${encodeURIComponent(actionId)}/remediate'), true);
   assert.equal(appJs.includes('data-action-resolve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-action-resolve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '후속 요청 해소'"), true);
