@@ -259,6 +259,13 @@ try {
   assert.equal(appJs.includes('후속 작업 큐가 비어 있습니다'), true);
   assert.equal(appJs.includes('${visibleFilterLabel} 항목이 없습니다'), true);
   assert.equal(appJs.includes('${visibleFilterLabel} 필터에 맞는 열린 후속 작업이 없습니다.'), true);
+  assert.equal(appJs.includes('renderActionInboxUnavailableState'), true);
+  assert.equal(appJs.includes('function renderActionInboxUnavailableState()'), true);
+  assert.equal(appJs.includes('const unavailableState = renderActionInboxUnavailableState()'), true);
+  assert.equal(appJs.includes('elements.actionSummary.innerHTML = unavailableState.summaryHtml'), true);
+  assert.equal(appJs.includes('elements.actionList.innerHTML = unavailableState.listHtml'), true);
+  assert.equal(appJs.includes('후속 작업 큐가 준비되지 않았습니다'), true);
+  assert.equal(appJs.includes('표시할 액션이 없습니다'), true);
   assert.equal(appJs.includes('renderActionInboxCallout'), true);
   assert.equal(appJs.includes('function renderActionInboxCallout({'), true);
   assert.equal(appJs.includes('renderActionInboxCallout({'), true);

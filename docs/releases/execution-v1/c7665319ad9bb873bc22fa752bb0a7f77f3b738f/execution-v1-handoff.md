@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T01:36:07.745Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T01:36:06.307Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-unavailable-state-renderer
 - commit: c7665319ad9bb873bc22fa752bb0a7f77f3b738f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c7665319ad9bb873bc22fa752bb0a7f77f3b738f](releases/execution-v1/c7665319ad9bb873bc22fa752bb0a7f77f3b738f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c7665319ad9bb873bc22fa752bb0a7f77f3b738f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c7665319ad9bb873bc22fa752bb0a7f77f3b738f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c7665319ad9bb873bc22fa752bb0a7f77f3b738f](docs/releases/execution-v1/c7665319ad9bb873bc22fa752bb0a7f77f3b738f)
 - visualArtifactSetSha256: 3fa39abe19c75fbb32f5799f142216b0872c7869817e39327402a62933f3079b
 - commitPushStatus: not pushed, origin/codex/action-inbox-unavailable-state-renderer not found
 

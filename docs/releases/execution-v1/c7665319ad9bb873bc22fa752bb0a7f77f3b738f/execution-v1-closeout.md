@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-16T01:36:07.745Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-16T01:35:59.219Z
 - branch: codex/action-inbox-unavailable-state-renderer
 - commit: c7665319ad9bb873bc22fa752bb0a7f77f3b738f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c7665319ad9bb873bc22fa752bb0a7f77f3b738f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
