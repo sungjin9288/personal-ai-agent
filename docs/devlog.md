@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox Specialist Follow-Up Wiring
+
+- moved action inbox specialist follow-up remediation click wiring onto a dedicated wiring helper
+- kept specialist label resolution, confirmation copy, remediation API call, mission reload, approval reload, and selected mission refresh behavior aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for specialist follow-up wiring delegation
+
 ## 2026-06-16 Action Inbox Provider Attention Wiring
 
 - moved action inbox provider attention remediation click wiring onto a dedicated wiring helper

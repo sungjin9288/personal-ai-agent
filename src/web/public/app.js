@@ -22598,6 +22598,33 @@ function wireActionInboxProviderAttentionButtons(items = []) {
   });
 }
 
+function wireActionInboxSpecialistFollowUpButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-specialist-follow-up-remediate]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const actionId = button.dataset.specialistFollowUpRemediate;
+      const item = items.find((entry) => entry.actionId === actionId);
+      if (!item) {
+        return;
+      }
+
+      const specialistLabel = item.specialistKind ? `${item.specialistKind} specialist` : 'specialist';
+      const confirmed = window.confirm(`${specialistLabel} follow-up remediation을 실행할까요?`);
+      if (!confirmed) {
+        return;
+      }
+
+      await api(`/api/actions/specialist-follow-ups/${encodeURIComponent(actionId)}/remediate`, {
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22651,31 +22678,7 @@ function renderMissionActions() {
   wireActionInboxOpenButtons();
   wireActionInboxRerunButtons(items);
   wireActionInboxProviderAttentionButtons(items);
-
-  elements.actionList.querySelectorAll('[data-specialist-follow-up-remediate]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const actionId = button.dataset.specialistFollowUpRemediate;
-      const item = items.find((entry) => entry.actionId === actionId);
-      if (!item) {
-        return;
-      }
-
-      const specialistLabel = item.specialistKind ? `${item.specialistKind} specialist` : 'specialist';
-      const confirmed = window.confirm(`${specialistLabel} follow-up remediation을 실행할까요?`);
-      if (!confirmed) {
-        return;
-      }
-
-      await api(`/api/actions/specialist-follow-ups/${encodeURIComponent(actionId)}/remediate`, {
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
+  wireActionInboxSpecialistFollowUpButtons(items);
 
   elements.actionList.querySelectorAll('[data-learning-promotion-resolve]').forEach((button) => {
     button.addEventListener('click', async () => {
