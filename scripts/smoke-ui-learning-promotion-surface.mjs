@@ -171,9 +171,13 @@ try {
   assert.equal(appJs.includes('renderMissionActionItemButton({'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-action-open'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '미션 열기'"), true);
+  assert.equal(appJs.includes('function wireActionInboxOpenButtons()'), true);
+  assert.equal(appJs.includes('wireActionInboxOpenButtons();'), true);
   assert.equal(appJs.includes('data-action-rerun'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-action-rerun'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '권장 재실행'"), true);
+  assert.equal(appJs.includes('function wireActionInboxRerunButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxRerunButtons(items);'), true);
   assert.equal(appJs.includes('data-provider-attention-remediate'), true);
   assert.equal(appJs.includes('renderProviderAttentionRemediationButton'), true);
   assert.equal(appJs.includes('renderProviderAttentionRemediationButton({ item })'), true);

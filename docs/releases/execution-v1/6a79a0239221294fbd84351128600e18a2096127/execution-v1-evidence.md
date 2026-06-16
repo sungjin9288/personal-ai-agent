@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-16T01:54:13.736Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-16T01:54:04.046Z
 - branch: codex/action-inbox-open-rerun-wiring
 - commit: 6a79a0239221294fbd84351128600e18a2096127
