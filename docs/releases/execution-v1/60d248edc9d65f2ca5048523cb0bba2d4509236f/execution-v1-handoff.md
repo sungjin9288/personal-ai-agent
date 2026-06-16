@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-16T03:53:15.881Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-16T03:53:12.553Z
 - localDate: 2026-06-16
 - branch: codex/action-inbox-learning-audit-copy-wiring
 - commit: 60d248edc9d65f2ca5048523cb0bba2d4509236f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/60d248edc9d65f2ca5048523cb0bba2d4509236f](releases/execution-v1/60d248edc9d65f2ca5048523cb0bba2d4509236f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/60d248edc9d65f2ca5048523cb0bba2d4509236f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/60d248edc9d65f2ca5048523cb0bba2d4509236f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/60d248edc9d65f2ca5048523cb0bba2d4509236f](docs/releases/execution-v1/60d248edc9d65f2ca5048523cb0bba2d4509236f)
 - visualArtifactSetSha256: b82a71a74aa9b63c63bb95b0d4e00993aaf2d41ab3a5c13ae3020f8c3e8d5286
 - commitPushStatus: not pushed, origin/codex/action-inbox-learning-audit-copy-wiring not found
 

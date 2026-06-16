@@ -219,6 +219,9 @@ try {
   assert.equal(appJs.includes('renderLearningPromotionAuditCopyButton({ candidateId })'), true);
   assert.equal(appJs.includes('data-learning-promotion-audit-copy="${escapeHtml(candidateId)}"'), true);
   assert.equal(appJs.includes("label: 'audit package 복사'"), true);
+  assert.equal(appJs.includes('function wireActionInboxLearningPromotionAuditCopyButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxLearningPromotionAuditCopyButtons(items);'), true);
+  assert.equal(appJs.includes('copyLearningPromotionAuditPackage(item)'), true);
   assert.equal(appJs.includes('renderLearningPromotionResolveButton'), true);
   assert.equal(appJs.includes('function renderLearningPromotionResolveButton({'), true);
   assert.equal(appJs.includes('renderLearningPromotionResolveButton({'), true);

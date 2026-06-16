@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-16T03:53:15.881Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-16T03:52:59.156Z
 - branch: codex/action-inbox-learning-audit-copy-wiring
 - commit: 60d248edc9d65f2ca5048523cb0bba2d4509236f
