@@ -289,6 +289,11 @@ try {
   assert.equal(appJs.includes('<div class="action-item">'), true);
   assert.equal(appJs.includes('renderLearningPromotionCommandMeta(item)'), true);
   assert.equal(appJs.includes('renderActionInboxItemActions(item)'), true);
+  assert.equal(appJs.includes('renderActionInboxList'), true);
+  assert.equal(appJs.includes('function renderActionInboxList({'), true);
+  assert.equal(appJs.includes('renderActionInboxList({'), true);
+  assert.equal(appJs.includes('count: items.length'), true);
+  assert.equal(appJs.includes("items.map((item) => renderActionInboxItem(item)).join('')"), true);
   assert.equal(appJs.includes("aria-pressed=\"${active ? 'true' : 'false'}\""), true);
   assert.equal(appJs.includes('filterButtonTitle'), true);
   assert.equal(appJs.includes("${label} action 필터, ${countLabel}건"), true);

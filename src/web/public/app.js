@@ -22389,6 +22389,19 @@ function renderActionInboxItem(item = {}) {
       `;
 }
 
+function renderActionInboxList({
+  hasActiveFilter = false,
+  items = [],
+  visibleFilterLabel = '전체',
+} = {}) {
+  const callout = renderActionInboxCallout({
+    count: items.length,
+    hasActiveFilter,
+    visibleFilterLabel,
+  });
+  return `${callout}${items.map((item) => renderActionInboxItem(item)).join('')}`;
+}
+
 function wireMissionActionsFilterControls() {
   elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -22507,13 +22520,11 @@ function renderMissionActions() {
     return;
   }
 
-  const callout = renderActionInboxCallout({
-    count: items.length,
+  elements.actionList.innerHTML = renderActionInboxList({
     hasActiveFilter,
+    items,
     visibleFilterLabel,
   });
-
-  elements.actionList.innerHTML = `${callout}${items.map((item) => renderActionInboxItem(item)).join('')}`;
 
   elements.actionList.querySelectorAll('[data-action-open]').forEach((button) => {
     button.addEventListener('click', async () => {

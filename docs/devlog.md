@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-16 Action Inbox List Renderer
+
+- moved action inbox list composition onto a dedicated renderer
+- kept callout count, active filter messaging, visible filter label, and item card renderer delegation aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for list renderer delegation
+
 ## 2026-06-16 Action Inbox Item Card Renderer
 
 - moved action inbox item card composition onto a dedicated renderer
