@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-17T07:45:37.011Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-17T07:45:28.658Z
 - branch: codex/approval-approve-wiring
 - commit: f12dfb520490faa2f95d9f388356f15be49c8e87
