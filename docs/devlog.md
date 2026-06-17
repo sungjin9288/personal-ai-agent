@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-17 Approval Reject Wiring
+
+- moved approval list reject click wiring onto a dedicated wiring helper
+- kept rejection reason prompt and reject resolution behavior aligned with the existing approval panel contract
+- extended UI learning promotion smoke coverage for approval reject wiring delegation
+
 ## 2026-06-17 Approval Approve Wiring
 
 - moved approval list approve click wiring onto a dedicated wiring helper

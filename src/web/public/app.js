@@ -22825,6 +22825,18 @@ function wireApprovalApproveButtons() {
   });
 }
 
+function wireApprovalRejectButtons() {
+  elements.approvalList.querySelectorAll('[data-approval-reject]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const reason = window.prompt('반려 사유를 입력하세요.', '추가 수정 필요');
+      if (!reason) {
+        return;
+      }
+      await resolveApproval(button.dataset.approvalReject, 'reject', reason);
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22948,16 +22960,7 @@ function renderApprovals() {
 
   wireApprovalOpenButtons();
   wireApprovalApproveButtons();
-
-  elements.approvalList.querySelectorAll('[data-approval-reject]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const reason = window.prompt('반려 사유를 입력하세요.', '추가 수정 필요');
-      if (!reason) {
-        return;
-      }
-      await resolveApproval(button.dataset.approvalReject, 'reject', reason);
-    });
-  });
+  wireApprovalRejectButtons();
 }
 
 function renderSessionList() {
