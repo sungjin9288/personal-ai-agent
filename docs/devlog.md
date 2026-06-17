@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-17 Action Inbox Reviewer Follow-Up Resolve Wiring
+
+- moved action inbox reviewer follow-up resolve click wiring onto a dedicated wiring helper
+- kept resolution kind prompt, resolution note prompt, resolve payload construction, resolve API call, and selected mission refresh behavior aligned with the existing action inbox contract
+- extended UI learning promotion smoke coverage for reviewer follow-up resolve wiring delegation
+
 ## 2026-06-17 Action Inbox Learning Promotion Remind Wiring
 
 - moved action inbox blocked learning promotion reminder click wiring onto a dedicated wiring helper

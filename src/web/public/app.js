@@ -22773,6 +22773,32 @@ function wireActionInboxLearningPromotionRemindButtons(items = []) {
   });
 }
 
+function wireActionInboxReviewerFollowUpResolveButtons() {
+  elements.actionList.querySelectorAll('[data-action-resolve]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const actionId = button.dataset.actionResolve;
+      const kind = window.prompt(
+        'resolution kind를 입력하세요. (rerun-fixed | superseded | scope-reduced | accepted-risk)',
+        'rerun-fixed',
+      );
+      if (!kind) {
+        return;
+      }
+      const note = window.prompt('해소 메모를 입력하세요.', 'UI에서 처리 완료');
+      if (!note) {
+        return;
+      }
+      await api(`/api/actions/reviewer-follow-ups/${encodeURIComponent(actionId)}/resolve`, {
+        body: JSON.stringify({ kind, note }),
+        method: 'POST',
+      });
+      if (state.selectedMissionId) {
+        await selectMission(state.selectedMissionId, { urlMode: 'replace' });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22832,30 +22858,7 @@ function renderMissionActions() {
   wireActionInboxLearningPromotionExpireButtons(items);
   wireActionInboxLearningPromotionRollbackButtons(items);
   wireActionInboxLearningPromotionRemindButtons(items);
-
-  elements.actionList.querySelectorAll('[data-action-resolve]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const actionId = button.dataset.actionResolve;
-      const kind = window.prompt(
-        'resolution kind를 입력하세요. (rerun-fixed | superseded | scope-reduced | accepted-risk)',
-        'rerun-fixed',
-      );
-      if (!kind) {
-        return;
-      }
-      const note = window.prompt('해소 메모를 입력하세요.', 'UI에서 처리 완료');
-      if (!note) {
-        return;
-      }
-      await api(`/api/actions/reviewer-follow-ups/${encodeURIComponent(actionId)}/resolve`, {
-        body: JSON.stringify({ kind, note }),
-        method: 'POST',
-      });
-      if (state.selectedMissionId) {
-        await selectMission(state.selectedMissionId, { urlMode: 'replace' });
-      }
-    });
-  });
+  wireActionInboxReviewerFollowUpResolveButtons();
 }
 
 function renderApprovals() {
