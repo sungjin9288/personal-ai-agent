@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-17T07:45:37.011Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-17T07:45:28.709Z
 - branch: codex/approval-approve-wiring
 - commit: f12dfb520490faa2f95d9f388356f15be49c8e87
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f12dfb520490faa2f95d9f388356f15be49c8e87/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
