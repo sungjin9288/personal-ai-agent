@@ -207,6 +207,10 @@ try {
   assert.equal(appJs.includes('renderApprovalActionButton'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-open'"), true);
   assert.equal(appJs.includes('actionLabelValue: item.missionTitle || item.title || item.missionId || item.approvalId'), true);
+  assert.equal(appJs.includes('function wireApprovalOpenButtons()'), true);
+  assert.equal(appJs.includes('wireApprovalOpenButtons();'), true);
+  assert.equal(appJs.includes("preferredDetailTab: 'reviews'"), true);
+  assert.equal(appJs.includes("preferredStep: 'step-review'"), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);
