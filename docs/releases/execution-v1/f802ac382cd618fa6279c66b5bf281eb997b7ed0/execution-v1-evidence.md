@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-17T07:18:34.142Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-17T07:18:25.280Z
 - branch: codex/approval-open-wiring
 - commit: f802ac382cd618fa6279c66b5bf281eb997b7ed0

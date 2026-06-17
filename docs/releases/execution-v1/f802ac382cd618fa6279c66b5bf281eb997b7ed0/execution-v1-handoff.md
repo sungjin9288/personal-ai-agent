@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-17T07:18:34.142Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-17T07:18:32.558Z
 - localDate: 2026-06-17
 - branch: codex/approval-open-wiring
 - commit: f802ac382cd618fa6279c66b5bf281eb997b7ed0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f802ac382cd618fa6279c66b5bf281eb997b7ed0](releases/execution-v1/f802ac382cd618fa6279c66b5bf281eb997b7ed0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f802ac382cd618fa6279c66b5bf281eb997b7ed0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f802ac382cd618fa6279c66b5bf281eb997b7ed0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f802ac382cd618fa6279c66b5bf281eb997b7ed0](docs/releases/execution-v1/f802ac382cd618fa6279c66b5bf281eb997b7ed0)
 - visualArtifactSetSha256: 1d3a70127887940fb376724a198151af67f0de0a3e4789b32e48b98655621718
 - commitPushStatus: not pushed, origin/codex/approval-open-wiring not found
 
