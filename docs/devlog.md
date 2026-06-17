@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-17 Approval Approve Wiring
+
+- moved approval list approve click wiring onto a dedicated wiring helper
+- kept approval reason prompt and approve resolution behavior aligned with the existing approval panel contract
+- extended UI learning promotion smoke coverage for approval approve wiring delegation
+
 ## 2026-06-17 Approval Open Wiring
 
 - moved approval list mission-open click wiring onto a dedicated wiring helper

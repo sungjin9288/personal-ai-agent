@@ -22813,6 +22813,18 @@ function wireApprovalOpenButtons() {
   });
 }
 
+function wireApprovalApproveButtons() {
+  elements.approvalList.querySelectorAll('[data-approval-approve]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const reason = window.prompt('승인 사유를 입력하세요.', 'UI에서 확인 후 승인');
+      if (!reason) {
+        return;
+      }
+      await resolveApproval(button.dataset.approvalApprove, 'approve', reason);
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22935,16 +22947,7 @@ function renderApprovals() {
     .join('')}`;
 
   wireApprovalOpenButtons();
-
-  elements.approvalList.querySelectorAll('[data-approval-approve]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const reason = window.prompt('승인 사유를 입력하세요.', 'UI에서 확인 후 승인');
-      if (!reason) {
-        return;
-      }
-      await resolveApproval(button.dataset.approvalApprove, 'approve', reason);
-    });
-  });
+  wireApprovalApproveButtons();
 
   elements.approvalList.querySelectorAll('[data-approval-reject]').forEach((button) => {
     button.addEventListener('click', async () => {

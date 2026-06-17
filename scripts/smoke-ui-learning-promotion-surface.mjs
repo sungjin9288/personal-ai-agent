@@ -214,6 +214,9 @@ try {
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);
+  assert.equal(appJs.includes('function wireApprovalApproveButtons()'), true);
+  assert.equal(appJs.includes('wireApprovalApproveButtons();'), true);
+  assert.equal(appJs.includes("resolveApproval(button.dataset.approvalApprove, 'approve', reason)"), true);
   assert.equal(appJs.includes('data-approval-reject'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-reject'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '반려'"), true);
