@@ -223,6 +223,11 @@ try {
   assert.equal(appJs.includes('function wireApprovalRejectButtons()'), true);
   assert.equal(appJs.includes('wireApprovalRejectButtons();'), true);
   assert.equal(appJs.includes("resolveApproval(button.dataset.approvalReject, 'reject', reason)"), true);
+  assert.equal(appJs.includes('data-session-id'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-session-id'"), true);
+  assert.equal(appJs.includes('function wireSessionListSelectionButtons()'), true);
+  assert.equal(appJs.includes('wireSessionListSelectionButtons();'), true);
+  assert.equal(appJs.includes("selectSession(button.dataset.sessionId, { urlMode: 'push' })"), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);

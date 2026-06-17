@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-17 Session List Selection Wiring
+
+- moved session list selection click wiring onto a dedicated wiring helper
+- kept session id dataset lookup and push URL selection behavior aligned with the existing session list contract
+- extended UI learning promotion smoke coverage for session list selection wiring delegation
+
 ## 2026-06-17 Approval Reject Wiring
 
 - moved approval list reject click wiring onto a dedicated wiring helper
