@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-17T06:53:57.063Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-17T06:53:46.783Z
 - branch: codex/action-inbox-reviewer-resolve-wiring
 - commit: ba72b25f060b5367aba9990fa53d97d6bb4b0875
