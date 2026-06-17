@@ -22799,6 +22799,20 @@ function wireActionInboxReviewerFollowUpResolveButtons() {
   });
 }
 
+function wireApprovalOpenButtons() {
+  elements.approvalList.querySelectorAll('[data-approval-open]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      if (button.dataset.approvalOpen) {
+        await selectMission(button.dataset.approvalOpen, {
+          preferredDetailTab: 'reviews',
+          preferredStep: 'step-review',
+          urlMode: 'push',
+        });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22920,17 +22934,7 @@ function renderApprovals() {
     )
     .join('')}`;
 
-  elements.approvalList.querySelectorAll('[data-approval-open]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      if (button.dataset.approvalOpen) {
-        await selectMission(button.dataset.approvalOpen, {
-          preferredDetailTab: 'reviews',
-          preferredStep: 'step-review',
-          urlMode: 'push',
-        });
-      }
-    });
-  });
+  wireApprovalOpenButtons();
 
   elements.approvalList.querySelectorAll('[data-approval-approve]').forEach((button) => {
     button.addEventListener('click', async () => {

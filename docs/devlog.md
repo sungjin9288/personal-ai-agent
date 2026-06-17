@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-17 Approval Open Wiring
+
+- moved approval list mission-open click wiring onto a dedicated wiring helper
+- kept mission selection, reviews tab preference, review step preference, and push URL behavior aligned with the existing approval panel contract
+- extended UI learning promotion smoke coverage for approval open wiring delegation
+
 ## 2026-06-17 Action Inbox Reviewer Follow-Up Resolve Wiring
 
 - moved action inbox reviewer follow-up resolve click wiring onto a dedicated wiring helper
