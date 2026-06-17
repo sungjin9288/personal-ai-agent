@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-17T14:47:33.351Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-17T14:47:23.302Z
 - branch: codex/session-list-selection-wiring
 - commit: 29eea0d386f5d60354a895c659d6e835fbf973ee
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/29eea0d386f5d60354a895c659d6e835fbf973ee/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

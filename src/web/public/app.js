@@ -22837,6 +22837,12 @@ function wireApprovalRejectButtons() {
   });
 }
 
+function wireSessionListSelectionButtons() {
+  elements.sessionList.querySelectorAll('[data-session-id]').forEach((button) => {
+    button.addEventListener('click', () => selectSession(button.dataset.sessionId, { urlMode: 'push' }));
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -23014,9 +23020,7 @@ function renderSessionList() {
     })
     .join('');
 
-  elements.sessionList.querySelectorAll('[data-session-id]').forEach((button) => {
-    button.addEventListener('click', () => selectSession(button.dataset.sessionId, { urlMode: 'push' }));
-  });
+  wireSessionListSelectionButtons();
 }
 
 function renderSessionDetail(sessionPayload) {
