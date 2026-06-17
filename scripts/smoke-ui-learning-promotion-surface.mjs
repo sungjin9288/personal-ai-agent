@@ -220,6 +220,9 @@ try {
   assert.equal(appJs.includes('data-approval-reject'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-reject'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '반려'"), true);
+  assert.equal(appJs.includes('function wireApprovalRejectButtons()'), true);
+  assert.equal(appJs.includes('wireApprovalRejectButtons();'), true);
+  assert.equal(appJs.includes("resolveApproval(button.dataset.approvalReject, 'reject', reason)"), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
