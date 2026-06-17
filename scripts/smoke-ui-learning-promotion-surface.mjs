@@ -253,6 +253,10 @@ try {
   assert.equal(appJs.includes('function renderLearningPromotionRollbackButton({'), true);
   assert.equal(appJs.includes('renderLearningPromotionRollbackButton({ candidateId })'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback="${escapeHtml(candidateId)}"'), true);
+  assert.equal(appJs.includes('function wireActionInboxLearningPromotionRollbackButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxLearningPromotionRollbackButtons(items);'), true);
+  assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback'), true);
+  assert.equal(appJs.includes('body: JSON.stringify({ note })'), true);
   assert.equal(appJs.includes("label: '학습 rollback'"), true);
   assert.equal(appJs.includes('${label}: learning candidate ${candidateId}'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(actionLabel)}"'), true);

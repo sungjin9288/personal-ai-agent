@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-17 Action Inbox Learning Promotion Rollback Wiring
+
+- moved action inbox promoted learning candidate rollback click wiring onto a dedicated wiring helper
+- kept candidate lookup, rollback note prompt, rollback payload construction, mission reload, approval reload, and selected mission refresh behavior aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for rollback wiring delegation
+
 ## 2026-06-16 Action Inbox Learning Promotion Expire Wiring
 
 - moved action inbox pending learning promotion expiration click wiring onto a dedicated wiring helper
