@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-17T03:50:32.458Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-17T03:50:30.970Z
 - localDate: 2026-06-17
 - branch: codex/action-inbox-learning-remind-wiring
 - commit: 81e20999481acc13cd2592b42af87e846f1a3868
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/81e20999481acc13cd2592b42af87e846f1a3868](releases/execution-v1/81e20999481acc13cd2592b42af87e846f1a3868)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/81e20999481acc13cd2592b42af87e846f1a3868/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/81e20999481acc13cd2592b42af87e846f1a3868/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/81e20999481acc13cd2592b42af87e846f1a3868](docs/releases/execution-v1/81e20999481acc13cd2592b42af87e846f1a3868)
 - visualArtifactSetSha256: 4802914d1ec9c3feea6fef022b29384e798fb7778cab9122d7a449c326a36a33
 - commitPushStatus: not pushed, origin/codex/action-inbox-learning-remind-wiring not found
 

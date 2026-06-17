@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-17T03:50:32.458Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-17T03:50:23.086Z
 - branch: codex/action-inbox-learning-remind-wiring
 - commit: 81e20999481acc13cd2592b42af87e846f1a3868
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/81e20999481acc13cd2592b42af87e846f1a3868/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
