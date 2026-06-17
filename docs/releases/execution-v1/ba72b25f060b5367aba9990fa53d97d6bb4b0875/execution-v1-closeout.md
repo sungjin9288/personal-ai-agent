@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-17T06:53:57.063Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-17T06:53:46.853Z
 - branch: codex/action-inbox-reviewer-resolve-wiring
 - commit: ba72b25f060b5367aba9990fa53d97d6bb4b0875
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ba72b25f060b5367aba9990fa53d97d6bb4b0875/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

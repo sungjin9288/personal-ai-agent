@@ -199,6 +199,10 @@ try {
   assert.equal(appJs.includes('data-action-resolve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-action-resolve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '후속 요청 해소'"), true);
+  assert.equal(appJs.includes('function wireActionInboxReviewerFollowUpResolveButtons()'), true);
+  assert.equal(appJs.includes('wireActionInboxReviewerFollowUpResolveButtons();'), true);
+  assert.equal(appJs.includes('/api/actions/reviewer-follow-ups/${encodeURIComponent(actionId)}/resolve'), true);
+  assert.equal(appJs.includes('body: JSON.stringify({ kind, note })'), true);
   assert.equal(appJs.includes('data-approval-open'), true);
   assert.equal(appJs.includes('renderApprovalActionButton'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-open'"), true);

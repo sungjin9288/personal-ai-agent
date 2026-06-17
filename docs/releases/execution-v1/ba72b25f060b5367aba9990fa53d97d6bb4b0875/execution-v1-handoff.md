@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-17T06:53:57.063Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-17T06:53:55.500Z
 - localDate: 2026-06-17
 - branch: codex/action-inbox-reviewer-resolve-wiring
 - commit: ba72b25f060b5367aba9990fa53d97d6bb4b0875
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ba72b25f060b5367aba9990fa53d97d6bb4b0875](releases/execution-v1/ba72b25f060b5367aba9990fa53d97d6bb4b0875)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ba72b25f060b5367aba9990fa53d97d6bb4b0875/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ba72b25f060b5367aba9990fa53d97d6bb4b0875/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ba72b25f060b5367aba9990fa53d97d6bb4b0875](docs/releases/execution-v1/ba72b25f060b5367aba9990fa53d97d6bb4b0875)
 - visualArtifactSetSha256: 170fd5eaee707aeaf94910c6b792779e77fc30823810f005a3a57fc6c0e5dd89
 - commitPushStatus: not pushed, origin/codex/action-inbox-reviewer-resolve-wiring not found
 
