@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-17 Action Inbox Learning Promotion Remind Wiring
+
+- moved action inbox blocked learning promotion reminder click wiring onto a dedicated wiring helper
+- kept candidate lookup, reminder note prompt, due-only reminder payload construction, mission reload, approval reload, and selected mission refresh behavior aligned with the existing learning promotion contract
+- extended UI learning promotion smoke coverage for remind wiring delegation
+
 ## 2026-06-17 Action Inbox Learning Promotion Rollback Wiring
 
 - moved action inbox promoted learning candidate rollback click wiring onto a dedicated wiring helper
