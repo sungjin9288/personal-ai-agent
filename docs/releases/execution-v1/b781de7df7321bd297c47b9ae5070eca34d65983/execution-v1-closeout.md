@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-17T03:34:46.827Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-17T03:34:37.368Z
 - branch: codex/action-inbox-learning-rollback-wiring
 - commit: b781de7df7321bd297c47b9ae5070eca34d65983
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b781de7df7321bd297c47b9ae5070eca34d65983/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-17T03:34:46.827Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-17T03:34:45.401Z
 - localDate: 2026-06-17
 - branch: codex/action-inbox-learning-rollback-wiring
 - commit: b781de7df7321bd297c47b9ae5070eca34d65983
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b781de7df7321bd297c47b9ae5070eca34d65983](releases/execution-v1/b781de7df7321bd297c47b9ae5070eca34d65983)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b781de7df7321bd297c47b9ae5070eca34d65983/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b781de7df7321bd297c47b9ae5070eca34d65983/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b781de7df7321bd297c47b9ae5070eca34d65983](docs/releases/execution-v1/b781de7df7321bd297c47b9ae5070eca34d65983)
 - visualArtifactSetSha256: ee40aa0ac6ab684eaa7f5883cf0174045149c11ba3a84c00bf971b7b22c515fe
 - commitPushStatus: not pushed, origin/codex/action-inbox-learning-rollback-wiring not found
 

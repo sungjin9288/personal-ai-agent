@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-17T03:34:46.827Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-17T03:34:37.280Z
 - branch: codex/action-inbox-learning-rollback-wiring
 - commit: b781de7df7321bd297c47b9ae5070eca34d65983

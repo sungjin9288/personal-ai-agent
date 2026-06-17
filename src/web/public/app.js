@@ -22711,6 +22711,33 @@ function wireActionInboxLearningPromotionExpireButtons(items = []) {
   });
 }
 
+function wireActionInboxLearningPromotionRollbackButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-learning-promotion-rollback]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionRollback;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const note = window.prompt('rollback 메모를 입력하세요.', 'UI에서 promoted learning candidate rollback');
+      if (!note) {
+        return;
+      }
+
+      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback`, {
+        body: JSON.stringify({ note }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22768,31 +22795,7 @@ function renderMissionActions() {
   wireActionInboxLearningPromotionResolveButtons(items);
   wireActionInboxLearningPromotionAuditCopyButtons(items);
   wireActionInboxLearningPromotionExpireButtons(items);
-
-  elements.actionList.querySelectorAll('[data-learning-promotion-rollback]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionRollback;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
-
-      const note = window.prompt('rollback 메모를 입력하세요.', 'UI에서 promoted learning candidate rollback');
-      if (!note) {
-        return;
-      }
-
-      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback`, {
-        body: JSON.stringify({ note }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
+  wireActionInboxLearningPromotionRollbackButtons(items);
 
   elements.actionList.querySelectorAll('[data-learning-promotion-remind]').forEach((button) => {
     button.addEventListener('click', async () => {
