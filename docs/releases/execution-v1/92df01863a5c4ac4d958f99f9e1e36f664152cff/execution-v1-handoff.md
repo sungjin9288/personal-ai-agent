@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-17T08:42:43.508Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-17T08:42:42.064Z
 - localDate: 2026-06-17
 - branch: codex/approval-reject-wiring
 - commit: 92df01863a5c4ac4d958f99f9e1e36f664152cff
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/92df01863a5c4ac4d958f99f9e1e36f664152cff](releases/execution-v1/92df01863a5c4ac4d958f99f9e1e36f664152cff)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/92df01863a5c4ac4d958f99f9e1e36f664152cff/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/92df01863a5c4ac4d958f99f9e1e36f664152cff/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/92df01863a5c4ac4d958f99f9e1e36f664152cff](docs/releases/execution-v1/92df01863a5c4ac4d958f99f9e1e36f664152cff)
 - visualArtifactSetSha256: 1429743b8e5d87eaa0ae523e8f7b687c581f9422d5dc6118385792db739bc3b6
 - commitPushStatus: not pushed, origin/codex/approval-reject-wiring not found
 

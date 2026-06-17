@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-17T08:42:43.508Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-17T08:42:35.351Z
 - branch: codex/approval-reject-wiring
 - commit: 92df01863a5c4ac4d958f99f9e1e36f664152cff
