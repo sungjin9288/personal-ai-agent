@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-17T14:47:33.351Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-17T14:47:23.217Z
 - branch: codex/session-list-selection-wiring
 - commit: 29eea0d386f5d60354a895c659d6e835fbf973ee
