@@ -22738,6 +22738,41 @@ function wireActionInboxLearningPromotionRollbackButtons(items = []) {
   });
 }
 
+function wireActionInboxLearningPromotionRemindButtons(items = []) {
+  elements.actionList.querySelectorAll('[data-learning-promotion-remind]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const candidateId = button.dataset.learningPromotionRemind;
+      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
+      if (!item) {
+        return;
+      }
+
+      const note = window.prompt(
+        'stop-condition 재알림 메모를 입력하세요.',
+        'UI에서 blocked learning promotion stop-condition 후속 조치 재알림',
+      );
+      if (!note) {
+        return;
+      }
+
+      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind`, {
+        body: JSON.stringify({
+          dueOnly: true,
+          missionId: item.missionId || '',
+          note,
+          workspaceId: item.workspaceId || '',
+        }),
+        method: 'POST',
+      });
+
+      await Promise.all([loadMissions(), loadApprovals()]);
+      if (state.selectedMissionId) {
+        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+      }
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -22796,39 +22831,7 @@ function renderMissionActions() {
   wireActionInboxLearningPromotionAuditCopyButtons(items);
   wireActionInboxLearningPromotionExpireButtons(items);
   wireActionInboxLearningPromotionRollbackButtons(items);
-
-  elements.actionList.querySelectorAll('[data-learning-promotion-remind]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionRemind;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
-
-      const note = window.prompt(
-        'stop-condition 재알림 메모를 입력하세요.',
-        'UI에서 blocked learning promotion stop-condition 후속 조치 재알림',
-      );
-      if (!note) {
-        return;
-      }
-
-      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind`, {
-        body: JSON.stringify({
-          dueOnly: true,
-          missionId: item.missionId || '',
-          note,
-          workspaceId: item.workspaceId || '',
-        }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
+  wireActionInboxLearningPromotionRemindButtons(items);
 
   elements.actionList.querySelectorAll('[data-action-resolve]').forEach((button) => {
     button.addEventListener('click', async () => {

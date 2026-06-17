@@ -248,6 +248,10 @@ try {
   assert.equal(appJs.includes('function renderLearningPromotionRemindButton({'), true);
   assert.equal(appJs.includes('renderLearningPromotionRemindButton({ candidateId })'), true);
   assert.equal(appJs.includes('data-learning-promotion-remind="${escapeHtml(candidateId)}"'), true);
+  assert.equal(appJs.includes('function wireActionInboxLearningPromotionRemindButtons(items = [])'), true);
+  assert.equal(appJs.includes('wireActionInboxLearningPromotionRemindButtons(items);'), true);
+  assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind'), true);
+  assert.equal(appJs.includes('dueOnly: true'), true);
   assert.equal(appJs.includes("label: 'stop-condition 재알림'"), true);
   assert.equal(appJs.includes('renderLearningPromotionRollbackButton'), true);
   assert.equal(appJs.includes('function renderLearningPromotionRollbackButton({'), true);
