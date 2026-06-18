@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Release Status Action Wiring
+
+- moved release status preflight and live refresh click wiring onto a dedicated wiring helper
+- kept provider dataset lookup, single-provider preflight, all-provider preflight, live refresh confirmation, and live confirm arming behavior aligned with the existing release status contract
+- extended UI learning promotion smoke coverage for release status action wiring delegation
+
 ## 2026-06-18 Agent Blueprint Selection Wiring
 
 - moved agent blueprint card selection click wiring onto a dedicated wiring helper

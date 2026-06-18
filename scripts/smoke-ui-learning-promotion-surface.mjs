@@ -231,6 +231,15 @@ try {
   assert.equal(appJs.includes('function wireAgentBlueprintSelectionButtons(mode)'), true);
   assert.equal(appJs.includes('wireAgentBlueprintSelectionButtons(mode);'), true);
   assert.equal(appJs.includes("setSelectedAgentBlueprint(String(button.dataset.agentBlueprintId || '').trim(), mode)"), true);
+  assert.equal(appJs.includes('function wireReleaseStatusActionButtons()'), true);
+  assert.equal(appJs.includes('wireReleaseStatusActionButtons();'), true);
+  assert.equal(appJs.includes('data-ui-action="run-release-preflight"'), true);
+  assert.equal(appJs.includes('data-ui-action="run-release-preflight-all"'), true);
+  assert.equal(appJs.includes('data-ui-action="refresh-release-status-live"'), true);
+  assert.equal(appJs.includes('await runReleasePreflight(provider)'), true);
+  assert.equal(appJs.includes('await runReleasePreflightAll()'), true);
+  assert.equal(appJs.includes('await refreshReleaseStatusWithOptions(provider, { confirmLiveValidation: true })'), true);
+  assert.equal(appJs.includes('await armReleaseLiveConfirm(provider)'), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);
