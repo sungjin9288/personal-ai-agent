@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T00:58:58.499Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T00:58:57.199Z
 - localDate: 2026-06-18
 - branch: codex/mission-list-selection-wiring
 - commit: 5db1e1daa1540f26bf253df635a766a4d36f2618
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5db1e1daa1540f26bf253df635a766a4d36f2618](releases/execution-v1/5db1e1daa1540f26bf253df635a766a4d36f2618)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5db1e1daa1540f26bf253df635a766a4d36f2618/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5db1e1daa1540f26bf253df635a766a4d36f2618/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5db1e1daa1540f26bf253df635a766a4d36f2618](docs/releases/execution-v1/5db1e1daa1540f26bf253df635a766a4d36f2618)
 - visualArtifactSetSha256: 8b2d4a51da3cfaa0a207e1840e81d73fd2d2e73ddcde0748ccbd65250fec2aeb
 - commitPushStatus: not pushed, origin/codex/mission-list-selection-wiring not found
 
