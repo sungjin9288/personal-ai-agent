@@ -15285,7 +15285,10 @@ function renderAgentBlueprintBuilder() {
   `;
   wireQuickActions(elements.agentBlueprintBuilder);
   wireRetrievalSourceButtons(elements.agentBlueprintBuilder);
+  wireAgentBlueprintSelectionButtons(mode);
+}
 
+function wireAgentBlueprintSelectionButtons(mode) {
   elements.agentBlueprintBuilder.querySelectorAll('[data-agent-blueprint-id]').forEach((button) => {
     button.addEventListener('click', () => {
       setSelectedAgentBlueprint(String(button.dataset.agentBlueprintId || '').trim(), mode);

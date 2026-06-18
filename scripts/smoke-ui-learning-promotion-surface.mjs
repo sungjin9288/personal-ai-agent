@@ -227,6 +227,10 @@ try {
   assert.equal(appJs.includes('missionPlaybooks.find((entry) => entry.id === button.dataset.playbookId)'), true);
   assert.equal(appJs.includes('state.selectedPlaybookId = playbook.id'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode.value = playbook.values.mode'), true);
+  assert.equal(appJs.includes('data-agent-blueprint-id'), true);
+  assert.equal(appJs.includes('function wireAgentBlueprintSelectionButtons(mode)'), true);
+  assert.equal(appJs.includes('wireAgentBlueprintSelectionButtons(mode);'), true);
+  assert.equal(appJs.includes("setSelectedAgentBlueprint(String(button.dataset.agentBlueprintId || '').trim(), mode)"), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);
