@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-18T02:36:38.052Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-18T02:36:29.315Z
 - branch: codex/document-mutation-action-wiring
 - commit: cbb49c02876cb295fc91d142b160a2c5cf5722b1
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cbb49c02876cb295fc91d142b160a2c5cf5722b1/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
