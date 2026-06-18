@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Mission List Selection Wiring
+
+- moved mission list selection click wiring onto a dedicated wiring helper
+- kept mission id dataset lookup and push URL mission selection behavior aligned with the existing mission list contract
+- extended UI learning promotion smoke coverage for mission list selection wiring delegation
+
 ## 2026-06-18 Timeline Session Selection Wiring
 
 - moved timeline session selection click wiring onto a dedicated wiring helper

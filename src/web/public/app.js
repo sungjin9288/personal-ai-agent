@@ -15688,6 +15688,12 @@ function renderMissionSelectionButton({
   });
 }
 
+function wireMissionListSelectionButtons() {
+  elements.missionList.querySelectorAll('[data-mission-id]').forEach((button) => {
+    button.addEventListener('click', () => selectMission(button.dataset.missionId, { urlMode: 'push' }));
+  });
+}
+
 function renderMissionList() {
   const missions = filteredMissions();
   const selectedFlow =
@@ -15791,9 +15797,7 @@ function renderMissionList() {
     })
     .join('');
 
-  elements.missionList.querySelectorAll('[data-mission-id]').forEach((button) => {
-    button.addEventListener('click', () => selectMission(button.dataset.missionId, { urlMode: 'push' }));
-  });
+  wireMissionListSelectionButtons();
 }
 
 function renderMissionQueueSummary(missions = filteredMissions()) {

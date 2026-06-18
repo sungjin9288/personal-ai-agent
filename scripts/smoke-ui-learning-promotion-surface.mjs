@@ -223,6 +223,11 @@ try {
   assert.equal(appJs.includes('function wireApprovalRejectButtons()'), true);
   assert.equal(appJs.includes('wireApprovalRejectButtons();'), true);
   assert.equal(appJs.includes("resolveApproval(button.dataset.approvalReject, 'reject', reason)"), true);
+  assert.equal(appJs.includes('data-mission-id'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-mission-id'"), true);
+  assert.equal(appJs.includes('function wireMissionListSelectionButtons()'), true);
+  assert.equal(appJs.includes('wireMissionListSelectionButtons();'), true);
+  assert.equal(appJs.includes("selectMission(button.dataset.missionId, { urlMode: 'push' })"), true);
   assert.equal(appJs.includes('data-session-id'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-session-id'"), true);
   assert.equal(appJs.includes('function wireSessionListSelectionButtons()'), true);
