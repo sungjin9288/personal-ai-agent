@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T01:14:58.732Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T01:14:50.522Z
 - branch: codex/output-toolbar-tab-wiring
 - commit: a844c6233a5648d1f9cc9efe318636322a8d7caf

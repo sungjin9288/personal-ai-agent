@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T01:14:58.732Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T01:14:57.294Z
 - localDate: 2026-06-18
 - branch: codex/output-toolbar-tab-wiring
 - commit: a844c6233a5648d1f9cc9efe318636322a8d7caf
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a844c6233a5648d1f9cc9efe318636322a8d7caf](releases/execution-v1/a844c6233a5648d1f9cc9efe318636322a8d7caf)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a844c6233a5648d1f9cc9efe318636322a8d7caf/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a844c6233a5648d1f9cc9efe318636322a8d7caf/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a844c6233a5648d1f9cc9efe318636322a8d7caf](docs/releases/execution-v1/a844c6233a5648d1f9cc9efe318636322a8d7caf)
 - visualArtifactSetSha256: 9ced5a746b7a6f6aae5ac97ef451a93c446d67077306ef79ae2c7b818c80c88b
 - commitPushStatus: not pushed, origin/codex/output-toolbar-tab-wiring not found
 
