@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T02:12:11.312Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T02:12:09.906Z
 - localDate: 2026-06-18
 - branch: codex/release-status-action-wiring
 - commit: b58fc7cd368334459541cebfd2d8485f75f38ab3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b58fc7cd368334459541cebfd2d8485f75f38ab3](releases/execution-v1/b58fc7cd368334459541cebfd2d8485f75f38ab3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b58fc7cd368334459541cebfd2d8485f75f38ab3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b58fc7cd368334459541cebfd2d8485f75f38ab3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b58fc7cd368334459541cebfd2d8485f75f38ab3](docs/releases/execution-v1/b58fc7cd368334459541cebfd2d8485f75f38ab3)
 - visualArtifactSetSha256: a6c590e3e945a259a9a8a212454eaa1ecefa65820bfa0729deadd8ea8623b4cc
 - commitPushStatus: not pushed, origin/codex/release-status-action-wiring not found
 
