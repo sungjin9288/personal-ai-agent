@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T01:39:42.280Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T01:39:31.943Z
 - branch: codex/playbook-selection-wiring
 - commit: b10557730f115b05a2575bd386ab1c44e05ff086

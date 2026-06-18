@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T01:39:42.280Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T01:39:40.702Z
 - localDate: 2026-06-18
 - branch: codex/playbook-selection-wiring
 - commit: b10557730f115b05a2575bd386ab1c44e05ff086
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b10557730f115b05a2575bd386ab1c44e05ff086](releases/execution-v1/b10557730f115b05a2575bd386ab1c44e05ff086)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b10557730f115b05a2575bd386ab1c44e05ff086/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b10557730f115b05a2575bd386ab1c44e05ff086/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b10557730f115b05a2575bd386ab1c44e05ff086](docs/releases/execution-v1/b10557730f115b05a2575bd386ab1c44e05ff086)
 - visualArtifactSetSha256: 5b71684a8d8c2c3449e87706c49480973789e2cf8e72f787b759df65d18629e3
 - commitPushStatus: not pushed, origin/codex/playbook-selection-wiring not found
 
