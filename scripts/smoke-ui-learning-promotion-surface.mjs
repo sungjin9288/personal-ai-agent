@@ -228,6 +228,11 @@ try {
   assert.equal(appJs.includes('function wireSessionListSelectionButtons()'), true);
   assert.equal(appJs.includes('wireSessionListSelectionButtons();'), true);
   assert.equal(appJs.includes("selectSession(button.dataset.sessionId, { urlMode: 'push' })"), true);
+  assert.equal(appJs.includes('data-artifact-id'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-artifact-id'"), true);
+  assert.equal(appJs.includes('function wireSessionArtifactSelectionButtons()'), true);
+  assert.equal(appJs.includes('wireSessionArtifactSelectionButtons();'), true);
+  assert.equal(appJs.includes("loadArtifact(button.dataset.artifactId, { urlMode: 'push' })"), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);

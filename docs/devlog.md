@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Session Artifact Selection Wiring
+
+- moved session detail artifact selection click wiring onto a dedicated wiring helper
+- kept artifact id dataset lookup and push URL artifact loading behavior aligned with the existing session detail contract
+- extended UI learning promotion smoke coverage for session artifact selection wiring delegation
+
 ## 2026-06-17 Session List Selection Wiring
 
 - moved session list selection click wiring onto a dedicated wiring helper
