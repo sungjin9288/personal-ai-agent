@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-18T01:39:42.280Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-18T01:39:32.022Z
 - branch: codex/playbook-selection-wiring
 - commit: b10557730f115b05a2575bd386ab1c44e05ff086
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b10557730f115b05a2575bd386ab1c44e05ff086/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

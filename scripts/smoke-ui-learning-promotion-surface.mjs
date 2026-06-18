@@ -221,6 +221,12 @@ try {
   assert.equal(appJs.includes('function wireTemplateSelectionButtons()'), true);
   assert.equal(appJs.includes('wireTemplateSelectionButtons();'), true);
   assert.equal(appJs.includes('applyTemplate(Number(button.dataset.templateIndex))'), true);
+  assert.equal(appJs.includes('data-playbook-id'), true);
+  assert.equal(appJs.includes('function wirePlaybookSelectionButtons()'), true);
+  assert.equal(appJs.includes('wirePlaybookSelectionButtons();'), true);
+  assert.equal(appJs.includes('missionPlaybooks.find((entry) => entry.id === button.dataset.playbookId)'), true);
+  assert.equal(appJs.includes('state.selectedPlaybookId = playbook.id'), true);
+  assert.equal(appJs.includes('elements.missionForm.elements.mode.value = playbook.values.mode'), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);
