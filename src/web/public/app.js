@@ -11971,6 +11971,15 @@ function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {})
   }
 }
 
+function wireOutputToolbarTabButtons() {
+  elements.detailToolbarActions.querySelectorAll('[data-output-primary-tab]').forEach((button) => {
+    button.addEventListener('click', () => setActiveDetailTab(button.dataset.outputPrimaryTab, { urlMode: 'push' }));
+  });
+  elements.detailToolbarActions.querySelectorAll('[data-output-secondary-tab]').forEach((button) => {
+    button.addEventListener('click', () => setActiveDetailTab(button.dataset.outputSecondaryTab, { urlMode: 'push' }));
+  });
+}
+
 function renderDetailToolbarActions() {
   if (!elements.detailToolbarActions) {
     return;
@@ -12122,12 +12131,7 @@ function renderDetailToolbarActions() {
     }
   `;
   wireQuickActions(elements.detailToolbarActions);
-  elements.detailToolbarActions.querySelectorAll('[data-output-primary-tab]').forEach((button) => {
-    button.addEventListener('click', () => setActiveDetailTab(button.dataset.outputPrimaryTab, { urlMode: 'push' }));
-  });
-  elements.detailToolbarActions.querySelectorAll('[data-output-secondary-tab]').forEach((button) => {
-    button.addEventListener('click', () => setActiveDetailTab(button.dataset.outputSecondaryTab, { urlMode: 'push' }));
-  });
+  wireOutputToolbarTabButtons();
 }
 
 function openComposer() {
