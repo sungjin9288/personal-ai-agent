@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T02:12:11.312Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T02:12:02.274Z
 - branch: codex/release-status-action-wiring
 - commit: b58fc7cd368334459541cebfd2d8485f75f38ab3

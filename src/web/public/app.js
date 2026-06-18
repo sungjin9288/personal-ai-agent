@@ -21249,6 +21249,10 @@ function renderReleaseStatus() {
     releaseActionLabel,
   });
   wireQuickActions(elements.releaseStatus);
+  wireReleaseStatusActionButtons();
+}
+
+function wireReleaseStatusActionButtons() {
   elements.releaseStatus.querySelectorAll('[data-ui-action="run-release-preflight"]').forEach((button) => {
     button.addEventListener('click', async () => {
       const provider = String(button.dataset.uiProvider || '').trim();
