@@ -240,6 +240,14 @@ try {
   assert.equal(appJs.includes('await runReleasePreflightAll()'), true);
   assert.equal(appJs.includes('await refreshReleaseStatusWithOptions(provider, { confirmLiveValidation: true })'), true);
   assert.equal(appJs.includes('await armReleaseLiveConfirm(provider)'), true);
+  assert.equal(appJs.includes('function wireDocumentMutationActionButtons()'), true);
+  assert.equal(appJs.includes('wireDocumentMutationActionButtons();'), true);
+  assert.equal(appJs.includes('data-document-action="edit"'), true);
+  assert.equal(appJs.includes('data-document-action="delete"'), true);
+  assert.equal(appJs.includes('data-document-action="migrate-legacy"'), true);
+  assert.equal(appJs.includes('populateDocumentLogForm(entry)'), true);
+  assert.equal(appJs.includes('await handleDocumentLogDelete(entryId)'), true);
+  assert.equal(appJs.includes('await handleLegacyDocumentMigration()'), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);

@@ -21287,38 +21287,7 @@ function wireDocumentRowActions() {
     return;
   }
 
-  elements.harnessSource.querySelectorAll('[data-document-action="edit"]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const entryId = String(button.dataset.documentId || '').trim();
-      const entry = getHarnessDocumentEntry(entryId);
-      if (!entry) {
-        window.alert('문서 기록을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
-        return;
-      }
-      populateDocumentLogForm(entry);
-    });
-  });
-
-  elements.harnessSource.querySelectorAll('[data-document-action="delete"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const entryId = String(button.dataset.documentId || '').trim();
-      try {
-        await handleDocumentLogDelete(entryId);
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-
-  elements.harnessSource.querySelectorAll('[data-document-action="migrate-legacy"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        await handleLegacyDocumentMigration();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
+  wireDocumentMutationActionButtons();
 
   elements.harnessSource.querySelector('#document-log-sort')?.addEventListener('change', async (event) => {
     try {
@@ -21375,6 +21344,41 @@ function wireDocumentRowActions() {
         state.harnessDocumentOffset += Number(state.harnessDocumentVisibleCount || 12);
         await loadHarnessDocuments();
         renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
+}
+
+function wireDocumentMutationActionButtons() {
+  elements.harnessSource.querySelectorAll('[data-document-action="edit"]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const entryId = String(button.dataset.documentId || '').trim();
+      const entry = getHarnessDocumentEntry(entryId);
+      if (!entry) {
+        window.alert('문서 기록을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
+        return;
+      }
+      populateDocumentLogForm(entry);
+    });
+  });
+
+  elements.harnessSource.querySelectorAll('[data-document-action="delete"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const entryId = String(button.dataset.documentId || '').trim();
+      try {
+        await handleDocumentLogDelete(entryId);
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
+
+  elements.harnessSource.querySelectorAll('[data-document-action="migrate-legacy"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        await handleLegacyDocumentMigration();
       } catch (error) {
         window.alert(error.message);
       }

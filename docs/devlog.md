@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Document Mutation Action Wiring
+
+- moved harness document edit, delete, and legacy migration click wiring onto a dedicated wiring helper
+- kept document id dataset lookup, document form hydration, delete handler, legacy migration handler, and alert behavior aligned with the existing document row action contract
+- extended UI learning promotion smoke coverage for document mutation action wiring delegation
+
 ## 2026-06-18 Release Status Action Wiring
 
 - moved release status preflight and live refresh click wiring onto a dedicated wiring helper
