@@ -211,6 +211,12 @@ try {
   assert.equal(appJs.includes('wireApprovalOpenButtons();'), true);
   assert.equal(appJs.includes("preferredDetailTab: 'reviews'"), true);
   assert.equal(appJs.includes("preferredStep: 'step-review'"), true);
+  assert.equal(appJs.includes('data-output-primary-tab'), true);
+  assert.equal(appJs.includes('data-output-secondary-tab'), true);
+  assert.equal(appJs.includes('function wireOutputToolbarTabButtons()'), true);
+  assert.equal(appJs.includes('wireOutputToolbarTabButtons();'), true);
+  assert.equal(appJs.includes("setActiveDetailTab(button.dataset.outputPrimaryTab, { urlMode: 'push' })"), true);
+  assert.equal(appJs.includes("setActiveDetailTab(button.dataset.outputSecondaryTab, { urlMode: 'push' })"), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);

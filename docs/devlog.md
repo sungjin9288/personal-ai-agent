@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Output Toolbar Tab Wiring
+
+- moved output toolbar primary and secondary tab click wiring onto a dedicated wiring helper
+- kept primary tab, secondary tab, detail tab activation, and push URL behavior aligned with the existing output toolbar contract
+- extended UI learning promotion smoke coverage for output toolbar tab wiring delegation
+
 ## 2026-06-18 Mission List Selection Wiring
 
 - moved mission list selection click wiring onto a dedicated wiring helper
