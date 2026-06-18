@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Template Selection Wiring
+
+- moved template chip selection click wiring onto a dedicated wiring helper
+- kept template index dataset lookup, numeric index conversion, and applyTemplate behavior aligned with the existing template list contract
+- extended UI learning promotion smoke coverage for template selection wiring delegation
+
 ## 2026-06-18 Output Toolbar Tab Wiring
 
 - moved output toolbar primary and secondary tab click wiring onto a dedicated wiring helper

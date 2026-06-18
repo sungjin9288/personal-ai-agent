@@ -217,6 +217,10 @@ try {
   assert.equal(appJs.includes('wireOutputToolbarTabButtons();'), true);
   assert.equal(appJs.includes("setActiveDetailTab(button.dataset.outputPrimaryTab, { urlMode: 'push' })"), true);
   assert.equal(appJs.includes("setActiveDetailTab(button.dataset.outputSecondaryTab, { urlMode: 'push' })"), true);
+  assert.equal(appJs.includes('data-template-index'), true);
+  assert.equal(appJs.includes('function wireTemplateSelectionButtons()'), true);
+  assert.equal(appJs.includes('wireTemplateSelectionButtons();'), true);
+  assert.equal(appJs.includes('applyTemplate(Number(button.dataset.templateIndex))'), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);

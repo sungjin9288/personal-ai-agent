@@ -14872,16 +14872,20 @@ function renderTemplateChipButton({ index = 0, template = {} } = {}) {
   `;
 }
 
-function renderTemplates() {
-  elements.templateList.innerHTML = missionTemplates
-    .map((template, index) => renderTemplateChipButton({ index, template }))
-    .join('');
-
+function wireTemplateSelectionButtons() {
   elements.templateList.querySelectorAll('[data-template-index]').forEach((button) => {
     button.addEventListener('click', () => {
       applyTemplate(Number(button.dataset.templateIndex));
     });
   });
+}
+
+function renderTemplates() {
+  elements.templateList.innerHTML = missionTemplates
+    .map((template, index) => renderTemplateChipButton({ index, template }))
+    .join('');
+
+  wireTemplateSelectionButtons();
 }
 
 function inferPlaybook(mission) {
