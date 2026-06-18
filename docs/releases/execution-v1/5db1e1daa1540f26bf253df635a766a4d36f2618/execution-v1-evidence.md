@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T00:58:58.499Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T00:58:50.187Z
 - branch: codex/mission-list-selection-wiring
 - commit: 5db1e1daa1540f26bf253df635a766a4d36f2618
