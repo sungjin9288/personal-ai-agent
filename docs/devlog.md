@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Timeline Session Selection Wiring
+
+- moved timeline session selection click wiring onto a dedicated wiring helper
+- kept session id dataset lookup, session selection, output step activation, artifacts detail tab activation, and push URL behavior aligned with the existing timeline contract
+- extended UI learning promotion smoke coverage for timeline session selection wiring delegation
+
 ## 2026-06-18 Session Artifact Selection Wiring
 
 - moved session detail artifact selection click wiring onto a dedicated wiring helper

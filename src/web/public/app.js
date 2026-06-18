@@ -22849,6 +22849,16 @@ function wireSessionArtifactSelectionButtons() {
   });
 }
 
+function wireTimelineSessionSelectionButtons() {
+  elements.timelineList.querySelectorAll('[data-session-id]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      await selectSession(button.dataset.sessionId, { urlMode: 'push' });
+      setActiveStep('step-output', { syncDetailTab: false, syncUrl: false });
+      setActiveDetailTab('artifacts', { urlMode: 'push' });
+    });
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -23271,13 +23281,7 @@ function renderTimeline() {
     })
     .join('');
 
-  elements.timelineList.querySelectorAll('[data-session-id]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      await selectSession(button.dataset.sessionId, { urlMode: 'push' });
-      setActiveStep('step-output', { syncDetailTab: false, syncUrl: false });
-      setActiveDetailTab('artifacts', { urlMode: 'push' });
-    });
-  });
+  wireTimelineSessionSelectionButtons();
 }
 
 async function selectSession(
