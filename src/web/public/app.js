@@ -22843,6 +22843,12 @@ function wireSessionListSelectionButtons() {
   });
 }
 
+function wireSessionArtifactSelectionButtons() {
+  elements.sessionDetail.querySelectorAll('[data-artifact-id]').forEach((button) => {
+    button.addEventListener('click', () => loadArtifact(button.dataset.artifactId, { urlMode: 'push' }));
+  });
+}
+
 function renderMissionActions() {
   if (!state.missionActions) {
     const unavailableState = renderActionInboxUnavailableState();
@@ -23120,9 +23126,7 @@ function renderSessionDetail(sessionPayload) {
     </div>
   `;
 
-  elements.sessionDetail.querySelectorAll('[data-artifact-id]').forEach((button) => {
-    button.addEventListener('click', () => loadArtifact(button.dataset.artifactId, { urlMode: 'push' }));
-  });
+  wireSessionArtifactSelectionButtons();
   renderDetailTabLabels();
   renderDetailContextbar();
 }

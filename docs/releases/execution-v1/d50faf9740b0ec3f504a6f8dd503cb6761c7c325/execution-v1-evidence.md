@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T00:13:48.587Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T00:13:39.584Z
 - branch: codex/session-artifact-selection-wiring
 - commit: d50faf9740b0ec3f504a6f8dd503cb6761c7c325
