@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T01:57:29.329Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T01:57:20.706Z
 - branch: codex/agent-blueprint-selection-wiring
 - commit: da0d8ead7f23d7e86aa4840d2529651262eb8ec5

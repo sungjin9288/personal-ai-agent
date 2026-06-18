@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-18T01:57:29.329Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-18T01:57:20.782Z
 - branch: codex/agent-blueprint-selection-wiring
 - commit: da0d8ead7f23d7e86aa4840d2529651262eb8ec5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/da0d8ead7f23d7e86aa4840d2529651262eb8ec5/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

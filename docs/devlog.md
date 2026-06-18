@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Agent Blueprint Selection Wiring
+
+- moved agent blueprint card selection click wiring onto a dedicated wiring helper
+- kept blueprint id dataset lookup, trimmed id normalization, selected blueprint update, and mode-specific selection behavior aligned with the existing agent blueprint builder contract
+- extended UI learning promotion smoke coverage for agent blueprint selection wiring delegation
+
 ## 2026-06-18 Playbook Selection Wiring
 
 - moved playbook card selection click wiring onto a dedicated wiring helper
