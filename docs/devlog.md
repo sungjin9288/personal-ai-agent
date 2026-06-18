@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-18 Playbook Selection Wiring
+
+- moved playbook card selection click wiring onto a dedicated wiring helper
+- kept playbook id dataset lookup, selected playbook state update, mission form value hydration, builder refresh, and composer activation aligned with the existing playbook list contract
+- extended UI learning promotion smoke coverage for playbook selection wiring delegation
+
 ## 2026-06-18 Template Selection Wiring
 
 - moved template chip selection click wiring onto a dedicated wiring helper

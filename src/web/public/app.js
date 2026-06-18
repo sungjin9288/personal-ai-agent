@@ -15003,11 +15003,7 @@ function renderAgentBlueprintCardButton({ blueprint = {}, active = false } = {})
   `;
 }
 
-function renderPlaybooks() {
-  elements.playbookList.innerHTML = missionPlaybooks
-    .map((playbook) => renderPlaybookCardButton({ playbook, active: playbook.id === state.selectedPlaybookId }))
-    .join('');
-
+function wirePlaybookSelectionButtons() {
   elements.playbookList.querySelectorAll('[data-playbook-id]').forEach((button) => {
     button.addEventListener('click', () => {
       const playbook = missionPlaybooks.find((entry) => entry.id === button.dataset.playbookId);
@@ -15025,6 +15021,14 @@ function renderPlaybooks() {
       openComposer();
     });
   });
+}
+
+function renderPlaybooks() {
+  elements.playbookList.innerHTML = missionPlaybooks
+    .map((playbook) => renderPlaybookCardButton({ playbook, active: playbook.id === state.selectedPlaybookId }))
+    .join('');
+
+  wirePlaybookSelectionButtons();
 }
 
 function applyTemplate(index) {
