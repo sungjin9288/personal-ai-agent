@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T00:44:03.415Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T00:43:55.318Z
 - branch: codex/timeline-session-selection-wiring
 - commit: fafa61b607c7c9444e73841520e41ae8e386cef9

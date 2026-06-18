@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T00:44:03.415Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T00:44:02.157Z
 - localDate: 2026-06-18
 - branch: codex/timeline-session-selection-wiring
 - commit: fafa61b607c7c9444e73841520e41ae8e386cef9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/fafa61b607c7c9444e73841520e41ae8e386cef9](releases/execution-v1/fafa61b607c7c9444e73841520e41ae8e386cef9)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fafa61b607c7c9444e73841520e41ae8e386cef9/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/fafa61b607c7c9444e73841520e41ae8e386cef9/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/fafa61b607c7c9444e73841520e41ae8e386cef9](docs/releases/execution-v1/fafa61b607c7c9444e73841520e41ae8e386cef9)
 - visualArtifactSetSha256: def7c9895a179670afec191d2f49eab39cd05a35c2dec218811dc10da6172f90
 - commitPushStatus: not pushed, origin/codex/timeline-session-selection-wiring not found
 

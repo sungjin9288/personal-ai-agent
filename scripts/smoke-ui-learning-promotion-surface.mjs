@@ -233,6 +233,10 @@ try {
   assert.equal(appJs.includes('function wireSessionArtifactSelectionButtons()'), true);
   assert.equal(appJs.includes('wireSessionArtifactSelectionButtons();'), true);
   assert.equal(appJs.includes("loadArtifact(button.dataset.artifactId, { urlMode: 'push' })"), true);
+  assert.equal(appJs.includes('function wireTimelineSessionSelectionButtons()'), true);
+  assert.equal(appJs.includes('wireTimelineSessionSelectionButtons();'), true);
+  assert.equal(appJs.includes("setActiveStep('step-output', { syncDetailTab: false, syncUrl: false })"), true);
+  assert.equal(appJs.includes("setActiveDetailTab('artifacts', { urlMode: 'push' })"), true);
   assert.equal(appJs.includes('data-learning-promotion-resolve'), true);
   assert.equal(appJs.includes('data-learning-promotion-expire'), true);
   assert.equal(appJs.includes('data-learning-promotion-rollback'), true);
