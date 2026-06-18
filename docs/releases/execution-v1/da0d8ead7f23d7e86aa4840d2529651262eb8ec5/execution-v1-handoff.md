@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T01:57:29.329Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T01:57:28.010Z
 - localDate: 2026-06-18
 - branch: codex/agent-blueprint-selection-wiring
 - commit: da0d8ead7f23d7e86aa4840d2529651262eb8ec5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/da0d8ead7f23d7e86aa4840d2529651262eb8ec5](releases/execution-v1/da0d8ead7f23d7e86aa4840d2529651262eb8ec5)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/da0d8ead7f23d7e86aa4840d2529651262eb8ec5/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/da0d8ead7f23d7e86aa4840d2529651262eb8ec5/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/da0d8ead7f23d7e86aa4840d2529651262eb8ec5](docs/releases/execution-v1/da0d8ead7f23d7e86aa4840d2529651262eb8ec5)
 - visualArtifactSetSha256: 873ee56712588a4b9bab02edec1947e908b75c95b17db21356e83ddc832e7ba9
 - commitPushStatus: not pushed, origin/codex/agent-blueprint-selection-wiring not found
 
