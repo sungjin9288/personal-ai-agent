@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T01:27:31.915Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T01:27:22.928Z
 - branch: codex/template-selection-wiring
 - commit: f97a474a35f5505a46cc137db30778e27053e3b7

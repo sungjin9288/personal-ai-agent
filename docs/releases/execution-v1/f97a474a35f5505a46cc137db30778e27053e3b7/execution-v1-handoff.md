@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T01:27:31.915Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T01:27:30.517Z
 - localDate: 2026-06-18
 - branch: codex/template-selection-wiring
 - commit: f97a474a35f5505a46cc137db30778e27053e3b7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f97a474a35f5505a46cc137db30778e27053e3b7](releases/execution-v1/f97a474a35f5505a46cc137db30778e27053e3b7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f97a474a35f5505a46cc137db30778e27053e3b7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f97a474a35f5505a46cc137db30778e27053e3b7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f97a474a35f5505a46cc137db30778e27053e3b7](docs/releases/execution-v1/f97a474a35f5505a46cc137db30778e27053e3b7)
 - visualArtifactSetSha256: ccbd766fdcf4c887bad52e4b8fbaf413e73d3e021a265bba34faf3d23cec2236
 - commitPushStatus: not pushed, origin/codex/template-selection-wiring not found
 
