@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T00:13:48.587Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T00:13:47.186Z
 - localDate: 2026-06-18
 - branch: codex/session-artifact-selection-wiring
 - commit: d50faf9740b0ec3f504a6f8dd503cb6761c7c325
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d50faf9740b0ec3f504a6f8dd503cb6761c7c325](releases/execution-v1/d50faf9740b0ec3f504a6f8dd503cb6761c7c325)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d50faf9740b0ec3f504a6f8dd503cb6761c7c325/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d50faf9740b0ec3f504a6f8dd503cb6761c7c325/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d50faf9740b0ec3f504a6f8dd503cb6761c7c325](docs/releases/execution-v1/d50faf9740b0ec3f504a6f8dd503cb6761c7c325)
 - visualArtifactSetSha256: 3b32c7f5ce4841a3d1e3217b260329c16274e706f14f00997be71b253f0ac834
 - commitPushStatus: not pushed, origin/codex/session-artifact-selection-wiring not found
 
