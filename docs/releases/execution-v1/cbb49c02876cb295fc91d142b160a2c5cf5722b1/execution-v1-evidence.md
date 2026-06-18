@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-18T02:36:38.052Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-18T02:36:29.204Z
 - branch: codex/document-mutation-action-wiring
 - commit: cbb49c02876cb295fc91d142b160a2c5cf5722b1

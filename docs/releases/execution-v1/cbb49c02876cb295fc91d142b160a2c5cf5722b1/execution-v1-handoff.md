@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-18T02:36:38.052Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-18T02:36:36.716Z
 - localDate: 2026-06-18
 - branch: codex/document-mutation-action-wiring
 - commit: cbb49c02876cb295fc91d142b160a2c5cf5722b1
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/cbb49c02876cb295fc91d142b160a2c5cf5722b1](releases/execution-v1/cbb49c02876cb295fc91d142b160a2c5cf5722b1)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cbb49c02876cb295fc91d142b160a2c5cf5722b1/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/cbb49c02876cb295fc91d142b160a2c5cf5722b1/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/cbb49c02876cb295fc91d142b160a2c5cf5722b1](docs/releases/execution-v1/cbb49c02876cb295fc91d142b160a2c5cf5722b1)
 - visualArtifactSetSha256: 77b30758ee2e84153baf1fd20c365adcd27a2ca3cb9e83c536965a20c3f8c468
 - commitPushStatus: not pushed, origin/codex/document-mutation-action-wiring not found
 
