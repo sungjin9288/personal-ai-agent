@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T02:56:05.622Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T02:55:46.694Z
 - branch: codex/workspace-composer-wiring
 - commit: f5aa3bb281675372db65a60eb186216699da8e06
