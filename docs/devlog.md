@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Memory Browse Pagination Wiring
+
+- moved harness memory search, filter, page-size, sort, reset, previous page, and next page wiring onto a dedicated pagination helper
+- kept browse reset, visible-count based previous/next offset updates, memory reload, panel rerender, URL sync, and alert behavior aligned with the existing memory browse contract
+- extended UI learning promotion smoke coverage for memory browse pagination wiring delegation
+
 ## 2026-06-19 Memory Mutation Action Wiring
 
 - moved harness memory edit and delete click wiring onto a dedicated wiring helper

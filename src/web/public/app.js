@@ -21396,7 +21396,10 @@ function wireMemoryRowActions() {
   }
 
   wireMemoryMutationActionButtons();
+  wireMemoryBrowsePaginationButtons();
+}
 
+function wireMemoryBrowsePaginationButtons() {
   elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', async (event) => {
     try {
       state.retrievalSourceFocusType = '';
