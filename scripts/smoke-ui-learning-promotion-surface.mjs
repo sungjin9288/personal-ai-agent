@@ -372,6 +372,10 @@ try {
   assert.equal(appJs.includes('} = buildHarnessPanelActionLabels({'), true);
   assert.equal(appJs.includes("legacyDevlogMigrationLabel: `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`"), true);
   assert.equal(appJs.includes('missionAttachmentUploadLabel: `첨부 업로드: ${selectedMissionLabel}`'), true);
+  assert.equal(appJs.includes('function renderHarnessAttachmentList(attachmentEntries = [])'), true);
+  assert.equal(appJs.includes('${renderHarnessAttachmentList(attachmentEntries)}'), true);
+  assert.equal(appJs.includes("state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''"), true);
+  assert.equal(appJs.includes('아직 첨부된 파일이 없습니다.'), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
