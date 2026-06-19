@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T05:12:26.965Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T05:12:14.255Z
 - branch: codex/bootstrap-static-surfaces
 - commit: 929f061fc49aee86656ff6da2917af9eda326996

@@ -24892,13 +24892,17 @@ function attachEvents() {
   wireBrowserHistoryControls();
 }
 
-async function bootstrap() {
-  attachEvents();
+function renderBootstrapStaticSurfaces() {
   renderPlaybooks();
   renderTemplates();
   renderAgentBlueprintBuilder();
   updateRunFallbackControls();
   setActiveStep('step-setup', { syncUrl: false });
+}
+
+async function bootstrap() {
+  attachEvents();
+  renderBootstrapStaticSurfaces();
 
   try {
     await Promise.all([loadWorkspaces(), loadProviders(), loadRuntimeRequests(), loadRuntimeJobs(), loadApprovals(), loadMissions(), loadReleaseStatus()]);

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Bootstrap Static Surfaces
+
+- moved playbook/template rendering, agent blueprint builder rendering, fallback control refresh, and default setup step selection into a dedicated bootstrap static surfaces helper
+- kept startup render order, fallback control initialization, and non-URL-sync default step behavior aligned with the existing bootstrap contract
+- extended UI learning promotion smoke coverage for bootstrap static surface delegation
+
 ## 2026-06-19 Browser History Controls Wiring
 
 - moved browser popstate listener wiring onto a dedicated one-time history controls helper
