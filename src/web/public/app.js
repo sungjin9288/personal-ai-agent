@@ -24900,9 +24900,21 @@ function renderBootstrapStaticSurfaces() {
   setActiveStep('step-setup', { syncUrl: false });
 }
 
+async function loadBootstrapData() {
+  await Promise.all([
+    loadWorkspaces(),
+    loadProviders(),
+    loadRuntimeRequests(),
+    loadRuntimeJobs(),
+    loadApprovals(),
+    loadMissions(),
+    loadReleaseStatus(),
+  ]);
+}
+
 async function hydrateBootstrapDataAndRestoreState() {
   try {
-    await Promise.all([loadWorkspaces(), loadProviders(), loadRuntimeRequests(), loadRuntimeJobs(), loadApprovals(), loadMissions(), loadReleaseStatus()]);
+    await loadBootstrapData();
     await restoreUiStateFromUrl();
   } catch (error) {
     window.alert(error.message);
