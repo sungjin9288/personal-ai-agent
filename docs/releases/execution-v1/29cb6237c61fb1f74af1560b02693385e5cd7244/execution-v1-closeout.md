@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T06:52:18.829Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T06:52:06.670Z
 - branch: codex/restore-workspace-url-state
 - commit: 29cb6237c61fb1f74af1560b02693385e5cd7244
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/29cb6237c61fb1f74af1560b02693385e5cd7244/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

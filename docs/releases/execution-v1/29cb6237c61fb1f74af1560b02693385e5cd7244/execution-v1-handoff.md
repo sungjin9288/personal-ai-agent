@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T06:52:18.829Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T06:52:18.632Z
 - localDate: 2026-06-19
 - branch: codex/restore-workspace-url-state
 - commit: 29cb6237c61fb1f74af1560b02693385e5cd7244
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/29cb6237c61fb1f74af1560b02693385e5cd7244](releases/execution-v1/29cb6237c61fb1f74af1560b02693385e5cd7244)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/29cb6237c61fb1f74af1560b02693385e5cd7244/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/29cb6237c61fb1f74af1560b02693385e5cd7244/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/29cb6237c61fb1f74af1560b02693385e5cd7244](docs/releases/execution-v1/29cb6237c61fb1f74af1560b02693385e5cd7244)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/restore-workspace-url-state not found
 

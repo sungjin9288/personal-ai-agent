@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T06:52:18.829Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T06:52:06.622Z
 - branch: codex/restore-workspace-url-state
 - commit: 29cb6237c61fb1f74af1560b02693385e5cd7244
