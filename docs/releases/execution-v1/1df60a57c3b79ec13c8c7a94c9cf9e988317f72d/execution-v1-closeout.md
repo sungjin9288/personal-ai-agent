@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T06:59:04.558Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T06:58:58.130Z
 - branch: codex/restore-mission-target-bootstrap-state
 - commit: 1df60a57c3b79ec13c8c7a94c9cf9e988317f72d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1df60a57c3b79ec13c8c7a94c9cf9e988317f72d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Mission Target Bootstrap State
+
+- moved mission list rendering and restored target mission resolution into a dedicated URL restore helper
+- kept filtered mission visibility, URL mission preference, and fallback target calculation aligned with the existing restore contract
+- extended UI learning promotion smoke coverage for mission target bootstrap URL restore delegation
+
 ## 2026-06-19 Restore Workspace Selection State
 
 - moved workspace URL selection restore and workspace id validation into a dedicated restore helper

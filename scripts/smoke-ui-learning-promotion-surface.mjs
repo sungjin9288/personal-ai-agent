@@ -313,6 +313,10 @@ try {
   assert.equal(appJs.includes('restoreWorkspaceSelectionUrlState(urlState);'), true);
   assert.equal(appJs.includes('state.workspaces.some((workspace) => workspace.id === urlState.workspaceId)'), true);
   assert.equal(appJs.includes('elements.workspaceSelect.value = urlState.workspaceId;'), true);
+  assert.equal(appJs.includes('function restoreMissionTargetUrlState(urlState)'), true);
+  assert.equal(appJs.includes('const targetMissionId = restoreMissionTargetUrlState(urlState);'), true);
+  assert.equal(appJs.includes('renderMissionList();'), true);
+  assert.equal(appJs.includes('const visibleMission = filteredMissions();'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
