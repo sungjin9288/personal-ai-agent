@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T06:29:58.959Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T06:29:50.144Z
 - branch: codex/restore-missing-mission-url-state
 - commit: 1a8253805b0b50220d13a0ea6114338f5fed01bc
