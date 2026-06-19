@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T04:47:15.782Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T04:47:15.634Z
 - localDate: 2026-06-19
 - branch: codex/browser-history-controls-wiring
 - commit: ed3429f8be7f553ee5e8370e64147451314aa478
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ed3429f8be7f553ee5e8370e64147451314aa478](releases/execution-v1/ed3429f8be7f553ee5e8370e64147451314aa478)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ed3429f8be7f553ee5e8370e64147451314aa478/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ed3429f8be7f553ee5e8370e64147451314aa478/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ed3429f8be7f553ee5e8370e64147451314aa478](docs/releases/execution-v1/ed3429f8be7f553ee5e8370e64147451314aa478)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/browser-history-controls-wiring not found
 
