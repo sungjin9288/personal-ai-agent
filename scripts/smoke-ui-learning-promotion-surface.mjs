@@ -394,6 +394,12 @@ try {
   assert.equal(appJs.includes("const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';"), true);
   assert.equal(appJs.includes('`${actionPrefix} 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`'), true);
   assert.equal(appJs.includes('`${actionPrefix} 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseFooter({'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryBrowseFooter({'), true);
+  assert.equal(appJs.includes('const filteredTotal = Number(memoryBrowse.summary?.filteredTotal || 0);'), true);
+  assert.equal(appJs.includes('일치하는 메모리가 없습니다.'), true);
+  assert.equal(appJs.includes("actionLabel: memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}`"), true);
+  assert.equal(appJs.includes("actionLabel: memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}`"), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
   assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);

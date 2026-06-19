@@ -2438,6 +2438,10 @@ try {
   assert.equal(appJs.includes('`${actionPrefix} 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`'), true);
   assert.equal(appJs.includes('data-memory-action="prev-page"'), true);
   assert.equal(appJs.includes("action: 'prev-page'"), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseFooter({'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryBrowseFooter({'), true);
+  assert.equal(appJs.includes('const filteredTotal = Number(memoryBrowse.summary?.filteredTotal || 0);'), true);
+  assert.equal(appJs.includes('일치하는 메모리가 없습니다.'), true);
   assert.equal(appJs.includes('disabled: !memoryBrowse.summary?.hasPrev'), true);
   assert.equal(appJs.includes('이전 메모리 ${memoryPageSize}건'), true);
   assert.equal(appJs.includes('data-memory-action="next-page"'), true);
