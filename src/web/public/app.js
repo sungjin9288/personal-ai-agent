@@ -23984,6 +23984,23 @@ function resolveRestoredMissionId(urlState, visibleMission = []) {
   return visibleMission[0]?.mission?.id || null;
 }
 
+async function restoreTargetMissionUrlState(targetMissionId, urlState) {
+  await selectMission(targetMissionId, {
+    preferredArtifactId: urlState.artifactId,
+    preferredDetailTab: urlState.detailTab,
+    preferredSessionId: urlState.sessionId,
+    preferredStep: urlState.stepId,
+    syncUrl: false,
+  });
+  await applyRetrievalSourceUrlState({
+    sourceLabel: urlState.retrievalSourceLabel,
+    sourceType: urlState.retrievalSourceType,
+  });
+  renderAgentBlueprintBuilder();
+  renderHarnessPanel();
+  renderOutputStageSummary();
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
@@ -24002,20 +24019,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   });
 
   if (targetMissionId) {
-    await selectMission(targetMissionId, {
-      preferredArtifactId: urlState.artifactId,
-      preferredDetailTab: urlState.detailTab,
-      preferredSessionId: urlState.sessionId,
-      preferredStep: urlState.stepId,
-      syncUrl: false,
-    });
-    await applyRetrievalSourceUrlState({
-      sourceLabel: urlState.retrievalSourceLabel,
-      sourceType: urlState.retrievalSourceType,
-    });
-    renderAgentBlueprintBuilder();
-    renderHarnessPanel();
-    renderOutputStageSummary();
+    await restoreTargetMissionUrlState(targetMissionId, urlState);
   } else {
     clearMissionSelection({ syncUrl: false });
     if (urlState.stepId) {

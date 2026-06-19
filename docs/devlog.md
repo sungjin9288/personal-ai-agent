@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Target Mission State
+
+- moved target mission selection, retrieval source focus restore, and post-selection render refresh into a dedicated URL restore helper
+- kept preferred artifact/session/detail/step restore, retrieval source restore, and output summary refresh aligned with the existing restore contract
+- extended UI learning promotion smoke coverage for target mission URL restore delegation
+
 ## 2026-06-19 Restore Mission Target
 
 - moved URL mission id validation and first visible mission fallback selection into a dedicated restore target helper

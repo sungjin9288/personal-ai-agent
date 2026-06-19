@@ -294,6 +294,11 @@ try {
   assert.equal(appJs.includes('function resolveRestoredMissionId(urlState, visibleMission = [])'), true);
   assert.equal(appJs.includes('const targetMissionId = resolveRestoredMissionId(urlState, visibleMission);'), true);
   assert.equal(appJs.includes('visibleMission[0]?.mission?.id || null'), true);
+  assert.equal(appJs.includes('async function restoreTargetMissionUrlState(targetMissionId, urlState)'), true);
+  assert.equal(appJs.includes('await restoreTargetMissionUrlState(targetMissionId, urlState);'), true);
+  assert.equal(appJs.includes('preferredArtifactId: urlState.artifactId'), true);
+  assert.equal(appJs.includes('await applyRetrievalSourceUrlState({'), true);
+  assert.equal(appJs.includes('renderOutputStageSummary();'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
