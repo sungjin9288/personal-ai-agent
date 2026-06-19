@@ -248,6 +248,14 @@ try {
   assert.equal(appJs.includes('populateDocumentLogForm(entry)'), true);
   assert.equal(appJs.includes('await handleDocumentLogDelete(entryId)'), true);
   assert.equal(appJs.includes('await handleLegacyDocumentMigration()'), true);
+  assert.equal(appJs.includes('function wireDocumentBrowsePaginationButtons()'), true);
+  assert.equal(appJs.includes('wireDocumentBrowsePaginationButtons();'), true);
+  assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
+  assert.equal(appJs.includes('data-document-action="prev-page"'), true);
+  assert.equal(appJs.includes('data-document-action="next-page"'), true);
+  assert.equal(appJs.includes('resetHarnessDocumentBrowseState()'), true);
+  assert.equal(appJs.includes('state.harnessDocumentOffset = Math.max('), true);
+  assert.equal(appJs.includes('state.harnessDocumentOffset += Number(state.harnessDocumentVisibleCount || 12)'), true);
   assert.equal(appJs.includes('data-approval-approve'), true);
   assert.equal(appJs.includes("dataAttribute: 'data-approval-approve'"), true);
   assert.equal(appJs.includes("actionLabelPrefix: '승인'"), true);

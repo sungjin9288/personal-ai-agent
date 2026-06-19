@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T00:25:10.624Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T00:25:00.693Z
 - branch: codex/document-browse-pagination-wiring
 - commit: f14d76a54f0f8f2c82ef45c11f68d99811b6d728

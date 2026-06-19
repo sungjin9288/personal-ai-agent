@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Document Browse Pagination Wiring
+
+- moved harness document reset, previous page, and next page click wiring onto a dedicated pagination helper
+- kept browse reset, visible-count based previous/next offset updates, document reload, panel rerender, and alert behavior aligned with the existing document browse contract
+- extended UI learning promotion smoke coverage for document browse pagination wiring delegation
+
 ## 2026-06-18 Document Mutation Action Wiring
 
 - moved harness document edit, delete, and legacy migration click wiring onto a dedicated wiring helper
