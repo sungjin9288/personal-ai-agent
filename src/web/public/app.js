@@ -24862,6 +24862,15 @@ function wireMissionBrowseControls() {
   });
 }
 
+function wireNavigationTabControls() {
+  elements.stepButtons.forEach((button) => {
+    button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget, { urlMode: 'push' }));
+  });
+  elements.detailTabButtons.forEach((button) => {
+    button.addEventListener('click', () => setActiveDetailTab(button.dataset.detailTab, { urlMode: 'push' }));
+  });
+}
+
 function attachEvents() {
   wireWorkspaceComposerActions();
   wireMissionBrowseControls();
@@ -24869,12 +24878,7 @@ function attachEvents() {
   wireMemoryFormActions();
   wireDocumentLogFormActions();
   wireMissionRunActions();
-  elements.stepButtons.forEach((button) => {
-    button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget, { urlMode: 'push' }));
-  });
-  elements.detailTabButtons.forEach((button) => {
-    button.addEventListener('click', () => setActiveDetailTab(button.dataset.detailTab, { urlMode: 'push' }));
-  });
+  wireNavigationTabControls();
   window.addEventListener('popstate', async () => {
     try {
       await restoreUiStateFromUrl({ syncUrl: false });

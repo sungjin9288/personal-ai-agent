@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Navigation Tab Controls Wiring
+
+- moved step and detail tab button listener wiring onto a dedicated one-time navigation controls helper
+- kept step selection, detail tab selection, and URL push behavior aligned with the existing navigation tab contract
+- extended UI learning promotion smoke coverage for navigation tab controls wiring delegation
+
 ## 2026-06-19 Mission Browse Controls Wiring
 
 - moved mission filter input and workspace select listener wiring onto a dedicated one-time browse controls helper
