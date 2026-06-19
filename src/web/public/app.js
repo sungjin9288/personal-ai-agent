@@ -24069,6 +24069,12 @@ async function restoreMissionSelectionUrlState(targetMissionId, urlState) {
   }
 }
 
+function syncRestoredUiStateToUrl(syncUrl) {
+  if (syncUrl) {
+    writeUiStateToUrl();
+  }
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
@@ -24082,9 +24088,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
 
   await restoreReleaseDetailUrlState(urlState);
 
-  if (syncUrl) {
-    writeUiStateToUrl();
-  }
+  syncRestoredUiStateToUrl(syncUrl);
 }
 
 async function loadHarnessDocuments(missionId = state.selectedMissionId) {

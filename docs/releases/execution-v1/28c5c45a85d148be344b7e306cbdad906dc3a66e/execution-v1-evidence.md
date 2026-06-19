@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T07:53:12.876Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T07:53:06.279Z
 - branch: codex/sync-restored-ui-state-url
 - commit: 28c5c45a85d148be344b7e306cbdad906dc3a66e

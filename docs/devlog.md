@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Sync Restored UI State URL
+
+- moved restored UI state URL writeback behind a dedicated sync helper
+- kept syncUrl gating and writeUiStateToUrl behavior aligned with the existing restore contract
+- extended UI learning promotion smoke coverage for restored URL sync delegation
+
 ## 2026-06-19 Restore Mission Selection State
 
 - moved target/missing mission selection URL restoration branching into a dedicated restore helper
