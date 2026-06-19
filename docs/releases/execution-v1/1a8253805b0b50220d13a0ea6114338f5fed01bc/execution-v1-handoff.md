@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T06:29:58.959Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T06:29:58.796Z
 - localDate: 2026-06-19
 - branch: codex/restore-missing-mission-url-state
 - commit: 1a8253805b0b50220d13a0ea6114338f5fed01bc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1a8253805b0b50220d13a0ea6114338f5fed01bc](releases/execution-v1/1a8253805b0b50220d13a0ea6114338f5fed01bc)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1a8253805b0b50220d13a0ea6114338f5fed01bc/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1a8253805b0b50220d13a0ea6114338f5fed01bc/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1a8253805b0b50220d13a0ea6114338f5fed01bc](docs/releases/execution-v1/1a8253805b0b50220d13a0ea6114338f5fed01bc)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/restore-missing-mission-url-state not found
 

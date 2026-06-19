@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T06:29:58.959Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T06:29:50.206Z
 - branch: codex/restore-missing-mission-url-state
 - commit: 1a8253805b0b50220d13a0ea6114338f5fed01bc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1a8253805b0b50220d13a0ea6114338f5fed01bc/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

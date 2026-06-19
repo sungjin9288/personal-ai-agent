@@ -24030,6 +24030,16 @@ async function restoreReleaseDetailUrlState(urlState) {
   }
 }
 
+function restoreMissingMissionUrlState(urlState) {
+  clearMissionSelection({ syncUrl: false });
+  if (urlState.stepId) {
+    setActiveStep(urlState.stepId, { syncDetailTab: false, syncUrl: false });
+  }
+  if (urlState.detailTab) {
+    setActiveDetailTab(urlState.detailTab, { syncUrl: false });
+  }
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
@@ -24050,13 +24060,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   if (targetMissionId) {
     await restoreTargetMissionUrlState(targetMissionId, urlState);
   } else {
-    clearMissionSelection({ syncUrl: false });
-    if (urlState.stepId) {
-      setActiveStep(urlState.stepId, { syncDetailTab: false, syncUrl: false });
-    }
-    if (urlState.detailTab) {
-      setActiveDetailTab(urlState.detailTab, { syncUrl: false });
-    }
+    restoreMissingMissionUrlState(urlState);
   }
 
   await restoreReleaseDetailUrlState(urlState);
