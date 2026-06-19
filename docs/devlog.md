@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Missing Mission State
+
+- moved no-target mission URL restore fallback behavior into a dedicated restore helper
+- kept mission selection clearing, step focus restore, and detail tab restore behavior aligned with the existing empty mission contract
+- extended UI learning promotion smoke coverage for missing mission URL restore delegation
+
 ## 2026-06-19 Restore Release Detail State
 
 - moved release tab URL state restoration and release fallback reset behavior into a dedicated restore helper

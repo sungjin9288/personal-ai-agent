@@ -304,6 +304,11 @@ try {
   assert.equal(appJs.includes("urlState.detailTab === 'release'"), true);
   assert.equal(appJs.includes('await applyReleaseHandoffPreviewUrlState(urlState.releaseHandoffPreviewId);'), true);
   assert.equal(appJs.includes('clearReleaseHandoffPreview();'), true);
+  assert.equal(appJs.includes('function restoreMissingMissionUrlState(urlState)'), true);
+  assert.equal(appJs.includes('restoreMissingMissionUrlState(urlState);'), true);
+  assert.equal(appJs.includes('clearMissionSelection({ syncUrl: false });'), true);
+  assert.equal(appJs.includes('setActiveStep(urlState.stepId, { syncDetailTab: false, syncUrl: false });'), true);
+  assert.equal(appJs.includes('setActiveDetailTab(urlState.detailTab, { syncUrl: false });'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
