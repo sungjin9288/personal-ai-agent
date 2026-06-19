@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T05:12:26.965Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T05:12:14.481Z
 - branch: codex/bootstrap-static-surfaces
 - commit: 929f061fc49aee86656ff6da2917af9eda326996
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/929f061fc49aee86656ff6da2917af9eda326996/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

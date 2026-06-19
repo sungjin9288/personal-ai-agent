@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T05:12:26.965Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T05:12:26.758Z
 - localDate: 2026-06-19
 - branch: codex/bootstrap-static-surfaces
 - commit: 929f061fc49aee86656ff6da2917af9eda326996
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/929f061fc49aee86656ff6da2917af9eda326996](releases/execution-v1/929f061fc49aee86656ff6da2917af9eda326996)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/929f061fc49aee86656ff6da2917af9eda326996/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/929f061fc49aee86656ff6da2917af9eda326996/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/929f061fc49aee86656ff6da2917af9eda326996](docs/releases/execution-v1/929f061fc49aee86656ff6da2917af9eda326996)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/bootstrap-static-surfaces not found
 
