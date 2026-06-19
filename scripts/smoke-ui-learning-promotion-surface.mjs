@@ -309,6 +309,10 @@ try {
   assert.equal(appJs.includes('clearMissionSelection({ syncUrl: false });'), true);
   assert.equal(appJs.includes('setActiveStep(urlState.stepId, { syncDetailTab: false, syncUrl: false });'), true);
   assert.equal(appJs.includes('setActiveDetailTab(urlState.detailTab, { syncUrl: false });'), true);
+  assert.equal(appJs.includes('function restoreWorkspaceSelectionUrlState(urlState)'), true);
+  assert.equal(appJs.includes('restoreWorkspaceSelectionUrlState(urlState);'), true);
+  assert.equal(appJs.includes('state.workspaces.some((workspace) => workspace.id === urlState.workspaceId)'), true);
+  assert.equal(appJs.includes('elements.workspaceSelect.value = urlState.workspaceId;'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
