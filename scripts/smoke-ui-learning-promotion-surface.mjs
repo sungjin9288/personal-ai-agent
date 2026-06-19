@@ -260,6 +260,11 @@ try {
   assert.equal(appJs.includes("elements.runMissionButton.textContent = '이 미션 실행'"), true);
   assert.equal(appJs.includes('elements.runFallbackProviderSelect?.addEventListener'), true);
   assert.equal(appJs.includes('updateRunFallbackControls'), true);
+  assert.equal(appJs.includes('function wireWorkspaceComposerActions()'), true);
+  assert.equal(appJs.includes('wireWorkspaceComposerActions();'), true);
+  assert.equal(appJs.includes('elements.toggleCreateButton.addEventListener'), true);
+  assert.equal(appJs.includes('elements.toggleWorkspaceFormButton?.addEventListener'), true);
+  assert.equal(appJs.includes('await handleWorkspaceCreate(event)'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);

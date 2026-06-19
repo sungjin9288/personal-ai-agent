@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Workspace Composer Wiring
+
+- moved create composer, workspace form toggle/cancel, and workspace create submit listener wiring onto a dedicated one-time composer helper
+- kept composer opening, workspace form focus behavior, workspace creation, status recovery, and alert behavior aligned with the existing workspace composer contract
+- extended UI learning promotion smoke coverage for workspace composer wiring delegation
+
 ## 2026-06-19 Mission Run Wiring
 
 - moved mission run button and fallback provider selector listener wiring onto a dedicated one-time run helper
