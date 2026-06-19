@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T07:59:49.784Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T07:59:42.665Z
 - branch: codex/apply-restored-ui-state
 - commit: d017ca1f931989ae089e663550a9513f3d93618b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d017ca1f931989ae089e663550a9513f3d93618b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
