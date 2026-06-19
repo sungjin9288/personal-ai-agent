@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Bootstrap Data Hydration
+
+- moved startup data loading and URL state restore into a dedicated bootstrap hydration helper
+- kept workspace/provider/runtime/action/mission/release loading, URL restore order, and alert handling aligned with the existing bootstrap contract
+- extended UI learning promotion smoke coverage for bootstrap hydration delegation
+
 ## 2026-06-19 Bootstrap Static Surfaces
 
 - moved playbook/template rendering, agent blueprint builder rendering, fallback control refresh, and default setup step selection into a dedicated bootstrap static surfaces helper

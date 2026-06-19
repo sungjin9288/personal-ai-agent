@@ -24900,16 +24900,19 @@ function renderBootstrapStaticSurfaces() {
   setActiveStep('step-setup', { syncUrl: false });
 }
 
-async function bootstrap() {
-  attachEvents();
-  renderBootstrapStaticSurfaces();
-
+async function hydrateBootstrapDataAndRestoreState() {
   try {
     await Promise.all([loadWorkspaces(), loadProviders(), loadRuntimeRequests(), loadRuntimeJobs(), loadApprovals(), loadMissions(), loadReleaseStatus()]);
     await restoreUiStateFromUrl();
   } catch (error) {
     window.alert(error.message);
   }
+}
+
+async function bootstrap() {
+  attachEvents();
+  renderBootstrapStaticSurfaces();
+  await hydrateBootstrapDataAndRestoreState();
 }
 
 bootstrap();
