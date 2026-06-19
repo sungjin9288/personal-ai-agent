@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T14:18:06.973Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T14:17:59.948Z
 - branch: codex/harness-panel-action-labels
 - commit: a4fc3f78b89280b4137ed412bdc2329975a20d06
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a4fc3f78b89280b4137ed412bdc2329975a20d06/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
