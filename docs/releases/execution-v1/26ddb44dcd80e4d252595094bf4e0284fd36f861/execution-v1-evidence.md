@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T01:36:31.924Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T01:36:25.878Z
 - branch: codex/memory-browse-pagination-wiring
 - commit: 26ddb44dcd80e4d252595094bf4e0284fd36f861

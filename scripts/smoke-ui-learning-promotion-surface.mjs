@@ -254,6 +254,14 @@ try {
   assert.equal(appJs.includes('data-memory-action="delete"'), true);
   assert.equal(appJs.includes('populateMemoryForm(scope, entry)'), true);
   assert.equal(appJs.includes('await handleMemoryDelete(scope, memoryId)'), true);
+  assert.equal(appJs.includes('function wireMemoryBrowsePaginationButtons()'), true);
+  assert.equal(appJs.includes('wireMemoryBrowsePaginationButtons();'), true);
+  assert.equal(appJs.includes('data-memory-action="reset-browse"'), true);
+  assert.equal(appJs.includes('data-memory-action="prev-page"'), true);
+  assert.equal(appJs.includes('data-memory-action="next-page"'), true);
+  assert.equal(appJs.includes('resetHarnessMemoryBrowseState()'), true);
+  assert.equal(appJs.includes('state.harnessMemoryOffset = Math.max('), true);
+  assert.equal(appJs.includes('state.harnessMemoryOffset += Number(state.harnessMemoryVisibleCount || 12)'), true);
   assert.equal(appJs.includes('function wireDocumentBrowsePaginationButtons()'), true);
   assert.equal(appJs.includes('wireDocumentBrowsePaginationButtons();'), true);
   assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
