@@ -4355,6 +4355,41 @@ function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {})
   </div>`;
 }
 
+function renderHarnessMemoryBrowseFooter({
+  memoryBrowse = {},
+  memoryFilterLabel = '',
+  memoryPageLabel = '',
+  memoryPageSize = 12,
+  memoryRangeLabel = '',
+} = {}) {
+  const filteredTotal = Number(memoryBrowse.summary?.filteredTotal || 0);
+  if (filteredTotal) {
+    return `<div class="harness-empty-inline">
+      <strong>${escapeHtml(memoryPageLabel)} · ${escapeHtml(memoryRangeLabel)}</strong>
+      <p>남은 메모 ${escapeHtml(String(memoryBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(filteredTotal))}건</p>
+      <div class="inline-actions">
+        ${renderMemoryBrowseActionButton({
+          action: 'prev-page',
+          actionLabel: memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`,
+          buttonText: `이전 ${String(memoryPageSize)}건`,
+          disabled: !memoryBrowse.summary?.hasPrev,
+        })}
+        ${renderMemoryBrowseActionButton({
+          action: 'next-page',
+          actionLabel: memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`,
+          buttonText: `다음 ${String(memoryPageSize)}건`,
+          disabled: !memoryBrowse.summary?.hasNext,
+        })}
+      </div>
+    </div>`;
+  }
+
+  return `<div class="harness-empty-inline">
+    <strong>일치하는 메모리가 없습니다.</strong>
+    <p>${escapeHtml(memoryFilterLabel)} 기준으로 일치하는 메모를 찾지 못했습니다.</p>
+  </div>`;
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -17969,36 +18004,13 @@ function renderHarnessPanel() {
           </div>`
         : ''
     }
-    ${
-      Number(memoryBrowse.summary?.filteredTotal || 0)
-        ? `<div class="harness-empty-inline">
-            <strong>${escapeHtml(memoryPageLabel)} · ${escapeHtml(memoryRangeLabel)}</strong>
-            <p>남은 메모 ${escapeHtml(String(memoryBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건</p>
-            <div class="inline-actions">
-              ${renderMemoryBrowseActionButton({
-                action: 'prev-page',
-                actionLabel: memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `이전 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`,
-                buttonText: `이전 ${String(memoryPageSize)}건`,
-                disabled: !memoryBrowse.summary?.hasPrev,
-              })}
-              ${renderMemoryBrowseActionButton({
-                action: 'next-page',
-                actionLabel: memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}` : `다음 메모리 ${memoryPageSize}건 없음: ${memoryPageLabel}`,
-                buttonText: `다음 ${String(memoryPageSize)}건`,
-                disabled: !memoryBrowse.summary?.hasNext,
-              })}
-            </div>
-          </div>`
-        : ''
-    }
-    ${
-      Number(memoryBrowse.summary?.filteredTotal || 0) === 0
-        ? `<div class="harness-empty-inline">
-            <strong>일치하는 메모리가 없습니다.</strong>
-            <p>${escapeHtml(memoryFilterLabel)} 기준으로 일치하는 메모를 찾지 못했습니다.</p>
-          </div>`
-        : ''
-    }
+    ${renderHarnessMemoryBrowseFooter({
+      memoryBrowse,
+      memoryFilterLabel,
+      memoryPageLabel,
+      memoryPageSize,
+      memoryRangeLabel,
+    })}
   `;
 
   elements.harnessLoops.innerHTML = `

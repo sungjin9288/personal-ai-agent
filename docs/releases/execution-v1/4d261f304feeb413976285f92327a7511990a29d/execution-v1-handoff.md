@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T19:13:48.247Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T19:13:48.143Z
 - localDate: 2026-06-20
 - branch: codex/harness-memory-browse-footer-renderer
 - commit: 4d261f304feeb413976285f92327a7511990a29d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4d261f304feeb413976285f92327a7511990a29d](releases/execution-v1/4d261f304feeb413976285f92327a7511990a29d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4d261f304feeb413976285f92327a7511990a29d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4d261f304feeb413976285f92327a7511990a29d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4d261f304feeb413976285f92327a7511990a29d](docs/releases/execution-v1/4d261f304feeb413976285f92327a7511990a29d)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-memory-browse-footer-renderer not found
 

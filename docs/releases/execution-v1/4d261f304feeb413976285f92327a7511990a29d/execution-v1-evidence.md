@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T19:13:48.247Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T19:13:40.976Z
 - branch: codex/harness-memory-browse-footer-renderer
 - commit: 4d261f304feeb413976285f92327a7511990a29d

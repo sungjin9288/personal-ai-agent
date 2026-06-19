@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Memory Browse Footer Renderer
+
+- moved memory browse pagination footer and no-results empty-state markup into a dedicated renderer helper
+- kept remaining-count summary, prev/next action labels, disabled-state rules, and empty-state copy aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for memory browse footer renderer delegation
+
 ## 2026-06-20 Harness Memory Browse List Renderer
 
 - moved mission and workspace memory browse row/list markup into a shared renderer helper
