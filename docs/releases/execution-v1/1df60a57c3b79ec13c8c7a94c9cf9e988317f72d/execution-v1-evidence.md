@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T06:59:04.558Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T06:58:58.088Z
 - branch: codex/restore-mission-target-bootstrap-state
 - commit: 1df60a57c3b79ec13c8c7a94c9cf9e988317f72d
