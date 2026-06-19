@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Bootstrap Loader List
+
+- moved startup workspace/provider/runtime/action/mission/release loader calls into a dedicated bootstrap data loader helper
+- kept parallel loading, hydration order, and URL restore behavior aligned with the existing bootstrap contract
+- extended UI learning promotion smoke coverage for bootstrap loader delegation
+
 ## 2026-06-19 Bootstrap Data Hydration
 
 - moved startup data loading and URL state restore into a dedicated bootstrap hydration helper
