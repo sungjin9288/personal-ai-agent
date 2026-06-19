@@ -24061,6 +24061,14 @@ function restoreMissionActionsFilterUrlState(urlState) {
   });
 }
 
+async function restoreMissionSelectionUrlState(targetMissionId, urlState) {
+  if (targetMissionId) {
+    await restoreTargetMissionUrlState(targetMissionId, urlState);
+  } else {
+    restoreMissingMissionUrlState(urlState);
+  }
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
@@ -24070,11 +24078,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
 
   restoreMissionActionsFilterUrlState(urlState);
 
-  if (targetMissionId) {
-    await restoreTargetMissionUrlState(targetMissionId, urlState);
-  } else {
-    restoreMissingMissionUrlState(urlState);
-  }
+  await restoreMissionSelectionUrlState(targetMissionId, urlState);
 
   await restoreReleaseDetailUrlState(urlState);
 

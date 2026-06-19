@@ -321,6 +321,10 @@ try {
   assert.equal(appJs.includes('restoreMissionActionsFilterUrlState(urlState);'), true);
   assert.equal(appJs.includes('actionInboxFallbackStopReason: urlState.actionInboxFallbackStopReason'), true);
   assert.equal(appJs.includes('actionInboxFilter: urlState.actionInboxFilter'), true);
+  assert.equal(appJs.includes('async function restoreMissionSelectionUrlState(targetMissionId, urlState)'), true);
+  assert.equal(appJs.includes('await restoreMissionSelectionUrlState(targetMissionId, urlState);'), true);
+  assert.equal(appJs.includes('if (targetMissionId) {'), true);
+  assert.equal(appJs.includes('await restoreTargetMissionUrlState(targetMissionId, urlState);'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);

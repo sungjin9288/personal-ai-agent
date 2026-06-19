@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Mission Selection State
+
+- moved target/missing mission selection URL restoration branching into a dedicated restore helper
+- kept target mission restore and missing mission fallback delegation aligned with the existing URL restore contract
+- extended UI learning promotion smoke coverage for mission selection URL restore delegation
+
 ## 2026-06-19 Restore Mission Actions Filter State
 
 - moved mission action inbox filter and fallback stop reason URL restoration into a dedicated restore helper
