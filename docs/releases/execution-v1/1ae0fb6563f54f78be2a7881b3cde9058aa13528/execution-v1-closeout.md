@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T03:05:21.233Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T03:05:15.538Z
 - branch: codex/mission-browse-controls-wiring
 - commit: 1ae0fb6563f54f78be2a7881b3cde9058aa13528
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1ae0fb6563f54f78be2a7881b3cde9058aa13528/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

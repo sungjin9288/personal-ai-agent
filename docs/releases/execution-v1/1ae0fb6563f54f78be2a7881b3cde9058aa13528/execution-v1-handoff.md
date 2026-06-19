@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T03:05:21.233Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T03:05:21.143Z
 - localDate: 2026-06-19
 - branch: codex/mission-browse-controls-wiring
 - commit: 1ae0fb6563f54f78be2a7881b3cde9058aa13528
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1ae0fb6563f54f78be2a7881b3cde9058aa13528](releases/execution-v1/1ae0fb6563f54f78be2a7881b3cde9058aa13528)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1ae0fb6563f54f78be2a7881b3cde9058aa13528/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1ae0fb6563f54f78be2a7881b3cde9058aa13528/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1ae0fb6563f54f78be2a7881b3cde9058aa13528](docs/releases/execution-v1/1ae0fb6563f54f78be2a7881b3cde9058aa13528)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/mission-browse-controls-wiring not found
 
