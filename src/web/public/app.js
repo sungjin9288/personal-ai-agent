@@ -21288,7 +21288,10 @@ function wireDocumentRowActions() {
   }
 
   wireDocumentMutationActionButtons();
+  wireDocumentBrowsePaginationButtons();
+}
 
+function wireDocumentBrowsePaginationButtons() {
   elements.harnessSource.querySelector('#document-log-sort')?.addEventListener('change', async (event) => {
     try {
       state.harnessDocumentSort = String(event.target.value || 'latest').trim() || 'latest';
@@ -21311,10 +21314,6 @@ function wireDocumentRowActions() {
     }
   });
 
-  wireDocumentBrowsePaginationButtons();
-}
-
-function wireDocumentBrowsePaginationButtons() {
   elements.harnessSource.querySelectorAll('[data-document-action="reset-browse"]').forEach((button) => {
     button.addEventListener('click', async () => {
       try {

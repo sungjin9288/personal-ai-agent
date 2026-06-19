@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Document Browse Control Wiring
+
+- moved harness document sort and page-size change wiring onto the document browse pagination helper
+- kept sort state updates, visible-count updates, offset reset, document reload, panel rerender, and alert behavior aligned with the existing document browse contract
+- extended UI learning promotion smoke coverage for document browse control wiring delegation
+
 ## 2026-06-19 Memory Browse Pagination Wiring
 
 - moved harness memory search, filter, page-size, sort, reset, previous page, and next page wiring onto a dedicated pagination helper
