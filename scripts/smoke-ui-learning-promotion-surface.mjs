@@ -356,6 +356,10 @@ try {
   assert.equal(appJs.includes('const memoryBrowse = state.harnessMemoryResult || buildFallbackHarnessMemoryBrowse(harnessSummary);'), true);
   assert.equal(appJs.includes('const visibleCount = recentMissionEntries.length + recentWorkspaceEntries.length'), true);
   assert.equal(appJs.includes('workspaceEntries: recentWorkspaceEntries'), true);
+  assert.equal(appJs.includes('function buildHarnessMemoryBrowseViewModel(memoryBrowse = {})'), true);
+  assert.equal(appJs.includes('} = buildHarnessMemoryBrowseViewModel(memoryBrowse);'), true);
+  assert.equal(appJs.includes("filterChips.unshift({ label: '검색', value: query });"), true);
+  assert.equal(appJs.includes("String(state.harnessMemorySort || 'latest').trim() !== 'latest'"), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
