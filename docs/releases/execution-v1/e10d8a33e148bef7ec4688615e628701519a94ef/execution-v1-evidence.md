@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T08:15:42.892Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T08:15:32.855Z
 - branch: codex/harness-documents-query-params
 - commit: e10d8a33e148bef7ec4688615e628701519a94ef
