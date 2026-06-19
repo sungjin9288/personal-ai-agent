@@ -376,6 +376,10 @@ try {
   assert.equal(appJs.includes('${renderHarnessAttachmentList(attachmentEntries)}'), true);
   assert.equal(appJs.includes("state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''"), true);
   assert.equal(appJs.includes('아직 첨부된 파일이 없습니다.'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentSourceList(documentItems = [])'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentSourceList(documentItems)}'), true);
+  assert.equal(appJs.includes("item.exists ? 'status-completed' : 'status-failed'"), true);
+  assert.equal(appJs.includes('formatDate(item.updatedAt)'), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
