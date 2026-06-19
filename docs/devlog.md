@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Harness Memory Query Params
+
+- moved harness memory browse query parameter construction into a dedicated helper
+- kept kind, limit, offset, query, scope, and sort parameter defaults aligned with the existing browse contract
+- extended UI learning promotion smoke coverage for harness memory query param delegation
+
 ## 2026-06-19 Harness Documents Query Params
 
 - moved harness document browse query parameter construction into a dedicated helper

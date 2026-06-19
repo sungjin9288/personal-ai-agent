@@ -348,6 +348,10 @@ try {
   assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
   assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);
   assert.equal(appJs.includes("sort: String(state.harnessDocumentSort || 'latest')"), true);
+  assert.equal(appJs.includes('function buildHarnessMemoryQueryParams()'), true);
+  assert.equal(appJs.includes('const params = buildHarnessMemoryQueryParams();'), true);
+  assert.equal(appJs.includes("kind: String(state.harnessMemoryFilterKind || 'all')"), true);
+  assert.equal(appJs.includes("scope: String(state.harnessMemoryFilterScope || 'all')"), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);

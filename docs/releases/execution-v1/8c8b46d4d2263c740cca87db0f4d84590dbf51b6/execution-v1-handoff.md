@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T08:22:40.447Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T08:22:40.151Z
 - localDate: 2026-06-19
 - branch: codex/harness-memory-query-params
 - commit: 8c8b46d4d2263c740cca87db0f4d84590dbf51b6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/8c8b46d4d2263c740cca87db0f4d84590dbf51b6](releases/execution-v1/8c8b46d4d2263c740cca87db0f4d84590dbf51b6)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/8c8b46d4d2263c740cca87db0f4d84590dbf51b6/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/8c8b46d4d2263c740cca87db0f4d84590dbf51b6/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/8c8b46d4d2263c740cca87db0f4d84590dbf51b6](docs/releases/execution-v1/8c8b46d4d2263c740cca87db0f4d84590dbf51b6)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-memory-query-params not found
 
