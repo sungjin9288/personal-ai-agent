@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T02:18:37.193Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T02:18:22.503Z
 - branch: codex/memory-form-wiring
 - commit: 25ffb44948421c9b6c0bd1fc954b864b627fc75f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/25ffb44948421c9b6c0bd1fc954b864b627fc75f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -24769,6 +24769,32 @@ function wireDocumentLogFormActions() {
   });
 }
 
+function wireMemoryFormActions() {
+  elements.memoryForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleMemoryCreate(event);
+    } catch (error) {
+      window.alert(error.message);
+      elements.memorySubmitButton.disabled = false;
+      elements.memorySubmitButton.textContent = getMemoryFormConfig('mission').submitText;
+    }
+  });
+
+  elements.memoryCancelButton?.addEventListener('click', () => resetMemoryForm('mission'));
+
+  elements.workspaceMemoryForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleWorkspaceMemoryCreate(event);
+    } catch (error) {
+      window.alert(error.message);
+      elements.workspaceMemorySubmitButton.disabled = false;
+      elements.workspaceMemorySubmitButton.textContent = getMemoryFormConfig('workspace').submitText;
+    }
+  });
+
+  elements.workspaceMemoryCancelButton?.addEventListener('click', () => resetMemoryForm('workspace'));
+}
+
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.toggleWorkspaceFormButton?.addEventListener('click', () => {
@@ -24812,26 +24838,7 @@ function attachEvents() {
   elements.missionAttachmentInput?.addEventListener('change', () => {
     renderAgentBlueprintBuilder();
   });
-  elements.memoryForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleMemoryCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-      elements.memorySubmitButton.disabled = false;
-      elements.memorySubmitButton.textContent = getMemoryFormConfig('mission').submitText;
-    }
-  });
-  elements.memoryCancelButton?.addEventListener('click', () => resetMemoryForm('mission'));
-  elements.workspaceMemoryForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleWorkspaceMemoryCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-      elements.workspaceMemorySubmitButton.disabled = false;
-      elements.workspaceMemorySubmitButton.textContent = getMemoryFormConfig('workspace').submitText;
-    }
-  });
-  elements.workspaceMemoryCancelButton?.addEventListener('click', () => resetMemoryForm('workspace'));
+  wireMemoryFormActions();
   wireDocumentLogFormActions();
   elements.runMissionButton.addEventListener('click', async () => {
     try {

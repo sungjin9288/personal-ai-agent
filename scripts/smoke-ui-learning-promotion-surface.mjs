@@ -250,6 +250,12 @@ try {
   assert.equal(appJs.includes('await handleLegacyDocumentMigration()'), true);
   assert.equal(appJs.includes('function wireDocumentLogFormActions()'), true);
   assert.equal(appJs.includes('wireDocumentLogFormActions();'), true);
+  assert.equal(appJs.includes('function wireMemoryFormActions()'), true);
+  assert.equal(appJs.includes('wireMemoryFormActions();'), true);
+  assert.equal(appJs.includes('await handleMemoryCreate(event)'), true);
+  assert.equal(appJs.includes('await handleWorkspaceMemoryCreate(event)'), true);
+  assert.equal(appJs.includes("resetMemoryForm('mission')"), true);
+  assert.equal(appJs.includes("resetMemoryForm('workspace')"), true);
   assert.equal(appJs.includes('await handleDocumentLogCreate(event)'), true);
   assert.equal(appJs.includes('await handleHarnessDocumentSearch(event)'), true);
   assert.equal(appJs.includes('await handleHarnessDocumentFilter(event)'), true);

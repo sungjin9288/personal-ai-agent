@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T02:18:37.193Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T02:18:22.326Z
 - branch: codex/memory-form-wiring
 - commit: 25ffb44948421c9b6c0bd1fc954b864b627fc75f
