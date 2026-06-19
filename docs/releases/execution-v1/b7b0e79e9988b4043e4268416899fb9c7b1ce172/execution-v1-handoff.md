@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T01:27:22.145Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T01:27:22.035Z
 - localDate: 2026-06-19
 - branch: codex/memory-mutation-action-wiring
 - commit: b7b0e79e9988b4043e4268416899fb9c7b1ce172
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b7b0e79e9988b4043e4268416899fb9c7b1ce172](releases/execution-v1/b7b0e79e9988b4043e4268416899fb9c7b1ce172)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b7b0e79e9988b4043e4268416899fb9c7b1ce172/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b7b0e79e9988b4043e4268416899fb9c7b1ce172/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b7b0e79e9988b4043e4268416899fb9c7b1ce172](docs/releases/execution-v1/b7b0e79e9988b4043e4268416899fb9c7b1ce172)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/memory-mutation-action-wiring not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T01:27:22.145Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T01:27:15.412Z
 - branch: codex/memory-mutation-action-wiring
 - commit: b7b0e79e9988b4043e4268416899fb9c7b1ce172
