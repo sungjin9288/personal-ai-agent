@@ -24728,6 +24728,47 @@ function wireMissionAttachmentActions() {
   });
 }
 
+function wireDocumentLogFormActions() {
+  elements.documentLogForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleDocumentLogCreate(event);
+    } catch (error) {
+      window.alert(error.message);
+      elements.documentLogSubmitButton.disabled = false;
+      elements.documentLogSubmitButton.textContent = '문서 기록 저장';
+    }
+  });
+
+  elements.documentLogSearch?.addEventListener('input', async (event) => {
+    try {
+      await handleHarnessDocumentSearch(event);
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+
+  elements.documentLogFilter?.addEventListener('change', async (event) => {
+    try {
+      await handleHarnessDocumentFilter(event);
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+
+  elements.documentLogCancelButton?.addEventListener('click', () => resetDocumentLogForm());
+
+  elements.documentLogFile?.addEventListener('change', async (event) => {
+    try {
+      await handleDocumentLogFilePick(event);
+    } catch (error) {
+      window.alert(error.message);
+      if (elements.documentLogFile) {
+        elements.documentLogFile.value = '';
+      }
+    }
+  });
+}
+
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.toggleWorkspaceFormButton?.addEventListener('click', () => {
@@ -24791,40 +24832,7 @@ function attachEvents() {
     }
   });
   elements.workspaceMemoryCancelButton?.addEventListener('click', () => resetMemoryForm('workspace'));
-  elements.documentLogForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleDocumentLogCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-      elements.documentLogSubmitButton.disabled = false;
-      elements.documentLogSubmitButton.textContent = '문서 기록 저장';
-    }
-  });
-  elements.documentLogSearch?.addEventListener('input', async (event) => {
-    try {
-      await handleHarnessDocumentSearch(event);
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-  elements.documentLogFilter?.addEventListener('change', async (event) => {
-    try {
-      await handleHarnessDocumentFilter(event);
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-  elements.documentLogCancelButton?.addEventListener('click', () => resetDocumentLogForm());
-  elements.documentLogFile?.addEventListener('change', async (event) => {
-    try {
-      await handleDocumentLogFilePick(event);
-    } catch (error) {
-      window.alert(error.message);
-      if (elements.documentLogFile) {
-        elements.documentLogFile.value = '';
-      }
-    }
-  });
+  wireDocumentLogFormActions();
   elements.runMissionButton.addEventListener('click', async () => {
     try {
       await handleMissionRun();
