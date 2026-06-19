@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Document Source List Renderer
+
+- moved harness document source list markup into a dedicated renderer helper
+- kept document item label, path, existence status, and updated timestamp rendering aligned with the existing render contract
+- extended UI learning promotion smoke coverage for harness document source list renderer delegation
+
 ## 2026-06-20 Harness Attachment List Renderer
 
 - moved harness attachment list and empty-state markup into a dedicated renderer helper

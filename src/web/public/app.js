@@ -4174,6 +4174,27 @@ function renderHarnessAttachmentList(attachmentEntries = []) {
   </div>`;
 }
 
+function renderHarnessDocumentSourceList(documentItems = []) {
+  return `<div class="harness-list">
+    ${documentItems
+      .map(
+        (item) => `
+          <div class="harness-row">
+            <div>
+              <div class="item-title">${escapeHtml(item.label)}</div>
+              <div class="item-meta mono">${escapeHtml(item.path || '-')}</div>
+            </div>
+            <div class="harness-row-meta">
+              <span class="mini-badge ${item.exists ? 'status-completed' : 'status-failed'}">${escapeHtml(item.exists ? '기록됨' : '누락')}</span>
+              <span class="item-meta">${escapeHtml(formatDate(item.updatedAt))}</span>
+            </div>
+          </div>
+        `,
+      )
+      .join('')}
+  </div>`;
+}
+
 function renderDocumentBrowseActionButton({
   action = '',
   actionLabel = '',
@@ -17622,24 +17643,7 @@ function renderHarnessPanel() {
       </form>
       ${renderHarnessAttachmentList(attachmentEntries)}
     </div>
-    <div class="harness-list">
-      ${documentItems
-        .map(
-          (item) => `
-            <div class="harness-row">
-              <div>
-                <div class="item-title">${escapeHtml(item.label)}</div>
-                <div class="item-meta mono">${escapeHtml(item.path || '-')}</div>
-              </div>
-              <div class="harness-row-meta">
-                <span class="mini-badge ${item.exists ? 'status-completed' : 'status-failed'}">${escapeHtml(item.exists ? '기록됨' : '누락')}</span>
-                <span class="item-meta">${escapeHtml(formatDate(item.updatedAt))}</span>
-              </div>
-            </div>
-          `,
-        )
-        .join('')}
-    </div>
+    ${renderHarnessDocumentSourceList(documentItems)}
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">문서 기록 탐색</p>
