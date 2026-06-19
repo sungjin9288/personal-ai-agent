@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Mission Actions Filter State
+
+- moved mission action inbox filter and fallback stop reason URL restoration into a dedicated restore helper
+- kept action inbox filter and fallback stop reason restore payloads aligned with the existing URL restore contract
+- extended UI learning promotion smoke coverage for mission actions filter URL restore delegation
+
 ## 2026-06-19 Restore Mission Target Bootstrap State
 
 - moved mission list rendering and restored target mission resolution into a dedicated URL restore helper

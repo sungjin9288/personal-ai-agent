@@ -317,6 +317,10 @@ try {
   assert.equal(appJs.includes('const targetMissionId = restoreMissionTargetUrlState(urlState);'), true);
   assert.equal(appJs.includes('renderMissionList();'), true);
   assert.equal(appJs.includes('const visibleMission = filteredMissions();'), true);
+  assert.equal(appJs.includes('function restoreMissionActionsFilterUrlState(urlState)'), true);
+  assert.equal(appJs.includes('restoreMissionActionsFilterUrlState(urlState);'), true);
+  assert.equal(appJs.includes('actionInboxFallbackStopReason: urlState.actionInboxFallbackStopReason'), true);
+  assert.equal(appJs.includes('actionInboxFilter: urlState.actionInboxFilter'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
