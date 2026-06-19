@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Memory Browse List Renderer
+
+- moved mission and workspace memory browse row/list markup into a shared renderer helper
+- kept scope-specific edit/delete action labels, memory IDs, timestamps, and summarized content rendering aligned with the existing render contract
+- extended UI learning promotion smoke coverage for memory browse list renderer delegation
+
 ## 2026-06-20 Harness Document Browse Results Renderer
 
 - moved harness document browse result list, empty-state, and pagination footer markup into a dedicated renderer helper

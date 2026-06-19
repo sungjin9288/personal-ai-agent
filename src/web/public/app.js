@@ -4316,6 +4316,45 @@ function renderMemoryBrowseActionButton({
   return `<button class="${escapeHtml(className)}" type="button" data-memory-action="${escapeHtml(actionName)}"${memoryIdAttribute}${scopeAttribute}${disabledAttributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
+  const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
+  const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
+  return `<div class="harness-list">
+    ${(entries || [])
+      .map(
+        (entry) => `
+          <div class="harness-row">
+            <div>
+              <div class="item-title">${escapeHtml(getDisplayLabel(entry.kind, entry.kind))}</div>
+              <div class="item-meta">${escapeHtml(summarizeText(entry.content, '-'))}</div>
+            </div>
+            <div class="harness-row-meta">
+              <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+              <div class="inline-actions">
+                ${renderMemoryBrowseActionButton({
+                  action: 'edit',
+                  actionLabel: `${actionPrefix} 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`,
+                  buttonText: '불러오기',
+                  memoryId: entry.id,
+                  scope: scopeValue,
+                })}
+                ${renderMemoryBrowseActionButton({
+                  action: 'delete',
+                  actionLabel: `${actionPrefix} 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`,
+                  buttonText: '삭제',
+                  className: 'danger-button',
+                  memoryId: entry.id,
+                  scope: scopeValue,
+                })}
+              </div>
+            </div>
+          </div>
+        `,
+      )
+      .join('')}
+  </div>`;
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -17920,79 +17959,13 @@ function renderHarnessPanel() {
           })}
         </div>
       </div>
-      <div class="harness-list">
-      ${(visibleMissionMemoryEntries || [])
-        .map(
-          (entry) => `
-            <div class="harness-row">
-              <div>
-                <div class="item-title">${escapeHtml(getDisplayLabel(entry.kind, entry.kind))}</div>
-                <div class="item-meta">${escapeHtml(summarizeText(entry.content, '-'))}</div>
-              </div>
-              <div class="harness-row-meta">
-                <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
-                <div class="inline-actions">
-                  ${renderMemoryBrowseActionButton({
-                    action: 'edit',
-                    actionLabel: `미션 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`,
-                    buttonText: '불러오기',
-                    memoryId: entry.id,
-                    scope: 'mission',
-                  })}
-                  ${renderMemoryBrowseActionButton({
-                    action: 'delete',
-                    actionLabel: `미션 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`,
-                    buttonText: '삭제',
-                    className: 'danger-button',
-                    memoryId: entry.id,
-                    scope: 'mission',
-                  })}
-                </div>
-              </div>
-            </div>
-          `,
-        )
-        .join('')}
-      </div>
+      ${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}
     </div>
     ${
       (visibleWorkspaceMemoryEntries || []).length
         ? `<div class="harness-subsection">
             <p class="summary-label">워크스페이스 기억</p>
-            <div class="harness-list">
-              ${visibleWorkspaceMemoryEntries
-                .map(
-                  (entry) => `
-                    <div class="harness-row">
-                      <div>
-                        <div class="item-title">${escapeHtml(getDisplayLabel(entry.kind, entry.kind))}</div>
-                        <div class="item-meta">${escapeHtml(summarizeText(entry.content, '-'))}</div>
-                      </div>
-                      <div class="harness-row-meta">
-                        <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
-                        <div class="inline-actions">
-                          ${renderMemoryBrowseActionButton({
-                            action: 'edit',
-                            actionLabel: `워크스페이스 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`,
-                            buttonText: '불러오기',
-                            memoryId: entry.id,
-                            scope: 'workspace',
-                          })}
-                          ${renderMemoryBrowseActionButton({
-                            action: 'delete',
-                            actionLabel: `워크스페이스 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`,
-                            buttonText: '삭제',
-                            className: 'danger-button',
-                            memoryId: entry.id,
-                            scope: 'workspace',
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  `,
-                )
-                .join('')}
-            </div>
+            ${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}
           </div>`
         : ''
     }
