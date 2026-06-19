@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T07:53:12.876Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T07:53:06.312Z
 - branch: codex/sync-restored-ui-state-url
 - commit: 28c5c45a85d148be344b7e306cbdad906dc3a66e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/28c5c45a85d148be344b7e306cbdad906dc3a66e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
