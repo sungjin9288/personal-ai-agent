@@ -4145,6 +4145,35 @@ function renderHarnessFilterChips(items = []) {
   `;
 }
 
+function renderHarnessAttachmentList(attachmentEntries = []) {
+  if (!attachmentEntries.length) {
+    return `<div class="harness-empty-inline">
+      <strong>아직 첨부된 파일이 없습니다.</strong>
+      <p>요구사항, 로그, 참고 문서를 붙이면 다음 에이전트 run에서 함께 읽습니다.</p>
+    </div>`;
+  }
+
+  return `<div class="harness-list">
+    ${attachmentEntries
+      .map(
+        (entry) => `
+          <div class="harness-row ${state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''}" data-harness-attachment-file="${escapeHtml(entry.fileName)}">
+            <div>
+              <div class="item-title">${escapeHtml(entry.fileName)}</div>
+              <div class="item-meta">${escapeHtml(entry.excerpt || '본문 미리보기가 없습니다.')}</div>
+              <div class="item-meta mono">${escapeHtml(entry.mimeType || 'text/plain')} · ${escapeHtml(String(entry.charCount || 0))} chars · ${escapeHtml(String(entry.lineCount || 0))} lines</div>
+            </div>
+            <div class="harness-row-meta">
+              <span class="mini-badge ${entry.truncated ? 'status-pending' : 'status-completed'}">${escapeHtml(entry.truncated ? 'truncated' : 'stored')}</span>
+              <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+            </div>
+          </div>
+        `,
+      )
+      .join('')}
+  </div>`;
+}
+
 function renderDocumentBrowseActionButton({
   action = '',
   actionLabel = '',
@@ -17591,32 +17620,7 @@ function renderHarnessPanel() {
           })}
         </div>
       </form>
-      ${
-        attachmentEntries.length
-          ? `<div class="harness-list">
-              ${attachmentEntries
-                .map(
-                  (entry) => `
-                    <div class="harness-row ${state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''}" data-harness-attachment-file="${escapeHtml(entry.fileName)}">
-                      <div>
-                        <div class="item-title">${escapeHtml(entry.fileName)}</div>
-                        <div class="item-meta">${escapeHtml(entry.excerpt || '본문 미리보기가 없습니다.')}</div>
-                        <div class="item-meta mono">${escapeHtml(entry.mimeType || 'text/plain')} · ${escapeHtml(String(entry.charCount || 0))} chars · ${escapeHtml(String(entry.lineCount || 0))} lines</div>
-                      </div>
-                      <div class="harness-row-meta">
-                        <span class="mini-badge ${entry.truncated ? 'status-pending' : 'status-completed'}">${escapeHtml(entry.truncated ? 'truncated' : 'stored')}</span>
-                        <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
-                      </div>
-                    </div>
-                  `,
-                )
-                .join('')}
-            </div>`
-          : `<div class="harness-empty-inline">
-              <strong>아직 첨부된 파일이 없습니다.</strong>
-              <p>요구사항, 로그, 참고 문서를 붙이면 다음 에이전트 run에서 함께 읽습니다.</p>
-            </div>`
-      }
+      ${renderHarnessAttachmentList(attachmentEntries)}
     </div>
     <div class="harness-list">
       ${documentItems

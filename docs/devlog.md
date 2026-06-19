@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Attachment List Renderer
+
+- moved harness attachment list and empty-state markup into a dedicated renderer helper
+- kept attachment focus highlighting, file metadata, truncated status, and empty-state copy aligned with the existing render contract
+- extended UI learning promotion smoke coverage for harness attachment list renderer delegation
+
 ## 2026-06-19 Harness Document Fallback Browse
 
 - moved harness document fallback browse model construction into a dedicated helper
