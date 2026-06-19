@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T14:47:15.184Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T14:47:07.285Z
 - branch: codex/harness-document-fallback-browse
 - commit: 12b830861ce18f410496fc5c21a0e292a6628332

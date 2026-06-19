@@ -3925,6 +3925,36 @@ function getHarnessPageSizeLabel(limit) {
   return `${normalized}건씩`;
 }
 
+function buildFallbackHarnessDocumentBrowse(harnessSummary = {}) {
+  const recentEntries = harnessSummary.documents?.recentEntries || [];
+  const visibleCount = recentEntries.length;
+  return {
+    entries: recentEntries,
+    filters: {
+      limit: Number(state.harnessDocumentVisibleCount || 12),
+      offset: Number(state.harnessDocumentOffset || 0),
+      query: String(state.harnessDocumentQuery || ''),
+      sort: String(state.harnessDocumentSort || 'latest'),
+      type: String(state.harnessDocumentFilter || 'all'),
+    },
+    hasMore: false,
+    summary: {
+      currentPage: visibleCount ? 1 : 0,
+      filteredCount: visibleCount,
+      hasNext: false,
+      hasPrev: false,
+      offset: Number(state.harnessDocumentOffset || 0),
+      pageCount: visibleCount,
+      pageEnd: visibleCount,
+      pageStart: visibleCount ? 1 : 0,
+      remainingCount: 0,
+      trackedEntryCount: harnessSummary.documents?.summary?.trackedEntryCount || 0,
+      totalPages: visibleCount ? 1 : 0,
+      visibleCount,
+    },
+  };
+}
+
 function buildHarnessDocumentBrowseViewModel(documentBrowse = {}) {
   const query = String(documentBrowse.filters?.query || '').trim();
   const typeFilter = String(documentBrowse.filters?.type || state.harnessDocumentFilter || 'all').trim();
@@ -17438,31 +17468,7 @@ function renderHarnessPanel() {
   const harnessSummary = state.missionDetail.harness;
   const documentSummary = harnessSummary.documents?.summary || {};
   const documentItems = harnessSummary.documents?.items || [];
-  const documentBrowse = state.harnessDocumentResult || {
-    entries: harnessSummary.documents?.recentEntries || [],
-    filters: {
-      limit: Number(state.harnessDocumentVisibleCount || 12),
-      offset: Number(state.harnessDocumentOffset || 0),
-      query: String(state.harnessDocumentQuery || ''),
-      sort: String(state.harnessDocumentSort || 'latest'),
-      type: String(state.harnessDocumentFilter || 'all'),
-    },
-    hasMore: false,
-    summary: {
-      currentPage: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
-      filteredCount: harnessSummary.documents?.recentEntries?.length || 0,
-      hasNext: false,
-      hasPrev: false,
-      offset: Number(state.harnessDocumentOffset || 0),
-      pageCount: harnessSummary.documents?.recentEntries?.length || 0,
-      pageEnd: harnessSummary.documents?.recentEntries?.length || 0,
-      pageStart: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
-      remainingCount: 0,
-      trackedEntryCount: documentSummary.trackedEntryCount || 0,
-      totalPages: (harnessSummary.documents?.recentEntries?.length || 0) ? 1 : 0,
-      visibleCount: harnessSummary.documents?.recentEntries?.length || 0,
-    },
-  };
+  const documentBrowse = state.harnessDocumentResult || buildFallbackHarnessDocumentBrowse(harnessSummary);
   const attachmentSummary = harnessSummary.attachments?.summary || {};
   const attachmentEntries = harnessSummary.attachments?.recentEntries || [];
   const memoryBrowse = state.harnessMemoryResult || buildFallbackHarnessMemoryBrowse(harnessSummary);
