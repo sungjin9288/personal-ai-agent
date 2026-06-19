@@ -21311,6 +21311,10 @@ function wireDocumentRowActions() {
     }
   });
 
+  wireDocumentBrowsePaginationButtons();
+}
+
+function wireDocumentBrowsePaginationButtons() {
   elements.harnessSource.querySelectorAll('[data-document-action="reset-browse"]').forEach((button) => {
     button.addEventListener('click', async () => {
       try {
