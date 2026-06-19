@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T04:47:15.782Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T04:47:07.407Z
 - branch: codex/browser-history-controls-wiring
 - commit: ed3429f8be7f553ee5e8370e64147451314aa478

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Browser History Controls Wiring
+
+- moved browser popstate listener wiring onto a dedicated one-time history controls helper
+- kept URL restore, non-mutating sync behavior, and alert handling aligned with the existing browser history contract
+- extended UI learning promotion smoke coverage for browser history controls wiring delegation
+
 ## 2026-06-19 Navigation Tab Controls Wiring
 
 - moved step and detail tab button listener wiring onto a dedicated one-time navigation controls helper

@@ -24871,6 +24871,16 @@ function wireNavigationTabControls() {
   });
 }
 
+function wireBrowserHistoryControls() {
+  window.addEventListener('popstate', async () => {
+    try {
+      await restoreUiStateFromUrl({ syncUrl: false });
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+}
+
 function attachEvents() {
   wireWorkspaceComposerActions();
   wireMissionBrowseControls();
@@ -24879,13 +24889,7 @@ function attachEvents() {
   wireDocumentLogFormActions();
   wireMissionRunActions();
   wireNavigationTabControls();
-  window.addEventListener('popstate', async () => {
-    try {
-      await restoreUiStateFromUrl({ syncUrl: false });
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
+  wireBrowserHistoryControls();
 }
 
 async function bootstrap() {

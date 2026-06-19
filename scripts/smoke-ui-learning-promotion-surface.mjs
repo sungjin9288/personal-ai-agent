@@ -275,6 +275,10 @@ try {
   assert.equal(appJs.includes('elements.stepButtons.forEach'), true);
   assert.equal(appJs.includes('setActiveStep(button.dataset.stepTarget'), true);
   assert.equal(appJs.includes('setActiveDetailTab(button.dataset.detailTab'), true);
+  assert.equal(appJs.includes('function wireBrowserHistoryControls()'), true);
+  assert.equal(appJs.includes('wireBrowserHistoryControls();'), true);
+  assert.equal(appJs.includes("window.addEventListener('popstate'"), true);
+  assert.equal(appJs.includes('await restoreUiStateFromUrl({ syncUrl: false })'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
