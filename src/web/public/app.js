@@ -24827,13 +24827,25 @@ function wireMissionRunActions() {
   elements.runFallbackProviderSelect?.addEventListener('change', updateRunFallbackControls);
 }
 
-function attachEvents() {
+function wireWorkspaceComposerActions() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.toggleWorkspaceFormButton?.addEventListener('click', () => {
     const nextOpen = Boolean(elements.workspaceForm?.hidden);
     setWorkspaceFormOpen(nextOpen, { focus: nextOpen });
   });
   elements.cancelWorkspaceFormButton?.addEventListener('click', () => setWorkspaceFormOpen(false));
+  elements.workspaceForm?.addEventListener('submit', async (event) => {
+    try {
+      await handleWorkspaceCreate(event);
+    } catch (error) {
+      setWorkspaceFormStatus(error.message || '워크스페이스를 추가하지 못했습니다.');
+      window.alert(error.message);
+    }
+  });
+}
+
+function attachEvents() {
+  wireWorkspaceComposerActions();
   elements.missionFilter.addEventListener('input', renderMissionList);
   elements.workspaceSelect.addEventListener('change', async () => {
     renderMissionList();
@@ -24848,14 +24860,6 @@ function attachEvents() {
       return;
     }
     writeUiStateToUrl({ historyMode: 'push' });
-  });
-  elements.workspaceForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleWorkspaceCreate(event);
-    } catch (error) {
-      setWorkspaceFormStatus(error.message || '워크스페이스를 추가하지 못했습니다.');
-      window.alert(error.message);
-    }
   });
   wireMissionFormActions();
   wireMemoryFormActions();
