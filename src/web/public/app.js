@@ -21395,30 +21395,7 @@ function wireMemoryRowActions() {
     return;
   }
 
-  elements.harnessMemory.querySelectorAll('[data-memory-action="edit"]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const scope = String(button.dataset.memoryScope || 'mission').trim();
-      const memoryId = String(button.dataset.memoryId || '').trim();
-      const entry = getHarnessMemoryEntry(scope, memoryId);
-      if (!entry) {
-        window.alert('메모 항목을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
-        return;
-      }
-      populateMemoryForm(scope, entry);
-    });
-  });
-
-  elements.harnessMemory.querySelectorAll('[data-memory-action="delete"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const scope = String(button.dataset.memoryScope || 'mission').trim();
-      const memoryId = String(button.dataset.memoryId || '').trim();
-      try {
-        await handleMemoryDelete(scope, memoryId);
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
+  wireMemoryMutationActionButtons();
 
   elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', async (event) => {
     try {
@@ -21518,6 +21495,33 @@ function wireMemoryRowActions() {
         state.harnessMemoryOffset += Number(state.harnessMemoryVisibleCount || 12);
         await loadHarnessMemory();
         renderHarnessPanel();
+      } catch (error) {
+        window.alert(error.message);
+      }
+    });
+  });
+}
+
+function wireMemoryMutationActionButtons() {
+  elements.harnessMemory.querySelectorAll('[data-memory-action="edit"]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const scope = String(button.dataset.memoryScope || 'mission').trim();
+      const memoryId = String(button.dataset.memoryId || '').trim();
+      const entry = getHarnessMemoryEntry(scope, memoryId);
+      if (!entry) {
+        window.alert('메모 항목을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
+        return;
+      }
+      populateMemoryForm(scope, entry);
+    });
+  });
+
+  elements.harnessMemory.querySelectorAll('[data-memory-action="delete"]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const scope = String(button.dataset.memoryScope || 'mission').trim();
+      const memoryId = String(button.dataset.memoryId || '').trim();
+      try {
+        await handleMemoryDelete(scope, memoryId);
       } catch (error) {
         window.alert(error.message);
       }

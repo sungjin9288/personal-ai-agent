@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Memory Mutation Action Wiring
+
+- moved harness memory edit and delete click wiring onto a dedicated wiring helper
+- kept memory scope/id dataset lookup, memory form hydration, delete handler, and alert behavior aligned with the existing memory row action contract
+- extended UI learning promotion smoke coverage for memory mutation action wiring delegation
+
 ## 2026-06-19 Document Browse Pagination Wiring
 
 - moved harness document reset, previous page, and next page click wiring onto a dedicated pagination helper

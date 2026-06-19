@@ -248,6 +248,12 @@ try {
   assert.equal(appJs.includes('populateDocumentLogForm(entry)'), true);
   assert.equal(appJs.includes('await handleDocumentLogDelete(entryId)'), true);
   assert.equal(appJs.includes('await handleLegacyDocumentMigration()'), true);
+  assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
+  assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
+  assert.equal(appJs.includes('data-memory-action="edit"'), true);
+  assert.equal(appJs.includes('data-memory-action="delete"'), true);
+  assert.equal(appJs.includes('populateMemoryForm(scope, entry)'), true);
+  assert.equal(appJs.includes('await handleMemoryDelete(scope, memoryId)'), true);
   assert.equal(appJs.includes('function wireDocumentBrowsePaginationButtons()'), true);
   assert.equal(appJs.includes('wireDocumentBrowsePaginationButtons();'), true);
   assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
