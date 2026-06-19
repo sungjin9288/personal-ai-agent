@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Release Detail State
+
+- moved release tab URL state restoration and release fallback reset behavior into a dedicated restore helper
+- kept release history, blocker filters, production blocker focus, provider focus, and handoff preview restore order aligned with the existing contract
+- extended UI learning promotion smoke coverage for release detail URL restore delegation
+
 ## 2026-06-19 Restore Target Mission State
 
 - moved target mission selection, retrieval source focus restore, and post-selection render refresh into a dedicated URL restore helper

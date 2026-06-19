@@ -24001,6 +24001,35 @@ async function restoreTargetMissionUrlState(targetMissionId, urlState) {
   renderOutputStageSummary();
 }
 
+async function restoreReleaseDetailUrlState(urlState) {
+  if (urlState.detailTab === 'release') {
+    applyReleaseHistoryUrlState({
+      focusedHistoryId: urlState.releaseFocusedHistoryId,
+      outcome: urlState.releaseHistoryOutcome,
+      provider: urlState.releaseHistoryProvider,
+      scope: urlState.releaseHistoryScope,
+    });
+    applyReleaseBlockerFilterUrlState({
+      category: urlState.releaseBlockerCategoryFilter,
+      includeShared: urlState.releaseBlockerIncludeSharedProviderOperations,
+      owner: urlState.releaseBlockerOwnerFilter,
+      provider: urlState.releaseBlockerProviderFilter,
+    });
+    applyReleaseBlockerUrlState(urlState.releaseFocusedBlockerId);
+    applyReleaseProductionBlockerUrlState(urlState.releaseFocusedProductionBlockerIndex);
+    applyReleaseProviderUrlState(urlState.releaseFocusedProvider);
+    await applyReleaseHandoffPreviewUrlState(urlState.releaseHandoffPreviewId);
+  } else {
+    applyReleaseHistoryUrlState();
+    applyReleaseBlockerFilterUrlState();
+    applyReleaseBlockerUrlState();
+    applyReleaseProductionBlockerUrlState();
+    applyReleaseProviderUrlState();
+    clearReleaseHandoffPreview();
+    renderReleaseStatus();
+  }
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
@@ -24030,32 +24059,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
     }
   }
 
-  if (urlState.detailTab === 'release') {
-    applyReleaseHistoryUrlState({
-      focusedHistoryId: urlState.releaseFocusedHistoryId,
-      outcome: urlState.releaseHistoryOutcome,
-      provider: urlState.releaseHistoryProvider,
-      scope: urlState.releaseHistoryScope,
-    });
-    applyReleaseBlockerFilterUrlState({
-      category: urlState.releaseBlockerCategoryFilter,
-      includeShared: urlState.releaseBlockerIncludeSharedProviderOperations,
-      owner: urlState.releaseBlockerOwnerFilter,
-      provider: urlState.releaseBlockerProviderFilter,
-    });
-    applyReleaseBlockerUrlState(urlState.releaseFocusedBlockerId);
-    applyReleaseProductionBlockerUrlState(urlState.releaseFocusedProductionBlockerIndex);
-    applyReleaseProviderUrlState(urlState.releaseFocusedProvider);
-    await applyReleaseHandoffPreviewUrlState(urlState.releaseHandoffPreviewId);
-  } else {
-    applyReleaseHistoryUrlState();
-    applyReleaseBlockerFilterUrlState();
-    applyReleaseBlockerUrlState();
-    applyReleaseProductionBlockerUrlState();
-    applyReleaseProviderUrlState();
-    clearReleaseHandoffPreview();
-    renderReleaseStatus();
-  }
+  await restoreReleaseDetailUrlState(urlState);
 
   if (syncUrl) {
     writeUiStateToUrl();
