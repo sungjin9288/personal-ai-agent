@@ -4390,6 +4390,32 @@ function renderHarnessMemoryBrowseFooter({
   </div>`;
 }
 
+function renderHarnessLoopStatusList(loops = {}) {
+  return `<div class="harness-list">
+    <div class="harness-row">
+      <div>
+        <div class="item-title">검토 루프</div>
+        <div class="item-meta">${escapeHtml(loops.review?.latestReviewerSummary || '최근 reviewer summary가 없습니다.')}</div>
+      </div>
+      <div class="harness-row-meta"><span class="mini-badge ${getStatusClass(loops.review?.latestReviewerStatus || 'pending')}">${escapeHtml(getDisplayLabel(loops.review?.latestReviewerStatus || 'pending'))}</span></div>
+    </div>
+    <div class="harness-row">
+      <div>
+        <div class="item-title">유지보수 루프</div>
+        <div class="item-meta">최근 sweep ${escapeHtml(formatDate(loops.maintenance?.latestRunAt))} · 다음 due ${escapeHtml(formatDate(loops.maintenance?.nextDueAt))}</div>
+      </div>
+      <div class="harness-row-meta"><span class="mini-badge ${getStatusClass((loops.maintenance?.requiredCount || 0) > 0 ? 'failed' : 'completed')}">${escapeHtml((loops.maintenance?.requiredCount || 0) > 0 ? '점검 필요' : '안정')}</span></div>
+    </div>
+    <div class="harness-row">
+      <div>
+        <div class="item-title">품질 게이트</div>
+        <div class="item-meta">blocked ${escapeHtml(String(loops.quality?.blockedCount || 0))}건 · 상태 ${escapeHtml(getDisplayLabel(loops.quality?.status || 'none'))}</div>
+      </div>
+      <div class="harness-row-meta"><span class="item-meta">${escapeHtml(formatDate(loops.provider?.latestSuccessAt || loops.provider?.latestFailureAt))}</span></div>
+    </div>
+  </div>`;
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -18023,29 +18049,7 @@ function renderHarnessPanel() {
       <div class="summary-chip"><span>유지보수</span><strong>${escapeHtml(String(loops.maintenance?.requiredCount || 0))}건</strong></div>
       <div class="summary-chip"><span>제공자</span><strong>${escapeHtml(getDisplayLabel(loops.provider?.healthDriftStatus || 'stable'))}</strong></div>
     </div>
-    <div class="harness-list">
-      <div class="harness-row">
-        <div>
-          <div class="item-title">검토 루프</div>
-          <div class="item-meta">${escapeHtml(loops.review?.latestReviewerSummary || '최근 reviewer summary가 없습니다.')}</div>
-        </div>
-        <div class="harness-row-meta"><span class="mini-badge ${getStatusClass(loops.review?.latestReviewerStatus || 'pending')}">${escapeHtml(getDisplayLabel(loops.review?.latestReviewerStatus || 'pending'))}</span></div>
-      </div>
-      <div class="harness-row">
-        <div>
-          <div class="item-title">유지보수 루프</div>
-          <div class="item-meta">최근 sweep ${escapeHtml(formatDate(loops.maintenance?.latestRunAt))} · 다음 due ${escapeHtml(formatDate(loops.maintenance?.nextDueAt))}</div>
-        </div>
-        <div class="harness-row-meta"><span class="mini-badge ${getStatusClass((loops.maintenance?.requiredCount || 0) > 0 ? 'failed' : 'completed')}">${escapeHtml((loops.maintenance?.requiredCount || 0) > 0 ? '점검 필요' : '안정')}</span></div>
-      </div>
-      <div class="harness-row">
-        <div>
-          <div class="item-title">품질 게이트</div>
-          <div class="item-meta">blocked ${escapeHtml(String(loops.quality?.blockedCount || 0))}건 · 상태 ${escapeHtml(getDisplayLabel(loops.quality?.status || 'none'))}</div>
-        </div>
-        <div class="harness-row-meta"><span class="item-meta">${escapeHtml(formatDate(loops.provider?.latestSuccessAt || loops.provider?.latestFailureAt))}</span></div>
-      </div>
-    </div>
+    ${renderHarnessLoopStatusList(loops)}
     ${
       recommendations.length > 1
         ? `<div class="harness-subsection">

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Loop Status List Renderer
+
+- moved harness review, maintenance, and quality gate status rows into a dedicated loop status renderer helper
+- kept reviewer status badge, maintenance required-state mapping, quality blocked count, and provider timestamp rendering aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for loop status list renderer delegation
+
 ## 2026-06-20 Harness Memory Browse Footer Renderer
 
 - moved memory browse pagination footer and no-results empty-state markup into a dedicated renderer helper

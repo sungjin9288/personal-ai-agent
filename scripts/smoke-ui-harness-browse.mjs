@@ -2448,6 +2448,11 @@ try {
   assert.equal(appJs.includes("action: 'next-page'"), true);
   assert.equal(appJs.includes('disabled: !memoryBrowse.summary?.hasNext'), true);
   assert.equal(appJs.includes('다음 메모리 ${memoryPageSize}건'), true);
+  assert.equal(appJs.includes('function renderHarnessLoopStatusList(loops = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessLoopStatusList(loops)}'), true);
+  assert.equal(appJs.includes("getStatusClass(loops.review?.latestReviewerStatus || 'pending')"), true);
+  assert.equal(appJs.includes("getStatusClass((loops.maintenance?.requiredCount || 0) > 0 ? 'failed' : 'completed')"), true);
+  assert.equal(appJs.includes('formatDate(loops.provider?.latestSuccessAt || loops.provider?.latestFailureAt)'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="reset-browse"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="edit"'), false);
   assert.equal(appJs.includes('<button class="danger-button" type="button" data-memory-action="delete"'), false);
