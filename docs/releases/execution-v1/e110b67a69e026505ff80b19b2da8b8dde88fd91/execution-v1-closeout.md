@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T02:05:18.472Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T02:05:08.454Z
 - branch: codex/document-log-form-wiring
 - commit: e110b67a69e026505ff80b19b2da8b8dde88fd91
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e110b67a69e026505ff80b19b2da8b8dde88fd91/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
