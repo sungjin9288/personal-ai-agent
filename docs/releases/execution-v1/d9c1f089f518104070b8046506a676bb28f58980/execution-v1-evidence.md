@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T02:30:01.825Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T02:29:37.874Z
 - branch: codex/mission-form-wiring
 - commit: d9c1f089f518104070b8046506a676bb28f58980

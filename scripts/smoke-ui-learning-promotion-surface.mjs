@@ -252,6 +252,12 @@ try {
   assert.equal(appJs.includes('wireDocumentLogFormActions();'), true);
   assert.equal(appJs.includes('function wireMemoryFormActions()'), true);
   assert.equal(appJs.includes('wireMemoryFormActions();'), true);
+  assert.equal(appJs.includes('function wireMissionFormActions()'), true);
+  assert.equal(appJs.includes('wireMissionFormActions();'), true);
+  assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
+  assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
+  assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
+  assert.equal(appJs.includes('renderAgentBlueprintBuilder()'), true);
   assert.equal(appJs.includes('await handleMemoryCreate(event)'), true);
   assert.equal(appJs.includes('await handleWorkspaceMemoryCreate(event)'), true);
   assert.equal(appJs.includes("resetMemoryForm('mission')"), true);
