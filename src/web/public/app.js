@@ -24095,19 +24095,23 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   syncRestoredUiStateToUrl(syncUrl);
 }
 
-async function loadHarnessDocuments(missionId = state.selectedMissionId) {
-  if (!missionId) {
-    state.harnessDocumentResult = null;
-    return null;
-  }
-
-  const params = new URLSearchParams({
+function buildHarnessDocumentsQueryParams() {
+  return new URLSearchParams({
     limit: String(state.harnessDocumentVisibleCount || 12),
     offset: String(state.harnessDocumentOffset || 0),
     query: String(state.harnessDocumentQuery || ''),
     sort: String(state.harnessDocumentSort || 'latest'),
     type: String(state.harnessDocumentFilter || 'all'),
   });
+}
+
+async function loadHarnessDocuments(missionId = state.selectedMissionId) {
+  if (!missionId) {
+    state.harnessDocumentResult = null;
+    return null;
+  }
+
+  const params = buildHarnessDocumentsQueryParams();
   const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/documents?${params.toString()}`);
   state.harnessDocumentOffset = Number(payload.filters?.offset || 0);
   state.harnessDocumentResult = payload;
