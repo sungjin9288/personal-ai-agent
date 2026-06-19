@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Harness Document Browse View Model
+
+- moved harness document browse labels, chips, page size, range label, query, type filter, and dirty-state calculation into a dedicated helper
+- kept search, type, sort, page size, and current page dirty-state rules aligned with the existing render contract
+- extended UI learning promotion smoke coverage for document browse view model delegation
+
 ## 2026-06-19 Harness Memory Browse View Model
 
 - moved harness memory browse labels, chips, page size, range label, and dirty-state calculation into a dedicated helper
