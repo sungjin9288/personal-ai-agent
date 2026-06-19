@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T13:22:52.551Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T13:22:52.394Z
 - localDate: 2026-06-19
 - branch: codex/harness-memory-browse-view-model
 - commit: 070a3d1a6d7b7daba845b32e815e883eb9574e7c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/070a3d1a6d7b7daba845b32e815e883eb9574e7c](releases/execution-v1/070a3d1a6d7b7daba845b32e815e883eb9574e7c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/070a3d1a6d7b7daba845b32e815e883eb9574e7c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/070a3d1a6d7b7daba845b32e815e883eb9574e7c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/070a3d1a6d7b7daba845b32e815e883eb9574e7c](docs/releases/execution-v1/070a3d1a6d7b7daba845b32e815e883eb9574e7c)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-memory-browse-view-model not found
 
