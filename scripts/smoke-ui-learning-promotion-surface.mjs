@@ -264,6 +264,10 @@ try {
   assert.equal(appJs.includes('state.harnessMemoryOffset += Number(state.harnessMemoryVisibleCount || 12)'), true);
   assert.equal(appJs.includes('function wireDocumentBrowsePaginationButtons()'), true);
   assert.equal(appJs.includes('wireDocumentBrowsePaginationButtons();'), true);
+  assert.equal(appJs.includes('#document-log-sort'), true);
+  assert.equal(appJs.includes('#document-log-limit'), true);
+  assert.equal(appJs.includes("state.harnessDocumentSort = String(event.target.value || 'latest').trim() || 'latest'"), true);
+  assert.equal(appJs.includes('state.harnessDocumentVisibleCount = Number(event.target.value || 12) || 12'), true);
   assert.equal(appJs.includes('data-document-action="reset-browse"'), true);
   assert.equal(appJs.includes('data-document-action="prev-page"'), true);
   assert.equal(appJs.includes('data-document-action="next-page"'), true);
