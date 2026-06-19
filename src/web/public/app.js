@@ -24040,12 +24040,16 @@ function restoreMissingMissionUrlState(urlState) {
   }
 }
 
-async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
-  const urlState = parseUiStateFromUrl();
-
+function restoreWorkspaceSelectionUrlState(urlState) {
   if (urlState.workspaceId && state.workspaces.some((workspace) => workspace.id === urlState.workspaceId)) {
     elements.workspaceSelect.value = urlState.workspaceId;
   }
+}
+
+async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
+  const urlState = parseUiStateFromUrl();
+
+  restoreWorkspaceSelectionUrlState(urlState);
 
   renderMissionList();
 

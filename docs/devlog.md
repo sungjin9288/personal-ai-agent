@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Workspace Selection State
+
+- moved workspace URL selection restore and workspace id validation into a dedicated restore helper
+- kept workspace existence checks and workspace select value restoration aligned with the existing URL restore contract
+- extended UI learning promotion smoke coverage for workspace selection URL restore delegation
+
 ## 2026-06-19 Restore Missing Mission State
 
 - moved no-target mission URL restore fallback behavior into a dedicated restore helper
