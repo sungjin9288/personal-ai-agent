@@ -3925,6 +3925,44 @@ function getHarnessPageSizeLabel(limit) {
   return `${normalized}건씩`;
 }
 
+function buildHarnessDocumentBrowseViewModel(documentBrowse = {}) {
+  const query = String(documentBrowse.filters?.query || '').trim();
+  const typeFilter = String(documentBrowse.filters?.type || state.harnessDocumentFilter || 'all').trim();
+  const pageSize = Number(documentBrowse.filters?.limit || state.harnessDocumentVisibleCount || 12) || 12;
+  const filterLabel = typeFilter === 'all'
+    ? '전체'
+    : getDisplayLabel(typeFilter, typeFilter);
+  const filterChips = [
+    { label: '정렬', value: getHarnessDocumentSortLabel() },
+    { label: '페이지', value: getHarnessPageSizeLabel(pageSize) },
+  ];
+  if (typeFilter !== 'all') {
+    filterChips.unshift({ label: '유형', value: filterLabel });
+  }
+  if (query) {
+    filterChips.unshift({ label: '검색', value: query });
+  }
+  return {
+    filterChips,
+    filterLabel,
+    isDirty: Boolean(
+      query ||
+        typeFilter !== 'all' ||
+        String(state.harnessDocumentSort || 'latest').trim() !== 'latest' ||
+        pageSize !== 12 ||
+        Number(documentBrowse.summary?.currentPage || 0) > 1,
+    ),
+    pageLabel: getHarnessPageLabel(documentBrowse.summary),
+    pageSize,
+    query,
+    rangeLabel: getHarnessRangeLabel(
+      documentBrowse.summary,
+      Number(documentBrowse.summary?.filteredCount || 0),
+    ),
+    typeFilter,
+  };
+}
+
 function getHarnessMemorySortLabel() {
   const sort = String(state.harnessMemorySort || 'latest').trim();
   if (sort === 'oldest') {
@@ -17426,17 +17464,16 @@ function renderHarnessPanel() {
   const visibleDocumentEntries = documentBrowse.entries || [];
   const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
   const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
-  const documentQuery = String(documentBrowse.filters?.query || '').trim();
-  const documentTypeFilter = String(documentBrowse.filters?.type || state.harnessDocumentFilter || 'all').trim();
-  const documentFilterLabel = documentTypeFilter === 'all'
-    ? '전체'
-    : getDisplayLabel(documentTypeFilter, documentTypeFilter);
-  const documentPageLabel = getHarnessPageLabel(documentBrowse.summary);
-  const documentRangeLabel = getHarnessRangeLabel(
-    documentBrowse.summary,
-    Number(documentBrowse.summary?.filteredCount || 0),
-  );
-  const documentPageSize = Number(documentBrowse.filters?.limit || state.harnessDocumentVisibleCount || 12) || 12;
+  const {
+    filterChips: documentFilterChips,
+    filterLabel: documentFilterLabel,
+    isDirty: isDocumentBrowseDirty,
+    pageLabel: documentPageLabel,
+    pageSize: documentPageSize,
+    query: documentQuery,
+    rangeLabel: documentRangeLabel,
+    typeFilter: documentTypeFilter,
+  } = buildHarnessDocumentBrowseViewModel(documentBrowse);
   const {
     filterChips: memoryFilterChips,
     filterLabel: memoryFilterLabel,
@@ -17445,23 +17482,6 @@ function renderHarnessPanel() {
     pageSize: memoryPageSize,
     rangeLabel: memoryRangeLabel,
   } = buildHarnessMemoryBrowseViewModel(memoryBrowse);
-  const isDocumentBrowseDirty = Boolean(
-    documentQuery ||
-      documentTypeFilter !== 'all' ||
-      String(state.harnessDocumentSort || 'latest').trim() !== 'latest' ||
-      documentPageSize !== 12 ||
-      Number(documentBrowse.summary?.currentPage || 0) > 1,
-  );
-  const documentFilterChips = [
-    { label: '정렬', value: getHarnessDocumentSortLabel() },
-    { label: '페이지', value: getHarnessPageSizeLabel(documentPageSize) },
-  ];
-  if (documentTypeFilter !== 'all') {
-    documentFilterChips.unshift({ label: '유형', value: documentFilterLabel });
-  }
-  if (documentQuery) {
-    documentFilterChips.unshift({ label: '검색', value: documentQuery });
-  }
   const selectedHarnessMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
   const legacyDevlogMigrationLabel = `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`;
   const missionAttachmentUploadLabel = `첨부 업로드: ${selectedHarnessMissionLabel}`;
