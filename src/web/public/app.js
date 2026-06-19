@@ -24118,13 +24118,8 @@ async function loadHarnessDocuments(missionId = state.selectedMissionId) {
   return payload;
 }
 
-async function loadHarnessMemory(missionId = state.selectedMissionId) {
-  if (!missionId) {
-    state.harnessMemoryResult = null;
-    return null;
-  }
-
-  const params = new URLSearchParams({
+function buildHarnessMemoryQueryParams() {
+  return new URLSearchParams({
     kind: String(state.harnessMemoryFilterKind || 'all'),
     limit: String(state.harnessMemoryVisibleCount || 12),
     offset: String(state.harnessMemoryOffset || 0),
@@ -24132,6 +24127,15 @@ async function loadHarnessMemory(missionId = state.selectedMissionId) {
     scope: String(state.harnessMemoryFilterScope || 'all'),
     sort: String(state.harnessMemorySort || 'latest'),
   });
+}
+
+async function loadHarnessMemory(missionId = state.selectedMissionId) {
+  if (!missionId) {
+    state.harnessMemoryResult = null;
+    return null;
+  }
+
+  const params = buildHarnessMemoryQueryParams();
   const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/memory?${params.toString()}`);
   state.harnessMemoryOffset = Number(payload.filters?.offset || 0);
   state.harnessMemoryResult = payload;
