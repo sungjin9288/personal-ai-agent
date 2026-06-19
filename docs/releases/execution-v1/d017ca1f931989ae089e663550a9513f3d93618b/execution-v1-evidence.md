@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T07:59:49.784Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T07:59:42.621Z
 - branch: codex/apply-restored-ui-state
 - commit: d017ca1f931989ae089e663550a9513f3d93618b

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Apply Restored UI State
+
+- moved parsed URL state application order into a dedicated UI restore orchestration helper
+- kept workspace restore, mission target resolution, mission action filters, mission selection, release detail restore, and URL writeback order aligned with the existing contract
+- extended UI learning promotion smoke coverage for parsed restored state application delegation
+
 ## 2026-06-19 Sync Restored UI State URL
 
 - moved restored UI state URL writeback behind a dedicated sync helper

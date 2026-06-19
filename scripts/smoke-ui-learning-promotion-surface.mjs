@@ -329,6 +329,10 @@ try {
   assert.equal(appJs.includes('syncRestoredUiStateToUrl(syncUrl);'), true);
   assert.equal(appJs.includes('if (syncUrl) {'), true);
   assert.equal(appJs.includes('writeUiStateToUrl();'), true);
+  assert.equal(appJs.includes('async function applyRestoredUiState(urlState)'), true);
+  assert.equal(appJs.includes('await applyRestoredUiState(urlState);'), true);
+  assert.equal(appJs.includes('restoreWorkspaceSelectionUrlState(urlState);'), true);
+  assert.equal(appJs.includes('await restoreReleaseDetailUrlState(urlState);'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);

@@ -24075,9 +24075,7 @@ function syncRestoredUiStateToUrl(syncUrl) {
   }
 }
 
-async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
-  const urlState = parseUiStateFromUrl();
-
+async function applyRestoredUiState(urlState) {
   restoreWorkspaceSelectionUrlState(urlState);
 
   const targetMissionId = restoreMissionTargetUrlState(urlState);
@@ -24087,6 +24085,12 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   await restoreMissionSelectionUrlState(targetMissionId, urlState);
 
   await restoreReleaseDetailUrlState(urlState);
+}
+
+async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
+  const urlState = parseUiStateFromUrl();
+
+  await applyRestoredUiState(urlState);
 
   syncRestoredUiStateToUrl(syncUrl);
 }
