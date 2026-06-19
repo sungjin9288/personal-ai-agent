@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Document Log Form Wiring
+
+- moved document log submit, search, filter, cancel, and file-pick listener wiring onto a dedicated one-time form helper
+- kept document creation, browse search/filter handlers, form reset, file picker handling, submit button recovery, and alert behavior aligned with the existing document log contract
+- extended UI learning promotion smoke coverage for document log form wiring delegation
+
 ## 2026-06-19 Document Browse Control Wiring
 
 - moved harness document sort and page-size change wiring onto the document browse pagination helper
