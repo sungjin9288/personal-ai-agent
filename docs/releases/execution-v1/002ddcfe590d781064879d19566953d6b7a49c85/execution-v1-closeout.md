@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T15:12:33.755Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T15:12:27.890Z
 - branch: codex/harness-document-source-list-renderer
 - commit: 002ddcfe590d781064879d19566953d6b7a49c85
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/002ddcfe590d781064879d19566953d6b7a49c85/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
