@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T00:25:10.624Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T00:25:00.801Z
 - branch: codex/document-browse-pagination-wiring
 - commit: f14d76a54f0f8f2c82ef45c11f68d99811b6d728
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f14d76a54f0f8f2c82ef45c11f68d99811b6d728/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

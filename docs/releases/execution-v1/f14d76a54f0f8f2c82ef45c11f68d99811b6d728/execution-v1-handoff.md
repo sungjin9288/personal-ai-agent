@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T00:25:10.624Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T00:25:08.933Z
 - localDate: 2026-06-19
 - branch: codex/document-browse-pagination-wiring
 - commit: f14d76a54f0f8f2c82ef45c11f68d99811b6d728
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f14d76a54f0f8f2c82ef45c11f68d99811b6d728](releases/execution-v1/f14d76a54f0f8f2c82ef45c11f68d99811b6d728)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f14d76a54f0f8f2c82ef45c11f68d99811b6d728/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f14d76a54f0f8f2c82ef45c11f68d99811b6d728/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f14d76a54f0f8f2c82ef45c11f68d99811b6d728](docs/releases/execution-v1/f14d76a54f0f8f2c82ef45c11f68d99811b6d728)
 - visualArtifactSetSha256: f91d9947c6a60070f5dc527c1221fa13e8eb5186d064b432fe3db8326773701b
 - commitPushStatus: not pushed, origin/codex/document-browse-pagination-wiring not found
 
