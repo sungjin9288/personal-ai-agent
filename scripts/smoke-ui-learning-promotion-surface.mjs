@@ -254,6 +254,12 @@ try {
   assert.equal(appJs.includes('wireMemoryFormActions();'), true);
   assert.equal(appJs.includes('function wireMissionFormActions()'), true);
   assert.equal(appJs.includes('wireMissionFormActions();'), true);
+  assert.equal(appJs.includes('function wireMissionRunActions()'), true);
+  assert.equal(appJs.includes('wireMissionRunActions();'), true);
+  assert.equal(appJs.includes('await handleMissionRun()'), true);
+  assert.equal(appJs.includes("elements.runMissionButton.textContent = '이 미션 실행'"), true);
+  assert.equal(appJs.includes('elements.runFallbackProviderSelect?.addEventListener'), true);
+  assert.equal(appJs.includes('updateRunFallbackControls'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);

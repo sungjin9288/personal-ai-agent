@@ -24813,6 +24813,20 @@ function wireMissionFormActions() {
   });
 }
 
+function wireMissionRunActions() {
+  elements.runMissionButton.addEventListener('click', async () => {
+    try {
+      await handleMissionRun();
+    } catch (error) {
+      window.alert(error.message);
+      elements.runMissionButton.disabled = false;
+      elements.runMissionButton.textContent = '이 미션 실행';
+    }
+  });
+
+  elements.runFallbackProviderSelect?.addEventListener('change', updateRunFallbackControls);
+}
+
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.toggleWorkspaceFormButton?.addEventListener('click', () => {
@@ -24846,16 +24860,7 @@ function attachEvents() {
   wireMissionFormActions();
   wireMemoryFormActions();
   wireDocumentLogFormActions();
-  elements.runMissionButton.addEventListener('click', async () => {
-    try {
-      await handleMissionRun();
-    } catch (error) {
-      window.alert(error.message);
-      elements.runMissionButton.disabled = false;
-      elements.runMissionButton.textContent = '이 미션 실행';
-    }
-  });
-  elements.runFallbackProviderSelect?.addEventListener('change', updateRunFallbackControls);
+  wireMissionRunActions();
   elements.stepButtons.forEach((button) => {
     button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget, { urlMode: 'push' }));
   });
