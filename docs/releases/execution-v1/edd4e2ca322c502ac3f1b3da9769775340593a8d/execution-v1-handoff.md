@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T05:36:26.604Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T05:36:26.414Z
 - localDate: 2026-06-19
 - branch: codex/bootstrap-loader-list
 - commit: edd4e2ca322c502ac3f1b3da9769775340593a8d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/edd4e2ca322c502ac3f1b3da9769775340593a8d](releases/execution-v1/edd4e2ca322c502ac3f1b3da9769775340593a8d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/edd4e2ca322c502ac3f1b3da9769775340593a8d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/edd4e2ca322c502ac3f1b3da9769775340593a8d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/edd4e2ca322c502ac3f1b3da9769775340593a8d](docs/releases/execution-v1/edd4e2ca322c502ac3f1b3da9769775340593a8d)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/bootstrap-loader-list not found
 

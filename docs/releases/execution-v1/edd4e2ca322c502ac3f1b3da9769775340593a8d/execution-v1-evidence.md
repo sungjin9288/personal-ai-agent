@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T05:36:26.604Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T05:36:20.026Z
 - branch: codex/bootstrap-loader-list
 - commit: edd4e2ca322c502ac3f1b3da9769775340593a8d

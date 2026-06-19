@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T05:36:26.604Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T05:36:20.078Z
 - branch: codex/bootstrap-loader-list
 - commit: edd4e2ca322c502ac3f1b3da9769775340593a8d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/edd4e2ca322c502ac3f1b3da9769775340593a8d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
