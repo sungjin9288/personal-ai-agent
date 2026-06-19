@@ -364,6 +364,10 @@ try {
   assert.equal(appJs.includes('} = buildHarnessMemoryBrowseViewModel(memoryBrowse);'), true);
   assert.equal(appJs.includes("filterChips.unshift({ label: '검색', value: query });"), true);
   assert.equal(appJs.includes("String(state.harnessMemorySort || 'latest').trim() !== 'latest'"), true);
+  assert.equal(appJs.includes('function buildHarnessPanelActionLabels({'), true);
+  assert.equal(appJs.includes('} = buildHarnessPanelActionLabels({'), true);
+  assert.equal(appJs.includes("legacyDevlogMigrationLabel: `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`"), true);
+  assert.equal(appJs.includes('missionAttachmentUploadLabel: `첨부 업로드: ${selectedMissionLabel}`'), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
