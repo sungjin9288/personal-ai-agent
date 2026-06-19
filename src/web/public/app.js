@@ -24046,15 +24046,20 @@ function restoreWorkspaceSelectionUrlState(urlState) {
   }
 }
 
+function restoreMissionTargetUrlState(urlState) {
+  renderMissionList();
+
+  const visibleMission = filteredMissions();
+  const targetMissionId = resolveRestoredMissionId(urlState, visibleMission);
+  return targetMissionId;
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
   restoreWorkspaceSelectionUrlState(urlState);
 
-  renderMissionList();
-
-  const visibleMission = filteredMissions();
-  const targetMissionId = resolveRestoredMissionId(urlState, visibleMission);
+  const targetMissionId = restoreMissionTargetUrlState(urlState);
 
   applyMissionActionsFilterUrlState({
     actionInboxFallbackStopReason: urlState.actionInboxFallbackStopReason,
