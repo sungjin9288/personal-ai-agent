@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T05:24:19.854Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T05:24:19.728Z
 - localDate: 2026-06-19
 - branch: codex/bootstrap-data-hydration
 - commit: 960f5d344fe1397564f6f4495ceb80fb7e01da46
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/960f5d344fe1397564f6f4495ceb80fb7e01da46](releases/execution-v1/960f5d344fe1397564f6f4495ceb80fb7e01da46)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/960f5d344fe1397564f6f4495ceb80fb7e01da46/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/960f5d344fe1397564f6f4495ceb80fb7e01da46/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/960f5d344fe1397564f6f4495ceb80fb7e01da46](docs/releases/execution-v1/960f5d344fe1397564f6f4495ceb80fb7e01da46)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/bootstrap-data-hydration not found
 

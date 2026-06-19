@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T05:24:19.854Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T05:24:13.392Z
 - branch: codex/bootstrap-data-hydration
 - commit: 960f5d344fe1397564f6f4495ceb80fb7e01da46
