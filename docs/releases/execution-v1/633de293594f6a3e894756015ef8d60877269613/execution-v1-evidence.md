@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T04:33:49.971Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T04:33:43.521Z
 - branch: codex/navigation-tab-controls-wiring
 - commit: 633de293594f6a3e894756015ef8d60877269613

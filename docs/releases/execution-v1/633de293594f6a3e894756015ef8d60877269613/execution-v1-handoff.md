@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T04:33:49.971Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T04:33:49.845Z
 - localDate: 2026-06-19
 - branch: codex/navigation-tab-controls-wiring
 - commit: 633de293594f6a3e894756015ef8d60877269613
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/633de293594f6a3e894756015ef8d60877269613](releases/execution-v1/633de293594f6a3e894756015ef8d60877269613)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/633de293594f6a3e894756015ef8d60877269613/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/633de293594f6a3e894756015ef8d60877269613/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/633de293594f6a3e894756015ef8d60877269613](docs/releases/execution-v1/633de293594f6a3e894756015ef8d60877269613)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/navigation-tab-controls-wiring not found
 
