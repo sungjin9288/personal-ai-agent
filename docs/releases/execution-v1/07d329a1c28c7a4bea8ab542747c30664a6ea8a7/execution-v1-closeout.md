@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T07:26:00.908Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T07:25:52.273Z
 - branch: codex/restore-mission-actions-filter-state
 - commit: 07d329a1c28c7a4bea8ab542747c30664a6ea8a7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/07d329a1c28c7a4bea8ab542747c30664a6ea8a7/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
