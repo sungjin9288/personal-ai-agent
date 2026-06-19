@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T07:26:00.908Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T07:26:00.742Z
 - localDate: 2026-06-19
 - branch: codex/restore-mission-actions-filter-state
 - commit: 07d329a1c28c7a4bea8ab542747c30664a6ea8a7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/07d329a1c28c7a4bea8ab542747c30664a6ea8a7](releases/execution-v1/07d329a1c28c7a4bea8ab542747c30664a6ea8a7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/07d329a1c28c7a4bea8ab542747c30664a6ea8a7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/07d329a1c28c7a4bea8ab542747c30664a6ea8a7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/07d329a1c28c7a4bea8ab542747c30664a6ea8a7](docs/releases/execution-v1/07d329a1c28c7a4bea8ab542747c30664a6ea8a7)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/restore-mission-actions-filter-state not found
 

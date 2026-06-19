@@ -24054,6 +24054,13 @@ function restoreMissionTargetUrlState(urlState) {
   return targetMissionId;
 }
 
+function restoreMissionActionsFilterUrlState(urlState) {
+  applyMissionActionsFilterUrlState({
+    actionInboxFallbackStopReason: urlState.actionInboxFallbackStopReason,
+    actionInboxFilter: urlState.actionInboxFilter,
+  });
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
@@ -24061,10 +24068,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
 
   const targetMissionId = restoreMissionTargetUrlState(urlState);
 
-  applyMissionActionsFilterUrlState({
-    actionInboxFallbackStopReason: urlState.actionInboxFallbackStopReason,
-    actionInboxFilter: urlState.actionInboxFilter,
-  });
+  restoreMissionActionsFilterUrlState(urlState);
 
   if (targetMissionId) {
     await restoreTargetMissionUrlState(targetMissionId, urlState);
