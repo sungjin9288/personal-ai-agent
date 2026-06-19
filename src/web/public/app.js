@@ -3974,6 +3974,52 @@ function buildFallbackHarnessMemoryBrowse(harnessSummary = {}) {
   };
 }
 
+function buildHarnessMemoryBrowseViewModel(memoryBrowse = {}) {
+  const query = String(memoryBrowse.filters?.query || state.harnessMemoryQuery || '').trim();
+  const scopeFilter = String(memoryBrowse.filters?.scope || state.harnessMemoryFilterScope || 'all').trim();
+  const kindFilter = String(memoryBrowse.filters?.kind || state.harnessMemoryFilterKind || 'all').trim();
+  const pageSize = Number(memoryBrowse.filters?.limit || state.harnessMemoryVisibleCount || 12) || 12;
+  const filterLabel = getHarnessMemoryFilterLabel({
+    kindFilter,
+    query,
+    scopeFilter,
+  });
+  const filterChips = [
+    { label: '정렬', value: getHarnessMemorySortLabel() },
+    { label: '페이지', value: getHarnessPageSizeLabel(pageSize) },
+  ];
+  if (scopeFilter !== 'all') {
+    filterChips.unshift({
+      label: '범위',
+      value: scopeFilter === 'mission' ? '미션 메모' : '워크스페이스 메모',
+    });
+  }
+  if (kindFilter !== 'all') {
+    filterChips.unshift({ label: '종류', value: getDisplayLabel(kindFilter, kindFilter) });
+  }
+  if (query) {
+    filterChips.unshift({ label: '검색', value: query });
+  }
+  return {
+    filterChips,
+    filterLabel,
+    isDirty: Boolean(
+      query ||
+        scopeFilter !== 'all' ||
+        kindFilter !== 'all' ||
+        String(state.harnessMemorySort || 'latest').trim() !== 'latest' ||
+        pageSize !== 12 ||
+        Number(memoryBrowse.summary?.currentPage || 0) > 1,
+    ),
+    pageLabel: getHarnessPageLabel(memoryBrowse.summary),
+    pageSize,
+    rangeLabel: getHarnessRangeLabel(
+      memoryBrowse.summary,
+      Number(memoryBrowse.summary?.filteredTotal || 0),
+    ),
+  };
+}
+
 function getHarnessPageLabel(summary = {}) {
   const currentPage = Number(summary.currentPage || 0);
   const totalPages = Number(summary.totalPages || 0);
@@ -17386,39 +17432,25 @@ function renderHarnessPanel() {
     ? '전체'
     : getDisplayLabel(documentTypeFilter, documentTypeFilter);
   const documentPageLabel = getHarnessPageLabel(documentBrowse.summary);
-  const memoryFilterLabel = getHarnessMemoryFilterLabel({
-    kindFilter: String(memoryBrowse.filters?.kind || state.harnessMemoryFilterKind || 'all').trim(),
-    query: String(memoryBrowse.filters?.query || state.harnessMemoryQuery || '').trim(),
-    scopeFilter: String(memoryBrowse.filters?.scope || state.harnessMemoryFilterScope || 'all').trim(),
-  });
-  const memoryPageLabel = getHarnessPageLabel(memoryBrowse.summary);
   const documentRangeLabel = getHarnessRangeLabel(
     documentBrowse.summary,
     Number(documentBrowse.summary?.filteredCount || 0),
   );
-  const memoryRangeLabel = getHarnessRangeLabel(
-    memoryBrowse.summary,
-    Number(memoryBrowse.summary?.filteredTotal || 0),
-  );
   const documentPageSize = Number(documentBrowse.filters?.limit || state.harnessDocumentVisibleCount || 12) || 12;
-  const memoryPageSize = Number(memoryBrowse.filters?.limit || state.harnessMemoryVisibleCount || 12) || 12;
-  const memoryScopeFilter = String(memoryBrowse.filters?.scope || state.harnessMemoryFilterScope || 'all').trim();
-  const memoryKindFilter = String(memoryBrowse.filters?.kind || state.harnessMemoryFilterKind || 'all').trim();
-  const memoryQuery = String(memoryBrowse.filters?.query || state.harnessMemoryQuery || '').trim();
+  const {
+    filterChips: memoryFilterChips,
+    filterLabel: memoryFilterLabel,
+    isDirty: isMemoryBrowseDirty,
+    pageLabel: memoryPageLabel,
+    pageSize: memoryPageSize,
+    rangeLabel: memoryRangeLabel,
+  } = buildHarnessMemoryBrowseViewModel(memoryBrowse);
   const isDocumentBrowseDirty = Boolean(
     documentQuery ||
       documentTypeFilter !== 'all' ||
       String(state.harnessDocumentSort || 'latest').trim() !== 'latest' ||
       documentPageSize !== 12 ||
       Number(documentBrowse.summary?.currentPage || 0) > 1,
-  );
-  const isMemoryBrowseDirty = Boolean(
-    memoryQuery ||
-      memoryScopeFilter !== 'all' ||
-      memoryKindFilter !== 'all' ||
-      String(state.harnessMemorySort || 'latest').trim() !== 'latest' ||
-      memoryPageSize !== 12 ||
-      Number(memoryBrowse.summary?.currentPage || 0) > 1,
   );
   const documentFilterChips = [
     { label: '정렬', value: getHarnessDocumentSortLabel() },
@@ -17429,22 +17461,6 @@ function renderHarnessPanel() {
   }
   if (documentQuery) {
     documentFilterChips.unshift({ label: '검색', value: documentQuery });
-  }
-  const memoryFilterChips = [
-    { label: '정렬', value: getHarnessMemorySortLabel() },
-    { label: '페이지', value: getHarnessPageSizeLabel(memoryPageSize) },
-  ];
-  if (memoryScopeFilter !== 'all') {
-    memoryFilterChips.unshift({
-      label: '범위',
-      value: memoryScopeFilter === 'mission' ? '미션 메모' : '워크스페이스 메모',
-    });
-  }
-  if (memoryKindFilter !== 'all') {
-    memoryFilterChips.unshift({ label: '종류', value: getDisplayLabel(memoryKindFilter, memoryKindFilter) });
-  }
-  if (memoryQuery) {
-    memoryFilterChips.unshift({ label: '검색', value: memoryQuery });
   }
   const selectedHarnessMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
   const legacyDevlogMigrationLabel = `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`;

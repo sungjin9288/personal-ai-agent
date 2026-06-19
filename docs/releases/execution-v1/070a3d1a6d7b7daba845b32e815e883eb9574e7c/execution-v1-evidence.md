@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T13:22:52.551Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T13:22:45.504Z
 - branch: codex/harness-memory-browse-view-model
 - commit: 070a3d1a6d7b7daba845b32e815e883eb9574e7c
