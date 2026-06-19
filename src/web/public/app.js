@@ -4214,6 +4214,86 @@ function renderDocumentBrowseActionButton({
   return `<button class="${escapeHtml(className)}" type="button" data-document-action="${escapeHtml(actionName)}"${documentIdAttribute}${disabledAttributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderHarnessDocumentBrowseResults({
+  documentBrowse = {},
+  documentFilterLabel = '',
+  documentPageLabel = '',
+  documentPageSize = 12,
+  documentQuery = '',
+  documentRangeLabel = '',
+  documentTypeFilter = 'all',
+  visibleDocumentEntries = [],
+} = {}) {
+  const filteredCount = Number(documentBrowse.summary?.filteredCount || 0);
+  const shouldShowResults = filteredCount || documentQuery || documentTypeFilter !== 'all';
+  if (!shouldShowResults) {
+    return '';
+  }
+
+  return `<div class="harness-list">
+    ${
+      filteredCount
+        ? visibleDocumentEntries
+            .map(
+              (entry) => `
+                <div class="harness-row">
+                  <div>
+                    <div class="item-title">${escapeHtml(entry.title)}</div>
+                    <div class="item-meta">${escapeHtml(getDisplayLabel(entry.type, entry.type))} · ${escapeHtml(summarizeText(entry.content, '-'))}</div>
+                    <div class="item-meta mono">${escapeHtml(entry.path || '-')}</div>
+                  </div>
+                  <div class="harness-row-meta">
+                    <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
+                    <div class="inline-actions">
+                      ${renderDocumentBrowseActionButton({
+                        action: 'edit',
+                        actionLabel: `문서 불러오기: ${entry.title || entry.id || entry.path}`,
+                        buttonText: '불러오기',
+                        documentId: entry.id,
+                      })}
+                      ${renderDocumentBrowseActionButton({
+                        action: 'delete',
+                        actionLabel: `문서 삭제: ${entry.title || entry.id || entry.path}`,
+                        buttonText: '삭제',
+                        className: 'danger-button',
+                        documentId: entry.id,
+                      })}
+                    </div>
+                  </div>
+                </div>
+              `,
+            )
+            .join('')
+        : `<div class="harness-empty-inline">
+            <strong>일치하는 문서 기록이 없습니다.</strong>
+            <p>${escapeHtml(documentFilterLabel)} 범위에서 ${escapeHtml(documentQuery || '검색 조건')}와 맞는 항목을 찾지 못했습니다.</p>
+          </div>`
+    }
+    ${
+      filteredCount
+        ? `<div class="harness-empty-inline">
+            <strong>${escapeHtml(documentPageLabel)} · ${escapeHtml(documentRangeLabel)}</strong>
+            <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(filteredCount))}건</p>
+            <div class="inline-actions">
+              ${renderDocumentBrowseActionButton({
+                action: 'prev-page',
+                actionLabel: documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`,
+                buttonText: `이전 ${String(documentPageSize)}건`,
+                disabled: !documentBrowse.summary?.hasPrev,
+              })}
+              ${renderDocumentBrowseActionButton({
+                action: 'next-page',
+                actionLabel: documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`,
+                buttonText: `다음 ${String(documentPageSize)}건`,
+                disabled: !documentBrowse.summary?.hasNext,
+              })}
+            </div>
+          </div>`
+        : ''
+    }
+  </div>`;
+}
+
 function renderMemoryBrowseActionButton({
   action = '',
   actionLabel = '',
@@ -17678,70 +17758,16 @@ function renderHarnessPanel() {
           })}
         </div>
       </div>
-      ${
-        Number(documentBrowse.summary?.filteredCount || 0) || documentQuery || documentTypeFilter !== 'all'
-          ? `<div class="harness-list">
-              ${Number(documentBrowse.summary?.filteredCount || 0)
-                ? visibleDocumentEntries
-                    .map(
-                      (entry) => `
-                        <div class="harness-row">
-                          <div>
-                            <div class="item-title">${escapeHtml(entry.title)}</div>
-                            <div class="item-meta">${escapeHtml(getDisplayLabel(entry.type, entry.type))} · ${escapeHtml(summarizeText(entry.content, '-'))}</div>
-                            <div class="item-meta mono">${escapeHtml(entry.path || '-')}</div>
-                          </div>
-                          <div class="harness-row-meta">
-                            <span class="item-meta">${escapeHtml(formatDate(entry.updatedAt || entry.createdAt))}</span>
-                            <div class="inline-actions">
-                              ${renderDocumentBrowseActionButton({
-                                action: 'edit',
-                                actionLabel: `문서 불러오기: ${entry.title || entry.id || entry.path}`,
-                                buttonText: '불러오기',
-                                documentId: entry.id,
-                              })}
-                              ${renderDocumentBrowseActionButton({
-                                action: 'delete',
-                                actionLabel: `문서 삭제: ${entry.title || entry.id || entry.path}`,
-                                buttonText: '삭제',
-                                className: 'danger-button',
-                                documentId: entry.id,
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      `,
-                    )
-                    .join('')
-                : `<div class="harness-empty-inline">
-                    <strong>일치하는 문서 기록이 없습니다.</strong>
-                    <p>${escapeHtml(documentFilterLabel)} 범위에서 ${escapeHtml(documentQuery || '검색 조건')}와 맞는 항목을 찾지 못했습니다.</p>
-                  </div>`}
-              ${
-                Number(documentBrowse.summary?.filteredCount || 0)
-                  ? `<div class="harness-empty-inline">
-                      <strong>${escapeHtml(documentPageLabel)} · ${escapeHtml(documentRangeLabel)}</strong>
-                      <p>남은 문서 기록 ${escapeHtml(String(documentBrowse.summary?.remainingCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건</p>
-                      <div class="inline-actions">
-                        ${renderDocumentBrowseActionButton({
-                          action: 'prev-page',
-                          actionLabel: documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}` : `이전 문서 ${documentPageSize}건 없음: ${documentPageLabel}`,
-                          buttonText: `이전 ${String(documentPageSize)}건`,
-                          disabled: !documentBrowse.summary?.hasPrev,
-                        })}
-                        ${renderDocumentBrowseActionButton({
-                          action: 'next-page',
-                          actionLabel: documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}` : `다음 문서 ${documentPageSize}건 없음: ${documentPageLabel}`,
-                          buttonText: `다음 ${String(documentPageSize)}건`,
-                          disabled: !documentBrowse.summary?.hasNext,
-                        })}
-                      </div>
-                    </div>`
-                  : ''
-              }
-            </div>`
-          : ''
-      }
+      ${renderHarnessDocumentBrowseResults({
+        documentBrowse,
+        documentFilterLabel,
+        documentPageLabel,
+        documentPageSize,
+        documentQuery,
+        documentRangeLabel,
+        documentTypeFilter,
+        visibleDocumentEntries,
+      })}
     </div>
     <div class="harness-note">문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.</div>
   `;

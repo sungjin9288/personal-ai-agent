@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Document Browse Results Renderer
+
+- moved harness document browse result list, empty-state, and pagination footer markup into a dedicated renderer helper
+- kept document row edit/delete actions, search-empty copy, page labels, and prev/next disabled-state rules aligned with the existing render contract
+- extended UI learning promotion smoke coverage for document browse results renderer delegation
+
 ## 2026-06-20 Harness Document Source List Renderer
 
 - moved harness document source list markup into a dedicated renderer helper

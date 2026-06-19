@@ -380,6 +380,12 @@ try {
   assert.equal(appJs.includes('${renderHarnessDocumentSourceList(documentItems)}'), true);
   assert.equal(appJs.includes("item.exists ? 'status-completed' : 'status-failed'"), true);
   assert.equal(appJs.includes('formatDate(item.updatedAt)'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentBrowseResults({'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentBrowseResults({'), true);
+  assert.equal(appJs.includes("const shouldShowResults = filteredCount || documentQuery || documentTypeFilter !== 'all';"), true);
+  assert.equal(appJs.includes('일치하는 문서 기록이 없습니다.'), true);
+  assert.equal(appJs.includes("actionLabel: documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}`"), true);
+  assert.equal(appJs.includes("actionLabel: documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}`"), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
