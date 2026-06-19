@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-19T05:51:17.898Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-19T05:51:17.713Z
 - localDate: 2026-06-19
 - branch: codex/restore-mission-target
 - commit: 1e70f158897f77575423e341ef14cd25b99e2392
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1e70f158897f77575423e341ef14cd25b99e2392](releases/execution-v1/1e70f158897f77575423e341ef14cd25b99e2392)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1e70f158897f77575423e341ef14cd25b99e2392/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1e70f158897f77575423e341ef14cd25b99e2392/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1e70f158897f77575423e341ef14cd25b99e2392](docs/releases/execution-v1/1e70f158897f77575423e341ef14cd25b99e2392)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/restore-mission-target not found
 

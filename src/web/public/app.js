@@ -23977,6 +23977,13 @@ function ensureExecutionPolling() {
   }, 2000);
 }
 
+function resolveRestoredMissionId(urlState, visibleMission = []) {
+  if (urlState.missionId && visibleMission.some(({ mission }) => mission.id === urlState.missionId)) {
+    return urlState.missionId;
+  }
+  return visibleMission[0]?.mission?.id || null;
+}
+
 async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   const urlState = parseUiStateFromUrl();
 
@@ -23987,10 +23994,7 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   renderMissionList();
 
   const visibleMission = filteredMissions();
-  const targetMissionId =
-    urlState.missionId && visibleMission.some(({ mission }) => mission.id === urlState.missionId)
-      ? urlState.missionId
-      : visibleMission[0]?.mission?.id || null;
+  const targetMissionId = resolveRestoredMissionId(urlState, visibleMission);
 
   applyMissionActionsFilterUrlState({
     actionInboxFallbackStopReason: urlState.actionInboxFallbackStopReason,
