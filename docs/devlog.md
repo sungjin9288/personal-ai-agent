@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Mission Browse Controls Wiring
+
+- moved mission filter input and workspace select listener wiring onto a dedicated one-time browse controls helper
+- kept mission list rendering, empty workspace composer fallback, selected mission recovery, and URL push behavior aligned with the existing mission browse contract
+- extended UI learning promotion smoke coverage for mission browse controls wiring delegation
+
 ## 2026-06-19 Workspace Composer Wiring
 
 - moved create composer, workspace form toggle/cancel, and workspace create submit listener wiring onto a dedicated one-time composer helper

@@ -265,6 +265,11 @@ try {
   assert.equal(appJs.includes('elements.toggleCreateButton.addEventListener'), true);
   assert.equal(appJs.includes('elements.toggleWorkspaceFormButton?.addEventListener'), true);
   assert.equal(appJs.includes('await handleWorkspaceCreate(event)'), true);
+  assert.equal(appJs.includes('function wireMissionBrowseControls()'), true);
+  assert.equal(appJs.includes('wireMissionBrowseControls();'), true);
+  assert.equal(appJs.includes('elements.missionFilter.addEventListener'), true);
+  assert.equal(appJs.includes('elements.workspaceSelect.addEventListener'), true);
+  assert.equal(appJs.includes("clearMissionSelection({ urlMode: 'push' })"), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
