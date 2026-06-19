@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T02:30:01.825Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T02:29:38.083Z
 - branch: codex/mission-form-wiring
 - commit: d9c1f089f518104070b8046506a676bb28f58980
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d9c1f089f518104070b8046506a676bb28f58980/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
