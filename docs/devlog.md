@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Memory Form Wiring
+
+- moved mission and workspace memory submit/cancel listener wiring onto a dedicated one-time form helper
+- kept memory creation, workspace memory creation, submit button recovery, form reset, and alert behavior aligned with the existing memory form contract
+- extended UI learning promotion smoke coverage for memory form wiring delegation
+
 ## 2026-06-19 Document Log Form Wiring
 
 - moved document log submit, search, filter, cancel, and file-pick listener wiring onto a dedicated one-time form helper
