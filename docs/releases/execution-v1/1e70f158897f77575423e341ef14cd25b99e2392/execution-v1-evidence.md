@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T05:51:17.898Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T05:51:06.506Z
 - branch: codex/restore-mission-target
 - commit: 1e70f158897f77575423e341ef14cd25b99e2392
