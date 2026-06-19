@@ -279,6 +279,11 @@ try {
   assert.equal(appJs.includes('wireBrowserHistoryControls();'), true);
   assert.equal(appJs.includes("window.addEventListener('popstate'"), true);
   assert.equal(appJs.includes('await restoreUiStateFromUrl({ syncUrl: false })'), true);
+  assert.equal(appJs.includes('function renderBootstrapStaticSurfaces()'), true);
+  assert.equal(appJs.includes('renderBootstrapStaticSurfaces();'), true);
+  assert.equal(appJs.includes('renderPlaybooks();'), true);
+  assert.equal(appJs.includes('renderTemplates();'), true);
+  assert.equal(appJs.includes("setActiveStep('step-setup', { syncUrl: false })"), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
