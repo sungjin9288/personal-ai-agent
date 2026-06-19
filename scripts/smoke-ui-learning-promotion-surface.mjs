@@ -299,6 +299,11 @@ try {
   assert.equal(appJs.includes('preferredArtifactId: urlState.artifactId'), true);
   assert.equal(appJs.includes('await applyRetrievalSourceUrlState({'), true);
   assert.equal(appJs.includes('renderOutputStageSummary();'), true);
+  assert.equal(appJs.includes('async function restoreReleaseDetailUrlState(urlState)'), true);
+  assert.equal(appJs.includes('await restoreReleaseDetailUrlState(urlState);'), true);
+  assert.equal(appJs.includes("urlState.detailTab === 'release'"), true);
+  assert.equal(appJs.includes('await applyReleaseHandoffPreviewUrlState(urlState.releaseHandoffPreviewId);'), true);
+  assert.equal(appJs.includes('clearReleaseHandoffPreview();'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);

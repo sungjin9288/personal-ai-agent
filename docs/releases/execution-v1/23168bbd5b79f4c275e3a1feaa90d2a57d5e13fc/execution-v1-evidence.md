@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T06:15:48.097Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T06:15:36.206Z
 - branch: codex/restore-release-detail-url-state
 - commit: 23168bbd5b79f4c275e3a1feaa90d2a57d5e13fc
