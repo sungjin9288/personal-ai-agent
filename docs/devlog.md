@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Restore Mission Target
+
+- moved URL mission id validation and first visible mission fallback selection into a dedicated restore target helper
+- kept workspace-filtered mission visibility, URL mission preference, and first visible mission fallback behavior aligned with the existing restore contract
+- extended UI learning promotion smoke coverage for restore mission target delegation
+
 ## 2026-06-19 Bootstrap Loader List
 
 - moved startup workspace/provider/runtime/action/mission/release loader calls into a dedicated bootstrap data loader helper

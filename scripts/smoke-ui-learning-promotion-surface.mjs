@@ -291,6 +291,9 @@ try {
   assert.equal(appJs.includes('async function hydrateBootstrapDataAndRestoreState()'), true);
   assert.equal(appJs.includes('await hydrateBootstrapDataAndRestoreState();'), true);
   assert.equal(appJs.includes('await restoreUiStateFromUrl();'), true);
+  assert.equal(appJs.includes('function resolveRestoredMissionId(urlState, visibleMission = [])'), true);
+  assert.equal(appJs.includes('const targetMissionId = resolveRestoredMissionId(urlState, visibleMission);'), true);
+  assert.equal(appJs.includes('visibleMission[0]?.mission?.id || null'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);
