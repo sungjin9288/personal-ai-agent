@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Mission Form Wiring
+
+- moved mission submit, mode change, and pending attachment change listener wiring onto a dedicated one-time form helper
+- kept mission creation, alert handling, and agent blueprint refresh behavior aligned with the existing mission form contract
+- extended UI learning promotion smoke coverage for mission form wiring delegation
+
 ## 2026-06-19 Memory Form Wiring
 
 - moved mission and workspace memory submit/cancel listener wiring onto a dedicated one-time form helper

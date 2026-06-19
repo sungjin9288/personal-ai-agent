@@ -24795,6 +24795,24 @@ function wireMemoryFormActions() {
   elements.workspaceMemoryCancelButton?.addEventListener('click', () => resetMemoryForm('workspace'));
 }
 
+function wireMissionFormActions() {
+  elements.missionForm.addEventListener('submit', async (event) => {
+    try {
+      await handleMissionCreate(event);
+    } catch (error) {
+      window.alert(error.message);
+    }
+  });
+
+  elements.missionForm.elements.mode?.addEventListener('change', () => {
+    renderAgentBlueprintBuilder();
+  });
+
+  elements.missionAttachmentInput?.addEventListener('change', () => {
+    renderAgentBlueprintBuilder();
+  });
+}
+
 function attachEvents() {
   elements.toggleCreateButton.addEventListener('click', () => openComposer());
   elements.toggleWorkspaceFormButton?.addEventListener('click', () => {
@@ -24825,19 +24843,7 @@ function attachEvents() {
       window.alert(error.message);
     }
   });
-  elements.missionForm.addEventListener('submit', async (event) => {
-    try {
-      await handleMissionCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-  elements.missionForm.elements.mode?.addEventListener('change', () => {
-    renderAgentBlueprintBuilder();
-  });
-  elements.missionAttachmentInput?.addEventListener('change', () => {
-    renderAgentBlueprintBuilder();
-  });
+  wireMissionFormActions();
   wireMemoryFormActions();
   wireDocumentLogFormActions();
   elements.runMissionButton.addEventListener('click', async () => {
