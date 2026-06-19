@@ -348,6 +348,10 @@ try {
   assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
   assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);
   assert.equal(appJs.includes("sort: String(state.harnessDocumentSort || 'latest')"), true);
+  assert.equal(appJs.includes('function buildFallbackHarnessDocumentBrowse(harnessSummary = {})'), true);
+  assert.equal(appJs.includes('const documentBrowse = state.harnessDocumentResult || buildFallbackHarnessDocumentBrowse(harnessSummary);'), true);
+  assert.equal(appJs.includes('const visibleCount = recentEntries.length'), true);
+  assert.equal(appJs.includes('trackedEntryCount: harnessSummary.documents?.summary?.trackedEntryCount || 0'), true);
   assert.equal(appJs.includes('function buildHarnessDocumentBrowseViewModel(documentBrowse = {})'), true);
   assert.equal(appJs.includes('} = buildHarnessDocumentBrowseViewModel(documentBrowse);'), true);
   assert.equal(appJs.includes("filterChips.unshift({ label: '유형', value: filterLabel });"), true);

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Harness Document Fallback Browse
+
+- moved harness document fallback browse model construction into a dedicated helper
+- kept recent entry counts, pagination defaults, tracked entry count, and active document filter defaults aligned with the existing render contract
+- extended UI learning promotion smoke coverage for document fallback browse delegation
+
 ## 2026-06-19 Harness Panel Action Labels
 
 - moved harness panel action label construction for retrieval evidence, source focus clear, legacy devlog migration, and attachment upload into a dedicated helper
