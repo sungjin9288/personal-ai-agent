@@ -352,6 +352,10 @@ try {
   assert.equal(appJs.includes('const params = buildHarnessMemoryQueryParams();'), true);
   assert.equal(appJs.includes("kind: String(state.harnessMemoryFilterKind || 'all')"), true);
   assert.equal(appJs.includes("scope: String(state.harnessMemoryFilterScope || 'all')"), true);
+  assert.equal(appJs.includes('function buildFallbackHarnessMemoryBrowse(harnessSummary = {})'), true);
+  assert.equal(appJs.includes('const memoryBrowse = state.harnessMemoryResult || buildFallbackHarnessMemoryBrowse(harnessSummary);'), true);
+  assert.equal(appJs.includes('const visibleCount = recentMissionEntries.length + recentWorkspaceEntries.length'), true);
+  assert.equal(appJs.includes('workspaceEntries: recentWorkspaceEntries'), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);

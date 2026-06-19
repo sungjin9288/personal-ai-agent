@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Harness Memory Fallback Browse
+
+- moved harness memory fallback browse model construction into a dedicated helper
+- kept mission/workspace entry counts, pagination defaults, and active memory filter defaults aligned with the existing render contract
+- extended UI learning promotion smoke coverage for fallback browse delegation
+
 ## 2026-06-19 Harness Memory Query Params
 
 - moved harness memory browse query parameter construction into a dedicated helper

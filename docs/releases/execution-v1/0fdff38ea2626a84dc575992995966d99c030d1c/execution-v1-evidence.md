@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T08:34:54.704Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T08:34:48.000Z
 - branch: codex/harness-memory-fallback-browse
 - commit: 0fdff38ea2626a84dc575992995966d99c030d1c

@@ -3936,6 +3936,44 @@ function getHarnessMemorySortLabel() {
   return '최신순';
 }
 
+function buildFallbackHarnessMemoryBrowse(harnessSummary = {}) {
+  const recentMissionEntries = harnessSummary.memory?.recentMissionEntries || [];
+  const recentWorkspaceEntries = harnessSummary.memory?.recentWorkspaceEntries || [];
+  const visibleCount = recentMissionEntries.length + recentWorkspaceEntries.length;
+  return {
+    entries: [],
+    filters: {
+      kind: String(state.harnessMemoryFilterKind || 'all'),
+      limit: Number(state.harnessMemoryVisibleCount || 12),
+      offset: Number(state.harnessMemoryOffset || 0),
+      query: String(state.harnessMemoryQuery || ''),
+      scope: String(state.harnessMemoryFilterScope || 'all'),
+      sort: String(state.harnessMemorySort || 'latest'),
+    },
+    hasMore: false,
+    missionEntries: recentMissionEntries,
+    summary: {
+      currentPage: visibleCount ? 1 : 0,
+      filteredMissionCount: recentMissionEntries.length,
+      filteredTotal: visibleCount,
+      filteredWorkspaceCount: recentWorkspaceEntries.length,
+      hasNext: false,
+      hasPrev: false,
+      missionTotal: harnessSummary.memory?.missionCounts?.total || 0,
+      offset: Number(state.harnessMemoryOffset || 0),
+      pageCount: visibleCount,
+      pageEnd: visibleCount,
+      pageStart: visibleCount ? 1 : 0,
+      remainingCount: 0,
+      total: (harnessSummary.memory?.missionCounts?.total || 0) + (harnessSummary.memory?.workspaceCount || 0),
+      totalPages: visibleCount ? 1 : 0,
+      visibleCount,
+      workspaceTotal: harnessSummary.memory?.workspaceCount || 0,
+    },
+    workspaceEntries: recentWorkspaceEntries,
+  };
+}
+
 function getHarnessPageLabel(summary = {}) {
   const currentPage = Number(summary.currentPage || 0);
   const totalPages = Number(summary.totalPages || 0);
@@ -17325,58 +17363,7 @@ function renderHarnessPanel() {
   };
   const attachmentSummary = harnessSummary.attachments?.summary || {};
   const attachmentEntries = harnessSummary.attachments?.recentEntries || [];
-  const memoryBrowse = state.harnessMemoryResult || {
-    entries: [],
-    filters: {
-      kind: String(state.harnessMemoryFilterKind || 'all'),
-      limit: Number(state.harnessMemoryVisibleCount || 12),
-      offset: Number(state.harnessMemoryOffset || 0),
-      query: String(state.harnessMemoryQuery || ''),
-      scope: String(state.harnessMemoryFilterScope || 'all'),
-      sort: String(state.harnessMemorySort || 'latest'),
-    },
-    hasMore: false,
-    missionEntries: harnessSummary.memory?.recentMissionEntries || [],
-    summary: {
-      currentPage:
-        ((harnessSummary.memory?.recentMissionEntries?.length || 0) +
-          (harnessSummary.memory?.recentWorkspaceEntries?.length || 0))
-          ? 1
-          : 0,
-      filteredMissionCount: harnessSummary.memory?.recentMissionEntries?.length || 0,
-      filteredTotal:
-        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
-        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
-      filteredWorkspaceCount: harnessSummary.memory?.recentWorkspaceEntries?.length || 0,
-      hasNext: false,
-      hasPrev: false,
-      missionTotal: harnessSummary.memory?.missionCounts?.total || 0,
-      offset: Number(state.harnessMemoryOffset || 0),
-      pageCount:
-        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
-        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
-      pageEnd:
-        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
-        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
-      pageStart:
-        ((harnessSummary.memory?.recentMissionEntries?.length || 0) +
-          (harnessSummary.memory?.recentWorkspaceEntries?.length || 0))
-          ? 1
-          : 0,
-      remainingCount: 0,
-      total: (harnessSummary.memory?.missionCounts?.total || 0) + (harnessSummary.memory?.workspaceCount || 0),
-      totalPages:
-        ((harnessSummary.memory?.recentMissionEntries?.length || 0) +
-          (harnessSummary.memory?.recentWorkspaceEntries?.length || 0))
-          ? 1
-          : 0,
-      visibleCount:
-        (harnessSummary.memory?.recentMissionEntries?.length || 0) +
-        (harnessSummary.memory?.recentWorkspaceEntries?.length || 0),
-      workspaceTotal: harnessSummary.memory?.workspaceCount || 0,
-    },
-    workspaceEntries: harnessSummary.memory?.recentWorkspaceEntries || [],
-  };
+  const memoryBrowse = state.harnessMemoryResult || buildFallbackHarnessMemoryBrowse(harnessSummary);
   const memory = harnessSummary.memory || {};
   const retrieval = harnessSummary.retrieval || { previewItems: [], roles: [], summary: {} };
   const loops = harnessSummary.loops || {};
