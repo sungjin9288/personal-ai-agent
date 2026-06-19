@@ -24844,8 +24844,7 @@ function wireWorkspaceComposerActions() {
   });
 }
 
-function attachEvents() {
-  wireWorkspaceComposerActions();
+function wireMissionBrowseControls() {
   elements.missionFilter.addEventListener('input', renderMissionList);
   elements.workspaceSelect.addEventListener('change', async () => {
     renderMissionList();
@@ -24861,6 +24860,11 @@ function attachEvents() {
     }
     writeUiStateToUrl({ historyMode: 'push' });
   });
+}
+
+function attachEvents() {
+  wireWorkspaceComposerActions();
+  wireMissionBrowseControls();
   wireMissionFormActions();
   wireMemoryFormActions();
   wireDocumentLogFormActions();

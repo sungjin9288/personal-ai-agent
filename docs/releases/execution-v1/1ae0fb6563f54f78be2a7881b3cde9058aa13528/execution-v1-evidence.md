@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T03:05:21.233Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T03:05:15.509Z
 - branch: codex/mission-browse-controls-wiring
 - commit: 1ae0fb6563f54f78be2a7881b3cde9058aa13528
