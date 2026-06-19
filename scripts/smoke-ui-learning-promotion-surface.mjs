@@ -400,6 +400,11 @@ try {
   assert.equal(appJs.includes('일치하는 메모리가 없습니다.'), true);
   assert.equal(appJs.includes("actionLabel: memoryBrowse.summary?.hasPrev ? `이전 메모리 ${memoryPageSize}건: ${memoryPageLabel}`"), true);
   assert.equal(appJs.includes("actionLabel: memoryBrowse.summary?.hasNext ? `다음 메모리 ${memoryPageSize}건: ${memoryPageLabel}`"), true);
+  assert.equal(appJs.includes('function renderHarnessLoopStatusList(loops = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessLoopStatusList(loops)}'), true);
+  assert.equal(appJs.includes("getStatusClass(loops.review?.latestReviewerStatus || 'pending')"), true);
+  assert.equal(appJs.includes("getStatusClass((loops.maintenance?.requiredCount || 0) > 0 ? 'failed' : 'completed')"), true);
+  assert.equal(appJs.includes('formatDate(loops.provider?.latestSuccessAt || loops.provider?.latestFailureAt)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
   assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);

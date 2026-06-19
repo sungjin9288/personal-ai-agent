@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T20:36:01.751Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T20:35:55.491Z
 - branch: codex/harness-loop-status-list-renderer
 - commit: 4654ecd163c5dc8b343494ed96987e3ad9b8f56a
