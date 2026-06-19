@@ -2428,12 +2428,14 @@ try {
   assert.equal(appJs.includes('메모리 필터 초기화: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);
   assert.equal(appJs.includes("action: 'edit'"), true);
-  assert.equal(appJs.includes('미션 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}'), true);
-  assert.equal(appJs.includes('워크스페이스 메모 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
+  assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
+  assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);
+  assert.equal(appJs.includes("const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';"), true);
+  assert.equal(appJs.includes('`${actionPrefix} 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`'), true);
   assert.equal(appJs.includes('data-memory-action="delete"'), true);
   assert.equal(appJs.includes("action: 'delete'"), true);
-  assert.equal(appJs.includes('미션 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}'), true);
-  assert.equal(appJs.includes('워크스페이스 메모 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}'), true);
+  assert.equal(appJs.includes('`${actionPrefix} 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`'), true);
   assert.equal(appJs.includes('data-memory-action="prev-page"'), true);
   assert.equal(appJs.includes("action: 'prev-page'"), true);
   assert.equal(appJs.includes('disabled: !memoryBrowse.summary?.hasPrev'), true);

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T15:38:53.746Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T15:38:47.224Z
 - branch: codex/harness-memory-browse-list-renderer
 - commit: fbd4e2992c283385d87feb476888c0cea36f8847

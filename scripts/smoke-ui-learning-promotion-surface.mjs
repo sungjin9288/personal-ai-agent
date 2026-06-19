@@ -388,6 +388,12 @@ try {
   assert.equal(appJs.includes("actionLabel: documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}`"), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
+  assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
+  assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);
+  assert.equal(appJs.includes("const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';"), true);
+  assert.equal(appJs.includes('`${actionPrefix} 불러오기: ${summarizeText(entry.content, entry.id || entry.kind)}`'), true);
+  assert.equal(appJs.includes('`${actionPrefix} 삭제: ${summarizeText(entry.content, entry.id || entry.kind)}`'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
   assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);
