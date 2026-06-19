@@ -4058,6 +4058,24 @@ function buildHarnessMemoryBrowseViewModel(memoryBrowse = {}) {
   };
 }
 
+function buildHarnessPanelActionLabels({
+  activeRetrievalSourceFocus,
+  documentSummary = {},
+  latestRetrievalArtifact,
+} = {}) {
+  const selectedMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
+  return {
+    activeRetrievalSourceClearLabel: activeRetrievalSourceFocus
+      ? getRetrievalSourceActionLabel('retrieval source focus 해제', activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label)
+      : '',
+    latestRetrievalArtifactOpenLabel: latestRetrievalArtifact
+      ? getRetrievalArtifactOpenLabel(latestRetrievalArtifact)
+      : '',
+    legacyDevlogMigrationLabel: `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`,
+    missionAttachmentUploadLabel: `첨부 업로드: ${selectedMissionLabel}`,
+  };
+}
+
 function getHarnessPageLabel(summary = {}) {
   const currentPage = Number(summary.currentPage || 0);
   const totalPages = Number(summary.totalPages || 0);
@@ -17455,12 +17473,6 @@ function renderHarnessPanel() {
   const latestArtifact = harnessSummary.documents?.latestArtifact || null;
   const latestRetrievalArtifact = retrieval.latestArtifact || null;
   const activeRetrievalSourceFocus = getActiveRetrievalSourceFocus();
-  const latestRetrievalArtifactOpenLabel = latestRetrievalArtifact
-    ? getRetrievalArtifactOpenLabel(latestRetrievalArtifact)
-    : '';
-  const activeRetrievalSourceClearLabel = activeRetrievalSourceFocus
-    ? getRetrievalSourceActionLabel('retrieval source focus 해제', activeRetrievalSourceFocus.type, activeRetrievalSourceFocus.label)
-    : '';
   const visibleDocumentEntries = documentBrowse.entries || [];
   const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
   const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
@@ -17482,9 +17494,16 @@ function renderHarnessPanel() {
     pageSize: memoryPageSize,
     rangeLabel: memoryRangeLabel,
   } = buildHarnessMemoryBrowseViewModel(memoryBrowse);
-  const selectedHarnessMissionLabel = state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
-  const legacyDevlogMigrationLabel = `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`;
-  const missionAttachmentUploadLabel = `첨부 업로드: ${selectedHarnessMissionLabel}`;
+  const {
+    activeRetrievalSourceClearLabel,
+    latestRetrievalArtifactOpenLabel,
+    legacyDevlogMigrationLabel,
+    missionAttachmentUploadLabel,
+  } = buildHarnessPanelActionLabels({
+    activeRetrievalSourceFocus,
+    documentSummary,
+    latestRetrievalArtifact,
+  });
 
   elements.harnessSource.innerHTML = `
     <div class="harness-overview-grid">

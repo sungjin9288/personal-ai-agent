@@ -353,7 +353,7 @@ try {
   assert.equal(appJs.includes('legacyDevlogMigrationLabel'), true);
   assert.equal(appJs.includes('missionAttachmentUploadLabel'), true);
   assert.equal(appJs.includes('기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건'), true);
-  assert.equal(appJs.includes('첨부 업로드: ${selectedHarnessMissionLabel}'), true);
+  assert.equal(appJs.includes('첨부 업로드: ${selectedMissionLabel}'), true);
   assert.equal(appJs.includes('actionLabel: legacyDevlogMigrationLabel'), true);
   assert.equal(appJs.includes("buttonText: '기존 개발 로그 전환'"), true);
   assert.equal(appJs.includes('renderMissionAttachmentUploadButton'), true);

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Harness Panel Action Labels
+
+- moved harness panel action label construction for retrieval evidence, source focus clear, legacy devlog migration, and attachment upload into a dedicated helper
+- kept selected mission fallback, retrieval artifact open label, and legacy migration count rules aligned with the existing render contract
+- extended UI learning promotion smoke coverage for harness panel action label delegation
+
 ## 2026-06-19 Harness Document Browse View Model
 
 - moved harness document browse labels, chips, page size, range label, query, type filter, and dirty-state calculation into a dedicated helper
