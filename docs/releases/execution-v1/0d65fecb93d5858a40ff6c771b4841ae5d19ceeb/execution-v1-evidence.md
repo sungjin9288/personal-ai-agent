@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T01:44:45.082Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T01:44:28.331Z
 - branch: codex/document-browse-control-wiring
 - commit: 0d65fecb93d5858a40ff6c771b4841ae5d19ceeb
