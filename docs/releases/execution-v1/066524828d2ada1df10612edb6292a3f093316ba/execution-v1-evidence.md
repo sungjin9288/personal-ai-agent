@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T07:32:42.178Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T07:32:31.253Z
 - branch: codex/restore-mission-selection-state
 - commit: 066524828d2ada1df10612edb6292a3f093316ba
