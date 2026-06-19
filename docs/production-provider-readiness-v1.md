@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-06-19T06:29:50.692Z
-- sourceBranch: codex/restore-missing-mission-url-state
-- sourceCommit: 1a8253805b0b50220d13a0ea6114338f5fed01bc
+- generatedAt: 2026-06-19T06:32:28.756Z
+- sourceBranch: main
+- sourceCommit: 04abb9d38f0173b621b35dbe90c118af22b1e2fc
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
@@ -30,7 +30,7 @@ Production-ready remains blocked until every provider included in the target rel
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run preflight:execution-v1:all` | pass | 0 | 7990 |
+| `npm run preflight:execution-v1:all` | pass | 0 | 5786 |
 
 ## Key Signals
 
