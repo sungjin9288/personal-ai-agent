@@ -284,6 +284,10 @@ try {
   assert.equal(appJs.includes('renderPlaybooks();'), true);
   assert.equal(appJs.includes('renderTemplates();'), true);
   assert.equal(appJs.includes("setActiveStep('step-setup', { syncUrl: false })"), true);
+  assert.equal(appJs.includes('async function hydrateBootstrapDataAndRestoreState()'), true);
+  assert.equal(appJs.includes('await hydrateBootstrapDataAndRestoreState();'), true);
+  assert.equal(appJs.includes('await Promise.all([loadWorkspaces(), loadProviders(), loadRuntimeRequests(), loadRuntimeJobs(), loadApprovals(), loadMissions(), loadReleaseStatus()])'), true);
+  assert.equal(appJs.includes('await restoreUiStateFromUrl();'), true);
   assert.equal(appJs.includes('await handleMissionCreate(event)'), true);
   assert.equal(appJs.includes('elements.missionForm.elements.mode?.addEventListener'), true);
   assert.equal(appJs.includes('elements.missionAttachmentInput?.addEventListener'), true);

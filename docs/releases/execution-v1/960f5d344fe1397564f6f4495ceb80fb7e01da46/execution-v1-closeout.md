@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-19T05:24:19.854Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-19T05:24:13.429Z
 - branch: codex/bootstrap-data-hydration
 - commit: 960f5d344fe1397564f6f4495ceb80fb7e01da46
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/960f5d344fe1397564f6f4495ceb80fb7e01da46/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
