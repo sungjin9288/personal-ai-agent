@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Harness Documents Query Params
+
+- moved harness document browse query parameter construction into a dedicated helper
+- kept limit, offset, query, sort, and type parameter defaults aligned with the existing browse contract
+- extended UI learning promotion smoke coverage for harness document query param delegation
+
 ## 2026-06-19 Apply Restored UI State
 
 - moved parsed URL state application order into a dedicated UI restore orchestration helper

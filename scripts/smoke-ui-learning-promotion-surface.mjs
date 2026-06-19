@@ -344,6 +344,10 @@ try {
   assert.equal(appJs.includes('await handleDocumentLogCreate(event)'), true);
   assert.equal(appJs.includes('await handleHarnessDocumentSearch(event)'), true);
   assert.equal(appJs.includes('await handleHarnessDocumentFilter(event)'), true);
+  assert.equal(appJs.includes('function buildHarnessDocumentsQueryParams()'), true);
+  assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
+  assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);
+  assert.equal(appJs.includes("sort: String(state.harnessDocumentSort || 'latest')"), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
