@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-19T02:43:48.484Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-19T02:43:34.083Z
 - branch: codex/mission-run-wiring
 - commit: 14237b8072c56ef3cafeddaa786107ecfd1d5080
