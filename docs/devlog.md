@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-19 Mission Run Wiring
+
+- moved mission run button and fallback provider selector listener wiring onto a dedicated one-time run helper
+- kept mission run execution, run button recovery, fallback control refresh, and alert behavior aligned with the existing mission run contract
+- extended UI learning promotion smoke coverage for mission run wiring delegation
+
 ## 2026-06-19 Mission Form Wiring
 
 - moved mission submit, mode change, and pending attachment change listener wiring onto a dedicated one-time form helper
