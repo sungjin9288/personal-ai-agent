@@ -486,10 +486,13 @@ try {
   assert.equal(appJs.includes('.slice(1, 4)'), true);
   assert.equal(appJs.includes('escapeHtml(item.title)'), true);
   assert.equal(appJs.includes('function renderHarnessAdoptedPatterns(patterns = [])'), true);
-  assert.equal(appJs.includes('${renderHarnessAdoptedPatterns(harnessSummary.adoptedPatterns)}'), true);
+  assert.equal(appJs.includes('${renderHarnessAdoptedPatterns(adoptedPatterns)}'), true);
   assert.equal(appJs.includes('이번에 적용한 하네스 원칙'), true);
   assert.equal(appJs.includes('escapeHtml(pattern.label)'), true);
   assert.equal(appJs.includes('escapeHtml(pattern.detail)'), true);
+  assert.equal(appJs.includes('function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendations = [] } = {})'), true);
+  assert.equal(appJs.includes('elements.harnessLoops.innerHTML = renderHarnessLoopsPanel({'), true);
+  assert.equal(appJs.includes('adoptedPatterns: harnessSummary.adoptedPatterns'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
   assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);

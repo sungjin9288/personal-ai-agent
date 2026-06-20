@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Loops Panel Renderer
+
+- moved harness loops recommendation callout, overview grid, loop status list, additional recommendations, and adopted patterns composition into a dedicated panel renderer helper
+- kept recommendation fallback copy, loops overview/status delegation, secondary recommendation limits, and adopted pattern rendering aligned with the existing loops surface
+- extended UI learning promotion and harness browse smoke coverage for loops panel renderer delegation
+
 ## 2026-06-20 Harness Memory Browse Section Renderer
 
 - moved harness memory browse subsection header, filter chips, controls, mission list, optional workspace list, and footer composition into a dedicated renderer helper
