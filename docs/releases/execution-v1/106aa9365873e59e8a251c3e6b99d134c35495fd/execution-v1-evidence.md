@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T04:18:54.475Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T04:18:48.135Z
 - branch: codex/harness-loops-overview-grid-renderer
 - commit: 106aa9365873e59e8a251c3e6b99d134c35495fd
