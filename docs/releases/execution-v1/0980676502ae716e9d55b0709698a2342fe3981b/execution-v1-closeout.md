@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-20T06:03:27.579Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-20T06:03:21.540Z
 - branch: codex/harness-retrieval-role-tags-renderer
 - commit: 0980676502ae716e9d55b0709698a2342fe3981b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0980676502ae716e9d55b0709698a2342fe3981b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

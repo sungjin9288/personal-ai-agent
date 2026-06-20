@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-20T06:03:27.579Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-20T06:03:27.454Z
 - localDate: 2026-06-20
 - branch: codex/harness-retrieval-role-tags-renderer
 - commit: 0980676502ae716e9d55b0709698a2342fe3981b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0980676502ae716e9d55b0709698a2342fe3981b](releases/execution-v1/0980676502ae716e9d55b0709698a2342fe3981b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0980676502ae716e9d55b0709698a2342fe3981b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0980676502ae716e9d55b0709698a2342fe3981b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0980676502ae716e9d55b0709698a2342fe3981b](docs/releases/execution-v1/0980676502ae716e9d55b0709698a2342fe3981b)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-retrieval-role-tags-renderer not found
 
