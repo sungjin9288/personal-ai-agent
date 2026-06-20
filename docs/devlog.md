@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Memory Browse Section Renderer
+
+- moved harness memory browse subsection header, filter chips, controls, mission list, optional workspace list, and footer composition into a dedicated renderer helper
+- kept memory summary metadata, workspace section visibility, browse control delegation, list rendering, and pagination footer contract aligned with the existing memory harness surface
+- extended UI learning promotion and harness browse smoke coverage for memory browse section renderer delegation
+
 ## 2026-06-20 Harness Memory Browse Controls Renderer
 
 - moved harness memory sort, page-size, and reset-filter controls into a dedicated renderer helper

@@ -384,6 +384,13 @@ try {
   assert.equal(appJs.includes('harness-memory-limit'), true);
   assert.equal(appJs.includes("action: 'reset-browse'"), true);
   assert.equal(appJs.includes('disabled: !isMemoryBrowseDirty'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryBrowseSection({'), true);
+  assert.equal(appJs.includes('visibleMissionMemoryEntries = []'), true);
+  assert.equal(appJs.includes('visibleWorkspaceMemoryEntries = []'), true);
+  assert.equal(appJs.includes('총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건'), true);
+  assert.equal(appJs.includes('워크스페이스 기억'), true);
+  assert.equal(appJs.includes('renderHarnessMemoryBrowseFooter({'), true);
   assert.equal(appJs.includes('function buildHarnessPanelActionLabels({'), true);
   assert.equal(appJs.includes('} = buildHarnessPanelActionLabels({'), true);
   assert.equal(appJs.includes("legacyDevlogMigrationLabel: `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`"), true);
