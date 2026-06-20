@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Attachment Intake Section Renderer
+
+- moved harness attachment intake header, summary, callout, upload form, and attachment list composition into a dedicated renderer helper
+- kept attachment count metadata, truncation summary, upload input attributes, upload button delegation, and focused attachment list rendering aligned with the existing source harness surface
+- extended UI learning promotion and harness browse smoke coverage for attachment intake section renderer delegation
+
 ## 2026-06-21 Harness Document Browse Section Renderer
 
 - moved harness document browse subsection header, filter chips, controls, and results composition into a dedicated renderer helper
