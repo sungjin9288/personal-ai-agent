@@ -4333,6 +4333,13 @@ function renderHarnessMemoryOverviewGrid(memory = {}) {
   </div>`;
 }
 
+function renderHarnessLayeredMemoryCallout() {
+  return `<div class="harness-callout">
+    <strong>레이어드 메모리</strong>
+    <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -17943,10 +17950,7 @@ function renderHarnessPanel() {
 
   elements.harnessMemory.innerHTML = `
     ${renderHarnessMemoryOverviewGrid(memory)}
-    <div class="harness-callout">
-      <strong>레이어드 메모리</strong>
-      <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
-    </div>
+    ${renderHarnessLayeredMemoryCallout()}
     ${renderFactGraphPreview(memory)}
     ${
       activeRetrievalSourceFocus?.type === 'memory'
