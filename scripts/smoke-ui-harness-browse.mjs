@@ -2433,7 +2433,15 @@ try {
   assert.equal(appJs.includes('documentSummary = {}'), true);
   assert.equal(appJs.includes('visibleDocumentEntries = []'), true);
   assert.equal(appJs.includes('function renderHarnessSourcePanel({'), true);
-  assert.equal(appJs.includes('elements.harnessSource.innerHTML = renderHarnessSourcePanel({'), true);
+  assert.equal(appJs.includes('function buildHarnessPanelViewModel(harnessSummary = {})'), true);
+  assert.equal(appJs.includes('const documentBrowseViewModel = buildHarnessDocumentBrowseViewModel(documentBrowse);'), true);
+  assert.equal(appJs.includes('const memoryBrowseViewModel = buildHarnessMemoryBrowseViewModel(memoryBrowse);'), true);
+  assert.equal(appJs.includes('const actionLabels = buildHarnessPanelActionLabels({'), true);
+  assert.equal(appJs.includes('sourcePanel: {'), true);
+  assert.equal(appJs.includes('memoryPanel: {'), true);
+  assert.equal(appJs.includes('loopsPanel: {'), true);
+  assert.equal(appJs.includes('const harnessPanel = buildHarnessPanelViewModel(state.missionDetail.harness);'), true);
+  assert.equal(appJs.includes('elements.harnessSource.innerHTML = renderHarnessSourcePanel(harnessPanel.sourcePanel);'), true);
   assert.equal(appJs.includes('documentSort = \'latest\''), true);
   assert.equal(appJs.includes('documentVisibleCount = 12'), true);
   assert.equal(appJs.includes('latestArtifact = null'), true);
@@ -2536,7 +2544,7 @@ try {
   assert.equal(appJs.includes('snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개'), true);
   assert.equal(appJs.includes('renderRetrievalCompareCallout(retrieval)'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryPanel({'), true);
-  assert.equal(appJs.includes('elements.harnessMemory.innerHTML = renderHarnessMemoryPanel({'), true);
+  assert.equal(appJs.includes('elements.harnessMemory.innerHTML = renderHarnessMemoryPanel(harnessPanel.memoryPanel);'), true);
   assert.equal(appJs.includes('memorySort = \'latest\''), true);
   assert.equal(appJs.includes('memoryVisibleCount = 12'), true);
   assert.equal(appJs.includes('retrieval = {}'), true);
@@ -2586,7 +2594,7 @@ try {
   assert.equal(appJs.includes('escapeHtml(pattern.label)'), true);
   assert.equal(appJs.includes('escapeHtml(pattern.detail)'), true);
   assert.equal(appJs.includes('function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendations = [] } = {})'), true);
-  assert.equal(appJs.includes('elements.harnessLoops.innerHTML = renderHarnessLoopsPanel({'), true);
+  assert.equal(appJs.includes('elements.harnessLoops.innerHTML = renderHarnessLoopsPanel(harnessPanel.loopsPanel);'), true);
   assert.equal(appJs.includes('adoptedPatterns: harnessSummary.adoptedPatterns'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="reset-browse"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="edit"'), false);

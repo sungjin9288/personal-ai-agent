@@ -353,7 +353,7 @@ try {
   assert.equal(appJs.includes('const visibleCount = recentEntries.length'), true);
   assert.equal(appJs.includes('trackedEntryCount: harnessSummary.documents?.summary?.trackedEntryCount || 0'), true);
   assert.equal(appJs.includes('function buildHarnessDocumentBrowseViewModel(documentBrowse = {})'), true);
-  assert.equal(appJs.includes('} = buildHarnessDocumentBrowseViewModel(documentBrowse);'), true);
+  assert.equal(appJs.includes('const documentBrowseViewModel = buildHarnessDocumentBrowseViewModel(documentBrowse);'), true);
   assert.equal(appJs.includes("filterChips.unshift({ label: '유형', value: filterLabel });"), true);
   assert.equal(appJs.includes("String(state.harnessDocumentSort || 'latest').trim() !== 'latest'"), true);
   assert.equal(appJs.includes('function buildHarnessMemoryQueryParams()'), true);
@@ -365,7 +365,7 @@ try {
   assert.equal(appJs.includes('const visibleCount = recentMissionEntries.length + recentWorkspaceEntries.length'), true);
   assert.equal(appJs.includes('workspaceEntries: recentWorkspaceEntries'), true);
   assert.equal(appJs.includes('function buildHarnessMemoryBrowseViewModel(memoryBrowse = {})'), true);
-  assert.equal(appJs.includes('} = buildHarnessMemoryBrowseViewModel(memoryBrowse);'), true);
+  assert.equal(appJs.includes('const memoryBrowseViewModel = buildHarnessMemoryBrowseViewModel(memoryBrowse);'), true);
   assert.equal(appJs.includes("filterChips.unshift({ label: '검색', value: query });"), true);
   assert.equal(appJs.includes("String(state.harnessMemorySort || 'latest').trim() !== 'latest'"), true);
   assert.equal(appJs.includes('function renderHarnessMemorySearchbar({ memoryBrowse = {}, memoryFilterLabel = \'\' } = {})'), true);
@@ -392,7 +392,11 @@ try {
   assert.equal(appJs.includes('워크스페이스 기억'), true);
   assert.equal(appJs.includes('renderHarnessMemoryBrowseFooter({'), true);
   assert.equal(appJs.includes('function buildHarnessPanelActionLabels({'), true);
-  assert.equal(appJs.includes('} = buildHarnessPanelActionLabels({'), true);
+  assert.equal(appJs.includes('function buildHarnessPanelViewModel(harnessSummary = {})'), true);
+  assert.equal(appJs.includes('const actionLabels = buildHarnessPanelActionLabels({'), true);
+  assert.equal(appJs.includes('sourcePanel: {'), true);
+  assert.equal(appJs.includes('memoryPanel: {'), true);
+  assert.equal(appJs.includes('loopsPanel: {'), true);
   assert.equal(appJs.includes("legacyDevlogMigrationLabel: `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`"), true);
   assert.equal(appJs.includes('missionAttachmentUploadLabel: `첨부 업로드: ${selectedMissionLabel}`'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSummary = {})'), true);
@@ -463,7 +467,8 @@ try {
   assert.equal(appJs.includes('visibleDocumentEntries = []'), true);
   assert.equal(appJs.includes('총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건'), true);
   assert.equal(appJs.includes('function renderHarnessSourcePanel({'), true);
-  assert.equal(appJs.includes('elements.harnessSource.innerHTML = renderHarnessSourcePanel({'), true);
+  assert.equal(appJs.includes('const harnessPanel = buildHarnessPanelViewModel(state.missionDetail.harness);'), true);
+  assert.equal(appJs.includes('elements.harnessSource.innerHTML = renderHarnessSourcePanel(harnessPanel.sourcePanel);'), true);
   assert.equal(appJs.includes('activeRetrievalSourceFocus = null'), true);
   assert.equal(appJs.includes('documentSort = \'latest\''), true);
   assert.equal(appJs.includes('documentVisibleCount = 12'), true);
@@ -514,7 +519,7 @@ try {
   assert.equal(appJs.includes('snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개'), true);
   assert.equal(appJs.includes('renderRetrievalCompareCallout(retrieval)'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryPanel({'), true);
-  assert.equal(appJs.includes('elements.harnessMemory.innerHTML = renderHarnessMemoryPanel({'), true);
+  assert.equal(appJs.includes('elements.harnessMemory.innerHTML = renderHarnessMemoryPanel(harnessPanel.memoryPanel);'), true);
   assert.equal(appJs.includes('memorySort = \'latest\''), true);
   assert.equal(appJs.includes('memoryVisibleCount = 12'), true);
   assert.equal(appJs.includes('retrieval = {}'), true);
@@ -556,7 +561,7 @@ try {
   assert.equal(appJs.includes('escapeHtml(pattern.label)'), true);
   assert.equal(appJs.includes('escapeHtml(pattern.detail)'), true);
   assert.equal(appJs.includes('function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendations = [] } = {})'), true);
-  assert.equal(appJs.includes('elements.harnessLoops.innerHTML = renderHarnessLoopsPanel({'), true);
+  assert.equal(appJs.includes('elements.harnessLoops.innerHTML = renderHarnessLoopsPanel(harnessPanel.loopsPanel);'), true);
   assert.equal(appJs.includes('adoptedPatterns: harnessSummary.adoptedPatterns'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
   assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
