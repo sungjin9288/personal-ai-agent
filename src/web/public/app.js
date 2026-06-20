@@ -4154,6 +4154,28 @@ function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSumma
   </div>`;
 }
 
+function renderHarnessLegacyDevlogMigrationCallout({
+  documentSummary = {},
+  legacyDevlogMigrationLabel = '',
+} = {}) {
+  const legacyDevlogCount = Number(documentSummary.legacyDevlogCount || 0);
+  if (!legacyDevlogCount) {
+    return '';
+  }
+
+  return `<div class="harness-callout">
+    <strong>기존 개발 로그 ${escapeHtml(String(legacyDevlogCount))}건이 아직 tracked entry가 아닙니다.</strong>
+    <p>예전 append-only 섹션을 편집 가능한 문서 기록으로 한 번에 전환합니다. 전환 후에는 하네스에서 바로 수정/삭제할 수 있습니다.</p>
+    <div class="inline-actions">
+      ${renderDocumentBrowseActionButton({
+        action: 'migrate-legacy',
+        actionLabel: legacyDevlogMigrationLabel,
+        buttonText: '기존 개발 로그 전환',
+      })}
+    </div>
+  </div>`;
+}
+
 function renderHarnessAttachmentList(attachmentEntries = []) {
   if (!attachmentEntries.length) {
     return `<div class="harness-empty-inline">
@@ -18210,21 +18232,10 @@ function renderHarnessPanel() {
 
   elements.harnessSource.innerHTML = `
     ${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}
-    ${
-      Number(documentSummary.legacyDevlogCount || 0) > 0
-        ? `<div class="harness-callout">
-            <strong>기존 개발 로그 ${escapeHtml(String(documentSummary.legacyDevlogCount || 0))}건이 아직 tracked entry가 아닙니다.</strong>
-            <p>예전 append-only 섹션을 편집 가능한 문서 기록으로 한 번에 전환합니다. 전환 후에는 하네스에서 바로 수정/삭제할 수 있습니다.</p>
-            <div class="inline-actions">
-              ${renderDocumentBrowseActionButton({
-                action: 'migrate-legacy',
-                actionLabel: legacyDevlogMigrationLabel,
-                buttonText: '기존 개발 로그 전환',
-              })}
-            </div>
-          </div>`
-        : ''
-    }
+    ${renderHarnessLegacyDevlogMigrationCallout({
+      documentSummary,
+      legacyDevlogMigrationLabel,
+    })}
     ${
       latestArtifact
         ? `<div class="harness-callout">

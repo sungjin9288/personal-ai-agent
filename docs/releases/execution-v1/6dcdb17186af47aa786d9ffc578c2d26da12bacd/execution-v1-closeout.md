@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-20T16:23:21.181Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-20T16:23:06.567Z
 - branch: codex/harness-legacy-devlog-migration-callout-renderer
 - commit: 6dcdb17186af47aa786d9ffc578c2d26da12bacd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6dcdb17186af47aa786d9ffc578c2d26da12bacd/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

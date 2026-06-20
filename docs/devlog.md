@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Legacy Devlog Migration Callout Renderer
+
+- moved harness legacy devlog migration callout composition into a dedicated renderer helper
+- kept zero-count visibility guard, migration action metadata, migration button copy, and tracked-entry warning copy aligned with the existing source harness surface
+- extended UI learning promotion and harness browse smoke coverage for legacy devlog migration callout renderer delegation
+
 ## 2026-06-21 Harness Document Source Section Renderer
 
 - moved harness document source-of-record section composition into a dedicated renderer helper
