@@ -4223,6 +4223,45 @@ function renderDocumentBrowseActionButton({
   return `<button class="${escapeHtml(className)}" type="button" data-document-action="${escapeHtml(actionName)}"${documentIdAttribute}${disabledAttributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderHarnessDocumentBrowseControls({
+  documentFilterLabel = '',
+  documentSort = 'latest',
+  documentVisibleCount = 12,
+  isDocumentBrowseDirty = false,
+} = {}) {
+  const sortValue = String(documentSort || 'latest');
+  const pageSizeValue = Number(documentVisibleCount || 12) || 12;
+
+  return `<div class="harness-filter-row">
+    <p class="summary-label">정렬</p>
+    <div class="inline-actions">
+      <label class="compact-label">
+        문서 정렬
+        <select id="document-log-sort" aria-label="${escapeHtml(`문서 정렬: ${documentFilterLabel}`)}">
+          <option value="latest" ${sortValue === 'latest' ? 'selected' : ''}>최신순</option>
+          <option value="oldest" ${sortValue === 'oldest' ? 'selected' : ''}>오래된 순</option>
+          <option value="title" ${sortValue === 'title' ? 'selected' : ''}>제목순</option>
+          <option value="type" ${sortValue === 'type' ? 'selected' : ''}>유형순</option>
+        </select>
+      </label>
+      <label class="compact-label">
+        페이지 크기
+        <select id="document-log-limit" aria-label="${escapeHtml(`문서 페이지 크기: ${documentFilterLabel}`)}">
+          <option value="12" ${pageSizeValue === 12 ? 'selected' : ''}>12건</option>
+          <option value="24" ${pageSizeValue === 24 ? 'selected' : ''}>24건</option>
+          <option value="48" ${pageSizeValue === 48 ? 'selected' : ''}>48건</option>
+        </select>
+      </label>
+      ${renderDocumentBrowseActionButton({
+        action: 'reset-browse',
+        actionLabel: isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음',
+        buttonText: '필터 초기화',
+        disabled: !isDocumentBrowseDirty,
+      })}
+    </div>
+  </div>`;
+}
+
 function renderHarnessDocumentBrowseResults({
   documentBrowse = {},
   documentFilterLabel = '',
@@ -18136,34 +18175,12 @@ function renderHarnessPanel() {
         <div class="item-meta">총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건 · ${escapeHtml(documentPageLabel)} · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
       </div>
       ${renderHarnessFilterChips(documentFilterChips)}
-      <div class="harness-filter-row">
-        <p class="summary-label">정렬</p>
-        <div class="inline-actions">
-          <label class="compact-label">
-            문서 정렬
-            <select id="document-log-sort" aria-label="${escapeHtml(`문서 정렬: ${documentFilterLabel}`)}">
-              <option value="latest" ${state.harnessDocumentSort === 'latest' ? 'selected' : ''}>최신순</option>
-              <option value="oldest" ${state.harnessDocumentSort === 'oldest' ? 'selected' : ''}>오래된 순</option>
-              <option value="title" ${state.harnessDocumentSort === 'title' ? 'selected' : ''}>제목순</option>
-              <option value="type" ${state.harnessDocumentSort === 'type' ? 'selected' : ''}>유형순</option>
-            </select>
-          </label>
-          <label class="compact-label">
-            페이지 크기
-            <select id="document-log-limit" aria-label="${escapeHtml(`문서 페이지 크기: ${documentFilterLabel}`)}">
-              <option value="12" ${Number(state.harnessDocumentVisibleCount || 12) === 12 ? 'selected' : ''}>12건</option>
-              <option value="24" ${Number(state.harnessDocumentVisibleCount || 12) === 24 ? 'selected' : ''}>24건</option>
-              <option value="48" ${Number(state.harnessDocumentVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
-            </select>
-          </label>
-          ${renderDocumentBrowseActionButton({
-            action: 'reset-browse',
-            actionLabel: isDocumentBrowseDirty ? `문서 필터 초기화: ${documentFilterLabel}` : '문서 필터 초기화: 적용된 문서 필터 없음',
-            buttonText: '필터 초기화',
-            disabled: !isDocumentBrowseDirty,
-          })}
-        </div>
-      </div>
+      ${renderHarnessDocumentBrowseControls({
+        documentFilterLabel,
+        documentSort: state.harnessDocumentSort,
+        documentVisibleCount: state.harnessDocumentVisibleCount,
+        isDocumentBrowseDirty,
+      })}
       ${renderHarnessDocumentBrowseResults({
         documentBrowse,
         documentFilterLabel,

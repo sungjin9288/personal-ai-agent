@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T14:53:59.562Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T14:53:50.738Z
 - branch: codex/harness-document-browse-controls-renderer
 - commit: 7694ce1c7214785dd0e73336743c871331e5548b
