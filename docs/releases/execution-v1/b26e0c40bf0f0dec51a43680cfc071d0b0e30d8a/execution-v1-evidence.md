@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T04:44:22.019Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T04:44:13.359Z
 - branch: codex/harness-current-recommendation-callout-renderer
 - commit: b26e0c40bf0f0dec51a43680cfc071d0b0e30d8a
