@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T05:06:52.477Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T05:06:46.593Z
 - branch: codex/harness-memory-overview-grid-renderer
 - commit: 38159065d08d490acf9b763452916020ec9923b5
