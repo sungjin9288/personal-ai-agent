@@ -376,6 +376,14 @@ try {
   assert.equal(appJs.includes('activeRetrievalSourceFocus = null'), true);
   assert.equal(appJs.includes("sourceLabel: activeRetrievalSourceFocus.label"), true);
   assert.equal(appJs.includes("sourceType: activeRetrievalSourceFocus.type"), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentSourceList(documentItems = [])'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentSourceList(documentItems)}'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentSourceSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentSourceSection({'), true);
+  assert.equal(appJs.includes('documentItems = []'), true);
+  assert.equal(appJs.includes('documentSummary = {}'), true);
+  assert.equal(appJs.includes('문서 source-of-record'), true);
+  assert.equal(appJs.includes('등록 ${escapeHtml(String(documentItems.length))}개'), true);
   assert.equal(
     appJs.includes('<button class="ghost-button" type="submit" aria-label="${escapeHtml(missionAttachmentUploadLabel)}"'),
     false,

@@ -426,6 +426,13 @@ try {
   assert.equal(appJs.includes('${renderHarnessDocumentSourceList(documentItems)}'), true);
   assert.equal(appJs.includes("item.exists ? 'status-completed' : 'status-failed'"), true);
   assert.equal(appJs.includes('formatDate(item.updatedAt)'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentSourceSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentSourceSection({'), true);
+  assert.equal(appJs.includes('documentItems = []'), true);
+  assert.equal(appJs.includes('documentSummary = {}'), true);
+  assert.equal(appJs.includes('문서 source-of-record'), true);
+  assert.equal(appJs.includes('등록 ${escapeHtml(String(documentItems.length))}개'), true);
+  assert.equal(appJs.includes('사용 가능 ${escapeHtml(String(documentSummary.availableCount || 0))}/${escapeHtml(String(documentSummary.totalCount || 0))}'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentBrowseResults({'), true);
   assert.equal(appJs.includes('${renderHarnessDocumentBrowseResults({'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentBrowseControls({'), true);

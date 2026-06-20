@@ -4268,6 +4268,19 @@ function renderHarnessDocumentSourceList(documentItems = []) {
   </div>`;
 }
 
+function renderHarnessDocumentSourceSection({
+  documentItems = [],
+  documentSummary = {},
+} = {}) {
+  return `<div class="harness-subsection">
+    <div class="harness-filter-row">
+      <p class="summary-label">문서 source-of-record</p>
+      <div class="item-meta">등록 ${escapeHtml(String(documentItems.length))}개 · 사용 가능 ${escapeHtml(String(documentSummary.availableCount || 0))}/${escapeHtml(String(documentSummary.totalCount || 0))}</div>
+    </div>
+    ${renderHarnessDocumentSourceList(documentItems)}
+  </div>`;
+}
+
 function renderDocumentBrowseActionButton({
   action = '',
   actionLabel = '',
@@ -18230,7 +18243,10 @@ function renderHarnessPanel() {
       attachmentSummary,
       missionAttachmentUploadLabel,
     })}
-    ${renderHarnessDocumentSourceList(documentItems)}
+    ${renderHarnessDocumentSourceSection({
+      documentItems,
+      documentSummary,
+    })}
     ${renderHarnessDocumentBrowseSection({
       documentBrowse,
       documentFilterChips,

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Document Source Section Renderer
+
+- moved harness document source-of-record section composition into a dedicated renderer helper
+- kept document source list row rendering, source availability metadata, status badge mapping, and updated-at formatting aligned with the existing source harness surface
+- extended UI learning promotion and harness browse smoke coverage for document source section renderer delegation
+
 ## 2026-06-21 Harness Attachment Retrieval Focus Callout Renderer
 
 - moved harness attachment retrieval source focus callout composition into a dedicated renderer helper
