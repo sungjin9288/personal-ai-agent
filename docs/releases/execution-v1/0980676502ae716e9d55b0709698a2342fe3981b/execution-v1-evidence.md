@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T06:03:27.579Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T06:03:21.460Z
 - branch: codex/harness-retrieval-role-tags-renderer
 - commit: 0980676502ae716e9d55b0709698a2342fe3981b
