@@ -4106,6 +4106,82 @@ function buildHarnessPanelActionLabels({
   };
 }
 
+function buildHarnessPanelViewModel(harnessSummary = {}) {
+  const documentSummary = harnessSummary.documents?.summary || {};
+  const documentItems = harnessSummary.documents?.items || [];
+  const documentBrowse = state.harnessDocumentResult || buildFallbackHarnessDocumentBrowse(harnessSummary);
+  const attachmentSummary = harnessSummary.attachments?.summary || {};
+  const attachmentEntries = harnessSummary.attachments?.recentEntries || [];
+  const memoryBrowse = state.harnessMemoryResult || buildFallbackHarnessMemoryBrowse(harnessSummary);
+  const memory = harnessSummary.memory || {};
+  const retrieval = harnessSummary.retrieval || { previewItems: [], roles: [], summary: {} };
+  const loops = harnessSummary.loops || {};
+  const recommendations = harnessSummary.recommendations || [];
+  const latestArtifact = harnessSummary.documents?.latestArtifact || null;
+  const latestRetrievalArtifact = retrieval.latestArtifact || null;
+  const activeRetrievalSourceFocus = getActiveRetrievalSourceFocus();
+  const visibleDocumentEntries = documentBrowse.entries || [];
+  const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
+  const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
+  const documentBrowseViewModel = buildHarnessDocumentBrowseViewModel(documentBrowse);
+  const memoryBrowseViewModel = buildHarnessMemoryBrowseViewModel(memoryBrowse);
+  const actionLabels = buildHarnessPanelActionLabels({
+    activeRetrievalSourceFocus,
+    documentSummary,
+    latestRetrievalArtifact,
+  });
+
+  return {
+    loopsPanel: {
+      adoptedPatterns: harnessSummary.adoptedPatterns,
+      loops,
+      recommendations,
+    },
+    memoryPanel: {
+      activeRetrievalSourceClearLabel: actionLabels.activeRetrievalSourceClearLabel,
+      activeRetrievalSourceFocus,
+      isMemoryBrowseDirty: memoryBrowseViewModel.isDirty,
+      latestRetrievalArtifact,
+      latestRetrievalArtifactOpenLabel: actionLabels.latestRetrievalArtifactOpenLabel,
+      memory,
+      memoryBrowse,
+      memoryFilterChips: memoryBrowseViewModel.filterChips,
+      memoryFilterLabel: memoryBrowseViewModel.filterLabel,
+      memoryPageLabel: memoryBrowseViewModel.pageLabel,
+      memoryPageSize: memoryBrowseViewModel.pageSize,
+      memoryRangeLabel: memoryBrowseViewModel.rangeLabel,
+      memorySort: state.harnessMemorySort,
+      memoryVisibleCount: state.harnessMemoryVisibleCount,
+      retrieval,
+      visibleMissionMemoryEntries,
+      visibleWorkspaceMemoryEntries,
+    },
+    sourcePanel: {
+      activeRetrievalSourceClearLabel: actionLabels.activeRetrievalSourceClearLabel,
+      activeRetrievalSourceFocus,
+      attachmentEntries,
+      attachmentSummary,
+      documentBrowse,
+      documentFilterChips: documentBrowseViewModel.filterChips,
+      documentFilterLabel: documentBrowseViewModel.filterLabel,
+      documentItems,
+      documentPageLabel: documentBrowseViewModel.pageLabel,
+      documentPageSize: documentBrowseViewModel.pageSize,
+      documentQuery: documentBrowseViewModel.query,
+      documentRangeLabel: documentBrowseViewModel.rangeLabel,
+      documentSort: state.harnessDocumentSort,
+      documentSummary,
+      documentTypeFilter: documentBrowseViewModel.typeFilter,
+      documentVisibleCount: state.harnessDocumentVisibleCount,
+      isDocumentBrowseDirty: documentBrowseViewModel.isDirty,
+      latestArtifact,
+      legacyDevlogMigrationLabel: actionLabels.legacyDevlogMigrationLabel,
+      missionAttachmentUploadLabel: actionLabels.missionAttachmentUploadLabel,
+      visibleDocumentEntries,
+    },
+  };
+}
+
 function getHarnessPageLabel(summary = {}) {
   const currentPage = Number(summary.currentPage || 0);
   const totalPages = Number(summary.totalPages || 0);
@@ -18310,101 +18386,11 @@ function renderHarnessPanel() {
     return;
   }
 
-  const harnessSummary = state.missionDetail.harness;
-  const documentSummary = harnessSummary.documents?.summary || {};
-  const documentItems = harnessSummary.documents?.items || [];
-  const documentBrowse = state.harnessDocumentResult || buildFallbackHarnessDocumentBrowse(harnessSummary);
-  const attachmentSummary = harnessSummary.attachments?.summary || {};
-  const attachmentEntries = harnessSummary.attachments?.recentEntries || [];
-  const memoryBrowse = state.harnessMemoryResult || buildFallbackHarnessMemoryBrowse(harnessSummary);
-  const memory = harnessSummary.memory || {};
-  const retrieval = harnessSummary.retrieval || { previewItems: [], roles: [], summary: {} };
-  const loops = harnessSummary.loops || {};
-  const recommendations = harnessSummary.recommendations || [];
-  const latestArtifact = harnessSummary.documents?.latestArtifact || null;
-  const latestRetrievalArtifact = retrieval.latestArtifact || null;
-  const activeRetrievalSourceFocus = getActiveRetrievalSourceFocus();
-  const visibleDocumentEntries = documentBrowse.entries || [];
-  const visibleMissionMemoryEntries = memoryBrowse.missionEntries || [];
-  const visibleWorkspaceMemoryEntries = memoryBrowse.workspaceEntries || [];
-  const {
-    filterChips: documentFilterChips,
-    filterLabel: documentFilterLabel,
-    isDirty: isDocumentBrowseDirty,
-    pageLabel: documentPageLabel,
-    pageSize: documentPageSize,
-    query: documentQuery,
-    rangeLabel: documentRangeLabel,
-    typeFilter: documentTypeFilter,
-  } = buildHarnessDocumentBrowseViewModel(documentBrowse);
-  const {
-    filterChips: memoryFilterChips,
-    filterLabel: memoryFilterLabel,
-    isDirty: isMemoryBrowseDirty,
-    pageLabel: memoryPageLabel,
-    pageSize: memoryPageSize,
-    rangeLabel: memoryRangeLabel,
-  } = buildHarnessMemoryBrowseViewModel(memoryBrowse);
-  const {
-    activeRetrievalSourceClearLabel,
-    latestRetrievalArtifactOpenLabel,
-    legacyDevlogMigrationLabel,
-    missionAttachmentUploadLabel,
-  } = buildHarnessPanelActionLabels({
-    activeRetrievalSourceFocus,
-    documentSummary,
-    latestRetrievalArtifact,
-  });
+  const harnessPanel = buildHarnessPanelViewModel(state.missionDetail.harness);
 
-  elements.harnessSource.innerHTML = renderHarnessSourcePanel({
-    activeRetrievalSourceClearLabel,
-    activeRetrievalSourceFocus,
-    attachmentEntries,
-    attachmentSummary,
-    documentBrowse,
-    documentFilterChips,
-    documentFilterLabel,
-    documentItems,
-    documentPageLabel,
-    documentPageSize,
-    documentQuery,
-    documentRangeLabel,
-    documentSort: state.harnessDocumentSort,
-    documentSummary,
-    documentTypeFilter,
-    documentVisibleCount: state.harnessDocumentVisibleCount,
-    isDocumentBrowseDirty,
-    latestArtifact,
-    legacyDevlogMigrationLabel,
-    missionAttachmentUploadLabel,
-    visibleDocumentEntries,
-  });
-
-  elements.harnessMemory.innerHTML = renderHarnessMemoryPanel({
-    activeRetrievalSourceClearLabel,
-    activeRetrievalSourceFocus,
-    isMemoryBrowseDirty,
-    latestRetrievalArtifact,
-    latestRetrievalArtifactOpenLabel,
-    memory,
-    memoryBrowse,
-    memoryFilterChips,
-    memoryFilterLabel,
-    memoryPageLabel,
-    memoryPageSize,
-    memoryRangeLabel,
-    memorySort: state.harnessMemorySort,
-    memoryVisibleCount: state.harnessMemoryVisibleCount,
-    retrieval,
-    visibleMissionMemoryEntries,
-    visibleWorkspaceMemoryEntries,
-  });
-
-  elements.harnessLoops.innerHTML = renderHarnessLoopsPanel({
-    adoptedPatterns: harnessSummary.adoptedPatterns,
-    loops,
-    recommendations,
-  });
+  elements.harnessSource.innerHTML = renderHarnessSourcePanel(harnessPanel.sourcePanel);
+  elements.harnessMemory.innerHTML = renderHarnessMemoryPanel(harnessPanel.memoryPanel);
+  elements.harnessLoops.innerHTML = renderHarnessLoopsPanel(harnessPanel.loopsPanel);
   wireQuickActions(elements.harnessSource);
   wireQuickActions(elements.harnessMemory);
   wireDocumentRowActions();

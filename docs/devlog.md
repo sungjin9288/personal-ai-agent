@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Panel View Model
+
+- moved harness panel data derivation into a dedicated view-model helper
+- kept source, memory, and loops renderer contracts unchanged while reducing top-level render orchestration
+- extended UI learning promotion and harness browse smoke coverage for harness panel view-model delegation
+
 ## 2026-06-21 Harness Memory Panel Renderer
 
 - moved harness memory panel top-level composition into a dedicated renderer helper
