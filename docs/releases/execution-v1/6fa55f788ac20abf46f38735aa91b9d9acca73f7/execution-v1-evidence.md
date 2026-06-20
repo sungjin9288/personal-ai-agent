@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T17:44:19.097Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T17:44:04.626Z
 - branch: codex/harness-panel-view-model
 - commit: 6fa55f788ac20abf46f38735aa91b9d9acca73f7
