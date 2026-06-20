@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Document Browse Controls Renderer
+
+- moved harness document sort, page-size, and reset-filter controls into a dedicated renderer helper
+- kept sort/page-size selected states, control ids, reset action metadata, disabled state, and aria-label copy aligned with the existing document browse wiring contract
+- extended UI learning promotion and harness browse smoke coverage for document browse controls renderer delegation
+
 ## 2026-06-20 Harness Loops Panel Renderer
 
 - moved harness loops recommendation callout, overview grid, loop status list, additional recommendations, and adopted patterns composition into a dedicated panel renderer helper

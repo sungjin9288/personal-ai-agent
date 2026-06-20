@@ -2388,6 +2388,10 @@ try {
   assert.equal(appJs.includes('미션 첨부 파일 추가: 총 ${attachmentSummary.total || 0}건 · 누적 ${attachmentSummary.totalChars || 0} chars'), true);
   assert.equal(appJs.includes('문서 정렬: ${documentFilterLabel}'), true);
   assert.equal(appJs.includes('문서 페이지 크기: ${documentFilterLabel}'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentBrowseControls({'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentBrowseControls({'), true);
+  assert.equal(appJs.includes("documentSort = 'latest'"), true);
+  assert.equal(appJs.includes('const pageSizeValue = Number(documentVisibleCount || 12) || 12;'), true);
   assert.equal(appJs.includes('renderDocumentBrowseActionButton'), true);
   assert.equal(appJs.includes('function renderDocumentBrowseActionButton({'), true);
   assert.equal(appJs.includes('/^(migrate-legacy|reset-browse|edit|delete|prev-page|next-page)$/.test(actionName)'), true);
