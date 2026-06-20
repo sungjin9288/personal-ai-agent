@@ -2379,6 +2379,12 @@ try {
   assert.equal(appJs.includes('provider 링크 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('provider live 검증 취소: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('document-log-search'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSummary = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}'), true);
+  assert.equal(appJs.includes('documentSummary.availableCount || 0'), true);
+  assert.equal(appJs.includes('documentSummary.adrCount || 0'), true);
+  assert.equal(appJs.includes('attachmentSummary.total || 0'), true);
+  assert.equal(appJs.includes('formatDate(documentSummary.latestUpdatedAt)'), true);
   assert.equal(appJs.includes('미션 첨부 파일 추가: 총 ${attachmentSummary.total || 0}건 · 누적 ${attachmentSummary.totalChars || 0} chars'), true);
   assert.equal(appJs.includes('문서 정렬: ${documentFilterLabel}'), true);
   assert.equal(appJs.includes('문서 페이지 크기: ${documentFilterLabel}'), true);

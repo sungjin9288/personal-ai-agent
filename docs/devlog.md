@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Document Overview Grid Renderer
+
+- moved harness document overview grid markup into a dedicated renderer helper
+- kept document availability, ADR count, attachment total, and latest-updated date rendering aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for document overview grid renderer delegation
+
 ## 2026-06-20 Harness Current Recommendation Callout Renderer
 
 - moved current harness recommendation callout markup into a dedicated renderer helper
