@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Attachment Retrieval Focus Callout Renderer
+
+- moved harness attachment retrieval source focus callout composition into a dedicated renderer helper
+- kept attachment-only visibility, source copy button delegation, source focus clear delegation, and active source metadata rendering aligned with the existing source harness surface
+- extended UI learning promotion and harness browse smoke coverage for attachment retrieval focus callout renderer delegation
+
 ## 2026-06-21 Harness Attachment Intake Section Renderer
 
 - moved harness attachment intake header, summary, callout, upload form, and attachment list composition into a dedicated renderer helper

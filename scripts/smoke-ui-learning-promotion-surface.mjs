@@ -414,6 +414,14 @@ try {
   assert.equal(appJs.includes('id="mission-harness-attachment-form"'), true);
   assert.equal(appJs.includes('id="mission-harness-attachment-input"'), true);
   assert.equal(appJs.includes('actionLabel: missionAttachmentUploadLabel'), true);
+  assert.equal(appJs.includes('function renderHarnessAttachmentRetrievalFocusCallout({'), true);
+  assert.equal(appJs.includes('${renderHarnessAttachmentRetrievalFocusCallout({'), true);
+  assert.equal(appJs.includes("activeRetrievalSourceFocus?.type !== 'attachment'"), true);
+  assert.equal(appJs.includes('activeRetrievalSourceClearLabel = \'\''), true);
+  assert.equal(appJs.includes('activeRetrievalSourceFocus = null'), true);
+  assert.equal(appJs.includes("sourceLabel: activeRetrievalSourceFocus.label"), true);
+  assert.equal(appJs.includes("sourceType: activeRetrievalSourceFocus.type"), true);
+  assert.equal(appJs.includes('actionLabel: activeRetrievalSourceClearLabel'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentSourceList(documentItems = [])'), true);
   assert.equal(appJs.includes('${renderHarnessDocumentSourceList(documentItems)}'), true);
   assert.equal(appJs.includes("item.exists ? 'status-completed' : 'status-failed'"), true);

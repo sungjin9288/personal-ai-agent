@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T15:45:23.564Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T15:45:13.758Z
 - branch: codex/harness-attachment-retrieval-focus-callout-renderer
 - commit: f41e7261f1f0170a54cf5bc0328b1645e54a8a9e
