@@ -420,6 +420,13 @@ try {
   assert.equal(appJs.includes('if (!roles?.length)'), true);
   assert.equal(appJs.includes('<div class="tag-list">'), true);
   assert.equal(appJs.includes('${escapeHtml(entry.label)} · ${escapeHtml(String(entry.itemCount || 0))}'), true);
+  assert.equal(appJs.includes('function renderHarnessRetrievalPreviewList(previewItems = [])'), true);
+  assert.equal(appJs.includes('${renderHarnessRetrievalPreviewList(retrieval.previewItems)}'), true);
+  assert.equal(appJs.includes('retrieval preview가 아직 비어 있습니다.'), true);
+  assert.equal(appJs.includes('formatRetrievalSourceLabel(item)'), true);
+  assert.equal(appJs.includes("(item.roles || []).join(', ') || '-'"), true);
+  assert.equal(appJs.includes('item.retrievalReason || `score ${item.score ?? \'-\'}`'), true);
+  assert.equal(appJs.includes("summarizeRetrievalSnippet(item.snippet, '-')"), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);

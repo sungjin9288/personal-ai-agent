@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Retrieval Preview List Renderer
+
+- moved retrieval preview item list and empty state markup into a dedicated renderer helper
+- kept source label, role list, retrieval reason fallback, snippet summary, and empty-preview copy aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for retrieval preview list renderer delegation
+
 ## 2026-06-20 Harness Retrieval Role Tags Renderer
 
 - moved retrieval role tag list markup into a dedicated renderer helper
