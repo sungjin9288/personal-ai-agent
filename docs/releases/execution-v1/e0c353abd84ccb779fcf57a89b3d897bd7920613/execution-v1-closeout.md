@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-20T05:37:45.799Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-20T05:37:35.685Z
 - branch: codex/harness-memory-retrieval-focus-callout-renderer
 - commit: e0c353abd84ccb779fcf57a89b3d897bd7920613
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e0c353abd84ccb779fcf57a89b3d897bd7920613/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
