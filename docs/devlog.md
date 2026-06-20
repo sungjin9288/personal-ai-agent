@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Memory Searchbar Renderer
+
+- moved harness memory search, scope filter, and kind filter controls into a dedicated renderer helper
+- kept search input value, filter selected states, control ids, placeholder, and aria-label copy aligned with the existing memory browse wiring contract
+- extended UI learning promotion and harness browse smoke coverage for memory searchbar renderer delegation
+
 ## 2026-06-20 Harness Retrieval Preview Section Renderer
 
 - moved retrieval preview subsection wrapper, summary metadata, evidence callout, compare callout, role tags, and preview list composition into a dedicated renderer helper

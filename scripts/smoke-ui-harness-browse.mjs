@@ -2418,6 +2418,9 @@ try {
   assert.equal(appJs.includes('<button class="danger-button" type="button" data-document-action="delete"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-document-action="prev-page"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-document-action="next-page"'), false);
+  assert.equal(appJs.includes('function renderHarnessMemorySearchbar({ memoryBrowse = {}, memoryFilterLabel = \'\' } = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessMemorySearchbar({'), true);
+  assert.equal(appJs.includes('memoryBrowse.filters?.query || \'\''), true);
   assert.equal(appJs.includes('harness-memory-search'), true);
   assert.equal(appJs.includes('메모 검색: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 범위 필터: ${memoryFilterLabel}'), true);
