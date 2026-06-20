@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Memory Overview Grid Renderer
+
+- moved harness memory overview grid markup into a dedicated renderer helper
+- kept mission memory total, decision count, and workspace memory count rendering aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for memory overview grid renderer delegation
+
 ## 2026-06-20 Harness Document Overview Grid Renderer
 
 - moved harness document overview grid markup into a dedicated renderer helper
