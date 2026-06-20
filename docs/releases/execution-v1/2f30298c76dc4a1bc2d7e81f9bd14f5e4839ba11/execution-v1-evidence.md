@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T17:04:51.442Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T17:04:42.127Z
 - branch: codex/harness-source-panel-renderer
 - commit: 2f30298c76dc4a1bc2d7e81f9bd14f5e4839ba11
