@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-20T04:18:54.475Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-20T04:18:54.383Z
 - localDate: 2026-06-20
 - branch: codex/harness-loops-overview-grid-renderer
 - commit: 106aa9365873e59e8a251c3e6b99d134c35495fd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/106aa9365873e59e8a251c3e6b99d134c35495fd](releases/execution-v1/106aa9365873e59e8a251c3e6b99d134c35495fd)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/106aa9365873e59e8a251c3e6b99d134c35495fd/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/106aa9365873e59e8a251c3e6b99d134c35495fd/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/106aa9365873e59e8a251c3e6b99d134c35495fd](docs/releases/execution-v1/106aa9365873e59e8a251c3e6b99d134c35495fd)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-loops-overview-grid-renderer not found
 

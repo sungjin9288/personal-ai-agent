@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-20T04:18:54.475Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-20T04:18:48.170Z
 - branch: codex/harness-loops-overview-grid-renderer
 - commit: 106aa9365873e59e8a251c3e6b99d134c35495fd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/106aa9365873e59e8a251c3e6b99d134c35495fd/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
