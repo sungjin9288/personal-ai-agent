@@ -2429,6 +2429,12 @@ try {
   assert.equal(appJs.includes('${renderHarnessMemoryBrowseControls({'), true);
   assert.equal(appJs.includes("memorySort = 'latest'"), true);
   assert.equal(appJs.includes('const pageSizeValue = Number(memoryVisibleCount || 12) || 12;'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryBrowseSection({'), true);
+  assert.equal(appJs.includes('visibleMissionMemoryEntries = []'), true);
+  assert.equal(appJs.includes('visibleWorkspaceMemoryEntries = []'), true);
+  assert.equal(appJs.includes('총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건'), true);
+  assert.equal(appJs.includes('워크스페이스 기억'), true);
   assert.equal(appJs.includes('메모 정렬: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 페이지 크기: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('renderMemoryBrowseActionButton'), true);

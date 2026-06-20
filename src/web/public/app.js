@@ -4555,6 +4555,50 @@ function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {})
   </div>`;
 }
 
+function renderHarnessMemoryBrowseSection({
+  isMemoryBrowseDirty = false,
+  memoryBrowse = {},
+  memoryFilterChips = [],
+  memoryFilterLabel = '',
+  memoryPageLabel = '',
+  memoryPageSize = 12,
+  memoryRangeLabel = '',
+  memorySort = 'latest',
+  memoryVisibleCount = 12,
+  visibleMissionMemoryEntries = [],
+  visibleWorkspaceMemoryEntries = [],
+} = {}) {
+  return `<div class="harness-subsection">
+    <div class="harness-filter-row">
+      <p class="summary-label">메모 탐색</p>
+      <span class="item-meta">총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건 · ${escapeHtml(memoryPageLabel)} · ${escapeHtml(getHarnessMemorySortLabel())}</span>
+    </div>
+    ${renderHarnessFilterChips(memoryFilterChips)}
+    ${renderHarnessMemoryBrowseControls({
+      isMemoryBrowseDirty,
+      memoryFilterLabel,
+      memorySort,
+      memoryVisibleCount,
+    })}
+    ${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}
+  </div>
+  ${
+    (visibleWorkspaceMemoryEntries || []).length
+      ? `<div class="harness-subsection">
+          <p class="summary-label">워크스페이스 기억</p>
+          ${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}
+        </div>`
+      : ''
+  }
+  ${renderHarnessMemoryBrowseFooter({
+    memoryBrowse,
+    memoryFilterLabel,
+    memoryPageLabel,
+    memoryPageSize,
+    memoryRangeLabel,
+  })}`;
+}
+
 function renderHarnessMemoryBrowseFooter({
   memoryBrowse = {},
   memoryFilterLabel = '',
@@ -18141,34 +18185,18 @@ function renderHarnessPanel() {
       memoryBrowse,
       memoryFilterLabel,
     })}
-    <div class="harness-subsection">
-      <div class="harness-filter-row">
-        <p class="summary-label">메모 탐색</p>
-        <span class="item-meta">총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건 · ${escapeHtml(memoryPageLabel)} · ${escapeHtml(getHarnessMemorySortLabel())}</span>
-      </div>
-      ${renderHarnessFilterChips(memoryFilterChips)}
-      ${renderHarnessMemoryBrowseControls({
-        isMemoryBrowseDirty,
-        memoryFilterLabel,
-        memorySort: state.harnessMemorySort,
-        memoryVisibleCount: state.harnessMemoryVisibleCount,
-      })}
-      ${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}
-    </div>
-    ${
-      (visibleWorkspaceMemoryEntries || []).length
-        ? `<div class="harness-subsection">
-            <p class="summary-label">워크스페이스 기억</p>
-            ${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}
-          </div>`
-        : ''
-    }
-    ${renderHarnessMemoryBrowseFooter({
+    ${renderHarnessMemoryBrowseSection({
+      isMemoryBrowseDirty,
       memoryBrowse,
+      memoryFilterChips,
       memoryFilterLabel,
       memoryPageLabel,
       memoryPageSize,
       memoryRangeLabel,
+      memorySort: state.harnessMemorySort,
+      memoryVisibleCount: state.harnessMemoryVisibleCount,
+      visibleMissionMemoryEntries,
+      visibleWorkspaceMemoryEntries,
     })}
   `;
 
