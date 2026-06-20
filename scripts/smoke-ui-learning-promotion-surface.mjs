@@ -403,6 +403,12 @@ try {
   assert.equal(appJs.includes('${renderHarnessLayeredMemoryCallout()}'), true);
   assert.equal(appJs.includes('레이어드 메모리'), true);
   assert.equal(appJs.includes('미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryRetrievalFocusCallout({'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryRetrievalFocusCallout({'), true);
+  assert.equal(appJs.includes("activeRetrievalSourceFocus?.type !== 'memory'"), true);
+  assert.equal(appJs.includes('현재 retrieval source focus'), true);
+  assert.equal(appJs.includes("actionLabel: '현재 source 링크 복사'"), true);
+  assert.equal(appJs.includes('actionLabel: activeRetrievalSourceClearLabel'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);
