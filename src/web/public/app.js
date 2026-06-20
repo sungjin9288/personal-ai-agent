@@ -4218,6 +4218,35 @@ function renderHarnessAttachmentIntakeSection({
   </div>`;
 }
 
+function renderHarnessAttachmentRetrievalFocusCallout({
+  activeRetrievalSourceClearLabel = '',
+  activeRetrievalSourceFocus = null,
+} = {}) {
+  if (activeRetrievalSourceFocus?.type !== 'attachment') {
+    return '';
+  }
+
+  return `<div class="harness-callout">
+    <div class="harness-filter-row">
+      <strong>현재 retrieval source focus</strong>
+      <span class="status-badge status-pending">${escapeHtml(activeRetrievalSourceFocus.title)}</span>
+    </div>
+    <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
+    <div class="inline-actions">
+      ${renderRetrievalSourceCopyButton({
+        actionLabel: '현재 source 링크 복사',
+        buttonText: '현재 source 링크 복사',
+        copiedText: '현재 source 링크 복사됨',
+        sourceLabel: activeRetrievalSourceFocus.label,
+        sourceType: activeRetrievalSourceFocus.type,
+      })}
+      ${renderRetrievalSourceFocusClearButton({
+        actionLabel: activeRetrievalSourceClearLabel,
+      })}
+    </div>
+  </div>`;
+}
+
 function renderHarnessDocumentSourceList(documentItems = []) {
   return `<div class="harness-list">
     ${documentItems
@@ -18192,29 +18221,10 @@ function renderHarnessPanel() {
           </div>`
         : ''
     }
-    ${
-      activeRetrievalSourceFocus?.type === 'attachment'
-        ? `<div class="harness-callout">
-            <div class="harness-filter-row">
-              <strong>현재 retrieval source focus</strong>
-              <span class="status-badge status-pending">${escapeHtml(activeRetrievalSourceFocus.title)}</span>
-            </div>
-            <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
-            <div class="inline-actions">
-              ${renderRetrievalSourceCopyButton({
-                actionLabel: '현재 source 링크 복사',
-                buttonText: '현재 source 링크 복사',
-                copiedText: '현재 source 링크 복사됨',
-                sourceLabel: activeRetrievalSourceFocus.label,
-                sourceType: activeRetrievalSourceFocus.type,
-              })}
-              ${renderRetrievalSourceFocusClearButton({
-                actionLabel: activeRetrievalSourceClearLabel,
-              })}
-            </div>
-          </div>`
-        : ''
-    }
+    ${renderHarnessAttachmentRetrievalFocusCallout({
+      activeRetrievalSourceClearLabel,
+      activeRetrievalSourceFocus,
+    })}
     ${renderHarnessAttachmentIntakeSection({
       attachmentEntries,
       attachmentSummary,
