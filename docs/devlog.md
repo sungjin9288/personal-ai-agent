@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Empty Panel State Renderer
+
+- moved the shared harness empty-state card into a dedicated renderer helper
+- kept source, memory, and loops empty panel behavior aligned when no mission harness is available
+- extended UI learning promotion and harness browse smoke coverage for empty panel renderer delegation
+
 ## 2026-06-21 Harness Panel View Model
 
 - moved harness panel data derivation into a dedicated view-model helper

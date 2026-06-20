@@ -2596,6 +2596,9 @@ try {
   assert.equal(appJs.includes('function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendations = [] } = {})'), true);
   assert.equal(appJs.includes('elements.harnessLoops.innerHTML = renderHarnessLoopsPanel(harnessPanel.loopsPanel);'), true);
   assert.equal(appJs.includes('adoptedPatterns: harnessSummary.adoptedPatterns'), true);
+  assert.equal(appJs.includes('function renderHarnessEmptyPanelState()'), true);
+  assert.equal(appJs.includes('const empty = renderHarnessEmptyPanelState();'), true);
+  assert.equal(appJs.includes("title: '하네스 정보를 계산할 미션이 없습니다'"), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="reset-browse"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="edit"'), false);
   assert.equal(appJs.includes('<button class="danger-button" type="button" data-memory-action="delete"'), false);

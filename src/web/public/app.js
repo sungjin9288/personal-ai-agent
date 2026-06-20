@@ -5107,6 +5107,17 @@ function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendat
   `;
 }
 
+function renderHarnessEmptyPanelState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '1단계로 이동',
+    actionValue: 'step-setup',
+    icon: 'HS',
+    message: '미션을 선택하면 문서 기준점, 메모리, 운영 루프를 묶은 하네스 뷰를 보여줍니다.',
+    title: '하네스 정보를 계산할 미션이 없습니다',
+  });
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -18369,14 +18380,7 @@ function renderHarnessPanel() {
   }
 
   if (!state.missionDetail?.harness) {
-    const empty = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '1단계로 이동',
-      actionValue: 'step-setup',
-      icon: 'HS',
-      message: '미션을 선택하면 문서 기준점, 메모리, 운영 루프를 묶은 하네스 뷰를 보여줍니다.',
-      title: '하네스 정보를 계산할 미션이 없습니다',
-    });
+    const empty = renderHarnessEmptyPanelState();
     elements.harnessSource.innerHTML = empty;
     elements.harnessMemory.innerHTML = empty;
     elements.harnessLoops.innerHTML = empty;
