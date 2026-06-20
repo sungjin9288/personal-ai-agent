@@ -4416,6 +4416,28 @@ function renderHarnessLoopStatusList(loops = {}) {
   </div>`;
 }
 
+function renderHarnessAdditionalRecommendations(recommendations = []) {
+  if (!recommendations.length || recommendations.length <= 1) {
+    return '';
+  }
+
+  return `<div class="harness-subsection">
+    <p class="summary-label">추가 권장 항목</p>
+    <div class="harness-list">
+      ${recommendations
+        .slice(1, 4)
+        .map(
+          (item) => `
+            <div class="harness-row">
+              <div class="item-meta">${escapeHtml(item.title)}</div>
+            </div>
+          `,
+        )
+        .join('')}
+    </div>
+  </div>`;
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -18050,25 +18072,7 @@ function renderHarnessPanel() {
       <div class="summary-chip"><span>제공자</span><strong>${escapeHtml(getDisplayLabel(loops.provider?.healthDriftStatus || 'stable'))}</strong></div>
     </div>
     ${renderHarnessLoopStatusList(loops)}
-    ${
-      recommendations.length > 1
-        ? `<div class="harness-subsection">
-            <p class="summary-label">추가 권장 항목</p>
-            <div class="harness-list">
-              ${recommendations
-                .slice(1, 4)
-                .map(
-                  (item) => `
-                    <div class="harness-row">
-                      <div class="item-meta">${escapeHtml(item.title)}</div>
-                    </div>
-                  `,
-                )
-                .join('')}
-            </div>
-          </div>`
-        : ''
-    }
+    ${renderHarnessAdditionalRecommendations(recommendations)}
     <div class="harness-subsection">
       <p class="summary-label">이번에 적용한 하네스 원칙</p>
       <div class="harness-list">
