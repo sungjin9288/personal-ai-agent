@@ -4183,6 +4183,41 @@ function renderHarnessAttachmentList(attachmentEntries = []) {
   </div>`;
 }
 
+function renderHarnessAttachmentIntakeSection({
+  attachmentEntries = [],
+  attachmentSummary = {},
+  missionAttachmentUploadLabel = '',
+} = {}) {
+  return `<div class="harness-subsection">
+    <div class="harness-filter-row">
+      <p class="summary-label">미션 첨부 입력</p>
+      <div class="item-meta">총 ${escapeHtml(String(attachmentSummary.total || 0))}건 · 누적 ${escapeHtml(String(attachmentSummary.totalChars || 0))} chars${Number(attachmentSummary.truncatedCount || 0) ? ` · truncated ${escapeHtml(String(attachmentSummary.truncatedCount || 0))}건` : ''}</div>
+    </div>
+    <div class="harness-callout">
+      <strong>첨부 파일은 다음 multi-agent 실행 prompt에 포함됩니다.</strong>
+      <p>텍스트 기반 파일만 지원합니다. 긴 파일은 저장 시 잘리고, runtime에는 요약과 발췌본만 전달됩니다.</p>
+    </div>
+    <form id="mission-harness-attachment-form" class="mission-form">
+      <label class="compact-label">
+        파일 추가
+        <input
+          id="mission-harness-attachment-input"
+          type="file"
+          multiple
+          accept=".md,.txt,.json,.csv,.yaml,.yml,.log,.js,.mjs,.ts,.tsx,.jsx,.py,.html,.css,.xml,.sql,text/*,application/json,application/xml"
+          aria-label="${escapeHtml(`미션 첨부 파일 추가: 총 ${attachmentSummary.total || 0}건 · 누적 ${attachmentSummary.totalChars || 0} chars`)}"
+        />
+      </label>
+      <div class="action-row">
+        ${renderMissionAttachmentUploadButton({
+          actionLabel: missionAttachmentUploadLabel,
+        })}
+      </div>
+    </form>
+    ${renderHarnessAttachmentList(attachmentEntries)}
+  </div>`;
+}
+
 function renderHarnessDocumentSourceList(documentItems = []) {
   return `<div class="harness-list">
     ${documentItems
@@ -18180,34 +18215,11 @@ function renderHarnessPanel() {
           </div>`
         : ''
     }
-    <div class="harness-subsection">
-      <div class="harness-filter-row">
-        <p class="summary-label">미션 첨부 입력</p>
-        <div class="item-meta">총 ${escapeHtml(String(attachmentSummary.total || 0))}건 · 누적 ${escapeHtml(String(attachmentSummary.totalChars || 0))} chars${Number(attachmentSummary.truncatedCount || 0) ? ` · truncated ${escapeHtml(String(attachmentSummary.truncatedCount || 0))}건` : ''}</div>
-      </div>
-      <div class="harness-callout">
-        <strong>첨부 파일은 다음 multi-agent 실행 prompt에 포함됩니다.</strong>
-        <p>텍스트 기반 파일만 지원합니다. 긴 파일은 저장 시 잘리고, runtime에는 요약과 발췌본만 전달됩니다.</p>
-      </div>
-      <form id="mission-harness-attachment-form" class="mission-form">
-        <label class="compact-label">
-          파일 추가
-          <input
-            id="mission-harness-attachment-input"
-            type="file"
-            multiple
-            accept=".md,.txt,.json,.csv,.yaml,.yml,.log,.js,.mjs,.ts,.tsx,.jsx,.py,.html,.css,.xml,.sql,text/*,application/json,application/xml"
-            aria-label="${escapeHtml(`미션 첨부 파일 추가: 총 ${attachmentSummary.total || 0}건 · 누적 ${attachmentSummary.totalChars || 0} chars`)}"
-          />
-        </label>
-        <div class="action-row">
-          ${renderMissionAttachmentUploadButton({
-            actionLabel: missionAttachmentUploadLabel,
-          })}
-        </div>
-      </form>
-      ${renderHarnessAttachmentList(attachmentEntries)}
-    </div>
+    ${renderHarnessAttachmentIntakeSection({
+      attachmentEntries,
+      attachmentSummary,
+      missionAttachmentUploadLabel,
+    })}
     ${renderHarnessDocumentSourceList(documentItems)}
     ${renderHarnessDocumentBrowseSection({
       documentBrowse,

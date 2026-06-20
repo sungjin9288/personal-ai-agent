@@ -405,6 +405,15 @@ try {
   assert.equal(appJs.includes('${renderHarnessAttachmentList(attachmentEntries)}'), true);
   assert.equal(appJs.includes("state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''"), true);
   assert.equal(appJs.includes('아직 첨부된 파일이 없습니다.'), true);
+  assert.equal(appJs.includes('function renderHarnessAttachmentIntakeSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessAttachmentIntakeSection({'), true);
+  assert.equal(appJs.includes('attachmentEntries = []'), true);
+  assert.equal(appJs.includes('attachmentSummary = {}'), true);
+  assert.equal(appJs.includes('missionAttachmentUploadLabel = \'\''), true);
+  assert.equal(appJs.includes('총 ${escapeHtml(String(attachmentSummary.total || 0))}건'), true);
+  assert.equal(appJs.includes('id="mission-harness-attachment-form"'), true);
+  assert.equal(appJs.includes('id="mission-harness-attachment-input"'), true);
+  assert.equal(appJs.includes('actionLabel: missionAttachmentUploadLabel'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentSourceList(documentItems = [])'), true);
   assert.equal(appJs.includes('${renderHarnessDocumentSourceList(documentItems)}'), true);
   assert.equal(appJs.includes("item.exists ? 'status-completed' : 'status-failed'"), true);
