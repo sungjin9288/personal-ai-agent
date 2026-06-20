@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T14:30:38.215Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T14:30:27.671Z
 - branch: codex/harness-loops-panel-renderer
 - commit: 1c4e0c072b4093435a567ff745e50112791f9bf5

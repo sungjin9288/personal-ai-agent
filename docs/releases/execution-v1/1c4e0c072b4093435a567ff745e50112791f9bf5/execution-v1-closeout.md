@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-20T14:30:38.215Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-20T14:30:27.739Z
 - branch: codex/harness-loops-panel-renderer
 - commit: 1c4e0c072b4093435a567ff745e50112791f9bf5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1c4e0c072b4093435a567ff745e50112791f9bf5/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
