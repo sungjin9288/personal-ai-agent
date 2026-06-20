@@ -4416,6 +4416,14 @@ function renderHarnessLoopStatusList(loops = {}) {
   </div>`;
 }
 
+function renderHarnessLoopsOverviewGrid(loops = {}) {
+  return `<div class="harness-overview-grid">
+    <div class="summary-chip"><span>검토</span><strong>승인 ${escapeHtml(String(loops.review?.pendingApprovals || 0))} · 후속 ${escapeHtml(String(loops.review?.pendingActions || 0))}</strong></div>
+    <div class="summary-chip"><span>유지보수</span><strong>${escapeHtml(String(loops.maintenance?.requiredCount || 0))}건</strong></div>
+    <div class="summary-chip"><span>제공자</span><strong>${escapeHtml(getDisplayLabel(loops.provider?.healthDriftStatus || 'stable'))}</strong></div>
+  </div>`;
+}
+
 function renderHarnessAdditionalRecommendations(recommendations = []) {
   if (!recommendations.length || recommendations.length <= 1) {
     return '';
@@ -18086,11 +18094,7 @@ function renderHarnessPanel() {
       <strong>현재 권장 조치</strong>
       <p>${escapeHtml(recommendations[0]?.title || '열린 하네스 경고가 없습니다. 문서, 메모리, 운영 루프가 안정 상태입니다.')}</p>
     </div>
-    <div class="harness-overview-grid">
-      <div class="summary-chip"><span>검토</span><strong>승인 ${escapeHtml(String(loops.review?.pendingApprovals || 0))} · 후속 ${escapeHtml(String(loops.review?.pendingActions || 0))}</strong></div>
-      <div class="summary-chip"><span>유지보수</span><strong>${escapeHtml(String(loops.maintenance?.requiredCount || 0))}건</strong></div>
-      <div class="summary-chip"><span>제공자</span><strong>${escapeHtml(getDisplayLabel(loops.provider?.healthDriftStatus || 'stable'))}</strong></div>
-    </div>
+    ${renderHarnessLoopsOverviewGrid(loops)}
     ${renderHarnessLoopStatusList(loops)}
     ${renderHarnessAdditionalRecommendations(recommendations)}
     ${renderHarnessAdoptedPatterns(harnessSummary.adoptedPatterns)}

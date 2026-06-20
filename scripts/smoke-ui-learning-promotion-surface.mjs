@@ -405,6 +405,11 @@ try {
   assert.equal(appJs.includes("getStatusClass(loops.review?.latestReviewerStatus || 'pending')"), true);
   assert.equal(appJs.includes("getStatusClass((loops.maintenance?.requiredCount || 0) > 0 ? 'failed' : 'completed')"), true);
   assert.equal(appJs.includes('formatDate(loops.provider?.latestSuccessAt || loops.provider?.latestFailureAt)'), true);
+  assert.equal(appJs.includes('function renderHarnessLoopsOverviewGrid(loops = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessLoopsOverviewGrid(loops)}'), true);
+  assert.equal(appJs.includes('loops.review?.pendingApprovals || 0'), true);
+  assert.equal(appJs.includes('loops.maintenance?.requiredCount || 0'), true);
+  assert.equal(appJs.includes("getDisplayLabel(loops.provider?.healthDriftStatus || 'stable')"), true);
   assert.equal(appJs.includes('function renderHarnessAdditionalRecommendations(recommendations = [])'), true);
   assert.equal(appJs.includes('${renderHarnessAdditionalRecommendations(recommendations)}'), true);
   assert.equal(appJs.includes('recommendations.length <= 1'), true);

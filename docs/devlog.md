@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Loops Overview Grid Renderer
+
+- moved harness loops overview grid markup into a dedicated renderer helper
+- kept review approval/action counts, maintenance required count, and provider health drift label rendering aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for loops overview grid renderer delegation
+
 ## 2026-06-20 Harness Adopted Patterns Renderer
 
 - moved adopted harness pattern list markup into a dedicated renderer helper
