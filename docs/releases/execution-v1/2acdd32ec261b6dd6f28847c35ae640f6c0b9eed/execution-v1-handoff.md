@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-20T16:06:20.033Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-20T16:06:18.686Z
 - localDate: 2026-06-21
 - branch: codex/harness-document-source-section-renderer
 - commit: 2acdd32ec261b6dd6f28847c35ae640f6c0b9eed
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2acdd32ec261b6dd6f28847c35ae640f6c0b9eed](releases/execution-v1/2acdd32ec261b6dd6f28847c35ae640f6c0b9eed)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2acdd32ec261b6dd6f28847c35ae640f6c0b9eed/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2acdd32ec261b6dd6f28847c35ae640f6c0b9eed/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2acdd32ec261b6dd6f28847c35ae640f6c0b9eed](docs/releases/execution-v1/2acdd32ec261b6dd6f28847c35ae640f6c0b9eed)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-document-source-section-renderer not found
 
