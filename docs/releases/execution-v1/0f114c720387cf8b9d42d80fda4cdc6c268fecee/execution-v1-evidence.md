@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T13:47:31.201Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T13:47:20.427Z
 - branch: codex/harness-memory-searchbar-renderer
 - commit: 0f114c720387cf8b9d42d80fda4cdc6c268fecee
