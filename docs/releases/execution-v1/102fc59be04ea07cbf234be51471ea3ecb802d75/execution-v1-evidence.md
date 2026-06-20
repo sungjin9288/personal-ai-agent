@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T17:28:27.054Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T17:28:17.035Z
 - branch: codex/harness-memory-panel-renderer
 - commit: 102fc59be04ea07cbf234be51471ea3ecb802d75

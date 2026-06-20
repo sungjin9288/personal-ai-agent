@@ -4702,6 +4702,58 @@ function renderHarnessRetrievalPreviewSection({
   </div>`;
 }
 
+function renderHarnessMemoryPanel({
+  activeRetrievalSourceClearLabel = '',
+  activeRetrievalSourceFocus = null,
+  isMemoryBrowseDirty = false,
+  latestRetrievalArtifact = null,
+  latestRetrievalArtifactOpenLabel = '',
+  memory = {},
+  memoryBrowse = {},
+  memoryFilterChips = [],
+  memoryFilterLabel = '',
+  memoryPageLabel = '',
+  memoryPageSize = 12,
+  memoryRangeLabel = '',
+  memorySort = 'latest',
+  memoryVisibleCount = 12,
+  retrieval = {},
+  visibleMissionMemoryEntries = [],
+  visibleWorkspaceMemoryEntries = [],
+} = {}) {
+  return `
+    ${renderHarnessMemoryOverviewGrid(memory)}
+    ${renderHarnessLayeredMemoryCallout()}
+    ${renderFactGraphPreview(memory)}
+    ${renderHarnessMemoryRetrievalFocusCallout({
+      activeRetrievalSourceClearLabel,
+      activeRetrievalSourceFocus,
+    })}
+    ${renderHarnessRetrievalPreviewSection({
+      latestRetrievalArtifact,
+      latestRetrievalArtifactOpenLabel,
+      retrieval,
+    })}
+    ${renderHarnessMemorySearchbar({
+      memoryBrowse,
+      memoryFilterLabel,
+    })}
+    ${renderHarnessMemoryBrowseSection({
+      isMemoryBrowseDirty,
+      memoryBrowse,
+      memoryFilterChips,
+      memoryFilterLabel,
+      memoryPageLabel,
+      memoryPageSize,
+      memoryRangeLabel,
+      memorySort,
+      memoryVisibleCount,
+      visibleMissionMemoryEntries,
+      visibleWorkspaceMemoryEntries,
+    })}
+  `;
+}
+
 function renderHarnessMemorySearchbar({ memoryBrowse = {}, memoryFilterLabel = '' } = {}) {
   return `<div class="harness-searchbar">
     <label class="compact-label">
@@ -18328,37 +18380,25 @@ function renderHarnessPanel() {
     visibleDocumentEntries,
   });
 
-  elements.harnessMemory.innerHTML = `
-    ${renderHarnessMemoryOverviewGrid(memory)}
-    ${renderHarnessLayeredMemoryCallout()}
-    ${renderFactGraphPreview(memory)}
-    ${renderHarnessMemoryRetrievalFocusCallout({
-      activeRetrievalSourceClearLabel,
-      activeRetrievalSourceFocus,
-    })}
-    ${renderHarnessRetrievalPreviewSection({
-      latestRetrievalArtifact,
-      latestRetrievalArtifactOpenLabel,
-      retrieval,
-    })}
-    ${renderHarnessMemorySearchbar({
-      memoryBrowse,
-      memoryFilterLabel,
-    })}
-    ${renderHarnessMemoryBrowseSection({
-      isMemoryBrowseDirty,
-      memoryBrowse,
-      memoryFilterChips,
-      memoryFilterLabel,
-      memoryPageLabel,
-      memoryPageSize,
-      memoryRangeLabel,
-      memorySort: state.harnessMemorySort,
-      memoryVisibleCount: state.harnessMemoryVisibleCount,
-      visibleMissionMemoryEntries,
-      visibleWorkspaceMemoryEntries,
-    })}
-  `;
+  elements.harnessMemory.innerHTML = renderHarnessMemoryPanel({
+    activeRetrievalSourceClearLabel,
+    activeRetrievalSourceFocus,
+    isMemoryBrowseDirty,
+    latestRetrievalArtifact,
+    latestRetrievalArtifactOpenLabel,
+    memory,
+    memoryBrowse,
+    memoryFilterChips,
+    memoryFilterLabel,
+    memoryPageLabel,
+    memoryPageSize,
+    memoryRangeLabel,
+    memorySort: state.harnessMemorySort,
+    memoryVisibleCount: state.harnessMemoryVisibleCount,
+    retrieval,
+    visibleMissionMemoryEntries,
+    visibleWorkspaceMemoryEntries,
+  });
 
   elements.harnessLoops.innerHTML = renderHarnessLoopsPanel({
     adoptedPatterns: harnessSummary.adoptedPatterns,

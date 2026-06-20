@@ -513,6 +513,13 @@ try {
   assert.equal(appJs.includes("latestRetrievalArtifactOpenLabel = ''"), true);
   assert.equal(appJs.includes('snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개'), true);
   assert.equal(appJs.includes('renderRetrievalCompareCallout(retrieval)'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryPanel({'), true);
+  assert.equal(appJs.includes('elements.harnessMemory.innerHTML = renderHarnessMemoryPanel({'), true);
+  assert.equal(appJs.includes('memorySort = \'latest\''), true);
+  assert.equal(appJs.includes('memoryVisibleCount = 12'), true);
+  assert.equal(appJs.includes('retrieval = {}'), true);
+  assert.equal(appJs.includes('visibleMissionMemoryEntries = []'), true);
+  assert.equal(appJs.includes('visibleWorkspaceMemoryEntries = []'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);
