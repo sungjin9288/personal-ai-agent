@@ -4450,6 +4450,34 @@ function renderHarnessRetrievalPreviewSection({
   </div>`;
 }
 
+function renderHarnessMemorySearchbar({ memoryBrowse = {}, memoryFilterLabel = '' } = {}) {
+  return `<div class="harness-searchbar">
+    <label class="compact-label">
+      메모 검색
+      <input id="harness-memory-search" type="search" value="${escapeHtml(String(memoryBrowse.filters?.query || ''))}" placeholder="내용 또는 kind 검색" aria-label="${escapeHtml(`메모 검색: ${memoryFilterLabel}`)}" />
+    </label>
+    <div class="harness-filter-row">
+      <label class="compact-label">
+        범위
+        <select id="harness-memory-scope-filter" aria-label="${escapeHtml(`메모 범위 필터: ${memoryFilterLabel}`)}">
+          <option value="all" ${String(memoryBrowse.filters?.scope || 'all') === 'all' ? 'selected' : ''}>전체</option>
+          <option value="mission" ${String(memoryBrowse.filters?.scope || 'all') === 'mission' ? 'selected' : ''}>미션 메모</option>
+          <option value="workspace" ${String(memoryBrowse.filters?.scope || 'all') === 'workspace' ? 'selected' : ''}>워크스페이스 메모</option>
+        </select>
+      </label>
+      <label class="compact-label">
+        종류
+        <select id="harness-memory-kind-filter" aria-label="${escapeHtml(`메모 종류 필터: ${memoryFilterLabel}`)}">
+          <option value="all" ${String(memoryBrowse.filters?.kind || 'all') === 'all' ? 'selected' : ''}>전체</option>
+          <option value="fact" ${String(memoryBrowse.filters?.kind || 'all') === 'fact' ? 'selected' : ''}>사실</option>
+          <option value="decision" ${String(memoryBrowse.filters?.kind || 'all') === 'decision' ? 'selected' : ''}>결정</option>
+          <option value="preference" ${String(memoryBrowse.filters?.kind || 'all') === 'preference' ? 'selected' : ''}>선호</option>
+        </select>
+      </label>
+    </div>
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -18071,31 +18099,10 @@ function renderHarnessPanel() {
       latestRetrievalArtifactOpenLabel,
       retrieval,
     })}
-    <div class="harness-searchbar">
-      <label class="compact-label">
-        메모 검색
-        <input id="harness-memory-search" type="search" value="${escapeHtml(String(memoryBrowse.filters?.query || ''))}" placeholder="내용 또는 kind 검색" aria-label="${escapeHtml(`메모 검색: ${memoryFilterLabel}`)}" />
-      </label>
-      <div class="harness-filter-row">
-        <label class="compact-label">
-          범위
-          <select id="harness-memory-scope-filter" aria-label="${escapeHtml(`메모 범위 필터: ${memoryFilterLabel}`)}">
-            <option value="all" ${String(memoryBrowse.filters?.scope || 'all') === 'all' ? 'selected' : ''}>전체</option>
-            <option value="mission" ${String(memoryBrowse.filters?.scope || 'all') === 'mission' ? 'selected' : ''}>미션 메모</option>
-            <option value="workspace" ${String(memoryBrowse.filters?.scope || 'all') === 'workspace' ? 'selected' : ''}>워크스페이스 메모</option>
-          </select>
-        </label>
-        <label class="compact-label">
-          종류
-          <select id="harness-memory-kind-filter" aria-label="${escapeHtml(`메모 종류 필터: ${memoryFilterLabel}`)}">
-            <option value="all" ${String(memoryBrowse.filters?.kind || 'all') === 'all' ? 'selected' : ''}>전체</option>
-            <option value="fact" ${String(memoryBrowse.filters?.kind || 'all') === 'fact' ? 'selected' : ''}>사실</option>
-            <option value="decision" ${String(memoryBrowse.filters?.kind || 'all') === 'decision' ? 'selected' : ''}>결정</option>
-            <option value="preference" ${String(memoryBrowse.filters?.kind || 'all') === 'preference' ? 'selected' : ''}>선호</option>
-          </select>
-        </label>
-      </div>
-    </div>
+    ${renderHarnessMemorySearchbar({
+      memoryBrowse,
+      memoryFilterLabel,
+    })}
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">메모 탐색</p>

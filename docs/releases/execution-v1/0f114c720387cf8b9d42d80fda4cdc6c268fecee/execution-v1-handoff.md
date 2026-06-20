@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-20T13:47:31.201Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-20T13:47:29.781Z
 - localDate: 2026-06-20
 - branch: codex/harness-memory-searchbar-renderer
 - commit: 0f114c720387cf8b9d42d80fda4cdc6c268fecee
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0f114c720387cf8b9d42d80fda4cdc6c268fecee](releases/execution-v1/0f114c720387cf8b9d42d80fda4cdc6c268fecee)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0f114c720387cf8b9d42d80fda4cdc6c268fecee/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0f114c720387cf8b9d42d80fda4cdc6c268fecee/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0f114c720387cf8b9d42d80fda4cdc6c268fecee](docs/releases/execution-v1/0f114c720387cf8b9d42d80fda4cdc6c268fecee)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-memory-searchbar-renderer not found
 
