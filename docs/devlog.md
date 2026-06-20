@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Retrieval Role Tags Renderer
+
+- moved retrieval role tag list markup into a dedicated renderer helper
+- kept empty-role guard, tag-list wrapper, role label, and item count rendering aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for retrieval role tags renderer delegation
+
 ## 2026-06-20 Harness Retrieval Evidence Callout Renderer
 
 - moved latest retrieval evidence callout markup into a dedicated renderer helper

@@ -415,6 +415,11 @@ try {
   assert.equal(appJs.includes('최근 실행 retrieval evidence'), true);
   assert.equal(appJs.includes("`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`"), true);
   assert.equal(appJs.includes('renderRetrievalArtifactOpenButton({'), true);
+  assert.equal(appJs.includes('function renderHarnessRetrievalRoleTags(roles = [])'), true);
+  assert.equal(appJs.includes('${renderHarnessRetrievalRoleTags(retrieval.roles)}'), true);
+  assert.equal(appJs.includes('if (!roles?.length)'), true);
+  assert.equal(appJs.includes('<div class="tag-list">'), true);
+  assert.equal(appJs.includes('${escapeHtml(entry.label)} · ${escapeHtml(String(entry.itemCount || 0))}'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);

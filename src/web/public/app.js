@@ -4389,6 +4389,21 @@ function renderHarnessRetrievalEvidenceCallout({
   </div>`;
 }
 
+function renderHarnessRetrievalRoleTags(roles = []) {
+  if (!roles?.length) {
+    return '';
+  }
+
+  return `<div class="tag-list">
+    ${roles
+      .map(
+        (entry) =>
+          `<span class="tag tag-muted">${escapeHtml(entry.label)} · ${escapeHtml(String(entry.itemCount || 0))}</span>`,
+      )
+      .join('')}
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -18015,18 +18030,7 @@ function renderHarnessPanel() {
         latestRetrievalArtifactOpenLabel,
       })}
       ${renderRetrievalCompareCallout(retrieval)}
-      ${
-        retrieval.roles?.length
-          ? `<div class="tag-list">
-              ${retrieval.roles
-                .map(
-                  (entry) =>
-                    `<span class="tag tag-muted">${escapeHtml(entry.label)} · ${escapeHtml(String(entry.itemCount || 0))}</span>`,
-                )
-                .join('')}
-            </div>`
-          : ''
-      }
+      ${renderHarnessRetrievalRoleTags(retrieval.roles)}
       ${
         retrieval.previewItems?.length
           ? `<div class="agent-retrieval-list">
