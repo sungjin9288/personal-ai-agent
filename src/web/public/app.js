@@ -4262,6 +4262,46 @@ function renderHarnessDocumentBrowseControls({
   </div>`;
 }
 
+function renderHarnessDocumentBrowseSection({
+  documentBrowse = {},
+  documentFilterChips = [],
+  documentFilterLabel = '',
+  documentPageLabel = '',
+  documentPageSize = 12,
+  documentQuery = '',
+  documentRangeLabel = '',
+  documentSort = 'latest',
+  documentSummary = {},
+  documentTypeFilter = 'all',
+  documentVisibleCount = 12,
+  isDocumentBrowseDirty = false,
+  visibleDocumentEntries = [],
+} = {}) {
+  return `<div class="harness-subsection">
+    <div class="harness-filter-row">
+      <p class="summary-label">문서 기록 탐색</p>
+      <div class="item-meta">총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건 · ${escapeHtml(documentPageLabel)} · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
+    </div>
+    ${renderHarnessFilterChips(documentFilterChips)}
+    ${renderHarnessDocumentBrowseControls({
+      documentFilterLabel,
+      documentSort,
+      documentVisibleCount,
+      isDocumentBrowseDirty,
+    })}
+    ${renderHarnessDocumentBrowseResults({
+      documentBrowse,
+      documentFilterLabel,
+      documentPageLabel,
+      documentPageSize,
+      documentQuery,
+      documentRangeLabel,
+      documentTypeFilter,
+      visibleDocumentEntries,
+    })}
+  </div>`;
+}
+
 function renderHarnessDocumentBrowseResults({
   documentBrowse = {},
   documentFilterLabel = '',
@@ -18169,29 +18209,21 @@ function renderHarnessPanel() {
       ${renderHarnessAttachmentList(attachmentEntries)}
     </div>
     ${renderHarnessDocumentSourceList(documentItems)}
-    <div class="harness-subsection">
-      <div class="harness-filter-row">
-        <p class="summary-label">문서 기록 탐색</p>
-        <div class="item-meta">총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건 · 검색 결과 ${escapeHtml(String(documentBrowse.summary?.filteredCount || 0))}건 · ${escapeHtml(documentPageLabel)} · ${escapeHtml(getHarnessDocumentSortLabel())}</div>
-      </div>
-      ${renderHarnessFilterChips(documentFilterChips)}
-      ${renderHarnessDocumentBrowseControls({
-        documentFilterLabel,
-        documentSort: state.harnessDocumentSort,
-        documentVisibleCount: state.harnessDocumentVisibleCount,
-        isDocumentBrowseDirty,
-      })}
-      ${renderHarnessDocumentBrowseResults({
-        documentBrowse,
-        documentFilterLabel,
-        documentPageLabel,
-        documentPageSize,
-        documentQuery,
-        documentRangeLabel,
-        documentTypeFilter,
-        visibleDocumentEntries,
-      })}
-    </div>
+    ${renderHarnessDocumentBrowseSection({
+      documentBrowse,
+      documentFilterChips,
+      documentFilterLabel,
+      documentPageLabel,
+      documentPageSize,
+      documentQuery,
+      documentRangeLabel,
+      documentSort: state.harnessDocumentSort,
+      documentSummary,
+      documentTypeFilter,
+      documentVisibleCount: state.harnessDocumentVisibleCount,
+      isDocumentBrowseDirty,
+      visibleDocumentEntries,
+    })}
     <div class="harness-note">문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.</div>
   `;
 

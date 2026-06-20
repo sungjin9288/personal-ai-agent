@@ -2392,6 +2392,11 @@ try {
   assert.equal(appJs.includes('${renderHarnessDocumentBrowseControls({'), true);
   assert.equal(appJs.includes("documentSort = 'latest'"), true);
   assert.equal(appJs.includes('const pageSizeValue = Number(documentVisibleCount || 12) || 12;'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentBrowseSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentBrowseSection({'), true);
+  assert.equal(appJs.includes('documentFilterChips = []'), true);
+  assert.equal(appJs.includes('documentSummary = {}'), true);
+  assert.equal(appJs.includes('visibleDocumentEntries = []'), true);
   assert.equal(appJs.includes('renderDocumentBrowseActionButton'), true);
   assert.equal(appJs.includes('function renderDocumentBrowseActionButton({'), true);
   assert.equal(appJs.includes('/^(migrate-legacy|reset-browse|edit|delete|prev-page|next-page)$/.test(actionName)'), true);
