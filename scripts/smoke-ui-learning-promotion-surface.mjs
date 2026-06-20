@@ -376,6 +376,14 @@ try {
   assert.equal(appJs.includes('메모 검색: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 범위 필터: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 종류 필터: ${memoryFilterLabel}'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseControls({'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryBrowseControls({'), true);
+  assert.equal(appJs.includes("memorySort = 'latest'"), true);
+  assert.equal(appJs.includes('const pageSizeValue = Number(memoryVisibleCount || 12) || 12;'), true);
+  assert.equal(appJs.includes('harness-memory-sort'), true);
+  assert.equal(appJs.includes('harness-memory-limit'), true);
+  assert.equal(appJs.includes("action: 'reset-browse'"), true);
+  assert.equal(appJs.includes('disabled: !isMemoryBrowseDirty'), true);
   assert.equal(appJs.includes('function buildHarnessPanelActionLabels({'), true);
   assert.equal(appJs.includes('} = buildHarnessPanelActionLabels({'), true);
   assert.equal(appJs.includes("legacyDevlogMigrationLabel: `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`"), true);

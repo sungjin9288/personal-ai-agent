@@ -4478,6 +4478,44 @@ function renderHarnessMemorySearchbar({ memoryBrowse = {}, memoryFilterLabel = '
   </div>`;
 }
 
+function renderHarnessMemoryBrowseControls({
+  isMemoryBrowseDirty = false,
+  memoryFilterLabel = '',
+  memorySort = 'latest',
+  memoryVisibleCount = 12,
+} = {}) {
+  const sortValue = String(memorySort || 'latest');
+  const pageSizeValue = Number(memoryVisibleCount || 12) || 12;
+
+  return `<div class="harness-filter-row">
+    <p class="summary-label">정렬</p>
+    <div class="inline-actions">
+      <label class="compact-label">
+        메모 정렬
+        <select id="harness-memory-sort" aria-label="${escapeHtml(`메모 정렬: ${memoryFilterLabel}`)}">
+          <option value="latest" ${sortValue === 'latest' ? 'selected' : ''}>최신순</option>
+          <option value="oldest" ${sortValue === 'oldest' ? 'selected' : ''}>오래된 순</option>
+          <option value="kind" ${sortValue === 'kind' ? 'selected' : ''}>종류순</option>
+        </select>
+      </label>
+      <label class="compact-label">
+        페이지 크기
+        <select id="harness-memory-limit" aria-label="${escapeHtml(`메모 페이지 크기: ${memoryFilterLabel}`)}">
+          <option value="12" ${pageSizeValue === 12 ? 'selected' : ''}>12건</option>
+          <option value="24" ${pageSizeValue === 24 ? 'selected' : ''}>24건</option>
+          <option value="48" ${pageSizeValue === 48 ? 'selected' : ''}>48건</option>
+        </select>
+      </label>
+      ${renderMemoryBrowseActionButton({
+        action: 'reset-browse',
+        actionLabel: isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음',
+        buttonText: '필터 초기화',
+        disabled: !isMemoryBrowseDirty,
+      })}
+    </div>
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -18109,33 +18147,12 @@ function renderHarnessPanel() {
         <span class="item-meta">총 ${escapeHtml(String(memoryBrowse.summary?.total || 0))}건 · 검색 결과 ${escapeHtml(String(memoryBrowse.summary?.filteredTotal || 0))}건 · ${escapeHtml(memoryPageLabel)} · ${escapeHtml(getHarnessMemorySortLabel())}</span>
       </div>
       ${renderHarnessFilterChips(memoryFilterChips)}
-      <div class="harness-filter-row">
-        <p class="summary-label">정렬</p>
-        <div class="inline-actions">
-          <label class="compact-label">
-            메모 정렬
-            <select id="harness-memory-sort" aria-label="${escapeHtml(`메모 정렬: ${memoryFilterLabel}`)}">
-              <option value="latest" ${state.harnessMemorySort === 'latest' ? 'selected' : ''}>최신순</option>
-              <option value="oldest" ${state.harnessMemorySort === 'oldest' ? 'selected' : ''}>오래된 순</option>
-              <option value="kind" ${state.harnessMemorySort === 'kind' ? 'selected' : ''}>종류순</option>
-            </select>
-          </label>
-          <label class="compact-label">
-            페이지 크기
-            <select id="harness-memory-limit" aria-label="${escapeHtml(`메모 페이지 크기: ${memoryFilterLabel}`)}">
-              <option value="12" ${Number(state.harnessMemoryVisibleCount || 12) === 12 ? 'selected' : ''}>12건</option>
-              <option value="24" ${Number(state.harnessMemoryVisibleCount || 12) === 24 ? 'selected' : ''}>24건</option>
-              <option value="48" ${Number(state.harnessMemoryVisibleCount || 12) === 48 ? 'selected' : ''}>48건</option>
-            </select>
-          </label>
-          ${renderMemoryBrowseActionButton({
-            action: 'reset-browse',
-            actionLabel: isMemoryBrowseDirty ? `메모리 필터 초기화: ${memoryFilterLabel}` : '메모리 필터 초기화: 적용된 메모리 필터 없음',
-            buttonText: '필터 초기화',
-            disabled: !isMemoryBrowseDirty,
-          })}
-        </div>
-      </div>
+      ${renderHarnessMemoryBrowseControls({
+        isMemoryBrowseDirty,
+        memoryFilterLabel,
+        memorySort: state.harnessMemorySort,
+        memoryVisibleCount: state.harnessMemoryVisibleCount,
+      })}
       ${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}
     </div>
     ${
