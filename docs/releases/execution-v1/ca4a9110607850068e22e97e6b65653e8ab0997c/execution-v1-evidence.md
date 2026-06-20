@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T06:38:40.654Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T06:38:34.043Z
 - branch: codex/harness-retrieval-preview-section-renderer
 - commit: ca4a9110607850068e22e97e6b65653e8ab0997c
