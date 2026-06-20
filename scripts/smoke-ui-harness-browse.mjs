@@ -362,6 +362,12 @@ try {
   assert.equal(appJs.includes('const legacyDevlogCount = Number(documentSummary.legacyDevlogCount || 0);'), true);
   assert.equal(appJs.includes('if (!legacyDevlogCount) {'), true);
   assert.equal(appJs.includes("action: 'migrate-legacy'"), true);
+  assert.equal(appJs.includes('function renderHarnessLatestArtifactCallout(latestArtifact = null)'), true);
+  assert.equal(appJs.includes('${renderHarnessLatestArtifactCallout(latestArtifact)}'), true);
+  assert.equal(appJs.includes('if (!latestArtifact) {'), true);
+  assert.equal(appJs.includes('<strong>대표 산출물</strong>'), true);
+  assert.equal(appJs.includes('${escapeHtml(latestArtifact.title)}'), true);
+  assert.equal(appJs.includes("${escapeHtml(latestArtifact.path || '-')}"), true);
   assert.equal(appJs.includes('renderMissionAttachmentUploadButton'), true);
   assert.equal(appJs.includes('function renderMissionAttachmentUploadButton({'), true);
   assert.equal(appJs.includes("buttonText = '첨부 업로드'"), true);

@@ -408,6 +408,12 @@ try {
   assert.equal(appJs.includes('if (!legacyDevlogCount) {'), true);
   assert.equal(appJs.includes('action: \'migrate-legacy\''), true);
   assert.equal(appJs.includes('actionLabel: legacyDevlogMigrationLabel'), true);
+  assert.equal(appJs.includes('function renderHarnessLatestArtifactCallout(latestArtifact = null)'), true);
+  assert.equal(appJs.includes('${renderHarnessLatestArtifactCallout(latestArtifact)}'), true);
+  assert.equal(appJs.includes('if (!latestArtifact) {'), true);
+  assert.equal(appJs.includes('<strong>대표 산출물</strong>'), true);
+  assert.equal(appJs.includes('${escapeHtml(latestArtifact.title)}'), true);
+  assert.equal(appJs.includes("${escapeHtml(latestArtifact.path || '-')}"), true);
   assert.equal(appJs.includes('function renderHarnessAttachmentList(attachmentEntries = [])'), true);
   assert.equal(appJs.includes('${renderHarnessAttachmentList(attachmentEntries)}'), true);
   assert.equal(appJs.includes("state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''"), true);

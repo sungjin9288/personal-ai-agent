@@ -4176,6 +4176,18 @@ function renderHarnessLegacyDevlogMigrationCallout({
   </div>`;
 }
 
+function renderHarnessLatestArtifactCallout(latestArtifact = null) {
+  if (!latestArtifact) {
+    return '';
+  }
+
+  return `<div class="harness-callout">
+    <strong>대표 산출물</strong>
+    <p>${escapeHtml(latestArtifact.title)}</p>
+    <div class="item-meta mono">${escapeHtml(latestArtifact.path || '-')}</div>
+  </div>`;
+}
+
 function renderHarnessAttachmentList(attachmentEntries = []) {
   if (!attachmentEntries.length) {
     return `<div class="harness-empty-inline">
@@ -18236,15 +18248,7 @@ function renderHarnessPanel() {
       documentSummary,
       legacyDevlogMigrationLabel,
     })}
-    ${
-      latestArtifact
-        ? `<div class="harness-callout">
-            <strong>대표 산출물</strong>
-            <p>${escapeHtml(latestArtifact.title)}</p>
-            <div class="item-meta mono">${escapeHtml(latestArtifact.path || '-')}</div>
-          </div>`
-        : ''
-    }
+    ${renderHarnessLatestArtifactCallout(latestArtifact)}
     ${renderHarnessAttachmentRetrievalFocusCallout({
       activeRetrievalSourceClearLabel,
       activeRetrievalSourceFocus,

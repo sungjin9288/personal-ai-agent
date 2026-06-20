@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Latest Artifact Callout Renderer
+
+- moved harness latest artifact callout composition into a dedicated renderer helper
+- kept empty artifact visibility guard, artifact title rendering, path fallback, and representative artifact copy aligned with the existing source harness surface
+- extended UI learning promotion and harness browse smoke coverage for latest artifact callout renderer delegation
+
 ## 2026-06-21 Harness Legacy Devlog Migration Callout Renderer
 
 - moved harness legacy devlog migration callout composition into a dedicated renderer helper
