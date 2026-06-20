@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T14:01:03.435Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T14:00:54.065Z
 - branch: codex/harness-memory-browse-controls-renderer
 - commit: 83947a0a08de9b58655c17d216df56053debfba4
