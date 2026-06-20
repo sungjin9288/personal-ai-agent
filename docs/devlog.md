@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Retrieval Preview Section Renderer
+
+- moved retrieval preview subsection wrapper, summary metadata, evidence callout, compare callout, role tags, and preview list composition into a dedicated renderer helper
+- kept snippet, memory source, attachment source, latest artifact action, compare callout, role tags, and preview list rendering aligned with the existing memory harness contract
+- extended UI learning promotion and harness browse smoke coverage for retrieval preview section renderer delegation
+
 ## 2026-06-20 Harness Retrieval Preview List Renderer
 
 - moved retrieval preview item list and empty state markup into a dedicated renderer helper

@@ -4430,6 +4430,26 @@ function renderHarnessRetrievalPreviewList(previewItems = []) {
   </div>`;
 }
 
+function renderHarnessRetrievalPreviewSection({
+  latestRetrievalArtifact = null,
+  latestRetrievalArtifactOpenLabel = '',
+  retrieval = {},
+} = {}) {
+  return `<div class="harness-subsection">
+    <div class="harness-filter-row">
+      <p class="summary-label">다음 실행 retrieval preview</p>
+      <span class="item-meta">snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개 · 메모 ${escapeHtml(String(retrieval.summary?.memorySourceCount || 0))} · 첨부 ${escapeHtml(String(retrieval.summary?.attachmentSourceCount || 0))}</span>
+    </div>
+    ${renderHarnessRetrievalEvidenceCallout({
+      latestRetrievalArtifact,
+      latestRetrievalArtifactOpenLabel,
+    })}
+    ${renderRetrievalCompareCallout(retrieval)}
+    ${renderHarnessRetrievalRoleTags(retrieval.roles)}
+    ${renderHarnessRetrievalPreviewList(retrieval.previewItems)}
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -18046,19 +18066,11 @@ function renderHarnessPanel() {
       activeRetrievalSourceClearLabel,
       activeRetrievalSourceFocus,
     })}
-    <div class="harness-subsection">
-      <div class="harness-filter-row">
-        <p class="summary-label">다음 실행 retrieval preview</p>
-        <span class="item-meta">snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개 · 메모 ${escapeHtml(String(retrieval.summary?.memorySourceCount || 0))} · 첨부 ${escapeHtml(String(retrieval.summary?.attachmentSourceCount || 0))}</span>
-      </div>
-      ${renderHarnessRetrievalEvidenceCallout({
-        latestRetrievalArtifact,
-        latestRetrievalArtifactOpenLabel,
-      })}
-      ${renderRetrievalCompareCallout(retrieval)}
-      ${renderHarnessRetrievalRoleTags(retrieval.roles)}
-      ${renderHarnessRetrievalPreviewList(retrieval.previewItems)}
-    </div>
+    ${renderHarnessRetrievalPreviewSection({
+      latestRetrievalArtifact,
+      latestRetrievalArtifactOpenLabel,
+      retrieval,
+    })}
     <div class="harness-searchbar">
       <label class="compact-label">
         메모 검색

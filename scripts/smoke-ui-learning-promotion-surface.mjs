@@ -427,6 +427,11 @@ try {
   assert.equal(appJs.includes("(item.roles || []).join(', ') || '-'"), true);
   assert.equal(appJs.includes('item.retrievalReason || `score ${item.score ?? \'-\'}`'), true);
   assert.equal(appJs.includes("summarizeRetrievalSnippet(item.snippet, '-')"), true);
+  assert.equal(appJs.includes('function renderHarnessRetrievalPreviewSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessRetrievalPreviewSection({'), true);
+  assert.equal(appJs.includes("latestRetrievalArtifactOpenLabel = ''"), true);
+  assert.equal(appJs.includes('snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개'), true);
+  assert.equal(appJs.includes('renderRetrievalCompareCallout(retrieval)'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);
