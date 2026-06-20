@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T02:10:40.903Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T02:10:34.660Z
 - branch: codex/harness-additional-recommendations-renderer
 - commit: 78e46c2f5898256ad5bacaf93b0e7a3005076e4d

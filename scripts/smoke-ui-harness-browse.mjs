@@ -2453,6 +2453,11 @@ try {
   assert.equal(appJs.includes("getStatusClass(loops.review?.latestReviewerStatus || 'pending')"), true);
   assert.equal(appJs.includes("getStatusClass((loops.maintenance?.requiredCount || 0) > 0 ? 'failed' : 'completed')"), true);
   assert.equal(appJs.includes('formatDate(loops.provider?.latestSuccessAt || loops.provider?.latestFailureAt)'), true);
+  assert.equal(appJs.includes('function renderHarnessAdditionalRecommendations(recommendations = [])'), true);
+  assert.equal(appJs.includes('${renderHarnessAdditionalRecommendations(recommendations)}'), true);
+  assert.equal(appJs.includes('recommendations.length <= 1'), true);
+  assert.equal(appJs.includes('.slice(1, 4)'), true);
+  assert.equal(appJs.includes('escapeHtml(item.title)'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="reset-browse"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="edit"'), false);
   assert.equal(appJs.includes('<button class="danger-button" type="button" data-memory-action="delete"'), false);

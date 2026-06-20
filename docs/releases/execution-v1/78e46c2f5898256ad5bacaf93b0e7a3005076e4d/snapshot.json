@@ -1,0 +1,9 @@
+{
+  "archivedAt": "2026-06-20T02:10:40.903Z",
+  "snapshotDir": "docs/releases/execution-v1/78e46c2f5898256ad5bacaf93b0e7a3005076e4d",
+  "sourceCloseoutPath": "docs/execution-v1-closeout.md",
+  "sourceEvidencePath": "docs/execution-v1-evidence.md",
+  "sourceHandoffPath": "docs/execution-v1-handoff.md",
+  "snapshotHandoffPath": "docs/releases/execution-v1/78e46c2f5898256ad5bacaf93b0e7a3005076e4d/execution-v1-handoff.md",
+  "verifiedCommit": "78e46c2f5898256ad5bacaf93b0e7a3005076e4d"
+}

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Additional Recommendations Renderer
+
+- moved additional harness recommendation list markup into a dedicated renderer helper
+- kept the top recommendation reserved for the callout, limited secondary recommendations to three rows, and preserved escaped title rendering
+- extended UI learning promotion and harness browse smoke coverage for additional recommendation renderer delegation
+
 ## 2026-06-20 Harness Loop Status List Renderer
 
 - moved harness review, maintenance, and quality gate status rows into a dedicated loop status renderer helper
