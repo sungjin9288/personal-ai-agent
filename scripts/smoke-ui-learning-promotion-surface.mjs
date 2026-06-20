@@ -394,6 +394,11 @@ try {
   assert.equal(appJs.includes("actionLabel: documentBrowse.summary?.hasNext ? `다음 문서 ${documentPageSize}건: ${documentPageLabel}`"), true);
   assert.equal(appJs.includes('resetDocumentLogForm()'), true);
   assert.equal(appJs.includes('await handleDocumentLogFilePick(event)'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryOverviewGrid(memory = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryOverviewGrid(memory)}'), true);
+  assert.equal(appJs.includes('memory.missionCounts?.total || 0'), true);
+  assert.equal(appJs.includes('memory.missionCounts?.decision || 0'), true);
+  assert.equal(appJs.includes('memory.workspaceCount || 0'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);

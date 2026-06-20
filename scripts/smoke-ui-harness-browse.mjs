@@ -2434,6 +2434,11 @@ try {
   assert.equal(appJs.includes('메모리 필터 초기화: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);
   assert.equal(appJs.includes("action: 'edit'"), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryOverviewGrid(memory = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryOverviewGrid(memory)}'), true);
+  assert.equal(appJs.includes('memory.missionCounts?.total || 0'), true);
+  assert.equal(appJs.includes('memory.missionCounts?.decision || 0'), true);
+  assert.equal(appJs.includes('memory.workspaceCount || 0'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);

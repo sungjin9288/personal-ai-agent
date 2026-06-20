@@ -4325,6 +4325,14 @@ function renderMemoryBrowseActionButton({
   return `<button class="${escapeHtml(className)}" type="button" data-memory-action="${escapeHtml(actionName)}"${memoryIdAttribute}${scopeAttribute}${disabledAttributes} aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderHarnessMemoryOverviewGrid(memory = {}) {
+  return `<div class="harness-overview-grid">
+    <div class="summary-chip"><span>미션 메모</span><strong>${escapeHtml(String(memory.missionCounts?.total || 0))}개</strong></div>
+    <div class="summary-chip"><span>결정</span><strong>${escapeHtml(String(memory.missionCounts?.decision || 0))}개</strong></div>
+    <div class="summary-chip"><span>워크스페이스</span><strong>${escapeHtml(String(memory.workspaceCount || 0))}개</strong></div>
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -17934,11 +17942,7 @@ function renderHarnessPanel() {
   `;
 
   elements.harnessMemory.innerHTML = `
-    <div class="harness-overview-grid">
-      <div class="summary-chip"><span>미션 메모</span><strong>${escapeHtml(String(memory.missionCounts?.total || 0))}개</strong></div>
-      <div class="summary-chip"><span>결정</span><strong>${escapeHtml(String(memory.missionCounts?.decision || 0))}개</strong></div>
-      <div class="summary-chip"><span>워크스페이스</span><strong>${escapeHtml(String(memory.workspaceCount || 0))}개</strong></div>
-    </div>
+    ${renderHarnessMemoryOverviewGrid(memory)}
     <div class="harness-callout">
       <strong>레이어드 메모리</strong>
       <p>미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.</p>
