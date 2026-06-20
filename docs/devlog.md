@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Current Recommendation Callout Renderer
+
+- moved current harness recommendation callout markup into a dedicated renderer helper
+- kept top recommendation title rendering and stable empty-warning fallback copy aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for current recommendation callout renderer delegation
+
 ## 2026-06-20 Harness Loops Overview Grid Renderer
 
 - moved harness loops overview grid markup into a dedicated renderer helper
