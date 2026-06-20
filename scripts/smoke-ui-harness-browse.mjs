@@ -2425,6 +2425,10 @@ try {
   assert.equal(appJs.includes('메모 검색: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 범위 필터: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 종류 필터: ${memoryFilterLabel}'), true);
+  assert.equal(appJs.includes('function renderHarnessMemoryBrowseControls({'), true);
+  assert.equal(appJs.includes('${renderHarnessMemoryBrowseControls({'), true);
+  assert.equal(appJs.includes("memorySort = 'latest'"), true);
+  assert.equal(appJs.includes('const pageSizeValue = Number(memoryVisibleCount || 12) || 12;'), true);
   assert.equal(appJs.includes('메모 정렬: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('메모 페이지 크기: ${memoryFilterLabel}'), true);
   assert.equal(appJs.includes('renderMemoryBrowseActionButton'), true);

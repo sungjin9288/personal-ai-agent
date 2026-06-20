@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Memory Browse Controls Renderer
+
+- moved harness memory sort, page-size, and reset-filter controls into a dedicated renderer helper
+- kept sort/page-size selected states, control ids, reset action metadata, disabled state, and aria-label copy aligned with the existing memory browse wiring contract
+- extended UI learning promotion and harness browse smoke coverage for memory browse controls renderer delegation
+
 ## 2026-06-20 Harness Memory Searchbar Renderer
 
 - moved harness memory search, scope filter, and kind filter controls into a dedicated renderer helper
