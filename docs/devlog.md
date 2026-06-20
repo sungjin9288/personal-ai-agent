@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Memory Panel Renderer
+
+- moved harness memory panel top-level composition into a dedicated renderer helper
+- kept overview, layered memory callout, fact graph preview, retrieval focus, retrieval preview, memory searchbar, and memory browse section ordering aligned with the existing memory harness surface
+- extended UI learning promotion and harness browse smoke coverage for memory panel renderer delegation
+
 ## 2026-06-21 Harness Source Panel Renderer
 
 - moved harness source panel top-level composition into a dedicated renderer helper
