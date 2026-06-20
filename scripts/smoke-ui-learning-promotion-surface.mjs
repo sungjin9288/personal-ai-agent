@@ -409,6 +409,12 @@ try {
   assert.equal(appJs.includes('현재 retrieval source focus'), true);
   assert.equal(appJs.includes("actionLabel: '현재 source 링크 복사'"), true);
   assert.equal(appJs.includes('actionLabel: activeRetrievalSourceClearLabel'), true);
+  assert.equal(appJs.includes('function renderHarnessRetrievalEvidenceCallout({'), true);
+  assert.equal(appJs.includes('${renderHarnessRetrievalEvidenceCallout({'), true);
+  assert.equal(appJs.includes('if (!latestRetrievalArtifact)'), true);
+  assert.equal(appJs.includes('최근 실행 retrieval evidence'), true);
+  assert.equal(appJs.includes("`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`"), true);
+  assert.equal(appJs.includes('renderRetrievalArtifactOpenButton({'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);

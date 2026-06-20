@@ -4369,6 +4369,26 @@ function renderHarnessMemoryRetrievalFocusCallout({
   </div>`;
 }
 
+function renderHarnessRetrievalEvidenceCallout({
+  latestRetrievalArtifact = null,
+  latestRetrievalArtifactOpenLabel = '',
+} = {}) {
+  if (!latestRetrievalArtifact) {
+    return '';
+  }
+
+  return `<div class="harness-callout">
+    <strong>최근 실행 retrieval evidence</strong>
+    <p>${escapeHtml(`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`)}</p>
+    <div class="inline-actions">
+      ${renderRetrievalArtifactOpenButton({
+        artifact: latestRetrievalArtifact,
+        openLabel: latestRetrievalArtifactOpenLabel,
+      })}
+    </div>
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -17990,20 +18010,10 @@ function renderHarnessPanel() {
         <p class="summary-label">다음 실행 retrieval preview</p>
         <span class="item-meta">snippet ${escapeHtml(String(retrieval.summary?.snippetCount || 0))}개 · 메모 ${escapeHtml(String(retrieval.summary?.memorySourceCount || 0))} · 첨부 ${escapeHtml(String(retrieval.summary?.attachmentSourceCount || 0))}</span>
       </div>
-      ${
-        latestRetrievalArtifact
-          ? `<div class="harness-callout">
-              <strong>최근 실행 retrieval evidence</strong>
-              <p>${escapeHtml(`${latestRetrievalArtifact.role || 'agent'} · ${formatDate(latestRetrievalArtifact.updatedAt)} · ${latestRetrievalArtifact.path || latestRetrievalArtifact.fileName}`)}</p>
-              <div class="inline-actions">
-                ${renderRetrievalArtifactOpenButton({
-                  artifact: latestRetrievalArtifact,
-                  openLabel: latestRetrievalArtifactOpenLabel,
-                })}
-              </div>
-            </div>`
-          : ''
-      }
+      ${renderHarnessRetrievalEvidenceCallout({
+        latestRetrievalArtifact,
+        latestRetrievalArtifactOpenLabel,
+      })}
       ${renderRetrievalCompareCallout(retrieval)}
       ${
         retrieval.roles?.length
