@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Memory Retrieval Focus Callout Renderer
+
+- moved memory retrieval source focus callout markup into a dedicated renderer helper
+- kept memory-only focus guard, source copy action, clear action, title, and detail rendering aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for memory retrieval focus callout renderer delegation
+
 ## 2026-06-20 Harness Layered Memory Callout Renderer
 
 - moved the layered memory callout markup into a dedicated renderer helper

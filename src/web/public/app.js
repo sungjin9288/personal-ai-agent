@@ -4340,6 +4340,35 @@ function renderHarnessLayeredMemoryCallout() {
   </div>`;
 }
 
+function renderHarnessMemoryRetrievalFocusCallout({
+  activeRetrievalSourceClearLabel = '',
+  activeRetrievalSourceFocus = null,
+} = {}) {
+  if (activeRetrievalSourceFocus?.type !== 'memory') {
+    return '';
+  }
+
+  return `<div class="harness-callout">
+    <div class="harness-filter-row">
+      <strong>현재 retrieval source focus</strong>
+      <span class="status-badge status-pending">${escapeHtml(activeRetrievalSourceFocus.title)}</span>
+    </div>
+    <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
+    <div class="inline-actions">
+      ${renderRetrievalSourceCopyButton({
+        actionLabel: '현재 source 링크 복사',
+        buttonText: '현재 source 링크 복사',
+        copiedText: '현재 source 링크 복사됨',
+        sourceLabel: activeRetrievalSourceFocus.label,
+        sourceType: activeRetrievalSourceFocus.type,
+      })}
+      ${renderRetrievalSourceFocusClearButton({
+        actionLabel: activeRetrievalSourceClearLabel,
+      })}
+    </div>
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -17952,29 +17981,10 @@ function renderHarnessPanel() {
     ${renderHarnessMemoryOverviewGrid(memory)}
     ${renderHarnessLayeredMemoryCallout()}
     ${renderFactGraphPreview(memory)}
-    ${
-      activeRetrievalSourceFocus?.type === 'memory'
-        ? `<div class="harness-callout">
-            <div class="harness-filter-row">
-              <strong>현재 retrieval source focus</strong>
-              <span class="status-badge status-pending">${escapeHtml(activeRetrievalSourceFocus.title)}</span>
-            </div>
-            <p>${escapeHtml(activeRetrievalSourceFocus.detail)}</p>
-            <div class="inline-actions">
-              ${renderRetrievalSourceCopyButton({
-                actionLabel: '현재 source 링크 복사',
-                buttonText: '현재 source 링크 복사',
-                copiedText: '현재 source 링크 복사됨',
-                sourceLabel: activeRetrievalSourceFocus.label,
-                sourceType: activeRetrievalSourceFocus.type,
-              })}
-              ${renderRetrievalSourceFocusClearButton({
-                actionLabel: activeRetrievalSourceClearLabel,
-              })}
-            </div>
-          </div>`
-        : ''
-    }
+    ${renderHarnessMemoryRetrievalFocusCallout({
+      activeRetrievalSourceClearLabel,
+      activeRetrievalSourceFocus,
+    })}
     <div class="harness-subsection">
       <div class="harness-filter-row">
         <p class="summary-label">다음 실행 retrieval preview</p>
