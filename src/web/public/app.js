@@ -4438,6 +4438,26 @@ function renderHarnessAdditionalRecommendations(recommendations = []) {
   </div>`;
 }
 
+function renderHarnessAdoptedPatterns(patterns = []) {
+  return `<div class="harness-subsection">
+    <p class="summary-label">이번에 적용한 하네스 원칙</p>
+    <div class="harness-list">
+      ${(patterns || [])
+        .map(
+          (pattern) => `
+            <div class="harness-row">
+              <div>
+                <div class="item-title">${escapeHtml(pattern.label)}</div>
+                <div class="item-meta">${escapeHtml(pattern.detail)}</div>
+              </div>
+            </div>
+          `,
+        )
+        .join('')}
+    </div>
+  </div>`;
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -18073,23 +18093,7 @@ function renderHarnessPanel() {
     </div>
     ${renderHarnessLoopStatusList(loops)}
     ${renderHarnessAdditionalRecommendations(recommendations)}
-    <div class="harness-subsection">
-      <p class="summary-label">이번에 적용한 하네스 원칙</p>
-      <div class="harness-list">
-        ${(harnessSummary.adoptedPatterns || [])
-          .map(
-            (pattern) => `
-              <div class="harness-row">
-                <div>
-                  <div class="item-title">${escapeHtml(pattern.label)}</div>
-                  <div class="item-meta">${escapeHtml(pattern.detail)}</div>
-                </div>
-              </div>
-            `,
-          )
-          .join('')}
-      </div>
-    </div>
+    ${renderHarnessAdoptedPatterns(harnessSummary.adoptedPatterns)}
   `;
   wireQuickActions(elements.harnessSource);
   wireQuickActions(elements.harnessMemory);

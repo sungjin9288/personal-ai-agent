@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Adopted Patterns Renderer
+
+- moved adopted harness pattern list markup into a dedicated renderer helper
+- kept applied-pattern section title, label rendering, and detail rendering aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for adopted patterns renderer delegation
+
 ## 2026-06-20 Harness Additional Recommendations Renderer
 
 - moved additional harness recommendation list markup into a dedicated renderer helper
