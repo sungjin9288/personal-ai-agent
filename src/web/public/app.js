@@ -4145,6 +4145,15 @@ function renderHarnessFilterChips(items = []) {
   `;
 }
 
+function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSummary = {}) {
+  return `<div class="harness-overview-grid">
+    <div class="summary-chip"><span>문서</span><strong>${escapeHtml(String(documentSummary.availableCount || 0))}/${escapeHtml(String(documentSummary.totalCount || 0))}</strong></div>
+    <div class="summary-chip"><span>ADR</span><strong>${escapeHtml(String(documentSummary.adrCount || 0))}개</strong></div>
+    <div class="summary-chip"><span>첨부</span><strong>${escapeHtml(String(attachmentSummary.total || 0))}개</strong></div>
+    <div class="summary-chip"><span>최근 갱신</span><strong>${escapeHtml(formatDate(documentSummary.latestUpdatedAt))}</strong></div>
+  </div>`;
+}
+
 function renderHarnessAttachmentList(attachmentEntries = []) {
   if (!attachmentEntries.length) {
     return `<div class="harness-empty-inline">
@@ -17799,12 +17808,7 @@ function renderHarnessPanel() {
   });
 
   elements.harnessSource.innerHTML = `
-    <div class="harness-overview-grid">
-      <div class="summary-chip"><span>문서</span><strong>${escapeHtml(String(documentSummary.availableCount || 0))}/${escapeHtml(String(documentSummary.totalCount || 0))}</strong></div>
-      <div class="summary-chip"><span>ADR</span><strong>${escapeHtml(String(documentSummary.adrCount || 0))}개</strong></div>
-      <div class="summary-chip"><span>첨부</span><strong>${escapeHtml(String(attachmentSummary.total || 0))}개</strong></div>
-      <div class="summary-chip"><span>최근 갱신</span><strong>${escapeHtml(formatDate(documentSummary.latestUpdatedAt))}</strong></div>
-    </div>
+    ${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}
     ${
       Number(documentSummary.legacyDevlogCount || 0) > 0
         ? `<div class="harness-callout">

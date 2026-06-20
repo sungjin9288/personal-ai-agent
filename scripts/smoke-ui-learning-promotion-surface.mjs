@@ -372,6 +372,12 @@ try {
   assert.equal(appJs.includes('} = buildHarnessPanelActionLabels({'), true);
   assert.equal(appJs.includes("legacyDevlogMigrationLabel: `기존 개발 로그 전환: ${documentSummary.legacyDevlogCount || 0}건`"), true);
   assert.equal(appJs.includes('missionAttachmentUploadLabel: `첨부 업로드: ${selectedMissionLabel}`'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSummary = {})'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}'), true);
+  assert.equal(appJs.includes('documentSummary.availableCount || 0'), true);
+  assert.equal(appJs.includes('documentSummary.adrCount || 0'), true);
+  assert.equal(appJs.includes('attachmentSummary.total || 0'), true);
+  assert.equal(appJs.includes('formatDate(documentSummary.latestUpdatedAt)'), true);
   assert.equal(appJs.includes('function renderHarnessAttachmentList(attachmentEntries = [])'), true);
   assert.equal(appJs.includes('${renderHarnessAttachmentList(attachmentEntries)}'), true);
   assert.equal(appJs.includes("state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''"), true);
