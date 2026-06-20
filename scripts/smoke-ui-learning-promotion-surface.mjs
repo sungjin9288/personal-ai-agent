@@ -401,6 +401,13 @@ try {
   assert.equal(appJs.includes('documentSummary.adrCount || 0'), true);
   assert.equal(appJs.includes('attachmentSummary.total || 0'), true);
   assert.equal(appJs.includes('formatDate(documentSummary.latestUpdatedAt)'), true);
+  assert.equal(appJs.includes('function renderHarnessLegacyDevlogMigrationCallout({'), true);
+  assert.equal(appJs.includes('${renderHarnessLegacyDevlogMigrationCallout({'), true);
+  assert.equal(appJs.includes('legacyDevlogMigrationLabel = \'\''), true);
+  assert.equal(appJs.includes('const legacyDevlogCount = Number(documentSummary.legacyDevlogCount || 0);'), true);
+  assert.equal(appJs.includes('if (!legacyDevlogCount) {'), true);
+  assert.equal(appJs.includes('action: \'migrate-legacy\''), true);
+  assert.equal(appJs.includes('actionLabel: legacyDevlogMigrationLabel'), true);
   assert.equal(appJs.includes('function renderHarnessAttachmentList(attachmentEntries = [])'), true);
   assert.equal(appJs.includes('${renderHarnessAttachmentList(attachmentEntries)}'), true);
   assert.equal(appJs.includes("state.harnessAttachmentFocus === entry.fileName ? 'is-focused-source' : ''"), true);

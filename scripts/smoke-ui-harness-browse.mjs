@@ -356,6 +356,12 @@ try {
   assert.equal(appJs.includes('첨부 업로드: ${selectedMissionLabel}'), true);
   assert.equal(appJs.includes('actionLabel: legacyDevlogMigrationLabel'), true);
   assert.equal(appJs.includes("buttonText: '기존 개발 로그 전환'"), true);
+  assert.equal(appJs.includes('function renderHarnessLegacyDevlogMigrationCallout({'), true);
+  assert.equal(appJs.includes('${renderHarnessLegacyDevlogMigrationCallout({'), true);
+  assert.equal(appJs.includes('legacyDevlogMigrationLabel = \'\''), true);
+  assert.equal(appJs.includes('const legacyDevlogCount = Number(documentSummary.legacyDevlogCount || 0);'), true);
+  assert.equal(appJs.includes('if (!legacyDevlogCount) {'), true);
+  assert.equal(appJs.includes("action: 'migrate-legacy'"), true);
   assert.equal(appJs.includes('renderMissionAttachmentUploadButton'), true);
   assert.equal(appJs.includes('function renderMissionAttachmentUploadButton({'), true);
   assert.equal(appJs.includes("buttonText = '첨부 업로드'"), true);
