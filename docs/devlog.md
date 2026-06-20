@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Document Browse Section Renderer
+
+- moved harness document browse subsection header, filter chips, controls, and results composition into a dedicated renderer helper
+- kept tracked-count summary, filtered-count summary, sort label, filter chips, browse control delegation, and result rendering contract aligned with the existing source harness surface
+- extended UI learning promotion and harness browse smoke coverage for document browse section renderer delegation
+
 ## 2026-06-20 Harness Document Browse Controls Renderer
 
 - moved harness document sort, page-size, and reset-filter controls into a dedicated renderer helper

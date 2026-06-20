@@ -419,6 +419,12 @@ try {
   assert.equal(appJs.includes('document-log-limit'), true);
   assert.equal(appJs.includes('문서 필터 초기화: ${documentFilterLabel}'), true);
   assert.equal(appJs.includes('disabled: !isDocumentBrowseDirty'), true);
+  assert.equal(appJs.includes('function renderHarnessDocumentBrowseSection({'), true);
+  assert.equal(appJs.includes('${renderHarnessDocumentBrowseSection({'), true);
+  assert.equal(appJs.includes('documentFilterChips = []'), true);
+  assert.equal(appJs.includes('documentSummary = {}'), true);
+  assert.equal(appJs.includes('visibleDocumentEntries = []'), true);
+  assert.equal(appJs.includes('총 ${escapeHtml(String(documentBrowse.summary?.trackedEntryCount || documentSummary.trackedEntryCount || 0))}건'), true);
   assert.equal(appJs.includes("const shouldShowResults = filteredCount || documentQuery || documentTypeFilter !== 'all';"), true);
   assert.equal(appJs.includes('일치하는 문서 기록이 없습니다.'), true);
   assert.equal(appJs.includes("actionLabel: documentBrowse.summary?.hasPrev ? `이전 문서 ${documentPageSize}건: ${documentPageLabel}`"), true);
