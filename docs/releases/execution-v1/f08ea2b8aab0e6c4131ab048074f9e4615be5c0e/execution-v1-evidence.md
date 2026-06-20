@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T15:21:50.358Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T15:21:41.632Z
 - branch: codex/harness-attachment-intake-section-renderer
 - commit: f08ea2b8aab0e6c4131ab048074f9e4615be5c0e
