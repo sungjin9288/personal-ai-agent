@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-20T06:23:07.861Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-20T06:23:07.747Z
 - localDate: 2026-06-20
 - branch: codex/harness-retrieval-preview-list-renderer
 - commit: 20440b70bcff23515f5c4bed1ab659bf1052f877
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/20440b70bcff23515f5c4bed1ab659bf1052f877](releases/execution-v1/20440b70bcff23515f5c4bed1ab659bf1052f877)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/20440b70bcff23515f5c4bed1ab659bf1052f877/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/20440b70bcff23515f5c4bed1ab659bf1052f877/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/20440b70bcff23515f5c4bed1ab659bf1052f877](docs/releases/execution-v1/20440b70bcff23515f5c4bed1ab659bf1052f877)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-retrieval-preview-list-renderer not found
 

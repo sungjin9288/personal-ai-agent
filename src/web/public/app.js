@@ -4404,6 +4404,32 @@ function renderHarnessRetrievalRoleTags(roles = []) {
   </div>`;
 }
 
+function renderHarnessRetrievalPreviewList(previewItems = []) {
+  if (!previewItems?.length) {
+    return `<div class="harness-empty-inline">
+      <strong>retrieval preview가 아직 비어 있습니다.</strong>
+      <p>첨부나 메모를 누적하면 다음 실행 전에 어떤 snippet이 우선 주입되는지 여기서 바로 확인할 수 있습니다.</p>
+    </div>`;
+  }
+
+  return `<div class="agent-retrieval-list">
+    ${previewItems
+      .map(
+        (item) => `
+          <div class="agent-retrieval-row">
+            <div class="agent-retrieval-meta">
+              <strong>${escapeHtml(formatRetrievalSourceLabel(item))}</strong>
+              <span>${escapeHtml((item.roles || []).join(', ') || '-')}</span>
+              <span>${escapeHtml(item.retrievalReason || `score ${item.score ?? '-'}`)}</span>
+            </div>
+            <p>${escapeHtml(summarizeRetrievalSnippet(item.snippet, '-'))}</p>
+          </div>
+        `,
+      )
+      .join('')}
+  </div>`;
+}
+
 function renderHarnessMemoryBrowseList({ entries = [], scope = 'mission' } = {}) {
   const scopeValue = String(scope || 'mission').trim() === 'workspace' ? 'workspace' : 'mission';
   const actionPrefix = scopeValue === 'workspace' ? '워크스페이스 메모' : '미션 메모';
@@ -18031,29 +18057,7 @@ function renderHarnessPanel() {
       })}
       ${renderRetrievalCompareCallout(retrieval)}
       ${renderHarnessRetrievalRoleTags(retrieval.roles)}
-      ${
-        retrieval.previewItems?.length
-          ? `<div class="agent-retrieval-list">
-              ${retrieval.previewItems
-                .map(
-                  (item) => `
-                    <div class="agent-retrieval-row">
-                      <div class="agent-retrieval-meta">
-                        <strong>${escapeHtml(formatRetrievalSourceLabel(item))}</strong>
-                        <span>${escapeHtml((item.roles || []).join(', ') || '-')}</span>
-                        <span>${escapeHtml(item.retrievalReason || `score ${item.score ?? '-'}`)}</span>
-                      </div>
-                      <p>${escapeHtml(summarizeRetrievalSnippet(item.snippet, '-'))}</p>
-                    </div>
-                  `,
-                )
-                .join('')}
-            </div>`
-          : `<div class="harness-empty-inline">
-              <strong>retrieval preview가 아직 비어 있습니다.</strong>
-              <p>첨부나 메모를 누적하면 다음 실행 전에 어떤 snippet이 우선 주입되는지 여기서 바로 확인할 수 있습니다.</p>
-            </div>`
-      }
+      ${renderHarnessRetrievalPreviewList(retrieval.previewItems)}
     </div>
     <div class="harness-searchbar">
       <label class="compact-label">
