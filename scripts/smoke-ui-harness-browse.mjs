@@ -2432,6 +2432,12 @@ try {
   assert.equal(appJs.includes('documentFilterChips = []'), true);
   assert.equal(appJs.includes('documentSummary = {}'), true);
   assert.equal(appJs.includes('visibleDocumentEntries = []'), true);
+  assert.equal(appJs.includes('function renderHarnessSourcePanel({'), true);
+  assert.equal(appJs.includes('elements.harnessSource.innerHTML = renderHarnessSourcePanel({'), true);
+  assert.equal(appJs.includes('documentSort = \'latest\''), true);
+  assert.equal(appJs.includes('documentVisibleCount = 12'), true);
+  assert.equal(appJs.includes('latestArtifact = null'), true);
+  assert.equal(appJs.includes('문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.'), true);
   assert.equal(appJs.includes('renderDocumentBrowseActionButton'), true);
   assert.equal(appJs.includes('function renderDocumentBrowseActionButton({'), true);
   assert.equal(appJs.includes('/^(migrate-legacy|reset-browse|edit|delete|prev-page|next-page)$/.test(actionName)'), true);

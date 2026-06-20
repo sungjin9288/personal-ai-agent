@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Source Panel Renderer
+
+- moved harness source panel top-level composition into a dedicated renderer helper
+- kept overview, migration callout, latest artifact callout, attachment focus, attachment intake, document source section, document browse section, and source-of-record note ordering aligned with the existing source harness surface
+- extended UI learning promotion and harness browse smoke coverage for source panel renderer delegation
+
 ## 2026-06-21 Harness Latest Artifact Callout Renderer
 
 - moved harness latest artifact callout composition into a dedicated renderer helper

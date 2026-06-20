@@ -4413,6 +4413,68 @@ function renderHarnessDocumentBrowseSection({
   </div>`;
 }
 
+function renderHarnessSourcePanel({
+  activeRetrievalSourceClearLabel = '',
+  activeRetrievalSourceFocus = null,
+  attachmentEntries = [],
+  attachmentSummary = {},
+  documentBrowse = {},
+  documentFilterChips = [],
+  documentFilterLabel = '',
+  documentItems = [],
+  documentPageLabel = '',
+  documentPageSize = 12,
+  documentQuery = '',
+  documentRangeLabel = '',
+  documentSort = 'latest',
+  documentSummary = {},
+  documentTypeFilter = 'all',
+  documentVisibleCount = 12,
+  isDocumentBrowseDirty = false,
+  latestArtifact = null,
+  legacyDevlogMigrationLabel = '',
+  missionAttachmentUploadLabel = '',
+  visibleDocumentEntries = [],
+} = {}) {
+  return `
+    ${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}
+    ${renderHarnessLegacyDevlogMigrationCallout({
+      documentSummary,
+      legacyDevlogMigrationLabel,
+    })}
+    ${renderHarnessLatestArtifactCallout(latestArtifact)}
+    ${renderHarnessAttachmentRetrievalFocusCallout({
+      activeRetrievalSourceClearLabel,
+      activeRetrievalSourceFocus,
+    })}
+    ${renderHarnessAttachmentIntakeSection({
+      attachmentEntries,
+      attachmentSummary,
+      missionAttachmentUploadLabel,
+    })}
+    ${renderHarnessDocumentSourceSection({
+      documentItems,
+      documentSummary,
+    })}
+    ${renderHarnessDocumentBrowseSection({
+      documentBrowse,
+      documentFilterChips,
+      documentFilterLabel,
+      documentPageLabel,
+      documentPageSize,
+      documentQuery,
+      documentRangeLabel,
+      documentSort,
+      documentSummary,
+      documentTypeFilter,
+      documentVisibleCount,
+      isDocumentBrowseDirty,
+      visibleDocumentEntries,
+    })}
+    <div class="harness-note">문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.</div>
+  `;
+}
+
 function renderHarnessDocumentBrowseResults({
   documentBrowse = {},
   documentFilterLabel = '',
@@ -18242,43 +18304,29 @@ function renderHarnessPanel() {
     latestRetrievalArtifact,
   });
 
-  elements.harnessSource.innerHTML = `
-    ${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}
-    ${renderHarnessLegacyDevlogMigrationCallout({
-      documentSummary,
-      legacyDevlogMigrationLabel,
-    })}
-    ${renderHarnessLatestArtifactCallout(latestArtifact)}
-    ${renderHarnessAttachmentRetrievalFocusCallout({
-      activeRetrievalSourceClearLabel,
-      activeRetrievalSourceFocus,
-    })}
-    ${renderHarnessAttachmentIntakeSection({
-      attachmentEntries,
-      attachmentSummary,
-      missionAttachmentUploadLabel,
-    })}
-    ${renderHarnessDocumentSourceSection({
-      documentItems,
-      documentSummary,
-    })}
-    ${renderHarnessDocumentBrowseSection({
-      documentBrowse,
-      documentFilterChips,
-      documentFilterLabel,
-      documentPageLabel,
-      documentPageSize,
-      documentQuery,
-      documentRangeLabel,
-      documentSort: state.harnessDocumentSort,
-      documentSummary,
-      documentTypeFilter,
-      documentVisibleCount: state.harnessDocumentVisibleCount,
-      isDocumentBrowseDirty,
-      visibleDocumentEntries,
-    })}
-    <div class="harness-note">문서 intake는 원본 형식과 별개로 Markdown 작업본을 source-of-record로 유지하는 방향을 기본값으로 둡니다.</div>
-  `;
+  elements.harnessSource.innerHTML = renderHarnessSourcePanel({
+    activeRetrievalSourceClearLabel,
+    activeRetrievalSourceFocus,
+    attachmentEntries,
+    attachmentSummary,
+    documentBrowse,
+    documentFilterChips,
+    documentFilterLabel,
+    documentItems,
+    documentPageLabel,
+    documentPageSize,
+    documentQuery,
+    documentRangeLabel,
+    documentSort: state.harnessDocumentSort,
+    documentSummary,
+    documentTypeFilter,
+    documentVisibleCount: state.harnessDocumentVisibleCount,
+    isDocumentBrowseDirty,
+    latestArtifact,
+    legacyDevlogMigrationLabel,
+    missionAttachmentUploadLabel,
+    visibleDocumentEntries,
+  });
 
   elements.harnessMemory.innerHTML = `
     ${renderHarnessMemoryOverviewGrid(memory)}
