@@ -2458,6 +2458,9 @@ try {
   assert.equal(appJs.includes('loops.review?.pendingApprovals || 0'), true);
   assert.equal(appJs.includes('loops.maintenance?.requiredCount || 0'), true);
   assert.equal(appJs.includes("getDisplayLabel(loops.provider?.healthDriftStatus || 'stable')"), true);
+  assert.equal(appJs.includes('function renderHarnessCurrentRecommendationCallout(recommendations = [])'), true);
+  assert.equal(appJs.includes('${renderHarnessCurrentRecommendationCallout(recommendations)}'), true);
+  assert.equal(appJs.includes("recommendations[0]?.title || '열린 하네스 경고가 없습니다. 문서, 메모리, 운영 루프가 안정 상태입니다.'"), true);
   assert.equal(appJs.includes('function renderHarnessAdditionalRecommendations(recommendations = [])'), true);
   assert.equal(appJs.includes('${renderHarnessAdditionalRecommendations(recommendations)}'), true);
   assert.equal(appJs.includes('recommendations.length <= 1'), true);

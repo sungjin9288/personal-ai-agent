@@ -4424,6 +4424,13 @@ function renderHarnessLoopsOverviewGrid(loops = {}) {
   </div>`;
 }
 
+function renderHarnessCurrentRecommendationCallout(recommendations = []) {
+  return `<div class="harness-callout">
+    <strong>현재 권장 조치</strong>
+    <p>${escapeHtml(recommendations[0]?.title || '열린 하네스 경고가 없습니다. 문서, 메모리, 운영 루프가 안정 상태입니다.')}</p>
+  </div>`;
+}
+
 function renderHarnessAdditionalRecommendations(recommendations = []) {
   if (!recommendations.length || recommendations.length <= 1) {
     return '';
@@ -18090,10 +18097,7 @@ function renderHarnessPanel() {
   `;
 
   elements.harnessLoops.innerHTML = `
-    <div class="harness-callout">
-      <strong>현재 권장 조치</strong>
-      <p>${escapeHtml(recommendations[0]?.title || '열린 하네스 경고가 없습니다. 문서, 메모리, 운영 루프가 안정 상태입니다.')}</p>
-    </div>
+    ${renderHarnessCurrentRecommendationCallout(recommendations)}
     ${renderHarnessLoopsOverviewGrid(loops)}
     ${renderHarnessLoopStatusList(loops)}
     ${renderHarnessAdditionalRecommendations(recommendations)}
