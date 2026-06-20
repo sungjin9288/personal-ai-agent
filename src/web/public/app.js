@@ -4717,6 +4717,16 @@ function renderHarnessAdoptedPatterns(patterns = []) {
   </div>`;
 }
 
+function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendations = [] } = {}) {
+  return `
+    ${renderHarnessCurrentRecommendationCallout(recommendations)}
+    ${renderHarnessLoopsOverviewGrid(loops)}
+    ${renderHarnessLoopStatusList(loops)}
+    ${renderHarnessAdditionalRecommendations(recommendations)}
+    ${renderHarnessAdoptedPatterns(adoptedPatterns)}
+  `;
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -18200,13 +18210,11 @@ function renderHarnessPanel() {
     })}
   `;
 
-  elements.harnessLoops.innerHTML = `
-    ${renderHarnessCurrentRecommendationCallout(recommendations)}
-    ${renderHarnessLoopsOverviewGrid(loops)}
-    ${renderHarnessLoopStatusList(loops)}
-    ${renderHarnessAdditionalRecommendations(recommendations)}
-    ${renderHarnessAdoptedPatterns(harnessSummary.adoptedPatterns)}
-  `;
+  elements.harnessLoops.innerHTML = renderHarnessLoopsPanel({
+    adoptedPatterns: harnessSummary.adoptedPatterns,
+    loops,
+    recommendations,
+  });
   wireQuickActions(elements.harnessSource);
   wireQuickActions(elements.harnessMemory);
   wireDocumentRowActions();
