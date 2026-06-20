@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Layered Memory Callout Renderer
+
+- moved the layered memory callout markup into a dedicated renderer helper
+- kept the callout title and mission/workspace memory explanation copy aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for layered memory callout renderer delegation
+
 ## 2026-06-20 Harness Memory Overview Grid Renderer
 
 - moved harness memory overview grid markup into a dedicated renderer helper

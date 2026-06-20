@@ -399,6 +399,10 @@ try {
   assert.equal(appJs.includes('memory.missionCounts?.total || 0'), true);
   assert.equal(appJs.includes('memory.missionCounts?.decision || 0'), true);
   assert.equal(appJs.includes('memory.workspaceCount || 0'), true);
+  assert.equal(appJs.includes('function renderHarnessLayeredMemoryCallout()'), true);
+  assert.equal(appJs.includes('${renderHarnessLayeredMemoryCallout()}'), true);
+  assert.equal(appJs.includes('레이어드 메모리'), true);
+  assert.equal(appJs.includes('미션 메모리는 현재 실행 품질을, 워크스페이스 메모리는 장기 운영 문맥을 받쳐줍니다.'), true);
   assert.equal(appJs.includes('function renderHarnessMemoryBrowseList({ entries = [], scope = \'mission\' } = {})'), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleMissionMemoryEntries, scope: 'mission' })}"), true);
   assert.equal(appJs.includes("${renderHarnessMemoryBrowseList({ entries: visibleWorkspaceMemoryEntries, scope: 'workspace' })}"), true);
