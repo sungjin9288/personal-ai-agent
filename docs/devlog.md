@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-20 Harness Retrieval Evidence Callout Renderer
+
+- moved latest retrieval evidence callout markup into a dedicated renderer helper
+- kept artifact presence guard, role/date/path summary, and retrieval artifact open action aligned with the existing render contract
+- extended UI learning promotion and harness browse smoke coverage for retrieval evidence callout renderer delegation
+
 ## 2026-06-20 Harness Memory Retrieval Focus Callout Renderer
 
 - moved memory retrieval source focus callout markup into a dedicated renderer helper

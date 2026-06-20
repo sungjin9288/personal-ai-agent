@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-20T05:55:31.210Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-20T05:55:22.770Z
 - branch: codex/harness-retrieval-evidence-callout-renderer
 - commit: e4053268adae548b1bb2797b9e62a9d0a2ff7e95
