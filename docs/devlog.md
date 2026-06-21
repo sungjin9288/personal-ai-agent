@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Session List Empty State Renderer
+
+- moved the no-session list empty state into a dedicated renderer helper
+- kept the create-mission quick action, Korean empty copy, icon marker, and session selection list behavior unchanged
+- extended UI learning promotion and harness browse smoke coverage for session list empty-state delegation
+
 ## 2026-06-21 Artifact Viewer Empty State Renderer
 
 - moved the no-artifact viewer empty state into a dedicated renderer helper

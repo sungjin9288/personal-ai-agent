@@ -23441,16 +23441,20 @@ function renderApprovals() {
   wireApprovalRejectButtons();
 }
 
+function renderSessionListEmptyState() {
+  return emptyStateCard({
+    action: 'open-create',
+    actionLabel: '미션 작성 열기',
+    icon: 'SE',
+    message: '실행을 시작하면 세션 이력이 시간순으로 쌓이고, 여기서 각 세션으로 바로 들어갈 수 있습니다.',
+    title: '아직 세션이 없습니다',
+  });
+}
+
 function renderSessionList() {
   const sessions = state.missionDetail?.sessions || [];
   if (!sessions.length) {
-    elements.sessionList.innerHTML = emptyStateCard({
-      action: 'open-create',
-      actionLabel: '미션 작성 열기',
-      icon: 'SE',
-      message: '실행을 시작하면 세션 이력이 시간순으로 쌓이고, 여기서 각 세션으로 바로 들어갈 수 있습니다.',
-      title: '아직 세션이 없습니다',
-    });
+    elements.sessionList.innerHTML = renderSessionListEmptyState();
     wireQuickActions(elements.sessionList);
     return;
   }
