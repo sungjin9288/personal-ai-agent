@@ -368,6 +368,10 @@ try {
   assert.equal(appJs.includes('elements.sessionList.innerHTML = renderSessionListEmptyState();'), true);
   assert.equal(appJs.includes('아직 세션이 없습니다'), true);
   assert.equal(appJs.includes('미션 작성 열기'), true);
+  assert.equal(appJs.includes('function renderSessionListState(sessions = [])'), true);
+  assert.equal(appJs.includes('elements.sessionList.innerHTML = renderSessionListState(sessions);'), true);
+  assert.equal(appJs.includes('sessionSelectionLabel'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-session-id'"), true);
   assert.equal(appJs.includes('function renderSessionDetailEmptyState()'), true);
   assert.equal(appJs.includes('elements.sessionDetail.innerHTML = renderSessionDetailEmptyState();'), true);
   assert.equal(appJs.includes('현재 선택된 세션이 없습니다'), true);

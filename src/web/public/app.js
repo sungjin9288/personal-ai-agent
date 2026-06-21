@@ -23451,15 +23451,8 @@ function renderSessionListEmptyState() {
   });
 }
 
-function renderSessionList() {
-  const sessions = state.missionDetail?.sessions || [];
-  if (!sessions.length) {
-    elements.sessionList.innerHTML = renderSessionListEmptyState();
-    wireQuickActions(elements.sessionList);
-    return;
-  }
-
-  elements.sessionList.innerHTML = sessions
+function renderSessionListState(sessions = []) {
+  return sessions
     .slice()
     .reverse()
     .map((session) => {
@@ -23495,6 +23488,17 @@ function renderSessionList() {
       `;
     })
     .join('');
+}
+
+function renderSessionList() {
+  const sessions = state.missionDetail?.sessions || [];
+  if (!sessions.length) {
+    elements.sessionList.innerHTML = renderSessionListEmptyState();
+    wireQuickActions(elements.sessionList);
+    return;
+  }
+
+  elements.sessionList.innerHTML = renderSessionListState(sessions);
 
   wireSessionListSelectionButtons();
 }
