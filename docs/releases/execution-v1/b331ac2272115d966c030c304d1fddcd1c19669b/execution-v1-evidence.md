@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T00:09:54.805Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T00:09:45.344Z
 - branch: codex/harness-panel-action-wiring
 - commit: b331ac2272115d966c030c304d1fddcd1c19669b

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-21T00:09:54.805Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-21T00:09:45.390Z
 - branch: codex/harness-panel-action-wiring
 - commit: b331ac2272115d966c030c304d1fddcd1c19669b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b331ac2272115d966c030c304d1fddcd1c19669b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

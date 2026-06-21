@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-21T00:09:54.805Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-21T00:09:53.440Z
 - localDate: 2026-06-21
 - branch: codex/harness-panel-action-wiring
 - commit: b331ac2272115d966c030c304d1fddcd1c19669b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b331ac2272115d966c030c304d1fddcd1c19669b](releases/execution-v1/b331ac2272115d966c030c304d1fddcd1c19669b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b331ac2272115d966c030c304d1fddcd1c19669b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b331ac2272115d966c030c304d1fddcd1c19669b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b331ac2272115d966c030c304d1fddcd1c19669b](docs/releases/execution-v1/b331ac2272115d966c030c304d1fddcd1c19669b)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-panel-action-wiring not found
 
