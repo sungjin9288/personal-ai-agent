@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T01:54:58.361Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T01:54:48.031Z
 - branch: codex/artifact-meta-state-renderer
 - commit: 6622849db5e4856c45d82b07a342609e80e7bd8a
