@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Detail Contextbar Mission State Renderer
+
+- moved the standard mission detail contextbar state into a dedicated renderer helper
+- kept current tab label, latest session, artifact focus, approval count, and harness summary copy unchanged
+- extended UI learning promotion and harness browse smoke coverage for mission contextbar renderer delegation
+
 ## 2026-06-21 Detail Contextbar Release State Renderer
 
 - moved the release detail contextbar state into a dedicated renderer helper

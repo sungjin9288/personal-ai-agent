@@ -18341,6 +18341,42 @@ function renderDetailContextbarReleaseState(summary = {}) {
   `;
 }
 
+function renderDetailContextbarMissionState({
+  approvals = [],
+  artifacts = [],
+  currentTabLabel = '',
+  highlightedArtifact = '',
+  latestSession = null,
+  mission = {},
+  missionHarness = {},
+} = {}) {
+  return `
+    <div class="detail-context-main">
+      <span class="detail-context-label">현재 세부 보기</span>
+      <strong>${escapeHtml(currentTabLabel || '세부 보기')}</strong>
+      <p>${escapeHtml(mission.title)} 기준으로 결과와 기록을 한곳에서 확인합니다.</p>
+    </div>
+    <div class="detail-context-stats">
+      <div class="detail-context-pill">
+        <span>최근 세션</span>
+        <strong>${escapeHtml(latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '없음')}</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>결과물</span>
+        <strong>${escapeHtml(String(artifacts.length))}개 · ${escapeHtml(highlightedArtifact || '없음')}</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>검토 상태</span>
+        <strong>${escapeHtml(approvals.length ? `승인 ${approvals.length}건 기록` : '승인 기록 없음')}</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>하네스</span>
+        <strong>${escapeHtml(`${missionHarness?.recommendations?.length || 0}건 권장 · 메모 ${missionHarness?.memory?.missionCounts?.total || 0}개`)}</strong>
+      </div>
+    </div>
+  `;
+}
+
 function renderDetailContextbar() {
   if (!elements.detailContextbar) {
     return;
@@ -18377,31 +18413,15 @@ function renderDetailContextbar() {
       : getArtifactLabel(primaryArtifact) ||
         '선택된 결과물 없음';
 
-  elements.detailContextbar.innerHTML = `
-    <div class="detail-context-main">
-      <span class="detail-context-label">현재 세부 보기</span>
-      <strong>${escapeHtml(currentTabLabel || '세부 보기')}</strong>
-      <p>${escapeHtml(mission.title)} 기준으로 결과와 기록을 한곳에서 확인합니다.</p>
-    </div>
-    <div class="detail-context-stats">
-      <div class="detail-context-pill">
-        <span>최근 세션</span>
-        <strong>${escapeHtml(latestSession ? `${latestSession.provider || '-'} · ${getDisplayLabel(latestSession.status)}` : '없음')}</strong>
-      </div>
-      <div class="detail-context-pill">
-        <span>결과물</span>
-        <strong>${escapeHtml(String(artifacts.length))}개 · ${escapeHtml(highlightedArtifact || '없음')}</strong>
-      </div>
-      <div class="detail-context-pill">
-        <span>검토 상태</span>
-        <strong>${escapeHtml(approvals.length ? `승인 ${approvals.length}건 기록` : '승인 기록 없음')}</strong>
-      </div>
-      <div class="detail-context-pill">
-        <span>하네스</span>
-        <strong>${escapeHtml(`${state.missionDetail?.harness?.recommendations?.length || 0}건 권장 · 메모 ${state.missionDetail?.harness?.memory?.missionCounts?.total || 0}개`)}</strong>
-      </div>
-    </div>
-  `;
+  elements.detailContextbar.innerHTML = renderDetailContextbarMissionState({
+    approvals,
+    artifacts,
+    currentTabLabel,
+    highlightedArtifact,
+    latestSession,
+    mission,
+    missionHarness: state.missionDetail?.harness,
+  });
 }
 
 function renderHarnessPanel() {

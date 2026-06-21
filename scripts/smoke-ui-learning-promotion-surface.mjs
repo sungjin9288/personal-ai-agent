@@ -351,6 +351,10 @@ try {
   assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarReleaseState(summary);'), true);
   assert.equal(appJs.includes('execution v1 마감 상태 확인 중'), true);
   assert.equal(appJs.includes('summary.deterministicLabel'), true);
+  assert.equal(appJs.includes('function renderDetailContextbarMissionState({'), true);
+  assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarMissionState({'), true);
+  assert.equal(appJs.includes('missionHarness = {}'), true);
+  assert.equal(appJs.includes('missionHarness?.recommendations?.length || 0'), true);
   assert.equal(appJs.includes('function buildHarnessDocumentsQueryParams()'), true);
   assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
   assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);
