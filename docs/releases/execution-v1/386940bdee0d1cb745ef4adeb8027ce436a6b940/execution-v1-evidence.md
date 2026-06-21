@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T14:49:22.295Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T14:49:08.882Z
 - branch: codex/artifact-viewer-empty-state-renderer
 - commit: 386940bdee0d1cb745ef4adeb8027ce436a6b940
