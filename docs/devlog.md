@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Detail Contextbar Release State Renderer
+
+- moved the release detail contextbar state into a dedicated renderer helper
+- kept execution v1 closeout summary metrics, deterministic label, checklist count, environment gap count, and generated timestamp copy unchanged
+- extended UI learning promotion and harness browse smoke coverage for release contextbar renderer delegation
+
 ## 2026-06-21 Detail Contextbar Empty State Renderer
 
 - moved the no-mission detail contextbar empty state into a dedicated renderer helper
