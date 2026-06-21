@@ -371,6 +371,10 @@ try {
   assert.equal(appJs.includes('실행 정보가 없습니다.'), true);
   assert.equal(appJs.includes('승인 이력이 없습니다.'), true);
   assert.equal(appJs.includes('산출물이 없습니다.'), true);
+  assert.equal(appJs.includes('function renderTimelineEmptyState()'), true);
+  assert.equal(appJs.includes('elements.timelineList.innerHTML = renderTimelineEmptyState();'), true);
+  assert.equal(appJs.includes('표시할 타임라인이 없습니다'), true);
+  assert.equal(appJs.includes("action: 'open-create'"), true);
   assert.equal(appJs.includes('function buildHarnessDocumentsQueryParams()'), true);
   assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
   assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);

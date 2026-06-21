@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Timeline Empty State Renderer
+
+- moved the no-event timeline empty state into a dedicated renderer helper
+- kept the create-mission quick action, Korean empty copy, icon marker, and timeline session selection behavior unchanged
+- extended UI learning promotion and harness browse smoke coverage for timeline empty-state delegation
+
 ## 2026-06-21 Session Detail State Renderer
 
 - moved the populated session detail inspector shell into a dedicated renderer helper
