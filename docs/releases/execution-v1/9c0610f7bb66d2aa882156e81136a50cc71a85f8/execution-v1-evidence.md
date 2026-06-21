@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T15:06:51.019Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T15:06:40.303Z
 - branch: codex/session-list-empty-state-renderer
 - commit: 9c0610f7bb66d2aa882156e81136a50cc71a85f8
