@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Session Detail State Renderer
+
+- moved the populated session detail inspector shell into a dedicated renderer helper
+- kept run, approval, artifact counts plus empty group fallback copy and artifact selection wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for session detail state renderer delegation
+
 ## 2026-06-21 Session Detail Empty State Renderer
 
 - moved the no-session detail empty state into a dedicated renderer helper
