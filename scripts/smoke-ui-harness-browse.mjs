@@ -2417,6 +2417,10 @@ try {
   assert.equal(appJs.includes('function renderDetailContextbarEmptyState()'), true);
   assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarEmptyState();'), true);
   assert.equal(appJs.includes('detail-context-empty'), true);
+  assert.equal(appJs.includes('function renderDetailContextbarReleaseState(summary = {})'), true);
+  assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarReleaseState(summary);'), true);
+  assert.equal(appJs.includes('execution v1 마감 상태 확인 중'), true);
+  assert.equal(appJs.includes('summary.deterministicLabel'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSummary = {})'), true);
   assert.equal(appJs.includes('${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}'), true);
   assert.equal(appJs.includes('documentSummary.availableCount || 0'), true);

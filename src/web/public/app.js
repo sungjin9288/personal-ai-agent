@@ -18313,6 +18313,34 @@ function renderDetailContextbarEmptyState() {
   `;
 }
 
+function renderDetailContextbarReleaseState(summary = {}) {
+  return `
+    <div class="detail-context-main">
+      <span class="detail-context-label">현재 세부 보기</span>
+      <strong>execution v1 마감 상태 확인 중</strong>
+      <p>검증 근거, closeout checklist, provider readiness를 같은 작업면에서 확인합니다.</p>
+    </div>
+    <div class="detail-context-stats">
+      <div class="detail-context-pill">
+        <span>deterministic</span>
+        <strong>${escapeHtml(summary.deterministicLabel)}</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>열린 체크리스트</span>
+        <strong>${escapeHtml(String(summary.checklistOpen))}건</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>환경 gap</span>
+        <strong>${escapeHtml(String(summary.blockedItems))}건</strong>
+      </div>
+      <div class="detail-context-pill">
+        <span>갱신 시각</span>
+        <strong>${escapeHtml(formatDate(summary.generatedAt))}</strong>
+      </div>
+    </div>
+  `;
+}
+
 function renderDetailContextbar() {
   if (!elements.detailContextbar) {
     return;
@@ -18320,31 +18348,7 @@ function renderDetailContextbar() {
 
   if (state.activeDetailTab === 'release' && state.releaseStatus) {
     const summary = getReleaseStatusSummary();
-    elements.detailContextbar.innerHTML = `
-      <div class="detail-context-main">
-        <span class="detail-context-label">현재 세부 보기</span>
-        <strong>execution v1 마감 상태 확인 중</strong>
-        <p>검증 근거, closeout checklist, provider readiness를 같은 작업면에서 확인합니다.</p>
-      </div>
-      <div class="detail-context-stats">
-        <div class="detail-context-pill">
-          <span>deterministic</span>
-          <strong>${escapeHtml(summary.deterministicLabel)}</strong>
-        </div>
-        <div class="detail-context-pill">
-          <span>열린 체크리스트</span>
-          <strong>${escapeHtml(String(summary.checklistOpen))}건</strong>
-        </div>
-        <div class="detail-context-pill">
-          <span>환경 gap</span>
-          <strong>${escapeHtml(String(summary.blockedItems))}건</strong>
-        </div>
-        <div class="detail-context-pill">
-          <span>갱신 시각</span>
-          <strong>${escapeHtml(formatDate(summary.generatedAt))}</strong>
-        </div>
-      </div>
-    `;
+    elements.detailContextbar.innerHTML = renderDetailContextbarReleaseState(summary);
     return;
   }
 

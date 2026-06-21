@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T01:20:18.350Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T01:20:08.979Z
 - branch: codex/detail-contextbar-release-state-renderer
 - commit: e4b59de6a68162557a9b1e10c2a38ce4ad9df3dd
