@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Artifact Meta State Renderer
+
+- moved selected artifact metadata rendering into a dedicated renderer helper
+- kept output-focused compact metadata, path toggle copy, selected artifact label, kind badge, and path row behavior unchanged
+- extended UI learning promotion and harness browse smoke coverage for artifact meta renderer delegation
+
 ## 2026-06-21 Detail Contextbar Mission State Renderer
 
 - moved the standard mission detail contextbar state into a dedicated renderer helper

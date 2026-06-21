@@ -355,6 +355,11 @@ try {
   assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarMissionState({'), true);
   assert.equal(appJs.includes('missionHarness = {}'), true);
   assert.equal(appJs.includes('missionHarness?.recommendations?.length || 0'), true);
+  assert.equal(appJs.includes('function renderArtifactMetaState({'), true);
+  assert.equal(appJs.includes('elements.artifactMeta.innerHTML = renderArtifactMetaState({'), true);
+  assert.equal(appJs.includes('outputArtifactMetaExpanded = false'), true);
+  assert.equal(appJs.includes("artifactKind: payload.artifact.kind || 'artifact'"), true);
+  assert.equal(appJs.includes('artifactPath: payload.path'), true);
   assert.equal(appJs.includes('function buildHarnessDocumentsQueryParams()'), true);
   assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
   assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);

@@ -23597,6 +23597,45 @@ function renderSessionDetail(sessionPayload) {
   renderDetailContextbar();
 }
 
+function renderArtifactMetaState({
+  artifactKind = 'artifact',
+  artifactMetaToggleLabel = '',
+  artifactPath = '',
+  artifactTitle = '',
+  outputArtifactMetaExpanded = false,
+  outputFocus = false,
+} = {}) {
+  return outputFocus
+    ? `
+        <div class="artifact-meta-compact">
+          <strong>${escapeHtml(artifactTitle)}</strong>
+          <div class="artifact-meta-row artifact-meta-row-compact">
+            <span class="mini-badge ${getStatusClass(artifactKind)}">${escapeHtml(getDisplayLabel(artifactKind, artifactKind))}</span>
+            ${renderOutputToolbarToggleButton({
+              action: 'toggle-output-artifact-meta',
+              actionLabel: artifactMetaToggleLabel,
+              buttonText: outputArtifactMetaExpanded ? '경로 닫기' : '경로',
+              className: 'ghost-button artifact-meta-toggle',
+              expanded: outputArtifactMetaExpanded,
+            })}
+          </div>
+          ${
+            outputArtifactMetaExpanded
+              ? `<span class="artifact-meta-path mono">${escapeHtml(artifactPath)}</span>`
+              : ''
+          }
+        </div>
+      `
+    : `
+        <span class="detail-context-label">선택된 결과물</span>
+        <strong>${escapeHtml(artifactTitle)}</strong>
+        <div class="artifact-meta-row">
+          <span class="mini-badge ${getStatusClass(artifactKind)}">${escapeHtml(getDisplayLabel(artifactKind, artifactKind))}</span>
+          <div class="item-meta mono">${escapeHtml(artifactPath)}</div>
+        </div>
+      `;
+}
+
 function renderArtifact(payload) {
   if (!payload) {
     elements.artifactMeta.textContent = '아직 선택된 산출물이 없습니다.';
@@ -23618,35 +23657,14 @@ function renderArtifact(payload) {
   const artifactMetaToggleLabel = state.outputArtifactMetaExpanded
     ? `결과물 경로 닫기: ${artifactTitle}`
     : `결과물 경로 보기: ${artifactTitle}`;
-  elements.artifactMeta.innerHTML = outputFocus
-    ? `
-        <div class="artifact-meta-compact">
-          <strong>${escapeHtml(artifactTitle)}</strong>
-          <div class="artifact-meta-row artifact-meta-row-compact">
-            <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
-            ${renderOutputToolbarToggleButton({
-              action: 'toggle-output-artifact-meta',
-              actionLabel: artifactMetaToggleLabel,
-              buttonText: state.outputArtifactMetaExpanded ? '경로 닫기' : '경로',
-              className: 'ghost-button artifact-meta-toggle',
-              expanded: state.outputArtifactMetaExpanded,
-            })}
-          </div>
-          ${
-            state.outputArtifactMetaExpanded
-              ? `<span class="artifact-meta-path mono">${escapeHtml(payload.path)}</span>`
-              : ''
-          }
-        </div>
-      `
-    : `
-        <span class="detail-context-label">선택된 결과물</span>
-        <strong>${escapeHtml(artifactTitle)}</strong>
-        <div class="artifact-meta-row">
-          <span class="mini-badge ${getStatusClass(payload.artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(payload.artifact.kind, payload.artifact.kind || 'artifact'))}</span>
-          <div class="item-meta mono">${escapeHtml(payload.path)}</div>
-        </div>
-      `;
+  elements.artifactMeta.innerHTML = renderArtifactMetaState({
+    artifactKind: payload.artifact.kind || 'artifact',
+    artifactMetaToggleLabel,
+    artifactPath: payload.path,
+    artifactTitle,
+    outputArtifactMetaExpanded: state.outputArtifactMetaExpanded,
+    outputFocus,
+  });
   wireQuickActions(elements.artifactMeta);
   elements.artifactViewer.innerHTML = markdownToHtml(payload.content || '');
   renderDetailContextbar();
