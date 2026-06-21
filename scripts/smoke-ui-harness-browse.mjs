@@ -2414,6 +2414,9 @@ try {
   assert.equal(appJs.includes('provider 링크 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('provider live 검증 취소: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('document-log-search'), true);
+  assert.equal(appJs.includes('function renderDetailContextbarEmptyState()'), true);
+  assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarEmptyState();'), true);
+  assert.equal(appJs.includes('detail-context-empty'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSummary = {})'), true);
   assert.equal(appJs.includes('${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}'), true);
   assert.equal(appJs.includes('documentSummary.availableCount || 0'), true);
