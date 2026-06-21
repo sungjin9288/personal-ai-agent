@@ -23737,15 +23737,8 @@ function renderTimelineEmptyState() {
   });
 }
 
-function renderTimeline() {
-  const timeline = state.missionTimeline?.timeline || [];
-  if (!timeline.length) {
-    elements.timelineList.innerHTML = renderTimelineEmptyState();
-    wireQuickActions(elements.timelineList);
-    return;
-  }
-
-  elements.timelineList.innerHTML = timeline
+function renderTimelineState(timeline = []) {
+  return timeline
     .slice()
     .reverse()
     .slice(0, 32)
@@ -23780,6 +23773,17 @@ function renderTimeline() {
       `;
     })
     .join('');
+}
+
+function renderTimeline() {
+  const timeline = state.missionTimeline?.timeline || [];
+  if (!timeline.length) {
+    elements.timelineList.innerHTML = renderTimelineEmptyState();
+    wireQuickActions(elements.timelineList);
+    return;
+  }
+
+  elements.timelineList.innerHTML = renderTimelineState(timeline);
 
   wireTimelineSessionSelectionButtons();
 }

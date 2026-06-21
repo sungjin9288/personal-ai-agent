@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T14:32:38.405Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T14:32:27.952Z
 - branch: codex/timeline-state-renderer
 - commit: a022a23b3d40419270e1394c0d57dcf79b7d6690

@@ -375,6 +375,10 @@ try {
   assert.equal(appJs.includes('elements.timelineList.innerHTML = renderTimelineEmptyState();'), true);
   assert.equal(appJs.includes('표시할 타임라인이 없습니다'), true);
   assert.equal(appJs.includes("action: 'open-create'"), true);
+  assert.equal(appJs.includes('function renderTimelineState(timeline = [])'), true);
+  assert.equal(appJs.includes('elements.timelineList.innerHTML = renderTimelineState(timeline);'), true);
+  assert.equal(appJs.includes('.slice(0, 32)'), true);
+  assert.equal(appJs.includes('timelineEventLabel'), true);
   assert.equal(appJs.includes('function buildHarnessDocumentsQueryParams()'), true);
   assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
   assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);

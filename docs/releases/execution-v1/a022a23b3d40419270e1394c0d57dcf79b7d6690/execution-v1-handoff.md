@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-21T14:32:38.405Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-21T14:32:36.807Z
 - localDate: 2026-06-21
 - branch: codex/timeline-state-renderer
 - commit: a022a23b3d40419270e1394c0d57dcf79b7d6690
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a022a23b3d40419270e1394c0d57dcf79b7d6690](releases/execution-v1/a022a23b3d40419270e1394c0d57dcf79b7d6690)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a022a23b3d40419270e1394c0d57dcf79b7d6690/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a022a23b3d40419270e1394c0d57dcf79b7d6690/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a022a23b3d40419270e1394c0d57dcf79b7d6690](docs/releases/execution-v1/a022a23b3d40419270e1394c0d57dcf79b7d6690)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/timeline-state-renderer not found
 
