@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Session List State Renderer
+
+- moved populated session list row rendering into a dedicated renderer helper
+- kept latest-first ordering, provider/status labels, active session labels, and session selection wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for session list state renderer delegation
+
 ## 2026-06-22 Session List Empty State Renderer
 
 - moved the no-session list empty state into a dedicated renderer helper
