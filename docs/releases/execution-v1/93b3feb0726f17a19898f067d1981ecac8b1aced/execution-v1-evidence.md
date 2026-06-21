@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T00:42:02.705Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T00:41:53.293Z
 - branch: codex/harness-document-log-control-sync
 - commit: 93b3feb0726f17a19898f067d1981ecac8b1aced
