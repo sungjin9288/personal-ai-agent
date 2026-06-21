@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Timeline State Renderer
+
+- moved populated timeline event list rendering into a dedicated renderer helper
+- kept latest-first ordering, 32-event limit, active session event labels, and timeline session selection wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for timeline state renderer delegation
+
 ## 2026-06-21 Timeline Empty State Renderer
 
 - moved the no-event timeline empty state into a dedicated renderer helper
