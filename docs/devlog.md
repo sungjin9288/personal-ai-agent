@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Document Log Control Sync
+
+- moved harness document log search and filter value synchronization into a dedicated helper
+- kept renderHarnessPanel focused on panel state selection, renderer delegation, and action wiring
+- extended UI learning promotion and harness browse smoke coverage for document log control sync delegation
+
 ## 2026-06-21 Harness Panel Action Wiring
 
 - moved harness empty-state and populated panel action binding into dedicated wiring helpers

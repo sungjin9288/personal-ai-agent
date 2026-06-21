@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-21T00:42:02.705Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-21T00:42:01.271Z
 - localDate: 2026-06-21
 - branch: codex/harness-document-log-control-sync
 - commit: 93b3feb0726f17a19898f067d1981ecac8b1aced
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/93b3feb0726f17a19898f067d1981ecac8b1aced](releases/execution-v1/93b3feb0726f17a19898f067d1981ecac8b1aced)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/93b3feb0726f17a19898f067d1981ecac8b1aced/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/93b3feb0726f17a19898f067d1981ecac8b1aced/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/93b3feb0726f17a19898f067d1981ecac8b1aced](docs/releases/execution-v1/93b3feb0726f17a19898f067d1981ecac8b1aced)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-document-log-control-sync not found
 

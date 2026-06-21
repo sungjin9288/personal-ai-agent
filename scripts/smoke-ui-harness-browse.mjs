@@ -2604,6 +2604,10 @@ try {
   assert.equal(appJs.includes('function wireHarnessPanelActions()'), true);
   assert.equal(appJs.includes('wireHarnessPanelActions();'), true);
   assert.equal(appJs.includes('wireRetrievalSourceButtons(elements.harnessMemory);'), true);
+  assert.equal(appJs.includes('function syncHarnessDocumentLogControls()'), true);
+  assert.equal(appJs.includes('syncHarnessDocumentLogControls();'), true);
+  assert.equal(appJs.includes('elements.documentLogSearch.value = state.harnessDocumentQuery;'), true);
+  assert.equal(appJs.includes('elements.documentLogFilter.value = state.harnessDocumentFilter;'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="reset-browse"'), false);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-memory-action="edit"'), false);
   assert.equal(appJs.includes('<button class="danger-button" type="button" data-memory-action="delete"'), false);
