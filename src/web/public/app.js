@@ -23495,16 +23495,20 @@ function renderSessionList() {
   wireSessionListSelectionButtons();
 }
 
+function renderSessionDetailEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '세션 섹션 보기',
+    actionValue: 'step-output',
+    icon: 'IN',
+    message: '세션을 선택하면 실행 이력, 승인 이력, 산출물이 이 상세 영역에 정리됩니다.',
+    title: '현재 선택된 세션이 없습니다',
+  });
+}
+
 function renderSessionDetail(sessionPayload) {
   if (!sessionPayload) {
-    elements.sessionDetail.innerHTML = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '세션 섹션 보기',
-      actionValue: 'step-output',
-      icon: 'IN',
-      message: '세션을 선택하면 실행 이력, 승인 이력, 산출물이 이 상세 영역에 정리됩니다.',
-      title: '현재 선택된 세션이 없습니다',
-    });
+    elements.sessionDetail.innerHTML = renderSessionDetailEmptyState();
     wireQuickActions(elements.sessionDetail);
     renderDetailTabLabels();
     renderDetailContextbar();

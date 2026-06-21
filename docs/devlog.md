@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Session Detail Empty State Renderer
+
+- moved the no-session detail empty state into a dedicated renderer helper
+- kept the jump-step quick action, Korean empty copy, icon marker, detail tab label refresh, and contextbar refresh behavior unchanged
+- extended UI learning promotion and harness browse smoke coverage for session detail empty-state delegation
+
 ## 2026-06-21 Artifact Meta State Renderer
 
 - moved selected artifact metadata rendering into a dedicated renderer helper
