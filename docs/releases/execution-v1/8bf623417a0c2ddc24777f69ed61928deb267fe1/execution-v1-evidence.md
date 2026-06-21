@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T00:54:16.007Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T00:54:07.038Z
 - branch: codex/detail-contextbar-empty-state-renderer
 - commit: 8bf623417a0c2ddc24777f69ed61928deb267fe1
