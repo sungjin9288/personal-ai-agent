@@ -2425,6 +2425,11 @@ try {
   assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarMissionState({'), true);
   assert.equal(appJs.includes('missionHarness = {}'), true);
   assert.equal(appJs.includes('missionHarness?.recommendations?.length || 0'), true);
+  assert.equal(appJs.includes('function renderArtifactMetaState({'), true);
+  assert.equal(appJs.includes('elements.artifactMeta.innerHTML = renderArtifactMetaState({'), true);
+  assert.equal(appJs.includes('outputArtifactMetaExpanded = false'), true);
+  assert.equal(appJs.includes("artifactKind: payload.artifact.kind || 'artifact'"), true);
+  assert.equal(appJs.includes('artifactPath: payload.path'), true);
   assert.equal(appJs.includes('function renderHarnessDocumentOverviewGrid(documentSummary = {}, attachmentSummary = {})'), true);
   assert.equal(appJs.includes('${renderHarnessDocumentOverviewGrid(documentSummary, attachmentSummary)}'), true);
   assert.equal(appJs.includes('documentSummary.availableCount || 0'), true);
@@ -4121,8 +4126,9 @@ function assertToggleExpandedMetadata({ appJs, rootHtml }) {
   assertSourceIncludes(appJs, "action: 'toggle-output-artifact-meta'", 'artifact meta output toggle action');
   assertSourceIncludes(appJs, 'actionLabel: artifactMetaToggleLabel', 'artifact meta output toggle label');
   assertSourceIncludes(appJs, "className: 'ghost-button artifact-meta-toggle'", 'artifact meta output toggle style');
-  assertSourceIncludes(appJs, "buttonText: state.outputArtifactMetaExpanded ? '경로 닫기' : '경로'", 'artifact meta output toggle copy');
-  assertSourceIncludes(appJs, 'expanded: state.outputArtifactMetaExpanded', 'artifact meta expanded state');
+  assertSourceIncludes(appJs, "buttonText: outputArtifactMetaExpanded ? '경로 닫기' : '경로'", 'artifact meta output toggle copy');
+  assertSourceIncludes(appJs, 'expanded: outputArtifactMetaExpanded', 'artifact meta expanded state');
+  assertSourceIncludes(appJs, 'outputArtifactMetaExpanded: state.outputArtifactMetaExpanded', 'artifact meta state delegation');
   assert.equal(appJs.includes('<button class="ghost-button artifact-meta-toggle" type="button" data-ui-action="toggle-output-artifact-meta"'), false);
   assertSourceIncludes(
     appJs,
