@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Harness Panel Action Wiring
+
+- moved harness empty-state and populated panel action binding into dedicated wiring helpers
+- kept quick actions, document row actions, attachment actions, retrieval buttons, and memory row actions aligned with the existing harness panel behavior
+- extended UI learning promotion and harness browse smoke coverage for harness action wiring delegation
+
 ## 2026-06-21 Harness Empty Panel State Renderer
 
 - moved the shared harness empty-state card into a dedicated renderer helper

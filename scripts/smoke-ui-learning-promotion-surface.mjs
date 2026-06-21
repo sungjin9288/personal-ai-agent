@@ -566,6 +566,11 @@ try {
   assert.equal(appJs.includes('function renderHarnessEmptyPanelState()'), true);
   assert.equal(appJs.includes('const empty = renderHarnessEmptyPanelState();'), true);
   assert.equal(appJs.includes("title: '하네스 정보를 계산할 미션이 없습니다'"), true);
+  assert.equal(appJs.includes('function wireHarnessEmptyPanelActions()'), true);
+  assert.equal(appJs.includes('wireHarnessEmptyPanelActions();'), true);
+  assert.equal(appJs.includes('function wireHarnessPanelActions()'), true);
+  assert.equal(appJs.includes('wireHarnessPanelActions();'), true);
+  assert.equal(appJs.includes('wireRetrievalSourceButtons(elements.harnessMemory);'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
   assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);

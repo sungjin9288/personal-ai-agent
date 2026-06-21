@@ -5118,6 +5118,22 @@ function renderHarnessEmptyPanelState() {
   });
 }
 
+function wireHarnessEmptyPanelActions() {
+  wireQuickActions(elements.harnessSource);
+  wireQuickActions(elements.harnessMemory);
+  wireQuickActions(elements.harnessLoops);
+}
+
+function wireHarnessPanelActions() {
+  wireQuickActions(elements.harnessSource);
+  wireQuickActions(elements.harnessMemory);
+  wireDocumentRowActions();
+  wireMissionAttachmentActions();
+  wireRetrievalArtifactButtons(elements.harnessMemory);
+  wireRetrievalSourceButtons(elements.harnessMemory);
+  wireMemoryRowActions();
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -18384,9 +18400,7 @@ function renderHarnessPanel() {
     elements.harnessSource.innerHTML = empty;
     elements.harnessMemory.innerHTML = empty;
     elements.harnessLoops.innerHTML = empty;
-    wireQuickActions(elements.harnessSource);
-    wireQuickActions(elements.harnessMemory);
-    wireQuickActions(elements.harnessLoops);
+    wireHarnessEmptyPanelActions();
     return;
   }
 
@@ -18395,13 +18409,7 @@ function renderHarnessPanel() {
   elements.harnessSource.innerHTML = renderHarnessSourcePanel(harnessPanel.sourcePanel);
   elements.harnessMemory.innerHTML = renderHarnessMemoryPanel(harnessPanel.memoryPanel);
   elements.harnessLoops.innerHTML = renderHarnessLoopsPanel(harnessPanel.loopsPanel);
-  wireQuickActions(elements.harnessSource);
-  wireQuickActions(elements.harnessMemory);
-  wireDocumentRowActions();
-  wireMissionAttachmentActions();
-  wireRetrievalArtifactButtons(elements.harnessMemory);
-  wireRetrievalSourceButtons(elements.harnessMemory);
-  wireMemoryRowActions();
+  wireHarnessPanelActions();
 }
 
 function renderReleaseStatus() {
