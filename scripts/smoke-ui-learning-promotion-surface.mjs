@@ -360,6 +360,10 @@ try {
   assert.equal(appJs.includes('outputArtifactMetaExpanded = false'), true);
   assert.equal(appJs.includes("artifactKind: payload.artifact.kind || 'artifact'"), true);
   assert.equal(appJs.includes('artifactPath: payload.path'), true);
+  assert.equal(appJs.includes('function renderArtifactViewerEmptyState()'), true);
+  assert.equal(appJs.includes('elements.artifactViewer.innerHTML = renderArtifactViewerEmptyState();'), true);
+  assert.equal(appJs.includes('선택된 산출물이 없습니다'), true);
+  assert.equal(appJs.includes("actionValue: 'step-output'"), true);
   assert.equal(appJs.includes('function renderSessionDetailEmptyState()'), true);
   assert.equal(appJs.includes('elements.sessionDetail.innerHTML = renderSessionDetailEmptyState();'), true);
   assert.equal(appJs.includes('현재 선택된 세션이 없습니다'), true);

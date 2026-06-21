@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Artifact Viewer Empty State Renderer
+
+- moved the no-artifact viewer empty state into a dedicated renderer helper
+- kept artifact meta empty copy, jump-step quick action, Korean empty viewer copy, and contextbar refresh behavior unchanged
+- extended UI learning promotion and harness browse smoke coverage for artifact viewer empty-state delegation
+
 ## 2026-06-21 Timeline State Renderer
 
 - moved populated timeline event list rendering into a dedicated renderer helper

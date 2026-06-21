@@ -23658,17 +23658,21 @@ function renderArtifactMetaState({
       `;
 }
 
+function renderArtifactViewerEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '세션 섹션으로 이동',
+    actionValue: 'step-output',
+    icon: 'AR',
+    message: '세션 상세에서 산출물을 선택하면 이 영역에서 문서를 바로 읽을 수 있습니다.',
+    title: '선택된 산출물이 없습니다',
+  });
+}
+
 function renderArtifact(payload) {
   if (!payload) {
     elements.artifactMeta.textContent = '아직 선택된 산출물이 없습니다.';
-    elements.artifactViewer.innerHTML = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '세션 섹션으로 이동',
-      actionValue: 'step-output',
-      icon: 'AR',
-      message: '세션 상세에서 산출물을 선택하면 이 영역에서 문서를 바로 읽을 수 있습니다.',
-      title: '선택된 산출물이 없습니다',
-    });
+    elements.artifactViewer.innerHTML = renderArtifactViewerEmptyState();
     wireQuickActions(elements.artifactViewer);
     renderDetailContextbar();
     return;
