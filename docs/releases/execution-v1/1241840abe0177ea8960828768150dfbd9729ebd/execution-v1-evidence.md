@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T13:57:24.202Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T13:57:12.968Z
 - branch: codex/timeline-empty-state-renderer
 - commit: 1241840abe0177ea8960828768150dfbd9729ebd

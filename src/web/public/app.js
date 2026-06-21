@@ -23727,16 +23727,20 @@ async function loadArtifact(artifactId, { activateTab = true, syncUrl = true, ur
   }
 }
 
+function renderTimelineEmptyState() {
+  return emptyStateCard({
+    action: 'open-create',
+    actionLabel: '새 미션 시작',
+    icon: 'TL',
+    message: '미션을 실행하면 제공자 실행, 리뷰어 판정, 승인, 유지보수 이벤트가 시간순으로 정리됩니다.',
+    title: '표시할 타임라인이 없습니다',
+  });
+}
+
 function renderTimeline() {
   const timeline = state.missionTimeline?.timeline || [];
   if (!timeline.length) {
-    elements.timelineList.innerHTML = emptyStateCard({
-      action: 'open-create',
-      actionLabel: '새 미션 시작',
-      icon: 'TL',
-      message: '미션을 실행하면 제공자 실행, 리뷰어 판정, 승인, 유지보수 이벤트가 시간순으로 정리됩니다.',
-      title: '표시할 타임라인이 없습니다',
-    });
+    elements.timelineList.innerHTML = renderTimelineEmptyState();
     wireQuickActions(elements.timelineList);
     return;
   }
