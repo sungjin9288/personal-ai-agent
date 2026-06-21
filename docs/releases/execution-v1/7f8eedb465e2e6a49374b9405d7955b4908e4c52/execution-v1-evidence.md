@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T01:38:07.767Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T01:37:59.014Z
 - branch: codex/detail-contextbar-mission-state-renderer
 - commit: 7f8eedb465e2e6a49374b9405d7955b4908e4c52
