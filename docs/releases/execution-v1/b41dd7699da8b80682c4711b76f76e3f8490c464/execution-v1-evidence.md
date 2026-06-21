@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-21T13:38:48.347Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-21T13:38:38.649Z
 - branch: codex/session-detail-state-renderer
 - commit: b41dd7699da8b80682c4711b76f76e3f8490c464
