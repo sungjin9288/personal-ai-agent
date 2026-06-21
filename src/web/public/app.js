@@ -18307,6 +18307,12 @@ function renderOutputCloseout() {
   wireQuickActions(elements.outputCloseout);
 }
 
+function renderDetailContextbarEmptyState() {
+  return `
+    <div class="detail-context-empty">미션을 선택하면 결과물, 실행 기록, 검토 이력의 기준 맥락이 여기에 표시됩니다.</div>
+  `;
+}
+
 function renderDetailContextbar() {
   if (!elements.detailContextbar) {
     return;
@@ -18343,9 +18349,7 @@ function renderDetailContextbar() {
   }
 
   if (!state.missionDetail) {
-    elements.detailContextbar.innerHTML = `
-      <div class="detail-context-empty">미션을 선택하면 결과물, 실행 기록, 검토 이력의 기준 맥락이 여기에 표시됩니다.</div>
-    `;
+    elements.detailContextbar.innerHTML = renderDetailContextbarEmptyState();
     return;
   }
 

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-21 Detail Contextbar Empty State Renderer
+
+- moved the no-mission detail contextbar empty state into a dedicated renderer helper
+- kept the detail contextbar empty copy and class contract unchanged
+- extended UI learning promotion and harness browse smoke coverage for detail contextbar empty-state delegation
+
 ## 2026-06-21 Harness Document Log Control Sync
 
 - moved harness document log search and filter value synchronization into a dedicated helper

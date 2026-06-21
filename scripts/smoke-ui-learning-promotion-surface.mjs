@@ -344,6 +344,9 @@ try {
   assert.equal(appJs.includes('await handleDocumentLogCreate(event)'), true);
   assert.equal(appJs.includes('await handleHarnessDocumentSearch(event)'), true);
   assert.equal(appJs.includes('await handleHarnessDocumentFilter(event)'), true);
+  assert.equal(appJs.includes('function renderDetailContextbarEmptyState()'), true);
+  assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarEmptyState();'), true);
+  assert.equal(appJs.includes('detail-context-empty'), true);
   assert.equal(appJs.includes('function buildHarnessDocumentsQueryParams()'), true);
   assert.equal(appJs.includes('const params = buildHarnessDocumentsQueryParams();'), true);
   assert.equal(appJs.includes("type: String(state.harnessDocumentFilter || 'all')"), true);
