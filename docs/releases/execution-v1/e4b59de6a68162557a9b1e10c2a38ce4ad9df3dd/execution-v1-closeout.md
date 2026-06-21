@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-21T01:20:18.350Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-21T01:20:09.011Z
 - branch: codex/detail-contextbar-release-state-renderer
 - commit: e4b59de6a68162557a9b1e10c2a38ce4ad9df3dd
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e4b59de6a68162557a9b1e10c2a38ce4ad9df3dd/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
