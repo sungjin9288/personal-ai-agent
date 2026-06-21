@@ -571,6 +571,10 @@ try {
   assert.equal(appJs.includes('function wireHarnessPanelActions()'), true);
   assert.equal(appJs.includes('wireHarnessPanelActions();'), true);
   assert.equal(appJs.includes('wireRetrievalSourceButtons(elements.harnessMemory);'), true);
+  assert.equal(appJs.includes('function syncHarnessDocumentLogControls()'), true);
+  assert.equal(appJs.includes('syncHarnessDocumentLogControls();'), true);
+  assert.equal(appJs.includes('elements.documentLogSearch.value = state.harnessDocumentQuery;'), true);
+  assert.equal(appJs.includes('elements.documentLogFilter.value = state.harnessDocumentFilter;'), true);
   assert.equal(appJs.includes('function wireMemoryMutationActionButtons()'), true);
   assert.equal(appJs.includes('wireMemoryMutationActionButtons();'), true);
   assert.equal(appJs.includes('data-memory-action="edit"'), true);

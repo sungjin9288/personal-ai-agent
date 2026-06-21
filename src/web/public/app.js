@@ -5134,6 +5134,15 @@ function wireHarnessPanelActions() {
   wireMemoryRowActions();
 }
 
+function syncHarnessDocumentLogControls() {
+  if (elements.documentLogSearch) {
+    elements.documentLogSearch.value = state.harnessDocumentQuery;
+  }
+  if (elements.documentLogFilter) {
+    elements.documentLogFilter.value = state.harnessDocumentFilter;
+  }
+}
+
 function renderMissionAttachmentUploadButton({
   actionLabel = '',
   buttonText = '첨부 업로드',
@@ -18388,12 +18397,7 @@ function renderDetailContextbar() {
 }
 
 function renderHarnessPanel() {
-  if (elements.documentLogSearch) {
-    elements.documentLogSearch.value = state.harnessDocumentQuery;
-  }
-  if (elements.documentLogFilter) {
-    elements.documentLogFilter.value = state.harnessDocumentFilter;
-  }
+  syncHarnessDocumentLogControls();
 
   if (!state.missionDetail?.harness) {
     const empty = renderHarnessEmptyPanelState();
