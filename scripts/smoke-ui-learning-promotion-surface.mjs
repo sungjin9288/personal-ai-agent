@@ -364,6 +364,9 @@ try {
   assert.equal(appJs.includes('function renderSetupHarnessEmptyState()'), true);
   assert.equal(appJs.includes('elements.setupHarnessSummary.innerHTML = renderSetupHarnessEmptyState();'), true);
   assert.equal(appJs.includes('하네스 준비 상태를 계산할 미션이 없습니다'), true);
+  assert.equal(appJs.includes('function renderRunStageEmptyState()'), true);
+  assert.equal(appJs.includes('elements.runStageSummary.innerHTML = renderRunStageEmptyState();'), true);
+  assert.equal(appJs.includes('실행할 미션이 없습니다'), true);
   assert.equal(appJs.includes('function renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('elements.artifactMeta.innerHTML = renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('outputArtifactMetaExpanded = false'), true);

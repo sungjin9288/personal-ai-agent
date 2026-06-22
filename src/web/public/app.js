@@ -17661,20 +17661,24 @@ function renderSetupHarnessSummary() {
   wireQuickActions(elements.setupHarnessSummary);
 }
 
+function renderRunStageEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '1단계 열기',
+    actionValue: 'step-setup',
+    icon: 'RN',
+    message: '미션을 먼저 선택하면 어떤 제공자로 언제 실행할지 여기에서 정리됩니다.',
+    title: '실행할 미션이 없습니다',
+  });
+}
+
 function renderRunStageSummary() {
   if (!elements.runStageSummary) {
     return;
   }
 
   if (!state.missionDetail) {
-    elements.runStageSummary.innerHTML = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '1단계 열기',
-      actionValue: 'step-setup',
-      icon: 'RN',
-      message: '미션을 먼저 선택하면 어떤 제공자로 언제 실행할지 여기에서 정리됩니다.',
-      title: '실행할 미션이 없습니다',
-    });
+    elements.runStageSummary.innerHTML = renderRunStageEmptyState();
     wireQuickActions(elements.runStageSummary);
     return;
   }
