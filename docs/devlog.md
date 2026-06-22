@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Approval List Empty State Renderer
+
+- moved the no-pending-approvals empty state into a dedicated renderer helper
+- kept the Korean empty copy and AP icon marker unchanged
+- extended UI learning promotion and harness browse smoke coverage for approval list empty-state delegation
+
 ## 2026-06-22 Review Readiness Empty State Renderer
 
 - moved the no-mission review readiness empty state into a dedicated renderer helper
