@@ -17920,20 +17920,24 @@ function renderExecutionConsole() {
   wireQuickActions(elements.executionConsole);
 }
 
+function renderReviewStageEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '미션 선택하기',
+    actionValue: 'step-setup',
+    icon: 'RV',
+    message: '미션을 고르면 승인 대기와 후속 작업 상태를 이 단계에서 바로 판단할 수 있습니다.',
+    title: '검토할 미션이 없습니다',
+  });
+}
+
 function renderReviewStageSummary() {
   if (!elements.reviewStageSummary) {
     return;
   }
 
   if (!state.missionDetail) {
-    elements.reviewStageSummary.innerHTML = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '미션 선택하기',
-      actionValue: 'step-setup',
-      icon: 'RV',
-      message: '미션을 고르면 승인 대기와 후속 작업 상태를 이 단계에서 바로 판단할 수 있습니다.',
-      title: '검토할 미션이 없습니다',
-    });
+    elements.reviewStageSummary.innerHTML = renderReviewStageEmptyState();
     wireQuickActions(elements.reviewStageSummary);
     return;
   }

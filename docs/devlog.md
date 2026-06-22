@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Review Stage Empty State Renderer
+
+- moved the no-mission review stage empty state into a dedicated renderer helper
+- kept the jump-step quick action, Korean empty copy, RV icon marker, and review stage action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for review stage empty-state delegation
+
 ## 2026-06-22 Run Stage Empty State Renderer
 
 - moved the no-mission run stage empty state into a dedicated renderer helper
