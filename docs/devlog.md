@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 README Portfolio Overview
+
+- added a portfolio-first README overview before the long implementation details
+- highlighted the validated provider-scoped pilot boundary, representative demo replay, evidence files, and production-ready blockers
+- added `smoke:readme-portfolio-overview` to keep the top-level README claim boundary and demo entry point stable
+
 ## 2026-06-22 Representative Demo Evidence
 
 - added a repeatable `evidence:representative-demo` capture command for the release readiness walkthrough

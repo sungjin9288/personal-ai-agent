@@ -8,6 +8,12 @@
 - screenshot/demo 섹션이 부족해 web operator console의 실제 사용 흐름을 파악하기 어렵다.
 - production-ready가 아니라는 중요한 제한이 길게 설명되어 있어 별도 Current Status/Limitations 표로 분리하는 편이 좋다.
 
+## 1.1 적용한 개선 방향
+
+- 기존 README의 긴 target evidence command와 smoke 의존 문구는 회귀 방지를 위해 보존한다.
+- 대신 README 최상단에 `Portfolio Overview`를 추가해 첫 방문자가 프로젝트 목적, 현재 claim boundary, 대표 demo, 빠른 재현 명령, evidence 파일을 먼저 볼 수 있게 한다.
+- `smoke:readme-portfolio-overview`로 상단 요약이 `provider-scoped pilot-ready`, `not production-ready`, representative demo evidence 경로를 유지하는지 검증한다.
+
 ## 2. README에 추가해야 할 섹션
 
 # Personal AI Agent
