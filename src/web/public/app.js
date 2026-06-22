@@ -23689,6 +23689,10 @@ function renderArtifactViewerEmptyState() {
   });
 }
 
+function renderArtifactViewerState(content = '') {
+  return markdownToHtml(content || '');
+}
+
 function renderArtifact(payload) {
   if (!payload) {
     elements.artifactMeta.textContent = '아직 선택된 산출물이 없습니다.';
@@ -23712,7 +23716,7 @@ function renderArtifact(payload) {
     outputFocus,
   });
   wireQuickActions(elements.artifactMeta);
-  elements.artifactViewer.innerHTML = markdownToHtml(payload.content || '');
+  elements.artifactViewer.innerHTML = renderArtifactViewerState(payload.content);
   renderDetailContextbar();
 }
 
