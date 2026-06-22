@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T01:13:46.590Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T01:13:35.612Z
 - branch: codex/output-stage-collapsed-state-renderer
 - commit: fbffe3f5c0239a27cf0012e9247ca54679788c6d

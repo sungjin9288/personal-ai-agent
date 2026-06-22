@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-22T01:13:46.590Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-22T01:13:35.653Z
 - branch: codex/output-stage-collapsed-state-renderer
 - commit: fbffe3f5c0239a27cf0012e9247ca54679788c6d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fbffe3f5c0239a27cf0012e9247ca54679788c6d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
