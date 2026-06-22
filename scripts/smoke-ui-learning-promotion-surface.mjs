@@ -393,6 +393,9 @@ try {
   assert.equal(appJs.includes('elements.outputStageSummary.innerHTML = renderOutputStageExpandedState({'), true);
   assert.equal(appJs.includes('renderRetrievalCompareCallout(retrieval, { includeAction: false })'), true);
   assert.equal(appJs.includes("buttonText: '실행 기록 보기'"), true);
+  assert.equal(appJs.includes('function renderOutputCloseoutEmptyState()'), true);
+  assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutEmptyState();'), true);
+  assert.equal(appJs.includes('확인할 마무리 항목이 없습니다'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes("isOutputFocus ? 'is-output-compact' : ''"), true);
