@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T01:04:10.028Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T01:04:00.693Z
 - branch: codex/output-closeout-state-renderer
 - commit: ed091bb1df4508a5e4237df789a26289417fd338

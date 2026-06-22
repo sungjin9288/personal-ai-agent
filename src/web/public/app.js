@@ -18201,6 +18201,34 @@ function renderOutputStageSummary() {
   wireQuickActions(elements.outputStageSummary);
 }
 
+function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {}) {
+  return closeoutItems
+    .map(
+      (item, index) => `
+        <div class="closeout-item ${item.ready ? 'is-ready' : 'is-blocked'} ${isOutputFocus ? 'is-output-compact' : ''}">
+          <div class="closeout-item-head">
+            <span class="closeout-index">${escapeHtml(String(index + 1).padStart(2, '0'))}</span>
+            <div class="closeout-item-body">
+              <span class="closeout-label">${escapeHtml(item.label)}</span>
+              <strong>${escapeHtml(item.ready ? '바로 확인 가능' : '확인 필요')}</strong>
+              <p class="closeout-copy">${escapeHtml(item.detail)}</p>
+            </div>
+            <span class="status-badge ${item.ready ? 'status-completed' : 'status-pending'}">${escapeHtml(item.ready ? '준비됨' : '확인 필요')}</span>
+          </div>
+          <div class="closeout-actions">
+            ${renderFlowQuickActionButton({
+              action: 'switch-tab',
+              actionLabel: `${item.actionLabel}: ${item.label || item.actionValue}`,
+              buttonText: item.actionLabel,
+              value: item.actionValue,
+            })}
+          </div>
+        </div>
+      `,
+    )
+    .join('');
+}
+
 function renderOutputCloseout() {
   if (!elements.outputCloseout) {
     return;
@@ -18279,31 +18307,7 @@ function renderOutputCloseout() {
     });
   }
 
-  elements.outputCloseout.innerHTML = closeoutItems
-    .map(
-      (item, index) => `
-        <div class="closeout-item ${item.ready ? 'is-ready' : 'is-blocked'} ${isOutputFocus ? 'is-output-compact' : ''}">
-          <div class="closeout-item-head">
-            <span class="closeout-index">${escapeHtml(String(index + 1).padStart(2, '0'))}</span>
-            <div class="closeout-item-body">
-              <span class="closeout-label">${escapeHtml(item.label)}</span>
-              <strong>${escapeHtml(item.ready ? '바로 확인 가능' : '확인 필요')}</strong>
-              <p class="closeout-copy">${escapeHtml(item.detail)}</p>
-            </div>
-            <span class="status-badge ${item.ready ? 'status-completed' : 'status-pending'}">${escapeHtml(item.ready ? '준비됨' : '확인 필요')}</span>
-          </div>
-          <div class="closeout-actions">
-            ${renderFlowQuickActionButton({
-              action: 'switch-tab',
-              actionLabel: `${item.actionLabel}: ${item.label || item.actionValue}`,
-              buttonText: item.actionLabel,
-              value: item.actionValue,
-            })}
-          </div>
-        </div>
-      `,
-    )
-    .join('');
+  elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });
   wireQuickActions(elements.outputCloseout);
 }
 

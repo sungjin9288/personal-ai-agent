@@ -367,6 +367,10 @@ try {
   assert.equal(appJs.includes("function renderArtifactViewerState(content = '')"), true);
   assert.equal(appJs.includes('elements.artifactViewer.innerHTML = renderArtifactViewerState(payload.content);'), true);
   assert.equal(appJs.includes("return markdownToHtml(content || '');"), true);
+  assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
+  assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
+  assert.equal(appJs.includes("isOutputFocus ? 'is-output-compact' : ''"), true);
+  assert.equal(appJs.includes('actionLabel: `${item.actionLabel}: ${item.label || item.actionValue}`'), true);
   assert.equal(appJs.includes('function renderSessionListEmptyState()'), true);
   assert.equal(appJs.includes('elements.sessionList.innerHTML = renderSessionListEmptyState();'), true);
   assert.equal(appJs.includes('아직 세션이 없습니다'), true);
