@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Run Stage Empty State Renderer
+
+- moved the no-mission run stage empty state into a dedicated renderer helper
+- kept the jump-step quick action, Korean empty copy, RN icon marker, and run stage action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for run stage empty-state delegation
+
 ## 2026-06-22 Setup Harness Empty State Renderer
 
 - moved the no-mission setup harness empty state into a dedicated renderer helper
