@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Provider List Empty State Renderer
+
+- moved the no-provider-list empty state into a dedicated renderer helper
+- kept the open-create quick action, Korean empty copy, API icon marker, fallback audit composition, and provider list action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for provider list empty-state delegation
+
 ## 2026-06-22 Action Inbox Unavailable Empty Renderer
 
 - moved the no-selected-mission action inbox list and summary empty states into dedicated renderer helpers

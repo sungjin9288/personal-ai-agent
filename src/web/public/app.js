@@ -16701,6 +16701,16 @@ function wireProviderFallbackEventAuditControls() {
   });
 }
 
+function renderProviderListEmptyState() {
+  return emptyStateCard({
+    action: 'open-create',
+    actionLabel: '미션부터 시작',
+    icon: 'API',
+    message: '제공자 목록이 비어 있으면 먼저 로컬 워크스페이스와 미션 흐름부터 확인하세요.',
+    title: '표시할 제공자 정보가 없습니다',
+  });
+}
+
 function renderProviders() {
   const providerCards = state.providers
     .map((provider) => {
@@ -16727,14 +16737,7 @@ function renderProviders() {
     .join('');
 
   elements.providerList.innerHTML =
-    `${renderProviderFallbackEventAudit()}${providerCards}` ||
-    emptyStateCard({
-      action: 'open-create',
-      actionLabel: '미션부터 시작',
-      icon: 'API',
-      message: '제공자 목록이 비어 있으면 먼저 로컬 워크스페이스와 미션 흐름부터 확인하세요.',
-      title: '표시할 제공자 정보가 없습니다',
-    });
+    `${renderProviderFallbackEventAudit()}${providerCards}` || renderProviderListEmptyState();
   wireProviderFallbackEventAuditControls();
   wireQuickActions(elements.providerList);
 }
