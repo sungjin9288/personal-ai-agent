@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T05:18:20.351Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T05:18:08.795Z
 - branch: codex/fallback-event-empty-list-renderer
 - commit: 92284b7d0f59002663e469147979710852ec4d97

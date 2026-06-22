@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Provider Fallback Event Empty List Renderer
+
+- moved the filtered provider fallback event empty placeholder into a dedicated renderer helper
+- kept the Korean empty copy, provider fallback event filters, count chips, and row rendering contract unchanged
+- extended UI learning promotion and harness browse smoke coverage for fallback event empty-list delegation
+
 ## 2026-06-22 Session Detail Empty List Renderer
 
 - moved the run, approval, and artifact empty placeholders inside session detail into dedicated renderer helpers
