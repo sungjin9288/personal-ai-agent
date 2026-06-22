@@ -408,6 +408,11 @@ try {
   assert.equal(appJs.includes('미션 선택: ${mission.title} · ${snapshot.stage}'), true);
   assert.equal(appJs.includes('현재 세션 선택됨: ${sessionTitle} · ${providerUiLabel}'), true);
   assert.equal(appJs.includes('세션 선택: ${sessionTitle} · ${providerUiLabel}'), true);
+  assert.equal(appJs.includes("function renderSessionDetailRunList(agentRuns = [], fallbackProvider = '-')"), true);
+  assert.equal(
+    appJs.includes("const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');"),
+    true,
+  );
   assert.equal(appJs.includes('현재 산출물 선택됨: ${artifactTitle}'), true);
   assert.equal(appJs.includes('산출물 선택: ${artifactTitle}'), true);
   assert.equal(appJs.includes('function renderSessionDetailArtifactList(artifacts = [])'), true);

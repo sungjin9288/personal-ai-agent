@@ -383,6 +383,12 @@ try {
   assert.equal(appJs.includes('실행 정보가 없습니다.'), true);
   assert.equal(appJs.includes('승인 이력이 없습니다.'), true);
   assert.equal(appJs.includes('산출물이 없습니다.'), true);
+  assert.equal(appJs.includes("function renderSessionDetailRunList(agentRuns = [], fallbackProvider = '-')"), true);
+  assert.equal(
+    appJs.includes("const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');"),
+    true,
+  );
+  assert.equal(appJs.includes('run.providerId || fallbackProvider'), true);
   assert.equal(appJs.includes('function renderSessionDetailArtifactList(artifacts = [])'), true);
   assert.equal(appJs.includes('const artifacts = renderSessionDetailArtifactList(sessionPayload.artifacts || []);'), true);
   assert.equal(appJs.includes('artifactSelectionLabel'), true);
