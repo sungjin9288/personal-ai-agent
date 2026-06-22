@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-22T02:58:35.669Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-22T02:58:16.771Z
 - branch: codex/review-stage-empty-state-renderer
 - commit: e1968ecbd0ca6f8a9b16c24ac48fa8555284d025
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e1968ecbd0ca6f8a9b16c24ac48fa8555284d025/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
