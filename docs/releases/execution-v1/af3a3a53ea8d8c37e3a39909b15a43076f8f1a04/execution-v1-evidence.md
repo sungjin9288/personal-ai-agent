@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T02:13:17.993Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T02:12:57.173Z
 - branch: codex/agent-lane-empty-state-renderer
 - commit: af3a3a53ea8d8c37e3a39909b15a43076f8f1a04
