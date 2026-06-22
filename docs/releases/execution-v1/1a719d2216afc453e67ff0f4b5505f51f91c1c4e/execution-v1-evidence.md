@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T05:41:39.650Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T05:41:28.633Z
 - branch: codex/harness-engineering-loop-guardrails
 - commit: 1a719d2216afc453e67ff0f4b5505f51f91c1c4e
