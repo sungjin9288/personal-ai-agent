@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Session Detail Empty List Renderer
+
+- moved the run, approval, and artifact empty placeholders inside session detail into dedicated renderer helpers
+- kept the Korean empty copy, inspector group layout, section counts, and renderSessionDetailState caller contract unchanged
+- extended UI learning promotion and harness browse smoke coverage for session detail empty-list delegation
+
 ## 2026-06-22 Harness Panel Empty State Renderer
 
 - renamed the harness no-mission panel empty renderer to match the empty-state helper naming pattern

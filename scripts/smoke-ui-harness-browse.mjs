@@ -2501,6 +2501,12 @@ try {
   assert.equal(appJs.includes('runCount = 0'), true);
   assert.equal(appJs.includes('approvalCount = 0'), true);
   assert.equal(appJs.includes('artifactCount = 0'), true);
+  assert.equal(appJs.includes('function renderSessionDetailRunListEmptyState()'), true);
+  assert.equal(appJs.includes('runs || renderSessionDetailRunListEmptyState()'), true);
+  assert.equal(appJs.includes('function renderSessionDetailApprovalListEmptyState()'), true);
+  assert.equal(appJs.includes('approvals || renderSessionDetailApprovalListEmptyState()'), true);
+  assert.equal(appJs.includes('function renderSessionDetailArtifactListEmptyState()'), true);
+  assert.equal(appJs.includes('artifacts || renderSessionDetailArtifactListEmptyState()'), true);
   assert.equal(appJs.includes('실행 정보가 없습니다.'), true);
   assert.equal(appJs.includes('승인 이력이 없습니다.'), true);
   assert.equal(appJs.includes('산출물이 없습니다.'), true);
