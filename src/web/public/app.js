@@ -23001,21 +23001,29 @@ function renderActionInboxSummary({
   `;
 }
 
+function renderActionInboxOpenQueueEmptyState() {
+  return emptyStateCard({
+    icon: 'OK',
+    message: '현재 이 미션에는 열린 후속 작업이 없습니다. 리뷰어 후속 요청과 승인 대기 항목이 모두 정리된 상태입니다.',
+    title: '후속 작업 큐가 비어 있습니다',
+  });
+}
+
+function renderActionInboxFilteredEmptyState(visibleFilterLabel = '전체') {
+  return emptyStateCard({
+    icon: 'OK',
+    message: `${visibleFilterLabel} 필터에 맞는 열린 후속 작업이 없습니다.`,
+    title: `${visibleFilterLabel} 항목이 없습니다`,
+  });
+}
+
 function renderActionInboxEmptyList({
   hasActiveFilter = false,
   visibleFilterLabel = '전체',
 } = {}) {
-  return emptyStateCard({
-    icon: 'OK',
-    message:
-      !hasActiveFilter
-        ? '현재 이 미션에는 열린 후속 작업이 없습니다. 리뷰어 후속 요청과 승인 대기 항목이 모두 정리된 상태입니다.'
-        : `${visibleFilterLabel} 필터에 맞는 열린 후속 작업이 없습니다.`,
-    title:
-      !hasActiveFilter
-        ? '후속 작업 큐가 비어 있습니다'
-        : `${visibleFilterLabel} 항목이 없습니다`,
-  });
+  return hasActiveFilter
+    ? renderActionInboxFilteredEmptyState(visibleFilterLabel)
+    : renderActionInboxOpenQueueEmptyState();
 }
 
 function renderActionInboxUnavailableListEmptyState() {

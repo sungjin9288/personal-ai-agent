@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Action Inbox Empty List Renderer
+
+- moved the open-queue and filtered action inbox empty states into dedicated renderer helpers
+- kept the OK icon marker, Korean empty copy, visible filter label interpolation, and renderActionInboxEmptyList caller contract unchanged
+- extended UI learning promotion and harness browse smoke coverage for action inbox empty-list delegation
+
 ## 2026-06-22 Mission List Empty State Renderer
 
 - moved the filtered and uncreated mission list empty states into dedicated renderer helpers
