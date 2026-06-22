@@ -2,7 +2,7 @@
 
 - status: self-improvement-engine-current
 - localDate: 2026-06-01
-- designInput: Hermes Agent-style learning loop, memory nudges, skill/template promotion, trajectory compression, and quality feedback
+- designInput: Hermes Agent-style learning loop, Loop Engineering verification cycle, memory nudges, skill/template promotion, trajectory compression, and quality feedback
 - pairedBackbone: [orchestration-backbone-v1.md](orchestration-backbone-v1.md)
 - relatedReferences: [reference-repos.md](reference-repos.md)
 - relatedProductPlan: [product-plan-v1.md](product-plan-v1.md)
@@ -18,11 +18,18 @@ The engine does not own channel ingress, identity/session binding, workspace rou
 
 This is a design contract, not an approval to run autonomous recursive self-improvement, mutate code without review, share memory across scopes, or promote unverified lessons into global behavior.
 
+## Loop Engineering Cycle
+
+The self-improvement engine maps Loop Engineering into a reviewable learning cycle: observe mission and provider outcomes, classify success or failure patterns, reflect on reusable lessons, propose scoped memory/skill/template/provider-policy updates, approve or reject through a human gate, promote only after verification, and retain or expire the lesson by policy.
+
+The engine must never turn a failed verification into silent iteration. Unsafe, incomplete, cross-scope, or unreviewed learning becomes a stop-condition and re-enters the action inbox. This keeps Hermes-style continuous improvement useful without allowing autonomous promotion, uncontrolled skill mutation, or global memory pollution.
+
 ## Adopted Reference Inputs
 
 | Reference | Adopted pattern | Rejected or deferred pattern |
 | --- | --- | --- |
 | Hermes Agent | Agent-curated memory, periodic nudges, skill creation from repeated work, skill improvement during use, session search/summarization, model switching metadata, subagent and automation signals, trajectory compression mindset | Uncontrolled automatic skill mutation, cross-scope memory sharing, broad messaging gateway ownership, remote terminal backends, RL/data generation pipeline, and Python app vendoring |
+| Loop Engineering | Discover/plan/execute/verify/iterate feedback cycle, closed-loop default, maker/checker separation, memory-backed iteration, and explicit stop conditions | Open-loop self-improvement, hidden cost-unbounded retries, approval-free promotion, and using loops to avoid understanding the underlying work |
 | OpenClaw | Gateway-owned session/channel/workspace separation that constrains what the learning engine can see and promote | Treating memory as a gateway replacement or letting learned state bypass permission/sandbox checks |
 | Claw Code | `doctor`/parity discipline for checking whether learned behavior matches expected runtime capability | Rewriting the agent harness before learning controls are proven |
 | Harness | Evidence packet, artifact retention, runner boundary, and promotion gate thinking | Turning the self-improvement engine into a CI/CD platform or artifact registry |
