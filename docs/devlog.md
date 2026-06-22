@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Mission Summary Empty State Renderer
+
+- moved the no-mission summary empty state into a dedicated renderer helper
+- kept the open-create quick action, Korean empty copy, 01 icon marker, and mission summary action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for mission summary empty-state delegation
+
 ## 2026-06-22 Agent Lane Empty State Renderer
 
 - moved the no-mission agent lane empty state into a dedicated renderer helper
