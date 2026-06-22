@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Portfolio Docs Claim Boundary
+
+- removed unresolved `확인 필요` and `추가 필요` placeholders from portfolio-facing docs where repository evidence already exists
+- clarified public demo status as evidence-backed representative replay instead of hosted demo availability
+- tightened resume/interview wording so provider readiness and production claims remain conditional on evidence
+
 ## 2026-06-22 README Portfolio Overview
 
 - added a portfolio-first README overview before the long implementation details

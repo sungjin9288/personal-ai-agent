@@ -24,7 +24,7 @@
 ## 4. 구현 후 넣을 수 있는 bullet
 
 - 구현 후 사용 가능: Hosted identity/session, tenant isolation, target secret manager, target observability/SLO evidence를 닫아 production-like deployment readiness를 검증
-- 구현 후 사용 가능: Anthropic, local, Hermes target provider live validation을 모두 완료하고 all-provider readiness matrix를 운영 문서와 smoke evidence로 제공
+- 구현 후 사용 가능: Anthropic, local, Hermes target provider live validation을 완료한 provider 범위만 readiness matrix에 명시하고 운영 문서와 smoke evidence로 제공
 - 구현 후 사용 가능: 실제 사용자 pilot feedback과 운영 metric을 기반으로 mission completion, approval turnaround, provider failure recovery 사례를 정량화
 
 ## 5. 기술스택 한 줄
@@ -69,5 +69,5 @@
 
 - 현재 이력서 반영 가능 여부: 가능
 - 이유: 핵심 runtime, provider adapter, CLI/web surfaces, local persistence, approval/evidence workflow가 코드 근거로 확인된다.
-- 이력서에 넣기 전 반드시 보완할 것: 직접 구현 범위, 기간, demo screenshot, 대표 smoke command 결과, 가장 설명하기 쉬운 mission scenario 1개
-- 가장 먼저 개선해야 할 것: README를 portfolio-friendly하게 정리하고 production-ready가 아닌 OpenAI-backed local-first pilot boundary를 명확히 표현
+- 이력서에 넣기 전 반드시 보완할 것: 정확한 개발 기간, public demo 여부, 실제 사용자 feedback 또는 pilot metric
+- 최근 보완 완료: README portfolio overview, representative release readiness demo, replay log, screenshot evidence, 대표 smoke command 결과
