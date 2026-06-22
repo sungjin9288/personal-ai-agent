@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Output Stage Expanded State Renderer
+
+- moved expanded output stage summary rendering into a dedicated renderer helper
+- kept result summary, session/status chips, compact and full metadata, retrieval compare callout, and tab switch actions unchanged
+- extended UI learning promotion and harness browse smoke coverage for output stage expanded state renderer delegation
+
 ## 2026-06-22 Output Stage Collapsed State Renderer
 
 - moved collapsed output support panel rendering into a dedicated renderer helper
