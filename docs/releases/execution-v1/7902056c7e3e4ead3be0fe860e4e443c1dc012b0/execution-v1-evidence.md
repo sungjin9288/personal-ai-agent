@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T01:23:03.751Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T01:22:54.649Z
 - branch: codex/output-stage-expanded-state-renderer
 - commit: 7902056c7e3e4ead3be0fe860e4e443c1dc012b0
