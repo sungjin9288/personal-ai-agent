@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T03:25:24.559Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T03:25:08.913Z
 - branch: codex/review-readiness-empty-state-renderer
 - commit: 55631421a5b1b57b97d22cd84d02495bba63bc67

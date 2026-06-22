@@ -22166,16 +22166,20 @@ function getReadinessItems() {
   ];
 }
 
+function renderReviewReadinessEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '1단계로 이동',
+    actionValue: 'step-setup',
+    icon: 'RV',
+    message: '미션을 고르면 승인, 후속 요청, 산출물 기준으로 준비 상태를 자동 계산합니다.',
+    title: '리뷰 준비 상태를 계산할 미션이 없습니다',
+  });
+}
+
 function renderReviewReadiness() {
   if (!state.missionDetail) {
-    const empty = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '1단계로 이동',
-      actionValue: 'step-setup',
-      icon: 'RV',
-      message: '미션을 고르면 승인, 후속 요청, 산출물 기준으로 준비 상태를 자동 계산합니다.',
-      title: '리뷰 준비 상태를 계산할 미션이 없습니다',
-    });
+    const empty = renderReviewReadinessEmptyState();
     elements.reviewReadiness.innerHTML = empty;
     if (elements.reviewReadinessDetail) {
       elements.reviewReadinessDetail.innerHTML = empty;

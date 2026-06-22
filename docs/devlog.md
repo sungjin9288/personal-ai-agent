@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Review Readiness Empty State Renderer
+
+- moved the no-mission review readiness empty state into a dedicated renderer helper
+- kept the jump-step quick action, Korean empty copy, RV icon marker, and dual summary/detail panel wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for review readiness empty-state delegation
+
 ## 2026-06-22 Release Status Empty State Renderer
 
 - moved the unloaded release status empty state into a dedicated renderer helper
