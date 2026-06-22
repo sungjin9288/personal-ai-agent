@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Output Stage Collapsed State Renderer
+
+- moved collapsed output support panel rendering into a dedicated renderer helper
+- kept result readiness badges, approval/action compact meta, support toggle action, artifact switch action, and retrieval evidence button unchanged
+- extended UI learning promotion and harness browse smoke coverage for output stage collapsed state renderer delegation
+
 ## 2026-06-22 Output Closeout State Renderer
 
 - moved populated output closeout checklist item rendering into a dedicated renderer helper
