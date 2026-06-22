@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T07:32:21.755Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T07:32:12.275Z
 - branch: codex/portfolio-docs-claim-boundary
 - commit: 75aef5125ef8b73cdac7a66331c5b22df38d54ec
