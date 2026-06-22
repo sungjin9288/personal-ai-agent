@@ -18053,68 +18053,23 @@ function renderOutputStageCollapsedState({
   `;
 }
 
-function renderOutputStageSummary() {
-  if (!elements.outputStageSummary) {
-    return;
-  }
-
-  const latestArtifact = getPrimaryArtifact(state.currentSessionPayload?.artifacts || []);
-  const latestSession = state.missionDetail?.summary?.latestSession || null;
-  const retrieval = state.missionDetail?.harness?.retrieval || null;
-  const latestRetrievalArtifact = retrieval?.latestArtifact || null;
-  const latestRetrievalArtifactOpenLabel = latestRetrievalArtifact
-    ? getRetrievalArtifactOpenLabel(latestRetrievalArtifact)
-    : '';
-  const execution = getExecutionStatusPayload();
-  const latestExecutionSession = execution?.latestExecutionSession || null;
-  const flow = getFlowState();
-  const isOutputFocus = state.activeStep === 'step-output';
-
-  if (!state.missionDetail) {
-    elements.outputStageSummary.innerHTML = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '1단계 열기',
-      actionValue: 'step-setup',
-      icon: 'OT',
-      message: '미션을 선택하고 실행이 끝나면 결과 요약이 이 단계에 표시됩니다.',
-      title: '확인할 결과가 없습니다',
-    });
-    wireQuickActions(elements.outputStageSummary);
-    return;
-  }
-
-  const artifactLabel = getArtifactLabel(latestArtifact);
-  const outputStageTargetLabel = artifactLabel || state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
-  const artifactPath = latestArtifact?.path || latestArtifact?.fileName || '결과 파일 경로가 아직 없습니다.';
-  const resultStateLabel = latestArtifact ? '결과 확정 가능' : '결과 준비 중';
-  const resultSummary = latestSession?.reviewerSummary || flow.copy;
-  const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
-  const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
-  const compactMetaItems = [
-    `검토 · ${flow.blocker}`,
-    latestExecutionSession ? `변경 ${String(latestExecutionSession.changedFiles?.length || 0)}건` : null,
-    latestArtifact ? `${getDisplayLabel(latestArtifact.kind, latestArtifact.kind)} 결과` : '결과 준비 중',
-  ].filter(Boolean);
-
-  if (isOutputFocus && !state.outputSupportExpanded) {
-    elements.outputStageSummary.innerHTML = renderOutputStageCollapsedState({
-      artifactLabel,
-      flowBlocker: flow.blocker,
-      flowLabel: flow.label,
-      latestArtifact,
-      latestRetrievalArtifact,
-      latestRetrievalArtifactOpenLabel,
-      outputStageTargetLabel,
-      pendingActionCount,
-      pendingApprovalCount,
-      resultStateLabel,
-    });
-    wireRetrievalArtifactButtons(elements.outputStageSummary);
-    wireQuickActions(elements.outputStageSummary);
-    return;
-  }
-
-  elements.outputStageSummary.innerHTML = `
+function renderOutputStageExpandedState({
+  artifactLabel = '',
+  artifactPath = '',
+  compactMetaItems = [],
+  flow = {},
+  isOutputFocus = false,
+  latestArtifact = null,
+  latestExecutionSession = null,
+  latestRetrievalArtifact = null,
+  latestRetrievalArtifactOpenLabel = '',
+  latestSession = null,
+  outputStageTargetLabel = '',
+  resultStateLabel = '',
+  resultSummary = '',
+  retrieval = null,
+} = {}) {
+  return `
     <div class="stage-summary-card result-spotlight">
       <div class="result-spotlight-head">
         <div class="definition-item">
@@ -18222,6 +18177,85 @@ function renderOutputStageSummary() {
       </div>
     </div>
   `;
+}
+
+function renderOutputStageSummary() {
+  if (!elements.outputStageSummary) {
+    return;
+  }
+
+  const latestArtifact = getPrimaryArtifact(state.currentSessionPayload?.artifacts || []);
+  const latestSession = state.missionDetail?.summary?.latestSession || null;
+  const retrieval = state.missionDetail?.harness?.retrieval || null;
+  const latestRetrievalArtifact = retrieval?.latestArtifact || null;
+  const latestRetrievalArtifactOpenLabel = latestRetrievalArtifact
+    ? getRetrievalArtifactOpenLabel(latestRetrievalArtifact)
+    : '';
+  const execution = getExecutionStatusPayload();
+  const latestExecutionSession = execution?.latestExecutionSession || null;
+  const flow = getFlowState();
+  const isOutputFocus = state.activeStep === 'step-output';
+
+  if (!state.missionDetail) {
+    elements.outputStageSummary.innerHTML = emptyStateCard({
+      action: 'jump-step',
+      actionLabel: '1단계 열기',
+      actionValue: 'step-setup',
+      icon: 'OT',
+      message: '미션을 선택하고 실행이 끝나면 결과 요약이 이 단계에 표시됩니다.',
+      title: '확인할 결과가 없습니다',
+    });
+    wireQuickActions(elements.outputStageSummary);
+    return;
+  }
+
+  const artifactLabel = getArtifactLabel(latestArtifact);
+  const outputStageTargetLabel = artifactLabel || state.missionDetail?.mission?.title || state.selectedMissionId || '선택된 미션';
+  const artifactPath = latestArtifact?.path || latestArtifact?.fileName || '결과 파일 경로가 아직 없습니다.';
+  const resultStateLabel = latestArtifact ? '결과 확정 가능' : '결과 준비 중';
+  const resultSummary = latestSession?.reviewerSummary || flow.copy;
+  const pendingApprovalCount = state.approvals.filter((item) => item.missionId === state.selectedMissionId).length;
+  const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
+  const compactMetaItems = [
+    `검토 · ${flow.blocker}`,
+    latestExecutionSession ? `변경 ${String(latestExecutionSession.changedFiles?.length || 0)}건` : null,
+    latestArtifact ? `${getDisplayLabel(latestArtifact.kind, latestArtifact.kind)} 결과` : '결과 준비 중',
+  ].filter(Boolean);
+
+  if (isOutputFocus && !state.outputSupportExpanded) {
+    elements.outputStageSummary.innerHTML = renderOutputStageCollapsedState({
+      artifactLabel,
+      flowBlocker: flow.blocker,
+      flowLabel: flow.label,
+      latestArtifact,
+      latestRetrievalArtifact,
+      latestRetrievalArtifactOpenLabel,
+      outputStageTargetLabel,
+      pendingActionCount,
+      pendingApprovalCount,
+      resultStateLabel,
+    });
+    wireRetrievalArtifactButtons(elements.outputStageSummary);
+    wireQuickActions(elements.outputStageSummary);
+    return;
+  }
+
+  elements.outputStageSummary.innerHTML = renderOutputStageExpandedState({
+    artifactLabel,
+    artifactPath,
+    compactMetaItems,
+    flow,
+    isOutputFocus,
+    latestArtifact,
+    latestExecutionSession,
+    latestRetrievalArtifact,
+    latestRetrievalArtifactOpenLabel,
+    latestSession,
+    outputStageTargetLabel,
+    resultStateLabel,
+    resultSummary,
+    retrieval,
+  });
   wireRetrievalArtifactButtons(elements.outputStageSummary);
   wireRetrievalSourceButtons(elements.outputStageSummary);
   wireQuickActions(elements.outputStageSummary);

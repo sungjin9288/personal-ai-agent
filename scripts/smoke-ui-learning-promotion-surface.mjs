@@ -371,6 +371,10 @@ try {
   assert.equal(appJs.includes('elements.outputStageSummary.innerHTML = renderOutputStageCollapsedState({'), true);
   assert.equal(appJs.includes('result-spotlight-collapsed'), true);
   assert.equal(appJs.includes("buttonText: 'retrieval 근거'"), true);
+  assert.equal(appJs.includes('function renderOutputStageExpandedState({'), true);
+  assert.equal(appJs.includes('elements.outputStageSummary.innerHTML = renderOutputStageExpandedState({'), true);
+  assert.equal(appJs.includes('renderRetrievalCompareCallout(retrieval, { includeAction: false })'), true);
+  assert.equal(appJs.includes("buttonText: '실행 기록 보기'"), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes("isOutputFocus ? 'is-output-compact' : ''"), true);
