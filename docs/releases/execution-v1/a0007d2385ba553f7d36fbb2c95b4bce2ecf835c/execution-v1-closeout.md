@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-22T05:32:10.978Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-22T05:32:01.849Z
 - branch: codex/loop-engineering-orchestration-surface
 - commit: a0007d2385ba553f7d36fbb2c95b4bce2ecf835c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a0007d2385ba553f7d36fbb2c95b4bce2ecf835c/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

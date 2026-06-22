@@ -139,6 +139,9 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - borrowed: Hermes Agent's self-improving learning loop, agent-curated memory, periodic persistence nudges, skill creation from repeated work, skill improvement during use, session search/summarization, provider/model switching metadata, subagent and automation signals, trajectory compression mindset, and user-modeling caution as inputs for [self-improvement-engine-v1.md](self-improvement-engine-v1.md)
 - rejected for now: uncontrolled automatic skill mutation, cross-scope memory sharing, remote terminal backends, broad messaging gateway ownership, RL/data generation pipeline, and Python process ownership
 - 2026-06-01 status: Hermes is the engine reference only; OpenClaw-style backbone still owns gateway, session, workspace, permission, sandbox, provider routing, and evidence boundaries
+- inspected again: 2026-06-22, Loop Engineering article from PyTorchKR discussion
+- borrowed: prompt-to-loop framing, discover/plan/execute/verify/iterate cycle, closed-loop default for practical cost control, six operating foundations, maker/checker separation, and memory-backed iteration as UI and documentation guidance for the existing OpenClaw backbone plus Hermes engine architecture
+- rejected for now: unbounded open-loop autonomy, cost-unbounded fleet loops, automatic skill mutation, broad connector enablement, and treating the loop as a substitute for engineering judgment
 
 ### openscreen
 - source: https://github.com/siddharthvaddem/openscreen
@@ -160,6 +163,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - harness-level approval and memory hooks
 - OpenClaw-style gateway/session/workspace/channel/permission/sandbox backbone
 - Hermes-style scoped self-improvement engine behind approval, reviewer, and evidence gates
+- Loop Engineering closed-loop discover/plan/execute/verify/iterate surface with automations, worktrees, skills, connectors, subagents, and memory as explicit operating foundations
 - repo-native strategy and incident documentation
 
 ## 2026-04-27 External Reference Review

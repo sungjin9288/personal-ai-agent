@@ -380,8 +380,8 @@ const AGENT_BLUEPRINTS = {
       title: '엔지니어링 풀 스펙트럼',
     },
     {
-      bestFor: 'Hermes형 subagent, tool-calling, memory handoff 운영 패턴으로 복잡한 구현을 닫을 때',
-      description: 'Hermes Agent 레퍼런스의 session loop, parallel subagent, provider-aware tool call 패턴을 full-spectrum 하네스 프로파일로 실행합니다.',
+      bestFor: 'Loop Engineering 방식으로 발견, 계획, 실행, 검증, 반복을 닫힌 루프로 운영할 때',
+      description: 'OpenClaw backbone 위에 Hermes Agent 레퍼런스의 session loop, parallel subagent, provider-aware tool call 패턴을 full-spectrum 하네스 프로파일로 실행합니다.',
       directive: 'orchestration-profile:engineering-full-spectrum',
       emphasis: 'Hermes agent profile',
       id: 'engineering-hermes-agent',
@@ -469,8 +469,8 @@ const AGENT_INTENT_PRESETS = {
     },
     {
       blueprintId: 'engineering-hermes-agent',
-      description: 'Hermes형 tool/subagent loop로 운영',
-      label: 'Hermes agent',
+      description: 'OpenClaw backbone + Hermes engine loop로 운영',
+      label: 'Loop engine',
     },
   ],
   knowledge: [
@@ -496,6 +496,23 @@ const AGENT_INTENT_PRESETS = {
     },
   ],
 };
+
+const LOOP_ENGINEERING_CYCLE = [
+  { id: 'discover', label: 'Discover', detail: '목표, 자료, 제약, 이전 실행 흔적을 먼저 수집합니다.' },
+  { id: 'plan', label: 'Plan', detail: '작업 단위, 담당 agent, 검증 기준을 실행 전에 고정합니다.' },
+  { id: 'execute', label: 'Execute', detail: '선택한 orchestration profile 안에서 specialist workstream을 실행합니다.' },
+  { id: 'verify', label: 'Verify', detail: 'reviewer, smoke, evidence gate로 결과를 확인합니다.' },
+  { id: 'iterate', label: 'Iterate', detail: '검증 실패는 stop-condition이나 action inbox로 되돌립니다.' },
+];
+
+const LOOP_ENGINEERING_FOUNDATIONS = [
+  'Automations',
+  'Worktrees',
+  'Skills',
+  'Connectors',
+  'Subagents',
+  'Memory',
+];
 
 const elements = {
   actionList: document.getElementById('action-list'),
@@ -16130,6 +16147,26 @@ function renderAgentBlueprintCardButton({ blueprint = {}, active = false } = {})
   `;
 }
 
+function renderLoopEngineeringCycleList() {
+  return LOOP_ENGINEERING_CYCLE.map(
+    (step, index) => `
+      <div class="loop-engineering-step" data-loop-engineering-step="${escapeHtml(step.id)}">
+        <span class="loop-engineering-index">${escapeHtml(String(index + 1).padStart(2, '0'))}</span>
+        <div>
+          <strong>${escapeHtml(step.label)}</strong>
+          <p>${escapeHtml(step.detail)}</p>
+        </div>
+      </div>
+    `,
+  ).join('');
+}
+
+function renderLoopEngineeringFoundationTags() {
+  return LOOP_ENGINEERING_FOUNDATIONS.map(
+    (foundation) => `<span class="tag tag-muted">${escapeHtml(foundation)}</span>`,
+  ).join('');
+}
+
 function wirePlaybookSelectionButtons() {
   elements.playbookList.querySelectorAll('[data-playbook-id]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -16266,6 +16303,28 @@ function renderAgentBlueprintBuilder() {
           </div>
         </div>
       </div>
+
+      <section class="loop-engineering-panel" data-loop-engineering-panel="true">
+        <div class="loop-engineering-head">
+          <div>
+            <p class="section-kicker">Loop Engineering</p>
+            <h4>프롬프트가 아니라 검증 루프를 설계합니다</h4>
+          </div>
+          <span class="mini-badge status-completed">closed-loop default</span>
+        </div>
+        <p class="loop-engineering-copy">
+          ${escapeHtml('OpenClaw식 backbone이 session, workspace, permission, sandbox, provider routing을 고정하고 Hermes식 engine이 memory, skill, template, provider lesson 후보를 승인/검증 뒤에만 반영합니다.')}
+        </p>
+        <div class="loop-engineering-cycle">
+          ${renderLoopEngineeringCycleList()}
+        </div>
+        <div class="loop-engineering-foundations">
+          <span class="summary-label">운영 기반</span>
+          <div class="tag-list">
+            ${renderLoopEngineeringFoundationTags()}
+          </div>
+        </div>
+      </section>
 
       <div class="agent-blueprint-grid">
         ${catalog

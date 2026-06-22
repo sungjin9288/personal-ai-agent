@@ -2,7 +2,7 @@
 
 - status: orchestration-backbone-current
 - localDate: 2026-06-01
-- designInput: OpenClaw-style gateway/control plane, Claw Code-style CLI harness discipline, Harness-style artifact and runner boundary
+- designInput: OpenClaw-style gateway/control plane, Loop Engineering closed-loop routing, Claw Code-style CLI harness discipline, Harness-style artifact and runner boundary
 - pairedEngine: [self-improvement-engine-v1.md](self-improvement-engine-v1.md)
 - relatedReferences: [reference-repos.md](reference-repos.md)
 - relatedProductPlan: [product-plan-v1.md](product-plan-v1.md)
@@ -18,11 +18,20 @@ The target shape is OpenClaw as the backbone and Hermes-style learning as an eng
 
 This is a design contract, not a production-ready claim. It does not approve hosted SaaS, always-on public messaging, unbounded remote execution, or direct vendoring from the reference repositories.
 
+## Loop Engineering Boundary
+
+The backbone treats Loop Engineering as a bounded control-plane cycle: discover, plan, execute, verify, and iterate. The default operating mode is closed-loop, not open-ended autonomy. Every loop pass must keep the route inspectable through session, workspace, permission, sandbox, provider, reviewer, action inbox, timeline, and evidence records.
+
+The six operating foundations are represented as explicit platform boundaries: automations define cadence and owner, worktrees isolate parallel execution, skills carry reusable project knowledge, connectors stay behind gateway policy, subagents run through orchestration profiles, and memory stays scoped to user, workspace, or mission before promotion.
+
+OpenClaw-style backbone ownership remains mandatory for every loop pass. Hermes-style self-improvement may propose the next iteration, but it cannot skip identity/session binding, permission and sandbox decisions, provider routing, reviewer gates, or release evidence.
+
 ## Adopted Reference Inputs
 
 | Reference | Adopted pattern | Rejected or deferred pattern |
 | --- | --- | --- |
 | OpenClaw | Local-first gateway, channel adapters, session separation, workspace routing, permissions, sandbox modes, tools/skills/plugin registry, provider gateway surface, operator status commands | Direct production channel matrix, public always-on deployment claim, plugin vendoring, and broad remote gateway exposure before target evidence |
+| Loop Engineering | Closed-loop discover/plan/execute/verify/iterate cycle, six operating foundations, and prompt-to-loop mindset | Unbounded open-loop autonomy, hidden recursive execution, cost-unbounded fleet loops, and bypassing operator-visible stop conditions |
 | Claw Code | CLI harness discipline, `doctor`/parity mindset, build-from-source clarity, provider/runtime separation | Rust harness rewrite, deprecated package assumptions, and replacing the Node runtime |
 | Harness | Pipeline boundary, artifact registry mindset, local runner/server separation, durable state warning, operator-facing DevOps surface | Go/Gitness platform adoption, hosted SCM, Gitspaces, Docker-socket-coupled CI engine, and artifact registry implementation inside v1 |
 | Hermes Agent | Gateway compatibility, provider-aware model switching, interrupt/approval cues, and subagent routing signals consumed by the backbone | Hermes process ownership, Python app vendoring, broad messaging gateway matrix, automatic skill mutation, and remote terminal backends in the backbone |

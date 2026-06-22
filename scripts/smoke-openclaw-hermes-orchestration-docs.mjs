@@ -117,6 +117,15 @@ assertDocumentBasics(engine, {
 
 for (const term of [
   'OpenClaw',
+  'Loop Engineering',
+  'closed-loop',
+  'discover, plan, execute, verify, and iterate',
+  'automations define cadence',
+  'worktrees isolate parallel execution',
+  'skills carry reusable project knowledge',
+  'connectors stay behind gateway policy',
+  'subagents run through orchestration profiles',
+  'memory stays scoped',
   'Claw Code',
   'Harness',
   'Hermes Agent',
@@ -139,6 +148,7 @@ for (const term of [
 
 for (const heading of [
   '## Decision Boundary',
+  '## Loop Engineering Boundary',
   '## Adopted Reference Inputs',
   '## Backbone Responsibilities',
   '## Routing Model',
@@ -184,6 +194,14 @@ for (const command of [
 
 for (const term of [
   'Hermes Agent',
+  'Loop Engineering',
+  'Discover/plan/execute/verify/iterate',
+  'closed-loop default',
+  'maker/checker separation',
+  'memory-backed iteration',
+  'explicit stop conditions',
+  'stop-condition',
+  'action inbox',
   'self-improvement engine',
   'Agent-curated memory',
   'skill creation',
@@ -220,6 +238,7 @@ for (const term of [
 
 for (const heading of [
   '## Decision Boundary',
+  '## Loop Engineering Cycle',
   '## Adopted Reference Inputs',
   '## Engine Loop',
   '## Learning Record Types',
@@ -280,6 +299,11 @@ for (const term of [
   'ultraworkers/claw-code',
   'NousResearch/hermes-agent',
   'harness/harness',
+  'Loop Engineering article from PyTorchKR discussion',
+  'prompt-to-loop framing',
+  'discover/plan/execute/verify/iterate cycle',
+  'closed-loop default for practical cost control',
+  'six operating foundations',
   'orchestration-backbone-v1.md',
   'self-improvement-engine-v1.md',
 ]) {

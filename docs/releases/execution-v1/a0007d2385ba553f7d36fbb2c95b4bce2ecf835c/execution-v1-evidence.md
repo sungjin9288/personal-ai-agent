@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T05:32:10.978Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T05:32:01.815Z
 - branch: codex/loop-engineering-orchestration-surface
 - commit: a0007d2385ba553f7d36fbb2c95b4bce2ecf835c

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T05:32:10.978Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T05:32:09.662Z
 - localDate: 2026-06-22
 - branch: codex/loop-engineering-orchestration-surface
 - commit: a0007d2385ba553f7d36fbb2c95b4bce2ecf835c
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a0007d2385ba553f7d36fbb2c95b4bce2ecf835c](releases/execution-v1/a0007d2385ba553f7d36fbb2c95b4bce2ecf835c)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a0007d2385ba553f7d36fbb2c95b4bce2ecf835c/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a0007d2385ba553f7d36fbb2c95b4bce2ecf835c/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a0007d2385ba553f7d36fbb2c95b4bce2ecf835c](docs/releases/execution-v1/a0007d2385ba553f7d36fbb2c95b4bce2ecf835c)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/loop-engineering-orchestration-surface not found
 

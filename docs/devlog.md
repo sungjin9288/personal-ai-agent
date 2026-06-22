@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Loop Engineering Orchestration Surface
+
+- added a Loop Engineering panel to the AI blueprint builder with closed-loop default, five-step cycle, and six operating foundations
+- aligned the Hermes agent card copy with the OpenClaw backbone plus Hermes engine direction without enabling autonomous promotion
+- extended OpenClaw/Hermes source-of-record docs and smoke coverage for loop engineering boundaries
+
 ## 2026-06-22 Provider Fallback Event Empty List Renderer
 
 - moved the filtered provider fallback event empty placeholder into a dedicated renderer helper
