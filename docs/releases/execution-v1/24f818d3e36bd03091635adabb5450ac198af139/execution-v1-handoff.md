@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T07:51:15.486Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T07:51:10.239Z
 - localDate: 2026-06-22
 - branch: codex/operator-surface-demo-evidence
 - commit: 24f818d3e36bd03091635adabb5450ac198af139
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/24f818d3e36bd03091635adabb5450ac198af139](releases/execution-v1/24f818d3e36bd03091635adabb5450ac198af139)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/24f818d3e36bd03091635adabb5450ac198af139/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/24f818d3e36bd03091635adabb5450ac198af139/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/24f818d3e36bd03091635adabb5450ac198af139](docs/releases/execution-v1/24f818d3e36bd03091635adabb5450ac198af139)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/operator-surface-demo-evidence not found
 
