@@ -71,6 +71,7 @@
     "smoke:clean-deployment-release": "node scripts/smoke-clean-deployment-release.mjs",
     "smoke:production-like-release-drill": "node scripts/smoke-production-like-release-drill.mjs",
     "smoke:pilot-export-package": "node scripts/smoke-pilot-export-package.mjs",
+    "smoke:readme-portfolio-overview": "node scripts/smoke-readme-portfolio-overview.mjs",
     "smoke:representative-demo": "node scripts/smoke-representative-demo.mjs",
     "smoke:representative-demo-evidence": "node scripts/smoke-representative-demo-evidence.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",

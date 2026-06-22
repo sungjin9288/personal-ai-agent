@@ -1,5 +1,52 @@
 # Personal AI Agent
 
+## Portfolio Overview
+
+Personal AI Agent is a local-first multi-agent engineering harness for planning, running, reviewing, and evidencing repository-based AI work. It is designed as a controlled operator workflow, not an unbounded autonomous swarm.
+
+Current validated claim: `provider-scoped pilot-ready` for an OpenAI-backed local-first/self-hosted path. The project is **not production-ready**, not all-provider-complete, and not a hosted SaaS product.
+
+### What It Demonstrates
+
+| Area | Implemented Surface | Evidence |
+|---|---|---|
+| Managed agent workflow | `manager -> planner -> executor -> reviewer`, bounded specialist lanes, approval gates | `src/core/mission-service.mjs`, `src/harness/runtime-harness.mjs`, `npm run smoke:execution-flow` |
+| Operator control plane | CLI, local web UI/API, action inbox, provider/release overview | `src/cli.mjs`, `src/web/server.mjs`, `npm run smoke:ui-execution-console` |
+| Provider reliability | provider registry, preflight, fallback policy, attention remediation, telemetry | `src/providers/*`, `npm run smoke:provider-fallback-policy`, `npm run smoke:provider-attention-remediation` |
+| Evidence workflow | release evidence, closeout, handoff, immutable snapshot, pilot export package | `npm run smoke:execution-v1-status`, `npm run smoke:pilot-export-package` |
+| Portfolio demo | credential-free release readiness walkthrough with replay log and screenshot evidence | `npm run smoke:representative-demo`, `npm run smoke:representative-demo-evidence` |
+
+### Quick Replay
+
+```bash
+npm run bootstrap:local
+npm run smoke:representative-demo
+npm run smoke:representative-demo-evidence
+npm run smoke:execution-v1-status
+npm run smoke:pilot-export-package
+```
+
+Representative demo evidence:
+
+- replay log: `evidence/cli-logs/representative-release-demo-replay.log`
+- summary: `evidence/output-artifacts/representative-release-demo-summary.json`
+- screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
+- walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
+
+### Status Boundary
+
+| Status | Current State |
+|---|---|
+| Local-first CLI/web MVP | Implemented and smoke-tested |
+| OpenAI-backed local-first pilot | Supported inside the documented pilot boundary |
+| Local provider pilot proof | Archived for the configured local rehearsal boundary |
+| Anthropic live validation | Blocked by provider account billing/credit evidence |
+| Hermes live validation | Blocked until target Hermes provider architecture/model evidence is supplied |
+| Hosted SaaS / production deployment | Not implemented; target evidence only |
+| Production-ready claim | Explicitly blocked |
+
+Detailed implementation notes, target operations, and release evidence follow below.
+
 CLI-first local-first personal AI agent for two classes of work:
 
 - `engineering`: implementation planning, verification planning, repo-oriented execution proposals
