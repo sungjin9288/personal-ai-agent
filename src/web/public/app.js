@@ -17216,17 +17216,21 @@ function renderAgentLane() {
   `;
 }
 
+function renderMissionSummaryEmptyState() {
+  return emptyStateCard({
+    action: 'open-create',
+    actionLabel: '새 미션 작성',
+    icon: '01',
+    message: '원하는 결과를 짧게 적고 실행하면, 이 영역에 목표, 제약 조건, 리뷰어 신호가 정리됩니다.',
+    title: '아직 선택된 미션이 없습니다',
+  });
+}
+
 function renderMissionSummary() {
   if (!state.missionDetail) {
     elements.missionTitle.textContent = '미션을 선택하세요';
     elements.missionSubtitle.textContent = '왼쪽 목록에서 미션을 선택하면 개요, 산출물, 타임라인을 바로 확인할 수 있습니다.';
-    elements.missionSummary.innerHTML = emptyStateCard({
-      action: 'open-create',
-      actionLabel: '새 미션 작성',
-      icon: '01',
-      message: '원하는 결과를 짧게 적고 실행하면, 이 영역에 목표, 제약 조건, 리뷰어 신호가 정리됩니다.',
-      title: '아직 선택된 미션이 없습니다',
-    });
+    elements.missionSummary.innerHTML = renderMissionSummaryEmptyState();
     elements.runMissionButton.disabled = true;
     renderSelectionBridge();
     renderHeroMetrics();
