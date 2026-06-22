@@ -17089,15 +17089,19 @@ function renderHeroSignals() {
     .join('');
 }
 
+function renderAgentLaneEmptyState() {
+  return emptyStateCard({
+    action: 'open-create',
+    actionLabel: '미션 작성 열기',
+    icon: 'AG',
+    message: '미션이 선택되면 core agent 4개와 추가 specialist AI 구성을 여기서 바로 볼 수 있습니다.',
+    title: '에이전트 진행 흐름이 아직 없습니다',
+  });
+}
+
 function renderAgentLane() {
   if (!state.missionDetail) {
-    elements.agentLane.innerHTML = emptyStateCard({
-      action: 'open-create',
-      actionLabel: '미션 작성 열기',
-      icon: 'AG',
-      message: '미션이 선택되면 core agent 4개와 추가 specialist AI 구성을 여기서 바로 볼 수 있습니다.',
-      title: '에이전트 진행 흐름이 아직 없습니다',
-    });
+    elements.agentLane.innerHTML = renderAgentLaneEmptyState();
     wireQuickActions(elements.agentLane);
     return;
   }
