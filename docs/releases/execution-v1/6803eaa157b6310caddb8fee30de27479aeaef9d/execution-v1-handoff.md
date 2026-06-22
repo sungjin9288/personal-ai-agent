@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T00:27:30.443Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T00:27:29.090Z
 - localDate: 2026-06-22
 - branch: codex/session-detail-artifact-list-renderer
 - commit: 6803eaa157b6310caddb8fee30de27479aeaef9d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6803eaa157b6310caddb8fee30de27479aeaef9d](releases/execution-v1/6803eaa157b6310caddb8fee30de27479aeaef9d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6803eaa157b6310caddb8fee30de27479aeaef9d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6803eaa157b6310caddb8fee30de27479aeaef9d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6803eaa157b6310caddb8fee30de27479aeaef9d](docs/releases/execution-v1/6803eaa157b6310caddb8fee30de27479aeaef9d)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/session-detail-artifact-list-renderer not found
 
