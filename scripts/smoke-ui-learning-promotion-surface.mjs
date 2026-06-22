@@ -682,8 +682,8 @@ try {
   assert.equal(appJs.includes('function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendations = [] } = {})'), true);
   assert.equal(appJs.includes('elements.harnessLoops.innerHTML = renderHarnessLoopsPanel(harnessPanel.loopsPanel);'), true);
   assert.equal(appJs.includes('adoptedPatterns: harnessSummary.adoptedPatterns'), true);
-  assert.equal(appJs.includes('function renderHarnessEmptyPanelState()'), true);
-  assert.equal(appJs.includes('const empty = renderHarnessEmptyPanelState();'), true);
+  assert.equal(appJs.includes('function renderHarnessPanelEmptyState()'), true);
+  assert.equal(appJs.includes('const empty = renderHarnessPanelEmptyState();'), true);
   assert.equal(appJs.includes("title: '하네스 정보를 계산할 미션이 없습니다'"), true);
   assert.equal(appJs.includes('function wireHarnessEmptyPanelActions()'), true);
   assert.equal(appJs.includes('wireHarnessEmptyPanelActions();'), true);
