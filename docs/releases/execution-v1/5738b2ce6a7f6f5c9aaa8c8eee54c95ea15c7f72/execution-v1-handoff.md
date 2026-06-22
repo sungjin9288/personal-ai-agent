@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T04:30:39.288Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T04:30:37.991Z
 - localDate: 2026-06-22
 - branch: codex/mission-list-empty-state-renderer
 - commit: 5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72](releases/execution-v1/5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72](docs/releases/execution-v1/5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/mission-list-empty-state-renderer not found
 

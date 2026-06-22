@@ -16839,6 +16839,26 @@ function wireMissionListSelectionButtons() {
   });
 }
 
+function renderMissionListFilteredEmptyState() {
+  return emptyStateCard({
+    action: 'clear-filter',
+    actionLabel: '필터 초기화',
+    icon: 'FL',
+    message: '현재 필터나 워크스페이스 범위에서 보이는 미션이 없습니다.',
+    title: '조건에 맞는 미션이 없습니다',
+  });
+}
+
+function renderMissionListUncreatedEmptyState() {
+  return emptyStateCard({
+    action: 'open-create',
+    actionLabel: '첫 미션 만들기',
+    icon: 'GO',
+    message: '템플릿을 선택하거나 목표와 제약 조건을 직접 적어서 첫 실행 흐름을 만들어보세요.',
+    title: '아직 생성된 미션이 없습니다',
+  });
+}
+
 function renderMissionList() {
   const missions = filteredMissions();
   const selectedFlow =
@@ -16847,20 +16867,8 @@ function renderMissionList() {
   renderMissionQueueSummary(missions);
   if (!missions.length) {
     elements.missionList.innerHTML = state.missions.length
-      ? emptyStateCard({
-          action: 'clear-filter',
-          actionLabel: '필터 초기화',
-          icon: 'FL',
-          message: '현재 필터나 워크스페이스 범위에서 보이는 미션이 없습니다.',
-          title: '조건에 맞는 미션이 없습니다',
-        })
-      : emptyStateCard({
-          action: 'open-create',
-          actionLabel: '첫 미션 만들기',
-          icon: 'GO',
-          message: '템플릿을 선택하거나 목표와 제약 조건을 직접 적어서 첫 실행 흐름을 만들어보세요.',
-          title: '아직 생성된 미션이 없습니다',
-        });
+      ? renderMissionListFilteredEmptyState()
+      : renderMissionListUncreatedEmptyState();
     wireQuickActions(elements.missionList);
     return;
   }
