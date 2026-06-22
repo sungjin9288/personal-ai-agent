@@ -2442,6 +2442,8 @@ try {
   assert.equal(appJs.includes('elements.setupHarnessSummary.innerHTML = renderSetupHarnessEmptyState();'), true);
   assert.equal(appJs.includes('function renderRunStageEmptyState()'), true);
   assert.equal(appJs.includes('elements.runStageSummary.innerHTML = renderRunStageEmptyState();'), true);
+  assert.equal(appJs.includes('function renderReviewStageEmptyState()'), true);
+  assert.equal(appJs.includes('elements.reviewStageSummary.innerHTML = renderReviewStageEmptyState();'), true);
   assert.equal(appJs.includes('function renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('elements.artifactMeta.innerHTML = renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('outputArtifactMetaExpanded = false'), true);
