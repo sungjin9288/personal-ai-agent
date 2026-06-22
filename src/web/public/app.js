@@ -18313,20 +18313,24 @@ function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false }
     .join('');
 }
 
+function renderOutputCloseoutEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '1단계 열기',
+    actionValue: 'step-setup',
+    icon: 'CK',
+    message: '미션을 선택하면 최종 결과를 닫기 전 확인할 체크리스트를 보여줍니다.',
+    title: '확인할 마무리 항목이 없습니다',
+  });
+}
+
 function renderOutputCloseout() {
   if (!elements.outputCloseout) {
     return;
   }
 
   if (!state.missionDetail) {
-    elements.outputCloseout.innerHTML = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '1단계 열기',
-      actionValue: 'step-setup',
-      icon: 'CK',
-      message: '미션을 선택하면 최종 결과를 닫기 전 확인할 체크리스트를 보여줍니다.',
-      title: '확인할 마무리 항목이 없습니다',
-    });
+    elements.outputCloseout.innerHTML = renderOutputCloseoutEmptyState();
     wireQuickActions(elements.outputCloseout);
     return;
   }

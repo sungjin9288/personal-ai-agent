@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Output Closeout Empty State Renderer
+
+- moved the no-mission output closeout empty state into a dedicated renderer helper
+- kept the jump-step quick action, Korean empty copy, CK icon marker, and output closeout action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for output closeout empty-state delegation
+
 ## 2026-06-22 Review Stage Empty State Renderer
 
 - moved the no-mission review stage empty state into a dedicated renderer helper
