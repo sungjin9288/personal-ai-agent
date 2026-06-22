@@ -2445,6 +2445,8 @@ try {
   assert.equal(appJs.includes("actionValue: 'step-output'"), true);
   assert.equal(appJs.includes("function renderArtifactViewerState(content = '')"), true);
   assert.equal(appJs.includes('elements.artifactViewer.innerHTML = renderArtifactViewerState(payload.content);'), true);
+  assert.equal(appJs.includes('function renderOutputStageEmptyState()'), true);
+  assert.equal(appJs.includes('elements.outputStageSummary.innerHTML = renderOutputStageEmptyState();'), true);
   assert.equal(appJs.includes('function renderOutputStageCollapsedState({'), true);
   assert.equal(appJs.includes('elements.outputStageSummary.innerHTML = renderOutputStageCollapsedState({'), true);
   assert.equal(appJs.includes('function renderOutputStageExpandedState({'), true);
