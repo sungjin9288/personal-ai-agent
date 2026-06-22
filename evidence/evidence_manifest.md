@@ -59,6 +59,7 @@
 - `docs/evidence-checklist.md`
 - `docs/evidence-gallery.md`
 - `docs/agent-runtime-evidence.md`
+- `docs/operator-surface-demo-evidence-v1.md`
 
 ## Verified Features
 
@@ -71,6 +72,7 @@
 - Global overview: verified with CLI
 - Release blocker handoff: verified with CLI
 - Representative release readiness demo: verified with `npm run evidence:representative-demo` and `npm run smoke:representative-demo-evidence`
+- Operator surface demo evidence: verified with `npm run smoke:operator-surface-demo-evidence`
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure

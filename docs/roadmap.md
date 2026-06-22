@@ -87,3 +87,10 @@
 | 3 | 핵심 smoke command 최신 실행 결과 정리 | 구현 주장에 검증 근거를 붙이기 위함 | smoke summary |
 | 4 | Anthropic/Hermes validation blocker 정리 | multi-provider claim의 위험을 줄이기 위함 | provider readiness matrix |
 | 5 | Architecture walkthrough 작성 | 면접에서 코드 수준 설명을 강화 | architecture notes |
+
+## 7. 대표 demo 보조 증거 현황
+
+- 완료: release readiness screenshot, replay log, browser E2E report, representative demo summary
+- 완료: operator surface demo evidence 문서로 mission/provider/action support evidence를 CLI/API/evidence manifest에 연결
+- 현재 claim boundary: provider-scoped local-first pilot support evidence
+- 남은 polish: mission creation/run browser screenshot, provider readiness browser screenshot, action inbox browser screenshot

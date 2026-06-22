@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Operator Surface Demo Evidence Map
+
+- added `docs/operator-surface-demo-evidence-v1.md` to connect representative demo follow-up questions to mission, provider, action, API, and UI evidence files
+- linked the operator surface evidence map from the demo catalog, evidence gallery, implementation evidence, and evidence manifest
+- added `smoke:operator-surface-demo-evidence` so mission/provider/action support evidence stays aligned without implying hosted demo or production-ready status
+
 ## 2026-06-22 Portfolio Docs Claim Boundary
 
 - removed unresolved `확인 필요` and `추가 필요` placeholders from portfolio-facing docs where repository evidence already exists
