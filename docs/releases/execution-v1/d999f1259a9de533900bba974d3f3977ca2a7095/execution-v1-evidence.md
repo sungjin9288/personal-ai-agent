@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T03:48:17.853Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T03:48:09.261Z
 - branch: codex/provider-list-empty-state-renderer
 - commit: d999f1259a9de533900bba974d3f3977ca2a7095
