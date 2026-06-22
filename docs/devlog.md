@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Representative Demo Evidence
+
+- added a repeatable `evidence:representative-demo` capture command for the release readiness walkthrough
+- stored sanitized replay logs, browser E2E report, summary JSON, and screenshot under `evidence/`
+- added `smoke:representative-demo-evidence` so portfolio evidence remains credential-free and productionReadyClaim=false
+
 ## 2026-06-22 Representative Release Demo
 
 - selected `Release Readiness Evidence Walkthrough` as the default portfolio and pilot demo

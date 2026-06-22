@@ -1,0 +1,122 @@
+# Representative Release Demo Replay
+
+generatedAt=2026-06-22T06:07:29.402Z
+branch=codex/representative-demo-evidence
+commit=5006e2e74faff0d00725a9273fba31569a4f4854
+
+## npm run smoke:representative-demo
+status=0
+startedAt=2026-06-22T06:07:29.402Z
+completedAt=2026-06-22T06:07:29.589Z
+
+stdout:
+
+> personal-ai-agent@0.1.0 smoke:representative-demo
+> node scripts/smoke-representative-demo.mjs
+
+{
+  "mode": "representative-demo-contract-smoke",
+  "ok": true,
+  "demo": "Release Readiness Evidence Walkthrough",
+  "credentialFree": true,
+  "productionReadyClaim": false
+}
+
+## npm run smoke:execution-v1-status
+status=0
+startedAt=2026-06-22T06:07:29.589Z
+completedAt=2026-06-22T06:07:30.362Z
+
+stdout:
+
+> personal-ai-agent@0.1.0 smoke:execution-v1-status
+> node scripts/smoke-execution-v1-status.mjs
+
+{
+  "artifactState": "local-current",
+  "artifactSyncCommit": false,
+  "branch": "codex/representative-demo-evidence",
+  "commit": "5006e2e74faff0d00725a9273fba31569a4f4854",
+  "deterministic": "8/8",
+  "ok": true,
+  "referenceAdoptionReady": true,
+  "runtimeRows": 8,
+  "snapshotCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+}
+
+## npm run smoke:execution-v1-snapshot
+status=0
+startedAt=2026-06-22T06:07:30.362Z
+completedAt=2026-06-22T06:07:30.946Z
+
+stdout:
+
+> personal-ai-agent@0.1.0 smoke:execution-v1-snapshot
+> node scripts/smoke-execution-v1-snapshot.mjs
+
+{
+  "archivedAt": "2026-06-22T06:02:22.276Z",
+  "artifactSyncCommit": false,
+  "commit": "5006e2e74faff0d00725a9273fba31569a4f4854",
+  "deterministicPassed": 8,
+  "ok": true,
+  "runtimeRows": 8,
+  "snapshotDir": "<repo>/docs/releases/execution-v1/5006e2e74faff0d00725a9273fba31569a4f4854",
+  "snapshotHandoffPath": "<repo>/docs/releases/execution-v1/5006e2e74faff0d00725a9273fba31569a4f4854/execution-v1-handoff.md",
+  "verifiedCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+}
+
+## npm run smoke:execution-v1-handoff
+status=0
+startedAt=2026-06-22T06:07:30.946Z
+completedAt=2026-06-22T06:07:35.265Z
+
+stdout:
+
+> personal-ai-agent@0.1.0 smoke:execution-v1-handoff
+> node scripts/smoke-execution-v1-handoff.mjs
+
+{
+  "ok": true,
+  "branch": "codex/representative-demo-evidence",
+  "commit": "5006e2e74faff0d00725a9273fba31569a4f4854",
+  "outputPath": "<temp>",
+  "visualArtifactSetSha256": "handoff-smoke-artifact-set"
+}
+
+## npm run smoke:release-artifact-hygiene
+status=0
+startedAt=2026-06-22T06:07:35.266Z
+completedAt=2026-06-22T06:07:35.429Z
+
+stdout:
+
+> personal-ai-agent@0.1.0 smoke:release-artifact-hygiene
+> node scripts/smoke-release-artifact-hygiene.mjs
+
+{
+  "machinePathFindingCount": 0,
+  "mode": "release-artifact-hygiene",
+  "ok": true,
+  "scannedFileCount": 48,
+  "secretFindingCount": 0,
+  "verifiedCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+}
+
+## npm run smoke:pilot-export-package
+status=0
+startedAt=2026-06-22T06:07:35.429Z
+completedAt=2026-06-22T06:07:35.571Z
+
+stdout:
+
+> personal-ai-agent@0.1.0 smoke:pilot-export-package
+> node scripts/smoke-pilot-export-package.mjs
+
+{
+  "fileCount": 57,
+  "mode": "pilot-export-package",
+  "ok": true,
+  "path": "docs/pilot-export-package-v1.md",
+  "verifiedCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+}

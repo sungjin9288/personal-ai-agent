@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-06-22T05:54:31.115Z
+- generatedAt: 2026-06-22T06:02:20.802Z
 - localDate: 2026-06-22
-- branch: main
-- commit: cfd2e66722dc0a88b39f97fbfaca6401ed01bdff
+- branch: codex/representative-demo-evidence
+- commit: 5006e2e74faff0d00725a9273fba31569a4f4854
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/cfd2e66722dc0a88b39f97fbfaca6401ed01bdff](releases/execution-v1/cfd2e66722dc0a88b39f97fbfaca6401ed01bdff)
+- immutableSnapshot: [releases/execution-v1/5006e2e74faff0d00725a9273fba31569a4f4854](releases/execution-v1/5006e2e74faff0d00725a9273fba31569a4f4854)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
-- commitPushStatus: pushed to origin/main
+- commitPushStatus: not pushed, origin/codex/representative-demo-evidence not found
 
 ## Operational State
 
@@ -79,7 +79,7 @@ Expected pre-live state:
 3. Attach target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before adding local provider operation to a production claim.
 4. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.
 5. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.
-6. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
+6. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
 
 ## Completion Boundary
 
