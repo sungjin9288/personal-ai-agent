@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Setup Harness Empty State Renderer
+
+- moved the no-mission setup harness empty state into a dedicated renderer helper
+- kept the open-create quick action, Korean empty copy, HS icon marker, and setup harness action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for setup harness empty-state delegation
+
 ## 2026-06-22 Mission Summary Empty State Renderer
 
 - moved the no-mission summary empty state into a dedicated renderer helper

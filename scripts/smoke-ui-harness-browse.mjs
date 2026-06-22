@@ -2438,6 +2438,8 @@ try {
   assert.equal(appJs.includes('elements.agentLane.innerHTML = renderAgentLaneEmptyState();'), true);
   assert.equal(appJs.includes('function renderMissionSummaryEmptyState()'), true);
   assert.equal(appJs.includes('elements.missionSummary.innerHTML = renderMissionSummaryEmptyState();'), true);
+  assert.equal(appJs.includes('function renderSetupHarnessEmptyState()'), true);
+  assert.equal(appJs.includes('elements.setupHarnessSummary.innerHTML = renderSetupHarnessEmptyState();'), true);
   assert.equal(appJs.includes('function renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('elements.artifactMeta.innerHTML = renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('outputArtifactMetaExpanded = false'), true);

@@ -17581,19 +17581,23 @@ function renderSelectionBridge() {
   wireQuickActions(elements.selectionBridge);
 }
 
+function renderSetupHarnessEmptyState() {
+  return emptyStateCard({
+    action: 'open-create',
+    actionLabel: '새 미션 작성',
+    icon: 'HS',
+    message: '미션을 고르면 문서 기준점, 기억, 운영 루프 기준으로 지금 먼저 정리할 항목을 여기에서 보여줍니다.',
+    title: '하네스 준비 상태를 계산할 미션이 없습니다',
+  });
+}
+
 function renderSetupHarnessSummary() {
   if (!elements.setupHarnessSummary) {
     return;
   }
 
   if (!state.missionDetail?.harness) {
-    elements.setupHarnessSummary.innerHTML = emptyStateCard({
-      action: 'open-create',
-      actionLabel: '새 미션 작성',
-      icon: 'HS',
-      message: '미션을 고르면 문서 기준점, 기억, 운영 루프 기준으로 지금 먼저 정리할 항목을 여기에서 보여줍니다.',
-      title: '하네스 준비 상태를 계산할 미션이 없습니다',
-    });
+    elements.setupHarnessSummary.innerHTML = renderSetupHarnessEmptyState();
     wireQuickActions(elements.setupHarnessSummary);
     return;
   }
