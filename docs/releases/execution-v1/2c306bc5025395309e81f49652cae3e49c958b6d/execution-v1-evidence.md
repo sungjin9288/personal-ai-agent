@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T05:51:56.926Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T05:51:47.419Z
 - branch: codex/representative-release-demo
 - commit: 2c306bc5025395309e81f49652cae3e49c958b6d

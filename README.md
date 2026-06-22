@@ -158,6 +158,20 @@ Current planning status:
 - enterprise/company pilot readiness is scoped to the validated OpenAI provider and documented self-hosted/local-first deployment boundary
 - the current release label should not move to `production-ready` until Anthropic account remediation, target Hermes provider architecture evidence, target local provider architecture evidence, enforced enterprise controls, and production-like deployment release evidence are complete
 
+## Representative Demo
+
+Use `Representative Demo: Release Readiness Evidence Walkthrough` as the default portfolio/pilot demo. It is credential-free and shows the local-first harness loop through release evidence, provider blockers, handoff, and immutable snapshot without claiming production readiness.
+
+```bash
+npm run smoke:representative-demo
+npm run smoke:execution-v1-status
+npm run smoke:execution-v1-snapshot
+npm run smoke:execution-v1-handoff
+npm run smoke:release-artifact-hygiene
+```
+
+The demo supports the current `provider-scoped pilot-ready` claim only. It is not production-ready evidence, not an all-provider-complete claim, and not proof that Anthropic, Hermes, or target local provider production approval is closed. See [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md) for the full narration checklist and stop criteria.
+
 ## Current Commands
 
 Local bootstrap for first test run:

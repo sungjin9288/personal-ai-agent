@@ -10,8 +10,9 @@
 ## 2. Phase 1 - MVP 완성
 
 - 목표: portfolio에서 설명 가능한 local-first AI agent MVP를 안정화한다.
+- 현재 대표 demo: `Release Readiness Evidence Walkthrough`를 기본 portfolio/pilot walkthrough로 사용한다.
 - 해야 할 작업:
-  - 대표 demo scenario 1개를 선정하고 `bootstrap:local` 또는 CLI mission flow로 재현
+  - 대표 demo scenario 1개를 선정하고 deterministic release evidence flow로 재현
   - README를 portfolio-friendly 구조로 재작성할 초안 반영
   - `npm run smoke`, provider smoke 중 핵심 3~5개를 최신 상태로 통과 확인
   - web console screenshot과 CLI output 예시 확보
@@ -81,7 +82,7 @@
 
 | 우선순위 | 작업 | 이유 | 예상 산출물 |
 |---|---|---|---|
-| 1 | 대표 demo scenario 1개 확정 및 재현 | 포트폴리오 설명의 중심 사례가 필요 | demo script, screenshot |
+| 1 | 대표 demo scenario 재현 근거 확장 | 포트폴리오 설명의 중심 사례가 정해졌으므로 screenshot/CLI output 근거가 필요 | demo script, screenshot, CLI output |
 | 2 | README를 구현 완료/개발 중/미구현 기준으로 재구성 | 현재 README는 운영 로그가 길어 핵심 전달이 어렵다 | updated README |
 | 3 | 핵심 smoke command 최신 실행 결과 정리 | 구현 주장에 검증 근거를 붙이기 위함 | smoke summary |
 | 4 | Anthropic/Hermes validation blocker 정리 | multi-provider claim의 위험을 줄이기 위함 | provider readiness matrix |
