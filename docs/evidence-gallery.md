@@ -14,6 +14,7 @@
 | Provider list | `evidence/cli-logs/provider-list.log` | provider registry exposes implemented provider metadata |
 | Global overview | `evidence/cli-logs/overview-global.log` | local runtime read model can summarize workspaces/missions |
 | Hermes blocker handoff | `evidence/cli-logs/release-blockers-hermes.log` | provider production blockers are explicit rather than hidden |
+| Representative release demo replay | `evidence/cli-logs/representative-release-demo-replay.log` | credential-free demo replay for status, snapshot, handoff, hygiene, pilot export, and browser E2E |
 
 ## 2. API Evidence
 
@@ -29,6 +30,7 @@
 | Evidence | File | What It Shows |
 |---|---|---|
 | Operator console home | `evidence/screenshots/operator-console-home.png` | local web operator console loaded through Playwright |
+| Representative release demo status | `evidence/screenshots/representative-release-demo-release-status.png` | release readiness walkthrough final browser state |
 
 ## 4. Architecture Evidence
 
@@ -46,6 +48,8 @@
 | Execution handoff | `evidence/output-artifacts/execution-v1-handoff.md` | existing operator handoff summary |
 | Release readiness | `evidence/output-artifacts/release-readiness-v1.md` | pilot-ready boundary and production blockers |
 | Runtime mission artifacts | `evidence/output-artifacts/runtime-mission-artifact-list.log` | prompt, plan, deliverable, reviewer, and learning candidate artifacts created by one mission run |
+| Representative release demo summary | `evidence/output-artifacts/representative-release-demo-summary.json` | command list, commit, screenshot hash, and productionReadyClaim=false boundary for the representative demo |
+| Representative release demo browser report | `evidence/output-artifacts/representative-release-demo-browser-e2e.json` | sanitized browser E2E report copied from the representative demo walkthrough |
 
 ## 6. Portfolio Usage Notes
 

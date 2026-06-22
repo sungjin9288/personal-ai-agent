@@ -45,6 +45,13 @@ npm run smoke:execution-v1-handoff
 npm run smoke:release-artifact-hygiene
 ```
 
+Evidence capture:
+
+```bash
+npm run evidence:representative-demo
+npm run smoke:representative-demo-evidence
+```
+
 Operator UI path:
 
 1. Run `npm run ui`.

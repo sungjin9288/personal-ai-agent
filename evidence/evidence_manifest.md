@@ -24,6 +24,7 @@
 - `evidence/cli-logs/provider-list.log`
 - `evidence/cli-logs/overview-global.log`
 - `evidence/cli-logs/release-blockers-hermes.log`
+- `evidence/cli-logs/representative-release-demo-replay.log`
 
 ### API Responses
 
@@ -35,6 +36,7 @@
 ### Screenshots
 
 - `evidence/screenshots/operator-console-home.png`
+- `evidence/screenshots/representative-release-demo-release-status.png`
 
 ### Output Artifacts
 
@@ -42,6 +44,8 @@
 - `evidence/output-artifacts/execution-v1-handoff.md`
 - `evidence/output-artifacts/release-readiness-v1.md`
 - `evidence/output-artifacts/runtime-mission-artifact-list.log`
+- `evidence/output-artifacts/representative-release-demo-summary.json`
+- `evidence/output-artifacts/representative-release-demo-browser-e2e.json`
 
 ### Architecture
 
@@ -66,6 +70,7 @@
 - Provider registry/status: verified with CLI and `/api/providers`
 - Global overview: verified with CLI
 - Release blocker handoff: verified with CLI
+- Representative release readiness demo: verified with `npm run evidence:representative-demo` and `npm run smoke:representative-demo-evidence`
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure

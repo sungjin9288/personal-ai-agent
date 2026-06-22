@@ -172,6 +172,13 @@ npm run smoke:release-artifact-hygiene
 
 The demo supports the current `provider-scoped pilot-ready` claim only. It is not production-ready evidence, not an all-provider-complete claim, and not proof that Anthropic, Hermes, or target local provider production approval is closed. See [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md) for the full narration checklist and stop criteria.
 
+To refresh the portfolio evidence files for this demo:
+
+```bash
+npm run evidence:representative-demo
+npm run smoke:representative-demo-evidence
+```
+
 ## Current Commands
 
 Local bootstrap for first test run:
