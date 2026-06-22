@@ -14,7 +14,7 @@
 | Provider list | `evidence/cli-logs/provider-list.log` | provider registry exposes implemented provider metadata |
 | Global overview | `evidence/cli-logs/overview-global.log` | local runtime read model can summarize workspaces/missions |
 | Hermes blocker handoff | `evidence/cli-logs/release-blockers-hermes.log` | provider production blockers are explicit rather than hidden |
-| Representative release demo replay | `evidence/cli-logs/representative-release-demo-replay.log` | credential-free demo replay for status, snapshot, handoff, hygiene, pilot export, and browser E2E |
+| Representative release demo replay | `evidence/cli-logs/representative-release-demo-replay.log` | credential-free demo replay for status, snapshot, handoff, hygiene, and pilot export |
 
 ## 2. API Evidence
 

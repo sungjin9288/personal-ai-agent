@@ -23,7 +23,6 @@ const commands = [
   ['npm', ['run', 'smoke:execution-v1-handoff']],
   ['npm', ['run', 'smoke:release-artifact-hygiene']],
   ['npm', ['run', 'smoke:pilot-export-package']],
-  ['npm', ['run', 'smoke:ui-execution-browser-e2e']],
 ];
 
 fs.mkdirSync(cliLogDir, { recursive: true });
@@ -148,6 +147,7 @@ function writeReplayArtifacts({
         credentialFree: true,
         demo: 'Representative Demo: Release Readiness Evidence Walkthrough',
         generatedAt,
+        note: 'Browser report and screenshot are copied from the latest output/playwright browser E2E artifacts. Refresh them with npm run smoke:ui-execution-browser-e2e when a new screenshot is required.',
         productionReadyClaim: false,
         replayLogPath: formatDisplayPath(replayLogPath),
         screenshot: {

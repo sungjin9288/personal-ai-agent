@@ -1,0 +1,59 @@
+{
+  "browserReport": {
+    "copied": true,
+    "path": "evidence/output-artifacts/representative-release-demo-browser-e2e.json",
+    "sha256": "86c8b928d7b5dedf102d23b68185272379030df144343ab7ac7fc2929d1db5f6"
+  },
+  "branch": "codex/representative-demo-evidence",
+  "commandCount": 6,
+  "commands": [
+    {
+      "command": "npm run smoke:representative-demo",
+      "completedAt": "2026-06-22T06:07:29.589Z",
+      "startedAt": "2026-06-22T06:07:29.402Z",
+      "status": 0
+    },
+    {
+      "command": "npm run smoke:execution-v1-status",
+      "completedAt": "2026-06-22T06:07:30.362Z",
+      "startedAt": "2026-06-22T06:07:29.589Z",
+      "status": 0
+    },
+    {
+      "command": "npm run smoke:execution-v1-snapshot",
+      "completedAt": "2026-06-22T06:07:30.946Z",
+      "startedAt": "2026-06-22T06:07:30.362Z",
+      "status": 0
+    },
+    {
+      "command": "npm run smoke:execution-v1-handoff",
+      "completedAt": "2026-06-22T06:07:35.265Z",
+      "startedAt": "2026-06-22T06:07:30.946Z",
+      "status": 0
+    },
+    {
+      "command": "npm run smoke:release-artifact-hygiene",
+      "completedAt": "2026-06-22T06:07:35.429Z",
+      "startedAt": "2026-06-22T06:07:35.266Z",
+      "status": 0
+    },
+    {
+      "command": "npm run smoke:pilot-export-package",
+      "completedAt": "2026-06-22T06:07:35.571Z",
+      "startedAt": "2026-06-22T06:07:35.429Z",
+      "status": 0
+    }
+  ],
+  "commit": "5006e2e74faff0d00725a9273fba31569a4f4854",
+  "credentialFree": true,
+  "demo": "Representative Demo: Release Readiness Evidence Walkthrough",
+  "generatedAt": "2026-06-22T06:07:29.402Z",
+  "note": "Browser report and screenshot are copied from the latest output/playwright browser E2E artifacts. Refresh them with npm run smoke:ui-execution-browser-e2e when a new screenshot is required.",
+  "productionReadyClaim": false,
+  "replayLogPath": "evidence/cli-logs/representative-release-demo-replay.log",
+  "screenshot": {
+    "copied": true,
+    "path": "evidence/screenshots/representative-release-demo-release-status.png",
+    "sha256": "be3dead0aabaf8330e1ed40009fa4c26a261fd6ca632ead88acf044ee5bd0a6a"
+  }
+}

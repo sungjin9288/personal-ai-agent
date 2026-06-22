@@ -18,7 +18,7 @@
 | Provider registry/status | 검증 완료 | `evidence/cli-logs/provider-list.log`, `evidence/api-responses/api-providers.json` | `exit_code=0`, API 응답 저장 | provider 5종 구현 상태 확인 |
 | Global overview/read model | 검증 완료 | `evidence/cli-logs/overview-global.log` | `exit_code=0` | workspace/global summary surface 확인 |
 | Release blocker handoff | 검증 완료 | `evidence/cli-logs/release-blockers-hermes.log` | `exit_code=0` | Hermes/target provider blocker가 남아 있음을 증거화 |
-| Representative release demo | 검증 완료 | `evidence/cli-logs/representative-release-demo-replay.log`, `evidence/output-artifacts/representative-release-demo-summary.json`, `evidence/screenshots/representative-release-demo-release-status.png` | 대표 demo smoke/status/snapshot/handoff/hygiene/pilot-export/browser E2E 통과 | credential-free portfolio walkthrough |
+| Representative release demo | 검증 완료 | `evidence/cli-logs/representative-release-demo-replay.log`, `evidence/output-artifacts/representative-release-demo-summary.json`, `evidence/output-artifacts/representative-release-demo-browser-e2e.json`, `evidence/screenshots/representative-release-demo-release-status.png` | 대표 demo smoke/status/snapshot/handoff/hygiene/pilot-export 통과, browser report/screenshot evidence 복사 | credential-free portfolio walkthrough |
 | Web API health/meta/status | 검증 완료 | `evidence/api-responses/api-health.json`, `api-meta.json`, `api-execution-v1-status.json` | HTTP 응답 저장 | local server `http://127.0.0.1:4510`에서 수집 |
 | Web operator console | 검증 완료 | `evidence/screenshots/operator-console-home.png` | Playwright full-page screenshot 저장 | UI title: `에이전트 운영 콘솔` |
 | Release/evidence output artifacts | 검증 완료 | `evidence/output-artifacts/*.md` | 기존 repo evidence docs 복사 | source docs 재생성 없이 포트폴리오 증거로 복사 |
