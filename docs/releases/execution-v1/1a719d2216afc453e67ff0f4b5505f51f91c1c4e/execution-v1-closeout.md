@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-22T05:41:39.650Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-22T05:41:28.692Z
 - branch: codex/harness-engineering-loop-guardrails
 - commit: 1a719d2216afc453e67ff0f4b5505f51f91c1c4e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1a719d2216afc453e67ff0f4b5505f51f91c1c4e/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

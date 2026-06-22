@@ -514,6 +514,15 @@ const LOOP_ENGINEERING_FOUNDATIONS = [
   'Memory',
 ];
 
+const HARNESS_ENGINEERING_GUARDRAILS = [
+  { label: 'Control plane', detail: 'prompt, policy, tool schema, approval, sandbox를 한 경계로 다룹니다.' },
+  { label: 'Query heartbeat', detail: 'model call은 loop의 한 단계이고 state, interrupts, recovery가 heartbeat를 유지합니다.' },
+  { label: 'Context budget', detail: 'memory와 compact는 더 많은 텍스트가 아니라 작업 의미를 보존하는 예산 장치입니다.' },
+  { label: 'Recovery branch', detail: '오류는 예외가 아니라 main path이며 loop-safe counter와 stop-condition이 필요합니다.' },
+  { label: 'Independent verify', detail: '구현과 검증을 분리해 completion이 problem solved로 위장하지 못하게 합니다.' },
+  { label: 'Local governance', detail: 'AGENTS, skills, hooks, team rules는 재사용 가능한 운영 제도로 유지합니다.' },
+];
+
 const elements = {
   actionList: document.getElementById('action-list'),
   agentLane: document.getElementById('agent-lane'),
@@ -16167,6 +16176,17 @@ function renderLoopEngineeringFoundationTags() {
   ).join('');
 }
 
+function renderHarnessEngineeringGuardrails() {
+  return HARNESS_ENGINEERING_GUARDRAILS.map(
+    (guardrail) => `
+      <div class="harness-guardrail">
+        <strong>${escapeHtml(guardrail.label)}</strong>
+        <p>${escapeHtml(guardrail.detail)}</p>
+      </div>
+    `,
+  ).join('');
+}
+
 function wirePlaybookSelectionButtons() {
   elements.playbookList.querySelectorAll('[data-playbook-id]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -16313,10 +16333,13 @@ function renderAgentBlueprintBuilder() {
           <span class="mini-badge status-completed">closed-loop default</span>
         </div>
         <p class="loop-engineering-copy">
-          ${escapeHtml('OpenClaw식 backbone이 session, workspace, permission, sandbox, provider routing을 고정하고 Hermes식 engine이 memory, skill, template, provider lesson 후보를 승인/검증 뒤에만 반영합니다.')}
+          ${escapeHtml('OpenClaw식 backbone이 session, workspace, permission, sandbox, provider routing을 고정하고 Hermes식 engine이 memory, skill, template, provider lesson 후보를 승인/검증 뒤에만 반영합니다. Harness Engineering guardrails가 query heartbeat, context budget, recovery, independent verification을 보호합니다.')}
         </p>
         <div class="loop-engineering-cycle">
           ${renderLoopEngineeringCycleList()}
+        </div>
+        <div class="harness-guardrail-grid">
+          ${renderHarnessEngineeringGuardrails()}
         </div>
         <div class="loop-engineering-foundations">
           <span class="summary-label">운영 기반</span>

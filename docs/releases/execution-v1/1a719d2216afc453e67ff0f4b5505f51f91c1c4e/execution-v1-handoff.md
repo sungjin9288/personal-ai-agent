@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T05:41:39.650Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T05:41:38.006Z
 - localDate: 2026-06-22
 - branch: codex/harness-engineering-loop-guardrails
 - commit: 1a719d2216afc453e67ff0f4b5505f51f91c1c4e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1a719d2216afc453e67ff0f4b5505f51f91c1c4e](releases/execution-v1/1a719d2216afc453e67ff0f4b5505f51f91c1c4e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1a719d2216afc453e67ff0f4b5505f51f91c1c4e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1a719d2216afc453e67ff0f4b5505f51f91c1c4e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1a719d2216afc453e67ff0f4b5505f51f91c1c4e](docs/releases/execution-v1/1a719d2216afc453e67ff0f4b5505f51f91c1c4e)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/harness-engineering-loop-guardrails not found
 

@@ -24,12 +24,19 @@ The self-improvement engine maps Loop Engineering into a reviewable learning cyc
 
 The engine must never turn a failed verification into silent iteration. Unsafe, incomplete, cross-scope, or unreviewed learning becomes a stop-condition and re-enters the action inbox. This keeps Hermes-style continuous improvement useful without allowing autonomous promotion, uncontrolled skill mutation, or global memory pollution.
 
+## Harness Engineering Guardrails
+
+Harness Engineering guardrails treat context, recovery, and verification as operating controls for learning. A learning candidate must preserve source scope, evidence, and rollback target instead of becoming unstructured memory. A repeated failure can create a lesson proposal, but the lesson is not accepted until the verifier and promotion gate confirm the working semantics.
+
+The engine must distinguish completion, failure, recovery, continuation, and promotion outcomes. If recovery or verification loops repeat without new evidence, the engine records a stop-condition rather than generating another recommendation. This keeps the learning loop from compounding bad lessons or hiding unresolved work behind confident summaries.
+
 ## Adopted Reference Inputs
 
 | Reference | Adopted pattern | Rejected or deferred pattern |
 | --- | --- | --- |
 | Hermes Agent | Agent-curated memory, periodic nudges, skill creation from repeated work, skill improvement during use, session search/summarization, model switching metadata, subagent and automation signals, trajectory compression mindset | Uncontrolled automatic skill mutation, cross-scope memory sharing, broad messaging gateway ownership, remote terminal backends, RL/data generation pipeline, and Python app vendoring |
 | Loop Engineering | Discover/plan/execute/verify/iterate feedback cycle, closed-loop default, maker/checker separation, memory-backed iteration, and explicit stop conditions | Open-loop self-improvement, hidden cost-unbounded retries, approval-free promotion, and using loops to avoid understanding the underlying work |
+| Harness Engineering books | Context governance, recovery circuit breakers, independent verification, persistent state, and team-local rule checklists | Importing CLAUDE.md conventions verbatim, creating automatic compaction/recovery without stop counters, and scaling skill volume before verification definitions are stable |
 | OpenClaw | Gateway-owned session/channel/workspace separation that constrains what the learning engine can see and promote | Treating memory as a gateway replacement or letting learned state bypass permission/sandbox checks |
 | Claw Code | `doctor`/parity discipline for checking whether learned behavior matches expected runtime capability | Rewriting the agent harness before learning controls are proven |
 | Harness | Evidence packet, artifact retention, runner boundary, and promotion gate thinking | Turning the self-improvement engine into a CI/CD platform or artifact registry |

@@ -1548,6 +1548,32 @@ button {
   line-height: 1.48;
 }
 
+.harness-guardrail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.harness-guardrail {
+  padding: 11px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.harness-guardrail strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+}
+
+.harness-guardrail p {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
 .loop-engineering-foundations {
   display: flex;
   flex-wrap: wrap;
@@ -4616,6 +4642,7 @@ select:focus {
   .agent-intent-strip,
   .agent-blueprint-grid,
   .loop-engineering-cycle,
+  .harness-guardrail-grid,
   .agent-blueprint-preview-grid,
   .agent-blueprint-hero,
   .agent-learning-summary,

@@ -56,6 +56,16 @@ try {
   assert.equal(appJs.includes('closed-loop default'), true);
   assert.equal(appJs.includes('OpenClaw식 backbone이 session, workspace, permission, sandbox, provider routing을 고정'), true);
   assert.equal(appJs.includes('Hermes식 engine이 memory, skill, template, provider lesson 후보를 승인/검증 뒤에만 반영'), true);
+  assert.equal(appJs.includes('Harness Engineering guardrails'), true);
+  assert.equal(appJs.includes('HARNESS_ENGINEERING_GUARDRAILS'), true);
+  assert.equal(appJs.includes('renderHarnessEngineeringGuardrails'), true);
+  assert.equal(appJs.includes('Control plane'), true);
+  assert.equal(appJs.includes('Query heartbeat'), true);
+  assert.equal(appJs.includes('Context budget'), true);
+  assert.equal(appJs.includes('Recovery branch'), true);
+  assert.equal(appJs.includes('Independent verify'), true);
+  assert.equal(appJs.includes('Local governance'), true);
+  assert.equal(appJs.includes('completion이 problem solved로 위장하지 못하게 합니다.'), true);
   assert.equal(appJs.includes('LOOP_ENGINEERING_CYCLE'), true);
   assert.equal(appJs.includes('LOOP_ENGINEERING_FOUNDATIONS'), true);
   assert.equal(appJs.includes('Discover'), true);
@@ -139,6 +149,8 @@ try {
   assert.equal(stylesCss.includes('.loop-engineering-panel'), true);
   assert.equal(stylesCss.includes('.loop-engineering-cycle'), true);
   assert.equal(stylesCss.includes('.loop-engineering-step'), true);
+  assert.equal(stylesCss.includes('.harness-guardrail-grid'), true);
+  assert.equal(stylesCss.includes('.harness-guardrail'), true);
   assert.equal(stylesCss.includes('.loop-engineering-foundations'), true);
   assert.equal(stylesCss.includes('.agent-learning-panel'), true);
   assert.equal(stylesCss.includes('.agent-retrieval-list'), true);
