@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Action Inbox Unavailable Empty Renderer
+
+- moved the no-selected-mission action inbox list and summary empty states into dedicated renderer helpers
+- kept the jump-step quick action, Korean empty copy, Q icon marker, and unavailable state object shape unchanged
+- extended UI learning promotion and harness browse smoke coverage for action inbox unavailable empty-state delegation
+
 ## 2026-06-22 Approval List Empty State Renderer
 
 - moved the no-pending-approvals empty state into a dedicated renderer helper

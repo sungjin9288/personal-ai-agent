@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T03:40:34.719Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T03:40:24.382Z
 - branch: codex/action-inbox-unavailable-empty-renderer
 - commit: edffc6c4f40f5877b4d89e488f91bb3377ad0167

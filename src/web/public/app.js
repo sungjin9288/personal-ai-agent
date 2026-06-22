@@ -23007,21 +23007,29 @@ function renderActionInboxEmptyList({
   });
 }
 
+function renderActionInboxUnavailableListEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '개요 보기',
+    actionValue: 'step-setup',
+    icon: 'Q',
+    message: '먼저 미션을 선택하면 현재 후속 작업과 권장 재실행 지점을 볼 수 있습니다.',
+    title: '표시할 액션이 없습니다',
+  });
+}
+
+function renderActionInboxUnavailableSummaryEmptyState() {
+  return emptyStateCard({
+    icon: 'Q',
+    message: '미션을 선택하면 열린 작업, 재실행 권장, 기한 초과 현황이 이곳에 표시됩니다.',
+    title: '후속 작업 큐가 준비되지 않았습니다',
+  });
+}
+
 function renderActionInboxUnavailableState() {
   return {
-    listHtml: emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '개요 보기',
-      actionValue: 'step-setup',
-      icon: 'Q',
-      message: '먼저 미션을 선택하면 현재 후속 작업과 권장 재실행 지점을 볼 수 있습니다.',
-      title: '표시할 액션이 없습니다',
-    }),
-    summaryHtml: emptyStateCard({
-      icon: 'Q',
-      message: '미션을 선택하면 열린 작업, 재실행 권장, 기한 초과 현황이 이곳에 표시됩니다.',
-      title: '후속 작업 큐가 준비되지 않았습니다',
-    }),
+    listHtml: renderActionInboxUnavailableListEmptyState(),
+    summaryHtml: renderActionInboxUnavailableSummaryEmptyState(),
   };
 }
 
