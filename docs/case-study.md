@@ -5,7 +5,7 @@
 - 이 프로젝트를 시작한 배경: 저장소 기반 engineering/knowledge work를 AI agent로 수행할 때 계획, 실행, 검토, 승인, 산출물, provider 상태, release evidence를 한 흐름으로 관리하기 위한 local-first harness가 필요했다.
 - 해결하려는 사용자 문제: AI agent 실행 결과가 단발성 답변으로 끝나고, 어떤 provider가 어떤 근거를 읽었는지, 어떤 승인과 검증을 거쳤는지 추적하기 어렵다.
 - 이 문제가 중요한 이유: 개발 작업은 코드 변경, 명령 실행, 외부 provider 호출, 문서/릴리즈 판단이 섞이므로 통제와 evidence가 없으면 운영 리스크가 커진다.
-- 현재 개발 진행 상태: OpenAI-backed local-first/self-hosted pilot boundary는 구현 및 문서화되어 있고, production/hosted SaaS readiness는 차단 상태다.
+- 현재 개발 진행 상태: `provider-scoped pilot-ready` for OpenAI-backed local-first/self-hosted path는 구현 및 문서화되어 있고, production/hosted SaaS readiness는 차단 상태다.
 
 ## 2. 문제 정의
 
@@ -94,20 +94,20 @@
 
 ## 7. 나의 역할
 
-- 기획: 확인 필요. 저장소 문서 기준 product plan, readiness level, target user/use case 정의가 존재한다.
-- 요구사항 정의: 확인 필요. `docs/product-plan-v1.md`, `docs/security-model-v1.md`, `docs/release-readiness-v1.md`에 요구사항 구조가 있다.
-- 프론트엔드: 확인 필요. `src/web/public/app.js`, `index.html`, `styles.css` 기반 operator console이 있다.
-- 백엔드: 확인 필요. `src/web/server.mjs`, `src/core/mission-service.mjs`, `src/core/store.mjs`가 핵심이다.
-- AI/LLM: 확인 필요. `src/providers/*`와 `src/agents/*.md`가 핵심이다.
-- 데이터 처리: 확인 필요. local JSON store, artifact write, retrieval/fact graph/memory service가 있다.
-- 배포: 확인 필요. self-hosted pilot docs와 GitHub Actions provider smoke가 있다.
-- 문서화: 확인 필요. 다수의 v1 planning/evidence/security/operator docs가 있다.
+- 기획: product plan, readiness level, target user/use case, MVP/non-scope를 문서화했다.
+- 요구사항 정의: `docs/product-plan-v1.md`, `docs/security-model-v1.md`, `docs/release-readiness-v1.md` 기준으로 provider, approval, evidence, release blocker 요구를 구조화했다.
+- 프론트엔드: `src/web/public/app.js`, `index.html`, `styles.css` 기반 operator console과 release/provider/action surface를 구성했다.
+- 백엔드: `src/web/server.mjs`, `src/core/mission-service.mjs`, `src/core/store.mjs` 중심의 local API/service/store 흐름을 구현했다.
+- AI/LLM: `src/providers/*`, `src/agents/*.md`를 통해 provider adapter와 role prompt 기반 managed agent flow를 구성했다.
+- 데이터 처리: local JSON store, artifact write, retrieval/fact graph/memory service로 실행 evidence를 남기도록 설계했다.
+- 배포/검증: self-hosted pilot docs, GitHub Actions provider smoke, release evidence generator, representative demo replay proof를 정리했다.
+- 문서화: v1 planning/evidence/security/operator docs와 portfolio evidence 문서를 유지했다.
 
 ## 8. 결과
 
 - 구현 완료 기능: local-first multi-agent runtime, CLI, web API/UI, provider abstraction, local persistence, approval/action/release evidence surfaces
 - 로컬 실행 가능 여부: 가능. README 기준 `npm run ui`, `npm run bootstrap:local`, `node src/cli.mjs ...`
-- 테스트 여부: smoke scripts와 GitHub Actions provider smoke가 존재한다. 이번 문서화 작업에서는 source 변경 없이 smoke command 일부만 검증한다.
+- 테스트 여부: smoke scripts, representative demo evidence smoke, execution-v1 artifact smoke, GitHub Actions provider smoke가 존재한다.
 - 배포 여부: hosted production 배포 근거 없음. self-hosted local-first pilot guide 존재.
 - 사용자 피드백: 현재 없음. 임의 생성 금지.
 - 수치 성과:

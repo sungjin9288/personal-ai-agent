@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-22T07:32:21.755Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-22T07:32:12.309Z
 - branch: codex/portfolio-docs-claim-boundary
 - commit: 75aef5125ef8b73cdac7a66331c5b22df38d54ec
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/75aef5125ef8b73cdac7a66331c5b22df38d54ec/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

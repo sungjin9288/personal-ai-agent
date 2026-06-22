@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T07:32:21.755Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T07:32:20.466Z
 - localDate: 2026-06-22
 - branch: codex/portfolio-docs-claim-boundary
 - commit: 75aef5125ef8b73cdac7a66331c5b22df38d54ec
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/75aef5125ef8b73cdac7a66331c5b22df38d54ec](releases/execution-v1/75aef5125ef8b73cdac7a66331c5b22df38d54ec)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/75aef5125ef8b73cdac7a66331c5b22df38d54ec/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/75aef5125ef8b73cdac7a66331c5b22df38d54ec/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/75aef5125ef8b73cdac7a66331c5b22df38d54ec](docs/releases/execution-v1/75aef5125ef8b73cdac7a66331c5b22df38d54ec)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/portfolio-docs-claim-boundary not found
 
