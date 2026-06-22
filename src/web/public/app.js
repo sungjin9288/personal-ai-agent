@@ -23477,14 +23477,18 @@ function renderMissionActions() {
   wireActionInboxReviewerFollowUpResolveButtons();
 }
 
+function renderApprovalListEmptyState() {
+  return emptyStateCard({
+    icon: 'AP',
+    message: '지금은 사람이 결정해야 할 승인 항목이 없습니다. 새로운 실행이 생기면 이 패널에 바로 나타납니다.',
+    title: '승인 대기 항목이 없습니다',
+  });
+}
+
 function renderApprovals() {
   const items = state.approvals || [];
   if (!items.length) {
-    elements.approvalList.innerHTML = emptyStateCard({
-      icon: 'AP',
-      message: '지금은 사람이 결정해야 할 승인 항목이 없습니다. 새로운 실행이 생기면 이 패널에 바로 나타납니다.',
-      title: '승인 대기 항목이 없습니다',
-    });
+    elements.approvalList.innerHTML = renderApprovalListEmptyState();
     return;
   }
 
