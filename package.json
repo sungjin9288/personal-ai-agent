@@ -75,6 +75,7 @@
     "smoke:readme-portfolio-overview": "node scripts/smoke-readme-portfolio-overview.mjs",
     "smoke:representative-demo": "node scripts/smoke-representative-demo.mjs",
     "smoke:representative-demo-evidence": "node scripts/smoke-representative-demo-evidence.mjs",
+    "smoke:operator-surface-demo-evidence": "node scripts/smoke-operator-surface-demo-evidence.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",

@@ -8,6 +8,7 @@
 - relatedRunbook: [operator-runbook-v1.md](operator-runbook-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-handoff.md](execution-v1-handoff.md)
+- relatedOperatorSurfaceEvidence: [operator-surface-demo-evidence-v1.md](operator-surface-demo-evidence-v1.md)
 
 ## Demo Goal
 
@@ -50,6 +51,7 @@ Evidence capture:
 ```bash
 npm run evidence:representative-demo
 npm run smoke:representative-demo-evidence
+npm run smoke:operator-surface-demo-evidence
 ```
 
 Operator UI path:
@@ -64,6 +66,7 @@ Narration checklist:
 
 - identify the selected demo as `Representative Demo: Release Readiness Evidence Walkthrough`
 - show current release evidence and immutable snapshot before discussing provider claims
+- use `Operator Surface Demo Evidence` in `docs/operator-surface-demo-evidence-v1.md` when the audience asks for mission/provider/action support evidence beyond the release tab
 - explain Anthropic, Hermes, and target local provider gaps as stop conditions, not hidden failures
 - point to `docs/execution-v1-handoff.md` for the current operator handoff
 - point to `docs/pilot-export-package-v1.md` as a manifest-only share package after hygiene passes
@@ -73,6 +76,7 @@ Success criteria:
 
 - `smoke:representative-demo` passes
 - execution-v1 status, snapshot, handoff, and release artifact hygiene smokes pass
+- `smoke:operator-surface-demo-evidence` passes for the mission/provider/action evidence map
 - the demo does not require live credentials
 - the narrative never upgrades the current state beyond provider-scoped pilot readiness
 
@@ -81,7 +85,16 @@ Stop criteria:
 - release artifact hygiene fails
 - execution-v1 snapshot is stale or missing
 - README, demo catalog, product plan, or handoff disagree about provider scope
+- mission/provider/action support evidence files are missing or contradict the claim boundary
 - the presenter cannot explain why production-ready and all-provider-complete are still blocked
+
+Supporting operator-surface follow-up gaps:
+
+- Mission creation/run browser screenshot
+- Provider readiness browser screenshot
+- Action inbox browser screenshot
+
+These are follow-up portfolio polish items. The current representative demo remains evidence-backed by release status screenshot, replay log, browser E2E report, CLI/API evidence, and the `Operator Surface Demo Evidence` map.
 
 ## Scenario 1: Release Readiness
 

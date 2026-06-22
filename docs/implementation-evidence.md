@@ -19,6 +19,7 @@
 | Global overview/read model | 검증 완료 | `evidence/cli-logs/overview-global.log` | `exit_code=0` | workspace/global summary surface 확인 |
 | Release blocker handoff | 검증 완료 | `evidence/cli-logs/release-blockers-hermes.log` | `exit_code=0` | Hermes/target provider blocker가 남아 있음을 증거화 |
 | Representative release demo | 검증 완료 | `evidence/cli-logs/representative-release-demo-replay.log`, `evidence/output-artifacts/representative-release-demo-summary.json`, `evidence/output-artifacts/representative-release-demo-browser-e2e.json`, `evidence/screenshots/representative-release-demo-release-status.png` | 대표 demo smoke/status/snapshot/handoff/hygiene/pilot-export 통과, browser report/screenshot evidence 복사 | credential-free portfolio walkthrough |
+| Operator surface demo evidence | 검증 완료 | `docs/operator-surface-demo-evidence-v1.md`, `evidence/cli-logs/mission-show-runtime.log`, `evidence/cli-logs/provider-list.log`, `evidence/cli-logs/approval-inbox-runtime.log`, `evidence/api-responses/api-providers.json` | mission/provider/action support evidence map smoke 통과 | release tab 밖의 보조 설명 증거 |
 | Web API health/meta/status | 검증 완료 | `evidence/api-responses/api-health.json`, `api-meta.json`, `api-execution-v1-status.json` | HTTP 응답 저장 | local server `http://127.0.0.1:4510`에서 수집 |
 | Web operator console | 검증 완료 | `evidence/screenshots/operator-console-home.png` | Playwright full-page screenshot 저장 | UI title: `에이전트 운영 콘솔` |
 | Release/evidence output artifacts | 검증 완료 | `evidence/output-artifacts/*.md` | 기존 repo evidence docs 복사 | source docs 재생성 없이 포트폴리오 증거로 복사 |
@@ -37,6 +38,7 @@
 | `node src/cli.mjs overview release-blockers --provider hermes` | `evidence/cli-logs/release-blockers-hermes.log` | 통과 |
 | `npm run evidence:representative-demo` | `evidence/cli-logs/representative-release-demo-replay.log` | 통과 |
 | `npm run smoke:representative-demo-evidence` | `evidence/output-artifacts/representative-release-demo-summary.json` | 통과 |
+| `npm run smoke:operator-surface-demo-evidence` | `docs/operator-surface-demo-evidence-v1.md` | 통과 |
 | `node scripts/bootstrap-local.mjs --workspace ... --run --provider stub` | `evidence/cli-logs/bootstrap-local-runtime.log` | 통과 |
 | `node src/cli.mjs mission show mission_20260609060035_b10cc9` | `evidence/cli-logs/mission-show-runtime.log` | 통과 |
 | `node src/cli.mjs session show mission_20260609060035_b10cc9 --session session_20260609060035_ba6107` | `evidence/cli-logs/session-show-runtime.log` | 통과 |

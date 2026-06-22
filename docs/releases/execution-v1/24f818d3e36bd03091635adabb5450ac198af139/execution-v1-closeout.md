@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-22T07:51:15.486Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-22T07:50:58.781Z
 - branch: codex/operator-surface-demo-evidence
 - commit: 24f818d3e36bd03091635adabb5450ac198af139
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/24f818d3e36bd03091635adabb5450ac198af139/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
