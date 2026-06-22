@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T02:50:15.095Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T02:49:49.641Z
 - branch: codex/run-stage-empty-state-renderer
 - commit: d92667aa69e691f09eccf54b6c6df777603f4fdd
