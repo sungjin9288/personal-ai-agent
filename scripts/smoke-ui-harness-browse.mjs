@@ -2465,6 +2465,8 @@ try {
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutEmptyState();'), true);
   assert.equal(appJs.includes('function renderReleaseStatusEmptyState()'), true);
   assert.equal(appJs.includes('elements.releaseStatus.innerHTML = renderReleaseStatusEmptyState();'), true);
+  assert.equal(appJs.includes('function renderReviewReadinessEmptyState()'), true);
+  assert.equal(appJs.includes('const empty = renderReviewReadinessEmptyState();'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes('function renderSessionListEmptyState()'), true);
