@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Representative Release Demo
+
+- selected `Release Readiness Evidence Walkthrough` as the default portfolio and pilot demo
+- added a credential-free 10-minute replay path covering execution-v1 status, snapshot, handoff, and release artifact hygiene
+- added `smoke:representative-demo` to keep README, demo catalog, product plan, handoff, and pilot export readiness claims aligned
+
 ## 2026-06-22 Harness Engineering Loop Guardrails
 
 - reviewed the local Claude Code and Codex harness PDFs and added harness engineering guardrails to the Loop Engineering UI surface

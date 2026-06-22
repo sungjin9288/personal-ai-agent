@@ -24,6 +24,58 @@ The demo may claim OpenAI-scoped local-first pilot readiness when it uses the ar
 - show evidence and handoff surfaces after each meaningful workflow
 - separate successful completion from known gaps
 
+## Representative Demo: Release Readiness Evidence Walkthrough
+
+This is the default portfolio and pilot walkthrough demo. It should be used before live-provider demos because it is deterministic, credential-free, and shows the product thesis in one operator-visible loop: `plan -> verify -> evidence -> handoff -> snapshot`.
+
+Why this demo comes first:
+
+- it proves the local-first harness can explain its own release state without external secrets
+- it shows the OpenClaw-style backbone through operator surfaces, release status, provider blockers, and snapshot evidence
+- it shows Hermes-style improvement boundaries by keeping learning, recovery, and provider claims behind evidence gates
+- it shows Loop Engineering and Harness Engineering guardrails without enabling unbounded autonomous execution
+
+10-minute replay:
+
+```bash
+npm run smoke:representative-demo
+npm run smoke:execution-v1-status
+npm run smoke:execution-v1-snapshot
+npm run smoke:execution-v1-handoff
+npm run smoke:release-artifact-hygiene
+```
+
+Operator UI path:
+
+1. Run `npm run ui`.
+2. Open the local operator console.
+3. Navigate to `결과와 기록 -> v1 마감 상태`.
+4. Show deterministic status, reference adoption readiness, runtime summary, provider cards, release blockers, handoff, and immutable snapshot.
+5. Explicitly state the boundary: the demo supports `provider-scoped pilot ready` for the OpenAI-backed local-first path and does not claim `production-ready`, all-provider completeness, Anthropic readiness, Hermes readiness, or target local provider production approval.
+
+Narration checklist:
+
+- identify the selected demo as `Representative Demo: Release Readiness Evidence Walkthrough`
+- show current release evidence and immutable snapshot before discussing provider claims
+- explain Anthropic, Hermes, and target local provider gaps as stop conditions, not hidden failures
+- point to `docs/execution-v1-handoff.md` for the current operator handoff
+- point to `docs/pilot-export-package-v1.md` as a manifest-only share package after hygiene passes
+- close by running or citing `smoke:representative-demo` and the execution-v1 smoke commands above
+
+Success criteria:
+
+- `smoke:representative-demo` passes
+- execution-v1 status, snapshot, handoff, and release artifact hygiene smokes pass
+- the demo does not require live credentials
+- the narrative never upgrades the current state beyond provider-scoped pilot readiness
+
+Stop criteria:
+
+- release artifact hygiene fails
+- execution-v1 snapshot is stale or missing
+- README, demo catalog, product plan, or handoff disagree about provider scope
+- the presenter cannot explain why production-ready and all-provider-complete are still blocked
+
 ## Scenario 1: Release Readiness
 
 Purpose:
