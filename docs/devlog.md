@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Output Closeout State Renderer
+
+- moved populated output closeout checklist item rendering into a dedicated renderer helper
+- kept readiness badges, compact output styling, switch-tab actions, and closeout item ordering unchanged
+- extended UI learning promotion and harness browse smoke coverage for output closeout state renderer delegation
+
 ## 2026-06-22 Artifact Viewer State Renderer
 
 - moved populated artifact viewer markdown rendering into a dedicated renderer helper
