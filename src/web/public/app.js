@@ -23558,6 +23558,22 @@ function renderSessionDetailRunList(agentRuns = [], fallbackProvider = '-') {
     .join('');
 }
 
+function renderSessionDetailApprovalList(approvals = []) {
+  return approvals
+    .slice()
+    .reverse()
+    .map(
+      (approval) => `
+        <div class="inspector-block">
+          <h3>${escapeHtml(approval.title || approval.id)}</h3>
+          <div class="item-meta">${escapeHtml(getDisplayLabel(approval.status))} · ${formatDate(approval.createdAt)}</div>
+          <div class="item-meta">${escapeHtml(approval.reason || '')}</div>
+        </div>
+      `,
+    )
+    .join('');
+}
+
 function renderSessionDetailArtifactList(artifacts = []) {
   return artifacts
     .slice()
@@ -23605,19 +23621,7 @@ function renderSessionDetail(sessionPayload) {
 
   const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');
 
-  const approvals = (sessionPayload.approvals || [])
-    .slice()
-    .reverse()
-    .map(
-      (approval) => `
-        <div class="inspector-block">
-          <h3>${escapeHtml(approval.title || approval.id)}</h3>
-          <div class="item-meta">${escapeHtml(getDisplayLabel(approval.status))} · ${formatDate(approval.createdAt)}</div>
-          <div class="item-meta">${escapeHtml(approval.reason || '')}</div>
-        </div>
-      `,
-    )
-    .join('');
+  const approvals = renderSessionDetailApprovalList(sessionPayload.approvals || []);
 
   const artifacts = renderSessionDetailArtifactList(sessionPayload.artifacts || []);
 

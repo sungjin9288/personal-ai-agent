@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T00:45:16.924Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T00:45:15.407Z
 - localDate: 2026-06-22
 - branch: codex/session-detail-approval-list-renderer
 - commit: 98d6b51855fd74006dafe59948141d2588358131
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/98d6b51855fd74006dafe59948141d2588358131](releases/execution-v1/98d6b51855fd74006dafe59948141d2588358131)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/98d6b51855fd74006dafe59948141d2588358131/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/98d6b51855fd74006dafe59948141d2588358131/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/98d6b51855fd74006dafe59948141d2588358131](docs/releases/execution-v1/98d6b51855fd74006dafe59948141d2588358131)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/session-detail-approval-list-renderer not found
 

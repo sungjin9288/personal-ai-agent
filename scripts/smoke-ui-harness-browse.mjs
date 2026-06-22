@@ -413,6 +413,8 @@ try {
     appJs.includes("const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');"),
     true,
   );
+  assert.equal(appJs.includes('function renderSessionDetailApprovalList(approvals = [])'), true);
+  assert.equal(appJs.includes('const approvals = renderSessionDetailApprovalList(sessionPayload.approvals || []);'), true);
   assert.equal(appJs.includes('현재 산출물 선택됨: ${artifactTitle}'), true);
   assert.equal(appJs.includes('산출물 선택: ${artifactTitle}'), true);
   assert.equal(appJs.includes('function renderSessionDetailArtifactList(artifacts = [])'), true);

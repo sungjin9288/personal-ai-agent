@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T00:45:16.924Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T00:45:05.483Z
 - branch: codex/session-detail-approval-list-renderer
 - commit: 98d6b51855fd74006dafe59948141d2588358131
