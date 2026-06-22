@@ -5107,7 +5107,7 @@ function renderHarnessLoopsPanel({ adoptedPatterns = [], loops = {}, recommendat
   `;
 }
 
-function renderHarnessEmptyPanelState() {
+function renderHarnessPanelEmptyState() {
   return emptyStateCard({
     action: 'jump-step',
     actionLabel: '1단계로 이동',
@@ -18531,7 +18531,7 @@ function renderHarnessPanel() {
   syncHarnessDocumentLogControls();
 
   if (!state.missionDetail?.harness) {
-    const empty = renderHarnessEmptyPanelState();
+    const empty = renderHarnessPanelEmptyState();
     elements.harnessSource.innerHTML = empty;
     elements.harnessMemory.innerHTML = empty;
     elements.harnessLoops.innerHTML = empty;

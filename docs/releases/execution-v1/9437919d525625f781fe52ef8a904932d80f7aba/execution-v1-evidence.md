@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T04:49:35.490Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T04:49:24.118Z
 - branch: codex/harness-panel-empty-state-renderer
 - commit: 9437919d525625f781fe52ef8a904932d80f7aba

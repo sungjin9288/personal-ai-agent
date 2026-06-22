@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Harness Panel Empty State Renderer
+
+- renamed the harness no-mission panel empty renderer to match the empty-state helper naming pattern
+- kept the jump-step quick action, Korean empty copy, HS icon marker, and shared source/memory/loops assignment unchanged
+- updated UI learning promotion and harness browse smoke coverage for harness panel empty-state delegation
+
 ## 2026-06-22 Action Inbox Empty List Renderer
 
 - moved the open-queue and filtered action inbox empty states into dedicated renderer helpers
