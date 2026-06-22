@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T05:18:20.351Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T05:18:18.959Z
 - localDate: 2026-06-22
 - branch: codex/fallback-event-empty-list-renderer
 - commit: 92284b7d0f59002663e469147979710852ec4d97
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/92284b7d0f59002663e469147979710852ec4d97](releases/execution-v1/92284b7d0f59002663e469147979710852ec4d97)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/92284b7d0f59002663e469147979710852ec4d97/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/92284b7d0f59002663e469147979710852ec4d97/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/92284b7d0f59002663e469147979710852ec4d97](docs/releases/execution-v1/92284b7d0f59002663e469147979710852ec4d97)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/fallback-event-empty-list-renderer not found
 
