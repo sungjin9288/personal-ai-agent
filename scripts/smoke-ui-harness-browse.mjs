@@ -2479,6 +2479,10 @@ try {
   assert.equal(appJs.includes('function renderMissionListUncreatedEmptyState()'), true);
   assert.equal(appJs.includes('? renderMissionListFilteredEmptyState()'), true);
   assert.equal(appJs.includes(': renderMissionListUncreatedEmptyState();'), true);
+  assert.equal(appJs.includes('function renderActionInboxOpenQueueEmptyState()'), true);
+  assert.equal(appJs.includes("function renderActionInboxFilteredEmptyState(visibleFilterLabel = '전체')"), true);
+  assert.equal(appJs.includes('? renderActionInboxFilteredEmptyState(visibleFilterLabel)'), true);
+  assert.equal(appJs.includes(': renderActionInboxOpenQueueEmptyState();'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes('function renderSessionListEmptyState()'), true);

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T04:41:02.934Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T04:40:48.260Z
 - branch: codex/action-inbox-empty-list-renderer
 - commit: 6be9f882e60baccd7fc4cd6ccc91846d515e2b5e
