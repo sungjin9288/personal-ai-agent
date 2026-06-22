@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T02:39:40.736Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T02:39:39.139Z
 - localDate: 2026-06-22
 - branch: codex/setup-harness-empty-state-renderer
 - commit: a6852bfbfc43afce634dbad170ac74d10570ad00
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a6852bfbfc43afce634dbad170ac74d10570ad00](releases/execution-v1/a6852bfbfc43afce634dbad170ac74d10570ad00)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a6852bfbfc43afce634dbad170ac74d10570ad00/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a6852bfbfc43afce634dbad170ac74d10570ad00/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a6852bfbfc43afce634dbad170ac74d10570ad00](docs/releases/execution-v1/a6852bfbfc43afce634dbad170ac74d10570ad00)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/setup-harness-empty-state-renderer not found
 
