@@ -2475,6 +2475,10 @@ try {
   assert.equal(appJs.includes('summaryHtml: renderActionInboxUnavailableSummaryEmptyState(),'), true);
   assert.equal(appJs.includes('function renderProviderListEmptyState()'), true);
   assert.equal(appJs.includes('`${renderProviderFallbackEventAudit()}${providerCards}` || renderProviderListEmptyState();'), true);
+  assert.equal(appJs.includes('function renderMissionListFilteredEmptyState()'), true);
+  assert.equal(appJs.includes('function renderMissionListUncreatedEmptyState()'), true);
+  assert.equal(appJs.includes('? renderMissionListFilteredEmptyState()'), true);
+  assert.equal(appJs.includes(': renderMissionListUncreatedEmptyState();'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes('function renderSessionListEmptyState()'), true);
