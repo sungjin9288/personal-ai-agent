@@ -2,7 +2,7 @@
 
 - status: orchestration-backbone-current
 - localDate: 2026-06-01
-- designInput: OpenClaw-style gateway/control plane, Loop Engineering closed-loop routing, Claw Code-style CLI harness discipline, Harness-style artifact and runner boundary
+- designInput: OpenClaw-style gateway/control plane, Loop Engineering closed-loop routing, Harness Engineering guardrails, Claw Code-style CLI harness discipline, Harness-style artifact and runner boundary
 - pairedEngine: [self-improvement-engine-v1.md](self-improvement-engine-v1.md)
 - relatedReferences: [reference-repos.md](reference-repos.md)
 - relatedProductPlan: [product-plan-v1.md](product-plan-v1.md)
@@ -26,12 +26,21 @@ The six operating foundations are represented as explicit platform boundaries: a
 
 OpenClaw-style backbone ownership remains mandatory for every loop pass. Hermes-style self-improvement may propose the next iteration, but it cannot skip identity/session binding, permission and sandbox decisions, provider routing, reviewer gates, or release evidence.
 
+## Harness Engineering Guardrails
+
+The backbone adopts the harness engineering rule that order must live before cleverness. Prompt text is treated as one control-plane input, not as the control plane itself. The runtime route must keep query heartbeat state, tool scheduling, interrupt semantics, recovery branches, context budget, and verification evidence explicit enough for operators to inspect.
+
+Recovery is a main path. Recoverable errors should move through bounded recovery branches before surfacing, but every recovery branch must have counters, anti-loop guards, and stop-condition records. Context governance must preserve working semantics through scoped memory, retrieval, and compaction instead of simply adding more prompt text.
+
+Independent verification is a required harness property. Implementation, verification, and synthesis may share evidence, but they must remain separately accountable so completion cannot impersonate problem solved.
+
 ## Adopted Reference Inputs
 
 | Reference | Adopted pattern | Rejected or deferred pattern |
 | --- | --- | --- |
 | OpenClaw | Local-first gateway, channel adapters, session separation, workspace routing, permissions, sandbox modes, tools/skills/plugin registry, provider gateway surface, operator status commands | Direct production channel matrix, public always-on deployment claim, plugin vendoring, and broad remote gateway exposure before target evidence |
 | Loop Engineering | Closed-loop discover/plan/execute/verify/iterate cycle, six operating foundations, and prompt-to-loop mindset | Unbounded open-loop autonomy, hidden recursive execution, cost-unbounded fleet loops, and bypassing operator-visible stop conditions |
+| Harness Engineering books | Control-plane-first design, query heartbeat, context governance, recovery-as-main-path, independent verification, and local governance checklists | Treating Claude Code internals as a vendored implementation, burying approval policy in code-only branches, and adding hooks before baseline verification is stable |
 | Claw Code | CLI harness discipline, `doctor`/parity mindset, build-from-source clarity, provider/runtime separation | Rust harness rewrite, deprecated package assumptions, and replacing the Node runtime |
 | Harness | Pipeline boundary, artifact registry mindset, local runner/server separation, durable state warning, operator-facing DevOps surface | Go/Gitness platform adoption, hosted SCM, Gitspaces, Docker-socket-coupled CI engine, and artifact registry implementation inside v1 |
 | Hermes Agent | Gateway compatibility, provider-aware model switching, interrupt/approval cues, and subagent routing signals consumed by the backbone | Hermes process ownership, Python app vendoring, broad messaging gateway matrix, automatic skill mutation, and remote terminal backends in the backbone |

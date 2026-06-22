@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Harness Engineering Loop Guardrails
+
+- reviewed the local Claude Code and Codex harness PDFs and added harness engineering guardrails to the Loop Engineering UI surface
+- captured control plane, query heartbeat, context budget, recovery branch, independent verification, and local governance as explicit guardrail concepts
+- extended OpenClaw/Hermes source-of-record docs and smoke coverage for the PDF-derived harness engineering boundaries
+
 ## 2026-06-22 Loop Engineering Orchestration Surface
 
 - added a Loop Engineering panel to the AI blueprint builder with closed-loop default, five-step cycle, and six operating foundations

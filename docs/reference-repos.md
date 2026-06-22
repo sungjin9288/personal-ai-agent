@@ -142,6 +142,9 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - inspected again: 2026-06-22, Loop Engineering article from PyTorchKR discussion
 - borrowed: prompt-to-loop framing, discover/plan/execute/verify/iterate cycle, closed-loop default for practical cost control, six operating foundations, maker/checker separation, and memory-backed iteration as UI and documentation guidance for the existing OpenClaw backbone plus Hermes engine architecture
 - rejected for now: unbounded open-loop autonomy, cost-unbounded fleet loops, automatic skill mutation, broad connector enablement, and treating the loop as a substitute for engineering judgment
+- inspected local PDFs: 2026-06-22, `book1-claude-code-en.pdf` and `book2-comparing-en.pdf`
+- borrowed: Harness Engineering framing, prompt-as-control-plane input, query loop heartbeat, context governance as budget governance, recovery as a main path with circuit breakers, independent verification, state sovereignty, and local governance checklists
+- rejected for now: vendoring Claude Code internals, copying CLAUDE.md hierarchy directly, adding hooks before stable baseline verification, and turning recovery or compaction into hidden autonomous loops
 
 ### openscreen
 - source: https://github.com/siddharthvaddem/openscreen
@@ -164,6 +167,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - OpenClaw-style gateway/session/workspace/channel/permission/sandbox backbone
 - Hermes-style scoped self-improvement engine behind approval, reviewer, and evidence gates
 - Loop Engineering closed-loop discover/plan/execute/verify/iterate surface with automations, worktrees, skills, connectors, subagents, and memory as explicit operating foundations
+- Harness Engineering guardrails for control plane, query heartbeat, context budget, recovery branch governance, independent verification, and local governance
 - repo-native strategy and incident documentation
 
 ## 2026-04-27 External Reference Review
