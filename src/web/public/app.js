@@ -23645,6 +23645,18 @@ function renderSessionDetailEmptyState() {
   });
 }
 
+function renderSessionDetailRunListEmptyState() {
+  return '<p class="empty-state">실행 정보가 없습니다.</p>';
+}
+
+function renderSessionDetailApprovalListEmptyState() {
+  return '<p class="empty-state">승인 이력이 없습니다.</p>';
+}
+
+function renderSessionDetailArtifactListEmptyState() {
+  return '<p class="empty-state">산출물이 없습니다.</p>';
+}
+
 function renderSessionDetailState({
   approvalCount = 0,
   approvals = '',
@@ -23657,15 +23669,15 @@ function renderSessionDetailState({
     <div class="inspector-stack">
       <div class="inspector-group">
         <h4>실행 이력 <span class="section-count">${escapeHtml(String(runCount))}</span></h4>
-        ${runs || '<p class="empty-state">실행 정보가 없습니다.</p>'}
+        ${runs || renderSessionDetailRunListEmptyState()}
       </div>
       <div class="inspector-group">
         <h4>승인 이력 <span class="section-count">${escapeHtml(String(approvalCount))}</span></h4>
-        ${approvals || '<p class="empty-state">승인 이력이 없습니다.</p>'}
+        ${approvals || renderSessionDetailApprovalListEmptyState()}
       </div>
       <div class="inspector-group">
         <h4>산출물 목록 <span class="section-count">${escapeHtml(String(artifactCount))}</span></h4>
-        ${artifacts || '<p class="empty-state">산출물이 없습니다.</p>'}
+        ${artifacts || renderSessionDetailArtifactListEmptyState()}
       </div>
     </div>
   `;
