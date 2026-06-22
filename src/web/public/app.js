@@ -18536,19 +18536,23 @@ function renderHarnessPanel() {
   wireHarnessPanelActions();
 }
 
+function renderReleaseStatusEmptyState() {
+  return emptyStateCard({
+    action: 'refresh-release-status',
+    actionLabel: '마감 상태 불러오기',
+    icon: 'V1',
+    message: 'execution v1 검증 요약, evidence, closeout checklist를 같은 화면에서 확인할 수 있습니다.',
+    title: 'v1 마감 상태가 아직 로드되지 않았습니다',
+  });
+}
+
 function renderReleaseStatus() {
   if (!elements.releaseStatus) {
     return;
   }
 
   if (!state.releaseStatus) {
-    elements.releaseStatus.innerHTML = emptyStateCard({
-      action: 'refresh-release-status',
-      actionLabel: '마감 상태 불러오기',
-      icon: 'V1',
-      message: 'execution v1 검증 요약, evidence, closeout checklist를 같은 화면에서 확인할 수 있습니다.',
-      title: 'v1 마감 상태가 아직 로드되지 않았습니다',
-    });
+    elements.releaseStatus.innerHTML = renderReleaseStatusEmptyState();
     wireQuickActions(elements.releaseStatus);
     return;
   }
