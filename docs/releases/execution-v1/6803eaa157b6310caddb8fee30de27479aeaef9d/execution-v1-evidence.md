@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T00:27:30.443Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T00:27:19.235Z
 - branch: codex/session-detail-artifact-list-renderer
 - commit: 6803eaa157b6310caddb8fee30de27479aeaef9d

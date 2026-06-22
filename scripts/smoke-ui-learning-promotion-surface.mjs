@@ -383,6 +383,10 @@ try {
   assert.equal(appJs.includes('실행 정보가 없습니다.'), true);
   assert.equal(appJs.includes('승인 이력이 없습니다.'), true);
   assert.equal(appJs.includes('산출물이 없습니다.'), true);
+  assert.equal(appJs.includes('function renderSessionDetailArtifactList(artifacts = [])'), true);
+  assert.equal(appJs.includes('const artifacts = renderSessionDetailArtifactList(sessionPayload.artifacts || []);'), true);
+  assert.equal(appJs.includes('artifactSelectionLabel'), true);
+  assert.equal(appJs.includes("dataAttribute: 'data-artifact-id'"), true);
   assert.equal(appJs.includes('function renderTimelineEmptyState()'), true);
   assert.equal(appJs.includes('elements.timelineList.innerHTML = renderTimelineEmptyState();'), true);
   assert.equal(appJs.includes('표시할 타임라인이 없습니다'), true);

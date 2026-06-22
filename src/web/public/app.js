@@ -23540,6 +23540,38 @@ function renderSessionDetailState({
   `;
 }
 
+function renderSessionDetailArtifactList(artifacts = []) {
+  return artifacts
+    .slice()
+    .reverse()
+    .map((artifact) => {
+      const active = artifact.id === state.selectedArtifactId ? 'is-active' : '';
+      const artifactTitle = artifact.title || artifact.fileName || artifact.id;
+      const artifactSelectionLabel = active
+        ? `현재 산출물 선택됨: ${artifactTitle}`
+        : `산출물 선택: ${artifactTitle}`;
+      const artifactButtonContent = `
+        <div class="status-row">
+          <span class="mini-badge ${getStatusClass(artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(artifact.kind, artifact.kind || 'artifact'))}</span>
+        </div>
+        <div class="item-title">${escapeHtml(artifact.title || artifact.fileName || artifact.id)}</div>
+        <div class="item-meta">${escapeHtml(artifact.fileName || '')}</div>
+      `;
+      return `
+        <div class="artifact-link ${active}">
+          ${renderSelectableDetailButton({
+            active: Boolean(active),
+            content: artifactButtonContent,
+            dataAttribute: 'data-artifact-id',
+            dataValue: artifact.id,
+            selectionLabel: artifactSelectionLabel,
+          })}
+        </div>
+      `;
+    })
+    .join('');
+}
+
 function renderSessionDetail(sessionPayload) {
   if (!sessionPayload) {
     elements.sessionDetail.innerHTML = renderSessionDetailEmptyState();
@@ -23583,35 +23615,7 @@ function renderSessionDetail(sessionPayload) {
     )
     .join('');
 
-  const artifacts = (sessionPayload.artifacts || [])
-    .slice()
-    .reverse()
-    .map((artifact) => {
-      const active = artifact.id === state.selectedArtifactId ? 'is-active' : '';
-      const artifactTitle = artifact.title || artifact.fileName || artifact.id;
-      const artifactSelectionLabel = active
-        ? `현재 산출물 선택됨: ${artifactTitle}`
-        : `산출물 선택: ${artifactTitle}`;
-      const artifactButtonContent = `
-        <div class="status-row">
-          <span class="mini-badge ${getStatusClass(artifact.kind || 'artifact')}">${escapeHtml(getDisplayLabel(artifact.kind, artifact.kind || 'artifact'))}</span>
-        </div>
-        <div class="item-title">${escapeHtml(artifact.title || artifact.fileName || artifact.id)}</div>
-        <div class="item-meta">${escapeHtml(artifact.fileName || '')}</div>
-      `;
-      return `
-        <div class="artifact-link ${active}">
-          ${renderSelectableDetailButton({
-            active: Boolean(active),
-            content: artifactButtonContent,
-            dataAttribute: 'data-artifact-id',
-            dataValue: artifact.id,
-            selectionLabel: artifactSelectionLabel,
-          })}
-        </div>
-      `;
-    })
-    .join('');
+  const artifacts = renderSessionDetailArtifactList(sessionPayload.artifacts || []);
 
   elements.sessionDetail.innerHTML = renderSessionDetailState({
     approvalCount,

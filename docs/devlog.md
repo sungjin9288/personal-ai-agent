@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Session Detail Artifact List Renderer
+
+- moved populated session detail artifact list row rendering into a dedicated renderer helper
+- kept latest-first ordering, active artifact labels, kind badges, and artifact selection wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for session detail artifact list renderer delegation
+
 ## 2026-06-22 Session List State Renderer
 
 - moved populated session list row rendering into a dedicated renderer helper
