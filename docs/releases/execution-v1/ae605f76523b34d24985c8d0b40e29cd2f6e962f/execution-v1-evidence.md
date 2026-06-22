@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T03:16:29.405Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T03:16:17.135Z
 - branch: codex/release-status-empty-state-renderer
 - commit: ae605f76523b34d24985c8d0b40e29cd2f6e962f

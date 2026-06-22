@@ -396,6 +396,9 @@ try {
   assert.equal(appJs.includes('function renderOutputCloseoutEmptyState()'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutEmptyState();'), true);
   assert.equal(appJs.includes('확인할 마무리 항목이 없습니다'), true);
+  assert.equal(appJs.includes('function renderReleaseStatusEmptyState()'), true);
+  assert.equal(appJs.includes('elements.releaseStatus.innerHTML = renderReleaseStatusEmptyState();'), true);
+  assert.equal(appJs.includes('v1 마감 상태가 아직 로드되지 않았습니다'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes("isOutputFocus ? 'is-output-compact' : ''"), true);

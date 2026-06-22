@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Release Status Empty State Renderer
+
+- moved the unloaded release status empty state into a dedicated renderer helper
+- kept the refresh-release-status quick action, Korean empty copy, V1 icon marker, and release status action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for release status empty-state delegation
+
 ## 2026-06-22 Output Closeout Empty State Renderer
 
 - moved the no-mission output closeout empty state into a dedicated renderer helper
