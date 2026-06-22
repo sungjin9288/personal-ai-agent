@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Artifact Viewer State Renderer
+
+- moved populated artifact viewer markdown rendering into a dedicated renderer helper
+- kept markdown conversion, payload content fallback, selected artifact meta rendering, and detail context refresh unchanged
+- extended UI learning promotion and harness browse smoke coverage for artifact viewer state renderer delegation
+
 ## 2026-06-22 Session Detail Approval List Renderer
 
 - moved populated session detail approval list row rendering into a dedicated renderer helper

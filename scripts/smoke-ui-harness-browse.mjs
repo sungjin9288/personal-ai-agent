@@ -2443,6 +2443,8 @@ try {
   assert.equal(appJs.includes('elements.artifactViewer.innerHTML = renderArtifactViewerEmptyState();'), true);
   assert.equal(appJs.includes('선택된 산출물이 없습니다'), true);
   assert.equal(appJs.includes("actionValue: 'step-output'"), true);
+  assert.equal(appJs.includes("function renderArtifactViewerState(content = '')"), true);
+  assert.equal(appJs.includes('elements.artifactViewer.innerHTML = renderArtifactViewerState(payload.content);'), true);
   assert.equal(appJs.includes('function renderSessionListEmptyState()'), true);
   assert.equal(appJs.includes('elements.sessionList.innerHTML = renderSessionListEmptyState();'), true);
   assert.equal(appJs.includes('아직 세션이 없습니다'), true);

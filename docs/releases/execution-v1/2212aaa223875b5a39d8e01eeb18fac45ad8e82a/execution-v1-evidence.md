@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T00:54:34.719Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T00:54:20.472Z
 - branch: codex/artifact-viewer-state-renderer
 - commit: 2212aaa223875b5a39d8e01eeb18fac45ad8e82a
