@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Session Detail Run List Renderer
+
+- moved populated session detail run list row rendering into a dedicated renderer helper
+- kept latest-first ordering, role/status/provider/date labels, summary copy, and session provider fallback unchanged
+- extended UI learning promotion and harness browse smoke coverage for session detail run list renderer delegation
+
 ## 2026-06-22 Session Detail Artifact List Renderer
 
 - moved populated session detail artifact list row rendering into a dedicated renderer helper

@@ -23540,6 +23540,24 @@ function renderSessionDetailState({
   `;
 }
 
+function renderSessionDetailRunList(agentRuns = [], fallbackProvider = '-') {
+  return agentRuns
+    .slice()
+    .reverse()
+    .map(
+      (run) => `
+        <div class="inspector-block">
+          <h3>${escapeHtml(getDisplayLabel(run.role || run.workflowRole || run.id, run.role || run.workflowRole || run.id))}</h3>
+          <div class="item-meta">
+            ${escapeHtml(getDisplayLabel(run.status))} · ${escapeHtml(run.providerId || fallbackProvider)} · ${formatDate(run.startedAt)}
+          </div>
+          <div class="item-meta">${escapeHtml(run.outputSummary || run.inputSummary || '')}</div>
+        </div>
+      `,
+    )
+    .join('');
+}
+
 function renderSessionDetailArtifactList(artifacts = []) {
   return artifacts
     .slice()
@@ -23585,21 +23603,7 @@ function renderSessionDetail(sessionPayload) {
   const approvalCount = (sessionPayload.approvals || []).length;
   const artifactCount = (sessionPayload.artifacts || []).length;
 
-  const runs = (sessionPayload.agentRuns || [])
-    .slice()
-    .reverse()
-    .map(
-      (run) => `
-        <div class="inspector-block">
-          <h3>${escapeHtml(getDisplayLabel(run.role || run.workflowRole || run.id, run.role || run.workflowRole || run.id))}</h3>
-          <div class="item-meta">
-            ${escapeHtml(getDisplayLabel(run.status))} · ${escapeHtml(run.providerId || sessionPayload.session?.provider || '-')} · ${formatDate(run.startedAt)}
-          </div>
-          <div class="item-meta">${escapeHtml(run.outputSummary || run.inputSummary || '')}</div>
-        </div>
-      `,
-    )
-    .join('');
+  const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');
 
   const approvals = (sessionPayload.approvals || [])
     .slice()
