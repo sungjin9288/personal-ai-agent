@@ -410,6 +410,9 @@ try {
   assert.equal(appJs.includes('function renderActionInboxUnavailableSummaryEmptyState()'), true);
   assert.equal(appJs.includes('summaryHtml: renderActionInboxUnavailableSummaryEmptyState(),'), true);
   assert.equal(appJs.includes('후속 작업 큐가 준비되지 않았습니다'), true);
+  assert.equal(appJs.includes('function renderProviderListEmptyState()'), true);
+  assert.equal(appJs.includes('`${renderProviderFallbackEventAudit()}${providerCards}` || renderProviderListEmptyState();'), true);
+  assert.equal(appJs.includes('표시할 제공자 정보가 없습니다'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes("isOutputFocus ? 'is-output-compact' : ''"), true);
