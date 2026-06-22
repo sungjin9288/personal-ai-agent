@@ -505,6 +505,9 @@ try {
   assert.equal(appJs.includes('renderProviderFallbackEventActionButton'), true);
   assert.equal(appJs.includes('function renderProviderFallbackEventActionButton({'), true);
   assert.equal(appJs.includes('/^(reset|package)$/.test(actionName)'), true);
+  assert.equal(appJs.includes('function renderProviderFallbackEventListEmptyState()'), true);
+  assert.equal(appJs.includes(': renderProviderFallbackEventListEmptyState()'), true);
+  assert.equal(appJs.includes('현재 필터에 해당하는 fallback event가 없습니다.'), true);
   assert.equal(appJs.includes('fallbackPolicyFilterLabel'), true);
   assert.equal(appJs.includes('fallbackStopReasonFilterLabel'), true);
   assert.equal(appJs.includes('fallbackEventResetLabel'), true);

@@ -926,6 +926,9 @@ try {
   assert.equal(appJs.includes('renderActionInboxFallbackStopResetButton'), true);
   assert.equal(appJs.includes('renderActionInboxFallbackStopResetButton({ hasFallbackStopReason: Boolean(fallbackStopReasonFilter) })'), true);
   assert.equal(appJs.includes('초기화할 fallback stop 필터가 없습니다'), true);
+  assert.equal(appJs.includes('function renderProviderFallbackEventListEmptyState()'), true);
+  assert.equal(appJs.includes(': renderProviderFallbackEventListEmptyState()'), true);
+  assert.equal(appJs.includes('현재 필터에 해당하는 fallback event가 없습니다.'), true);
   assert.equal(appJs.includes('aria-label="${escapeHtml(resetTitle)}"'), true);
   assert.equal(appJs.includes('필터 전체 초기화'), true);
   assert.equal(appJs.includes("${hasFallbackStopReason ? '' : 'disabled'}"), true);

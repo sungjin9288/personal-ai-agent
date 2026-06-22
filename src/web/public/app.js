@@ -16480,6 +16480,10 @@ function renderProviderFallbackEventActionButton({
   return `<button class="${escapeHtml(className)}" type="button" ${actionAttribute}="true" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}">${escapeHtml(buttonText)}</button>`;
 }
 
+function renderProviderFallbackEventListEmptyState() {
+  return '<div class="empty-state">현재 필터에 해당하는 fallback event가 없습니다.</div>';
+}
+
 function formatProviderFallbackEventCountLines(counts = {}, emptyLabel = 'none') {
   const entries = getReleaseCountRecordEntries(counts);
   if (!entries.length) {
@@ -16671,7 +16675,7 @@ function renderProviderFallbackEventAudit() {
                 )
                 .join('')}
             </div>`
-          : '<div class="empty-state">현재 필터에 해당하는 fallback event가 없습니다.</div>'
+          : renderProviderFallbackEventListEmptyState()
       }
     </section>
   `;
