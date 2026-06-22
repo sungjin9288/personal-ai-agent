@@ -405,6 +405,11 @@ try {
   assert.equal(appJs.includes('function renderApprovalListEmptyState()'), true);
   assert.equal(appJs.includes('elements.approvalList.innerHTML = renderApprovalListEmptyState();'), true);
   assert.equal(appJs.includes('승인 대기 항목이 없습니다'), true);
+  assert.equal(appJs.includes('function renderActionInboxUnavailableListEmptyState()'), true);
+  assert.equal(appJs.includes('listHtml: renderActionInboxUnavailableListEmptyState(),'), true);
+  assert.equal(appJs.includes('function renderActionInboxUnavailableSummaryEmptyState()'), true);
+  assert.equal(appJs.includes('summaryHtml: renderActionInboxUnavailableSummaryEmptyState(),'), true);
+  assert.equal(appJs.includes('후속 작업 큐가 준비되지 않았습니다'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes("isOutputFocus ? 'is-output-compact' : ''"), true);
