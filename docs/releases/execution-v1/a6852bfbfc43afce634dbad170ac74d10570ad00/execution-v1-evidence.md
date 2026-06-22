@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T02:39:40.736Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T02:39:27.058Z
 - branch: codex/setup-harness-empty-state-renderer
 - commit: a6852bfbfc43afce634dbad170ac74d10570ad00
