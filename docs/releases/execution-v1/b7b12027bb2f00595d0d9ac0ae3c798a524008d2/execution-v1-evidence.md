@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T03:32:26.406Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T03:32:16.469Z
 - branch: codex/approval-list-empty-state-renderer
 - commit: b7b12027bb2f00595d0d9ac0ae3c798a524008d2

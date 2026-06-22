@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T03:32:26.406Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T03:32:24.747Z
 - localDate: 2026-06-22
 - branch: codex/approval-list-empty-state-renderer
 - commit: b7b12027bb2f00595d0d9ac0ae3c798a524008d2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b7b12027bb2f00595d0d9ac0ae3c798a524008d2](releases/execution-v1/b7b12027bb2f00595d0d9ac0ae3c798a524008d2)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b7b12027bb2f00595d0d9ac0ae3c798a524008d2/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b7b12027bb2f00595d0d9ac0ae3c798a524008d2/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b7b12027bb2f00595d0d9ac0ae3c798a524008d2](docs/releases/execution-v1/b7b12027bb2f00595d0d9ac0ae3c798a524008d2)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/approval-list-empty-state-renderer not found
 
