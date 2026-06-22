@@ -355,6 +355,9 @@ try {
   assert.equal(appJs.includes('elements.detailContextbar.innerHTML = renderDetailContextbarMissionState({'), true);
   assert.equal(appJs.includes('missionHarness = {}'), true);
   assert.equal(appJs.includes('missionHarness?.recommendations?.length || 0'), true);
+  assert.equal(appJs.includes('function renderAgentLaneEmptyState()'), true);
+  assert.equal(appJs.includes('elements.agentLane.innerHTML = renderAgentLaneEmptyState();'), true);
+  assert.equal(appJs.includes('에이전트 진행 흐름이 아직 없습니다'), true);
   assert.equal(appJs.includes('function renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('elements.artifactMeta.innerHTML = renderArtifactMetaState({'), true);
   assert.equal(appJs.includes('outputArtifactMetaExpanded = false'), true);

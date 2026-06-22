@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-06-22T02:13:17.993Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-06-22T02:12:57.328Z
 - branch: codex/agent-lane-empty-state-renderer
 - commit: af3a3a53ea8d8c37e3a39909b15a43076f8f1a04
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/af3a3a53ea8d8c37e3a39909b15a43076f8f1a04/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Agent Lane Empty State Renderer
+
+- moved the no-mission agent lane empty state into a dedicated renderer helper
+- kept the open-create quick action, Korean empty copy, AG icon marker, and agent lane action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for agent lane empty-state delegation
+
 ## 2026-06-22 Output Stage Empty State Renderer
 
 - moved no-mission output stage empty state rendering into a dedicated renderer helper
