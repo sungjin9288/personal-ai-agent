@@ -1,13 +1,13 @@
 # Representative Release Demo Replay
 
-generatedAt=2026-06-22T06:07:29.402Z
-branch=codex/representative-demo-evidence
-commit=5006e2e74faff0d00725a9273fba31569a4f4854
+generatedAt=2026-06-22T06:11:00.579Z
+branch=main
+commit=b89e5f1060f6a4771855acfdd6490f40f6a04454
 
 ## npm run smoke:representative-demo
 status=0
-startedAt=2026-06-22T06:07:29.402Z
-completedAt=2026-06-22T06:07:29.589Z
+startedAt=2026-06-22T06:11:00.580Z
+completedAt=2026-06-22T06:11:00.747Z
 
 stdout:
 
@@ -24,8 +24,8 @@ stdout:
 
 ## npm run smoke:execution-v1-status
 status=0
-startedAt=2026-06-22T06:07:29.589Z
-completedAt=2026-06-22T06:07:30.362Z
+startedAt=2026-06-22T06:11:00.747Z
+completedAt=2026-06-22T06:11:01.453Z
 
 stdout:
 
@@ -35,19 +35,19 @@ stdout:
 {
   "artifactState": "local-current",
   "artifactSyncCommit": false,
-  "branch": "codex/representative-demo-evidence",
-  "commit": "5006e2e74faff0d00725a9273fba31569a4f4854",
+  "branch": "main",
+  "commit": "b89e5f1060f6a4771855acfdd6490f40f6a04454",
   "deterministic": "8/8",
   "ok": true,
   "referenceAdoptionReady": true,
   "runtimeRows": 8,
-  "snapshotCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+  "snapshotCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
 }
 
 ## npm run smoke:execution-v1-snapshot
 status=0
-startedAt=2026-06-22T06:07:30.362Z
-completedAt=2026-06-22T06:07:30.946Z
+startedAt=2026-06-22T06:11:01.453Z
+completedAt=2026-06-22T06:11:02.073Z
 
 stdout:
 
@@ -55,21 +55,21 @@ stdout:
 > node scripts/smoke-execution-v1-snapshot.mjs
 
 {
-  "archivedAt": "2026-06-22T06:02:22.276Z",
+  "archivedAt": "2026-06-22T06:11:00.326Z",
   "artifactSyncCommit": false,
-  "commit": "5006e2e74faff0d00725a9273fba31569a4f4854",
+  "commit": "b89e5f1060f6a4771855acfdd6490f40f6a04454",
   "deterministicPassed": 8,
   "ok": true,
   "runtimeRows": 8,
-  "snapshotDir": "<repo>/docs/releases/execution-v1/5006e2e74faff0d00725a9273fba31569a4f4854",
-  "snapshotHandoffPath": "<repo>/docs/releases/execution-v1/5006e2e74faff0d00725a9273fba31569a4f4854/execution-v1-handoff.md",
-  "verifiedCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+  "snapshotDir": "<repo>/docs/releases/execution-v1/b89e5f1060f6a4771855acfdd6490f40f6a04454",
+  "snapshotHandoffPath": "<repo>/docs/releases/execution-v1/b89e5f1060f6a4771855acfdd6490f40f6a04454/execution-v1-handoff.md",
+  "verifiedCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
 }
 
 ## npm run smoke:execution-v1-handoff
 status=0
-startedAt=2026-06-22T06:07:30.946Z
-completedAt=2026-06-22T06:07:35.265Z
+startedAt=2026-06-22T06:11:02.073Z
+completedAt=2026-06-22T06:11:05.441Z
 
 stdout:
 
@@ -78,16 +78,16 @@ stdout:
 
 {
   "ok": true,
-  "branch": "codex/representative-demo-evidence",
-  "commit": "5006e2e74faff0d00725a9273fba31569a4f4854",
+  "branch": "main",
+  "commit": "b89e5f1060f6a4771855acfdd6490f40f6a04454",
   "outputPath": "<temp>",
   "visualArtifactSetSha256": "handoff-smoke-artifact-set"
 }
 
 ## npm run smoke:release-artifact-hygiene
 status=0
-startedAt=2026-06-22T06:07:35.266Z
-completedAt=2026-06-22T06:07:35.429Z
+startedAt=2026-06-22T06:11:05.441Z
+completedAt=2026-06-22T06:11:05.674Z
 
 stdout:
 
@@ -100,13 +100,13 @@ stdout:
   "ok": true,
   "scannedFileCount": 48,
   "secretFindingCount": 0,
-  "verifiedCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+  "verifiedCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
 }
 
 ## npm run smoke:pilot-export-package
 status=0
-startedAt=2026-06-22T06:07:35.429Z
-completedAt=2026-06-22T06:07:35.571Z
+startedAt=2026-06-22T06:11:05.674Z
+completedAt=2026-06-22T06:11:05.916Z
 
 stdout:
 
@@ -118,5 +118,5 @@ stdout:
   "mode": "pilot-export-package",
   "ok": true,
   "path": "docs/pilot-export-package-v1.md",
-  "verifiedCommit": "5006e2e74faff0d00725a9273fba31569a4f4854"
+  "verifiedCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
 }
