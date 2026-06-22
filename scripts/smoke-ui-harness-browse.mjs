@@ -410,6 +410,8 @@ try {
   assert.equal(appJs.includes('세션 선택: ${sessionTitle} · ${providerUiLabel}'), true);
   assert.equal(appJs.includes('현재 산출물 선택됨: ${artifactTitle}'), true);
   assert.equal(appJs.includes('산출물 선택: ${artifactTitle}'), true);
+  assert.equal(appJs.includes('function renderSessionDetailArtifactList(artifacts = [])'), true);
+  assert.equal(appJs.includes('const artifacts = renderSessionDetailArtifactList(sessionPayload.artifacts || []);'), true);
   assert.equal(appJs.includes('isActiveSessionEvent'), true);
   assert.equal(appJs.includes('현재 세션 타임라인 이벤트 선택됨: ${timelineEventTitle}'), true);
   assert.equal(appJs.includes('세션 타임라인 이벤트 열기: ${timelineEventTitle}'), true);
