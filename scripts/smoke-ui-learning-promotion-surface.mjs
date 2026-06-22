@@ -367,6 +367,9 @@ try {
   assert.equal(appJs.includes("function renderArtifactViewerState(content = '')"), true);
   assert.equal(appJs.includes('elements.artifactViewer.innerHTML = renderArtifactViewerState(payload.content);'), true);
   assert.equal(appJs.includes("return markdownToHtml(content || '');"), true);
+  assert.equal(appJs.includes('function renderOutputStageEmptyState()'), true);
+  assert.equal(appJs.includes('elements.outputStageSummary.innerHTML = renderOutputStageEmptyState();'), true);
+  assert.equal(appJs.includes('확인할 결과가 없습니다'), true);
   assert.equal(appJs.includes('function renderOutputStageCollapsedState({'), true);
   assert.equal(appJs.includes('elements.outputStageSummary.innerHTML = renderOutputStageCollapsedState({'), true);
   assert.equal(appJs.includes('result-spotlight-collapsed'), true);

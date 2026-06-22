@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Output Stage Empty State Renderer
+
+- moved no-mission output stage empty state rendering into a dedicated renderer helper
+- kept jump-step quick action, Korean empty copy, icon marker, and output stage action wiring unchanged
+- extended UI learning promotion and harness browse smoke coverage for output stage empty-state delegation
+
 ## 2026-06-22 Output Stage Expanded State Renderer
 
 - moved expanded output stage summary rendering into a dedicated renderer helper

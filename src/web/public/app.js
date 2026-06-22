@@ -18179,6 +18179,17 @@ function renderOutputStageExpandedState({
   `;
 }
 
+function renderOutputStageEmptyState() {
+  return emptyStateCard({
+    action: 'jump-step',
+    actionLabel: '1단계 열기',
+    actionValue: 'step-setup',
+    icon: 'OT',
+    message: '미션을 선택하고 실행이 끝나면 결과 요약이 이 단계에 표시됩니다.',
+    title: '확인할 결과가 없습니다',
+  });
+}
+
 function renderOutputStageSummary() {
   if (!elements.outputStageSummary) {
     return;
@@ -18197,14 +18208,7 @@ function renderOutputStageSummary() {
   const isOutputFocus = state.activeStep === 'step-output';
 
   if (!state.missionDetail) {
-    elements.outputStageSummary.innerHTML = emptyStateCard({
-      action: 'jump-step',
-      actionLabel: '1단계 열기',
-      actionValue: 'step-setup',
-      icon: 'OT',
-      message: '미션을 선택하고 실행이 끝나면 결과 요약이 이 단계에 표시됩니다.',
-      title: '확인할 결과가 없습니다',
-    });
+    elements.outputStageSummary.innerHTML = renderOutputStageEmptyState();
     wireQuickActions(elements.outputStageSummary);
     return;
   }
