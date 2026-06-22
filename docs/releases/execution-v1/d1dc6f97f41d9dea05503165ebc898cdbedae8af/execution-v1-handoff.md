@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-06-22T07:16:28.548Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-06-22T07:16:27.013Z
 - localDate: 2026-06-22
 - branch: codex/readme-portfolio-overview
 - commit: d1dc6f97f41d9dea05503165ebc898cdbedae8af
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d1dc6f97f41d9dea05503165ebc898cdbedae8af](releases/execution-v1/d1dc6f97f41d9dea05503165ebc898cdbedae8af)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d1dc6f97f41d9dea05503165ebc898cdbedae8af/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d1dc6f97f41d9dea05503165ebc898cdbedae8af/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d1dc6f97f41d9dea05503165ebc898cdbedae8af](docs/releases/execution-v1/d1dc6f97f41d9dea05503165ebc898cdbedae8af)
 - visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
 - commitPushStatus: not pushed, origin/codex/readme-portfolio-overview not found
 

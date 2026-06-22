@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T07:16:28.548Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T07:16:18.073Z
 - branch: codex/readme-portfolio-overview
 - commit: d1dc6f97f41d9dea05503165ebc898cdbedae8af
