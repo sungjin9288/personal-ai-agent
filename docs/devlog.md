@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-06-22 Session Detail Approval List Renderer
+
+- moved populated session detail approval list row rendering into a dedicated renderer helper
+- kept latest-first ordering, approval title/status/date labels, and reason copy unchanged
+- extended UI learning promotion and harness browse smoke coverage for session detail approval list renderer delegation
+
 ## 2026-06-22 Session Detail Run List Renderer
 
 - moved populated session detail run list row rendering into a dedicated renderer helper

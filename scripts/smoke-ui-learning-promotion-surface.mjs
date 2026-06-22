@@ -389,6 +389,10 @@ try {
     true,
   );
   assert.equal(appJs.includes('run.providerId || fallbackProvider'), true);
+  assert.equal(appJs.includes('function renderSessionDetailApprovalList(approvals = [])'), true);
+  assert.equal(appJs.includes('const approvals = renderSessionDetailApprovalList(sessionPayload.approvals || []);'), true);
+  assert.equal(appJs.includes('approval.title || approval.id'), true);
+  assert.equal(appJs.includes('approval.reason ||'), true);
   assert.equal(appJs.includes('function renderSessionDetailArtifactList(artifacts = [])'), true);
   assert.equal(appJs.includes('const artifacts = renderSessionDetailArtifactList(sessionPayload.artifacts || []);'), true);
   assert.equal(appJs.includes('artifactSelectionLabel'), true);
