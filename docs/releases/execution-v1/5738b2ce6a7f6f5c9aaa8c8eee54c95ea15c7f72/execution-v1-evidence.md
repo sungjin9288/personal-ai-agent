@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-06-22T04:30:39.288Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-06-22T04:30:29.678Z
 - branch: codex/mission-list-empty-state-renderer
 - commit: 5738b2ce6a7f6f5c9aaa8c8eee54c95ea15c7f72
