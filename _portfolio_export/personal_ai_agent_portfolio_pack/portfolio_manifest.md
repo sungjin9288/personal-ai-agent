@@ -19,6 +19,7 @@
 - docs/interview-story.md
 - docs/roadmap.md
 - docs/readme-improvement.md
+- docs/demo-evidence-index-v1.md
 - docs/implementation-evidence.md
 - docs/agent-runtime-evidence.md
 - docs/evidence-checklist.md

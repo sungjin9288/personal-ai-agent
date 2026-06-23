@@ -30,6 +30,7 @@ assert.deepEqual(
     'npm run bootstrap:local',
     'npm run smoke:representative-demo',
     'npm run smoke:representative-demo-evidence',
+    'npm run smoke:demo-evidence-index',
     'npm run smoke:release-artifact-hygiene',
     'npm run smoke:pilot-export-package',
   ],
@@ -39,6 +40,7 @@ for (const evidencePath of [
   'evidence/cli-logs/representative-release-demo-replay.log',
   'evidence/output-artifacts/representative-release-demo-summary.json',
   'evidence/screenshots/representative-release-demo-release-status.png',
+  'docs/demo-evidence-index-v1.md',
   'docs/demo-scenarios-v1.md',
   'docs/pilot-export-package-v1.md',
 ]) {
