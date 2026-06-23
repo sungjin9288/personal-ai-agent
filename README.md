@@ -48,6 +48,7 @@ Contributor path:
 
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
+- Security policy: [SECURITY.md](SECURITY.md)
 
 ### Quick Replay
 
@@ -278,6 +279,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
+- Security policy: [SECURITY.md](SECURITY.md)
 - Target provider operations gate: [docs/target-provider-operations-v1.md](docs/target-provider-operations-v1.md)
 - Operator runbook: [docs/operator-runbook-v1.md](docs/operator-runbook-v1.md)
 - Self-hosted pilot guide: [docs/deployment-pilot-v1.md](docs/deployment-pilot-v1.md)

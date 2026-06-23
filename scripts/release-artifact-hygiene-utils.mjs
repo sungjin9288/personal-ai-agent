@@ -41,6 +41,10 @@ const MACHINE_LOCAL_PATH_PATTERNS = [
 
 const CURRENT_RELEASE_ARTIFACTS = [
   'CONTRIBUTING.md',
+  'SECURITY.md',
+  '.github/ISSUE_TEMPLATE/bug_report.yml',
+  '.github/ISSUE_TEMPLATE/security_report.yml',
+  '.github/ISSUE_TEMPLATE/config.yml',
   'docs/execution-v1-evidence.md',
   'docs/execution-v1-closeout.md',
   'docs/execution-v1-handoff.md',

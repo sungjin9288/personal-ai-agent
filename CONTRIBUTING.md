@@ -68,3 +68,10 @@ Every PR should explain:
 - whether runtime behavior, provider behavior, release evidence, or portfolio claims are affected
 
 Use the checklist in `.github/pull_request_template.md` as the baseline. Add focused verification when your change touches a narrower subsystem.
+
+## Issues And Security Reports
+
+- Use `.github/ISSUE_TEMPLATE/bug_report.yml` for reproducible bugs.
+- Use `.github/ISSUE_TEMPLATE/security_report.yml` for security concerns that can be described publicly without secrets.
+- Read [SECURITY.md](SECURITY.md) before filing security reports.
+- Never paste provider credentials, customer data, private repository data, or machine-local paths into public issues.

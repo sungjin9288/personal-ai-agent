@@ -6,6 +6,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const contributingPath = path.join(repoDir, 'CONTRIBUTING.md');
+const securityPolicyPath = path.join(repoDir, 'SECURITY.md');
 const releaseReadinessPath = path.join(repoDir, 'docs', 'release-readiness-v1.md');
 const productPlanPath = path.join(repoDir, 'docs', 'product-plan-v1.md');
 const deploymentPath = path.join(repoDir, 'docs', 'deployment-pilot-v1.md');
@@ -24,6 +25,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const manifest = readRequiredFile(manifestPath);
 const contributing = readRequiredFile(contributingPath);
+const securityPolicy = readRequiredFile(securityPolicyPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const productPlan = readRequiredFile(productPlanPath);
 const deployment = readRequiredFile(deploymentPath);
@@ -49,7 +51,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 60$/m);
+assert.match(manifest, /^- fileCount: 64$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -59,6 +61,10 @@ const manifestEntries = parseManifestEntries(manifest);
 const requiredPaths = [
   'README.md',
   'CONTRIBUTING.md',
+  'SECURITY.md',
+  '.github/ISSUE_TEMPLATE/bug_report.yml',
+  '.github/ISSUE_TEMPLATE/security_report.yml',
+  '.github/ISSUE_TEMPLATE/config.yml',
   'docs/product-plan-v1.md',
   'docs/security-model-v1.md',
   'docs/operator-runbook-v1.md',
@@ -214,6 +220,9 @@ assert.match(contributing, /# Contributing/);
 assert.match(contributing, /Current validated claim: `provider-scoped pilot-ready`/);
 assert.match(contributing, /npm run smoke:contributor-onboarding/);
 assert.match(contributing, /not a public hosted demo URL/);
+assert.match(securityPolicy, /# Security Policy/);
+assert.match(securityPolicy, /local-first PoC\/MVP harness/);
+assert.match(securityPolicy, /no production service endpoint or public hosted demo URL/);
 assert.match(forkOnboarding, /# Fork Onboarding v1/);
 assert.match(forkOnboarding, /publicHostedDemoUrl: none/);
 assert.match(forkOnboarding, /productionReadyClaim: false/);

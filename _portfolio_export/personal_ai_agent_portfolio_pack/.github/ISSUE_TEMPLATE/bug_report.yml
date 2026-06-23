@@ -1,0 +1,75 @@
+name: Bug report
+description: Report a reproducible issue in the local harness, documentation, or evidence flow.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue. Do not include secrets, provider API keys, private repository content, customer data, or machine-local paths.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI/runtime
+        - Web/API
+        - Provider adapter
+        - Release evidence
+        - Documentation/onboarding
+        - Portfolio package
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Use credential-free commands when possible.
+      placeholder: |
+        1. Run `npm run demo:local`
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification run
+      description: List smoke commands or checks you ran.
+      placeholder: |
+        - `npm run smoke:demo-local`
+        - `npm run smoke:release-artifact-hygiene`
+    validations:
+      required: false
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Safety checklist
+      options:
+        - label: I did not include secrets, tokens, provider API keys, or private data.
+          required: true
+        - label: I did not include machine-local paths from my environment.
+          required: true
+        - label: I understand there is no public hosted demo URL for this repository.
+          required: true
