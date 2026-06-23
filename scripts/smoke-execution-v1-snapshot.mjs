@@ -266,6 +266,10 @@ function isReleaseArtifactSyncPath(filePath) {
     'docs/target-slo-operations-v1.md',
     'docs/target-clean-deployment-operations-v1.md',
     'docs/release-readiness-v1.md',
+    'evidence/cli-logs/representative-release-demo-replay.log',
+    'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
+    'evidence/output-artifacts/representative-release-demo-summary.json',
+    'evidence/screenshots/representative-release-demo-release-status.png',
   ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
 }
 
