@@ -51,6 +51,7 @@ Contributor path:
 - Security policy: [SECURITY.md](SECURITY.md)
 - Support: [SUPPORT.md](SUPPORT.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Issue handoff: blank issues are disabled; use the bug report template and attach sanitized `npm run doctor:summary` output to the `Doctor diagnostics summary` field for setup or provider wiring reports.
 
 ### Quick Replay
 
@@ -232,6 +233,8 @@ Run the local diagnostics before filing setup or provider configuration issues:
 npm run doctor
 npm run doctor:summary
 ```
+
+Public setup and provider reports should use `.github/ISSUE_TEMPLATE/bug_report.yml`. Paste only sanitized `npm run doctor:summary` output into the `Doctor diagnostics summary` field; do not include secrets, provider credentials, private data, or machine-local paths.
 
 | Provider | Core environment variables |
 |---|---|
