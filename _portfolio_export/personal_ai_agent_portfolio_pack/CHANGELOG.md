@@ -8,6 +8,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Replaced stale future screenshot wording with scoped references to `evidence/screenshots/operator-surface-*.png`, `evidence/output-artifacts/operator-surface-demo-browser-report.json`, and the remaining non-public-demo gaps.
 - Added a recorded walkthrough script and smoke guard so future private/public demo video URLs can be added only after evidence, hygiene, and access checks pass.
 - Added an architecture code walkthrough and symbol smoke guard so reviewers can navigate CLI/web, mission service, runtime harness, provider registry, local store, and evidence scripts from verified source paths.
+- Added a provider readiness matrix and catalog smoke guard to separate adapter implementation, pilot evidence, target provider blockers, and safe multi-provider claims.
 
 ## v0.1.0 - 2026-06-23
 

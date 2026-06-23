@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-06-23T12:40:10.543Z
+- generatedAt: 2026-06-23T12:52:44.030Z
 - verifiedCommit: 86101b552d8596907936203c95dc2ad3b346fc9c
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: a632953526fc096659429da4724d0884de2794acf8200d6b1fc4dc2f53df6e1b
-- fileCount: 70
+- bundleSha256: 7dc400acbebb333b873a60b6ebe13fdd9548921a4830a9710da8a66cf447820b
+- fileCount: 71
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 18733 | `ae0ffe16e63eaba947702839a3c30e3938f37ff2ae2d778f56d6c7d6fa0f0e01` |
-| `CHANGELOG.md` | 3326 | `ea22c38c4c8cb42ec5e0bc35a7a26cc0f66593883980d743c19b2620ae8b11bd` |
+| `README.md` | 19090 | `5e0c74869290204828a864dda90acd2245f8c3fabff1e8f7bc9acbcde74004ae` |
+| `CHANGELOG.md` | 3496 | `9377c95a13ad31cfe02319d60cd48f681f2e67471079c22bc4365f378a54f16f` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -81,6 +81,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/demo-evidence-index-v1.md` | 4010 | `0244e4b23fba823f168e339cc08bafaffb4811cf05e0762201e6a4651be553b1` |
 | `docs/recorded-walkthrough-v1.md` | 5378 | `cc3fe2615d81a6af5bcaad7b3489aebd294a941dcbb192d81e4772447dd43ea5` |
 | `docs/architecture-code-walkthrough-v1.md` | 5756 | `fb82a8b47503bb5556101e39de2156da5248d7a5692df03c8c292f942dce0fb0` |
+| `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |

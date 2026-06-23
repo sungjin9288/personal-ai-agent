@@ -20,6 +20,7 @@ const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
 const demoEvidenceIndexPath = path.join(repoDir, 'docs', 'demo-evidence-index-v1.md');
 const recordedWalkthroughPath = path.join(repoDir, 'docs', 'recorded-walkthrough-v1.md');
 const architectureCodeWalkthroughPath = path.join(repoDir, 'docs', 'architecture-code-walkthrough-v1.md');
+const providerReadinessMatrixPath = path.join(repoDir, 'docs', 'provider-readiness-matrix-v1.md');
 const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
 const customerSupportOperationsPath = path.join(repoDir, 'docs', 'customer-support-operations-v1.md');
 const targetProviderEvidenceIntakePath = path.join(repoDir, 'docs', 'target-provider-evidence-intake-v1.md');
@@ -45,6 +46,7 @@ const demoScenarios = readRequiredFile(demoScenariosPath);
 const demoEvidenceIndex = readRequiredFile(demoEvidenceIndexPath);
 const recordedWalkthrough = readRequiredFile(recordedWalkthroughPath);
 const architectureCodeWalkthrough = readRequiredFile(architectureCodeWalkthroughPath);
+const providerReadinessMatrix = readRequiredFile(providerReadinessMatrixPath);
 const forkOnboarding = readRequiredFile(forkOnboardingPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
@@ -63,7 +65,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 70$/m);
+assert.match(manifest, /^- fileCount: 71$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -91,6 +93,7 @@ const requiredPaths = [
   'docs/demo-evidence-index-v1.md',
   'docs/recorded-walkthrough-v1.md',
   'docs/architecture-code-walkthrough-v1.md',
+  'docs/provider-readiness-matrix-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
@@ -244,6 +247,12 @@ assert.match(architectureCodeWalkthrough, /status: code-walkthrough-current/);
 assert.match(architectureCodeWalkthrough, /productionReadyClaim: false/);
 assert.match(architectureCodeWalkthrough, /createMissionService/);
 assert.match(architectureCodeWalkthrough, /createProviderRegistry/);
+assert.match(providerReadinessMatrix, /# Provider Readiness Matrix v1/);
+assert.match(providerReadinessMatrix, /status: provider-readiness-matrix-current/);
+assert.match(providerReadinessMatrix, /allProviderComplete: false/);
+assert.match(providerReadinessMatrix, /OPENAI_API_KEY/);
+assert.match(providerReadinessMatrix, /ANTHROPIC_API_KEY/);
+assert.match(providerReadinessMatrix, /HERMES_PROVIDER_MODEL/);
 assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-demo-release-status\.png/);
 assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
 assert.match(contributing, /# Contributing/);

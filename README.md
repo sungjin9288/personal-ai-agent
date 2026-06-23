@@ -101,6 +101,8 @@ Representative demo evidence:
 | Hosted SaaS / production deployment | Not implemented; target evidence only |
 | Production-ready claim | Explicitly blocked |
 
+Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
+
 ## Representative Demo
 
 `Representative Demo: Release Readiness Evidence Walkthrough` is the default portfolio demo. It is credential-free and demonstrates the local-first harness through release evidence, provider blockers, handoff readiness, and pilot export packaging without claiming production readiness.
@@ -281,6 +283,7 @@ npm run smoke:demo-local
 npm run smoke:demo-evidence-index
 npm run smoke:recorded-walkthrough
 npm run smoke:architecture-code-walkthrough
+npm run smoke:provider-readiness-matrix
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
@@ -314,6 +317,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
 - Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
 - Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
+- Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
 - Security policy: [SECURITY.md](SECURITY.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
@@ -356,5 +360,6 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Demo walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
 - Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
 - Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
+- Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Project card: [docs/project-card.md](docs/project-card.md)
 - Case study: [docs/case-study.md](docs/case-study.md)
