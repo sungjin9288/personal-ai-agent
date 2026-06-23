@@ -4,11 +4,12 @@
 
 - 프로젝트명: Personal AI Agent
 - 프로젝트 유형: PoC
-- 기간: 확인 필요
+- 기간: 개인 개발 프로젝트. 정확한 시작일/종료일은 이 문서에서 확정하지 않음
 - 현재 상태: MVP 구현
-- 내 역할: 확인 필요. 저장소 기준으로는 제품 기획, Node.js runtime 구현, provider adapter, CLI/web operator surface, smoke/evidence 문서화까지 수행한 것으로 보이나 개인 직접 기여 범위는 별도 확인 필요
+- 현재 검증 claim: `provider-scoped pilot-ready` for OpenAI-backed local-first/self-hosted path
+- 내 역할: 저장소 기준 설명 범위는 제품 기획, Node.js runtime 구현, provider adapter, CLI/web operator surface, smoke/evidence 자동화, 포트폴리오 문서화
 - GitHub 링크: https://github.com/sungjin9288/personal-ai-agent
-- Demo 링크: 추가 필요
+- Demo 링크: public hosted demo 없음. 대표 demo는 `Representative Demo: Release Readiness Evidence Walkthrough`와 `evidence/` replay proof로 제공
 - 핵심 기술스택: Node.js ESM, JavaScript, local JSON store, CLI, HTTP web console, OpenAI Responses API, Anthropic Messages API, OpenAI-compatible local provider, Hermes-compatible provider adapter, GitHub Actions, deterministic smoke scripts
 - 이력서 반영 가능 여부: 가능
 - 판단 이유: `src/cli.mjs`, `src/core/mission-service.mjs`, `src/harness/runtime-harness.mjs`, `src/providers/*`, `src/web/server.mjs`, `scripts/smoke-*.mjs`, `docs/release-readiness-v1.md` 기준으로 local-first multi-agent runtime, provider abstraction, approval gate, execution evidence, operator API/UI, smoke verification이 코드와 문서 양쪽에 존재한다. 단, production-ready, hosted SaaS, 모든 provider live validation 완료 주장은 위험하다.
@@ -92,7 +93,7 @@ Operator / Team
 
 ## 7. My Contribution
 
-- 직접 구현했다고 설명 가능한 기능: 확인 필요. 저장소 기준으로는 CLI command surface, mission runtime, provider adapter, web API/UI, smoke/evidence automation이 존재한다.
+- 직접 구현했다고 설명 가능한 기능: 저장소 기준으로 CLI command surface, mission runtime, provider adapter, web API/UI, smoke/evidence automation이 존재한다.
 - 설계했다고 설명 가능한 구조: managed role order `manager -> planner -> executor -> reviewer`, approval gate, provider registry, local-first state/artifact model, release readiness evidence model
 - 문서화 또는 기획 측면 기여: product plan, security model, operator runbook, release readiness, deployment pilot, target evidence docs
 - 문제 해결 또는 디버깅 사례: provider fallback, provider attention remediation, release artifact hygiene, execution-v1 snapshot/evidence refresh 관련 smoke scripts가 문제 해결 근거로 사용 가능하다.
@@ -124,7 +125,8 @@ Operator / Team
 - 테스트 파일: `scripts/smoke-*.mjs`, `scripts/verify-execution-v1.mjs`, `.github/workflows/provider-smoke.yml`
 - README 또는 문서 근거: `README.md`, `docs/product-plan-v1.md`, `docs/security-model-v1.md`, `docs/release-readiness-v1.md`, `docs/adr/ADR-001-runtime-and-agent-shape.md`
 - 실행 방법이 명확한지: README에 `npm run ui`, `node src/cli.mjs ...`, `npm run bootstrap:local` 예시가 있다.
-- 스크린샷/데모가 필요한 부분: web operator console, release tab, mission run flow, provider readiness/status, action inbox
+- 대표 demo 근거: `evidence/cli-logs/representative-release-demo-replay.log`, `evidence/output-artifacts/representative-release-demo-summary.json`, `evidence/screenshots/representative-release-demo-release-status.png`
+- 스크린샷/데모가 필요한 부분: mission run flow, provider readiness/status, action inbox는 추가 screenshot을 보강하면 좋다.
 
 ## 10. Consulting Angle
 

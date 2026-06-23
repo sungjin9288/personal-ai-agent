@@ -3,7 +3,7 @@
 ## 1. 1분 프로젝트 소개
 
 이 프로젝트는 AI agent가 저장소 기반 작업을 수행할 때 계획, 실행, 검토, 승인, 산출물, provider 상태가 흩어지는 문제를 해결하기 위해 시작했습니다.
-저는 확인 필요 역할을 맡아 현재 코드 기준으로 local-first multi-agent runtime, CLI, web operator API/UI, provider adapter, approval/evidence workflow를 개발했습니다.
+저는 저장소 기준으로 local-first multi-agent runtime, CLI, web operator API/UI, provider adapter, approval/evidence workflow, smoke/evidence 자동화를 설계하고 구현했습니다.
 기술적으로는 Node.js ESM, JavaScript, local JSON store, OpenAI/Anthropic/local/Hermes provider adapter, smoke scripts를 사용했고, 현재는 OpenAI-backed local-first pilot boundary까지 구현했습니다.
 개발 과정에서 production-ready처럼 과장하기 쉬운 readiness 표현과 provider별 검증 상태를 분리하는 어려움이 있었고, 이를 release readiness 문서, target evidence gate, deterministic smoke script로 해결했거나 해결 중입니다.
 이 프로젝트를 통해 AI agent 시스템은 기능 구현뿐 아니라 approval, fallback, audit, evidence 설계가 중요하다는 점을 배웠고, 향후에는 hosted identity/session, tenant isolation, target provider operations를 보완해 고도화할 계획입니다.
@@ -41,7 +41,7 @@
 | MVP 범위는 어디까지인가? | local-first managed runtime과 OpenAI-backed pilot boundary | `docs/product-plan-v1.md`, `docs/release-readiness-v1.md` | demo scenario 정리 |
 | 왜 autonomous swarm이 아닌 managed runtime인가? | 승인, 검토, evidence 없이 자동 실행하는 리스크를 줄이기 위해 | `docs/adr/ADR-001-runtime-and-agent-shape.md` | Agent safety 사례 |
 | 구현 완료와 예정 기능은 어떻게 구분하나? | 코드 파일, smoke script, release readiness 문서의 status로 구분 | 이 문서의 Current Status | 최신 smoke 결과 |
-| README가 긴데 핵심 메시지는 무엇인가? | 현재 README는 운영 로그 성격이 강해 portfolio README로 재구성이 필요 | `README.md`, `docs/readme-improvement.md` | README 개편 |
+| README가 긴데 핵심 메시지는 무엇인가? | README 최상단 Portfolio Overview가 목적, claim boundary, representative demo, evidence entry point를 먼저 설명하고 상세 운영 문서는 아래에 보존 | `README.md`, `docs/readme-improvement.md` | 지속적인 screenshot/demo 보강 |
 | 배포 상태는 어떤가? | self-hosted local-first pilot guide는 있으나 hosted production은 아님 | `docs/deployment-pilot-v1.md` | 실제 demo link |
 | 수치 성과가 있나? | 현재 없음. 임의 생성하지 않음 | 저장소 근거 없음 | pilot metric 확보 |
 | 보안은 어느 정도 구현됐나? | local shared-secret/OIDC/RBAC/tenant mode와 security docs는 있으나 hosted production은 gap | `docs/security-model-v1.md` | threat model 심화 |

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -7,6 +8,7 @@ const changelogPath = path.join(repoDir, 'CHANGELOG.md');
 const readmePath = path.join(repoDir, 'README.md');
 const packageJsonPath = path.join(repoDir, 'package.json');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
+const portfolioZipPath = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack.zip');
 const releaseHygienePath = path.join(repoDir, 'scripts', 'release-artifact-hygiene-utils.mjs');
 const pilotExportBuilderPath = path.join(repoDir, 'scripts', 'build-pilot-export-package.mjs');
 
@@ -23,6 +25,11 @@ const zipSha = extractBacktickValue(portfolioManifest, '압축 파일 SHA-256');
 const zipSize = extractPlainValue(portfolioManifest, '압축 파일 크기');
 assert.match(zipSha, /^[a-f0-9]{64}$/);
 assert.match(zipSize, /^\d{1,3}(,\d{3})* bytes$/);
+
+const zipBytes = fs.statSync(portfolioZipPath).size;
+const actualZipSha = crypto.createHash('sha256').update(fs.readFileSync(portfolioZipPath)).digest('hex');
+assert.equal(zipSize, `${zipBytes.toLocaleString('en-US')} bytes`);
+assert.equal(zipSha, actualZipSha);
 
 for (const term of [
   '# Changelog',

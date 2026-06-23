@@ -11,6 +11,7 @@ Run the credential-free checks first when they apply:
 ```bash
 npm run demo:local
 npm run doctor
+npm run doctor:summary
 npm run smoke:doctor
 npm run smoke:ui-doctor-surface
 npm run smoke:support-policy
@@ -27,6 +28,8 @@ npm run smoke:pilot-export-package
 ```
 
 ## Where To Ask
+
+GitHub blank issues are disabled so public reports keep the safety checklist, support route, and diagnostic context attached. Use the bug report or security report template instead of opening an unstructured issue.
 
 | Need | Route | Include |
 |---|---|---|
