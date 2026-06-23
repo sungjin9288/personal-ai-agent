@@ -34,6 +34,9 @@
 | Operator console home | `evidence/screenshots/operator-console-home.png` | local web operator console loaded through Playwright |
 | Representative release demo preview | `evidence/screenshots/representative-release-demo-preview.png` | compact release readiness preview for README and portfolio review |
 | Representative release demo status | `evidence/screenshots/representative-release-demo-release-status.png` | release readiness walkthrough final browser state |
+| Operator mission run | `evidence/screenshots/operator-surface-mission-run.png` | selected mission run surface with session, execution, and artifact state |
+| Operator provider readiness | `evidence/screenshots/operator-surface-provider-readiness.png` | provider readiness cards and fallback event audit surface |
+| Operator action inbox | `evidence/screenshots/operator-surface-action-inbox.png` | action inbox follow-up item, approval state, and review readiness surface |
 
 ## 4. Architecture Evidence
 
@@ -53,6 +56,7 @@
 | Runtime mission artifacts | `evidence/output-artifacts/runtime-mission-artifact-list.log` | prompt, plan, deliverable, reviewer, and learning candidate artifacts created by one mission run |
 | Representative release demo summary | `evidence/output-artifacts/representative-release-demo-summary.json` | command list, commit, screenshot hash, and productionReadyClaim=false boundary for the representative demo |
 | Representative release demo browser report | `evidence/output-artifacts/representative-release-demo-browser-e2e.json` | sanitized browser E2E report copied from the representative demo walkthrough |
+| Operator surface demo browser report | `evidence/output-artifacts/operator-surface-demo-browser-report.json` | screenshot paths, dimensions, hashes, active UI states, provider count, and action item count for mission/provider/action surfaces |
 
 ## 6. Portfolio Usage Notes
 

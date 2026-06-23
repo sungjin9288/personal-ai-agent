@@ -92,5 +92,6 @@
 
 - 완료: release readiness screenshot, replay log, browser E2E report, representative demo summary
 - 완료: operator surface demo evidence 문서로 mission/provider/action support evidence를 CLI/API/evidence manifest에 연결
+- 완료: mission creation/run browser screenshot, provider readiness browser screenshot, action inbox browser screenshot
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
-- 남은 polish: mission creation/run browser screenshot, provider readiness browser screenshot, action inbox browser screenshot
+- 남은 polish: recorded walkthrough or private hosted demo URL, actual pilot feedback and metric evidence

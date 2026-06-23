@@ -27,6 +27,7 @@
 - docs/roadmap.md
 - docs/readme-improvement.md
 - docs/demo-evidence-index-v1.md
+- docs/operator-surface-demo-evidence-v1.md
 - docs/fork-onboarding-v1.md
 - docs/implementation-evidence.md
 - docs/agent-runtime-evidence.md

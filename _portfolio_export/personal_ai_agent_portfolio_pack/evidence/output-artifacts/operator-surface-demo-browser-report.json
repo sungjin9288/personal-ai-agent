@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-06-23T11:53:52.796Z",
+  "mode": "operator-surface-demo-browser-evidence",
+  "ok": true,
+  "productionReadyClaim": false,
+  "screenshots": [
+    {
+      "actionItemCount": 1,
+      "activeDetailTab": "runs",
+      "activeStep": "step-run",
+      "flowStatus": "지금 해야 할 일\n      \n        \n          검토와 승인 처리가 필요합니다\n          승인 0건, 후속 작업 1건이 남아 있습니다. 이 항목을 정리해야 결과를 확정할 수 있습니다.\n        \n        \n          3단계 검토 열기\n          검토 이력 보기\n          검토 단계 열기\n          \n                현재 링크 복사\n                보기 초기화\n              \n          \n        \n      \n      \n        \n          현재 단계\n          3단계 · 검토하기\n        \n        \n          진행 상태\n          후속 작업 1건을 먼저 처리해야 합니다.\n        \n        \n          하네스\n          후속 작업 1건이 남아 있습니다. review loop를 먼저 닫아야 결과를 확정할 수 있습니다.",
+      "heading": "Operator Surface Evidence mqql62ap",
+      "providerCardCount": 6,
+      "runSummary": "현재 안내\n      검토와 승인 처리가 필요합니다\n      Reviewer accepted the draft for Implementation Proposal.\n      \n        \n          최근 세션\n          완료\n        \n        \n          제공자\n          stub\n        \n        \n          현재 단계\n          3단계 · 검토하기\n        \n        \n          최근 업데이트\n          2026. 6. 23. 오후 8:53\n        \n        \n              \n                실행 자격\n                승인 필요\n              \n            \n      \n      \n        실행 기록 보기",
+      "title": "에이전트 운영 콘솔",
+      "urlPath": "/",
+      "urlSearch": "?workspace=workspace_20260623115346_f271aa&mission=mission_20260623115346_459bed&step=step-run&tab=runs&session=session_20260623115346_2b0671&artifact=artifact_20260623115346_292d73",
+      "bytes": 608369,
+      "evidencePath": "evidence/screenshots/operator-surface-mission-run.png",
+      "height": 5597,
+      "id": "mission-run",
+      "outputPath": "output/playwright/operator-surface-mission-run.png",
+      "sha256": "ecd77044560bf8eacf238f88e41d32c7bc11d686019dab6e9fd563d13c7e2473",
+      "width": 1280
+    },
+    {
+      "actionItemCount": 1,
+      "activeDetailTab": "config",
+      "activeStep": "step-run",
+      "flowStatus": "지금 해야 할 일\n      \n        \n          검토와 승인 처리가 필요합니다\n          승인 0건, 후속 작업 1건이 남아 있습니다. 이 항목을 정리해야 결과를 확정할 수 있습니다.\n        \n        \n          3단계 검토 열기\n          검토 이력 보기\n          검토 단계 열기\n          \n                현재 링크 복사\n                보기 초기화\n              \n          \n        \n      \n      \n        \n          현재 단계\n          3단계 · 검토하기\n        \n        \n          진행 상태\n          후속 작업 1건을 먼저 처리해야 합니다.\n        \n        \n          하네스\n          후속 작업 1건이 남아 있습니다. review loop를 먼저 닫아야 결과를 확정할 수 있습니다.",
+      "heading": "Operator Surface Evidence mqql62ap",
+      "providerCardCount": 6,
+      "runSummary": "현재 안내\n      검토와 승인 처리가 필요합니다\n      Reviewer accepted the draft for Implementation Proposal.\n      \n        \n          최근 세션\n          완료\n        \n        \n          제공자\n          stub\n        \n        \n          현재 단계\n          3단계 · 검토하기\n        \n        \n          최근 업데이트\n          2026. 6. 23. 오후 8:53\n        \n        \n              \n                실행 자격\n                승인 필요\n              \n            \n      \n      \n        실행 기록 보기",
+      "title": "에이전트 운영 콘솔",
+      "urlPath": "/",
+      "urlSearch": "?workspace=workspace_20260623115346_f271aa&mission=mission_20260623115346_459bed&step=step-run&tab=config&session=session_20260623115346_2b0671&artifact=artifact_20260623115346_292d73",
+      "bytes": 720598,
+      "evidencePath": "evidence/screenshots/operator-surface-provider-readiness.png",
+      "height": 6706,
+      "id": "provider-readiness",
+      "outputPath": "output/playwright/operator-surface-provider-readiness.png",
+      "sha256": "baca9cd1a1377ad5c8ac35bb9d7b432aac29955844b190ff2add20949bf7d78d",
+      "width": 1280
+    },
+    {
+      "actionItemCount": 1,
+      "activeDetailTab": "reviews",
+      "activeStep": "step-review",
+      "flowStatus": "지금 해야 할 일\n      \n        \n          검토와 승인 처리가 필요합니다\n          승인 0건, 후속 작업 1건이 남아 있습니다. 이 항목을 정리해야 결과를 확정할 수 있습니다.\n        \n        \n          3단계 검토 열기\n          검토 이력 보기\n          검토 단계 열기\n          \n                현재 링크 복사\n                보기 초기화\n              \n          \n        \n      \n      \n        \n          현재 단계\n          3단계 · 검토하기\n        \n        \n          진행 상태\n          후속 작업 1건을 먼저 처리해야 합니다.\n        \n        \n          하네스\n          후속 작업 1건이 남아 있습니다. review loop를 먼저 닫아야 결과를 확정할 수 있습니다.",
+      "heading": "Operator Surface Evidence mqql62ap",
+      "providerCardCount": 6,
+      "runSummary": "현재 안내\n      검토와 승인 처리가 필요합니다\n      Reviewer accepted the draft for Implementation Proposal.\n      \n        \n          최근 세션\n          완료\n        \n        \n          제공자\n          stub\n        \n        \n          현재 단계\n          3단계 · 검토하기\n        \n        \n          최근 업데이트\n          2026. 6. 23. 오후 8:53\n        \n        \n              \n                실행 자격\n                승인 필요\n              \n            \n      \n      \n        실행 기록 보기",
+      "title": "에이전트 운영 콘솔",
+      "urlPath": "/",
+      "urlSearch": "?workspace=workspace_20260623115346_f271aa&mission=mission_20260623115346_459bed&step=step-review&tab=reviews&session=session_20260623115346_2b0671&artifact=artifact_20260623115346_292d73",
+      "bytes": 567548,
+      "evidencePath": "evidence/screenshots/operator-surface-action-inbox.png",
+      "height": 4086,
+      "id": "action-inbox",
+      "outputPath": "output/playwright/operator-surface-action-inbox.png",
+      "sha256": "83019a787a22987fcf20b37e2adfd8ec1606fb2819b7c30f4aaf5b52e8e04396",
+      "width": 1280
+    }
+  ],
+  "source": {
+    "missionId": "mission_20260623115346_459bed",
+    "missionStatus": "reviewed",
+    "workspaceId": "workspace_20260623115346_f271aa"
+  }
+}

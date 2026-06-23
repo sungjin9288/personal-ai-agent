@@ -38,6 +38,9 @@
 - `evidence/screenshots/operator-console-home.png`
 - `evidence/screenshots/representative-release-demo-preview.png`
 - `evidence/screenshots/representative-release-demo-release-status.png`
+- `evidence/screenshots/operator-surface-mission-run.png`
+- `evidence/screenshots/operator-surface-provider-readiness.png`
+- `evidence/screenshots/operator-surface-action-inbox.png`
 
 ### Output Artifacts
 
@@ -47,6 +50,7 @@
 - `evidence/output-artifacts/runtime-mission-artifact-list.log`
 - `evidence/output-artifacts/representative-release-demo-summary.json`
 - `evidence/output-artifacts/representative-release-demo-browser-e2e.json`
+- `evidence/output-artifacts/operator-surface-demo-browser-report.json`
 
 ### Architecture
 
@@ -74,6 +78,7 @@
 - Release blocker handoff: verified with CLI
 - Representative release readiness demo: verified with `npm run evidence:representative-demo` and `npm run smoke:representative-demo-evidence`
 - Operator surface demo evidence: verified with `npm run smoke:operator-surface-demo-evidence`
+- Operator surface browser screenshots: generated with `npm run evidence:operator-surface-demo`
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure

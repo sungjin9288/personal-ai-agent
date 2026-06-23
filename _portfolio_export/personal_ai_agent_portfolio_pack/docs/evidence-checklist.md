@@ -17,6 +17,7 @@
 | Web server 실행 | 완료 | `evidence/api-responses/api-health.json` | `/api/health` 응답 저장 |
 | API 응답 저장 | 완료 | `evidence/api-responses/*.json` | health/meta/providers/execution status |
 | Web UI screenshot | 완료 | `evidence/screenshots/operator-console-home.png` | Playwright screenshot |
+| Operator surface browser screenshots | 완료 | `evidence/screenshots/operator-surface-mission-run.png`, `operator-surface-provider-readiness.png`, `operator-surface-action-inbox.png` | mission/provider/action support evidence captured by `npm run evidence:operator-surface-demo` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |
