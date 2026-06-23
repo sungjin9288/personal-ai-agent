@@ -29,6 +29,8 @@ npm run smoke:pilot-export-package
 
 ## Where To Ask
 
+GitHub blank issues are disabled so public reports keep the safety checklist, support route, and diagnostic context attached. Use the bug report or security report template instead of opening an unstructured issue.
+
 | Need | Route | Include |
 |---|---|---|
 | Local setup, fork onboarding, or documentation issue | GitHub bug report | command, expected result, actual result, relevant smoke output |
