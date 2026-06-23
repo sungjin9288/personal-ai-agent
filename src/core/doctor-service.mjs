@@ -32,6 +32,7 @@ const REQUIRED_SCRIPTS = Object.freeze([
   'bootstrap:local',
   'demo:local',
   'doctor',
+  'doctor:summary',
   'smoke:doctor',
   'smoke:ui-doctor-surface',
   'smoke:env-example',

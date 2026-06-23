@@ -33,6 +33,9 @@ jobs:
       - name: Run doctor smoke
         run: npm run smoke:doctor
 
+      - name: Run doctor summary
+        run: npm run doctor:summary
+
       - name: Run UI doctor surface smoke
         run: npm run smoke:ui-doctor-surface
 

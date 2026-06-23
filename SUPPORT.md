@@ -11,7 +11,7 @@ Run the credential-free checks first when they apply:
 ```bash
 npm run demo:local
 npm run doctor
-node src/cli.mjs doctor summary
+npm run doctor:summary
 npm run smoke:doctor
 npm run smoke:ui-doctor-surface
 npm run smoke:support-policy
