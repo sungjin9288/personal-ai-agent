@@ -47,9 +47,13 @@ try {
   assert.equal(appJs.includes('renderDoctorDetailPanel'), true);
   assert.equal(appJs.includes('wireDoctorSummaryActions'), true);
   assert.equal(appJs.includes('loadDoctor'), true);
+  assert.equal(appJs.includes('doctorLoading'), true);
+  assert.equal(appJs.includes('data-doctor-refresh="true"'), true);
   assert.equal(appJs.includes('data-doctor-detail-toggle="true"'), true);
   assert.equal(appJs.includes('id="doctor-detail-panel"'), true);
   assert.equal(appJs.includes('Provider env'), true);
+  assert.equal(appJs.includes('갱신 ${escapeHtml(formatDate(generatedAt))}'), true);
+  assert.equal(appJs.includes('새로고침 중'), true);
 
   assert.equal(doctor.mode, 'doctor');
   assert.equal(doctor.ok, true, JSON.stringify(doctor.checks, null, 2));
