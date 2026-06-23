@@ -129,7 +129,7 @@ for (const templateTerm of [
   assertContains(securityTemplate, templateTerm, `security report template missing ${templateTerm}`);
 }
 
-for (const configTerm of ['Contributing guide', 'Security policy', 'Support policy', 'blank_issues_enabled: true']) {
+for (const configTerm of ['Contributing guide', 'Security policy', 'Support policy', 'blank_issues_enabled: false']) {
   assertContains(issueTemplateConfig, configTerm, `issue template config missing ${configTerm}`);
 }
 
@@ -174,7 +174,13 @@ console.log(
     {
       mode: 'contributor-onboarding-smoke',
       ok: true,
-      checkedDocs: ['CONTRIBUTING.md', 'SECURITY.md', 'SUPPORT.md', 'docs/fork-onboarding-v1.md'],
+      checkedDocs: [
+        'CONTRIBUTING.md',
+        'SECURITY.md',
+        'SUPPORT.md',
+        'docs/fork-onboarding-v1.md',
+        '.github/ISSUE_TEMPLATE/config.yml',
+      ],
     },
     null,
     2,

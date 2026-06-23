@@ -10,6 +10,7 @@ const securityPath = path.join(repoDir, 'SECURITY.md');
 const packageJsonPath = path.join(repoDir, 'package.json');
 const issueTemplateConfigPath = path.join(repoDir, '.github', 'ISSUE_TEMPLATE', 'config.yml');
 const bugReportTemplatePath = path.join(repoDir, '.github', 'ISSUE_TEMPLATE', 'bug_report.yml');
+const securityReportTemplatePath = path.join(repoDir, '.github', 'ISSUE_TEMPLATE', 'security_report.yml');
 const pullRequestTemplatePath = path.join(repoDir, '.github', 'pull_request_template.md');
 const workflowPath = path.join(repoDir, '.github', 'workflows', 'provider-smoke.yml');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
@@ -24,6 +25,7 @@ const security = readRequiredFile(securityPath);
 const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const issueTemplateConfig = readRequiredFile(issueTemplateConfigPath);
 const bugReportTemplate = readRequiredFile(bugReportTemplatePath);
+const securityReportTemplate = readRequiredFile(securityReportTemplatePath);
 const pullRequestTemplate = readRequiredFile(pullRequestTemplatePath);
 const workflow = readRequiredFile(workflowPath);
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
@@ -49,6 +51,7 @@ for (const term of [
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:pilot-export-package',
   'Security report path in [SECURITY.md](SECURITY.md)',
+  'GitHub blank issues are disabled',
   'Current validated claim: `provider-scoped pilot-ready`',
   'productionReadyClaim: false',
   'not production-ready',
@@ -79,6 +82,7 @@ for (const term of [
 }
 
 assertContains(security, '[SUPPORT.md](SUPPORT.md)', 'SECURITY missing support link');
+assertContains(issueTemplateConfig, 'blank_issues_enabled: false', 'issue template config must disable blank issues');
 assertContains(issueTemplateConfig, 'Support policy', 'issue template config missing support contact');
 assertContains(issueTemplateConfig, 'SUPPORT.md', 'issue template config missing support URL');
 assertContains(bugReportTemplate, 'Doctor diagnostics summary', 'bug report template missing doctor summary field');
@@ -86,6 +90,9 @@ assertContains(bugReportTemplate, 'npm run doctor:summary', 'bug report template
 assertContains(bugReportTemplate, 'sanitized output', 'bug report template missing sanitized output guidance');
 assertContains(bugReportTemplate, 'Do not paste secrets', 'bug report template missing secret warning');
 assertContains(bugReportTemplate, 'machine-local paths', 'bug report template missing local path warning');
+assertContains(securityReportTemplate, 'Public report safety', 'security report template missing safety checklist');
+assertContains(securityReportTemplate, 'Do not include provider API keys', 'security report template missing secret warning');
+assertContains(securityReportTemplate, 'machine-local paths', 'security report template missing local path warning');
 assertContains(pullRequestTemplate, 'npm run smoke:doctor', 'PR template missing doctor smoke');
 assertContains(pullRequestTemplate, 'npm run doctor:summary', 'PR template missing doctor summary command');
 assertContains(pullRequestTemplate, 'npm run smoke:ui-doctor-surface', 'PR template missing UI doctor surface smoke');
@@ -110,7 +117,9 @@ for (const risky of [
 }
 
 assertNoLocalPaths(support);
+assertNoLocalPaths(issueTemplateConfig);
 assertNoLocalPaths(bugReportTemplate);
+assertNoLocalPaths(securityReportTemplate);
 
 console.log(
   JSON.stringify(
@@ -122,7 +131,9 @@ console.log(
         'README.md',
         'CONTRIBUTING.md',
         'SECURITY.md',
+        '.github/ISSUE_TEMPLATE/config.yml',
         '.github/ISSUE_TEMPLATE/bug_report.yml',
+        '.github/ISSUE_TEMPLATE/security_report.yml',
       ],
     },
     null,
