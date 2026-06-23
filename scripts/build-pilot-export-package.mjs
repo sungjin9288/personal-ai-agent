@@ -11,6 +11,10 @@ const outputPath = path.join(docsDir, 'pilot-export-package-v1.md');
 const BASE_PACKAGE_FILES = [
   'README.md',
   'CONTRIBUTING.md',
+  'SECURITY.md',
+  '.github/ISSUE_TEMPLATE/bug_report.yml',
+  '.github/ISSUE_TEMPLATE/security_report.yml',
+  '.github/ISSUE_TEMPLATE/config.yml',
   'docs/product-plan-v1.md',
   'docs/security-model-v1.md',
   'docs/operator-runbook-v1.md',

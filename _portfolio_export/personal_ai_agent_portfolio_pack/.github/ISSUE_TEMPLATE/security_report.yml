@@ -1,0 +1,65 @@
+name: Security report
+description: Report a security concern without exposing secrets in public.
+title: "security: "
+labels:
+  - security
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include provider API keys, tokens, private repository content, customer data, screenshots with secrets, or machine-local paths. If sensitive details are required, open a minimal issue and state that details are available privately.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What security boundary may be affected?
+    validations:
+      required: true
+  - type: dropdown
+    id: boundary
+    attributes:
+      label: Affected boundary
+      options:
+        - Secret handling
+        - Provider execution
+        - Release artifact hygiene
+        - Local runtime state
+        - Documentation claim boundary
+        - Web/API local operator surface
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Credential-free reproduction
+      description: Provide local reproduction steps without secrets when possible.
+    validations:
+      required: false
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Explain the realistic impact inside this local-first PoC/MVP boundary.
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Checks run
+      placeholder: |
+        - `npm run smoke:release-artifact-hygiene`
+        - `npm run smoke:env-example`
+    validations:
+      required: false
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public report safety
+      options:
+        - label: I did not include secrets, provider credentials, private repository data, or customer data.
+          required: true
+        - label: I did not include machine-local paths or screenshots containing sensitive local paths.
+          required: true
+        - label: I understand this repository does not currently operate a public hosted service.
+          required: true

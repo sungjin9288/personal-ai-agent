@@ -6,6 +6,7 @@
 - productionReadyClaim: false
 - relatedReadme: [README.md](../README.md)
 - relatedContributing: [CONTRIBUTING.md](../CONTRIBUTING.md)
+- relatedSecurity: [SECURITY.md](../SECURITY.md)
 - relatedEnvTemplate: [.env.example](../.env.example)
 - relatedDemoEvidence: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 
@@ -71,3 +72,9 @@ npm run smoke:release-artifact-hygiene
 ```
 
 Use this as the baseline before changing runtime behavior.
+
+## Issue And Security Templates
+
+- Bug reports use `.github/ISSUE_TEMPLATE/bug_report.yml`.
+- Security reports use `.github/ISSUE_TEMPLATE/security_report.yml`.
+- Public reports must not include secrets, provider credentials, private data, customer data, screenshots with secrets, or machine-local paths.
