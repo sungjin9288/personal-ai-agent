@@ -1,6 +1,8 @@
 # Links
 
 - GitHub: https://github.com/sungjin9288/personal-ai-agent
+- Contributing: CONTRIBUTING.md
+- Fork onboarding: docs/fork-onboarding-v1.md
 - Demo: hosted public demo 없음
 - 로컬 대표 demo index: docs/demo-evidence-index-v1.md
 - 로컬 대표 demo replay: evidence/cli-logs/representative-release-demo-replay.log
