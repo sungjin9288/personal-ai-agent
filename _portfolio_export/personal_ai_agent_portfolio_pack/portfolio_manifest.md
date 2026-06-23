@@ -30,6 +30,7 @@
 - docs/recorded-walkthrough-v1.md
 - docs/architecture-code-walkthrough-v1.md
 - docs/provider-readiness-matrix-v1.md
+- docs/provider-failure-recovery-demo-v1.md
 - docs/operator-surface-demo-evidence-v1.md
 - docs/fork-onboarding-v1.md
 - docs/implementation-evidence.md
