@@ -76,6 +76,8 @@
     "smoke:representative-demo": "node scripts/smoke-representative-demo.mjs",
     "smoke:representative-demo-evidence": "node scripts/smoke-representative-demo-evidence.mjs",
     "smoke:operator-surface-demo-evidence": "node scripts/smoke-operator-surface-demo-evidence.mjs",
+    "smoke:demo-local": "node scripts/smoke-demo-local.mjs",
+    "demo:local": "node scripts/demo-local.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",

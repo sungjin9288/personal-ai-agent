@@ -46,7 +46,15 @@ The project deliberately favors inspectable Node.js modules, file-backed state, 
 
 ### Quick Replay
 
-The default replay path does not require external provider credentials.
+The default replay path does not require external provider credentials. For a single command, run:
+
+```bash
+npm run demo:local
+```
+
+The command runs the local bootstrap, representative demo checks, release artifact hygiene smoke, and pilot export package smoke in sequence.
+
+Manual replay:
 
 ```bash
 npm run bootstrap:local
@@ -74,6 +82,24 @@ Representative demo evidence:
 | Hermes live validation | Blocked until target Hermes provider architecture/model evidence is supplied |
 | Hosted SaaS / production deployment | Not implemented; target evidence only |
 | Production-ready claim | Explicitly blocked |
+
+## Representative Demo
+
+`Representative Demo: Release Readiness Evidence Walkthrough` is the default portfolio demo. It is credential-free and demonstrates the local-first harness through release evidence, provider blockers, handoff readiness, and pilot export packaging without claiming production readiness.
+
+```bash
+npm run demo:local
+```
+
+The one-command demo currently runs:
+
+- `npm run bootstrap:local`
+- `npm run smoke:representative-demo`
+- `npm run smoke:representative-demo-evidence`
+- `npm run smoke:release-artifact-hygiene`
+- `npm run smoke:pilot-export-package`
+
+Use `npm run demo:local -- --plan` to print the command plan without executing it.
 
 ## Features
 
@@ -200,6 +226,7 @@ Recommended public-readiness checks:
 
 ```bash
 npm run package:pilot-export
+npm run smoke:demo-local
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
