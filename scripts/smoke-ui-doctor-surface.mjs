@@ -46,8 +46,8 @@ try {
   assert.equal(appJs.includes('renderDoctorSummary'), true);
   assert.equal(appJs.includes('renderDoctorDetailPanel'), true);
   assert.equal(appJs.includes('wireDoctorSummaryActions'), true);
-  assert.equal(appJs.includes('buildDoctorDiagnosticsSummary'), true);
   assert.equal(appJs.includes('copyDoctorDiagnosticsSummary'), true);
+  assert.equal(appJs.includes('state.doctor.handoffSummary'), true);
   assert.equal(appJs.includes('loadDoctor'), true);
   assert.equal(appJs.includes('doctorLoading'), true);
   assert.equal(appJs.includes('data-doctor-copy-summary="true"'), true);
@@ -55,12 +55,13 @@ try {
   assert.equal(appJs.includes('data-doctor-detail-toggle="true"'), true);
   assert.equal(appJs.includes('id="doctor-detail-panel"'), true);
   assert.equal(appJs.includes('Provider env'), true);
-  assert.equal(appJs.includes('Boundary: missing environment variable names only; secret values are not included.'), true);
   assert.equal(appJs.includes('갱신 ${escapeHtml(formatDate(generatedAt))}'), true);
   assert.equal(appJs.includes('새로고침 중'), true);
 
   assert.equal(doctor.mode, 'doctor');
   assert.equal(doctor.ok, true, JSON.stringify(doctor.checks, null, 2));
+  assert.match(doctor.handoffSummary, /^# Personal AI Agent doctor diagnostics/m);
+  assert.match(doctor.handoffSummary, /Boundary: missing environment variable names only; secret values are not included\./);
   assert.equal(doctor.summary.fail, 0);
   assert.equal(doctor.checks.some((check) => check.id === 'script:doctor' && check.status === 'pass'), true);
   assert.equal(doctor.checks.some((check) => check.id === 'script:smoke:doctor' && check.status === 'pass'), true);

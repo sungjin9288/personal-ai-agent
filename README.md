@@ -230,6 +230,7 @@ Run the local diagnostics before filing setup or provider configuration issues:
 
 ```bash
 npm run doctor
+node src/cli.mjs doctor summary
 ```
 
 | Provider | Core environment variables |
