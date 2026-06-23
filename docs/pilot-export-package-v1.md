@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-06-23T08:40:02.709Z
+- generatedAt: 2026-06-23T10:38:34.818Z
 - verifiedCommit: 86101b552d8596907936203c95dc2ad3b346fc9c
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: e7eb3575eccbcb2106357405098d84aa8443c359b7d4c23fe797cf2c7a7fefd1
+- bundleSha256: 15162a4f399cb4485add51396afe4901bba694503e7c6b40b84edb0bc0463c97
 - fileCount: 67
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -64,7 +64,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
 | `README.md` | 17326 | `87737203120246d3f8f73f478030e7da8cab110b567ba2f163475c0bb5c650c3` |
-| `CHANGELOG.md` | 2594 | `505c028db84037179303b95b6f4984b30769a43486be86c543323c864ff9aed5` |
+| `CHANGELOG.md` | 2594 | `a6b5c1d9d84c580fb28cf6b9eee1f2717e96192f2c1ce0c80783830f9db4c171` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -78,7 +78,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/deployment-pilot-v1.md` | 82325 | `bc454889d127e247acf259e07538051bbcde1f3acbfd02cd016de574994b630e` |
 | `docs/pilot-onboarding-v1.md` | 12003 | `d6e3beeb3df6f5cf46d26f77331b770310d43c7eed616a6d09293c2a9668eb9c` |
 | `docs/demo-scenarios-v1.md` | 19692 | `3a327f007383225908d03d1df384e76f4b870874c1bbe5fe3c75e5faa71ce1fb` |
-| `docs/demo-evidence-index-v1.md` | 3682 | `71a3c153dfa0fb59d7431e78c9c4f8c4cccdf51ef1b9d27165ba0f6c27bcf7ec` |
+| `docs/demo-evidence-index-v1.md` | 3710 | `72a9d44aa8be5139537e6f9aae1214129bb8da1248be992e70c0dd813adee32b` |
 | `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |
 | `docs/customer-support-operations-v1.md` | 6200 | `8ed125281443fce70deb133eecfd9108744320ad1d977c5061e349f6fb1ab873` |
