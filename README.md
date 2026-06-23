@@ -30,7 +30,7 @@ Personal AI Agent explores that boundary as a local-first harness for engineers 
 | Operator control plane | CLI, local web UI/API, action inbox, provider overview, release overview | `src/cli.mjs`, `src/web/server.mjs`, `npm run smoke:ui-execution-console` |
 | Provider reliability | Provider registry, preflight, fallback policy, attention remediation, provider telemetry | `src/providers/*`, `npm run smoke:provider-fallback-policy`, `npm run smoke:provider-attention-remediation` |
 | Evidence workflow | Release status, closeout, handoff, snapshot, pilot export package | `npm run smoke:execution-v1-status`, `npm run smoke:pilot-export-package` |
-| Portfolio demo | Credential-free release readiness walkthrough with replay log and screenshot evidence | `npm run smoke:representative-demo`, `npm run smoke:representative-demo-evidence` |
+| Portfolio demo | Credential-free release readiness walkthrough with replay log, screenshot evidence, and operator surface support map | `npm run smoke:representative-demo`, `npm run smoke:representative-demo-evidence`, `npm run smoke:operator-surface-demo-evidence` |
 
 ### Why Fork This
 
@@ -81,6 +81,7 @@ Representative demo evidence:
 - summary: `evidence/output-artifacts/representative-release-demo-summary.json`
 - screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
 - walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
+- operator surface support map: [docs/operator-surface-demo-evidence-v1.md](docs/operator-surface-demo-evidence-v1.md)
 - There is no public hosted demo URL.
 
 ![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)
@@ -275,6 +276,7 @@ npm run smoke:demo-evidence-index
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
+npm run smoke:operator-surface-demo-evidence
 npm run smoke:pilot-export-package
 npm run smoke:portfolio-zip
 npm run smoke:release-artifact-hygiene
