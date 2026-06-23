@@ -9,12 +9,15 @@
 - sourcePreview: [representative-release-demo-preview.png](../evidence/screenshots/representative-release-demo-preview.png)
 - sourceScreenshot: [representative-release-demo-release-status.png](../evidence/screenshots/representative-release-demo-release-status.png)
 - relatedWalkthrough: [demo-scenarios-v1.md](demo-scenarios-v1.md)
+- relatedRecordedWalkthrough: [recorded-walkthrough-v1.md](recorded-walkthrough-v1.md)
 
 ## Purpose
 
 This index gives reviewers one stable entry point for the current representative demo evidence. It is a recorded local replay, not a public hosted demo URL.
 
 The evidence supports the scoped claim that this repository has a credential-free representative walkthrough for a provider-scoped local-first pilot boundary. It does not support a production-ready, all-provider-complete, or hosted SaaS claim.
+
+The current repository includes a recording script, not a published walkthrough URL.
 
 ## Current Recorded Replay
 
@@ -65,6 +68,7 @@ To refresh the recorded evidence files after intentional demo changes, run:
 ```bash
 npm run evidence:representative-demo
 npm run smoke:demo-evidence-index
+npm run smoke:recorded-walkthrough
 npm run smoke:representative-demo-evidence
 ```
 
@@ -72,6 +76,7 @@ npm run smoke:representative-demo-evidence
 
 - There is no public hosted demo URL.
 - The current evidence is a local recorded replay plus screenshot and browser report.
+- The recorded walkthrough state is `recording-script-ready`; no video URL is verified yet.
 - The demo remains credential-free and should not require OpenAI, Anthropic, local provider, or Hermes credentials.
 - Production readiness remains explicitly blocked by release readiness evidence.
 - Anthropic, Hermes, hosted SaaS, and target local provider production claims remain outside the current evidence boundary.

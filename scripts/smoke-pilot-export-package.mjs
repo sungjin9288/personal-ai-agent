@@ -18,6 +18,7 @@ const operatorRunbookPath = path.join(repoDir, 'docs', 'operator-runbook-v1.md')
 const pilotOnboardingPath = path.join(repoDir, 'docs', 'pilot-onboarding-v1.md');
 const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
 const demoEvidenceIndexPath = path.join(repoDir, 'docs', 'demo-evidence-index-v1.md');
+const recordedWalkthroughPath = path.join(repoDir, 'docs', 'recorded-walkthrough-v1.md');
 const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
 const customerSupportOperationsPath = path.join(repoDir, 'docs', 'customer-support-operations-v1.md');
 const targetProviderEvidenceIntakePath = path.join(repoDir, 'docs', 'target-provider-evidence-intake-v1.md');
@@ -41,6 +42,7 @@ const operatorRunbook = readRequiredFile(operatorRunbookPath);
 const pilotOnboarding = readRequiredFile(pilotOnboardingPath);
 const demoScenarios = readRequiredFile(demoScenariosPath);
 const demoEvidenceIndex = readRequiredFile(demoEvidenceIndexPath);
+const recordedWalkthrough = readRequiredFile(recordedWalkthroughPath);
 const forkOnboarding = readRequiredFile(forkOnboardingPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
@@ -59,7 +61,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 68$/m);
+assert.match(manifest, /^- fileCount: 69$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -85,6 +87,7 @@ const requiredPaths = [
   'docs/pilot-onboarding-v1.md',
   'docs/demo-scenarios-v1.md',
   'docs/demo-evidence-index-v1.md',
+  'docs/recorded-walkthrough-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
@@ -228,6 +231,11 @@ assert.match(demoEvidenceIndex, /publicHostedDemoUrl: none/);
 assert.match(demoEvidenceIndex, /productionReadyClaim: false/);
 assert.match(demoEvidenceIndex, /Representative Demo: Release Readiness Evidence Walkthrough/);
 assert.match(demoEvidenceIndex, /not a public hosted demo URL/);
+assert.match(recordedWalkthrough, /status: recording-script-ready/);
+assert.match(recordedWalkthrough, /publicHostedDemoUrl: none/);
+assert.match(recordedWalkthrough, /privateRecordedWalkthroughUrl: pending/);
+assert.match(recordedWalkthrough, /productionReadyClaim: false/);
+assert.match(recordedWalkthrough, /not a hosted demo link/);
 assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-demo-release-status\.png/);
 assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
 assert.match(contributing, /# Contributing/);

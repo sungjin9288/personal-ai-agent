@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-06-23T12:08:53.525Z
+- generatedAt: 2026-06-23T12:19:31.797Z
 - verifiedCommit: 86101b552d8596907936203c95dc2ad3b346fc9c
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: e9723c1e3abbab0a6df56ef6a19fd490fa93cfe0e8458a488c4ddea3d7358d02
-- fileCount: 68
+- bundleSha256: 8f0f378a8e0e08d40f581d0277dabc846a00fa6014a0fa8959754d73ff51409f
+- fileCount: 69
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 17856 | `4237ecfa734d4af193cc89783851d01447344f59c0c5d15c9bb69fdd378b1359` |
-| `CHANGELOG.md` | 2950 | `95ced83e4c6da270979f77ff5b5039da5c4772c844bb1ac09372674f162b246b` |
+| `README.md` | 18336 | `31b21939240338091faf75cb474f38141aaf4b70f7f4c043865aadd97e098cb3` |
+| `CHANGELOG.md` | 3112 | `55dc3892e0f0a89aa76d283fc92e64788bd8538e796d64d3ead27ec76d33ff12` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -77,8 +77,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/operator-runbook-v1.md` | 17537 | `5010c050f1921324f3adf75d5d4c796b6fbdde0c550f89f1f6b4849a4dcfc900` |
 | `docs/deployment-pilot-v1.md` | 82325 | `bc454889d127e247acf259e07538051bbcde1f3acbfd02cd016de574994b630e` |
 | `docs/pilot-onboarding-v1.md` | 12003 | `d6e3beeb3df6f5cf46d26f77331b770310d43c7eed616a6d09293c2a9668eb9c` |
-| `docs/demo-scenarios-v1.md` | 20084 | `a2bd9055d45631ebf5ec73055d049930c4e35986e6a5504c64be22d806ba6a56` |
-| `docs/demo-evidence-index-v1.md` | 3710 | `72a9d44aa8be5139537e6f9aae1214129bb8da1248be992e70c0dd813adee32b` |
+| `docs/demo-scenarios-v1.md` | 20536 | `5e01fa6f993b6ef7790f19bc945e9b3c774fa3ce6c2da374e81b09c87a06fe9e` |
+| `docs/demo-evidence-index-v1.md` | 4010 | `0244e4b23fba823f168e339cc08bafaffb4811cf05e0762201e6a4651be553b1` |
+| `docs/recorded-walkthrough-v1.md` | 5378 | `cc3fe2615d81a6af5bcaad7b3489aebd294a941dcbb192d81e4772447dd43ea5` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |

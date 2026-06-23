@@ -81,6 +81,7 @@ Representative demo evidence:
 - summary: `evidence/output-artifacts/representative-release-demo-summary.json`
 - screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
 - walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
+- Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
 - operator surface support map: [docs/operator-surface-demo-evidence-v1.md](docs/operator-surface-demo-evidence-v1.md)
 - operator surface screenshots: `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, `evidence/screenshots/operator-surface-action-inbox.png`
 - operator surface refresh command: `npm run evidence:operator-surface-demo`
@@ -114,6 +115,7 @@ The one-command demo currently runs:
 - `npm run smoke:representative-demo`
 - `npm run smoke:representative-demo-evidence`
 - `npm run smoke:demo-evidence-index`
+- `npm run smoke:recorded-walkthrough`
 - `npm run smoke:release-artifact-hygiene`
 - `npm run smoke:portfolio-zip`
 - `npm run smoke:pilot-export-package`
@@ -275,6 +277,7 @@ npm run smoke:contributor-onboarding
 npm run smoke:env-example
 npm run smoke:demo-local
 npm run smoke:demo-evidence-index
+npm run smoke:recorded-walkthrough
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
@@ -306,6 +309,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Evidence checklist: [docs/evidence-checklist.md](docs/evidence-checklist.md)
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
+- Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
 - Security policy: [SECURITY.md](SECURITY.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
@@ -338,6 +342,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - The target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence.
 - Hosted identity/session, hosted tenant isolation, target secret manager, target observability/SLO, and production clean deployment remain target evidence work.
 - There is no public hosted demo URL. The current demo is the credential-free representative replay and evidence package.
+- The recorded walkthrough is currently a recording script and acceptance checklist, not a published video URL.
 - Customer usage metrics, cost reduction claims, and production SLA claims are intentionally not included because this repository does not contain supporting evidence for them.
 
 ## Links
@@ -345,5 +350,6 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Repository: [github.com/sungjin9288/personal-ai-agent](https://github.com/sungjin9288/personal-ai-agent)
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Demo walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
+- Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
 - Project card: [docs/project-card.md](docs/project-card.md)
 - Case study: [docs/case-study.md](docs/case-study.md)

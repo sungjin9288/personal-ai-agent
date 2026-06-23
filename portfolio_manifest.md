@@ -27,6 +27,7 @@
 - docs/roadmap.md
 - docs/readme-improvement.md
 - docs/demo-evidence-index-v1.md
+- docs/recorded-walkthrough-v1.md
 - docs/operator-surface-demo-evidence-v1.md
 - docs/fork-onboarding-v1.md
 - docs/implementation-evidence.md
@@ -65,6 +66,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 2,224,517 bytes
-- 압축 파일 SHA-256: `2c92f7945ae32f72b25c86e090d8421838ba089c8f0b128638feca2c36c73842`
+- 압축 파일 크기: 2,227,246 bytes
+- 압축 파일 SHA-256: `902fb36c4cb1854fa59749e468b433712ce633408fb5471da7a7bebedebce9fa`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

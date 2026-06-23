@@ -6,6 +6,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 - Aligned portfolio case study, project card, interview story, and resume bullets with completed mission/provider/action operator surface browser evidence.
 - Replaced stale future screenshot wording with scoped references to `evidence/screenshots/operator-surface-*.png`, `evidence/output-artifacts/operator-surface-demo-browser-report.json`, and the remaining non-public-demo gaps.
+- Added a recorded walkthrough script and smoke guard so future private/public demo video URLs can be added only after evidence, hygiene, and access checks pass.
 
 ## v0.1.0 - 2026-06-23
 

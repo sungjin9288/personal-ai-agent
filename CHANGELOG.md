@@ -6,6 +6,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 - Aligned portfolio case study, project card, interview story, and resume bullets with completed mission/provider/action operator surface browser evidence.
 - Replaced stale future screenshot wording with scoped references to `evidence/screenshots/operator-surface-*.png`, `evidence/output-artifacts/operator-surface-demo-browser-report.json`, and the remaining non-public-demo gaps.
+- Added a recorded walkthrough script and smoke guard so future private/public demo video URLs can be added only after evidence, hygiene, and access checks pass.
 
 ## v0.1.0 - 2026-06-23
 
@@ -22,8 +23,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,224,517 bytes`
-- SHA-256: `2c92f7945ae32f72b25c86e090d8421838ba089c8f0b128638feca2c36c73842`
+- Size: `2,227,246 bytes`
+- SHA-256: `902fb36c4cb1854fa59749e468b433712ce633408fb5471da7a7bebedebce9fa`
 
 Included public surfaces:
 

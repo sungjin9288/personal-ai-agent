@@ -23,6 +23,10 @@ const steps = Object.freeze([
     purpose: 'Verify the reviewer-facing demo evidence index and public demo claim boundary.',
   },
   {
+    command: 'npm run smoke:recorded-walkthrough',
+    purpose: 'Verify the recording script, storyboard, evidence paths, and no-hosted-demo boundary.',
+  },
+  {
     command: 'npm run smoke:release-artifact-hygiene',
     purpose: 'Verify release artifacts do not expose secrets or machine-local paths.',
   },
@@ -43,6 +47,7 @@ const evidence = Object.freeze([
   'evidence/screenshots/representative-release-demo-release-status.png',
   'docs/demo-evidence-index-v1.md',
   'docs/demo-scenarios-v1.md',
+  'docs/recorded-walkthrough-v1.md',
   'docs/pilot-export-package-v1.md',
 ]);
 

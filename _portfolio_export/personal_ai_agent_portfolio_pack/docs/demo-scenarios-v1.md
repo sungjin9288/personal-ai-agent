@@ -51,6 +51,7 @@ Evidence capture:
 ```bash
 npm run evidence:representative-demo
 npm run smoke:representative-demo-evidence
+npm run smoke:recorded-walkthrough
 npm run smoke:operator-surface-demo-evidence
 ```
 
@@ -67,6 +68,7 @@ Narration checklist:
 - identify the selected demo as `Representative Demo: Release Readiness Evidence Walkthrough`
 - show current release evidence and immutable snapshot before discussing provider claims
 - use `Operator Surface Demo Evidence` in `docs/operator-surface-demo-evidence-v1.md` when the audience asks for mission/provider/action support evidence beyond the release tab
+- use the Recorded walkthrough script in `docs/recorded-walkthrough-v1.md` when preparing a private or public video recording
 - use `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, and `evidence/screenshots/operator-surface-action-inbox.png` for browser proof of the mission/provider/action operator surfaces
 - explain Anthropic, Hermes, and target local provider gaps as stop conditions, not hidden failures
 - point to `docs/execution-v1-handoff.md` for the current operator handoff
@@ -77,6 +79,7 @@ Success criteria:
 
 - `smoke:representative-demo` passes
 - execution-v1 status, snapshot, handoff, and release artifact hygiene smokes pass
+- `smoke:recorded-walkthrough` passes for the recording script, storyboard, evidence paths, and no-hosted-demo boundary
 - `smoke:operator-surface-demo-evidence` passes for the mission/provider/action evidence map
 - `evidence:operator-surface-demo` refreshes mission/provider/action browser screenshots and `operator-surface-demo-browser-report.json`
 - the demo does not require live credentials
@@ -90,13 +93,13 @@ Stop criteria:
 - mission/provider/action support evidence files are missing or contradict the claim boundary
 - the presenter cannot explain why production-ready and all-provider-complete are still blocked
 
-Supporting operator-surface follow-up gaps:
+Recorded walkthrough script:
 
-- Mission creation/run browser screenshot
-- Provider readiness browser screenshot
-- Action inbox browser screenshot
+- The current recording script is `docs/recorded-walkthrough-v1.md`.
+- The mission/provider/action browser screenshots are captured and referenced by the script.
+- Remaining walkthrough gap: no public or private video URL has been published and access-verified.
 
-These are follow-up portfolio polish items. The current representative demo remains evidence-backed by release status screenshot, replay log, browser E2E report, CLI/API evidence, and the `Operator Surface Demo Evidence` map.
+The current representative demo remains evidence-backed by release status screenshot, replay log, browser E2E report, CLI/API evidence, the `Operator Surface Demo Evidence` map, and a recording-ready walkthrough script. It remains a local replay, not a hosted demo.
 
 ## Scenario 1: Release Readiness
 

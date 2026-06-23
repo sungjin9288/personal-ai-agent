@@ -18,6 +18,7 @@ assert.equal(result.scannedFiles.includes('docs/execution-v1-evidence.md'), true
 assert.equal(result.scannedFiles.includes('docs/execution-v1-closeout.md'), true);
 assert.equal(result.scannedFiles.includes('docs/execution-v1-handoff.md'), true);
 assert.equal(result.scannedFiles.includes('docs/demo-evidence-index-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/recorded-walkthrough-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/fork-onboarding-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/pilot-export-package-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-like-release-drill-v1.md'), true);
