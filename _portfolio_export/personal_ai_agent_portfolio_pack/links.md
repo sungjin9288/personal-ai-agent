@@ -3,6 +3,7 @@
 - GitHub: https://github.com/sungjin9288/personal-ai-agent
 - Contributing: CONTRIBUTING.md
 - Security policy: SECURITY.md
+- Changelog: CHANGELOG.md
 - Fork onboarding: docs/fork-onboarding-v1.md
 - Demo: hosted public demo 없음
 - 로컬 대표 demo index: docs/demo-evidence-index-v1.md

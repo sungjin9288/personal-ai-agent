@@ -39,6 +39,7 @@ for (const term of [
   'npm run demo:local -- --plan',
   'runtime reads `process.env` directly',
   'Never commit `.env`',
+  'npm run smoke:changelog',
   'npm run smoke:contributor-onboarding',
   'npm run smoke:release-artifact-hygiene',
   'Read [SECURITY.md](SECURITY.md)',
@@ -82,6 +83,8 @@ for (const readmeTerm of [
   'Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)',
   'Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)',
   'Security policy: [SECURITY.md](SECURITY.md)',
+  'Changelog: [CHANGELOG.md](CHANGELOG.md)',
+  'npm run smoke:changelog',
   'npm run smoke:contributor-onboarding',
 ]) {
   assertContains(readme, readmeTerm, `README missing contributor onboarding term ${readmeTerm}`);
@@ -116,7 +119,7 @@ for (const ignored of ['.env', '.env.local', 'var/']) {
   assertContains(gitignore, ignored, `.gitignore missing ${ignored}`);
 }
 
-for (const ciTerm of ['npm run smoke:contributor-onboarding']) {
+for (const ciTerm of ['npm run smoke:contributor-onboarding', 'npm run smoke:changelog']) {
   assertContains(pullRequestTemplate, ciTerm, `PR template missing ${ciTerm}`);
   assertContains(workflow, ciTerm, `Provider smoke workflow missing ${ciTerm}`);
 }

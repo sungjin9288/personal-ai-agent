@@ -40,6 +40,7 @@ const MACHINE_LOCAL_PATH_PATTERNS = [
 ];
 
 const CURRENT_RELEASE_ARTIFACTS = [
+  'CHANGELOG.md',
   'CONTRIBUTING.md',
   'SECURITY.md',
   '.github/ISSUE_TEMPLATE/bug_report.yml',

@@ -11,6 +11,7 @@
 ## 포함 파일
 
 - README.md
+- CHANGELOG.md
 - CONTRIBUTING.md
 - SECURITY.md
 - .github/ISSUE_TEMPLATE/bug_report.yml

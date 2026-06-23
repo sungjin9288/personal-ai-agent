@@ -13,6 +13,7 @@
 - [ ] `npm run smoke:demo-local`
 - [ ] `npm run smoke:env-example`
 - [ ] `npm run smoke:contributor-onboarding`
+- [ ] `npm run smoke:changelog`
 - [ ] `npm run smoke:demo-evidence-index`
 - [ ] `npm run smoke:readme-portfolio-overview`
 - [ ] `npm run smoke:portfolio-docs-claim-boundary`

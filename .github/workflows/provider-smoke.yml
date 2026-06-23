@@ -36,6 +36,9 @@ jobs:
       - name: Run contributor onboarding smoke
         run: npm run smoke:contributor-onboarding
 
+      - name: Run changelog smoke
+        run: npm run smoke:changelog
+
       - name: Run demo evidence index smoke
         run: npm run smoke:demo-evidence-index
 
