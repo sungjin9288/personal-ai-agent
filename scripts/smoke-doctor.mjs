@@ -11,6 +11,7 @@ const readme = fs.readFileSync(path.join(repoDir, 'README.md'), 'utf8');
 const support = fs.readFileSync(path.join(repoDir, 'SUPPORT.md'), 'utf8');
 
 assert.equal(packageJson.scripts.doctor, 'node src/cli.mjs doctor');
+assert.equal(packageJson.scripts['doctor:summary'], 'node src/cli.mjs doctor summary');
 assert.equal(packageJson.scripts['smoke:doctor'], 'node scripts/smoke-doctor.mjs');
 assert.equal(packageJson.scripts['smoke:ui-doctor-surface'], 'node scripts/smoke-ui-doctor-surface.mjs');
 
@@ -24,6 +25,7 @@ assert.equal(direct.ok, true, JSON.stringify(direct.checks, null, 2));
 assert.equal(direct.providers.some((provider) => provider.id === 'stub' && provider.configured), true);
 assert.equal(direct.providers.some((provider) => provider.id === 'openai' && provider.missingEnv.includes('OPENAI_API_KEY')), true);
 assert.equal(direct.checks.some((check) => check.id === 'script:doctor' && check.status === 'pass'), true);
+assert.equal(direct.checks.some((check) => check.id === 'script:doctor:summary' && check.status === 'pass'), true);
 assert.equal(direct.checks.some((check) => check.id === 'script:smoke:doctor' && check.status === 'pass'), true);
 assert.equal(direct.checks.some((check) => check.id === 'script:smoke:ui-doctor-surface' && check.status === 'pass'), true);
 assert.equal(direct.checks.some((check) => check.id === 'env-example:provider-coverage' && check.status === 'pass'), true);
@@ -44,7 +46,7 @@ assert.equal(cliDoctor.ok, true, JSON.stringify(cliDoctor.checks, null, 2));
 assert.equal(cliDoctor.summary.fail, 0);
 assert.equal(cliDoctor.checks.some((check) => check.path === '.env.example'), true);
 
-const cliSummaryResult = spawnSync(process.execPath, ['src/cli.mjs', 'doctor', 'summary'], {
+const cliSummaryResult = spawnSync('npm', ['run', '--silent', 'doctor:summary'], {
   cwd: repoDir,
   encoding: 'utf8',
   env: {
@@ -62,7 +64,7 @@ assert.match(cliSummaryResult.stdout, /Boundary: missing environment variable na
 
 for (const term of [
   'npm run doctor',
-  'node src/cli.mjs doctor summary',
+  'npm run doctor:summary',
   'npm run smoke:doctor',
   'npm run smoke:ui-doctor-surface',
 ]) {

@@ -7,6 +7,7 @@
   "scripts": {
     "ui": "node src/web/server.mjs",
     "doctor": "node src/cli.mjs doctor",
+    "doctor:summary": "node src/cli.mjs doctor summary",
     "smoke": "node scripts/smoke.mjs",
     "smoke:doctor": "node scripts/smoke-doctor.mjs",
     "smoke:ui-doctor-surface": "node scripts/smoke-ui-doctor-surface.mjs",

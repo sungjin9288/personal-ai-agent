@@ -38,6 +38,7 @@ for (const term of [
   'public hosted demo URL',
   'npm run demo:local',
   'npm run doctor',
+  'npm run doctor:summary',
   'npm run smoke:doctor',
   'npm run smoke:ui-doctor-surface',
   'npm run smoke:env-example',
@@ -60,6 +61,7 @@ for (const term of [
 for (const term of [
   'Support: [SUPPORT.md](SUPPORT.md)',
   'npm run doctor',
+  'npm run doctor:summary',
   'npm run smoke:doctor',
   'npm run smoke:ui-doctor-surface',
   'npm run smoke:support-policy',
@@ -78,9 +80,11 @@ assertContains(security, '[SUPPORT.md](SUPPORT.md)', 'SECURITY missing support l
 assertContains(issueTemplateConfig, 'Support policy', 'issue template config missing support contact');
 assertContains(issueTemplateConfig, 'SUPPORT.md', 'issue template config missing support URL');
 assertContains(pullRequestTemplate, 'npm run smoke:doctor', 'PR template missing doctor smoke');
+assertContains(pullRequestTemplate, 'npm run doctor:summary', 'PR template missing doctor summary command');
 assertContains(pullRequestTemplate, 'npm run smoke:ui-doctor-surface', 'PR template missing UI doctor surface smoke');
 assertContains(pullRequestTemplate, 'npm run smoke:support-policy', 'PR template missing support smoke');
 assertContains(workflow, 'npm run smoke:doctor', 'Provider smoke workflow missing doctor smoke');
+assertContains(workflow, 'npm run doctor:summary', 'Provider smoke workflow missing doctor summary command');
 assertContains(workflow, 'npm run smoke:ui-doctor-surface', 'Provider smoke workflow missing UI doctor surface smoke');
 assertContains(workflow, 'npm run smoke:support-policy', 'Provider smoke workflow missing support smoke');
 assertContains(portfolioManifest, '- SUPPORT.md', 'portfolio manifest missing SUPPORT.md');
