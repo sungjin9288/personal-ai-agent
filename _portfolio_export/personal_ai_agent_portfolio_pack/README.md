@@ -112,6 +112,7 @@ The one-command demo currently runs:
 - `npm run smoke:representative-demo-evidence`
 - `npm run smoke:demo-evidence-index`
 - `npm run smoke:release-artifact-hygiene`
+- `npm run smoke:portfolio-zip`
 - `npm run smoke:pilot-export-package`
 
 Use `npm run demo:local -- --plan` to print the command plan without executing it.

@@ -48,6 +48,7 @@ for (const term of [
   'SUPPORT.md',
   'GitHub issue templates',
   'npm run smoke:changelog',
+  'npm run smoke:portfolio-zip',
   'npm run smoke:doctor',
   'npm run smoke:ui-doctor-surface',
   zipSha,

@@ -21,8 +21,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `410,720 bytes`
-- SHA-256: `463341ca6437933f0ac51b8a806f329a3a2a4e1e4cfbcb51e75d2aba5d72b9e6`
+- Size: `410,729 bytes`
+- SHA-256: `eaa09b466f016641b20873c6fe9e3ea636ad398ddd47d9112aee075fc7812bee`
 
 Included public surfaces:
 
@@ -44,6 +44,7 @@ npm run package:pilot-export
 npm run smoke:doctor
 npm run smoke:ui-doctor-surface
 npm run smoke:changelog
+npm run smoke:portfolio-zip
 npm run smoke:contributor-onboarding
 npm run smoke:env-example
 npm run smoke:demo-local
