@@ -7,6 +7,7 @@ const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
 const linksPath = path.join(repoDir, 'links.md');
+const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const supportPath = path.join(repoDir, 'SUPPORT.md');
 const contributingPath = path.join(repoDir, 'CONTRIBUTING.md');
 const securityPolicyPath = path.join(repoDir, 'SECURITY.md');
@@ -29,6 +30,7 @@ const packagePath = path.join(repoDir, 'package.json');
 const manifest = readRequiredFile(manifestPath);
 const changelog = readRequiredFile(changelogPath);
 const links = readRequiredFile(linksPath);
+const portfolioManifest = readRequiredFile(portfolioManifestPath);
 const support = readRequiredFile(supportPath);
 const contributing = readRequiredFile(contributingPath);
 const securityPolicy = readRequiredFile(securityPolicyPath);
@@ -63,6 +65,8 @@ assert.match(manifest, /not permission to claim `production-ready`/);
 
 const verifiedCommit = extractBulletValue(manifest, 'verifiedCommit');
 assert.match(verifiedCommit, /^[a-f0-9]{40}$/);
+const zipSha256 = extractBacktickValue(portfolioManifest, '압축 파일 SHA-256');
+assert.match(zipSha256, /^[a-f0-9]{64}$/);
 const manifestEntries = parseManifestEntries(manifest);
 const requiredPaths = [
   'README.md',
@@ -319,7 +323,7 @@ assert.match(changelog, /SUPPORT\.md/);
 assert.match(changelog, /## v0\.1\.0 - 2026-06-23/);
 assert.match(changelog, /\/api\/doctor/);
 assert.match(changelog, /productionReadyClaim: false/);
-assert.match(changelog, /66439a6a255b17adbbc04f2489804f0870848854f9a73934b9f7bad99285e6b5/);
+assert.match(changelog, new RegExp(escapeRegExp(zipSha256)));
 
 console.log(
   JSON.stringify(
@@ -344,6 +348,11 @@ function readRequiredFile(filePath) {
 
 function extractBulletValue(markdown, label) {
   const match = String(markdown || '').match(new RegExp(`^- ${escapeRegExp(label)}:\\s+(.+)$`, 'm'));
+  return match ? String(match[1] || '').trim() : '';
+}
+
+function extractBacktickValue(markdown, label) {
+  const match = String(markdown || '').match(new RegExp(`^- ${escapeRegExp(label)}:\\s+\`([^\`]+)\`$`, 'm'));
   return match ? String(match[1] || '').trim() : '';
 }
 
