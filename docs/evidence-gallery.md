@@ -46,6 +46,7 @@
 | Mission run sequence | `evidence/architecture/mission-run-sequence.mmd` | mission execution flow from operator to provider and store |
 | Provider adapter structure | `evidence/architecture/provider-adapter-structure.mmd` | provider catalog and adapter registry relationship |
 | Architecture code walkthrough | `docs/architecture-code-walkthrough-v1.md` | code-level path through CLI, web API, mission service, runtime harness, provider registry, store, and smoke evidence |
+| Provider readiness matrix | `docs/provider-readiness-matrix-v1.md` | provider adapter implementation, required env, current blocker state, safe claim boundary, and next verification commands |
 
 ## 5. Output Artifact Evidence
 
@@ -64,5 +65,6 @@
 - Use CLI/API/screenshot evidence to support “implemented local-first agent harness” claims.
 - Use `docs/operator-surface-demo-evidence-v1.md` to connect mission/provider/action support evidence to the representative demo without implying a public hosted demo.
 - Use `docs/architecture-code-walkthrough-v1.md` to explain the implementation path from CLI/web entrypoints to mission service, runtime harness, provider registry, local store, and evidence scripts.
+- Use `docs/provider-readiness-matrix-v1.md` to separate adapter support, local pilot evidence, target provider evidence, and blocked provider claims.
 - Use release blocker evidence to avoid risky claims such as production-ready, hosted SaaS ready, or all-provider live validated.
 - Use architecture diagrams in interviews to explain how CLI/web, mission service, runtime harness, provider registry, and local store interact.

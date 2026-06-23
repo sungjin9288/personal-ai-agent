@@ -20,13 +20,14 @@
 | Operator surface browser screenshots | 완료 | `evidence/screenshots/operator-surface-mission-run.png`, `operator-surface-provider-readiness.png`, `operator-surface-action-inbox.png` | mission/provider/action support evidence captured by `npm run evidence:operator-surface-demo` |
 | Recorded walkthrough script | 완료 | `docs/recorded-walkthrough-v1.md` | recording script and acceptance gate verified by `npm run smoke:recorded-walkthrough`; no published video URL yet |
 | Architecture code walkthrough | 완료 | `docs/architecture-code-walkthrough-v1.md` | code-level navigation verified by `npm run smoke:architecture-code-walkthrough` |
+| Provider readiness matrix | 완료 | `docs/provider-readiness-matrix-v1.md` | provider catalog/env/blocker boundary verified by `npm run smoke:provider-readiness-matrix` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,230,070 bytes, SHA-256 `f1e303de5047b5a4788e7e5e618ec0c8f2f60b55ad87d2fcf338f91bfaacefd2` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,232,612 bytes, SHA-256 `7b53cdffc1bec2ec5d0f5c97246abc23faddd89ef86dfb1102e219f679cfc724` |
 
 ## 검증 실패 / 보류
 

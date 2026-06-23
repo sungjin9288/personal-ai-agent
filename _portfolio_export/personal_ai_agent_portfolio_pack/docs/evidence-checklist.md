@@ -20,6 +20,7 @@
 | Operator surface browser screenshots | 완료 | `evidence/screenshots/operator-surface-mission-run.png`, `operator-surface-provider-readiness.png`, `operator-surface-action-inbox.png` | mission/provider/action support evidence captured by `npm run evidence:operator-surface-demo` |
 | Recorded walkthrough script | 완료 | `docs/recorded-walkthrough-v1.md` | recording script and acceptance gate verified by `npm run smoke:recorded-walkthrough`; no published video URL yet |
 | Architecture code walkthrough | 완료 | `docs/architecture-code-walkthrough-v1.md` | code-level navigation verified by `npm run smoke:architecture-code-walkthrough` |
+| Provider readiness matrix | 완료 | `docs/provider-readiness-matrix-v1.md` | provider catalog/env/blocker boundary verified by `npm run smoke:provider-readiness-matrix` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |

@@ -8,6 +8,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Replaced stale future screenshot wording with scoped references to `evidence/screenshots/operator-surface-*.png`, `evidence/output-artifacts/operator-surface-demo-browser-report.json`, and the remaining non-public-demo gaps.
 - Added a recorded walkthrough script and smoke guard so future private/public demo video URLs can be added only after evidence, hygiene, and access checks pass.
 - Added an architecture code walkthrough and symbol smoke guard so reviewers can navigate CLI/web, mission service, runtime harness, provider registry, local store, and evidence scripts from verified source paths.
+- Added a provider readiness matrix and catalog smoke guard to separate adapter implementation, pilot evidence, target provider blockers, and safe multi-provider claims.
 
 ## v0.1.0 - 2026-06-23
 
@@ -24,8 +25,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,230,070 bytes`
-- SHA-256: `f1e303de5047b5a4788e7e5e618ec0c8f2f60b55ad87d2fcf338f91bfaacefd2`
+- Size: `2,232,612 bytes`
+- SHA-256: `7b53cdffc1bec2ec5d0f5c97246abc23faddd89ef86dfb1102e219f679cfc724`
 
 Included public surfaces:
 
