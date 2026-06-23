@@ -301,6 +301,7 @@ assert.match(
 assert.match(readme, /npm run package:pilot-export/);
 assert.match(readme, /npm run doctor/);
 assert.match(readme, /npm run smoke:doctor/);
+assert.match(readme, /npm run smoke:ui-doctor-surface/);
 assert.match(readme, /Changelog: \[CHANGELOG\.md\]\(CHANGELOG\.md\)/);
 assert.match(readme, /Support: \[SUPPORT\.md\]\(SUPPORT\.md\)/);
 assert.match(readme, /npm run smoke:changelog/);
@@ -308,8 +309,9 @@ assert.match(readme, /npm run smoke:support-policy/);
 assert.match(changelog, /# Changelog/);
 assert.match(changelog, /SUPPORT\.md/);
 assert.match(changelog, /## v0\.1\.0 - 2026-06-23/);
+assert.match(changelog, /\/api\/doctor/);
 assert.match(changelog, /productionReadyClaim: false/);
-assert.match(changelog, /a73b9ec3f5352475c58167dadaa2a6abd4a2ce3814a0d428f93d53ceafd49f07/);
+assert.match(changelog, /66439a6a255b17adbbc04f2489804f0870848854f9a73934b9f7bad99285e6b5/);
 
 console.log(
   JSON.stringify(

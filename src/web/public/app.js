@@ -6,6 +6,7 @@ const state = {
   currentSessionPayload: null,
   currentViewLinkCopied: false,
   currentViewLinkCopiedTimer: null,
+  doctor: null,
   executionLogs: null,
   executionPollTimer: null,
   executionStatus: null,
@@ -543,6 +544,7 @@ const elements = {
   documentLogSearch: document.getElementById('document-log-search'),
   documentLogCancelButton: document.getElementById('document-log-cancel-button'),
   documentLogSubmitButton: document.getElementById('document-log-submit-button'),
+  doctorSummary: document.getElementById('doctor-summary'),
   executionConsole: document.getElementById('execution-console'),
   flowStatus: document.getElementById('flow-status'),
   harnessLoops: document.getElementById('harness-loops'),
@@ -15964,6 +15966,47 @@ function renderFlowState() {
   });
 }
 
+function renderDoctorSummary() {
+  if (!elements.doctorSummary) {
+    return;
+  }
+
+  const doctor = state.doctor;
+  if (!doctor) {
+    elements.doctorSummary.className = 'doctor-summary';
+    elements.doctorSummary.innerHTML = `
+      <p class="flow-status-label">로컬 진단</p>
+      <strong class="flow-status-value">진단 대기 중</strong>
+      <p class="flow-status-copy">필수 파일, scripts, provider 설정 상태를 확인합니다.</p>
+    `;
+    return;
+  }
+
+  const summary = doctor.summary || {};
+  const pass = Number(summary.pass || 0);
+  const warn = Number(summary.warn || 0);
+  const fail = Number(summary.fail || 0);
+  const providers = Array.isArray(doctor.providers) ? doctor.providers : [];
+  const missingProviderIds = providers
+    .filter((provider) => provider.id !== 'stub' && !provider.configured)
+    .map((provider) => provider.id)
+    .filter(Boolean);
+  const statusClass = fail > 0 ? 'is-danger' : warn > 0 ? 'is-warning' : 'is-success';
+  const statusLabel = fail > 0 ? '확인 필요' : warn > 0 ? '경고 있음' : '정상';
+  const copy = fail > 0
+    ? '필수 파일 또는 script 등록 상태를 확인해야 합니다.'
+    : missingProviderIds.length
+      ? `${missingProviderIds.join(', ')} provider env 미설정`
+      : '필수 파일과 provider 진단이 통과했습니다.';
+
+  elements.doctorSummary.className = `doctor-summary ${statusClass}`;
+  elements.doctorSummary.innerHTML = `
+    <p class="flow-status-label">로컬 진단</p>
+    <strong class="flow-status-value">${escapeHtml(statusLabel)} · pass ${escapeHtml(pass)} · warn ${escapeHtml(warn)} · fail ${escapeHtml(fail)}</strong>
+    <p class="flow-status-copy">${escapeHtml(copy)}</p>
+  `;
+}
+
 function renderWorkspaceOptions() {
   const previousValue = getSelectedWorkspaceId();
   elements.workspaceSelect.innerHTML = state.workspaces
@@ -24251,6 +24294,26 @@ async function loadProviders() {
   renderProviders();
 }
 
+async function loadDoctor() {
+  try {
+    state.doctor = await api('/api/doctor');
+  } catch (error) {
+    state.doctor = {
+      mode: 'doctor',
+      ok: false,
+      summary: {
+        fail: 1,
+        pass: 0,
+        total: 1,
+        warn: 0,
+      },
+      providers: [],
+      error: error.message || 'doctor diagnostics unavailable',
+    };
+  }
+  renderDoctorSummary();
+}
+
 async function loadProviderEvents() {
   state.providerEvents = await api(`/api/providers/events?${buildProviderEventFilterParams().toString()}`);
   renderProviders();
@@ -25675,6 +25738,7 @@ function renderBootstrapStaticSurfaces() {
 
 async function loadBootstrapData() {
   await Promise.all([
+    loadDoctor(),
     loadWorkspaces(),
     loadProviders(),
     loadRuntimeRequests(),

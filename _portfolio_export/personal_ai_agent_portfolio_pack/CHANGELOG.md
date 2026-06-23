@@ -21,12 +21,13 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size/SHA-256: managed outside the archive in root `portfolio_manifest.md` and `docs/evidence-checklist.md`.
+- Size and SHA-256 are tracked in the repository root `portfolio_manifest.md` after the ZIP is generated.
 
 Included public surfaces:
 
 - Professional README with scoped portfolio overview, representative demo preview, setup, testing, release evidence, and limitations.
 - Credential-free `npm run doctor` diagnostics for local setup, required file/script checks, provider configuration status, and `.env.example` coverage.
+- Credential-free `/api/doctor` and operator console local diagnostics summary backed by `npm run smoke:ui-doctor-surface`.
 - Credential-free `npm run demo:local` replay path.
 - Demo evidence index, preview screenshot, replay log, summary JSON, and browser E2E evidence references.
 - `.env.example` and `smoke:env-example` for local provider/runtime configuration onboarding.
@@ -40,6 +41,7 @@ Verification baseline:
 ```bash
 npm run package:pilot-export
 npm run smoke:doctor
+npm run smoke:ui-doctor-surface
 npm run smoke:changelog
 npm run smoke:contributor-onboarding
 npm run smoke:env-example

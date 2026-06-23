@@ -10,6 +10,7 @@ import {
   convertMissionAttachmentFile,
   getDocumentConversionCapabilities,
 } from '../core/document-conversion-service.mjs';
+import { runDoctor } from '../core/doctor-service.mjs';
 import { createId } from '../core/id.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
@@ -2835,6 +2836,14 @@ async function handleApi(request, response, url) {
       runtime: runtimeStatus.readStatus(),
       runtimeStatusPath: runtimeStatus.statusPath,
       url: `http://${host}:${activePort}`,
+    });
+    return;
+  }
+
+  if (request.method === 'GET' && pathname === '/api/doctor') {
+    sendJson(response, 200, {
+      generatedAt: new Date().toISOString(),
+      ...runDoctor({ rootDir: codeRootDir }),
     });
     return;
   }

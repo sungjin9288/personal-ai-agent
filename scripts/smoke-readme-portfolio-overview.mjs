@@ -28,6 +28,7 @@ for (const term of [
   '### Quick Replay',
   'npm run doctor',
   'npm run smoke:doctor',
+  'npm run smoke:ui-doctor-surface',
   'npm run smoke:support-policy',
   'npm run smoke:changelog',
   'npm run smoke:contributor-onboarding',

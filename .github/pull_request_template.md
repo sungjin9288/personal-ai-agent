@@ -12,6 +12,7 @@
 
 - [ ] `npm run smoke:demo-local`
 - [ ] `npm run smoke:doctor`
+- [ ] `npm run smoke:ui-doctor-surface`
 - [ ] `npm run smoke:env-example`
 - [ ] `npm run smoke:contributor-onboarding`
 - [ ] `npm run smoke:changelog`
