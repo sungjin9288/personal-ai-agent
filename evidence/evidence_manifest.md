@@ -65,6 +65,7 @@
 - `docs/evidence-gallery.md`
 - `docs/agent-runtime-evidence.md`
 - `docs/operator-surface-demo-evidence-v1.md`
+- `docs/recorded-walkthrough-v1.md`
 
 ## Verified Features
 
@@ -79,6 +80,7 @@
 - Representative release readiness demo: verified with `npm run evidence:representative-demo` and `npm run smoke:representative-demo-evidence`
 - Operator surface demo evidence: verified with `npm run smoke:operator-surface-demo-evidence`
 - Operator surface browser screenshots: generated with `npm run evidence:operator-surface-demo`
+- Recorded walkthrough script: verified with `npm run smoke:recorded-walkthrough`
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure
@@ -91,6 +93,7 @@
 - Hosted tenant isolation
 - Production secret manager and observability/SLO operations
 - Public demo URL
+- Published recorded walkthrough URL
 
 ## Sensitive Information Check
 

@@ -18,6 +18,7 @@
 | API 응답 저장 | 완료 | `evidence/api-responses/*.json` | health/meta/providers/execution status |
 | Web UI screenshot | 완료 | `evidence/screenshots/operator-console-home.png` | Playwright screenshot |
 | Operator surface browser screenshots | 완료 | `evidence/screenshots/operator-surface-mission-run.png`, `operator-surface-provider-readiness.png`, `operator-surface-action-inbox.png` | mission/provider/action support evidence captured by `npm run evidence:operator-surface-demo` |
+| Recorded walkthrough script | 완료 | `docs/recorded-walkthrough-v1.md` | recording script and acceptance gate verified by `npm run smoke:recorded-walkthrough`; no published video URL yet |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |
@@ -34,3 +35,4 @@
 | Hermes live validation | 검증 필요 | target Hermes model/env/evidence blocker 존재 | target architecture evidence와 env proof 확보 |
 | Hosted SaaS production readiness | 미구현 | 현재 release docs가 production-ready claim을 금지 | hosted identity/session, tenant isolation, target deployment evidence 필요 |
 | Public demo URL | 미구현 | 현재 repo에 demo link 없음 | recorded demo 또는 self-hosted preview 준비 |
+| Published recorded walkthrough URL | 미구현 | recording script는 준비됐지만 접근 검증된 video URL 없음 | private/public recording URL 생성 후 접근 검증 |

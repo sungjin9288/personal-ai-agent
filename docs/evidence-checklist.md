@@ -18,13 +18,14 @@
 | API 응답 저장 | 완료 | `evidence/api-responses/*.json` | health/meta/providers/execution status |
 | Web UI screenshot | 완료 | `evidence/screenshots/operator-console-home.png` | Playwright screenshot |
 | Operator surface browser screenshots | 완료 | `evidence/screenshots/operator-surface-mission-run.png`, `operator-surface-provider-readiness.png`, `operator-surface-action-inbox.png` | mission/provider/action support evidence captured by `npm run evidence:operator-surface-demo` |
+| Recorded walkthrough script | 완료 | `docs/recorded-walkthrough-v1.md` | recording script and acceptance gate verified by `npm run smoke:recorded-walkthrough`; no published video URL yet |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,224,517 bytes, SHA-256 `2c92f7945ae32f72b25c86e090d8421838ba089c8f0b128638feca2c36c73842` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,227,246 bytes, SHA-256 `902fb36c4cb1854fa59749e468b433712ce633408fb5471da7a7bebedebce9fa` |
 
 ## 검증 실패 / 보류
 
@@ -34,3 +35,4 @@
 | Hermes live validation | 검증 필요 | target Hermes model/env/evidence blocker 존재 | target architecture evidence와 env proof 확보 |
 | Hosted SaaS production readiness | 미구현 | 현재 release docs가 production-ready claim을 금지 | hosted identity/session, tenant isolation, target deployment evidence 필요 |
 | Public demo URL | 미구현 | 현재 repo에 demo link 없음 | recorded demo 또는 self-hosted preview 준비 |
+| Published recorded walkthrough URL | 미구현 | recording script는 준비됐지만 접근 검증된 video URL 없음 | private/public recording URL 생성 후 접근 검증 |

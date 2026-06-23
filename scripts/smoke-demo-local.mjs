@@ -31,6 +31,7 @@ assert.deepEqual(
     'npm run smoke:representative-demo',
     'npm run smoke:representative-demo-evidence',
     'npm run smoke:demo-evidence-index',
+    'npm run smoke:recorded-walkthrough',
     'npm run smoke:release-artifact-hygiene',
     'npm run smoke:portfolio-zip',
     'npm run smoke:pilot-export-package',
@@ -44,6 +45,7 @@ for (const evidencePath of [
   'evidence/screenshots/representative-release-demo-release-status.png',
   'docs/demo-evidence-index-v1.md',
   'docs/demo-scenarios-v1.md',
+  'docs/recorded-walkthrough-v1.md',
   'docs/pilot-export-package-v1.md',
 ]) {
   assert.equal(plan.evidence.includes(evidencePath), true, `plan missing evidence path ${evidencePath}`);
@@ -52,6 +54,7 @@ for (const evidencePath of [
 
 for (const term of [
   'npm run demo:local',
+  'npm run smoke:recorded-walkthrough',
   '## Representative Demo',
   'credential-free',
   'provider-scoped pilot-ready',

@@ -17,6 +17,7 @@ const browserReportPath = path.join(
 );
 const previewPath = path.join(repoDir, 'evidence', 'screenshots', 'representative-release-demo-preview.png');
 const screenshotPath = path.join(repoDir, 'evidence', 'screenshots', 'representative-release-demo-release-status.png');
+const recordedWalkthroughPath = path.join(repoDir, 'docs', 'recorded-walkthrough-v1.md');
 
 const doc = readRequiredFile(docPath);
 const readme = readRequiredFile(readmePath);
@@ -24,6 +25,7 @@ const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const summary = JSON.parse(readRequiredFile(summaryPath));
 const browserReport = JSON.parse(readRequiredFile(browserReportPath));
 const replayLog = readRequiredFile(replayLogPath);
+const recordedWalkthrough = readRequiredFile(recordedWalkthroughPath);
 const preview = fs.readFileSync(previewPath);
 const screenshot = fs.readFileSync(screenshotPath);
 
@@ -84,6 +86,8 @@ for (const term of [
   'Credential-free',
   'There is no public hosted demo URL.',
   'not a public hosted demo URL',
+  'relatedRecordedWalkthrough: [recorded-walkthrough-v1.md](recorded-walkthrough-v1.md)',
+  'The current repository includes a recording script, not a published walkthrough URL.',
   'The current evidence is a local recorded replay plus screenshot and browser report.',
   '![Representative demo preview](../evidence/screenshots/representative-release-demo-preview.png)',
   'Production readiness remains explicitly blocked',
@@ -95,8 +99,10 @@ for (const term of [
 
 for (const readmeTerm of [
   'Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)',
+  'Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)',
   '![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)',
   'npm run smoke:demo-evidence-index',
+  'npm run smoke:recorded-walkthrough',
   'There is no public hosted demo URL.',
 ]) {
   assertContains(readme, readmeTerm, `README missing demo evidence index term: ${readmeTerm}`);
@@ -113,6 +119,7 @@ for (const risky of [
 }
 
 assertNoLocalPaths(doc);
+assertNoLocalPaths(recordedWalkthrough);
 assertNoLocalPaths(JSON.stringify(summary));
 assertNoLocalPaths(JSON.stringify(browserReport));
 

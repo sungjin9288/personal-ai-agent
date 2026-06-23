@@ -52,6 +52,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/execution-v1-closeout.md',
   'docs/execution-v1-handoff.md',
   'docs/demo-evidence-index-v1.md',
+  'docs/recorded-walkthrough-v1.md',
   'docs/fork-onboarding-v1.md',
   'docs/pilot-export-package-v1.md',
   'docs/production-like-release-drill-v1.md',
