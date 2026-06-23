@@ -6,6 +6,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
+const linksPath = path.join(repoDir, 'links.md');
 const supportPath = path.join(repoDir, 'SUPPORT.md');
 const contributingPath = path.join(repoDir, 'CONTRIBUTING.md');
 const securityPolicyPath = path.join(repoDir, 'SECURITY.md');
@@ -27,6 +28,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const manifest = readRequiredFile(manifestPath);
 const changelog = readRequiredFile(changelogPath);
+const links = readRequiredFile(linksPath);
 const support = readRequiredFile(supportPath);
 const contributing = readRequiredFile(contributingPath);
 const securityPolicy = readRequiredFile(securityPolicyPath);
@@ -55,7 +57,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 66$/m);
+assert.match(manifest, /^- fileCount: 67$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -65,6 +67,7 @@ const manifestEntries = parseManifestEntries(manifest);
 const requiredPaths = [
   'README.md',
   'CHANGELOG.md',
+  'links.md',
   'SUPPORT.md',
   'CONTRIBUTING.md',
   'SECURITY.md',
@@ -237,6 +240,11 @@ assert.match(support, /local-first PoC\/MVP harness/);
 assert.match(support, /npm run smoke:support-policy/);
 assert.match(support, /productionReadyClaim: false/);
 assert.match(support, /There is no public hosted demo URL/);
+assert.match(links, /- Support: SUPPORT\.md/);
+assert.match(links, /- Bug report template: \.github\/ISSUE_TEMPLATE\/bug_report\.yml/);
+assert.match(links, /Issue handoff: blank issues are disabled/);
+assert.match(links, /npm run doctor:summary/);
+assert.match(links, /Doctor diagnostics summary/);
 assert.match(forkOnboarding, /# Fork Onboarding v1/);
 assert.match(forkOnboarding, /publicHostedDemoUrl: none/);
 assert.match(forkOnboarding, /productionReadyClaim: false/);

@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-06-23T06:05:43.467Z
+- generatedAt: 2026-06-23T07:30:59.387Z
 - verifiedCommit: ce0eafead7aaeab8eee7471dc94540e843512fa5
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 49a24d369c79fbdd2295ab31415e97d508e1ce7915f00f456ed91d993a264047
-- fileCount: 66
+- bundleSha256: 220de6e7a727840da8590616121fdf1e61fa63ecbe1430030a1325019e685baf
+- fileCount: 67
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,14 +63,15 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 16258 | `105d528b6241ac4d5dde4dc3a816229b3731586cbcbcec671fb0356e2fb73151` |
+| `README.md` | 16755 | `74b278f49e10ee7c9af52a66c9f7e24178e1718dcffdfd1067d039d9d3552694` |
 | `CHANGELOG.md` | 2566 | `8d3836f7ef69bc3439c0338d3767d749e9e80449b705162b99238ccf55eb28da` |
-| `SUPPORT.md` | 2736 | `5512fa0ca6c12d2085f87ae7c05d79e03f010aee72b0947fb0d092c0543dda76` |
-| `CONTRIBUTING.md` | 3245 | `24005ef581b0711768eb9cdec34c1c29c0335c40bd96bf9f1cb3c696b327d992` |
+| `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
+| `SUPPORT.md` | 2975 | `f9dd5b59a973b7a0fbc7b14bf90c2f5d9de9c04c1212e05b3d3c36b033c81261` |
+| `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
 | `SECURITY.md` | 2036 | `33b814aa3c9e7386831f0da761b25f069abbaa0136708e79e659943d950d3ad6` |
-| `.github/ISSUE_TEMPLATE/bug_report.yml` | 2023 | `65f01b61f87d85fd49d2e346a44e3bc5e0ea56e2aec70afb01030a8c47d5bef1` |
+| `.github/ISSUE_TEMPLATE/bug_report.yml` | 2777 | `046394852ef960bc5c885af9c5d6c4f948c0517d56c030e9cc5bdd93218bf42c` |
 | `.github/ISSUE_TEMPLATE/security_report.yml` | 2090 | `f89558f8e98760fba974b4cb5ed7d81e9c68d42aadd24adc6ada35e5796c20a9` |
-| `.github/ISSUE_TEMPLATE/config.yml` | 637 | `ab2c79ce7e3fb5548aa98f5cd9da8670c9fe2befc5fdf786e3389c9c3cccad19` |
+| `.github/ISSUE_TEMPLATE/config.yml` | 638 | `1a658b3ba52c0b68eecea56c137e463f3f1cb5f1faa5b54eebb4dff122ccc3f0` |
 | `docs/product-plan-v1.md` | 19100 | `20ac5772f3a672c9c8ac3ce6b422fdd772b28e3594b00bcc07fca111d9a88a40` |
 | `docs/security-model-v1.md` | 39764 | `42f9a43d6930ea87b5cad305f7067194ed5a7100945659731b90ad4f51d23c14` |
 | `docs/operator-runbook-v1.md` | 17537 | `5010c050f1921324f3adf75d5d4c796b6fbdde0c550f89f1f6b4849a4dcfc900` |
@@ -78,7 +79,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/pilot-onboarding-v1.md` | 12003 | `d6e3beeb3df6f5cf46d26f77331b770310d43c7eed616a6d09293c2a9668eb9c` |
 | `docs/demo-scenarios-v1.md` | 19692 | `3a327f007383225908d03d1df384e76f4b870874c1bbe5fe3c75e5faa71ce1fb` |
 | `docs/demo-evidence-index-v1.md` | 3682 | `71a3c153dfa0fb59d7431e78c9c4f8c4cccdf51ef1b9d27165ba0f6c27bcf7ec` |
-| `docs/fork-onboarding-v1.md` | 3113 | `930173a4a628059813e9b2621ee2f6e1a052f3bad3f9d5ec8beffda32fc5d80f` |
+| `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |
 | `docs/customer-support-operations-v1.md` | 6200 | `8ed125281443fce70deb133eecfd9108744320ad1d977c5061e349f6fb1ab873` |
 | `docs/support-escalation-review-v1.md` | 5328 | `3b77fef9b2cb83c887a3c634292d7a14dbe1b24704d481d7046520db55f0d80d` |
