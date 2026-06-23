@@ -8,6 +8,7 @@ const state = {
   currentViewLinkCopiedTimer: null,
   doctor: null,
   doctorDetailsExpanded: false,
+  doctorLoading: false,
   executionLogs: null,
   executionPollTimer: null,
   executionStatus: null,
@@ -15990,6 +15991,7 @@ function renderDoctorSummary() {
   const providers = Array.isArray(doctor.providers) ? doctor.providers : [];
   const checks = Array.isArray(doctor.checks) ? doctor.checks : [];
   const attentionChecks = checks.filter((check) => ['fail', 'warn'].includes(check.status));
+  const generatedAt = doctor.generatedAt || '';
   const missingProviderIds = providers
     .filter((provider) => provider.id !== 'stub' && !provider.configured)
     .map((provider) => provider.id)
@@ -16009,6 +16011,16 @@ function renderDoctorSummary() {
     <p class="flow-status-copy">${escapeHtml(copy)}</p>
     <div class="doctor-summary-actions">
       <button
+        class="ghost-button doctor-refresh-button"
+        type="button"
+        data-doctor-refresh="true"
+        aria-label="로컬 진단 새로고침"
+        title="로컬 진단 새로고침"
+        ${state.doctorLoading ? 'disabled' : ''}
+      >
+        ${state.doctorLoading ? '새로고침 중' : '새로고침'}
+      </button>
+      <button
         class="ghost-button doctor-detail-toggle"
         type="button"
         data-doctor-detail-toggle="true"
@@ -16020,6 +16032,7 @@ function renderDoctorSummary() {
         ${state.doctorDetailsExpanded ? '상세 닫기' : '상세 보기'}
       </button>
       <span class="mini-badge ${attentionChecks.length ? 'status-pending' : 'status-completed'}">${escapeHtml(String(attentionChecks.length))} checks</span>
+      <span class="doctor-refresh-meta">갱신 ${escapeHtml(formatDate(generatedAt))}</span>
     </div>
     ${state.doctorDetailsExpanded ? renderDoctorDetailPanel({ attentionChecks, providers }) : ''}
   `;
@@ -16077,7 +16090,11 @@ function renderDoctorDetailPanel({ attentionChecks = [], providers = [] } = {}) 
 }
 
 function wireDoctorSummaryActions() {
+  const refreshButton = elements.doctorSummary?.querySelector('[data-doctor-refresh]');
   const toggleButton = elements.doctorSummary?.querySelector('[data-doctor-detail-toggle]');
+  refreshButton?.addEventListener('click', () => {
+    void loadDoctor({ keepDetailsExpanded: true });
+  });
   toggleButton?.addEventListener('click', () => {
     state.doctorDetailsExpanded = !state.doctorDetailsExpanded;
     renderDoctorSummary();
@@ -24371,7 +24388,12 @@ async function loadProviders() {
   renderProviders();
 }
 
-async function loadDoctor() {
+async function loadDoctor({ keepDetailsExpanded = false } = {}) {
+  if (!keepDetailsExpanded) {
+    state.doctorDetailsExpanded = false;
+  }
+  state.doctorLoading = true;
+  renderDoctorSummary();
   try {
     state.doctor = await api('/api/doctor');
   } catch (error) {
@@ -24387,6 +24409,8 @@ async function loadDoctor() {
       providers: [],
       error: error.message || 'doctor diagnostics unavailable',
     };
+  } finally {
+    state.doctorLoading = false;
   }
   renderDoctorSummary();
 }
