@@ -11,7 +11,7 @@ import {
 import { createId } from './core/id.mjs';
 import { createMissionService } from './core/mission-service.mjs';
 import { compactOutputFile } from './core/output-compaction-service.mjs';
-import { runDoctor } from './core/doctor-service.mjs';
+import { buildDoctorDiagnosticsSummary, runDoctor } from './core/doctor-service.mjs';
 import { getReleaseBlockerHandoff } from './core/release-readiness-service.mjs';
 import { resolveRootDir } from './core/root.mjs';
 import { createStore } from './core/store.mjs';
@@ -96,6 +96,7 @@ function printHelp() {
 
 Commands:
   doctor
+  doctor summary
 
   overview global [--provider-since <iso-timestamp>]
   overview gateway-events [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--event-type <mission-create|mission-run>] [--route <route>] [--source-type <cli|web|service>] [--permission-decision <allow|approval-required|deny>] [--sandbox-mode <mode>] [--since <iso-timestamp>]
@@ -403,7 +404,15 @@ async function main() {
   }
 
   if (group === 'doctor') {
-    printJson(runDoctor({ rootDir }));
+    const doctor = {
+      generatedAt: new Date().toISOString(),
+      ...runDoctor({ rootDir }),
+    };
+    if (command === 'summary') {
+      console.log(buildDoctorDiagnosticsSummary(doctor));
+      return;
+    }
+    printJson(doctor);
     return;
   }
 

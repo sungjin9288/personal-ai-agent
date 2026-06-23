@@ -86,6 +86,43 @@ export function runDoctor({ rootDir, env = process.env, nodeVersion = process.ve
   };
 }
 
+export function buildDoctorDiagnosticsSummary(doctor = {}) {
+  const summary = doctor.summary || {};
+  const checks = Array.isArray(doctor.checks) ? doctor.checks : [];
+  const providers = Array.isArray(doctor.providers) ? doctor.providers : [];
+  const attentionChecks = checks.filter((check) => ['fail', 'warn'].includes(check.status));
+  const attentionLines = attentionChecks.length
+    ? attentionChecks
+        .slice(0, 10)
+        .map(
+          (check) =>
+            `- [${check.status}] ${check.id || check.path || check.script || 'check'}: ${check.message || '-'}`,
+        )
+    : ['- none'];
+  const providerLines = providers.map((provider) => {
+    const missingEnv = Array.isArray(provider.missingEnv) && provider.missingEnv.length
+      ? ` missingEnv=${provider.missingEnv.join(', ')}`
+      : '';
+    return `- ${provider.id}: ${provider.configured ? 'configured' : 'env-missing'}${missingEnv}`;
+  });
+
+  return [
+    '# Personal AI Agent doctor diagnostics',
+    `generatedAt: ${doctor.generatedAt || '-'}`,
+    `ok: ${doctor.ok ? 'true' : 'false'}`,
+    `summary: pass=${Number(summary.pass || 0)} warn=${Number(summary.warn || 0)} `
+      + `fail=${Number(summary.fail || 0)} total=${Number(summary.total || 0)}`,
+    '',
+    'Attention checks:',
+    ...attentionLines,
+    '',
+    'Provider env:',
+    ...(providerLines.length ? providerLines : ['- none']),
+    '',
+    'Boundary: missing environment variable names only; secret values are not included.',
+  ].join('\n');
+}
+
 function addNodeVersionCheck(checks, nodeVersion) {
   const major = Number.parseInt(String(nodeVersion || '').split('.')[0], 10);
   const pass = Number.isFinite(major) && major >= MINIMUM_NODE_MAJOR;
