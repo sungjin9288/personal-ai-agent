@@ -392,6 +392,12 @@ button {
   font-size: 0.72rem;
 }
 
+.doctor-copy-button {
+  min-height: 28px;
+  padding: 5px 8px;
+  font-size: 0.72rem;
+}
+
 .doctor-refresh-meta {
   color: var(--text-3);
   font-size: 0.68rem;

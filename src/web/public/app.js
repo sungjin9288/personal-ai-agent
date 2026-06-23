@@ -15968,6 +15968,57 @@ function renderFlowState() {
   });
 }
 
+function buildDoctorDiagnosticsSummary(doctor = {}) {
+  const summary = doctor.summary || {};
+  const checks = Array.isArray(doctor.checks) ? doctor.checks : [];
+  const providers = Array.isArray(doctor.providers) ? doctor.providers : [];
+  const attentionChecks = checks.filter((check) => ['fail', 'warn'].includes(check.status));
+  const attentionLines = attentionChecks.length
+    ? attentionChecks
+        .slice(0, 10)
+        .map(
+          (check) =>
+            `- [${check.status}] ${check.id || check.path || check.script || 'check'}: ${check.message || '-'}`,
+        )
+    : ['- none'];
+  const providerLines = providers.map((provider) => {
+    const missingEnv = Array.isArray(provider.missingEnv) && provider.missingEnv.length
+      ? ` missingEnv=${provider.missingEnv.join(', ')}`
+      : '';
+    return `- ${provider.id}: ${provider.configured ? 'configured' : 'env-missing'}${missingEnv}`;
+  });
+
+  return [
+    '# Personal AI Agent doctor diagnostics',
+    `generatedAt: ${doctor.generatedAt || '-'}`,
+    `ok: ${doctor.ok ? 'true' : 'false'}`,
+    `summary: pass=${Number(summary.pass || 0)} warn=${Number(summary.warn || 0)} `
+      + `fail=${Number(summary.fail || 0)} total=${Number(summary.total || 0)}`,
+    '',
+    'Attention checks:',
+    ...attentionLines,
+    '',
+    'Provider env:',
+    ...(providerLines.length ? providerLines : ['- none']),
+    '',
+    'Boundary: missing environment variable names only; secret values are not included.',
+  ].join('\n');
+}
+
+async function copyDoctorDiagnosticsSummary() {
+  if (!state.doctor) {
+    setUiNotice('복사할 doctor 진단 결과가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(buildDoctorDiagnosticsSummary(state.doctor), {
+    promptMessage: 'doctor 진단 요약을 복사하세요.',
+    shownNotice: 'doctor 진단 요약을 표시했습니다.',
+    successNotice: 'doctor 진단 요약을 복사했습니다.',
+    unavailableNotice: '브라우저가 doctor 진단 요약 복사를 지원하지 않습니다.',
+  });
+}
+
 function renderDoctorSummary() {
   if (!elements.doctorSummary) {
     return;
@@ -16019,6 +16070,15 @@ function renderDoctorSummary() {
         ${state.doctorLoading ? 'disabled' : ''}
       >
         ${state.doctorLoading ? '새로고침 중' : '새로고침'}
+      </button>
+      <button
+        class="ghost-button doctor-copy-button"
+        type="button"
+        data-doctor-copy-summary="true"
+        aria-label="doctor 진단 요약 복사"
+        title="doctor 진단 요약 복사"
+      >
+        요약 복사
       </button>
       <button
         class="ghost-button doctor-detail-toggle"
@@ -16090,8 +16150,12 @@ function renderDoctorDetailPanel({ attentionChecks = [], providers = [] } = {}) 
 }
 
 function wireDoctorSummaryActions() {
+  const copyButton = elements.doctorSummary?.querySelector('[data-doctor-copy-summary]');
   const refreshButton = elements.doctorSummary?.querySelector('[data-doctor-refresh]');
   const toggleButton = elements.doctorSummary?.querySelector('[data-doctor-detail-toggle]');
+  copyButton?.addEventListener('click', () => {
+    void copyDoctorDiagnosticsSummary();
+  });
   refreshButton?.addEventListener('click', () => {
     void loadDoctor({ keepDetailsExpanded: true });
   });
