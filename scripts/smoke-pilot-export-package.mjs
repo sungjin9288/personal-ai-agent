@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
+const changelogPath = path.join(repoDir, 'CHANGELOG.md');
 const contributingPath = path.join(repoDir, 'CONTRIBUTING.md');
 const securityPolicyPath = path.join(repoDir, 'SECURITY.md');
 const releaseReadinessPath = path.join(repoDir, 'docs', 'release-readiness-v1.md');
@@ -24,6 +25,7 @@ const readmePath = path.join(repoDir, 'README.md');
 const packagePath = path.join(repoDir, 'package.json');
 
 const manifest = readRequiredFile(manifestPath);
+const changelog = readRequiredFile(changelogPath);
 const contributing = readRequiredFile(contributingPath);
 const securityPolicy = readRequiredFile(securityPolicyPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
@@ -51,7 +53,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 64$/m);
+assert.match(manifest, /^- fileCount: 65$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -60,6 +62,7 @@ assert.match(verifiedCommit, /^[a-f0-9]{40}$/);
 const manifestEntries = parseManifestEntries(manifest);
 const requiredPaths = [
   'README.md',
+  'CHANGELOG.md',
   'CONTRIBUTING.md',
   'SECURITY.md',
   '.github/ISSUE_TEMPLATE/bug_report.yml',
@@ -218,6 +221,7 @@ assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-d
 assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
 assert.match(contributing, /# Contributing/);
 assert.match(contributing, /Current validated claim: `provider-scoped pilot-ready`/);
+assert.match(contributing, /npm run smoke:changelog/);
 assert.match(contributing, /npm run smoke:contributor-onboarding/);
 assert.match(contributing, /not a public hosted demo URL/);
 assert.match(securityPolicy, /# Security Policy/);
@@ -285,6 +289,12 @@ assert.match(
   /target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.match(readme, /npm run package:pilot-export/);
+assert.match(readme, /Changelog: \[CHANGELOG\.md\]\(CHANGELOG\.md\)/);
+assert.match(readme, /npm run smoke:changelog/);
+assert.match(changelog, /# Changelog/);
+assert.match(changelog, /## v0\.1\.0 - 2026-06-23/);
+assert.match(changelog, /productionReadyClaim: false/);
+assert.match(changelog, /072286dd4c8d0988d4242f4d0ed96a56db1ce434b4e9eb81c54f4e04e7a2045a/);
 
 console.log(
   JSON.stringify(

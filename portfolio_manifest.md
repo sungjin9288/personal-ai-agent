@@ -11,6 +11,7 @@
 ## 포함 파일
 
 - README.md
+- CHANGELOG.md
 - CONTRIBUTING.md
 - SECURITY.md
 - .github/ISSUE_TEMPLATE/bug_report.yml
@@ -62,6 +63,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 408,894 bytes
-- 압축 파일 SHA-256: `1c60f85c9536b1d0b97bfb8fadebe778aa056c32010c9813e74a0eb5147c982f`
+- 압축 파일 크기: 410,200 bytes
+- 압축 파일 SHA-256: `072286dd4c8d0988d4242f4d0ed96a56db1ce434b4e9eb81c54f4e04e7a2045a`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

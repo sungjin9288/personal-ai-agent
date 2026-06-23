@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-06-23T05:23:13.016Z
+- generatedAt: 2026-06-23T05:34:59.412Z
 - verifiedCommit: ce0eafead7aaeab8eee7471dc94540e843512fa5
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 37faf809ca4a0902bee5f44ab5b4b03faee09782c7e3535ca13cd32b86a8e27a
-- fileCount: 64
+- bundleSha256: de09c4eea9b2f48588e422347e1f0eb2313d432235466bb5e25d234fc9dbcace
+- fileCount: 65
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 15880 | `3f914f67216f06c8bc5b0025fdb85218cbed89991fae2bb45fd78206fdaf876c` |
-| `CONTRIBUTING.md` | 3071 | `09cded818e7c0a30e3068fe1b39b7a63355087e2ad1843afa3673af96115b241` |
+| `README.md` | 15988 | `63bdc4345e82effc3771d8cca15802a64cdbf6ca1b6f27a6a8ac6d2ed7cc3015` |
+| `CHANGELOG.md` | 2111 | `52c210cedbfe3d6eeabdb7f44bbc46c8cc1070f2fbba0af0d45b61b14a031818` |
+| `CONTRIBUTING.md` | 3095 | `dd894e127521ff55f3f40bb1bc564737a3724fcd0960634d0179b3fe8f564f3a` |
 | `SECURITY.md` | 1881 | `639d59b7eb99175b9882706735ab579c8b654f7859f5680a7c494bbe6cea9b9d` |
 | `.github/ISSUE_TEMPLATE/bug_report.yml` | 2023 | `65f01b61f87d85fd49d2e346a44e3bc5e0ea56e2aec70afb01030a8c47d5bef1` |
 | `.github/ISSUE_TEMPLATE/security_report.yml` | 2090 | `f89558f8e98760fba974b4cb5ed7d81e9c68d42aadd24adc6ada35e5796c20a9` |

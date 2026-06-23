@@ -49,6 +49,7 @@ Contributor path:
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
 - Security policy: [SECURITY.md](SECURITY.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ### Quick Replay
 
@@ -246,6 +247,7 @@ Recommended public-readiness checks:
 
 ```bash
 npm run package:pilot-export
+npm run smoke:changelog
 npm run smoke:contributor-onboarding
 npm run smoke:env-example
 npm run smoke:demo-local
@@ -274,6 +276,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 
 - Current public release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Release asset: `personal_ai_agent_portfolio_pack.zip`
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Portfolio manifest: [portfolio_manifest.md](portfolio_manifest.md)
 - Evidence checklist: [docs/evidence-checklist.md](docs/evidence-checklist.md)
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
