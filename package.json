@@ -87,6 +87,7 @@
     "smoke:representative-demo-evidence": "node scripts/smoke-representative-demo-evidence.mjs",
     "smoke:operator-surface-demo-evidence": "node scripts/smoke-operator-surface-demo-evidence.mjs",
     "smoke:recorded-walkthrough": "node scripts/smoke-recorded-walkthrough.mjs",
+    "smoke:architecture-code-walkthrough": "node scripts/smoke-architecture-code-walkthrough.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",
     "demo:local": "node scripts/demo-local.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
