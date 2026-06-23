@@ -16,6 +16,7 @@ const BASE_PACKAGE_FILES = [
   'docs/deployment-pilot-v1.md',
   'docs/pilot-onboarding-v1.md',
   'docs/demo-scenarios-v1.md',
+  'docs/demo-evidence-index-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
   'docs/support-escalation-review-v1.md',

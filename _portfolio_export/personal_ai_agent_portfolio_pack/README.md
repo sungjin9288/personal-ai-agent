@@ -66,10 +66,12 @@ npm run smoke:pilot-export-package
 
 Representative demo evidence:
 
+- Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
 - replay log: `evidence/cli-logs/representative-release-demo-replay.log`
 - summary: `evidence/output-artifacts/representative-release-demo-summary.json`
 - screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
 - walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
+- There is no public hosted demo URL.
 
 ### Status Boundary
 
@@ -96,6 +98,7 @@ The one-command demo currently runs:
 - `npm run bootstrap:local`
 - `npm run smoke:representative-demo`
 - `npm run smoke:representative-demo-evidence`
+- `npm run smoke:demo-evidence-index`
 - `npm run smoke:release-artifact-hygiene`
 - `npm run smoke:pilot-export-package`
 
@@ -236,6 +239,7 @@ Recommended public-readiness checks:
 npm run package:pilot-export
 npm run smoke:env-example
 npm run smoke:demo-local
+npm run smoke:demo-evidence-index
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
@@ -263,6 +267,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Portfolio manifest: [portfolio_manifest.md](portfolio_manifest.md)
 - Evidence checklist: [docs/evidence-checklist.md](docs/evidence-checklist.md)
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
+- Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
 - Target provider operations gate: [docs/target-provider-operations-v1.md](docs/target-provider-operations-v1.md)
 - Operator runbook: [docs/operator-runbook-v1.md](docs/operator-runbook-v1.md)
 - Self-hosted pilot guide: [docs/deployment-pilot-v1.md](docs/deployment-pilot-v1.md)

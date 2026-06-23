@@ -2,6 +2,7 @@
 
 - GitHub: https://github.com/sungjin9288/personal-ai-agent
 - Demo: hosted public demo 없음
+- 로컬 대표 demo index: docs/demo-evidence-index-v1.md
 - 로컬 대표 demo replay: evidence/cli-logs/representative-release-demo-replay.log
 - 로컬 대표 demo summary: evidence/output-artifacts/representative-release-demo-summary.json
 - 로컬 대표 demo screenshot: evidence/screenshots/representative-release-demo-release-status.png

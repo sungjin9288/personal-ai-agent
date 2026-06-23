@@ -75,6 +75,7 @@
     "smoke:portfolio-docs-claim-boundary": "node scripts/smoke-portfolio-docs-claim-boundary.mjs",
     "smoke:readme-portfolio-overview": "node scripts/smoke-readme-portfolio-overview.mjs",
     "smoke:representative-demo": "node scripts/smoke-representative-demo.mjs",
+    "smoke:demo-evidence-index": "node scripts/smoke-demo-evidence-index.mjs",
     "smoke:representative-demo-evidence": "node scripts/smoke-representative-demo-evidence.mjs",
     "smoke:operator-surface-demo-evidence": "node scripts/smoke-operator-surface-demo-evidence.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",
