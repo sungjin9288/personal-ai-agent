@@ -23,13 +23,14 @@
 | Provider readiness matrix | 완료 | `docs/provider-readiness-matrix-v1.md` | provider catalog/env/blocker boundary verified by `npm run smoke:provider-readiness-matrix` |
 | Provider failure recovery demo | 완료 | `docs/provider-failure-recovery-demo-v1.md` | attention remediation, fallback policy, timeline/event audit verified by `npm run smoke:provider-failure-recovery-demo` |
 | Memory retrieval quality fixture | 완료 | `docs/memory-retrieval-quality-fixture-v1.md` | retrieval ranking, source diversity, fact graph provenance, and instruction boundary verified by `npm run smoke:memory-retrieval-quality-fixture` |
+| Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,237,624 bytes, SHA-256 `0cf85c9324aee3ff34ee69677466fa0f4b5ec7eca43ca210ad278841fb4cc910` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,240,076 bytes, SHA-256 `e522f6cf9eec625b9d85ee74d41d087d4656806e7a8af036f6256e45af62241e` |
 
 ## 검증 실패 / 보류
 

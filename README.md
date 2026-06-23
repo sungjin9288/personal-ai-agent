@@ -85,6 +85,7 @@ Representative demo evidence:
 - operator surface support map: [docs/operator-surface-demo-evidence-v1.md](docs/operator-surface-demo-evidence-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
+- Smoke validation summary: [docs/smoke-validation-summary-v1.md](docs/smoke-validation-summary-v1.md)
 - operator surface screenshots: `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, `evidence/screenshots/operator-surface-action-inbox.png`
 - operator surface refresh command: `npm run evidence:operator-surface-demo`
 - There is no public hosted demo URL.
@@ -288,6 +289,7 @@ npm run smoke:architecture-code-walkthrough
 npm run smoke:provider-readiness-matrix
 npm run smoke:provider-failure-recovery-demo
 npm run smoke:memory-retrieval-quality-fixture
+npm run smoke:smoke-validation-summary
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
@@ -324,6 +326,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
+- Smoke validation summary: [docs/smoke-validation-summary-v1.md](docs/smoke-validation-summary-v1.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
 - Security policy: [SECURITY.md](SECURITY.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
@@ -369,5 +372,6 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
+- Smoke validation summary: [docs/smoke-validation-summary-v1.md](docs/smoke-validation-summary-v1.md)
 - Project card: [docs/project-card.md](docs/project-card.md)
 - Case study: [docs/case-study.md](docs/case-study.md)

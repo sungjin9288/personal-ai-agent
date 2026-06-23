@@ -98,5 +98,6 @@
 - 완료: provider readiness matrix와 catalog smoke guard
 - 완료: provider failure recovery demo와 smoke guard
 - 완료: memory/retrieval/fact graph quality fixture와 smoke guard
+- 완료: core smoke validation summary와 command guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
 - 남은 polish: published private/public walkthrough URL, actual pilot feedback and metric evidence

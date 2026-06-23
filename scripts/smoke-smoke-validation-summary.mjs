@@ -1,0 +1,161 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const repoDir = process.cwd();
+const packageJson = JSON.parse(readRequiredFile('package.json'));
+const doc = readRequiredFile('docs/smoke-validation-summary-v1.md');
+const readme = readRequiredFile('README.md');
+const roadmap = readRequiredFile('docs/roadmap.md');
+const evidenceGallery = readRequiredFile('docs/evidence-gallery.md');
+const evidenceManifest = readRequiredFile('evidence/evidence_manifest.md');
+const releaseReadiness = readRequiredFile('docs/release-readiness-v1.md');
+
+const expectedCommands = [
+  'npm run package:pilot-export',
+  'npm run smoke:doctor',
+  'npm run smoke:ui-doctor-surface',
+  'npm run smoke:changelog',
+  'npm run smoke:support-policy',
+  'npm run smoke:contributor-onboarding',
+  'npm run smoke:env-example',
+  'npm run smoke:demo-local',
+  'npm run smoke:demo-evidence-index',
+  'npm run smoke:recorded-walkthrough',
+  'npm run smoke:architecture-code-walkthrough',
+  'npm run smoke:provider-readiness-matrix',
+  'npm run smoke:provider-failure-recovery-demo',
+  'npm run smoke:memory-retrieval-quality-fixture',
+  'npm run smoke:smoke-validation-summary',
+  'npm run smoke:readme-portfolio-overview',
+  'npm run smoke:portfolio-docs-claim-boundary',
+  'npm run smoke:representative-demo-evidence',
+  'npm run smoke:operator-surface-demo-evidence',
+  'npm run smoke:pilot-export-package',
+  'npm run smoke:portfolio-zip',
+  'npm run smoke:release-artifact-hygiene',
+];
+
+assert.equal(packageJson.scripts['smoke:smoke-validation-summary'], 'node scripts/smoke-smoke-validation-summary.mjs');
+
+for (const command of expectedCommands) {
+  assertContains(doc, command, `smoke validation summary missing command ${command}`);
+  assertContains(readme, command, `README missing public-readiness command ${command}`);
+  const scriptName = command.replace(/^npm run /, '');
+  if (scriptName !== 'package:pilot-export') {
+    assert.ok(packageJson.scripts[scriptName], `package.json missing script ${scriptName}`);
+  }
+}
+
+for (const term of [
+  '# Smoke Validation Summary v1',
+  'status: smoke-validation-summary-current',
+  'productionReadyClaim: false',
+  'allProviderComplete: false',
+  'publicHostedDemoUrl: none',
+  'deterministic local smoke summary',
+  'not live all-provider validation',
+  'not hosted SaaS validation',
+  'not production readiness evidence',
+  'Core Verification Matrix',
+  'Replay Block',
+  'Safe Claim Boundary',
+  'Do not claim',
+]) {
+  assertContains(doc, term, `smoke validation summary missing ${term}`);
+}
+
+assertContains(roadmap, '완료: core smoke validation summary와 command guard', 'roadmap missing smoke validation summary completion');
+assertContains(
+  evidenceGallery,
+  '`docs/smoke-validation-summary-v1.md`',
+  'evidence gallery missing smoke validation summary',
+);
+assertContains(
+  evidenceManifest,
+  'Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`',
+  'evidence manifest missing smoke validation verification',
+);
+assertContains(releaseReadiness, 'productionReadyClaim: false', 'release readiness must keep productionReadyClaim false');
+
+const readmePublicCommands = extractCodeBlockAfterHeading(readme, 'Recommended public-readiness checks:')
+  .split('\n')
+  .map((line) => line.trim())
+  .filter(Boolean);
+assert.deepEqual(readmePublicCommands, expectedCommands);
+assert.equal(new Set(readmePublicCommands).size, readmePublicCommands.length, 'public readiness commands must be unique');
+
+for (const risky of [
+  'all providers are live validated',
+  'hosted SaaS validation is complete',
+  'production readiness is approved',
+  'external pilot feedback or customer metrics are proven',
+  'Anthropic, Hermes, or target local provider production readiness is complete',
+]) {
+  assert.equal(
+    combinedText().toLowerCase().includes(risky.toLowerCase()),
+    true,
+    `smoke validation summary must explicitly forbid risky claim: ${risky}`,
+  );
+}
+
+for (const riskyAchievement of [
+  'all-provider validation achieved',
+  'hosted SaaS validation achieved',
+  'production readiness approved',
+  'customer metrics proven',
+  'Anthropic readiness achieved',
+  'Hermes readiness achieved',
+]) {
+  assert.equal(
+    combinedText().toLowerCase().includes(riskyAchievement.toLowerCase()),
+    false,
+    `smoke validation summary contains risky achievement claim: ${riskyAchievement}`,
+  );
+}
+
+assertNoLocalPaths(doc);
+
+console.log(
+  JSON.stringify(
+    {
+      commandCount: expectedCommands.length,
+      mode: 'smoke-validation-summary-smoke',
+      ok: true,
+      productionReadyClaim: false,
+    },
+    null,
+    2,
+  ),
+);
+
+function readRequiredFile(relativePath) {
+  const filePath = path.join(repoDir, relativePath);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`required file not found: ${relativePath}`);
+  }
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function assertContains(text, needle, message) {
+  assert.ok(String(text || '').includes(needle), message);
+}
+
+function assertNoLocalPaths(text) {
+  assert.doesNotMatch(String(text || ''), /\/Users\//);
+  assert.doesNotMatch(String(text || ''), /\/private\/var\/folders\//);
+  assert.doesNotMatch(String(text || ''), /\/var\/folders\//);
+}
+
+function extractCodeBlockAfterHeading(markdown, heading) {
+  const headingIndex = String(markdown || '').indexOf(heading);
+  assert.notEqual(headingIndex, -1, `missing heading ${heading}`);
+  const afterHeading = markdown.slice(headingIndex + heading.length);
+  const match = afterHeading.match(/```bash\n([\s\S]*?)\n```/);
+  assert.ok(match, `missing bash code block after ${heading}`);
+  return match[1];
+}
+
+function combinedText() {
+  return [doc, readme, roadmap, evidenceGallery, evidenceManifest, releaseReadiness].join('\n\n');
+}

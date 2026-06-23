@@ -11,6 +11,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a provider readiness matrix and catalog smoke guard to separate adapter implementation, pilot evidence, target provider blockers, and safe multi-provider claims.
 - Added a provider failure recovery demo and smoke guard to document attention remediation, fallback policy, timeline/event audit, and claim boundaries.
 - Added a memory retrieval quality fixture and smoke guard to document retrieval ranking signals, source diversity, fact graph provenance, revision lifecycle, and instruction-boundary handling.
+- Added a smoke validation summary and command guard to document the deterministic public-readiness verification baseline without expanding provider, hosted, or production claims.
 
 ## v0.1.0 - 2026-06-23
 
