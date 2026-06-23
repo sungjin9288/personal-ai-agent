@@ -6,6 +6,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
+const supportPath = path.join(repoDir, 'SUPPORT.md');
 const contributingPath = path.join(repoDir, 'CONTRIBUTING.md');
 const securityPolicyPath = path.join(repoDir, 'SECURITY.md');
 const releaseReadinessPath = path.join(repoDir, 'docs', 'release-readiness-v1.md');
@@ -26,6 +27,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const manifest = readRequiredFile(manifestPath);
 const changelog = readRequiredFile(changelogPath);
+const support = readRequiredFile(supportPath);
 const contributing = readRequiredFile(contributingPath);
 const securityPolicy = readRequiredFile(securityPolicyPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
@@ -53,7 +55,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 65$/m);
+assert.match(manifest, /^- fileCount: 66$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -63,6 +65,7 @@ const manifestEntries = parseManifestEntries(manifest);
 const requiredPaths = [
   'README.md',
   'CHANGELOG.md',
+  'SUPPORT.md',
   'CONTRIBUTING.md',
   'SECURITY.md',
   '.github/ISSUE_TEMPLATE/bug_report.yml',
@@ -222,11 +225,18 @@ assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
 assert.match(contributing, /# Contributing/);
 assert.match(contributing, /Current validated claim: `provider-scoped pilot-ready`/);
 assert.match(contributing, /npm run smoke:changelog/);
+assert.match(contributing, /npm run smoke:support-policy/);
 assert.match(contributing, /npm run smoke:contributor-onboarding/);
 assert.match(contributing, /not a public hosted demo URL/);
 assert.match(securityPolicy, /# Security Policy/);
 assert.match(securityPolicy, /local-first PoC\/MVP harness/);
 assert.match(securityPolicy, /no production service endpoint or public hosted demo URL/);
+assert.match(securityPolicy, /\[SUPPORT\.md\]\(SUPPORT\.md\)/);
+assert.match(support, /# Support/);
+assert.match(support, /local-first PoC\/MVP harness/);
+assert.match(support, /npm run smoke:support-policy/);
+assert.match(support, /productionReadyClaim: false/);
+assert.match(support, /There is no public hosted demo URL/);
 assert.match(forkOnboarding, /# Fork Onboarding v1/);
 assert.match(forkOnboarding, /publicHostedDemoUrl: none/);
 assert.match(forkOnboarding, /productionReadyClaim: false/);
@@ -290,11 +300,14 @@ assert.match(
 );
 assert.match(readme, /npm run package:pilot-export/);
 assert.match(readme, /Changelog: \[CHANGELOG\.md\]\(CHANGELOG\.md\)/);
+assert.match(readme, /Support: \[SUPPORT\.md\]\(SUPPORT\.md\)/);
 assert.match(readme, /npm run smoke:changelog/);
+assert.match(readme, /npm run smoke:support-policy/);
 assert.match(changelog, /# Changelog/);
+assert.match(changelog, /SUPPORT\.md/);
 assert.match(changelog, /## v0\.1\.0 - 2026-06-23/);
 assert.match(changelog, /productionReadyClaim: false/);
-assert.match(changelog, /072286dd4c8d0988d4242f4d0ed96a56db1ce434b4e9eb81c54f4e04e7a2045a/);
+assert.match(changelog, /76e4872f0f2a5868d90484654f29dfea78f4e24b1571be0351437146dd076c2b/);
 
 console.log(
   JSON.stringify(
