@@ -57,6 +57,9 @@ jobs:
       - name: Run demo evidence index smoke
         run: npm run smoke:demo-evidence-index
 
+      - name: Run representative demo evidence smoke
+        run: npm run smoke:representative-demo-evidence
+
       - name: Run README portfolio overview smoke
         run: npm run smoke:readme-portfolio-overview
 

@@ -151,6 +151,8 @@ for (const ignored of ['.env', '.env.local', 'var/']) {
 for (const ciTerm of [
   'npm run smoke:contributor-onboarding',
   'npm run smoke:changelog',
+  'npm run smoke:demo-evidence-index',
+  'npm run smoke:representative-demo-evidence',
   'npm run smoke:support-policy',
   'npm run smoke:doctor',
 ]) {
