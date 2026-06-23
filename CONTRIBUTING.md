@@ -75,7 +75,9 @@ Use the checklist in `.github/pull_request_template.md` as the baseline. Add foc
 
 ## Issues And Security Reports
 
+- Blank issues are disabled so public reports keep the required safety checklist and diagnostic context.
 - Use `.github/ISSUE_TEMPLATE/bug_report.yml` for reproducible bugs.
 - Use `.github/ISSUE_TEMPLATE/security_report.yml` for security concerns that can be described publicly without secrets.
+- For local setup, provider configuration, or support handoff issues, run `npm run doctor:summary` and paste the sanitized output into the bug report's `Doctor diagnostics summary` field.
 - Read [SECURITY.md](SECURITY.md) before filing security reports.
 - Never paste provider credentials, customer data, private repository data, or machine-local paths into public issues.

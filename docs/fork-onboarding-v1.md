@@ -7,6 +7,7 @@
 - relatedReadme: [README.md](../README.md)
 - relatedContributing: [CONTRIBUTING.md](../CONTRIBUTING.md)
 - relatedSecurity: [SECURITY.md](../SECURITY.md)
+- relatedSupport: [SUPPORT.md](../SUPPORT.md)
 - relatedEnvTemplate: [.env.example](../.env.example)
 - relatedDemoEvidence: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 
@@ -75,6 +76,8 @@ Use this as the baseline before changing runtime behavior.
 
 ## Issue And Security Templates
 
+- Blank issues are disabled so every public report keeps the required checklist and route.
 - Bug reports use `.github/ISSUE_TEMPLATE/bug_report.yml`.
 - Security reports use `.github/ISSUE_TEMPLATE/security_report.yml`.
+- For setup or provider wiring issues, run `npm run doctor:summary` and paste the sanitized output into the bug report's `Doctor diagnostics summary` field.
 - Public reports must not include secrets, provider credentials, private data, customer data, screenshots with secrets, or machine-local paths.
