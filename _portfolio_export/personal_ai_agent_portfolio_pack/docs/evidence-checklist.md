@@ -2,7 +2,7 @@
 
 | 항목 | 상태 | 증거 | 메모 |
 |---|---|---|---|
-| 프로젝트 루트 확인 | 완료 | `/Users/<user>/dev/personal/personal-ai-agent` | local path는 evidence에서 치환 |
+| 프로젝트 루트 확인 | 완료 | `<local-workspace>/personal-ai-agent` | local path는 evidence에서 치환 |
 | 프로젝트 유형 판단 | 완료 | `docs/implementation-evidence.md` | PoC / MVP 구현 |
 | 필수 CLI smoke 실행 | 완료 | `evidence/cli-logs/npm-run-smoke.log` | `exit_code=0` |
 | Mission/session 생성 | 완료 | `evidence/cli-logs/bootstrap-local-runtime.log` | stub provider run completed |

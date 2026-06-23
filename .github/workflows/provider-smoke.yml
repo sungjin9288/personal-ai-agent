@@ -30,6 +30,9 @@ jobs:
       - name: Run local demo onboarding smoke
         run: npm run smoke:demo-local
 
+      - name: Run env example smoke
+        run: npm run smoke:env-example
+
       - name: Run README portfolio overview smoke
         run: npm run smoke:readme-portfolio-overview
 

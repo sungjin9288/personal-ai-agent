@@ -11,6 +11,7 @@
 ## Verification
 
 - [ ] `npm run smoke:demo-local`
+- [ ] `npm run smoke:env-example`
 - [ ] `npm run smoke:readme-portfolio-overview`
 - [ ] `npm run smoke:portfolio-docs-claim-boundary`
 - [ ] `npm run smoke:release-artifact-hygiene`

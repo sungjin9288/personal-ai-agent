@@ -2,7 +2,7 @@
 
 | 항목 | 상태 | 증거 | 메모 |
 |---|---|---|---|
-| 프로젝트 루트 확인 | 완료 | `/Users/<user>/dev/personal/personal-ai-agent` | local path는 evidence에서 치환 |
+| 프로젝트 루트 확인 | 완료 | `<local-workspace>/personal-ai-agent` | local path는 evidence에서 치환 |
 | 프로젝트 유형 판단 | 완료 | `docs/implementation-evidence.md` | PoC / MVP 구현 |
 | 필수 CLI smoke 실행 | 완료 | `evidence/cli-logs/npm-run-smoke.log` | `exit_code=0` |
 | Mission/session 생성 | 완료 | `evidence/cli-logs/bootstrap-local-runtime.log` | stub provider run completed |
@@ -23,7 +23,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 285,464 bytes, SHA-256 `ee059912f24a36839f41d7a12aae7ef678ca730003f5441f23b76c57592a8af4` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 289,635 bytes, SHA-256 `daa62fdff83bcc650246aa2c3d8451b9301876ba240661ec096d4b12c8dd4ffd` |
 
 ## 검증 실패 / 보류
 
