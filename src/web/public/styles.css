@@ -373,6 +373,70 @@ button {
   font-size: 0.73rem;
 }
 
+.doctor-summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.doctor-detail-toggle {
+  min-height: 28px;
+  padding: 5px 8px;
+  font-size: 0.72rem;
+}
+
+.doctor-detail-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.doctor-detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.doctor-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doctor-detail-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.doctor-detail-row strong,
+.doctor-detail-row span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.68rem;
+  line-height: 1.32;
+}
+
+.doctor-detail-note {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 0.68rem;
+}
+
 .flow-status-label,
 .summary-label,
 .section-kicker,
