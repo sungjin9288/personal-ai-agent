@@ -22,6 +22,7 @@ const commands = [
   ['npm', ['run', 'smoke:execution-v1-snapshot']],
   ['npm', ['run', 'smoke:execution-v1-handoff']],
   ['npm', ['run', 'smoke:release-artifact-hygiene']],
+  ['npm', ['run', 'smoke:portfolio-zip']],
   ['npm', ['run', 'smoke:pilot-export-package']],
 ];
 

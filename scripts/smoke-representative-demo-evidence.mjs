@@ -34,7 +34,7 @@ const screenshot = fs.readFileSync(screenshotPath);
 assert.equal(summary.demo, 'Representative Demo: Release Readiness Evidence Walkthrough');
 assert.equal(summary.credentialFree, true);
 assert.equal(summary.productionReadyClaim, false);
-assert.equal(summary.commandCount, 6);
+assert.equal(summary.commandCount, 7);
 assert.match(summary.note, /Refresh them with npm run smoke:ui-execution-browser-e2e/);
 assert.equal(summary.commands.every((entry) => entry.status === 0), true, JSON.stringify(summary.commands));
 assert.equal(summary.screenshot.copied, true);
@@ -48,6 +48,7 @@ for (const command of [
   'npm run smoke:execution-v1-snapshot',
   'npm run smoke:execution-v1-handoff',
   'npm run smoke:release-artifact-hygiene',
+  'npm run smoke:portfolio-zip',
   'npm run smoke:pilot-export-package',
 ]) {
   assert.equal(

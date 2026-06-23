@@ -2,7 +2,7 @@
   "artifactVersion": "execution-v1-browser-e2e/v1",
   "browserConsoleErrors": 0,
   "browserPageErrors": 0,
-  "generatedAt": "2026-06-19T01:24:46.073Z",
+  "generatedAt": "2026-06-23T08:38:17.836Z",
   "handoffCoverageSummary": {
     "bySessionLabel": {
       "copy": 2,
@@ -84,7 +84,7 @@
   ],
   "ok": true,
   "mode": "ui-execution-browser-e2e",
-  "port": 54365,
+  "port": 60263,
   "reportPath": "<repo>/output/playwright/execution-v1-browser-e2e.json",
   "releaseDocAssetSanity": {
     "closeoutLabelPresent": true,
@@ -1835,7 +1835,7 @@
   "releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---",
         "format": "text",
@@ -1845,7 +1845,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview",
         "format": "markdown",
@@ -1855,7 +1855,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---",
         "format": "text",
@@ -1865,7 +1865,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview",
         "format": "markdown",
@@ -1875,7 +1875,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy-body-line-copy-body-line-copy---",
         "format": "text",
@@ -1885,7 +1885,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Body Line Copy Overview",
         "format": "markdown",
@@ -1898,15 +1898,15 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429"
+    "stableSha256": "cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad"
   },
   "releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyVerificationSummary": {
     "bySurfaceId": {
@@ -1952,7 +1952,7 @@
   "releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy-body-line-copy---",
         "format": "text",
@@ -1962,7 +1962,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Overview",
         "format": "markdown",
@@ -1972,7 +1972,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy-body-line-copy---",
         "format": "text",
@@ -1982,7 +1982,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Overview",
         "format": "markdown",
@@ -1992,7 +1992,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy-body-line-copy---",
         "format": "text",
@@ -2002,7 +2002,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Body Line Copy Overview",
         "format": "markdown",
@@ -2015,15 +2015,15 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429"
+    "stableSha256": "cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad"
   },
   "releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyVerificationSummary": {
     "bySurfaceId": {
@@ -2071,7 +2071,7 @@
   "releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedStableLinePreviewBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy---",
         "format": "text",
@@ -2081,7 +2081,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedStableLinePreviewBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Overview",
         "format": "markdown",
@@ -2091,7 +2091,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedStableLinePreviewBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy---",
         "format": "text",
@@ -2101,7 +2101,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedStableLinePreviewBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Overview",
         "format": "markdown",
@@ -2111,7 +2111,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedStableLinePreviewBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyExactMatchCount=2",
         "expectedStableLinePreviewBodyLineCopyMarker": "---summary-stable-line-copy-preview-body-line-copy---",
         "format": "text",
@@ -2121,7 +2121,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedStableLinePreviewBodyLineCopyCounter": "summaryStableLineCopyPreviewBodyLineCopyExactMatchCount: 2",
         "expectedStableLinePreviewBodyLineCopyMarker": "Summary-Stable-Line-Copy Preview Body Line Copy Overview",
         "format": "markdown",
@@ -2134,15 +2134,15 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429"
+    "stableSha256": "cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad"
   },
   "releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyVerificationSummary": {
     "bySurfaceId": {
@@ -2190,7 +2190,7 @@
   "releaseHandoffSummaryStableLineCopyPreviewBodyVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount=2",
         "expectedStableLineMarker": "---summary-stable-line-copy---",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount=6",
@@ -2204,7 +2204,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount: 2",
         "expectedStableLineMarker": "Summary-Stable-Line-Copy Overview",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount: 6",
@@ -2218,7 +2218,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount=2",
         "expectedStableLineMarker": "---summary-stable-line-copy---",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount=6",
@@ -2232,7 +2232,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount: 2",
         "expectedStableLineMarker": "Summary-Stable-Line-Copy Overview",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount: 6",
@@ -2246,7 +2246,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount=2",
         "expectedStableLineMarker": "---summary-stable-line-copy---",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount=6",
@@ -2260,7 +2260,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount: 2",
         "expectedStableLineMarker": "Summary-Stable-Line-Copy Overview",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount: 6",
@@ -2277,20 +2277,20 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "224a92ccc3ca6701827daa696561835a6589f4b6622b9980f05e5f7139cba8f5",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=224a92ccc3ca6701827daa696561835a6589f4b6622b9980f05e5f7139cba8f5"
+    "stableSha256": "8364942b1ebdb2429c033d0df9ce452e3e9d78eae953b624e66b806bdeb2a534",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=8364942b1ebdb2429c033d0df9ce452e3e9d78eae953b624e66b806bdeb2a534"
   },
   "releaseHandoffSummaryStableLineCopyPreviewVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount=2",
         "expectedStableLineMarker": "---summary-stable-line-copy---",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount=6",
@@ -2304,7 +2304,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount: 2",
         "expectedStableLineMarker": "Summary-Stable-Line-Copy Overview",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount: 6",
@@ -2318,7 +2318,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount=2",
         "expectedStableLineMarker": "---summary-stable-line-copy---",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount=6",
@@ -2332,7 +2332,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount: 2",
         "expectedStableLineMarker": "Summary-Stable-Line-Copy Overview",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount: 6",
@@ -2346,7 +2346,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount=2",
         "expectedStableLineMarker": "---summary-stable-line-copy---",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount=6",
@@ -2360,7 +2360,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedStableLineCounter": "summaryStableLineCopyExactMatchCount: 2",
         "expectedStableLineMarker": "Summary-Stable-Line-Copy Overview",
         "expectedStableLinePreviewCounter": "summaryStableLineCopyPreviewExactMatchCount: 6",
@@ -2377,15 +2377,15 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|stableLineCounter=present|stableLineMarker=present|previewCounter=present|previewMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "224a92ccc3ca6701827daa696561835a6589f4b6622b9980f05e5f7139cba8f5",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=224a92ccc3ca6701827daa696561835a6589f4b6622b9980f05e5f7139cba8f5"
+    "stableSha256": "8364942b1ebdb2429c033d0df9ce452e3e9d78eae953b624e66b806bdeb2a534",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=8364942b1ebdb2429c033d0df9ce452e3e9d78eae953b624e66b806bdeb2a534"
   },
   "releaseHandoffSummaryStableLineCopyVerificationSummary": {
     "bySurfaceId": {
@@ -2433,7 +2433,7 @@
   "releaseHandoffSummaryDetailCopyPreviewLineCopyBodyVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedDetailPreviewLineCopyBodyCounter": "summaryDetailCopyPreviewLineCopyBodyExactMatchCount=6",
         "expectedDetailPreviewLineCopyBodyMarker": "---summary-detail-copy-preview-line-copy-body---",
         "format": "text",
@@ -2443,7 +2443,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedDetailPreviewLineCopyBodyCounter": "summaryDetailCopyPreviewLineCopyBodyExactMatchCount: 6",
         "expectedDetailPreviewLineCopyBodyMarker": "Summary-Detail-Copy Preview Line Copy Body Overview",
         "format": "markdown",
@@ -2453,7 +2453,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedDetailPreviewLineCopyBodyCounter": "summaryDetailCopyPreviewLineCopyBodyExactMatchCount=6",
         "expectedDetailPreviewLineCopyBodyMarker": "---summary-detail-copy-preview-line-copy-body---",
         "format": "text",
@@ -2463,7 +2463,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedDetailPreviewLineCopyBodyCounter": "summaryDetailCopyPreviewLineCopyBodyExactMatchCount: 6",
         "expectedDetailPreviewLineCopyBodyMarker": "Summary-Detail-Copy Preview Line Copy Body Overview",
         "format": "markdown",
@@ -2473,7 +2473,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedDetailPreviewLineCopyBodyCounter": "summaryDetailCopyPreviewLineCopyBodyExactMatchCount=6",
         "expectedDetailPreviewLineCopyBodyMarker": "---summary-detail-copy-preview-line-copy-body---",
         "format": "text",
@@ -2483,7 +2483,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedDetailPreviewLineCopyBodyCounter": "summaryDetailCopyPreviewLineCopyBodyExactMatchCount: 6",
         "expectedDetailPreviewLineCopyBodyMarker": "Summary-Detail-Copy Preview Line Copy Body Overview",
         "format": "markdown",
@@ -2496,15 +2496,15 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|bodyCounter=present|bodyMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=215fa5d81900062adcb816537c5e8efe7dfbea940938020cc5165f7f1d932429"
+    "stableSha256": "cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=cb993c6e1434d05db4110db1080b91dbec9db14fb092e072255fe127b9ca50ad"
   },
   "releaseHandoffSummaryDetailCopyPreviewLineCopyVerificationSummary": {
     "bySurfaceId": {
@@ -2550,7 +2550,7 @@
   "releaseHandoffSummaryDetailCopyPreviewVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedDetailCounter": "summaryDetailCopyExactMatchCount=4",
         "expectedDetailMarker": "---summary-detail-copy---",
         "expectedDetailPreviewCounter": "summaryDetailCopyPreviewExactMatchCount=6",
@@ -2564,7 +2564,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedDetailCounter": "summaryDetailCopyExactMatchCount: 4",
         "expectedDetailMarker": "Summary-Detail-Copy Overview",
         "expectedDetailPreviewCounter": "summaryDetailCopyPreviewExactMatchCount: 6",
@@ -2578,7 +2578,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedDetailCounter": "summaryDetailCopyExactMatchCount=4",
         "expectedDetailMarker": "---summary-detail-copy---",
         "expectedDetailPreviewCounter": "summaryDetailCopyPreviewExactMatchCount=6",
@@ -2592,7 +2592,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedDetailCounter": "summaryDetailCopyExactMatchCount: 4",
         "expectedDetailMarker": "Summary-Detail-Copy Overview",
         "expectedDetailPreviewCounter": "summaryDetailCopyPreviewExactMatchCount: 6",
@@ -2606,7 +2606,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedDetailCounter": "summaryDetailCopyExactMatchCount=4",
         "expectedDetailMarker": "---summary-detail-copy---",
         "expectedDetailPreviewCounter": "summaryDetailCopyPreviewExactMatchCount=6",
@@ -2620,7 +2620,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedDetailCounter": "summaryDetailCopyExactMatchCount: 4",
         "expectedDetailMarker": "Summary-Detail-Copy Overview",
         "expectedDetailPreviewCounter": "summaryDetailCopyPreviewExactMatchCount: 6",
@@ -2637,20 +2637,20 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|detailCounter=present|detailMarker=present|previewCounter=present|previewMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "403d251fceee7424c0481d4fc00b78ec29b2d41d8ab04574675ec291ad0f79e7",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=403d251fceee7424c0481d4fc00b78ec29b2d41d8ab04574675ec291ad0f79e7"
+    "stableSha256": "25518b676330b54f1c13d6981b9bd16a16db35002b6aeb7477703eb36184d0c8",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=25518b676330b54f1c13d6981b9bd16a16db35002b6aeb7477703eb36184d0c8"
   },
   "releaseHandoffSummaryCopyPreviewVerificationSummary": {
     "byArtifactId": {
       "handoff-digest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-digest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-digest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256",
         "expectedCounter": "summaryCopyExactMatchCount=2",
         "expectedMarker": "---summary-copy---",
         "expectedPreviewCounter": "summaryCopyPreviewExactMatchCount=6",
@@ -2670,7 +2670,7 @@
         "exactMatch": true
       },
       "handoff-digest-markdown": {
-        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
+        "bodySample": "Release Handoff Digest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-digestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasumm",
         "expectedCounter": "summaryCopyExactMatchCount: 2",
         "expectedMarker": "Summary-Copy Overview",
         "expectedPreviewCounter": "summaryCopyPreviewExactMatchCount: 6",
@@ -2690,7 +2690,7 @@
         "exactMatch": true
       },
       "handoff-manifest-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-manifest-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-manifest summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSh",
         "expectedCounter": "summaryCopyExactMatchCount=2",
         "expectedMarker": "---summary-copy---",
         "expectedPreviewCounter": "summaryCopyPreviewExactMatchCount=6",
@@ -2710,7 +2710,7 @@
         "exactMatch": true
       },
       "handoff-manifest-markdown": {
-        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
+        "bodySample": "Release Handoff Manifest SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-manifestsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-sha",
         "expectedCounter": "summaryCopyExactMatchCount: 2",
         "expectedMarker": "Summary-Copy Overview",
         "expectedPreviewCounter": "summaryCopyPreviewExactMatchCount: 6",
@@ -2730,7 +2730,7 @@
         "exactMatch": true
       },
       "handoff-index-text": {
-        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-19T01:18:53.771Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
+        "bodySample": "artifactVersion=execution-v1-release-handoff-index-text/seed generatedAt=2026-06-23T08:32:30.328Z kind=handoff-index summaryCopyTotalChecks=2 summaryCopyExactMatchCount=2 summaryCopyStableSha256=seed-summary-copy-sha summaryCopyPreviewTotalArtifacts=6 summaryCopyPreviewExactMatchCount=6 summaryCopyPreviewStableSha256=s",
         "expectedCounter": "summaryCopyExactMatchCount=2",
         "expectedMarker": "---summary-copy---",
         "expectedPreviewCounter": "summaryCopyPreviewExactMatchCount=6",
@@ -2750,7 +2750,7 @@
         "exactMatch": true
       },
       "handoff-index-markdown": {
-        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
+        "bodySample": "Release Handoff Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: handoff-indexsummaryCopyTotalChecks: 2summaryCopyExactMatchCount: 2summaryCopyStableSha256: seed-summary-copy-shasummaryCopyPreviewTotalArtifacts: 6summaryCopyPreviewExactMatchCount: 6summaryCopyPreviewStableSha256: seed-summary-copy-preview-shasummar",
         "expectedCounter": "summaryCopyExactMatchCount: 2",
         "expectedMarker": "Summary-Copy Overview",
         "expectedPreviewCounter": "summaryCopyPreviewExactMatchCount: 6",
@@ -2773,15 +2773,15 @@
     "exactMatchCount": 6,
     "totalArtifacts": 6,
     "stableLines": [
-      "handoff-digest-markdown|format=markdown|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=50579df4b82ef126d018cd6724fbdf346a5988b8d9b382fd5361ff66ae41021b",
-      "handoff-digest-text|format=text|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=021b4aa5fbd3a62638a319e7c946eff8520904904ed2d01018024e846427ecd9",
-      "handoff-index-markdown|format=markdown|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=827e79686d4b553394b6edfe5f8d8ec3b4dba5060ea38c9016838feaffcde524",
-      "handoff-index-text|format=text|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=c23d28178c6039d87237662ca0e8198a66d70c7f835adc78a344487d8cea62ce",
-      "handoff-manifest-markdown|format=markdown|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=e8a23074ecb313b67a2b11ea01708b964690b81544648f588cd207d6b38b61ce",
-      "handoff-manifest-text|format=text|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=a374cee4e8d6bc6d1733efeb53d5ae9f99d8e09d8dc24bbbe25779a4166aa3ef"
+      "handoff-digest-markdown|format=markdown|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=8bede02d57cdd5be095f8af4d996a07dfe9c11614c245fe9156eeee27c87bd7a",
+      "handoff-digest-text|format=text|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=ca1e956a4d80f4c29bb4641a956d882f7fc8c64b33eec9302e5afcf70ebe3433",
+      "handoff-index-markdown|format=markdown|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=fb2fe0c6481b7def2b6afad99943ae0863acd7b935831dab262d658164d5eb60",
+      "handoff-index-text|format=text|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=ee5e7acdf9840cdd8838e5f5ee3e02f50a783ceac32fdf7b621e12524302bf80",
+      "handoff-manifest-markdown|format=markdown|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=5ef158744e95aee432697dcf4561d8fc25776df9bf8021d062cbbaf87da0176c",
+      "handoff-manifest-text|format=text|exact=true|counter=present|marker=present|previewCounter=present|previewMarker=present|bodySha256=2ba6aef9b44471f9e41b2003dd6c742f0843aca18570fd32206be4a9dc2297b4"
     ],
-    "stableSha256": "c6a1d60da2e8faf633e60bfa85e13a6aeefb19dc91a0fc890a76a9c10bc8cc10",
-    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=c6a1d60da2e8faf633e60bfa85e13a6aeefb19dc91a0fc890a76a9c10bc8cc10"
+    "stableSha256": "4e2af4ad4e9bb11d14ad69997a994983fe603c46213e678221fbb37c227cf6dc",
+    "overviewLine": "totalArtifacts=6|exactMatchCount=6|artifacts=handoff-digest-text,handoff-digest-markdown,handoff-manifest-text,handoff-manifest-markdown,handoff-index-text,handoff-index-markdown|sha256=4e2af4ad4e9bb11d14ad69997a994983fe603c46213e678221fbb37c227cf6dc"
   },
   "releaseHandoffSummaryCopyVerificationSummary": {
     "bySurfaceId": {
@@ -3564,7 +3564,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/browser-report",
         "meta": [
           "116 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -3587,7 +3587,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/browser-screenshot",
         "meta": [
           "68 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "링크",
         "path": "<temp>",
@@ -3610,7 +3610,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/visual-evidence-manifest-json",
         "meta": [
           "3.0 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -3633,7 +3633,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-digest-json",
         "meta": [
           "153 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -4900,7 +4900,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-digest-text",
         "meta": [
           "57 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -6167,7 +6167,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-digest-markdown",
         "meta": [
           "15 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -7434,7 +7434,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-manifest-json",
         "meta": [
           "151 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -8701,7 +8701,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-manifest-text",
         "meta": [
           "57 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -9968,7 +9968,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-manifest-markdown",
         "meta": [
           "15 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -11235,7 +11235,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-index-json",
         "meta": [
           "151 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -12502,7 +12502,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-index-text",
         "meta": [
           "57 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -13769,7 +13769,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/handoff-index-markdown",
         "meta": [
           "15 KB",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15037,7 +15037,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/index-markdown",
         "meta": [
           "79 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15061,7 +15061,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/index-text",
         "meta": [
           "105 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15085,7 +15085,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/index-json",
         "meta": [
           "127 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15108,7 +15108,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/manifest-markdown",
         "meta": [
           "85 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15131,7 +15131,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/manifest-text",
         "meta": [
           "111 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15154,7 +15154,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/manifest-json",
         "meta": [
           "133 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15177,7 +15177,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/digest-markdown",
         "meta": [
           "81 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15200,7 +15200,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/digest-text",
         "meta": [
           "107 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15223,7 +15223,7 @@
         "linkHref": "/api/execution-v1/handoff-artifacts/digest-json",
         "meta": [
           "129 B",
-          "2026. 6. 19. 오전 10:18"
+          "2026. 6. 23. 오후 5:32"
         ],
         "openLinkCopyLabel": "",
         "path": "<temp>",
@@ -15238,7 +15238,7 @@
     ],
     "handoffPreview": {
       "artifactId": "index-markdown",
-      "bodySample": "Release Doc Index SeedgeneratedAt: 2026-06-19T01:18:53.771Zkind: index",
+      "bodySample": "Release Doc Index SeedgeneratedAt: 2026-06-23T08:32:30.328Zkind: index",
       "copyLinkLabel": "현재 링크 복사",
       "format": "markdown",
       "note": "",
@@ -15265,8 +15265,8 @@
         "path": "<temp>",
         "previewItems": [
           "Execution v1 Closeout",
-          "generatedAt: 2026-06-19T01:18:53.783Z",
-          "branch: codex/memory-mutation-action-wiring"
+          "generatedAt: 2026-06-23T08:32:30.379Z",
+          "branch: codex/representative-demo-portfolio-zip-evidence"
         ],
         "rawDocKind": "closeout"
       },
@@ -15283,8 +15283,8 @@
         "path": "<temp>",
         "previewItems": [
           "Execution v1 Evidence",
-          "generatedAt: 2026-06-19T01:18:53.783Z",
-          "branch: codex/memory-mutation-action-wiring"
+          "generatedAt: 2026-06-23T08:32:30.379Z",
+          "branch: codex/representative-demo-portfolio-zip-evidence"
         ],
         "rawDocKind": "evidence"
       },
@@ -15301,7 +15301,7 @@
         "path": "<temp>",
         "previewItems": [
           "Execution v1 Handoff",
-          "generatedAt: 2026-06-19T01:18:53.783Z",
+          "generatedAt: 2026-06-23T08:32:30.379Z",
           "localDate: 2026-05-02"
         ],
         "rawDocKind": "handoff"
@@ -15616,7 +15616,7 @@
         "action": "copy-release-blocker-api-link",
         "label": "API 링크 복사",
         "provider": "",
-        "value": "http://127.0.0.1:54365/api/execution-v1/release-blockers"
+        "value": "http://127.0.0.1:60263/api/execution-v1/release-blockers"
       },
       {
         "action": "copy-release-blocker-filter-package",
@@ -24658,7 +24658,7 @@
       },
       {
         "label": "최종 갱신",
-        "value": "2026. 6. 19. 오전 10:18"
+        "value": "2026. 6. 23. 오후 5:32"
       }
     ],
     "summaryChipLabels": [
@@ -24692,25 +24692,25 @@
     "activeDetailTab": "release",
     "activeStep": "step-output",
     "activeTab": "release",
-    "artifactId": "artifact_20260619011944_a6e20e",
-    "href": "http://127.0.0.1:54365/?workspace=workspace_20260619011854_8ed619&step=step-output&tab=release&mission=mission_20260619011930_c81f1a&session=session_20260619011940_06d9d5&artifact=artifact_20260619011944_a6e20e&hstype=attachment&hsource=retrieval-seed.md&rartifact=index-markdown",
-    "missionId": "mission_20260619011930_c81f1a",
+    "artifactId": "artifact_20260623083321_5377ec",
+    "href": "http://127.0.0.1:60263/?workspace=workspace_20260623083230_064e9b&step=step-output&tab=release&mission=mission_20260623083306_a02881&session=session_20260623083316_c144c8&artifact=artifact_20260623083321_5377ec&hstype=attachment&hsource=retrieval-seed.md&rartifact=index-markdown",
+    "missionId": "mission_20260623083306_a02881",
     "pageTitle": "에이전트 운영 콘솔",
     "releaseHeading": "검증, evidence, closeout",
-    "sessionId": "session_20260619011940_06d9d5",
-    "workspaceId": "workspace_20260619011854_8ed619"
+    "sessionId": "session_20260623083316_c144c8",
+    "workspaceId": "workspace_20260623083230_064e9b"
   },
   "screenshotCaptured": true,
-  "screenshotBytes": 13468084,
+  "screenshotBytes": 13464455,
   "screenshotHeight": 120036,
-  "screenshotModifiedAt": "2026-06-19T01:24:42.375Z",
-  "screenshotSha256": "be3dead0aabaf8330e1ed40009fa4c26a261fd6ca632ead88acf044ee5bd0a6a",
+  "screenshotModifiedAt": "2026-06-23T08:38:14.329Z",
+  "screenshotSha256": "0de6f7b2c8beb354b543b77d2bf28289ac8c025524ecf779f223787779a89bea",
   "screenshotWidth": 1280,
   "screenshotPath": "<repo>/output/playwright/execution-v1-browser-e2e.png",
-  "sessionId": "e8q7al",
+  "sessionId": "edz8i7",
   "timeoutMs": 900000,
-  "url": "http://127.0.0.1:54365/?workspace=workspace_20260619011854_8ed619&step=step-output&tab=release&mission=mission_20260619011930_c81f1a&session=session_20260619011940_06d9d5&artifact=artifact_20260619011944_a6e20e&hstype=attachment&hsource=retrieval-seed.md",
-  "workspaceId": "workspace_20260619011854_8ed619",
+  "url": "http://127.0.0.1:60263/?workspace=workspace_20260623083230_064e9b&step=step-output&tab=release&mission=mission_20260623083306_a02881&session=session_20260623083316_c144c8&artifact=artifact_20260623083321_5377ec&hstype=attachment&hsource=retrieval-seed.md",
+  "workspaceId": "workspace_20260623083230_064e9b",
   "releaseHandoffSummaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyLineCopyVerificationSummary": {
     "bySurfaceId": {
       "card": {

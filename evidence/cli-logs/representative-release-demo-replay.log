@@ -1,13 +1,13 @@
 # Representative Release Demo Replay
 
-generatedAt=2026-06-22T06:11:00.579Z
-branch=main
-commit=b89e5f1060f6a4771855acfdd6490f40f6a04454
+generatedAt=2026-06-23T08:40:08.751Z
+branch=codex/representative-demo-portfolio-zip-evidence
+commit=86101b552d8596907936203c95dc2ad3b346fc9c
 
 ## npm run smoke:representative-demo
 status=0
-startedAt=2026-06-22T06:11:00.580Z
-completedAt=2026-06-22T06:11:00.747Z
+startedAt=2026-06-23T08:40:08.752Z
+completedAt=2026-06-23T08:40:08.887Z
 
 stdout:
 
@@ -24,8 +24,8 @@ stdout:
 
 ## npm run smoke:execution-v1-status
 status=0
-startedAt=2026-06-22T06:11:00.747Z
-completedAt=2026-06-22T06:11:01.453Z
+startedAt=2026-06-23T08:40:08.887Z
+completedAt=2026-06-23T08:40:09.403Z
 
 stdout:
 
@@ -35,19 +35,19 @@ stdout:
 {
   "artifactState": "local-current",
   "artifactSyncCommit": false,
-  "branch": "main",
-  "commit": "b89e5f1060f6a4771855acfdd6490f40f6a04454",
+  "branch": "codex/representative-demo-portfolio-zip-evidence",
+  "commit": "86101b552d8596907936203c95dc2ad3b346fc9c",
   "deterministic": "8/8",
   "ok": true,
   "referenceAdoptionReady": true,
   "runtimeRows": 8,
-  "snapshotCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
+  "snapshotCommit": "86101b552d8596907936203c95dc2ad3b346fc9c"
 }
 
 ## npm run smoke:execution-v1-snapshot
 status=0
-startedAt=2026-06-22T06:11:01.453Z
-completedAt=2026-06-22T06:11:02.073Z
+startedAt=2026-06-23T08:40:09.403Z
+completedAt=2026-06-23T08:40:09.887Z
 
 stdout:
 
@@ -55,21 +55,21 @@ stdout:
 > node scripts/smoke-execution-v1-snapshot.mjs
 
 {
-  "archivedAt": "2026-06-22T06:11:00.326Z",
+  "archivedAt": "2026-06-23T08:40:02.651Z",
   "artifactSyncCommit": false,
-  "commit": "b89e5f1060f6a4771855acfdd6490f40f6a04454",
+  "commit": "86101b552d8596907936203c95dc2ad3b346fc9c",
   "deterministicPassed": 8,
   "ok": true,
   "runtimeRows": 8,
-  "snapshotDir": "<repo>/docs/releases/execution-v1/b89e5f1060f6a4771855acfdd6490f40f6a04454",
-  "snapshotHandoffPath": "<repo>/docs/releases/execution-v1/b89e5f1060f6a4771855acfdd6490f40f6a04454/execution-v1-handoff.md",
-  "verifiedCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
+  "snapshotDir": "<repo>/docs/releases/execution-v1/86101b552d8596907936203c95dc2ad3b346fc9c",
+  "snapshotHandoffPath": "<repo>/docs/releases/execution-v1/86101b552d8596907936203c95dc2ad3b346fc9c/execution-v1-handoff.md",
+  "verifiedCommit": "86101b552d8596907936203c95dc2ad3b346fc9c"
 }
 
 ## npm run smoke:execution-v1-handoff
 status=0
-startedAt=2026-06-22T06:11:02.073Z
-completedAt=2026-06-22T06:11:05.441Z
+startedAt=2026-06-23T08:40:09.887Z
+completedAt=2026-06-23T08:40:11.848Z
 
 stdout:
 
@@ -78,16 +78,16 @@ stdout:
 
 {
   "ok": true,
-  "branch": "main",
-  "commit": "b89e5f1060f6a4771855acfdd6490f40f6a04454",
+  "branch": "codex/representative-demo-portfolio-zip-evidence",
+  "commit": "86101b552d8596907936203c95dc2ad3b346fc9c",
   "outputPath": "<temp>",
   "visualArtifactSetSha256": "handoff-smoke-artifact-set"
 }
 
 ## npm run smoke:release-artifact-hygiene
 status=0
-startedAt=2026-06-22T06:11:05.441Z
-completedAt=2026-06-22T06:11:05.674Z
+startedAt=2026-06-23T08:40:11.848Z
+completedAt=2026-06-23T08:40:12.046Z
 
 stdout:
 
@@ -98,15 +98,33 @@ stdout:
   "machinePathFindingCount": 0,
   "mode": "release-artifact-hygiene",
   "ok": true,
-  "scannedFileCount": 48,
+  "scannedFileCount": 58,
   "secretFindingCount": 0,
-  "verifiedCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
+  "verifiedCommit": "86101b552d8596907936203c95dc2ad3b346fc9c"
+}
+
+## npm run smoke:portfolio-zip
+status=0
+startedAt=2026-06-23T08:40:12.046Z
+completedAt=2026-06-23T08:40:12.215Z
+
+stdout:
+
+> personal-ai-agent@0.1.0 smoke:portfolio-zip
+> node scripts/smoke-portfolio-zip.mjs
+
+{
+  "mode": "portfolio-zip-smoke",
+  "ok": true,
+  "zipBytes": 410914,
+  "zipSha256": "f35d2f51fb12b53097f68565dbfa48ae2dfc3118c8522af94c0a1e560e0c3d84",
+  "zipEntryCount": 60
 }
 
 ## npm run smoke:pilot-export-package
 status=0
-startedAt=2026-06-22T06:11:05.674Z
-completedAt=2026-06-22T06:11:05.916Z
+startedAt=2026-06-23T08:40:12.215Z
+completedAt=2026-06-23T08:40:12.338Z
 
 stdout:
 
@@ -114,9 +132,9 @@ stdout:
 > node scripts/smoke-pilot-export-package.mjs
 
 {
-  "fileCount": 57,
+  "fileCount": 67,
   "mode": "pilot-export-package",
   "ok": true,
   "path": "docs/pilot-export-package-v1.md",
-  "verifiedCommit": "b89e5f1060f6a4771855acfdd6490f40f6a04454"
+  "verifiedCommit": "86101b552d8596907936203c95dc2ad3b346fc9c"
 }

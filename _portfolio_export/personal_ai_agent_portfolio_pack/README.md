@@ -163,6 +163,11 @@ Key modules:
 - `src/providers/index.mjs`: provider registry and execution contract
 - `src/core/store.mjs`: local JSON-backed persistence
 
+Reference architecture notes:
+
+- OpenClaw as the orchestration backbone: [docs/orchestration-backbone-v1.md](docs/orchestration-backbone-v1.md) defines the gateway/session/workspace/permission/sandbox routing contract, including the channel adapter seam and `externalMessagingEnabled=false` boundary.
+- Hermes-style self-improvement engine: [docs/self-improvement-engine-v1.md](docs/self-improvement-engine-v1.md) defines the approved learning loop behind reviewer, approval, memory scope, and evidence gates.
+
 ## Key Design Decisions
 
 - **Local-first by default**: the harness can be replayed with the stub provider before any external API key is configured.

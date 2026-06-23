@@ -2,58 +2,64 @@
   "browserReport": {
     "copied": true,
     "path": "evidence/output-artifacts/representative-release-demo-browser-e2e.json",
-    "sha256": "86c8b928d7b5dedf102d23b68185272379030df144343ab7ac7fc2929d1db5f6"
+    "sha256": "eb279c7edb03033e6160775ea10e6205dba81ad4325657c39392f7fa65f62f34"
   },
-  "branch": "main",
-  "commandCount": 6,
+  "branch": "codex/representative-demo-portfolio-zip-evidence",
+  "commandCount": 7,
   "commands": [
     {
       "command": "npm run smoke:representative-demo",
-      "completedAt": "2026-06-22T06:11:00.747Z",
-      "startedAt": "2026-06-22T06:11:00.580Z",
+      "completedAt": "2026-06-23T08:40:08.887Z",
+      "startedAt": "2026-06-23T08:40:08.752Z",
       "status": 0
     },
     {
       "command": "npm run smoke:execution-v1-status",
-      "completedAt": "2026-06-22T06:11:01.453Z",
-      "startedAt": "2026-06-22T06:11:00.747Z",
+      "completedAt": "2026-06-23T08:40:09.403Z",
+      "startedAt": "2026-06-23T08:40:08.887Z",
       "status": 0
     },
     {
       "command": "npm run smoke:execution-v1-snapshot",
-      "completedAt": "2026-06-22T06:11:02.073Z",
-      "startedAt": "2026-06-22T06:11:01.453Z",
+      "completedAt": "2026-06-23T08:40:09.887Z",
+      "startedAt": "2026-06-23T08:40:09.403Z",
       "status": 0
     },
     {
       "command": "npm run smoke:execution-v1-handoff",
-      "completedAt": "2026-06-22T06:11:05.441Z",
-      "startedAt": "2026-06-22T06:11:02.073Z",
+      "completedAt": "2026-06-23T08:40:11.848Z",
+      "startedAt": "2026-06-23T08:40:09.887Z",
       "status": 0
     },
     {
       "command": "npm run smoke:release-artifact-hygiene",
-      "completedAt": "2026-06-22T06:11:05.674Z",
-      "startedAt": "2026-06-22T06:11:05.441Z",
+      "completedAt": "2026-06-23T08:40:12.046Z",
+      "startedAt": "2026-06-23T08:40:11.848Z",
+      "status": 0
+    },
+    {
+      "command": "npm run smoke:portfolio-zip",
+      "completedAt": "2026-06-23T08:40:12.215Z",
+      "startedAt": "2026-06-23T08:40:12.046Z",
       "status": 0
     },
     {
       "command": "npm run smoke:pilot-export-package",
-      "completedAt": "2026-06-22T06:11:05.916Z",
-      "startedAt": "2026-06-22T06:11:05.674Z",
+      "completedAt": "2026-06-23T08:40:12.338Z",
+      "startedAt": "2026-06-23T08:40:12.215Z",
       "status": 0
     }
   ],
-  "commit": "b89e5f1060f6a4771855acfdd6490f40f6a04454",
+  "commit": "86101b552d8596907936203c95dc2ad3b346fc9c",
   "credentialFree": true,
   "demo": "Representative Demo: Release Readiness Evidence Walkthrough",
-  "generatedAt": "2026-06-22T06:11:00.579Z",
+  "generatedAt": "2026-06-23T08:40:08.751Z",
   "note": "Browser report and screenshot are copied from the latest output/playwright browser E2E artifacts. Refresh them with npm run smoke:ui-execution-browser-e2e when a new screenshot is required.",
   "productionReadyClaim": false,
   "replayLogPath": "evidence/cli-logs/representative-release-demo-replay.log",
   "screenshot": {
     "copied": true,
     "path": "evidence/screenshots/representative-release-demo-release-status.png",
-    "sha256": "be3dead0aabaf8330e1ed40009fa4c26a261fd6ca632ead88acf044ee5bd0a6a"
+    "sha256": "0de6f7b2c8beb354b543b77d2bf28289ac8c025524ecf779f223787779a89bea"
   }
 }

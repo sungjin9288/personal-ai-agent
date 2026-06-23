@@ -32,7 +32,7 @@ assert.equal(packageJson.scripts['smoke:demo-evidence-index'], 'node scripts/smo
 assert.equal(summary.demo, 'Representative Demo: Release Readiness Evidence Walkthrough');
 assert.equal(summary.credentialFree, true);
 assert.equal(summary.productionReadyClaim, false);
-assert.equal(summary.commandCount, 6);
+assert.equal(summary.commandCount, 7);
 assert.equal(summary.commands.every((entry) => entry.status === 0), true, 'recorded demo commands must all pass');
 assert.equal(browserReport.ok, true);
 assert.equal(browserReport.mode, 'ui-execution-browser-e2e');
