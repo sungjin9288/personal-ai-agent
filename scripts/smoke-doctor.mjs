@@ -62,6 +62,28 @@ assert.match(cliSummaryResult.stdout, /Provider env:/);
 assert.match(cliSummaryResult.stdout, /missingEnv=OPENAI_API_KEY/);
 assert.match(cliSummaryResult.stdout, /Boundary: missing environment variable names only; secret values are not included\./);
 
+const doctorHelpResult = spawnSync(process.execPath, ['src/cli.mjs', 'doctor', '--help'], {
+  cwd: repoDir,
+  encoding: 'utf8',
+});
+
+assert.equal(doctorHelpResult.status, 0, doctorHelpResult.stderr || doctorHelpResult.stdout);
+assert.equal(doctorHelpResult.stderr, '');
+assert.match(doctorHelpResult.stdout, /Usage:\n  doctor\n  doctor summary/);
+assert.match(doctorHelpResult.stdout, /Doctor diagnostics list missing environment variable names only/);
+assert.doesNotMatch(doctorHelpResult.stdout, /"mode": "doctor"/);
+
+const doctorSummaryHelpResult = spawnSync(process.execPath, ['src/cli.mjs', 'doctor', 'summary', '--help'], {
+  cwd: repoDir,
+  encoding: 'utf8',
+});
+
+assert.equal(doctorSummaryHelpResult.status, 0, doctorSummaryHelpResult.stderr || doctorSummaryHelpResult.stdout);
+assert.equal(doctorSummaryHelpResult.stderr, '');
+assert.match(doctorSummaryHelpResult.stdout, /Usage:\n  doctor summary/);
+assert.match(doctorSummaryHelpResult.stdout, /npm run doctor:summary/);
+assert.doesNotMatch(doctorSummaryHelpResult.stdout, /^# Personal AI Agent doctor diagnostics/m);
+
 for (const term of [
   'npm run doctor',
   'npm run doctor:summary',
@@ -72,7 +94,14 @@ for (const term of [
   assert.equal(support.includes(term), true, `SUPPORT missing ${term}`);
 }
 
-for (const text of [JSON.stringify(direct), JSON.stringify(cliDoctor), directSummary, cliSummaryResult.stdout]) {
+for (const text of [
+  JSON.stringify(direct),
+  JSON.stringify(cliDoctor),
+  directSummary,
+  cliSummaryResult.stdout,
+  doctorHelpResult.stdout,
+  doctorSummaryHelpResult.stdout,
+]) {
   assert.doesNotMatch(text, /sk-[A-Za-z0-9_-]{10,}/);
   assert.doesNotMatch(text, /\/Users\//);
   assert.doesNotMatch(text, /\/private\/var\/folders\//);
