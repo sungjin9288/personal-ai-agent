@@ -226,6 +226,12 @@ cp .env.example .env
 
 The runtime reads `process.env` directly and does not load `.env` automatically. Export values in your shell or use your own dotenv loader if you choose to keep a local `.env` file. The default stub provider works without credentials.
 
+Run the local diagnostics before filing setup or provider configuration issues:
+
+```bash
+npm run doctor
+```
+
 | Provider | Core environment variables |
 |---|---|
 | OpenAI | `OPENAI_API_KEY`, optional `OPENAI_MODEL`, `OPENAI_BASE_URL`, `OPENAI_RUN_TIMEOUT_MS` |
@@ -248,6 +254,7 @@ Recommended public-readiness checks:
 
 ```bash
 npm run package:pilot-export
+npm run smoke:doctor
 npm run smoke:changelog
 npm run smoke:support-policy
 npm run smoke:contributor-onboarding

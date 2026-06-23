@@ -11,6 +11,7 @@ import {
 import { createId } from './core/id.mjs';
 import { createMissionService } from './core/mission-service.mjs';
 import { compactOutputFile } from './core/output-compaction-service.mjs';
+import { runDoctor } from './core/doctor-service.mjs';
 import { getReleaseBlockerHandoff } from './core/release-readiness-service.mjs';
 import { resolveRootDir } from './core/root.mjs';
 import { createStore } from './core/store.mjs';
@@ -94,6 +95,8 @@ function printHelp() {
   console.log(`Personal AI Agent
 
 Commands:
+  doctor
+
   overview global [--provider-since <iso-timestamp>]
   overview gateway-events [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--event-type <mission-create|mission-run>] [--route <route>] [--source-type <cli|web|service>] [--permission-decision <allow|approval-required|deny>] [--sandbox-mode <mode>] [--since <iso-timestamp>]
   overview identity-sessions [--workspace <workspaceId>] [--mission <missionId>] [--session <sessionId>] [--binding-status <bound|partial>] [--source-type <cli|web|service>] [--since <iso-timestamp>]
@@ -396,6 +399,11 @@ async function main() {
   }
 
   if (isHelpRequest(rest) && printCommandHelp(group, command)) {
+    return;
+  }
+
+  if (group === 'doctor') {
+    printJson(runDoctor({ rootDir }));
     return;
   }
 

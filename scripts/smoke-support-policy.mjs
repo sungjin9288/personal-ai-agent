@@ -37,6 +37,8 @@ for (const term of [
   'does not currently operate a public hosted service',
   'public hosted demo URL',
   'npm run demo:local',
+  'npm run doctor',
+  'npm run smoke:doctor',
   'npm run smoke:env-example',
   'npm run smoke:contributor-onboarding',
   'npm run smoke:changelog',
@@ -56,6 +58,8 @@ for (const term of [
 
 for (const term of [
   'Support: [SUPPORT.md](SUPPORT.md)',
+  'npm run doctor',
+  'npm run smoke:doctor',
   'npm run smoke:support-policy',
 ]) {
   assertContains(readme, term, `README missing support term ${term}`);
@@ -71,7 +75,9 @@ for (const term of [
 assertContains(security, '[SUPPORT.md](SUPPORT.md)', 'SECURITY missing support link');
 assertContains(issueTemplateConfig, 'Support policy', 'issue template config missing support contact');
 assertContains(issueTemplateConfig, 'SUPPORT.md', 'issue template config missing support URL');
+assertContains(pullRequestTemplate, 'npm run smoke:doctor', 'PR template missing doctor smoke');
 assertContains(pullRequestTemplate, 'npm run smoke:support-policy', 'PR template missing support smoke');
+assertContains(workflow, 'npm run smoke:doctor', 'Provider smoke workflow missing doctor smoke');
 assertContains(workflow, 'npm run smoke:support-policy', 'Provider smoke workflow missing support smoke');
 assertContains(portfolioManifest, '- SUPPORT.md', 'portfolio manifest missing SUPPORT.md');
 assertContains(links, '- Support: SUPPORT.md', 'links missing support route');

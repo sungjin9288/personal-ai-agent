@@ -299,6 +299,8 @@ assert.match(
   /target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence/,
 );
 assert.match(readme, /npm run package:pilot-export/);
+assert.match(readme, /npm run doctor/);
+assert.match(readme, /npm run smoke:doctor/);
 assert.match(readme, /Changelog: \[CHANGELOG\.md\]\(CHANGELOG\.md\)/);
 assert.match(readme, /Support: \[SUPPORT\.md\]\(SUPPORT\.md\)/);
 assert.match(readme, /npm run smoke:changelog/);
@@ -307,7 +309,7 @@ assert.match(changelog, /# Changelog/);
 assert.match(changelog, /SUPPORT\.md/);
 assert.match(changelog, /## v0\.1\.0 - 2026-06-23/);
 assert.match(changelog, /productionReadyClaim: false/);
-assert.match(changelog, /76e4872f0f2a5868d90484654f29dfea78f4e24b1571be0351437146dd076c2b/);
+assert.match(changelog, /a73b9ec3f5352475c58167dadaa2a6abd4a2ce3814a0d428f93d53ceafd49f07/);
 
 console.log(
   JSON.stringify(

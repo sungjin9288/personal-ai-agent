@@ -41,6 +41,7 @@ npm run ui
 For documentation or onboarding changes:
 
 ```bash
+npm run smoke:doctor
 npm run smoke:changelog
 npm run smoke:support-policy
 npm run smoke:contributor-onboarding
