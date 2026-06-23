@@ -89,6 +89,7 @@
     "smoke:recorded-walkthrough": "node scripts/smoke-recorded-walkthrough.mjs",
     "smoke:architecture-code-walkthrough": "node scripts/smoke-architecture-code-walkthrough.mjs",
     "smoke:provider-readiness-matrix": "node scripts/smoke-provider-readiness-matrix.mjs",
+    "smoke:provider-failure-recovery-demo": "node scripts/smoke-provider-failure-recovery-demo.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",
     "demo:local": "node scripts/demo-local.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
