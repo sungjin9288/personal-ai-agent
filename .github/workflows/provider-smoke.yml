@@ -27,6 +27,18 @@ jobs:
       - name: Show Node.js version
         run: node --version
 
+      - name: Run local demo onboarding smoke
+        run: npm run smoke:demo-local
+
+      - name: Run README portfolio overview smoke
+        run: npm run smoke:readme-portfolio-overview
+
+      - name: Run portfolio claim boundary smoke
+        run: npm run smoke:portfolio-docs-claim-boundary
+
+      - name: Run release artifact hygiene smoke
+        run: npm run smoke:release-artifact-hygiene
+
       - name: Run provider fallback policy smoke
         run: npm run smoke:provider-fallback-policy
 
