@@ -12,6 +12,7 @@ const support = fs.readFileSync(path.join(repoDir, 'SUPPORT.md'), 'utf8');
 
 assert.equal(packageJson.scripts.doctor, 'node src/cli.mjs doctor');
 assert.equal(packageJson.scripts['smoke:doctor'], 'node scripts/smoke-doctor.mjs');
+assert.equal(packageJson.scripts['smoke:ui-doctor-surface'], 'node scripts/smoke-ui-doctor-surface.mjs');
 
 const direct = runDoctor({ rootDir: repoDir, env: {} });
 assert.equal(direct.mode, 'doctor');
@@ -20,6 +21,7 @@ assert.equal(direct.providers.some((provider) => provider.id === 'stub' && provi
 assert.equal(direct.providers.some((provider) => provider.id === 'openai' && provider.missingEnv.includes('OPENAI_API_KEY')), true);
 assert.equal(direct.checks.some((check) => check.id === 'script:doctor' && check.status === 'pass'), true);
 assert.equal(direct.checks.some((check) => check.id === 'script:smoke:doctor' && check.status === 'pass'), true);
+assert.equal(direct.checks.some((check) => check.id === 'script:smoke:ui-doctor-surface' && check.status === 'pass'), true);
 assert.equal(direct.checks.some((check) => check.id === 'env-example:provider-coverage' && check.status === 'pass'), true);
 
 const cliResult = spawnSync(process.execPath, ['src/cli.mjs', 'doctor'], {
@@ -38,6 +40,7 @@ assert.equal(cliDoctor.checks.some((check) => check.path === '.env.example'), tr
 for (const term of [
   'npm run doctor',
   'npm run smoke:doctor',
+  'npm run smoke:ui-doctor-surface',
 ]) {
   assert.equal(readme.includes(term), true, `README missing ${term}`);
   assert.equal(support.includes(term), true, `SUPPORT missing ${term}`);
