@@ -91,6 +91,7 @@
     "smoke:provider-readiness-matrix": "node scripts/smoke-provider-readiness-matrix.mjs",
     "smoke:provider-failure-recovery-demo": "node scripts/smoke-provider-failure-recovery-demo.mjs",
     "smoke:memory-retrieval-quality-fixture": "node scripts/smoke-memory-retrieval-quality-fixture.mjs",
+    "smoke:smoke-validation-summary": "node scripts/smoke-smoke-validation-summary.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",
     "demo:local": "node scripts/demo-local.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
