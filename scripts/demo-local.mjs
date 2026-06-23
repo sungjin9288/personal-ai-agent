@@ -27,6 +27,10 @@ const steps = Object.freeze([
     purpose: 'Verify release artifacts do not expose secrets or machine-local paths.',
   },
   {
+    command: 'npm run smoke:portfolio-zip',
+    purpose: 'Verify the public portfolio ZIP integrity, checksum, required entries, and packaged content freshness.',
+  },
+  {
     command: 'npm run smoke:pilot-export-package',
     purpose: 'Verify the manifest-only pilot export package and productionReadyClaim=false boundary.',
   },

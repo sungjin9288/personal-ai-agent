@@ -32,6 +32,7 @@ assert.deepEqual(
     'npm run smoke:representative-demo-evidence',
     'npm run smoke:demo-evidence-index',
     'npm run smoke:release-artifact-hygiene',
+    'npm run smoke:portfolio-zip',
     'npm run smoke:pilot-export-package',
   ],
 );
