@@ -66,6 +66,7 @@
 - `docs/agent-runtime-evidence.md`
 - `docs/operator-surface-demo-evidence-v1.md`
 - `docs/recorded-walkthrough-v1.md`
+- `docs/architecture-code-walkthrough-v1.md`
 
 ## Verified Features
 
@@ -81,6 +82,7 @@
 - Operator surface demo evidence: verified with `npm run smoke:operator-surface-demo-evidence`
 - Operator surface browser screenshots: generated with `npm run evidence:operator-surface-demo`
 - Recorded walkthrough script: verified with `npm run smoke:recorded-walkthrough`
+- Architecture code walkthrough: verified with `npm run smoke:architecture-code-walkthrough`
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure

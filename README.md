@@ -168,6 +168,8 @@ Key modules:
 - `src/providers/index.mjs`: provider registry and execution contract
 - `src/core/store.mjs`: local JSON-backed persistence
 
+Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
+
 Reference architecture notes:
 
 - OpenClaw as the orchestration backbone: [docs/orchestration-backbone-v1.md](docs/orchestration-backbone-v1.md) defines the gateway/session/workspace/permission/sandbox routing contract, including the channel adapter seam and `externalMessagingEnabled=false` boundary.
@@ -278,6 +280,7 @@ npm run smoke:env-example
 npm run smoke:demo-local
 npm run smoke:demo-evidence-index
 npm run smoke:recorded-walkthrough
+npm run smoke:architecture-code-walkthrough
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
@@ -310,6 +313,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
 - Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
+- Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
 - Security policy: [SECURITY.md](SECURITY.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
@@ -351,5 +355,6 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Demo walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
 - Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
+- Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
 - Project card: [docs/project-card.md](docs/project-card.md)
 - Case study: [docs/case-study.md](docs/case-study.md)

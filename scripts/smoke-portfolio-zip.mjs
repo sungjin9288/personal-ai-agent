@@ -47,6 +47,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/security_report.yml',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/config.yml',
   'personal_ai_agent_portfolio_pack/docs/recorded-walkthrough-v1.md',
+  'personal_ai_agent_portfolio_pack/docs/architecture-code-walkthrough-v1.md',
   'personal_ai_agent_portfolio_pack/docs/operator-surface-demo-evidence-v1.md',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/operator-surface-demo-browser-report.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/operator-surface-mission-run.png',
