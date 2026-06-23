@@ -41,6 +41,7 @@ const MACHINE_LOCAL_PATH_PATTERNS = [
 
 const CURRENT_RELEASE_ARTIFACTS = [
   'CHANGELOG.md',
+  'links.md',
   'SUPPORT.md',
   'CONTRIBUTING.md',
   'SECURITY.md',

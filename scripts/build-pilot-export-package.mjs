@@ -11,6 +11,7 @@ const outputPath = path.join(docsDir, 'pilot-export-package-v1.md');
 const BASE_PACKAGE_FILES = [
   'README.md',
   'CHANGELOG.md',
+  'links.md',
   'SUPPORT.md',
   'CONTRIBUTING.md',
   'SECURITY.md',
