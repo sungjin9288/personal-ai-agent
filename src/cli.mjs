@@ -185,6 +185,41 @@ Commands:
 }
 
 function printCommandHelp(group, command) {
+  if (group === 'doctor' && !command) {
+    console.log(`Personal AI Agent
+
+Usage:
+  doctor
+  doctor summary
+
+Commands:
+  doctor          Print machine-readable JSON diagnostics for local setup, required files, scripts, and provider env status.
+  doctor summary  Print a sanitized plain-text handoff packet for setup or provider support requests.
+
+Audit policy:
+  Doctor diagnostics list missing environment variable names only. Secret values and machine-local paths are not included.
+`);
+    return true;
+  }
+
+  if (group === 'doctor' && command === 'summary') {
+    console.log(`Personal AI Agent
+
+Usage:
+  doctor summary
+
+NPM alias:
+  npm run doctor:summary
+
+Output:
+  Prints a sanitized plain-text diagnostics packet with generatedAt, ok state, pass/warn/fail totals, attention checks, and provider env status.
+
+Audit policy:
+  The summary includes missing environment variable names only. Secret values and machine-local paths are not included.
+`);
+    return true;
+  }
+
   if (group === 'overview' && command === 'gateway-events') {
     console.log(`Personal AI Agent
 
@@ -396,6 +431,11 @@ async function main() {
 
   if (!group || isHelpRequest([group])) {
     printHelp();
+    return;
+  }
+
+  if (group === 'doctor' && (isHelpRequest([command]) || isHelpRequest(rest))) {
+    printCommandHelp('doctor', command === 'summary' ? 'summary' : '');
     return;
   }
 
