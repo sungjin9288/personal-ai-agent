@@ -82,6 +82,8 @@ Representative demo evidence:
 - screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
 - walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
 - operator surface support map: [docs/operator-surface-demo-evidence-v1.md](docs/operator-surface-demo-evidence-v1.md)
+- operator surface screenshots: `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, `evidence/screenshots/operator-surface-action-inbox.png`
+- operator surface refresh command: `npm run evidence:operator-surface-demo`
 - There is no public hosted demo URL.
 
 ![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)

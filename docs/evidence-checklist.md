@@ -17,13 +17,14 @@
 | Web server 실행 | 완료 | `evidence/api-responses/api-health.json` | `/api/health` 응답 저장 |
 | API 응답 저장 | 완료 | `evidence/api-responses/*.json` | health/meta/providers/execution status |
 | Web UI screenshot | 완료 | `evidence/screenshots/operator-console-home.png` | Playwright screenshot |
+| Operator surface browser screenshots | 완료 | `evidence/screenshots/operator-surface-mission-run.png`, `operator-surface-provider-readiness.png`, `operator-surface-action-inbox.png` | mission/provider/action support evidence captured by `npm run evidence:operator-surface-demo` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 414,081 bytes, SHA-256 `048ae109ca09bf6588a44839387a99171500ab1b9a3f055bcbca3d56fce80c22` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,224,070 bytes, SHA-256 `a84bc7b48276026cad03d48a80c79abf65be74f947d74764f0f8d1b7a1620b17` |
 
 ## 검증 실패 / 보류
 
