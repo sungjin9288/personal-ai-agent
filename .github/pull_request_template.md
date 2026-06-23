@@ -20,6 +20,7 @@
 - [ ] `npm run smoke:portfolio-zip`
 - [ ] `npm run smoke:support-policy`
 - [ ] `npm run smoke:demo-evidence-index`
+- [ ] `npm run smoke:representative-demo-evidence`
 - [ ] `npm run smoke:readme-portfolio-overview`
 - [ ] `npm run smoke:portfolio-docs-claim-boundary`
 - [ ] `npm run smoke:release-artifact-hygiene`
