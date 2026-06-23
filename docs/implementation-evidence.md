@@ -18,7 +18,7 @@
 | Provider registry/status | 검증 완료 | `evidence/cli-logs/provider-list.log`, `evidence/api-responses/api-providers.json` | `exit_code=0`, API 응답 저장 | provider 5종 구현 상태 확인 |
 | Global overview/read model | 검증 완료 | `evidence/cli-logs/overview-global.log` | `exit_code=0` | workspace/global summary surface 확인 |
 | Release blocker handoff | 검증 완료 | `evidence/cli-logs/release-blockers-hermes.log` | `exit_code=0` | Hermes/target provider blocker가 남아 있음을 증거화 |
-| Representative release demo | 검증 완료 | `evidence/cli-logs/representative-release-demo-replay.log`, `evidence/output-artifacts/representative-release-demo-summary.json`, `evidence/output-artifacts/representative-release-demo-browser-e2e.json`, `evidence/screenshots/representative-release-demo-release-status.png` | 대표 demo smoke/status/snapshot/handoff/hygiene/pilot-export 통과, browser report/screenshot evidence 복사 | credential-free portfolio walkthrough |
+| Representative release demo | 검증 완료 | `evidence/cli-logs/representative-release-demo-replay.log`, `evidence/output-artifacts/representative-release-demo-summary.json`, `evidence/output-artifacts/representative-release-demo-browser-e2e.json`, `evidence/screenshots/representative-release-demo-preview.png`, `evidence/screenshots/representative-release-demo-release-status.png` | 대표 demo smoke/status/snapshot/handoff/hygiene/pilot-export 통과, browser report/screenshot evidence 복사 | credential-free portfolio walkthrough |
 | Operator surface demo evidence | 검증 완료 | `docs/operator-surface-demo-evidence-v1.md`, `evidence/cli-logs/mission-show-runtime.log`, `evidence/cli-logs/provider-list.log`, `evidence/cli-logs/approval-inbox-runtime.log`, `evidence/api-responses/api-providers.json` | mission/provider/action support evidence map smoke 통과 | release tab 밖의 보조 설명 증거 |
 | Web API health/meta/status | 검증 완료 | `evidence/api-responses/api-health.json`, `api-meta.json`, `api-execution-v1-status.json` | HTTP 응답 저장 | local server `http://127.0.0.1:4510`에서 수집 |
 | Web operator console | 검증 완료 | `evidence/screenshots/operator-console-home.png` | Playwright full-page screenshot 저장 | UI title: `에이전트 운영 콘솔` |
@@ -52,10 +52,11 @@
 ## 4. Screenshot Evidence
 
 - 파일: `evidence/screenshots/operator-console-home.png`
+- 대표 demo preview 파일: `evidence/screenshots/representative-release-demo-preview.png`
 - 대표 demo 파일: `evidence/screenshots/representative-release-demo-release-status.png`
 - 수집 방식: Playwright full-page screenshot
 - 확인한 화면: local operator web console
-- 민감정보 처리: evidence text files에서 local user path를 `/Users/<user>`로 치환했다.
+- 민감정보 처리: evidence text files에서 local user path를 `<local-user-path>`로 치환했다.
 
 ## 5. Output Artifacts
 

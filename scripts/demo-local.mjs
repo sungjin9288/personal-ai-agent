@@ -35,6 +35,7 @@ const steps = Object.freeze([
 const evidence = Object.freeze([
   'evidence/cli-logs/representative-release-demo-replay.log',
   'evidence/output-artifacts/representative-release-demo-summary.json',
+  'evidence/screenshots/representative-release-demo-preview.png',
   'evidence/screenshots/representative-release-demo-release-status.png',
   'docs/demo-evidence-index-v1.md',
   'docs/demo-scenarios-v1.md',

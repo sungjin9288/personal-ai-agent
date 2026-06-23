@@ -67,11 +67,14 @@ npm run smoke:pilot-export-package
 Representative demo evidence:
 
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
+- preview image: `evidence/screenshots/representative-release-demo-preview.png`
 - replay log: `evidence/cli-logs/representative-release-demo-replay.log`
 - summary: `evidence/output-artifacts/representative-release-demo-summary.json`
 - screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
 - walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
 - There is no public hosted demo URL.
+
+![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)
 
 ### Status Boundary
 

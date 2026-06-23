@@ -32,6 +32,7 @@
 | Evidence | File | What It Shows |
 |---|---|---|
 | Operator console home | `evidence/screenshots/operator-console-home.png` | local web operator console loaded through Playwright |
+| Representative release demo preview | `evidence/screenshots/representative-release-demo-preview.png` | compact release readiness preview for README and portfolio review |
 | Representative release demo status | `evidence/screenshots/representative-release-demo-release-status.png` | release readiness walkthrough final browser state |
 
 ## 4. Architecture Evidence
