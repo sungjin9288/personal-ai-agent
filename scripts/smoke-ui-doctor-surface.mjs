@@ -46,12 +46,16 @@ try {
   assert.equal(appJs.includes('renderDoctorSummary'), true);
   assert.equal(appJs.includes('renderDoctorDetailPanel'), true);
   assert.equal(appJs.includes('wireDoctorSummaryActions'), true);
+  assert.equal(appJs.includes('buildDoctorDiagnosticsSummary'), true);
+  assert.equal(appJs.includes('copyDoctorDiagnosticsSummary'), true);
   assert.equal(appJs.includes('loadDoctor'), true);
   assert.equal(appJs.includes('doctorLoading'), true);
+  assert.equal(appJs.includes('data-doctor-copy-summary="true"'), true);
   assert.equal(appJs.includes('data-doctor-refresh="true"'), true);
   assert.equal(appJs.includes('data-doctor-detail-toggle="true"'), true);
   assert.equal(appJs.includes('id="doctor-detail-panel"'), true);
   assert.equal(appJs.includes('Provider env'), true);
+  assert.equal(appJs.includes('Boundary: missing environment variable names only; secret values are not included.'), true);
   assert.equal(appJs.includes('갱신 ${escapeHtml(formatDate(generatedAt))}'), true);
   assert.equal(appJs.includes('새로고침 중'), true);
 
