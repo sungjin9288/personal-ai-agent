@@ -4,6 +4,9 @@
 - Contributing: CONTRIBUTING.md
 - Security policy: SECURITY.md
 - Support: SUPPORT.md
+- Bug report template: .github/ISSUE_TEMPLATE/bug_report.yml
+- Security report template: .github/ISSUE_TEMPLATE/security_report.yml
+- Issue handoff: blank issues are disabled; setup and provider reports should attach sanitized `npm run doctor:summary` output to the `Doctor diagnostics summary` field.
 - Changelog: CHANGELOG.md
 - Fork onboarding: docs/fork-onboarding-v1.md
 - Demo: hosted public demo 없음
