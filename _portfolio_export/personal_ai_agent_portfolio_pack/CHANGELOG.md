@@ -29,7 +29,8 @@ Included public surfaces:
 - Credential-free `npm run demo:local` replay path.
 - Demo evidence index, preview screenshot, replay log, summary JSON, and browser E2E evidence references.
 - `.env.example` and `smoke:env-example` for local provider/runtime configuration onboarding.
-- `CONTRIBUTING.md`, fork onboarding guide, `SECURITY.md`, and GitHub issue templates.
+- `CONTRIBUTING.md`, fork onboarding guide, `SECURITY.md`, `SUPPORT.md`, and GitHub issue templates.
+- `smoke:support-policy` for setup, provider configuration, release evidence, and public issue safety routing.
 - Provider smoke CI gates for fallback, attention remediation, provider events, provider overview, target provider operations, release hygiene, and public onboarding checks.
 - Manifest-only pilot export package and release artifact hygiene checks.
 

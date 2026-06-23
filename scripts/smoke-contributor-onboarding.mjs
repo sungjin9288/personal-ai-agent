@@ -5,6 +5,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const contributingPath = path.join(repoDir, 'CONTRIBUTING.md');
 const securityPath = path.join(repoDir, 'SECURITY.md');
+const supportPath = path.join(repoDir, 'SUPPORT.md');
 const forkGuidePath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
 const readmePath = path.join(repoDir, 'README.md');
 const packageJsonPath = path.join(repoDir, 'package.json');
@@ -16,6 +17,7 @@ const gitignorePath = path.join(repoDir, '.gitignore');
 
 const contributing = readRequiredFile(contributingPath);
 const security = readRequiredFile(securityPath);
+const support = readRequiredFile(supportPath);
 const forkGuide = readRequiredFile(forkGuidePath);
 const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
@@ -40,9 +42,11 @@ for (const term of [
   'runtime reads `process.env` directly',
   'Never commit `.env`',
   'npm run smoke:changelog',
+  'npm run smoke:support-policy',
   'npm run smoke:contributor-onboarding',
   'npm run smoke:release-artifact-hygiene',
   'Read [SECURITY.md](SECURITY.md)',
+  'Read [SUPPORT.md](SUPPORT.md)',
   '.github/ISSUE_TEMPLATE/bug_report.yml',
   '.github/ISSUE_TEMPLATE/security_report.yml',
 ]) {
@@ -56,8 +60,19 @@ for (const term of [
   'no production service endpoint or public hosted demo URL',
   'Do not include provider API keys',
   'npm run smoke:release-artifact-hygiene',
+  '[SUPPORT.md](SUPPORT.md)',
 ]) {
   assertContains(security, term, `SECURITY missing ${term}`);
+}
+
+for (const term of [
+  '# Support',
+  'local-first PoC/MVP harness',
+  'npm run demo:local',
+  'npm run smoke:support-policy',
+  'There is no public hosted demo URL',
+]) {
+  assertContains(support, term, `SUPPORT missing ${term}`);
 }
 
 for (const term of [
@@ -83,7 +98,9 @@ for (const readmeTerm of [
   'Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)',
   'Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)',
   'Security policy: [SECURITY.md](SECURITY.md)',
+  'Support: [SUPPORT.md](SUPPORT.md)',
   'Changelog: [CHANGELOG.md](CHANGELOG.md)',
+  'npm run smoke:support-policy',
   'npm run smoke:changelog',
   'npm run smoke:contributor-onboarding',
 ]) {
@@ -107,7 +124,7 @@ for (const templateTerm of [
   assertContains(securityTemplate, templateTerm, `security report template missing ${templateTerm}`);
 }
 
-for (const configTerm of ['Contributing guide', 'Security policy', 'blank_issues_enabled: true']) {
+for (const configTerm of ['Contributing guide', 'Security policy', 'Support policy', 'blank_issues_enabled: true']) {
   assertContains(issueTemplateConfig, configTerm, `issue template config missing ${configTerm}`);
 }
 
@@ -119,7 +136,7 @@ for (const ignored of ['.env', '.env.local', 'var/']) {
   assertContains(gitignore, ignored, `.gitignore missing ${ignored}`);
 }
 
-for (const ciTerm of ['npm run smoke:contributor-onboarding', 'npm run smoke:changelog']) {
+for (const ciTerm of ['npm run smoke:contributor-onboarding', 'npm run smoke:changelog', 'npm run smoke:support-policy']) {
   assertContains(pullRequestTemplate, ciTerm, `PR template missing ${ciTerm}`);
   assertContains(workflow, ciTerm, `Provider smoke workflow missing ${ciTerm}`);
 }
@@ -133,11 +150,13 @@ for (const risky of [
 ]) {
   assert.equal(contributing.toLowerCase().includes(risky.toLowerCase()), false, `CONTRIBUTING contains risky claim: ${risky}`);
   assert.equal(security.toLowerCase().includes(risky.toLowerCase()), false, `SECURITY contains risky claim: ${risky}`);
+  assert.equal(support.toLowerCase().includes(risky.toLowerCase()), false, `SUPPORT contains risky claim: ${risky}`);
   assert.equal(forkGuide.toLowerCase().includes(risky.toLowerCase()), false, `fork guide contains risky claim: ${risky}`);
 }
 
 assertNoLocalPaths(contributing);
 assertNoLocalPaths(security);
+assertNoLocalPaths(support);
 assertNoLocalPaths(forkGuide);
 
 console.log(
@@ -145,7 +164,7 @@ console.log(
     {
       mode: 'contributor-onboarding-smoke',
       ok: true,
-      checkedDocs: ['CONTRIBUTING.md', 'SECURITY.md', 'docs/fork-onboarding-v1.md'],
+      checkedDocs: ['CONTRIBUTING.md', 'SECURITY.md', 'SUPPORT.md', 'docs/fork-onboarding-v1.md'],
     },
     null,
     2,

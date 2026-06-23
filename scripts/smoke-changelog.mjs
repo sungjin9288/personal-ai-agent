@@ -36,6 +36,7 @@ for (const term of [
   'Credential-free `npm run demo:local` replay path',
   'CONTRIBUTING.md',
   'SECURITY.md',
+  'SUPPORT.md',
   'GitHub issue templates',
   'npm run smoke:changelog',
   zipSha,

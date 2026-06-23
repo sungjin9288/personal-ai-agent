@@ -42,6 +42,7 @@ For documentation or onboarding changes:
 
 ```bash
 npm run smoke:changelog
+npm run smoke:support-policy
 npm run smoke:contributor-onboarding
 npm run smoke:env-example
 npm run smoke:demo-local
@@ -58,6 +59,7 @@ For provider, release, or evidence changes, also run the relevant focused smoke 
 - Keep `productionReadyClaim: false` boundaries intact unless the required target evidence is added and verified.
 - Keep public demo wording explicit: there is no public hosted demo URL.
 - When adding metrics, include the command, log, or method used to produce them in the same documentation area.
+- Read [SUPPORT.md](SUPPORT.md) before opening support, setup, or provider configuration questions.
 
 ## Pull Request Notes
 

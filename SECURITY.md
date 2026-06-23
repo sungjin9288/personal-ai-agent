@@ -14,6 +14,8 @@ Open a GitHub issue using the security report template when the report can be sh
 
 If a report contains sensitive material, do not paste it into an issue. Instead, open a minimal issue that describes the affected area and states that sensitive details are available privately.
 
+For non-security support, setup, provider configuration, or release evidence questions, use [SUPPORT.md](SUPPORT.md) instead of the security report path.
+
 ## What To Include
 
 - affected command, script, or document

@@ -6,3 +6,6 @@ contact_links:
   - name: Security policy
     url: https://github.com/sungjin9288/personal-ai-agent/blob/main/SECURITY.md
     about: Read the security reporting scope and public issue safety rules.
+  - name: Support policy
+    url: https://github.com/sungjin9288/personal-ai-agent/blob/main/SUPPORT.md
+    about: Route setup, provider configuration, release evidence, and public issue safety questions.

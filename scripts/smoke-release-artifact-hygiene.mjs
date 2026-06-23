@@ -8,6 +8,7 @@ assert.equal(result.ok, true, JSON.stringify(result.findings, null, 2));
 assert.equal(result.secretFindingCount, 0, JSON.stringify(result.findings, null, 2));
 assert.equal(result.machinePathFindingCount, 0, JSON.stringify(result.findings, null, 2));
 assert.equal(result.scannedFiles.includes('CHANGELOG.md'), true);
+assert.equal(result.scannedFiles.includes('SUPPORT.md'), true);
 assert.equal(result.scannedFiles.includes('CONTRIBUTING.md'), true);
 assert.equal(result.scannedFiles.includes('SECURITY.md'), true);
 assert.equal(result.scannedFiles.includes('.github/ISSUE_TEMPLATE/bug_report.yml'), true);

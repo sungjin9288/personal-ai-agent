@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-06-23T05:34:59.412Z
+- generatedAt: 2026-06-23T05:45:54.601Z
 - verifiedCommit: ce0eafead7aaeab8eee7471dc94540e843512fa5
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: de09c4eea9b2f48588e422347e1f0eb2313d432235466bb5e25d234fc9dbcace
-- fileCount: 65
+- bundleSha256: 749ae30f0b824f3290deafc773240e67ee24dd5854ca04201458f2dcaf80a5fc
+- fileCount: 66
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,13 +63,14 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 15988 | `63bdc4345e82effc3771d8cca15802a64cdbf6ca1b6f27a6a8ac6d2ed7cc3015` |
-| `CHANGELOG.md` | 2111 | `52c210cedbfe3d6eeabdb7f44bbc46c8cc1070f2fbba0af0d45b61b14a031818` |
-| `CONTRIBUTING.md` | 3095 | `dd894e127521ff55f3f40bb1bc564737a3724fcd0960634d0179b3fe8f564f3a` |
-| `SECURITY.md` | 1881 | `639d59b7eb99175b9882706735ab579c8b654f7859f5680a7c494bbe6cea9b9d` |
+| `README.md` | 16096 | `4f564110ce1c105d40b8c1e21c12fe86c71aa9e2f1e7e83b5ec0a20b34a85fc1` |
+| `CHANGELOG.md` | 2236 | `1b623d2df242abea3ef8618978ac29bdb31cf7433c9f4d9050befa2b5a9a1b9c` |
+| `SUPPORT.md` | 2668 | `8fed79d60afff3922d5ef3636c6e6af35be80252b8595f04ea422585d9a2a082` |
+| `CONTRIBUTING.md` | 3224 | `51be508430563f069988e4e5e9199684bbddce26c547293ce01a300ad6814db0` |
+| `SECURITY.md` | 2036 | `33b814aa3c9e7386831f0da761b25f069abbaa0136708e79e659943d950d3ad6` |
 | `.github/ISSUE_TEMPLATE/bug_report.yml` | 2023 | `65f01b61f87d85fd49d2e346a44e3bc5e0ea56e2aec70afb01030a8c47d5bef1` |
 | `.github/ISSUE_TEMPLATE/security_report.yml` | 2090 | `f89558f8e98760fba974b4cb5ed7d81e9c68d42aadd24adc6ada35e5796c20a9` |
-| `.github/ISSUE_TEMPLATE/config.yml` | 432 | `e3a0e48cf530b3b2c13bbf15013f4a1a032c7a174a9ab1437cdf85a54bd7a423` |
+| `.github/ISSUE_TEMPLATE/config.yml` | 637 | `ab2c79ce7e3fb5548aa98f5cd9da8670c9fe2befc5fdf786e3389c9c3cccad19` |
 | `docs/product-plan-v1.md` | 19100 | `20ac5772f3a672c9c8ac3ce6b422fdd772b28e3594b00bcc07fca111d9a88a40` |
 | `docs/security-model-v1.md` | 39764 | `42f9a43d6930ea87b5cad305f7067194ed5a7100945659731b90ad4f51d23c14` |
 | `docs/operator-runbook-v1.md` | 17537 | `5010c050f1921324f3adf75d5d4c796b6fbdde0c550f89f1f6b4849a4dcfc900` |
