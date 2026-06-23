@@ -44,6 +44,11 @@ Fork this repo if you want a practical starting point for:
 
 The project deliberately favors inspectable Node.js modules, file-backed state, and explicit smoke commands over a heavy platform stack.
 
+Contributor path:
+
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
+
 ### Quick Replay
 
 The default replay path does not require external provider credentials. For a single command, run:
@@ -240,6 +245,7 @@ Recommended public-readiness checks:
 
 ```bash
 npm run package:pilot-export
+npm run smoke:contributor-onboarding
 npm run smoke:env-example
 npm run smoke:demo-local
 npm run smoke:demo-evidence-index
@@ -271,6 +277,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Evidence checklist: [docs/evidence-checklist.md](docs/evidence-checklist.md)
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
+- Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
 - Target provider operations gate: [docs/target-provider-operations-v1.md](docs/target-provider-operations-v1.md)
 - Operator runbook: [docs/operator-runbook-v1.md](docs/operator-runbook-v1.md)
 - Self-hosted pilot guide: [docs/deployment-pilot-v1.md](docs/deployment-pilot-v1.md)

@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
+const contributingPath = path.join(repoDir, 'CONTRIBUTING.md');
 const releaseReadinessPath = path.join(repoDir, 'docs', 'release-readiness-v1.md');
 const productPlanPath = path.join(repoDir, 'docs', 'product-plan-v1.md');
 const deploymentPath = path.join(repoDir, 'docs', 'deployment-pilot-v1.md');
@@ -12,6 +13,7 @@ const operatorRunbookPath = path.join(repoDir, 'docs', 'operator-runbook-v1.md')
 const pilotOnboardingPath = path.join(repoDir, 'docs', 'pilot-onboarding-v1.md');
 const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
 const demoEvidenceIndexPath = path.join(repoDir, 'docs', 'demo-evidence-index-v1.md');
+const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
 const customerSupportOperationsPath = path.join(repoDir, 'docs', 'customer-support-operations-v1.md');
 const targetProviderEvidenceIntakePath = path.join(repoDir, 'docs', 'target-provider-evidence-intake-v1.md');
 const targetProviderOperationsPath = path.join(repoDir, 'docs', 'target-provider-operations-v1.md');
@@ -21,6 +23,7 @@ const readmePath = path.join(repoDir, 'README.md');
 const packagePath = path.join(repoDir, 'package.json');
 
 const manifest = readRequiredFile(manifestPath);
+const contributing = readRequiredFile(contributingPath);
 const releaseReadiness = readRequiredFile(releaseReadinessPath);
 const productPlan = readRequiredFile(productPlanPath);
 const deployment = readRequiredFile(deploymentPath);
@@ -28,6 +31,7 @@ const operatorRunbook = readRequiredFile(operatorRunbookPath);
 const pilotOnboarding = readRequiredFile(pilotOnboardingPath);
 const demoScenarios = readRequiredFile(demoScenariosPath);
 const demoEvidenceIndex = readRequiredFile(demoEvidenceIndexPath);
+const forkOnboarding = readRequiredFile(forkOnboardingPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
 const targetProviderOperations = readRequiredFile(targetProviderOperationsPath);
@@ -45,7 +49,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 58$/m);
+assert.match(manifest, /^- fileCount: 60$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -54,6 +58,7 @@ assert.match(verifiedCommit, /^[a-f0-9]{40}$/);
 const manifestEntries = parseManifestEntries(manifest);
 const requiredPaths = [
   'README.md',
+  'CONTRIBUTING.md',
   'docs/product-plan-v1.md',
   'docs/security-model-v1.md',
   'docs/operator-runbook-v1.md',
@@ -61,6 +66,7 @@ const requiredPaths = [
   'docs/pilot-onboarding-v1.md',
   'docs/demo-scenarios-v1.md',
   'docs/demo-evidence-index-v1.md',
+  'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
   'docs/support-escalation-review-v1.md',
@@ -204,6 +210,15 @@ assert.match(demoEvidenceIndex, /Representative Demo: Release Readiness Evidence
 assert.match(demoEvidenceIndex, /not a public hosted demo URL/);
 assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-demo-release-status\.png/);
 assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
+assert.match(contributing, /# Contributing/);
+assert.match(contributing, /Current validated claim: `provider-scoped pilot-ready`/);
+assert.match(contributing, /npm run smoke:contributor-onboarding/);
+assert.match(contributing, /not a public hosted demo URL/);
+assert.match(forkOnboarding, /# Fork Onboarding v1/);
+assert.match(forkOnboarding, /publicHostedDemoUrl: none/);
+assert.match(forkOnboarding, /productionReadyClaim: false/);
+assert.match(forkOnboarding, /npm run smoke:contributor-onboarding/);
+assert.match(forkOnboarding, /There is no public hosted demo URL/);
 assert.match(
   operatorRunbook,
   /target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before a production provider claim/,

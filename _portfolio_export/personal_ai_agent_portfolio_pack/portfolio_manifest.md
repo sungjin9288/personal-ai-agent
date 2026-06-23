@@ -11,6 +11,7 @@
 ## 포함 파일
 
 - README.md
+- CONTRIBUTING.md
 - DEV_LOG.md
 - links.md
 - docs/project-card.md
@@ -20,6 +21,7 @@
 - docs/roadmap.md
 - docs/readme-improvement.md
 - docs/demo-evidence-index-v1.md
+- docs/fork-onboarding-v1.md
 - docs/implementation-evidence.md
 - docs/agent-runtime-evidence.md
 - docs/evidence-checklist.md

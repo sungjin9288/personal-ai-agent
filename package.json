@@ -24,6 +24,7 @@
     "smoke:release-blocker-handoff": "node scripts/smoke-release-blocker-handoff.mjs",
     "smoke:release-artifact-hygiene": "node scripts/smoke-release-artifact-hygiene.mjs",
     "smoke:env-example": "node scripts/smoke-env-example.mjs",
+    "smoke:contributor-onboarding": "node scripts/smoke-contributor-onboarding.mjs",
     "smoke:hosted-saas-architecture-decision": "node scripts/smoke-hosted-saas-architecture-decision.mjs",
     "smoke:hosted-identity-session-architecture": "node scripts/smoke-hosted-identity-session-architecture.mjs",
     "smoke:hosted-tenant-isolation-architecture": "node scripts/smoke-hosted-tenant-isolation-architecture.mjs",
