@@ -26,6 +26,8 @@ for (const term of [
   'Support: [SUPPORT.md](SUPPORT.md)',
   'Changelog: [CHANGELOG.md](CHANGELOG.md)',
   '### Quick Replay',
+  'npm run doctor',
+  'npm run smoke:doctor',
   'npm run smoke:support-policy',
   'npm run smoke:changelog',
   'npm run smoke:contributor-onboarding',

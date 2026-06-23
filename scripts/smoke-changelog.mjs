@@ -34,11 +34,13 @@ for (const term of [
   'not a hosted SaaS product',
   'There is no public hosted demo URL',
   'Credential-free `npm run demo:local` replay path',
+  'Credential-free `npm run doctor` diagnostics',
   'CONTRIBUTING.md',
   'SECURITY.md',
   'SUPPORT.md',
   'GitHub issue templates',
   'npm run smoke:changelog',
+  'npm run smoke:doctor',
   zipSha,
   zipSize,
 ]) {

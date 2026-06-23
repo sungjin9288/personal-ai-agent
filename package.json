@@ -6,7 +6,9 @@
   "description": "Local-first personal AI agent scaffold for engineering and knowledge work",
   "scripts": {
     "ui": "node src/web/server.mjs",
+    "doctor": "node src/cli.mjs doctor",
     "smoke": "node scripts/smoke.mjs",
+    "smoke:doctor": "node scripts/smoke-doctor.mjs",
     "smoke:ui-harness-browse": "node scripts/smoke-ui-harness-browse.mjs",
     "smoke:execution-flow": "node scripts/smoke-execution-flow.mjs",
     "smoke:execution-cli": "node scripts/smoke-execution-cli.mjs",

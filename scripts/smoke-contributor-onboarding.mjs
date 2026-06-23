@@ -41,6 +41,7 @@ for (const term of [
   'npm run demo:local -- --plan',
   'runtime reads `process.env` directly',
   'Never commit `.env`',
+  'npm run smoke:doctor',
   'npm run smoke:changelog',
   'npm run smoke:support-policy',
   'npm run smoke:contributor-onboarding',
@@ -69,6 +70,8 @@ for (const term of [
   '# Support',
   'local-first PoC/MVP harness',
   'npm run demo:local',
+  'npm run doctor',
+  'npm run smoke:doctor',
   'npm run smoke:support-policy',
   'There is no public hosted demo URL',
 ]) {
@@ -100,6 +103,8 @@ for (const readmeTerm of [
   'Security policy: [SECURITY.md](SECURITY.md)',
   'Support: [SUPPORT.md](SUPPORT.md)',
   'Changelog: [CHANGELOG.md](CHANGELOG.md)',
+  'npm run doctor',
+  'npm run smoke:doctor',
   'npm run smoke:support-policy',
   'npm run smoke:changelog',
   'npm run smoke:contributor-onboarding',
@@ -136,7 +141,12 @@ for (const ignored of ['.env', '.env.local', 'var/']) {
   assertContains(gitignore, ignored, `.gitignore missing ${ignored}`);
 }
 
-for (const ciTerm of ['npm run smoke:contributor-onboarding', 'npm run smoke:changelog', 'npm run smoke:support-policy']) {
+for (const ciTerm of [
+  'npm run smoke:contributor-onboarding',
+  'npm run smoke:changelog',
+  'npm run smoke:support-policy',
+  'npm run smoke:doctor',
+]) {
   assertContains(pullRequestTemplate, ciTerm, `PR template missing ${ciTerm}`);
   assertContains(workflow, ciTerm, `Provider smoke workflow missing ${ciTerm}`);
 }

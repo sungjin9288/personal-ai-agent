@@ -10,6 +10,8 @@ Run the credential-free checks first when they apply:
 
 ```bash
 npm run demo:local
+npm run doctor
+npm run smoke:doctor
 npm run smoke:support-policy
 npm run smoke:env-example
 npm run smoke:contributor-onboarding
