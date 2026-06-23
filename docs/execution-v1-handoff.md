@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-06-22T07:54:31.645Z
-- localDate: 2026-06-22
-- branch: main
-- commit: ce0eafead7aaeab8eee7471dc94540e843512fa5
+- generatedAt: 2026-06-23T08:40:01.410Z
+- localDate: 2026-06-23
+- branch: codex/representative-demo-portfolio-zip-evidence
+- commit: 86101b552d8596907936203c95dc2ad3b346fc9c
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ce0eafead7aaeab8eee7471dc94540e843512fa5](releases/execution-v1/ce0eafead7aaeab8eee7471dc94540e843512fa5)
-- visualArtifactSetSha256: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
-- commitPushStatus: pushed to origin/main
+- immutableSnapshot: [releases/execution-v1/86101b552d8596907936203c95dc2ad3b346fc9c](releases/execution-v1/86101b552d8596907936203c95dc2ad3b346fc9c)
+- visualArtifactSetSha256: 1acf6a7b7f25a71a6ce56527554ad2318327e2d45de61848c73aa1f2651a5e74
+- commitPushStatus: not pushed, origin/codex/representative-demo-portfolio-zip-evidence not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=44.6s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=47.2s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: c6c0c8fa12167e15b91c040c84537db1feac81998987b8b00a0385311cd92c4e
+- visual artifact set: 1acf6a7b7f25a71a6ce56527554ad2318327e2d45de61848c73aa1f2651a5e74
 
 ## Live Provider Handoff
 
@@ -79,7 +79,7 @@ Expected pre-live state:
 3. Attach target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before adding local provider operation to a production claim.
 4. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.
 5. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.
-6. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
+6. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
 
 ## Completion Boundary
 
