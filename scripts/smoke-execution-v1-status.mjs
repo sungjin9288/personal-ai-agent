@@ -765,6 +765,7 @@ function isReleaseArtifactSyncPath(filePath) {
     'docs/execution-v1-evidence.md',
     'docs/execution-v1-handoff.md',
     'docs/clean-deployment-release-v1.md',
+    'docs/demo-evidence-index-v1.md',
     'docs/pilot-export-package-v1.md',
     'docs/production-like-release-drill-v1.md',
     'docs/production-slo-operating-v1.md',
