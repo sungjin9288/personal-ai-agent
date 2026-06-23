@@ -262,7 +262,6 @@ npm run package:pilot-export
 npm run smoke:doctor
 npm run smoke:ui-doctor-surface
 npm run smoke:changelog
-npm run smoke:portfolio-zip
 npm run smoke:support-policy
 npm run smoke:contributor-onboarding
 npm run smoke:env-example

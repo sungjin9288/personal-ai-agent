@@ -35,7 +35,6 @@ for (const term of [
   'npm run smoke:ui-doctor-surface',
   'npm run smoke:support-policy',
   'npm run smoke:changelog',
-  'npm run smoke:portfolio-zip',
   'npm run smoke:contributor-onboarding',
   'npm run bootstrap:local',
   'npm run smoke:representative-demo',
@@ -57,6 +56,35 @@ for (const term of [
 ]) {
   assertContains(readme, term, `README portfolio overview missing ${term}`);
 }
+
+const publicReadinessCommands = extractCodeBlockAfterHeading(readme, 'Recommended public-readiness checks:')
+  .split('\n')
+  .map((line) => line.trim())
+  .filter(Boolean);
+
+assert.deepEqual(publicReadinessCommands, [
+  'npm run package:pilot-export',
+  'npm run smoke:doctor',
+  'npm run smoke:ui-doctor-surface',
+  'npm run smoke:changelog',
+  'npm run smoke:support-policy',
+  'npm run smoke:contributor-onboarding',
+  'npm run smoke:env-example',
+  'npm run smoke:demo-local',
+  'npm run smoke:demo-evidence-index',
+  'npm run smoke:readme-portfolio-overview',
+  'npm run smoke:portfolio-docs-claim-boundary',
+  'npm run smoke:representative-demo-evidence',
+  'npm run smoke:pilot-export-package',
+  'npm run smoke:portfolio-zip',
+  'npm run smoke:release-artifact-hygiene',
+]);
+
+assert.equal(
+  new Set(publicReadinessCommands).size,
+  publicReadinessCommands.length,
+  'README public-readiness checks must not contain duplicate commands',
+);
 
 const overviewIndex = readme.indexOf('## Portfolio Overview');
 const legacyIntroIndex = readme.indexOf('CLI-first local-first personal AI agent');
@@ -86,4 +114,14 @@ console.log(
 
 function assertContains(text, needle, message) {
   assert.ok(String(text || '').includes(needle), message);
+}
+
+function extractCodeBlockAfterHeading(markdown, heading) {
+  const headingIndex = String(markdown || '').indexOf(heading);
+  assert.notEqual(headingIndex, -1, `README missing heading ${heading}`);
+
+  const afterHeading = markdown.slice(headingIndex + heading.length);
+  const match = afterHeading.match(/```bash\n([\s\S]*?)\n```/);
+  assert.ok(match, `README missing bash code block after ${heading}`);
+  return match[1];
 }
