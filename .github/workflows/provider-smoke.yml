@@ -60,6 +60,9 @@ jobs:
       - name: Run representative demo evidence smoke
         run: npm run smoke:representative-demo-evidence
 
+      - name: Run pilot export package smoke
+        run: npm run smoke:pilot-export-package
+
       - name: Run README portfolio overview smoke
         run: npm run smoke:readme-portfolio-overview
 
