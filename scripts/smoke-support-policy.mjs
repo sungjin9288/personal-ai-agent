@@ -48,6 +48,7 @@ for (const term of [
   'npm run smoke:env-example',
   'npm run smoke:contributor-onboarding',
   'npm run smoke:changelog',
+  'npm run smoke:portfolio-zip',
   'npm run smoke:release-artifact-hygiene',
   'npm run smoke:pilot-export-package',
   'Security report path in [SECURITY.md](SECURITY.md)',
@@ -70,6 +71,7 @@ for (const term of [
   'npm run smoke:doctor',
   'npm run smoke:ui-doctor-surface',
   'npm run smoke:support-policy',
+  'npm run smoke:portfolio-zip',
 ]) {
   assertContains(readme, term, `README missing support term ${term}`);
 }

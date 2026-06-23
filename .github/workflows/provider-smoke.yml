@@ -48,6 +48,9 @@ jobs:
       - name: Run changelog smoke
         run: npm run smoke:changelog
 
+      - name: Run portfolio ZIP smoke
+        run: npm run smoke:portfolio-zip
+
       - name: Run support policy smoke
         run: npm run smoke:support-policy
 

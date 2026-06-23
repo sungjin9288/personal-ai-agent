@@ -18,6 +18,7 @@ npm run smoke:support-policy
 npm run smoke:env-example
 npm run smoke:contributor-onboarding
 npm run smoke:changelog
+npm run smoke:portfolio-zip
 ```
 
 For release, evidence, or portfolio package questions, also run:
@@ -25,6 +26,7 @@ For release, evidence, or portfolio package questions, also run:
 ```bash
 npm run smoke:release-artifact-hygiene
 npm run smoke:pilot-export-package
+npm run smoke:portfolio-zip
 ```
 
 ## Where To Ask

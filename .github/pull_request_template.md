@@ -17,6 +17,7 @@
 - [ ] `npm run smoke:env-example`
 - [ ] `npm run smoke:contributor-onboarding`
 - [ ] `npm run smoke:changelog`
+- [ ] `npm run smoke:portfolio-zip`
 - [ ] `npm run smoke:support-policy`
 - [ ] `npm run smoke:demo-evidence-index`
 - [ ] `npm run smoke:readme-portfolio-overview`
