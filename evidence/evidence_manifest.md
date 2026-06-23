@@ -69,6 +69,7 @@
 - `docs/architecture-code-walkthrough-v1.md`
 - `docs/provider-readiness-matrix-v1.md`
 - `docs/provider-failure-recovery-demo-v1.md`
+- `docs/memory-retrieval-quality-fixture-v1.md`
 
 ## Verified Features
 
@@ -87,6 +88,7 @@
 - Architecture code walkthrough: verified with `npm run smoke:architecture-code-walkthrough`
 - Provider readiness matrix: verified with `npm run smoke:provider-readiness-matrix`
 - Provider failure recovery demo: verified with `npm run smoke:provider-failure-recovery-demo`
+- Memory retrieval quality fixture: verified with `npm run smoke:memory-retrieval-quality-fixture`
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure

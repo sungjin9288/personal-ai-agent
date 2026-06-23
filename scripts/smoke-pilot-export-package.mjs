@@ -22,6 +22,7 @@ const recordedWalkthroughPath = path.join(repoDir, 'docs', 'recorded-walkthrough
 const architectureCodeWalkthroughPath = path.join(repoDir, 'docs', 'architecture-code-walkthrough-v1.md');
 const providerReadinessMatrixPath = path.join(repoDir, 'docs', 'provider-readiness-matrix-v1.md');
 const providerFailureRecoveryDemoPath = path.join(repoDir, 'docs', 'provider-failure-recovery-demo-v1.md');
+const memoryRetrievalQualityFixturePath = path.join(repoDir, 'docs', 'memory-retrieval-quality-fixture-v1.md');
 const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
 const customerSupportOperationsPath = path.join(repoDir, 'docs', 'customer-support-operations-v1.md');
 const targetProviderEvidenceIntakePath = path.join(repoDir, 'docs', 'target-provider-evidence-intake-v1.md');
@@ -49,6 +50,7 @@ const recordedWalkthrough = readRequiredFile(recordedWalkthroughPath);
 const architectureCodeWalkthrough = readRequiredFile(architectureCodeWalkthroughPath);
 const providerReadinessMatrix = readRequiredFile(providerReadinessMatrixPath);
 const providerFailureRecoveryDemo = readRequiredFile(providerFailureRecoveryDemoPath);
+const memoryRetrievalQualityFixture = readRequiredFile(memoryRetrievalQualityFixturePath);
 const forkOnboarding = readRequiredFile(forkOnboardingPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
@@ -67,7 +69,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 72$/m);
+assert.match(manifest, /^- fileCount: 73$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -97,6 +99,7 @@ const requiredPaths = [
   'docs/architecture-code-walkthrough-v1.md',
   'docs/provider-readiness-matrix-v1.md',
   'docs/provider-failure-recovery-demo-v1.md',
+  'docs/memory-retrieval-quality-fixture-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
@@ -264,6 +267,15 @@ assert.match(providerFailureRecoveryDemo, /provider attention inbox/);
 assert.match(providerFailureRecoveryDemo, /recoverable-provider-failure-only/);
 assert.match(providerFailureRecoveryDemo, /non-recoverable-provider-failure/);
 assert.match(providerFailureRecoveryDemo, /npm run smoke:provider-failure-recovery-demo/);
+assert.match(memoryRetrievalQualityFixture, /# Memory Retrieval Quality Fixture v1/);
+assert.match(memoryRetrievalQualityFixture, /status: memory-retrieval-quality-fixture-current/);
+assert.match(memoryRetrievalQualityFixture, /productionReadyClaim: false/);
+assert.match(memoryRetrievalQualityFixture, /credentialFreeReplay: yes/);
+assert.match(memoryRetrievalQualityFixture, /retrieval ranking/);
+assert.match(memoryRetrievalQualityFixture, /source diversity/);
+assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
+assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
+assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-demo-release-status\.png/);
 assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
 assert.match(contributing, /# Contributing/);

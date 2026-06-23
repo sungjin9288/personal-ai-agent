@@ -31,6 +31,7 @@
 - docs/architecture-code-walkthrough-v1.md
 - docs/provider-readiness-matrix-v1.md
 - docs/provider-failure-recovery-demo-v1.md
+- docs/memory-retrieval-quality-fixture-v1.md
 - docs/operator-surface-demo-evidence-v1.md
 - docs/fork-onboarding-v1.md
 - docs/implementation-evidence.md
@@ -69,6 +70,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 2,235,038 bytes
-- 압축 파일 SHA-256: `9aae8c06a61e3cf3c0cbe35d71104cc89b5c51694ffccd3a55c85444a86e6e3e`
+- 압축 파일 크기: 2,237,624 bytes
+- 압축 파일 SHA-256: `0cf85c9324aee3ff34ee69677466fa0f4b5ec7eca43ca210ad278841fb4cc910`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료
