@@ -204,6 +204,14 @@ CLI-first local-first personal AI agent flows remain supported for both engineer
 
 The stub provider works without credentials. External provider paths use environment variables that are referenced in `src/providers/provider-catalog.mjs`, `src/providers/*`, and `src/web/server.mjs`.
 
+Use `.env.example` as the local configuration template:
+
+```bash
+cp .env.example .env
+```
+
+The runtime reads `process.env` directly and does not load `.env` automatically. Export values in your shell or use your own dotenv loader if you choose to keep a local `.env` file. The default stub provider works without credentials.
+
 | Provider | Core environment variables |
 |---|---|
 | OpenAI | `OPENAI_API_KEY`, optional `OPENAI_MODEL`, `OPENAI_BASE_URL`, `OPENAI_RUN_TIMEOUT_MS` |
@@ -226,6 +234,7 @@ Recommended public-readiness checks:
 
 ```bash
 npm run package:pilot-export
+npm run smoke:env-example
 npm run smoke:demo-local
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary

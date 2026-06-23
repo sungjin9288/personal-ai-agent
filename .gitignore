@@ -2,3 +2,7 @@ var/
 .DS_Store
 .playwright-cli/
 output/playwright/
+
+# Local secrets and runtime configuration
+.env
+.env.local
