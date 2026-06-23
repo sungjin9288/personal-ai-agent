@@ -7,6 +7,7 @@ const state = {
   currentViewLinkCopied: false,
   currentViewLinkCopiedTimer: null,
   doctor: null,
+  doctorDetailsExpanded: false,
   executionLogs: null,
   executionPollTimer: null,
   executionStatus: null,
@@ -15987,6 +15988,8 @@ function renderDoctorSummary() {
   const warn = Number(summary.warn || 0);
   const fail = Number(summary.fail || 0);
   const providers = Array.isArray(doctor.providers) ? doctor.providers : [];
+  const checks = Array.isArray(doctor.checks) ? doctor.checks : [];
+  const attentionChecks = checks.filter((check) => ['fail', 'warn'].includes(check.status));
   const missingProviderIds = providers
     .filter((provider) => provider.id !== 'stub' && !provider.configured)
     .map((provider) => provider.id)
@@ -16004,7 +16007,81 @@ function renderDoctorSummary() {
     <p class="flow-status-label">로컬 진단</p>
     <strong class="flow-status-value">${escapeHtml(statusLabel)} · pass ${escapeHtml(pass)} · warn ${escapeHtml(warn)} · fail ${escapeHtml(fail)}</strong>
     <p class="flow-status-copy">${escapeHtml(copy)}</p>
+    <div class="doctor-summary-actions">
+      <button
+        class="ghost-button doctor-detail-toggle"
+        type="button"
+        data-doctor-detail-toggle="true"
+        aria-controls="doctor-detail-panel"
+        aria-expanded="${state.doctorDetailsExpanded ? 'true' : 'false'}"
+        aria-label="${state.doctorDetailsExpanded ? '로컬 진단 상세 닫기' : '로컬 진단 상세 보기'}"
+        title="${state.doctorDetailsExpanded ? '로컬 진단 상세 닫기' : '로컬 진단 상세 보기'}"
+      >
+        ${state.doctorDetailsExpanded ? '상세 닫기' : '상세 보기'}
+      </button>
+      <span class="mini-badge ${attentionChecks.length ? 'status-pending' : 'status-completed'}">${escapeHtml(String(attentionChecks.length))} checks</span>
+    </div>
+    ${state.doctorDetailsExpanded ? renderDoctorDetailPanel({ attentionChecks, providers }) : ''}
   `;
+  wireDoctorSummaryActions();
+}
+
+function renderDoctorDetailPanel({ attentionChecks = [], providers = [] } = {}) {
+  const visibleChecks = attentionChecks.slice(0, 6);
+  const hiddenCheckCount = Math.max(0, attentionChecks.length - visibleChecks.length);
+  const providerRows = providers
+    .filter((provider) => provider.id !== 'stub' || provider.configured)
+    .map((provider) => {
+      const configured = Boolean(provider.configured);
+      return `
+        <li class="doctor-detail-row">
+          <span class="mini-badge ${configured ? 'status-configured' : 'status-env-missing'}">${escapeHtml(configured ? 'configured' : 'env missing')}</span>
+          <strong>${escapeHtml(provider.displayName || provider.id)}</strong>
+          <span>${escapeHtml(provider.missingEnv?.length ? provider.missingEnv.join(', ') : provider.transport || '-')}</span>
+        </li>
+      `;
+    })
+    .join('');
+  const checkRows = visibleChecks
+    .map(
+      (check) => `
+        <li class="doctor-detail-row">
+          <span class="mini-badge ${check.status === 'fail' ? 'status-failed' : 'status-pending'}">${escapeHtml(check.status)}</span>
+          <strong>${escapeHtml(check.id || check.path || check.script || 'check')}</strong>
+          <span>${escapeHtml(check.message || check.path || check.script || '-')}</span>
+        </li>
+      `,
+    )
+    .join('');
+
+  return `
+    <div id="doctor-detail-panel" class="doctor-detail-panel">
+      <div class="doctor-detail-group">
+        <span class="flow-status-label">주의 항목</span>
+        <ul class="doctor-detail-list">
+          ${
+            checkRows
+              || '<li class="doctor-detail-row"><span class="mini-badge status-completed">clear</span><strong>추가 조치 없음</strong><span>fail 또는 warn check가 없습니다.</span></li>'
+          }
+        </ul>
+        ${hiddenCheckCount ? `<p class="doctor-detail-note">추가 check ${escapeHtml(hiddenCheckCount)}건은 API 응답에 포함됩니다.</p>` : ''}
+      </div>
+      <div class="doctor-detail-group">
+        <span class="flow-status-label">Provider env</span>
+        <ul class="doctor-detail-list">
+          ${providerRows}
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+function wireDoctorSummaryActions() {
+  const toggleButton = elements.doctorSummary?.querySelector('[data-doctor-detail-toggle]');
+  toggleButton?.addEventListener('click', () => {
+    state.doctorDetailsExpanded = !state.doctorDetailsExpanded;
+    renderDoctorSummary();
+  });
 }
 
 function renderWorkspaceOptions() {

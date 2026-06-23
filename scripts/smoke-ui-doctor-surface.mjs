@@ -44,7 +44,12 @@ try {
   assert.equal(rootHtml.includes('로컬 진단'), true);
   assert.equal(appJs.includes("api('/api/doctor')"), true);
   assert.equal(appJs.includes('renderDoctorSummary'), true);
+  assert.equal(appJs.includes('renderDoctorDetailPanel'), true);
+  assert.equal(appJs.includes('wireDoctorSummaryActions'), true);
   assert.equal(appJs.includes('loadDoctor'), true);
+  assert.equal(appJs.includes('data-doctor-detail-toggle="true"'), true);
+  assert.equal(appJs.includes('id="doctor-detail-panel"'), true);
+  assert.equal(appJs.includes('Provider env'), true);
 
   assert.equal(doctor.mode, 'doctor');
   assert.equal(doctor.ok, true, JSON.stringify(doctor.checks, null, 2));
