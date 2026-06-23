@@ -62,6 +62,22 @@ body:
         - `npm run smoke:release-artifact-hygiene`
     validations:
       required: false
+  - type: textarea
+    id: doctor-summary
+    attributes:
+      label: Doctor diagnostics summary
+      description: Run `npm run doctor:summary` and paste the sanitized output when the issue involves local setup, provider wiring, or support handoff. Do not paste secrets, API keys, private data, or machine-local paths.
+      placeholder: |
+        # Personal AI Agent doctor diagnostics
+        ok: true
+        summary: pass=28 warn=4 fail=0 total=32
+
+        Attention checks:
+        - [warn] provider:openai:configuration: OpenAI provider is not configured; missing required environment keys are listed by name only.
+
+        Boundary: missing environment variable names only; secret values are not included.
+    validations:
+      required: false
   - type: checkboxes
     id: boundaries
     attributes:
