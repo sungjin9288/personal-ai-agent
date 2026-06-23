@@ -10,6 +10,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added an architecture code walkthrough and symbol smoke guard so reviewers can navigate CLI/web, mission service, runtime harness, provider registry, local store, and evidence scripts from verified source paths.
 - Added a provider readiness matrix and catalog smoke guard to separate adapter implementation, pilot evidence, target provider blockers, and safe multi-provider claims.
 - Added a provider failure recovery demo and smoke guard to document attention remediation, fallback policy, timeline/event audit, and claim boundaries.
+- Added a memory retrieval quality fixture and smoke guard to document retrieval ranking signals, source diversity, fact graph provenance, revision lifecycle, and instruction-boundary handling.
 
 ## v0.1.0 - 2026-06-23
 
@@ -26,8 +27,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,235,038 bytes`
-- SHA-256: `9aae8c06a61e3cf3c0cbe35d71104cc89b5c51694ffccd3a55c85444a86e6e3e`
+- Size: `2,237,624 bytes`
+- SHA-256: `0cf85c9324aee3ff34ee69677466fa0f4b5ec7eca43ca210ad278841fb4cc910`
 
 Included public surfaces:
 

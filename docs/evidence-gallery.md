@@ -48,6 +48,7 @@
 | Architecture code walkthrough | `docs/architecture-code-walkthrough-v1.md` | code-level path through CLI, web API, mission service, runtime harness, provider registry, store, and smoke evidence |
 | Provider readiness matrix | `docs/provider-readiness-matrix-v1.md` | provider adapter implementation, required env, current blocker state, safe claim boundary, and next verification commands |
 | Provider failure recovery demo | `docs/provider-failure-recovery-demo-v1.md` | provider execution failure, attention remediation, fallback policy, timeline/event audit, and claim boundary |
+| Memory retrieval quality fixture | `docs/memory-retrieval-quality-fixture-v1.md` | retrieval ranking signals, source diversity, fact graph provenance, revision lifecycle, and instruction-boundary fixture |
 
 ## 5. Output Artifact Evidence
 
@@ -68,5 +69,6 @@
 - Use `docs/architecture-code-walkthrough-v1.md` to explain the implementation path from CLI/web entrypoints to mission service, runtime harness, provider registry, local store, and evidence scripts.
 - Use `docs/provider-readiness-matrix-v1.md` to separate adapter support, local pilot evidence, target provider evidence, and blocked provider claims.
 - Use `docs/provider-failure-recovery-demo-v1.md` to explain provider failure recovery through attention actions, fallback policy, and auditable event timelines without implying all-provider live validation.
+- Use `docs/memory-retrieval-quality-fixture-v1.md` to explain retrieval ranking, memory/fact provenance, and untrusted context boundaries without claiming benchmarked retrieval accuracy.
 - Use release blocker evidence to avoid risky claims such as production-ready, hosted SaaS ready, or all-provider live validated.
 - Use architecture diagrams in interviews to explain how CLI/web, mission service, runtime harness, provider registry, and local store interact.

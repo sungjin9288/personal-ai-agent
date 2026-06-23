@@ -56,6 +56,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/architecture-code-walkthrough-v1.md',
   'docs/provider-readiness-matrix-v1.md',
   'docs/provider-failure-recovery-demo-v1.md',
+  'docs/memory-retrieval-quality-fixture-v1.md',
   'docs/fork-onboarding-v1.md',
   'docs/pilot-export-package-v1.md',
   'docs/production-like-release-drill-v1.md',
