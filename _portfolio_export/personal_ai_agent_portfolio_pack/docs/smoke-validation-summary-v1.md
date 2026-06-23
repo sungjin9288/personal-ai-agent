@@ -37,6 +37,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Provider recovery | `npm run smoke:provider-failure-recovery-demo` | Verifies fallback/remediation demo linkage and claim boundary |
 | Memory quality fixture | `npm run smoke:memory-retrieval-quality-fixture` | Verifies retrieval ranking, fact graph provenance, and instruction-boundary fixture linkage |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
+| External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
 | Portfolio claim boundary | `npm run smoke:portfolio-docs-claim-boundary` | Verifies portfolio docs do not overclaim unsupported capabilities |
 | Representative demo evidence | `npm run smoke:representative-demo-evidence` | Verifies representative demo summary and evidence artifacts |
 | Operator surface evidence | `npm run smoke:operator-surface-demo-evidence` | Verifies mission/provider/action browser evidence map |
@@ -62,6 +63,7 @@ npm run smoke:provider-readiness-matrix
 npm run smoke:provider-failure-recovery-demo
 npm run smoke:memory-retrieval-quality-fixture
 npm run smoke:smoke-validation-summary
+npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview
 npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence

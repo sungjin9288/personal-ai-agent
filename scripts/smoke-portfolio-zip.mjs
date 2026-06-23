@@ -52,6 +52,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/docs/provider-failure-recovery-demo-v1.md',
   'personal_ai_agent_portfolio_pack/docs/memory-retrieval-quality-fixture-v1.md',
   'personal_ai_agent_portfolio_pack/docs/smoke-validation-summary-v1.md',
+  'personal_ai_agent_portfolio_pack/docs/external-evidence-blockers-v1.md',
   'personal_ai_agent_portfolio_pack/docs/operator-surface-demo-evidence-v1.md',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/operator-surface-demo-browser-report.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/operator-surface-mission-run.png',
