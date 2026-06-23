@@ -103,6 +103,15 @@ assertContains(workflow, 'npm run smoke:ui-doctor-surface', 'Provider smoke work
 assertContains(workflow, 'npm run smoke:support-policy', 'Provider smoke workflow missing support smoke');
 assertContains(portfolioManifest, '- SUPPORT.md', 'portfolio manifest missing SUPPORT.md');
 assertContains(links, '- Support: SUPPORT.md', 'links missing support route');
+assertContains(links, '- Bug report template: .github/ISSUE_TEMPLATE/bug_report.yml', 'links missing bug report template route');
+assertContains(
+  links,
+  '- Security report template: .github/ISSUE_TEMPLATE/security_report.yml',
+  'links missing security report template route',
+);
+assertContains(links, 'Issue handoff: blank issues are disabled', 'links missing issue handoff route');
+assertContains(links, 'npm run doctor:summary', 'links missing doctor summary handoff command');
+assertContains(links, 'Doctor diagnostics summary', 'links missing doctor diagnostics summary field');
 assertContains(releaseHygiene, "'SUPPORT.md'", 'release artifact hygiene missing SUPPORT.md');
 assertContains(pilotExportBuilder, "'SUPPORT.md'", 'pilot export package missing SUPPORT.md');
 
@@ -120,6 +129,7 @@ assertNoLocalPaths(support);
 assertNoLocalPaths(issueTemplateConfig);
 assertNoLocalPaths(bugReportTemplate);
 assertNoLocalPaths(securityReportTemplate);
+assertNoLocalPaths(links);
 
 console.log(
   JSON.stringify(
@@ -131,6 +141,7 @@ console.log(
         'README.md',
         'CONTRIBUTING.md',
         'SECURITY.md',
+        'links.md',
         '.github/ISSUE_TEMPLATE/config.yml',
         '.github/ISSUE_TEMPLATE/bug_report.yml',
         '.github/ISSUE_TEMPLATE/security_report.yml',
