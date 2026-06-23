@@ -31,6 +31,7 @@ const BASE_PACKAGE_FILES = [
   'docs/provider-failure-recovery-demo-v1.md',
   'docs/memory-retrieval-quality-fixture-v1.md',
   'docs/smoke-validation-summary-v1.md',
+  'docs/external-evidence-blockers-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',

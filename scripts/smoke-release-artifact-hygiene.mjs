@@ -24,6 +24,7 @@ assert.equal(result.scannedFiles.includes('docs/provider-readiness-matrix-v1.md'
 assert.equal(result.scannedFiles.includes('docs/provider-failure-recovery-demo-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/memory-retrieval-quality-fixture-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/smoke-validation-summary-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/external-evidence-blockers-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/fork-onboarding-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/pilot-export-package-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/production-like-release-drill-v1.md'), true);

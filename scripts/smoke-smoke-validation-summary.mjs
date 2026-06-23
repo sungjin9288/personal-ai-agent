@@ -27,6 +27,7 @@ const expectedCommands = [
   'npm run smoke:provider-failure-recovery-demo',
   'npm run smoke:memory-retrieval-quality-fixture',
   'npm run smoke:smoke-validation-summary',
+  'npm run smoke:external-evidence-blockers',
   'npm run smoke:readme-portfolio-overview',
   'npm run smoke:portfolio-docs-claim-boundary',
   'npm run smoke:representative-demo-evidence',

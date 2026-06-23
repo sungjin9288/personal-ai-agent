@@ -24,6 +24,7 @@ const providerReadinessMatrixPath = path.join(repoDir, 'docs', 'provider-readine
 const providerFailureRecoveryDemoPath = path.join(repoDir, 'docs', 'provider-failure-recovery-demo-v1.md');
 const memoryRetrievalQualityFixturePath = path.join(repoDir, 'docs', 'memory-retrieval-quality-fixture-v1.md');
 const smokeValidationSummaryPath = path.join(repoDir, 'docs', 'smoke-validation-summary-v1.md');
+const externalEvidenceBlockersPath = path.join(repoDir, 'docs', 'external-evidence-blockers-v1.md');
 const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
 const customerSupportOperationsPath = path.join(repoDir, 'docs', 'customer-support-operations-v1.md');
 const targetProviderEvidenceIntakePath = path.join(repoDir, 'docs', 'target-provider-evidence-intake-v1.md');
@@ -53,6 +54,7 @@ const providerReadinessMatrix = readRequiredFile(providerReadinessMatrixPath);
 const providerFailureRecoveryDemo = readRequiredFile(providerFailureRecoveryDemoPath);
 const memoryRetrievalQualityFixture = readRequiredFile(memoryRetrievalQualityFixturePath);
 const smokeValidationSummary = readRequiredFile(smokeValidationSummaryPath);
+const externalEvidenceBlockers = readRequiredFile(externalEvidenceBlockersPath);
 const forkOnboarding = readRequiredFile(forkOnboardingPath);
 const customerSupportOperations = readRequiredFile(customerSupportOperationsPath);
 const targetProviderEvidenceIntake = readRequiredFile(targetProviderEvidenceIntakePath);
@@ -71,7 +73,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 74$/m);
+assert.match(manifest, /^- fileCount: 75$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -103,6 +105,7 @@ const requiredPaths = [
   'docs/provider-failure-recovery-demo-v1.md',
   'docs/memory-retrieval-quality-fixture-v1.md',
   'docs/smoke-validation-summary-v1.md',
+  'docs/external-evidence-blockers-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
@@ -287,6 +290,14 @@ assert.match(smokeValidationSummary, /deterministic local smoke summary/);
 assert.match(smokeValidationSummary, /npm run smoke:smoke-validation-summary/);
 assert.match(smokeValidationSummary, /npm run smoke:portfolio-zip/);
 assert.match(smokeValidationSummary, /not live all-provider validation/);
+assert.match(externalEvidenceBlockers, /# External Evidence Blockers v1/);
+assert.match(externalEvidenceBlockers, /status: external-evidence-blockers-current/);
+assert.match(externalEvidenceBlockers, /externalEvidenceRequired: true/);
+assert.match(externalEvidenceBlockers, /Anthropic billing and live validation/);
+assert.match(externalEvidenceBlockers, /Hermes target provider architecture and live validation/);
+assert.match(externalEvidenceBlockers, /Public or private walkthrough URL/);
+assert.match(externalEvidenceBlockers, /Actual pilot feedback and metrics/);
+assert.match(externalEvidenceBlockers, /npm run smoke:external-evidence-blockers/);
 assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-demo-release-status\.png/);
 assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
 assert.match(contributing, /# Contributing/);
