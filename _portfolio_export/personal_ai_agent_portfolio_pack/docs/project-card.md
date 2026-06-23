@@ -126,7 +126,10 @@ Operator / Team
 - README 또는 문서 근거: `README.md`, `docs/product-plan-v1.md`, `docs/security-model-v1.md`, `docs/release-readiness-v1.md`, `docs/adr/ADR-001-runtime-and-agent-shape.md`
 - 실행 방법이 명확한지: README에 `npm run ui`, `node src/cli.mjs ...`, `npm run bootstrap:local` 예시가 있다.
 - 대표 demo 근거: `evidence/cli-logs/representative-release-demo-replay.log`, `evidence/output-artifacts/representative-release-demo-summary.json`, `evidence/screenshots/representative-release-demo-release-status.png`
-- 스크린샷/데모가 필요한 부분: mission run flow, provider readiness/status, action inbox는 추가 screenshot을 보강하면 좋다.
+- operator surface browser screenshots: `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, `evidence/screenshots/operator-surface-action-inbox.png`
+- operator surface browser report: `evidence/output-artifacts/operator-surface-demo-browser-report.json`
+- operator surface evidence 실행 명령: `npm run evidence:operator-surface-demo`
+- 남은 demo gap: public hosted demo 없음. recorded/private walkthrough URL, 실제 pilot feedback, 운영 metric은 아직 저장소 근거가 없다.
 
 ## 10. Consulting Angle
 

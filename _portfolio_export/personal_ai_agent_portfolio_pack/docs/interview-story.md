@@ -15,7 +15,7 @@
 - 기술 선택 이유: Node.js ESM은 CLI, HTTP server, file store, smoke automation을 한 repo에서 단순하게 연결하기 좋고, 별도 DB 없이 PoC를 빠르게 검증할 수 있다.
 - 핵심 구현: `createMissionService()`가 workspace/mission/provider/action/approval/execution/memory 흐름을 소유하고, `createRuntimeHarness()`가 session, agent run, artifact, approval lifecycle을 기록한다. Provider는 `createProviderRegistry()` 뒤에서 공통 contract로 다룬다.
 - 현재 상태: OpenAI-backed local-first pilot은 문서상 pilot-ready로 정리되어 있으나 production-ready, hosted SaaS, all-provider validation은 아직 아니다.
-- 앞으로의 개선 방향: target provider validation, hosted identity/session, tenant isolation, secret manager, observability/SLO, demo deployment, portfolio screenshots
+- 앞으로의 개선 방향: target provider validation, hosted identity/session, tenant isolation, secret manager, observability/SLO, recorded/private walkthrough URL, 실제 pilot feedback/metric 확보
 - 컨설팅 경험과의 자연스러운 연결: 문제를 사용자 역할과 운영 흐름으로 분해하고, 구현 완료와 target blocker를 구분해 stakeholder가 의사결정할 수 있는 문서로 정리한 점을 강조한다.
 
 ## 3. 기술 면접 예상 질문 10개
@@ -41,12 +41,12 @@
 | MVP 범위는 어디까지인가? | local-first managed runtime과 OpenAI-backed pilot boundary | `docs/product-plan-v1.md`, `docs/release-readiness-v1.md` | demo scenario 정리 |
 | 왜 autonomous swarm이 아닌 managed runtime인가? | 승인, 검토, evidence 없이 자동 실행하는 리스크를 줄이기 위해 | `docs/adr/ADR-001-runtime-and-agent-shape.md` | Agent safety 사례 |
 | 구현 완료와 예정 기능은 어떻게 구분하나? | 코드 파일, smoke script, release readiness 문서의 status로 구분 | 이 문서의 Current Status | 최신 smoke 결과 |
-| README가 긴데 핵심 메시지는 무엇인가? | README 최상단 Portfolio Overview가 목적, claim boundary, representative demo, evidence entry point를 먼저 설명하고 상세 운영 문서는 아래에 보존 | `README.md`, `docs/readme-improvement.md` | 지속적인 screenshot/demo 보강 |
+| README가 긴데 핵심 메시지는 무엇인가? | README 최상단 Portfolio Overview가 목적, claim boundary, representative demo, evidence entry point를 먼저 설명하고, mission/provider/action operator surface browser screenshots와 report를 evidence로 연결한다 | `README.md`, `docs/readme-improvement.md`, `evidence/output-artifacts/operator-surface-demo-browser-report.json` | recorded/private walkthrough URL |
 | 배포 상태는 어떤가? | self-hosted local-first pilot guide는 있으나 hosted production은 아님 | `docs/deployment-pilot-v1.md` | 실제 demo link |
 | 수치 성과가 있나? | 현재 없음. 임의 생성하지 않음 | 저장소 근거 없음 | pilot metric 확보 |
 | 보안은 어느 정도 구현됐나? | local shared-secret/OIDC/RBAC/tenant mode와 security docs는 있으나 hosted production은 gap | `docs/security-model-v1.md` | threat model 심화 |
 | 테스트 전략은 무엇인가? | 많은 deterministic smoke script와 GitHub Actions provider smoke 사용 | `package.json`, `.github/workflows/provider-smoke.yml` | 테스트 분류표 |
-| 포트폴리오에서 어떻게 설명할 것인가? | AI agent control plane, provider abstraction, evidence-driven workflow 중심 | `docs/project-card.md` | 발표용 screenshot |
+| 포트폴리오에서 어떻게 설명할 것인가? | AI agent control plane, provider abstraction, release readiness demo, operator surface browser screenshots, evidence-driven workflow 중심 | `docs/project-card.md`, `evidence/screenshots/operator-surface-mission-run.png` | 실제 pilot feedback/metric |
 
 ## 5. 컨설팅 경험과의 연결 질문 5개
 

@@ -18,7 +18,7 @@
 - Provider별 설정과 장애 원인이 분산되는 문제를 줄이기 위해 Stub, OpenAI, Anthropic, local OpenAI-compatible, Hermes-compatible adapter를 `createProviderRegistry()` 뒤에 추상화하고 provider readiness/probe/fallback surface를 구현
 - 위험한 agent 실행을 통제하기 위해 approval gate, execution lease, preflight, start/stop, rollback, log 조회 흐름을 `mission-service`와 CLI/web API에 반영
 - Operator가 작업 상태를 빠르게 파악할 수 있도록 workspace, mission, provider, action inbox, approval, release readiness API와 vanilla JS web console을 구현
-- Release claim 과장을 방지하기 위해 OpenAI-backed local-first pilot boundary와 production blocker를 `docs/release-readiness-v1.md`, smoke/evidence scripts, handoff docs로 분리해 문서화
+- Release claim 과장을 방지하기 위해 OpenAI-backed local-first pilot boundary와 production blocker를 `docs/release-readiness-v1.md`, smoke/evidence scripts, handoff docs, operator surface browser screenshots/report로 분리해 문서화
 - 사용자 흐름과 운영 리스크를 구조화하는 컨설팅형 접근을 바탕으로 product plan, security model, operator runbook, deployment pilot, target evidence docs를 정리
 
 ## 4. 구현 후 넣을 수 있는 bullet
@@ -70,4 +70,4 @@
 - 현재 이력서 반영 가능 여부: 가능
 - 이유: 핵심 runtime, provider adapter, CLI/web surfaces, local persistence, approval/evidence workflow가 코드 근거로 확인된다.
 - 이력서에 넣기 전 반드시 보완할 것: 정확한 개발 기간, public demo 여부, 실제 사용자 feedback 또는 pilot metric
-- 최근 보완 완료: README portfolio overview, representative release readiness demo, replay log, screenshot evidence, 대표 smoke command 결과
+- 최근 보완 완료: README portfolio overview, representative release readiness demo, replay log, screenshot evidence, operator surface browser screenshots/report, 대표 smoke command 결과

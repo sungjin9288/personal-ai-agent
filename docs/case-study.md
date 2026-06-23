@@ -108,6 +108,11 @@
 - 구현 완료 기능: local-first multi-agent runtime, CLI, web API/UI, provider abstraction, local persistence, approval/action/release evidence surfaces
 - 로컬 실행 가능 여부: 가능. README 기준 `npm run ui`, `npm run bootstrap:local`, `node src/cli.mjs ...`
 - 테스트 여부: smoke scripts, representative demo evidence smoke, execution-v1 artifact smoke, GitHub Actions provider smoke가 존재한다.
+- 브라우저 evidence: representative release readiness walkthrough와 함께 mission run, provider readiness, action inbox operator surface screenshot 및 browser report가 존재한다.
+  - `evidence/screenshots/operator-surface-mission-run.png`
+  - `evidence/screenshots/operator-surface-provider-readiness.png`
+  - `evidence/screenshots/operator-surface-action-inbox.png`
+  - `evidence/output-artifacts/operator-surface-demo-browser-report.json`
 - 배포 여부: hosted production 배포 근거 없음. self-hosted local-first pilot guide 존재.
 - 사용자 피드백: 현재 없음. 임의 생성 금지.
 - 수치 성과:
