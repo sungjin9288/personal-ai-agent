@@ -148,17 +148,50 @@ for (const ignored of ['.env', '.env.local', 'var/']) {
   assertContains(gitignore, ignored, `.gitignore missing ${ignored}`);
 }
 
-for (const ciTerm of [
+const expectedProviderSmokeCommands = [
+  'npm run smoke:demo-local',
+  'npm run smoke:doctor',
+  'npm run doctor:summary',
+  'npm run smoke:ui-doctor-surface',
+  'npm run smoke:env-example',
   'npm run smoke:contributor-onboarding',
   'npm run smoke:changelog',
+  'npm run smoke:portfolio-zip',
+  'npm run smoke:support-policy',
   'npm run smoke:demo-evidence-index',
   'npm run smoke:representative-demo-evidence',
-  'npm run smoke:support-policy',
-  'npm run smoke:doctor',
-]) {
-  assertContains(pullRequestTemplate, ciTerm, `PR template missing ${ciTerm}`);
-  assertContains(workflow, ciTerm, `Provider smoke workflow missing ${ciTerm}`);
-}
+  'npm run smoke:pilot-export-package',
+  'npm run smoke:readme-portfolio-overview',
+  'npm run smoke:portfolio-docs-claim-boundary',
+  'npm run smoke:release-artifact-hygiene',
+  'npm run smoke:provider-fallback-policy',
+  'npm run smoke:execution-v1-artifact-refresh',
+  'npm run smoke:provider-attention-remediation',
+  'npm run smoke:provider-capability-rate-guard',
+  'npm run smoke:provider-action-inbox',
+  'npm run smoke:provider-events',
+  'npm run smoke:provider-overview',
+  'npm run smoke:target-provider-operations',
+];
+
+const pullRequestVerificationCommands = Array.from(
+  pullRequestTemplate.matchAll(/- \[ \] `(npm run [^`]+)`/g),
+  (match) => match[1],
+);
+const workflowRunCommands = Array.from(workflow.matchAll(/^\s*run:\s+(npm run .+)$/gm), (match) => match[1].trim());
+
+assert.deepEqual(
+  pullRequestVerificationCommands,
+  expectedProviderSmokeCommands,
+  'PR template verification checklist must match provider smoke workflow commands',
+);
+assert.deepEqual(
+  workflowRunCommands,
+  expectedProviderSmokeCommands,
+  'Provider smoke workflow commands must match PR template verification checklist',
+);
+assertNoDuplicates(pullRequestVerificationCommands, 'PR template verification checklist');
+assertNoDuplicates(workflowRunCommands, 'provider smoke workflow commands');
 
 for (const risky of [
   'production-ready AI agent platform',
@@ -206,6 +239,18 @@ function readRequiredFile(filePath) {
 
 function assertContains(text, needle, message) {
   assert.ok(String(text || '').includes(needle), message);
+}
+
+function assertNoDuplicates(items, label) {
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const item of items) {
+    if (seen.has(item)) {
+      duplicates.add(item);
+    }
+    seen.add(item);
+  }
+  assert.deepEqual([...duplicates], [], `${label} must not contain duplicate commands`);
 }
 
 function assertNoLocalPaths(text) {
