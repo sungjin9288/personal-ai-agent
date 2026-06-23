@@ -36,6 +36,7 @@
 ### Screenshots
 
 - `evidence/screenshots/operator-console-home.png`
+- `evidence/screenshots/representative-release-demo-preview.png`
 - `evidence/screenshots/representative-release-demo-release-status.png`
 
 ### Output Artifacts

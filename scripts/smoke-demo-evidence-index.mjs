@@ -15,6 +15,7 @@ const browserReportPath = path.join(
   'output-artifacts',
   'representative-release-demo-browser-e2e.json',
 );
+const previewPath = path.join(repoDir, 'evidence', 'screenshots', 'representative-release-demo-preview.png');
 const screenshotPath = path.join(repoDir, 'evidence', 'screenshots', 'representative-release-demo-release-status.png');
 
 const doc = readRequiredFile(docPath);
@@ -23,6 +24,7 @@ const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const summary = JSON.parse(readRequiredFile(summaryPath));
 const browserReport = JSON.parse(readRequiredFile(browserReportPath));
 const replayLog = readRequiredFile(replayLogPath);
+const preview = fs.readFileSync(previewPath);
 const screenshot = fs.readFileSync(screenshotPath);
 
 assert.equal(packageJson.scripts['smoke:demo-evidence-index'], 'node scripts/smoke-demo-evidence-index.mjs');
@@ -34,6 +36,8 @@ assert.equal(summary.commandCount, 6);
 assert.equal(summary.commands.every((entry) => entry.status === 0), true, 'recorded demo commands must all pass');
 assert.equal(browserReport.ok, true);
 assert.equal(browserReport.mode, 'ui-execution-browser-e2e');
+assert.equal(preview.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+assert.deepEqual(readPngDimensions(preview), { height: 675, width: 960 });
 assert.equal(screenshot.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
 
 const expectedEvidence = [
@@ -47,6 +51,11 @@ const expectedEvidence = [
     'representative-release-demo-browser-e2e.json',
     'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
     browserReportPath,
+  ],
+  [
+    'representative-release-demo-preview.png',
+    'evidence/screenshots/representative-release-demo-preview.png',
+    previewPath,
   ],
   [
     'representative-release-demo-release-status.png',
@@ -76,6 +85,7 @@ for (const term of [
   'There is no public hosted demo URL.',
   'not a public hosted demo URL',
   'The current evidence is a local recorded replay plus screenshot and browser report.',
+  '![Representative demo preview](../evidence/screenshots/representative-release-demo-preview.png)',
   'Production readiness remains explicitly blocked',
   'npm run demo:local',
   'npm run evidence:representative-demo',
@@ -85,6 +95,7 @@ for (const term of [
 
 for (const readmeTerm of [
   'Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)',
+  '![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)',
   'npm run smoke:demo-evidence-index',
   'There is no public hosted demo URL.',
 ]) {
@@ -111,6 +122,7 @@ console.log(
       commandCount: summary.commandCount,
       mode: 'demo-evidence-index-smoke',
       ok: true,
+      previewBytes: preview.length,
       screenshotBytes: screenshot.length,
     },
     null,
@@ -131,6 +143,13 @@ function assertContains(text, needle, message) {
 
 function sha256File(filePath) {
   return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
+}
+
+function readPngDimensions(buffer) {
+  return {
+    height: buffer.readUInt32BE(20),
+    width: buffer.readUInt32BE(16),
+  };
 }
 
 function assertNoLocalPaths(text) {
