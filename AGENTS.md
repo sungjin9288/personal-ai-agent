@@ -4,6 +4,19 @@
 
 ---
 
+## Codex 작업 흐름
+
+- 비 trivial 작업은 `$karpathy-guidelines`로 시작해 가정, 성공 기준, 최소 변경 범위, 검증 기준을 먼저 잡는다.
+- 새 영역을 수정하기 전에는 `$repo-intake`로 기존 런타임, 증적, smoke 명령, 승인 경계를 확인한다.
+- 구현 중에는 `$edit-discipline`을 적용해 요청과 직접 연결되지 않는 리팩터링이나 speculative abstraction을 피한다.
+- 종료 전에는 `$verify-gate`로 touched surface에 맞는 검증을 실행하고, 큰 변경은 `$review-angles`로 goal, 품질, 보안, 실제 사용, 문맥 관점까지 확인한다.
+
+## 외부 패턴 이식 기준
+
+- LazyCodex류 패턴은 제품 의존성으로 vendoring하지 않는다. `plan -> execute -> review -> verify -> evidence` 운영 흐름, 역할 분리, 검증 루프만 현재 harness 모델에 맞게 재해석한다.
+- Hermes Desktop류 패턴은 Electron 앱 구조를 가져오지 않는다. provider setup, profile isolation, session history, logs, action inbox 같은 operator UX 패턴만 local-first web/CLI 표면에 맞게 적용한다.
+- 새 외부 패키지, 전역 Codex 설정 변경, provider contract 변경은 별도 명시 요청이나 승인 없이는 하지 않는다.
+
 ## README 정직성 규칙 (포트폴리오 공개용 — 반드시 준수)
 
 이 repo의 README는 채용 담당자·외부 방문자가 본다. README를 생성·수정할 때 아래를 **절대 규칙**으로 지킨다. 규칙을 어기면 작업을 멈추고 보고한다.
