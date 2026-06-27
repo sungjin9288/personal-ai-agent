@@ -5534,6 +5534,61 @@ function getExecutionStatusPayload() {
   return state.executionStatus?.execution || state.missionDetail?.execution || null;
 }
 
+function buildOperatorHandoffItems({
+  aiConfig = {},
+  flow = {},
+  latestSession = null,
+  mission = {},
+} = {}) {
+  const execution = getExecutionStatusPayload();
+  const executionSession = execution?.latestExecutionSession || null;
+  const verification = executionSession?.verification || null;
+  const providerLabel =
+    latestSession?.provider ||
+    executionSession?.provider ||
+    aiConfig.recommendedProvider ||
+    'provider 선택 전';
+  const sessionLabel =
+    executionSession?.id ||
+    latestSession?.id ||
+    mission.id ||
+    'session 없음';
+  const completionLabel = verification?.status
+    ? getDisplayLabel(verification.status, verification.status)
+    : executionSession?.status === 'completed'
+      ? '검증 확인 필요'
+      : flow.recommendedStep === 'step-output'
+        ? '결과 확인'
+        : '완료 전';
+
+  return [
+    {
+      detail:
+        verification?.summary ||
+        flow.copy ||
+        '완료 선언 전 실행 결과와 검증 근거를 확인합니다.',
+      label: '완료 게이트',
+      value: completionLabel,
+    },
+    {
+      detail: aiConfig.recommendedProvider
+        ? `권장 provider: ${aiConfig.recommendedProvider}`
+        : '미션 실행 provider와 fallback 상태를 같은 표면에서 확인합니다.',
+      label: 'Provider 경로',
+      value: providerLabel,
+    },
+    {
+      detail: executionSession?.status
+        ? `execution ${getDisplayLabel(executionSession.status, executionSession.status)}`
+        : latestSession?.status
+          ? `mission ${getDisplayLabel(latestSession.status, latestSession.status)}`
+          : '아직 실행 세션이 없습니다.',
+      label: '세션 증적',
+      value: sessionLabel,
+    },
+  ];
+}
+
 function isExecutionMissionSelected() {
   return state.missionDetail?.mission?.mode === 'engineering';
 }
@@ -17798,6 +17853,12 @@ function renderSelectionBridge() {
     ? `첨부 ${state.missionDetail.summary.attachmentCounts?.total || 0} · 메모 ${state.missionDetail.summary.memoryCounts?.total || 0}`
     : `첨부 0 · 메모 ${harnessState.memoryTotalCount}개`;
   const selectionBridgeStepLabel = `${getStepLabel(flow.recommendedStep, { short: true })}: ${mission.title || mission.id || '선택한 미션'}`;
+  const operatorHandoffItems = buildOperatorHandoffItems({
+    aiConfig,
+    flow,
+    latestSession,
+    mission,
+  });
 
   elements.selectionBridge.innerHTML = `
     <div class="selection-bridge-main selection-bridge-main-compact">
@@ -17837,6 +17898,19 @@ function renderSelectionBridge() {
         <span>다음 액션</span>
         <strong>${escapeHtml(snapshot.nextAction.replace(/^다음:\s*/, ''))}</strong>
       </div>
+    </div>
+    <div class="selection-bridge-handoff" aria-label="Operator handoff evidence">
+      ${operatorHandoffItems
+        .map(
+          (item) => `
+            <div class="selection-bridge-handoff-item">
+              <span>${escapeHtml(item.label)}</span>
+              <strong>${escapeHtml(item.value)}</strong>
+              <small>${escapeHtml(item.detail)}</small>
+            </div>
+          `,
+        )
+        .join('')}
     </div>
   `;
   wireQuickActions(elements.selectionBridge);

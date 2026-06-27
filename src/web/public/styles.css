@@ -1091,6 +1091,40 @@ button {
   flex-wrap: wrap;
 }
 
+.selection-bridge-handoff {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.selection-bridge-handoff-item {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(15, 118, 110, 0.1);
+  background: rgba(15, 118, 110, 0.055);
+}
+
+.selection-bridge-handoff-item span {
+  color: var(--accent);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.selection-bridge-handoff-item strong {
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
+.selection-bridge-handoff-item small {
+  color: var(--text-3);
+  font-size: 0.66rem;
+  line-height: 1.3;
+}
+
 .selection-bridge-pill {
   display: flex;
   flex: 1 1 180px;
@@ -4779,6 +4813,10 @@ select:focus {
   .selection-bridge-actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .selection-bridge-handoff {
+    grid-template-columns: 1fr;
   }
 
   .mission-summary-compact-head {

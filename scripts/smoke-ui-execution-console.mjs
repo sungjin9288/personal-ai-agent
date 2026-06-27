@@ -71,6 +71,10 @@ try {
 
   assert.equal(rootHtml.includes('id="execution-console"'), true);
   assert.equal(rootHtml.includes('preflight, 승인 lease, 라이브 로그'), true);
+  assert.equal(appJs.includes('buildOperatorHandoffItems'), true);
+  assert.equal(appJs.includes('완료 게이트'), true);
+  assert.equal(appJs.includes('Provider 경로'), true);
+  assert.equal(appJs.includes('세션 증적'), true);
   assert.equal(appJs.includes('handleExecutionPreflight'), true);
   assert.equal(appJs.includes('handleExecutionStart'), true);
   assert.equal(appJs.includes('handleExecutionStop'), true);
