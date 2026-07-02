@@ -312,6 +312,14 @@ npm run smoke:provider-attention-remediation
 npm run smoke:ui-execution-console
 ```
 
+Production provider readiness rehearsal and gates:
+
+```bash
+npm run rehearsal:production-provider-readiness
+npm run smoke:production-provider-readiness
+npm run smoke:target-provider-evidence-intake
+```
+
 The repository also includes many narrower smoke scripts in `package.json` for provider operations, release blocker handoff, UI flows, retention, backup, identity/session, tenant isolation, observability, and target evidence gates.
 
 ## Release And Evidence
