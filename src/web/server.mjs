@@ -22,6 +22,7 @@ import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.m
 import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
 import { evaluateOidcWebAuth, evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
+import { resolveWithinRoot } from './path-guard.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -698,9 +699,8 @@ function resolveExecutionV1ReleaseHandoffArtifact(artifactId) {
     return null;
   }
 
-  const artifactPath = path.resolve(entry.path);
-  const safeRoot = path.resolve(rootDir);
-  if (!artifactPath.startsWith(`${safeRoot}${path.sep}`) && artifactPath !== safeRoot) {
+  const artifactPath = resolveWithinRoot(rootDir, entry.path);
+  if (!artifactPath) {
     return null;
   }
 
@@ -770,9 +770,9 @@ function resolveExecutionV1ReleaseEvidenceDoc(filePath = '') {
     return null;
   }
 
-  const resolvedPath = path.resolve(rootDir, relativePath);
   const docsRoot = path.resolve(rootDir, 'docs');
-  if (!resolvedPath.startsWith(`${docsRoot}${path.sep}`) && resolvedPath !== docsRoot) {
+  const resolvedPath = resolveWithinRoot(docsRoot, path.resolve(rootDir, relativePath));
+  if (!resolvedPath) {
     return null;
   }
   if (!fs.existsSync(resolvedPath) || !fs.statSync(resolvedPath).isFile()) {
@@ -2685,9 +2685,8 @@ function resolveArtifactRecord(artifactId) {
     throw new Error(`Artifact not found: ${artifactId}`);
   }
 
-  const artifactPath = path.resolve(String(artifact.path || ''));
-  const safeRoot = path.resolve(rootDir);
-  if (!artifactPath.startsWith(`${safeRoot}${path.sep}`) && artifactPath !== safeRoot) {
+  const artifactPath = resolveWithinRoot(rootDir, String(artifact.path || ''));
+  if (!artifactPath) {
     throw new Error('Artifact path is outside of the project root.');
   }
 
@@ -2725,9 +2724,9 @@ function getContentType(filePath) {
 
 function serveStatic(response, pathname) {
   const relativePath = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
-  const filePath = path.resolve(publicDir, relativePath);
+  const filePath = resolveWithinRoot(publicDir, path.resolve(publicDir, relativePath));
 
-  if (!filePath.startsWith(`${publicDir}${path.sep}`) && filePath !== publicDir) {
+  if (!filePath) {
     sendNotFound(response);
     return;
   }
@@ -2789,7 +2788,12 @@ async function handleApi(request, response, url) {
     return;
   }
 
-  if (request.method === 'GET' && pathname === '/api/meta') {
+  const exactRoutes = new Map();
+  const registerExactRoute = (method, routePath, handler) => {
+    exactRoutes.set(`${method} ${routePath}`, handler);
+  };
+
+  registerExactRoute('GET', '/api/meta', async () => {
     sendJson(response, 200, {
       generatedAt: new Date().toISOString(),
       host,
@@ -2809,10 +2813,9 @@ async function handleApi(request, response, url) {
       },
       rootDir,
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/health') {
+  registerExactRoute('GET', '/api/health', async () => {
     const runtimeJobs = summarizeRuntimeJobs();
     const runtimeRequests = summarizeRuntimeRequests();
     sendJson(response, 200, {
@@ -2842,10 +2845,9 @@ async function handleApi(request, response, url) {
       runtimeStatusPath: runtimeStatus.statusPath,
       url: `http://${host}:${activePort}`,
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/doctor') {
+  registerExactRoute('GET', '/api/doctor', async () => {
     const doctor = {
       generatedAt: new Date().toISOString(),
       ...runDoctor({ rootDir: codeRootDir }),
@@ -2854,38 +2856,33 @@ async function handleApi(request, response, url) {
       ...doctor,
       handoffSummary: buildDoctorDiagnosticsSummary(doctor),
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/converter/diagnostics') {
+  registerExactRoute('GET', '/api/converter/diagnostics', async () => {
     sendJson(response, 200, await getDocumentConversionCapabilities());
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/runtime/requests') {
+  registerExactRoute('GET', '/api/runtime/requests', async () => {
     sendJson(response, 200, {
       generatedAt: new Date().toISOString(),
       requests: summarizeRuntimeRequests(),
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/runtime/jobs') {
+  registerExactRoute('GET', '/api/runtime/jobs', async () => {
     sendJson(response, 200, {
       generatedAt: new Date().toISOString(),
       jobs: summarizeRuntimeJobs(),
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/workspaces') {
+  registerExactRoute('GET', '/api/workspaces', async () => {
     sendJson(response, 200, {
       workspaces: filterTenantWorkspaces(store.listWorkspaces(), resolveAuthTenantId(auth)),
     });
-    return;
-  }
+  });
 
-  if (request.method === 'POST' && pathname === '/api/workspaces') {
+  registerExactRoute('POST', '/api/workspaces', async () => {
     const body = await readJsonBody(request);
     const rawWorkspacePath = String(body.workspacePath || '').trim();
     const normalizedPath = rawWorkspacePath ? path.resolve(rawWorkspacePath) : '';
@@ -2933,15 +2930,13 @@ async function handleApi(request, response, url) {
       created: true,
       workspace,
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/providers') {
+  registerExactRoute('GET', '/api/providers', async () => {
     sendJson(response, 200, service.listProviders());
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/providers/events') {
+  registerExactRoute('GET', '/api/providers/events', async () => {
     sendJson(
       response,
       200,
@@ -2963,15 +2958,13 @@ async function handleApi(request, response, url) {
         status: String(url.searchParams.get('status') || '').trim(),
       }),
     );
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/execution-v1/status') {
+  registerExactRoute('GET', '/api/execution-v1/status', async () => {
     sendJson(response, 200, buildExecutionV1Status());
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/execution-v1/release-blockers') {
+  registerExactRoute('GET', '/api/execution-v1/release-blockers', async () => {
     const includeSharedQuery =
       parseOptionalBooleanQueryParam(url.searchParams, 'includeShared') ??
       parseOptionalBooleanQueryParam(url.searchParams, 'include-shared');
@@ -2992,8 +2985,7 @@ async function handleApi(request, response, url) {
         rootDir,
       }),
     );
-    return;
-  }
+  });
 
   if (
     request.method === 'GET' &&
@@ -3021,7 +3013,7 @@ async function handleApi(request, response, url) {
     return;
   }
 
-  if (request.method === 'GET' && pathname === '/api/execution-v1/release-doc') {
+  registerExactRoute('GET', '/api/execution-v1/release-doc', async () => {
     const docRecord = resolveExecutionV1ReleaseEvidenceDoc(url.searchParams.get('path') || '');
     if (!docRecord) {
       sendNotFound(response);
@@ -3037,10 +3029,9 @@ async function handleApi(request, response, url) {
         'content-disposition': `inline; filename="${path.basename(docRecord.path)}"`,
       },
     );
-    return;
-  }
+  });
 
-  if (request.method === 'POST' && pathname === '/api/execution-v1/refresh') {
+  registerExactRoute('POST', '/api/execution-v1/refresh', async () => {
     const body = await readJsonBody(request);
     const args = buildLiveValidationArgs(body);
     const preflight = buildExecutionV1RefreshPreflight(args);
@@ -3158,10 +3149,9 @@ async function handleApi(request, response, url) {
       });
       throw error;
     }
-    return;
-  }
+  });
 
-  if (request.method === 'POST' && pathname === '/api/execution-v1/refresh/preflight') {
+  registerExactRoute('POST', '/api/execution-v1/refresh/preflight', async () => {
     const body = await readJsonBody(request);
     const args = buildLiveValidationArgs(body);
     const preflight = buildExecutionV1RefreshPreflight(args);
@@ -3180,10 +3170,9 @@ async function handleApi(request, response, url) {
       preflight,
       status: buildExecutionV1Status(),
     });
-    return;
-  }
+  });
 
-  if (request.method === 'POST' && pathname === '/api/execution-v1/preflight') {
+  registerExactRoute('POST', '/api/execution-v1/preflight', async () => {
     const body = await readJsonBody(request);
     const requestedProvider = String(body.provider || '').trim();
     const preflight = runExecutionV1Preflight(requestedProvider);
@@ -3202,10 +3191,9 @@ async function handleApi(request, response, url) {
     sendJson(response, 200, {
       preflight,
     });
-    return;
-  }
+  });
 
-  if (request.method === 'POST' && pathname === '/api/execution-v1/snapshot') {
+  registerExactRoute('POST', '/api/execution-v1/snapshot', async () => {
     const body = await readJsonBody(request);
     const preflight = buildExecutionV1SnapshotPreflight();
     if (!preflight.allowed) {
@@ -3288,10 +3276,9 @@ async function handleApi(request, response, url) {
         status: buildExecutionV1Status(),
       });
     }
-    return;
-  }
+  });
 
-  if (request.method === 'POST' && pathname === '/api/execution-v1/snapshot/preflight') {
+  registerExactRoute('POST', '/api/execution-v1/snapshot/preflight', async () => {
     const preflight = buildExecutionV1SnapshotPreflight();
     recordReleaseAction({
       action: 'snapshot-preflight',
@@ -3306,10 +3293,9 @@ async function handleApi(request, response, url) {
       preflight,
       status: buildExecutionV1Status(),
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathname === '/api/actions') {
+  registerExactRoute('GET', '/api/actions', async () => {
     const workspaceId = String(url.searchParams.get('workspaceId') || '').trim();
     if (workspaceId) {
       const tenant = evaluateWorkspaceTenantAccess(workspaceId, auth);
@@ -3338,8 +3324,7 @@ async function handleApi(request, response, url) {
       promotionStatus: String(url.searchParams.get('promotionStatus') || '').trim(),
       workspaceId,
     }));
-    return;
-  }
+  });
 
   if (
     request.method === 'POST' &&
@@ -3473,12 +3458,11 @@ async function handleApi(request, response, url) {
     return;
   }
 
-  if (request.method === 'GET' && pathname === '/api/missions') {
+  registerExactRoute('GET', '/api/missions', async () => {
     sendJson(response, 200, buildMissionListPayload({ tenantId: resolveAuthTenantId(auth) }));
-    return;
-  }
+  });
 
-  if (request.method === 'POST' && pathname === '/api/missions') {
+  registerExactRoute('POST', '/api/missions', async () => {
     const body = await readJsonBody(request);
     const tenant = evaluateWorkspaceTenantAccess(String(body.workspaceId || '').trim(), auth);
     if (!tenant.allowed) {
@@ -3498,8 +3482,7 @@ async function handleApi(request, response, url) {
     sendJson(response, 201, {
       mission,
     });
-    return;
-  }
+  });
 
   if (
     request.method === 'POST' &&
@@ -3952,10 +3935,9 @@ async function handleApi(request, response, url) {
     return;
   }
 
-  if (request.method === 'GET' && pathname === '/api/approvals') {
+  registerExactRoute('GET', '/api/approvals', async () => {
     sendJson(response, 200, service.getApprovalInbox({}));
-    return;
-  }
+  });
 
   if (
     request.method === 'POST' &&
@@ -3985,6 +3967,12 @@ async function handleApi(request, response, url) {
       content,
       path: artifactPath,
     });
+    return;
+  }
+
+  const exactRoute = exactRoutes.get(`${request.method} ${pathname}`);
+  if (exactRoute) {
+    await exactRoute();
     return;
   }
 
