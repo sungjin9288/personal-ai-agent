@@ -259,7 +259,7 @@ Public setup and provider reports should use `.github/ISSUE_TEMPLATE/bug_report.
 |---|---|
 | OpenAI | `OPENAI_API_KEY`, optional `OPENAI_MODEL`, `OPENAI_BASE_URL`, `OPENAI_RUN_TIMEOUT_MS` |
 | Anthropic | `ANTHROPIC_API_KEY`, optional `ANTHROPIC_MODEL`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_VERSION` |
-| OpenAI-compatible local | `LOCAL_PROVIDER_MODEL`, optional `LOCAL_PROVIDER_BASE_URL`, `LOCAL_PROVIDER_API_KEY`, `LOCAL_PROVIDER_MAX_TOKENS` |
+| OpenAI-compatible local | `LOCAL_PROVIDER_MODEL`, optional `LOCAL_PROVIDER_BASE_URL`, `LOCAL_PROVIDER_API_KEY`, `LOCAL_PROVIDER_MAX_TOKENS`, `LOCAL_PROVIDER_PROBE_TIMEOUT_MS`, `LOCAL_PROVIDER_RUN_TIMEOUT_MS` |
 | Hermes-compatible | `HERMES_PROVIDER_MODEL`, optional `HERMES_PROVIDER_BASE_URL`, `HERMES_PROVIDER_API_KEY`, `HERMES_PROVIDER_MAX_TOKENS` |
 | Web auth and tenancy | `PERSONAL_AI_AGENT_WEB_AUTH_MODE`, `PERSONAL_AI_AGENT_WEB_AUTH_TOKEN`, `PERSONAL_AI_AGENT_RBAC_MODE`, `PERSONAL_AI_AGENT_OIDC_*`, `PERSONAL_AI_AGENT_TENANT_*` |
 
@@ -310,6 +310,14 @@ npm run smoke:target-provider-operations
 npm run smoke:provider-fallback-policy
 npm run smoke:provider-attention-remediation
 npm run smoke:ui-execution-console
+```
+
+Production provider readiness rehearsal and gates:
+
+```bash
+npm run rehearsal:production-provider-readiness
+npm run smoke:production-provider-readiness
+npm run smoke:target-provider-evidence-intake
 ```
 
 The repository also includes many narrower smoke scripts in `package.json` for provider operations, release blocker handoff, UI flows, retention, backup, identity/session, tenant isolation, observability, and target evidence gates.
