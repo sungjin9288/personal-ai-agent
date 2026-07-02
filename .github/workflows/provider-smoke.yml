@@ -98,3 +98,6 @@ jobs:
 
       - name: Run target provider operations smoke
         run: npm run smoke:target-provider-operations
+
+      - name: Run production provider readiness smoke
+        run: npm run smoke:production-provider-readiness
