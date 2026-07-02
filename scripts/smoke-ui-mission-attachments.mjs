@@ -66,9 +66,9 @@ try {
   assert.equal(appJs.includes('handleMissionAttachmentUpload'), true);
   assert.equal(appJs.includes('contentBase64'), true);
   assert.equal(appJs.includes('missionAttachmentUploadLabel'), true);
-  assert.equal(appJs.includes('첨부 업로드: ${selectedHarnessMissionLabel}'), true);
-  assert.equal(appJs.includes('aria-label="${escapeHtml(missionAttachmentUploadLabel)}"'), true);
-  assert.equal(appJs.includes('title="${escapeHtml(missionAttachmentUploadLabel)}"'), true);
+  assert.equal(appJs.includes('첨부 업로드: ${selectedMissionLabel}'), true);
+  assert.equal(appJs.includes('renderMissionAttachmentUploadButton'), true);
+  assert.equal(appJs.includes('actionLabel: missionAttachmentUploadLabel'), true);
 
   const createMissionResponse = await fetchJson(`${baseUrl}/api/missions`, {
     body: JSON.stringify({
