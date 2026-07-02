@@ -13,8 +13,18 @@
 // over HTTP (proving they are served with the right MIME type too), and returns
 // the combined text. New modules are picked up automatically as long as app.js
 // imports them.
+//
+// Discovery recurses: a lib module may itself import a sibling lib module (e.g.
+// `from './app-state.js'`). Those transitive imports are followed so the bundle
+// stays complete even when a function is extracted into a module that app.js
+// only reaches indirectly.
 
-const LIB_IMPORT_PATTERN = /from\s+['"]\.\/(lib\/[\w-]+\.js)['"]/g;
+// Matches `from './lib/<name>.js'` (as written in app.js) and `from './<name>.js'`
+// (as written between sibling lib modules). Capture group 2 is the bare module
+// file name; the resolved served path is always `lib/<name>.js`. Requiring the
+// quote to sit immediately before `./` rejects parent specifiers like
+// `'../app.js'` — a lib module importing back into app.js is not a lib module.
+const LIB_IMPORT_PATTERN = /from\s+['"]\.\/(lib\/)?([\w-]+\.js)['"]/g;
 
 async function fetchTextOrThrow(url) {
   const response = await fetch(url);
@@ -29,12 +39,12 @@ async function fetchTextOrThrow(url) {
  * @param {string} appJsText raw text of /app.js
  * @returns {string[]} e.g. ['lib/text-format.js', 'lib/ui-params.js']
  */
-export function extractServedLibModulePaths(appJsText) {
+export function extractServedLibModulePaths(sourceText) {
   const paths = [];
   const seen = new Set();
   let match;
-  while ((match = LIB_IMPORT_PATTERN.exec(appJsText)) !== null) {
-    const relativePath = match[1];
+  while ((match = LIB_IMPORT_PATTERN.exec(sourceText)) !== null) {
+    const relativePath = `lib/${match[2]}`;
     if (!seen.has(relativePath)) {
       seen.add(relativePath);
       paths.push(relativePath);
@@ -53,9 +63,17 @@ export function extractServedLibModulePaths(appJsText) {
  */
 export async function fetchServedFrontendBundle(baseUrl) {
   const appJsText = await fetchTextOrThrow(`${baseUrl}/app.js`);
-  const libModulePaths = extractServedLibModulePaths(appJsText);
-  const libTexts = await Promise.all(
-    libModulePaths.map((relativePath) => fetchTextOrThrow(`${baseUrl}/${relativePath}`)),
-  );
-  return [appJsText, ...libTexts].join('\n');
+  const fetchedTexts = [appJsText];
+  const fetched = new Set();
+  let pending = extractServedLibModulePaths(appJsText);
+  while (pending.length > 0) {
+    const batch = pending.filter((relativePath) => !fetched.has(relativePath));
+    batch.forEach((relativePath) => fetched.add(relativePath));
+    const batchTexts = await Promise.all(
+      batch.map((relativePath) => fetchTextOrThrow(`${baseUrl}/${relativePath}`)),
+    );
+    fetchedTexts.push(...batchTexts);
+    pending = batchTexts.flatMap((text) => extractServedLibModulePaths(text));
+  }
+  return fetchedTexts.join('\n');
 }
