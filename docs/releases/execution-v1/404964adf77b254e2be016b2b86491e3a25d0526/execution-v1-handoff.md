@@ -1,17 +1,17 @@
 # Execution v1 Handoff
 
-- archivedAt: 2026-07-02T08:34:41.166Z
+- archivedAt: 2026-07-02T08:36:22.407Z
 - sourcePath: docs/execution-v1-handoff.md
 
-- generatedAt: 2026-06-23T08:40:01.410Z
-- localDate: 2026-06-23
-- branch: codex/representative-demo-portfolio-zip-evidence
-- commit: 86101b552d8596907936203c95dc2ad3b346fc9c
+- generatedAt: 2026-07-02T08:36:01.207Z
+- localDate: 2026-07-02
+- branch: main
+- commit: 404964adf77b254e2be016b2b86491e3a25d0526
 - evidence: [execution-v1-evidence.md](docs/releases/execution-v1/404964adf77b254e2be016b2b86491e3a25d0526/execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](docs/releases/execution-v1/404964adf77b254e2be016b2b86491e3a25d0526/execution-v1-closeout.md)
 - immutableSnapshot: [docs/releases/execution-v1/404964adf77b254e2be016b2b86491e3a25d0526](docs/releases/execution-v1/404964adf77b254e2be016b2b86491e3a25d0526)
 - visualArtifactSetSha256: 1acf6a7b7f25a71a6ce56527554ad2318327e2d45de61848c73aa1f2651a5e74
-- commitPushStatus: not pushed, origin/codex/representative-demo-portfolio-zip-evidence not found
+- commitPushStatus: not pushed to origin/main
 
 ## Operational State
 
