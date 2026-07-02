@@ -6,6 +6,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
+import { fetchServedFrontendBundle } from './ui-smoke-helpers.mjs';
+
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-ui-doctor-'));
@@ -36,7 +38,7 @@ try {
   await waitForServer(baseUrl, serverProcess, serverOutput);
 
   const rootHtml = await fetchText(baseUrl);
-  const appJs = await fetchText(`${baseUrl}/app.js`);
+  const appJs = await fetchServedFrontendBundle(baseUrl);
   const doctor = await fetchJson(`${baseUrl}/api/doctor`);
   const serializedDoctor = JSON.stringify(doctor);
 

@@ -6,6 +6,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 
 import { runCli } from './cli-test-helpers.mjs';
+import { fetchServedFrontendBundle } from './ui-smoke-helpers.mjs';
 
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
@@ -59,7 +60,7 @@ try {
   await waitForServer(baseUrl, serverProcess);
 
   const rootHtml = await fetchText(baseUrl);
-  const appJs = await fetchText(`${baseUrl}/app.js`);
+  const appJs = await fetchServedFrontendBundle(baseUrl);
 
   assert.equal(rootHtml.includes('id="mission-attachment-input"'), true);
   assert.equal(appJs.includes('mission-harness-attachment-form'), true);

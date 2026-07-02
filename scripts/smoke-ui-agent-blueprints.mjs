@@ -5,6 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 
+import { fetchServedFrontendBundle } from './ui-smoke-helpers.mjs';
+
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-ui-agent-blueprints-'));
@@ -35,7 +37,7 @@ try {
   await waitForServer(baseUrl, serverProcess);
 
   const rootHtml = await fetchText(baseUrl);
-  const appJs = await fetchText(`${baseUrl}/app.js`);
+  const appJs = await fetchServedFrontendBundle(baseUrl);
   const stylesCss = await fetchText(`${baseUrl}/styles.css`);
 
   assert.equal(rootHtml.includes('id="agent-blueprint-builder"'), true);

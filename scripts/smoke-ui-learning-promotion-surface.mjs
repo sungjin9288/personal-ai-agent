@@ -7,6 +7,7 @@ import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
 import { runCli } from './cli-test-helpers.mjs';
+import { fetchServedFrontendBundle } from './ui-smoke-helpers.mjs';
 
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
@@ -148,7 +149,7 @@ serverProcess.stderr.on('data', (chunk) => {
 try {
   await waitForServer(baseUrl, serverProcess, serverOutput);
 
-  const appJs = await fetchText(`${baseUrl}/app.js`);
+  const appJs = await fetchServedFrontendBundle(baseUrl);
   assert.equal(appJs.includes('data-learning-promotion-audit-copy'), true);
   assert.equal(appJs.includes('copyLearningPromotionAuditPackage'), true);
   assert.equal(appJs.includes('buildLearningPromotionAuditPackageText'), true);
@@ -1318,14 +1319,6 @@ async function fetchJson(url, options = {}) {
     throw new Error(`Request failed (${response.status}): ${url} ${body}`);
   }
   return await response.json();
-}
-
-async function fetchText(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Request failed (${response.status}): ${url}`);
-  }
-  return await response.text();
 }
 
 async function postJson(url, payload) {

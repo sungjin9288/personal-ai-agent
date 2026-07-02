@@ -7,6 +7,7 @@ import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 
 import { runCli } from './cli-test-helpers.mjs';
+import { fetchServedFrontendBundle } from './ui-smoke-helpers.mjs';
 
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
@@ -67,7 +68,7 @@ try {
   await waitForServer(baseUrl, serverProcess, serverOutput);
 
   const rootHtml = await fetchText(baseUrl);
-  const appJs = await fetchText(`${baseUrl}/app.js`);
+  const appJs = await fetchServedFrontendBundle(baseUrl);
 
   assert.equal(rootHtml.includes('id="execution-console"'), true);
   assert.equal(rootHtml.includes('preflight, 승인 lease, 라이브 로그'), true);
