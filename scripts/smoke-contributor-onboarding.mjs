@@ -173,6 +173,7 @@ const expectedProviderSmokeCommands = [
   'npm run smoke:provider-events',
   'npm run smoke:provider-overview',
   'npm run smoke:target-provider-operations',
+  'npm run smoke:production-provider-readiness',
 ];
 
 const pullRequestVerificationCommands = Array.from(
