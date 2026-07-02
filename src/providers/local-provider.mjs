@@ -4,6 +4,7 @@ import {
   estimateUsageCostUsd,
   extractProviderFailure,
   normalizeUsageMetrics,
+  parseOptionalTimeoutMs,
   parseOptionalUsdRate,
   requestJsonWithPolicy,
 } from './provider-runtime-utils.mjs';
@@ -33,6 +34,8 @@ function resolveLocalConfig(env) {
   let maxTokens;
   let inputCostPer1MUsd;
   let outputCostPer1MUsd;
+  let probeTimeoutMs;
+  let runTimeoutMs;
   try {
     maxTokens = parsePositiveInteger(
       env[LOCAL_SPEC.envKeys.maxTokens],
@@ -46,6 +49,16 @@ function resolveLocalConfig(env) {
     outputCostPer1MUsd = parseOptionalUsdRate(
       env[LOCAL_SPEC.envKeys.outputCostPer1MUsd],
       LOCAL_SPEC.envKeys.outputCostPer1MUsd,
+    );
+    probeTimeoutMs = parseOptionalTimeoutMs(
+      env[LOCAL_SPEC.envKeys.probeTimeoutMs],
+      LOCAL_SPEC.runtime.probeTimeoutMs,
+      LOCAL_SPEC.envKeys.probeTimeoutMs,
+    );
+    runTimeoutMs = parseOptionalTimeoutMs(
+      env[LOCAL_SPEC.envKeys.runTimeoutMs],
+      LOCAL_SPEC.runtime.runTimeoutMs,
+      LOCAL_SPEC.envKeys.runTimeoutMs,
     );
   } catch (error) {
     throw createProviderFailure(error instanceof Error ? error.message : String(error), {
@@ -65,6 +78,8 @@ function resolveLocalConfig(env) {
       inputCostPer1MUsd,
       outputCostPer1MUsd,
     },
+    probeTimeoutMs,
+    runTimeoutMs,
   };
 }
 
@@ -103,7 +118,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
           ...LOCAL_SPEC.runtime.rateLimit,
           scope: LOCAL_SPEC.id,
         },
-        timeoutMs: LOCAL_SPEC.runtime.probeTimeoutMs,
+        timeoutMs: config.probeTimeoutMs,
         url: `${config.baseUrl}/models`,
       });
       const models = Array.isArray(payload?.data)
@@ -164,7 +179,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
           ...LOCAL_SPEC.runtime.rateLimit,
           scope: LOCAL_SPEC.id,
         },
-        timeoutMs: LOCAL_SPEC.runtime.runTimeoutMs,
+        timeoutMs: config.runTimeoutMs,
         url: `${config.baseUrl}/chat/completions`,
       });
       const providerResponseId = normalizeText(payload.id);
