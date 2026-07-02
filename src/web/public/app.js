@@ -1,3 +1,48 @@
+import {
+  stripFileExtension,
+  getFileExtension,
+  formatByteCount,
+  getHarnessPageSizeLabel,
+  getHarnessPageLabel,
+  getHarnessRangeLabel,
+  getDetailTabLabel,
+  getRetrievalCompareStatusLabel,
+  getReleaseCountRecordEntries,
+  formatProviderFallbackEventCountLines,
+  getPrimaryArtifact,
+  inferCommandOption,
+  inferFallbackPolicyFromCommand,
+  getLearningPromotionCandidateId,
+  formatLearningPromotionAuditValue,
+  getFormEditingId,
+  getReleaseProductionBlockerVerificationCommands,
+} from './lib/text-format.js';
+import {
+  normalizeUiParam,
+  normalizeReleaseProductionBlockerStateIndex,
+  normalizeReleaseProductionBlockerQueryIndex,
+  getReleaseProductionBlockerOrdinal,
+  getSanitizedReleaseHistoryOutcome,
+  getSanitizedRetrievalSourceType,
+  getSanitizedMissionActionsFilter,
+  getRetrievalSourceKey,
+  getRetrievalArtifactTargetLabel,
+  getReleaseHandoffStructuredSummaryDetailCopyKey,
+  getReleaseHandoffStructuredSummaryStableLineCopyKey,
+  getReleaseCommandCopyKey,
+  getReleaseLinkCopyKey,
+} from './lib/ui-params.js';
+import {
+  getReleaseHandoffStableLineCopyLabel,
+  getReleaseHandoffAdditionalSummaryKeys,
+  appendReleaseHandoffSummaryRow,
+  getReleaseHandoffStructuredSummaryRows,
+  getReleaseHandoffStructuredSummaryDetails,
+  getReleaseHandoffStructuredSummaryDetailOverviewLine,
+  getReleaseHandoffStructuredSummarySha,
+  getReleaseHandoffStructuredSummaryOverviewLine,
+} from './lib/release-handoff-summary.js';
+
 const state = {
   activeStep: 'step-setup',
   activeDetailTab: 'artifacts',
@@ -744,37 +789,6 @@ function getMissionAiConfiguration(detail = state.missionDetail) {
   };
 }
 
-function normalizeUiParam(value) {
-  const normalized = String(value || '').trim();
-  return normalized || null;
-}
-
-function normalizeReleaseProductionBlockerStateIndex(value) {
-  const normalized = String(value ?? '').trim();
-  if (!/^\d+$/.test(normalized)) {
-    return '';
-  }
-  const index = Number(normalized);
-  return Number.isSafeInteger(index) ? String(index) : '';
-}
-
-function normalizeReleaseProductionBlockerQueryIndex(value) {
-  const normalized = String(value ?? '').trim();
-  if (!/^\d+$/.test(normalized)) {
-    return '';
-  }
-  const ordinal = Number(normalized);
-  if (!Number.isSafeInteger(ordinal) || ordinal < 1) {
-    return '';
-  }
-  return String(ordinal - 1);
-}
-
-function getReleaseProductionBlockerOrdinal(value) {
-  const normalizedIndex = normalizeReleaseProductionBlockerStateIndex(value);
-  return normalizedIndex === '' ? '' : String(Number(normalizedIndex) + 1);
-}
-
 function getSanitizedStepId(stepId) {
   const normalized = normalizeUiParam(stepId);
   return normalized && STEP_IDS.has(normalized) ? normalized : null;
@@ -783,21 +797,6 @@ function getSanitizedStepId(stepId) {
 function getSanitizedDetailTab(tabId) {
   const normalized = normalizeUiParam(tabId);
   return normalized && DETAIL_TAB_IDS.has(normalized) ? normalized : null;
-}
-
-function getSanitizedReleaseHistoryOutcome(outcome) {
-  const normalized = normalizeUiParam(outcome);
-  return normalized === 'attention' ? normalized : null;
-}
-
-function getSanitizedRetrievalSourceType(sourceType) {
-  const normalized = normalizeUiParam(sourceType);
-  return normalized === 'memory' || normalized === 'attachment' ? normalized : null;
-}
-
-function getSanitizedMissionActionsFilter(filter) {
-  const normalized = normalizeUiParam(filter);
-  return normalized === 'needs-reminder' || normalized === 'overdue' ? normalized : 'all';
 }
 
 function parseUiStateFromUrl() {
@@ -1078,15 +1077,6 @@ function writeUiStateToUrl({ historyMode = 'replace' } = {}) {
   }
 }
 
-function stripFileExtension(fileName = '') {
-  return String(fileName).replace(/\.[^.]+$/, '');
-}
-
-function getFileExtension(fileName = '') {
-  const match = String(fileName || '').toLowerCase().match(/\.[^.]+$/);
-  return match ? match[0] : '';
-}
-
 function isTextMissionAttachmentFile(file) {
   const extension = getFileExtension(file?.name);
   const mimeType = String(file?.type || '').toLowerCase();
@@ -1110,22 +1100,9 @@ function setUiNotice(message = '') {
   }
 }
 
-function getRetrievalSourceKey(sourceType = '', sourceLabel = '') {
-  const normalizedType = getSanitizedRetrievalSourceType(sourceType);
-  const normalizedLabel = normalizeUiParam(sourceLabel);
-  if (!normalizedType || !normalizedLabel) {
-    return '';
-  }
-  return `${normalizedType}:${normalizedLabel}`;
-}
-
 function getRetrievalSourceActionLabel(actionLabel = 'retrieval source', sourceType = '', sourceLabel = '') {
   const sourceTitle = formatRetrievalSourceLabel({ sourceLabel, sourceType });
   return `${String(actionLabel || 'retrieval source').trim()}: ${sourceTitle}`;
-}
-
-function getRetrievalArtifactTargetLabel(artifact = {}) {
-  return String(artifact.path || artifact.fileName || artifact.id || 'retrieval evidence').trim();
 }
 
 function getRetrievalArtifactOpenLabel(artifact = {}, actionLabel = 'retrieval 근거 열기') {
@@ -1144,40 +1121,12 @@ function isCopiedReleaseHandoffSummary(artifactId = '') {
   return state.releaseHandoffCopiedSummaryId === normalizeUiParam(artifactId);
 }
 
-function getReleaseHandoffStructuredSummaryDetailCopyKey(artifactId = '', detailKey = '') {
-  const normalizedArtifactId = normalizeUiParam(artifactId);
-  const normalizedDetailKey = normalizeUiParam(detailKey);
-  if (!normalizedArtifactId || !normalizedDetailKey) {
-    return '';
-  }
-  return `${normalizedArtifactId}:${normalizedDetailKey}`;
-}
-
 function isCopiedReleaseHandoffSummaryDetail(artifactId = '', detailKey = '') {
   return state.releaseHandoffCopiedSummaryDetailKey === getReleaseHandoffStructuredSummaryDetailCopyKey(artifactId, detailKey);
 }
 
-function getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId = '', detailKey = '', lineIndex = -1) {
-  const normalizedArtifactId = normalizeUiParam(artifactId);
-  const normalizedDetailKey = normalizeUiParam(detailKey);
-  const normalizedLineIndex = Number.isInteger(lineIndex) ? lineIndex : Number.parseInt(lineIndex, 10);
-  if (!normalizedArtifactId || !normalizedDetailKey || normalizedLineIndex < 0) {
-    return '';
-  }
-  return `${normalizedArtifactId}:${normalizedDetailKey}:${normalizedLineIndex}`;
-}
-
 function isCopiedReleaseHandoffSummaryStableLine(artifactId = '', detailKey = '', lineIndex = -1) {
   return state.releaseHandoffCopiedSummaryStableLineKey === getReleaseHandoffStructuredSummaryStableLineCopyKey(artifactId, detailKey, lineIndex);
-}
-
-function getReleaseCommandCopyKey(command = '', label = '') {
-  const normalizedCommand = normalizeUiParam(command);
-  const normalizedLabel = normalizeUiParam(label);
-  if (!normalizedCommand) {
-    return '';
-  }
-  return `${normalizedLabel || 'release command'}:${normalizedCommand}`;
 }
 
 function isCopiedReleaseCommand(command = '', label = '') {
@@ -1297,15 +1246,6 @@ function markCopiedReleaseBlockerEvidence(options = {}) {
     state.releaseBlockerEvidenceCopiedTimer = null;
     renderReleaseStatus();
   }, 1800);
-}
-
-function getReleaseLinkCopyKey(action = '', value = '') {
-  const normalizedAction = normalizeUiParam(action);
-  const normalizedValue = normalizeUiParam(value);
-  if (!normalizedAction || !normalizedValue) {
-    return '';
-  }
-  return `${normalizedAction}:${normalizedValue}`;
 }
 
 function isCopiedReleaseLink(action = '', value = '') {
@@ -3816,10 +3756,6 @@ function setWorkspaceFormOpen(isOpen, { focus = false } = {}) {
   }
 }
 
-function getFormEditingId(form) {
-  return String(form?.dataset?.editingId || '').trim();
-}
-
 function getMemoryFormConfig(scope) {
   if (scope === 'workspace') {
     return {
@@ -3948,11 +3884,6 @@ function getHarnessDocumentSortLabel() {
     return '유형순';
   }
   return '최신순';
-}
-
-function getHarnessPageSizeLabel(limit) {
-  const normalized = Number(limit || 12) || 12;
-  return `${normalized}건씩`;
 }
 
 function buildFallbackHarnessDocumentBrowse(harnessSummary = {}) {
@@ -4210,24 +4141,6 @@ function buildHarnessPanelViewModel(harnessSummary = {}) {
       visibleDocumentEntries,
     },
   };
-}
-
-function getHarnessPageLabel(summary = {}) {
-  const currentPage = Number(summary.currentPage || 0);
-  const totalPages = Number(summary.totalPages || 0);
-  if (!currentPage || !totalPages) {
-    return '0 / 0 페이지';
-  }
-  return `${currentPage} / ${totalPages} 페이지`;
-}
-
-function getHarnessRangeLabel(summary = {}, totalCount = 0) {
-  const pageStart = Number(summary.pageStart || 0);
-  const pageEnd = Number(summary.pageEnd || 0);
-  if (!pageStart || !pageEnd || !totalCount) {
-    return '표시할 항목이 없습니다';
-  }
-  return `${pageStart}-${pageEnd} / ${totalCount}건`;
 }
 
 function renderHarnessFilterChips(items = []) {
@@ -5326,20 +5239,6 @@ function formatDurationMs(value) {
   return `${Math.round(durationMs / 60_000)}m`;
 }
 
-function formatByteCount(value) {
-  const bytes = Number(value);
-  if (!Number.isFinite(bytes) || bytes < 0) {
-    return '-';
-  }
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(bytes >= 10 * 1024 ? 0 : 1)} KB`;
-  }
-  return `${(bytes / (1024 * 1024)).toFixed(bytes >= 10 * 1024 * 1024 ? 0 : 1)} MB`;
-}
-
 function isReleaseHandoffPreviewable(item = {}) {
   if (!item || typeof item !== 'object') {
     return false;
@@ -5353,114 +5252,6 @@ const releaseHandoffStableLineCopyBaseKey =
 
 function buildReleaseHandoffStableLineCopyKey(totalLineCopyCount) {
   return `${releaseHandoffStableLineCopyBaseKey}${'LineCopy'.repeat(totalLineCopyCount - 5)}`;
-}
-
-function getReleaseHandoffStableLineCopyLabel(summaryKey) {
-  return summaryKey
-    .replace(/([A-Z])/g, ' $1')
-    .trim()
-    .toLowerCase();
-}
-
-function getReleaseHandoffAdditionalSummaryKeys(summary = {}) {
-  const stableKeys = Object.keys(summary)
-    .filter((key) => key.startsWith('summaryStableLineCopy'))
-    .sort((left, right) => left.length - right.length || left.localeCompare(right));
-  return [...new Set([
-      ...stableKeys,
-      'summaryDetailCopyPreview',
-      'summaryDetailCopyPreviewLineCopy',
-      'summaryDetailCopyPreviewLineCopyBody',
-    ])].filter((key) => summary[key] && typeof summary[key] === 'object');
-}
-
-function appendReleaseHandoffSummaryRow(rows, key, entry = {}) {
-  rows.push({
-    label: getReleaseHandoffStableLineCopyLabel(key),
-    value: `${Number((entry.exactMatchCount ?? entry.errorFreeSessions) || 0)}/${Number(entry.totalSessions || 0)} exact-match`,
-  });
-}
-
-function getReleaseHandoffStructuredSummaryRows(item = {}) {
-  const summary = item?.structuredSummary;
-  if (!summary || typeof summary !== 'object') {
-    return [];
-  }
-  const rows = [
-    {
-      label: 'preview',
-      value: `${Number(summary.preview?.errorFreeSessions || 0)}/${Number(summary.preview?.totalSessions || 0)} error-free`,
-    },
-    {
-      label: 'open',
-      value: `${Number(summary.open?.errorFreeSessions || 0)}/${Number(summary.open?.totalSessions || 0)} error-free`,
-    },
-  ];
-
-  for (const key of ['summaryCopy', 'summaryCopyPreview', 'summaryDetailCopy']) {
-    if (summary[key] && typeof summary[key] === 'object') {
-      appendReleaseHandoffSummaryRow(rows, key, summary[key]);
-    }
-  }
-
-  for (const summaryKey of getReleaseHandoffAdditionalSummaryKeys(summary)) {
-    appendReleaseHandoffSummaryRow(rows, summaryKey, summary[summaryKey]);
-  }
-
-  return rows;
-}
-
-function getReleaseHandoffStructuredSummaryDetails(item = {}) {
-  const summary = item?.structuredSummary;
-  if (!summary || typeof summary !== 'object') {
-    return [];
-  }
-  const detailKeys = [
-    'preview',
-    'open',
-    'summaryCopy',
-    'summaryCopyPreview',
-    'summaryDetailCopy',
-    ...getReleaseHandoffAdditionalSummaryKeys(summary),
-  ];
-
-  return [...new Set(detailKeys)]
-    .map((key) => {
-      const overviewLine = String(summary?.[key]?.overviewLine || '').trim();
-      if (!overviewLine) {
-        return null;
-      }
-      const stableLines = Array.isArray(summary?.[key]?.stableLines)
-        ? summary[key].stableLines.map((line) => String(line || '').trim()).filter(Boolean)
-        : [];
-      return {
-        key,
-        label: getReleaseHandoffStableLineCopyLabel(key),
-        overviewLine,
-        stableLineCount: Number(summary?.[key]?.stableLineCount ?? stableLines.length ?? 0),
-        stableLines,
-      };
-    })
-    .filter(Boolean);
-}
-
-function getReleaseHandoffStructuredSummaryDetailOverviewLine(item = {}, detailKey = '') {
-  const normalizedDetailKey = normalizeUiParam(detailKey);
-  if (!normalizedDetailKey) {
-    return '';
-  }
-  const detailEntry = getReleaseHandoffStructuredSummaryDetails(item).find(
-    (detail) => normalizeUiParam(detail.key) === normalizedDetailKey,
-  );
-  return String(detailEntry?.overviewLine || '').trim();
-}
-
-function getReleaseHandoffStructuredSummarySha(item = {}) {
-  return String(item?.structuredSummary?.sha256 || '').trim();
-}
-
-function getReleaseHandoffStructuredSummaryOverviewLine(item = {}) {
-  return String(item?.structuredSummary?.overviewLine || '').trim();
 }
 
 function buildReleaseHandoffPreviewContent(content = '') {
@@ -6082,16 +5873,6 @@ function getAbsoluteReleaseUrl(href = '') {
   return `${window.location.origin}${normalizedHref.startsWith('/') ? normalizedHref : `/${normalizedHref}`}`;
 }
 
-function getReleaseCountRecordEntries(record = {}) {
-  if (!record || typeof record !== 'object') {
-    return [];
-  }
-  return Object.entries(record)
-    .map(([key, value]) => [String(key || '').trim(), Number(value || 0)])
-    .filter(([key, value]) => Boolean(key) && value > 0)
-    .sort(([leftKey, leftValue], [rightKey, rightValue]) => rightValue - leftValue || leftKey.localeCompare(rightKey));
-}
-
 function buildReleaseBlockerSliceUrl({
   category = state.releaseBlockerCategoryFilter,
   includeShared = state.releaseBlockerIncludeSharedProviderOperations,
@@ -6161,23 +5942,6 @@ function getValidReleaseProductionBlockerIndex(value, releaseStatus = state.rele
   const productionBlockers = getReleaseProductionBlockers(releaseStatus);
   const index = Number(normalizedIndex);
   return index >= 0 && index < productionBlockers.length ? String(index) : '';
-}
-
-function getReleaseProductionBlockerVerificationCommands() {
-  return [
-    {
-      command: 'npm run smoke:production-readiness-gate',
-      label: 'Production readiness gate',
-    },
-    {
-      command: 'npm run smoke:release-artifact-hygiene',
-      label: 'Release artifact hygiene',
-    },
-    {
-      command: 'npm run smoke:execution-v1-status',
-      label: 'Execution v1 status',
-    },
-  ];
 }
 
 function buildReleaseProductionBlockerSummaryText({
@@ -11479,19 +11243,6 @@ function getStepLabel(stepId, { short = false } = {}) {
   return short ? meta.shortLabel : meta.label;
 }
 
-function getDetailTabLabel(tabId) {
-  return (
-    {
-      artifacts: '결과물',
-      config: '입력값과 설정',
-      harness: '하네스',
-      release: 'v1 마감 상태',
-      reviews: '검토 이력',
-      runs: '실행 기록',
-    }[tabId] || '세부 보기'
-  );
-}
-
 function summarizeText(value, fallback = '') {
   const normalized = String(value || '')
     .replace(/\s+/g, ' ')
@@ -11602,28 +11353,6 @@ function renderFactGraphPreview(memory = {}) {
       }
     </div>
   `;
-}
-
-function getRetrievalCompareStatusLabel(compare = {}) {
-  const status = String(compare.status || '').trim();
-
-  if (status === 'aligned') {
-    return 'preview와 evidence 정렬됨';
-  }
-  if (status === 'partial') {
-    return '일부 source만 유지됨';
-  }
-  if (status === 'shifted') {
-    return 'source 흐름이 바뀜';
-  }
-  if (status === 'empty') {
-    return '비교할 retrieval 없음';
-  }
-  if (status === 'no-evidence') {
-    return '최근 evidence 없음';
-  }
-
-  return 'retrieval 비교';
 }
 
 function getRetrievalCompareStatusClass(compare = {}) {
@@ -16783,14 +16512,6 @@ function renderProviderFallbackEventActionButton({
 
 function renderProviderFallbackEventListEmptyState() {
   return '<div class="empty-state">현재 필터에 해당하는 fallback event가 없습니다.</div>';
-}
-
-function formatProviderFallbackEventCountLines(counts = {}, emptyLabel = 'none') {
-  const entries = getReleaseCountRecordEntries(counts);
-  if (!entries.length) {
-    return [`- ${emptyLabel}`];
-  }
-  return entries.map(([key, value]) => `- ${key}: ${value}`);
 }
 
 function buildProviderFallbackEventAuditCommand({
@@ -22435,17 +22156,6 @@ function renderStageSummaries() {
   renderOutputCloseout();
 }
 
-function getPrimaryArtifact(artifacts = []) {
-  return (
-    artifacts
-      .slice()
-      .reverse()
-      .find((artifact) => ['deliverable', 'execution-handoff', 'approval-resolution'].includes(artifact.kind)) ||
-    artifacts[artifacts.length - 1] ||
-    null
-  );
-}
-
 function getArtifactLabel(artifact) {
   if (!artifact) {
     return '';
@@ -22548,25 +22258,12 @@ function renderReviewReadiness() {
   }
 }
 
-function inferCommandOption(command = '', optionName = '') {
-  const escapedOption = String(optionName).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  if (!escapedOption) {
-    return '';
-  }
-  const match = String(command).match(new RegExp(`${escapedOption}\\s+([^\\s]+)`, 'i'));
-  return match ? match[1] : '';
-}
-
 function inferProviderFromCommand(command = '') {
   return inferCommandOption(command, '--provider');
 }
 
 function inferFallbackProviderFromCommand(command = '') {
   return inferCommandOption(command, '--fallback-provider');
-}
-
-function inferFallbackPolicyFromCommand(command = '') {
-  return inferCommandOption(command, '--fallback-policy');
 }
 
 function getProviderAttentionRemediationPayload(item, mode = 'primary') {
@@ -22603,38 +22300,6 @@ function formatSpecialistFollowUpRoute(item) {
   ]
     .filter(Boolean)
     .join(' · ');
-}
-
-function getLearningPromotionCandidateId(item) {
-  if (!item) {
-    return '';
-  }
-  if (item.learningCandidateId) {
-    return String(item.learningCandidateId);
-  }
-  return String(item.actionId || '').replace(/^learning-promotion:/, '');
-}
-
-function formatLearningPromotionAuditValue(value, fallback = '-') {
-  if (value === true) {
-    return 'true';
-  }
-  if (value === false) {
-    return 'false';
-  }
-  if (value === null || value === undefined || value === '') {
-    return fallback;
-  }
-  if (Array.isArray(value)) {
-    return value.length ? value.join(', ') : fallback;
-  }
-  if (typeof value === 'object') {
-    const entries = Object.entries(value)
-      .filter(([, entryValue]) => entryValue !== null && entryValue !== undefined && entryValue !== '')
-      .map(([key, entryValue]) => `${key}=${entryValue}`);
-    return entries.length ? entries.join(', ') : fallback;
-  }
-  return String(value);
 }
 
 function buildLearningPromotionAuditPackageText(item) {
