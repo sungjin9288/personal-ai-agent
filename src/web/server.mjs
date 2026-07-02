@@ -2793,6 +2793,44 @@ async function handleApi(request, response, url) {
     exactRoutes.set(`${method} ${routePath}`, handler);
   };
 
+  const paramRoutes = [];
+  const registerParamRoute = (method, pattern, handler) => {
+    const segments = pattern.split('/').filter(Boolean);
+    paramRoutes.push({ handler, method, segments });
+  };
+  const matchParamRoute = () => {
+    for (const route of paramRoutes) {
+      if (route.method !== request.method) {
+        continue;
+      }
+      if (route.segments.length !== pathParts.length) {
+        continue;
+      }
+      const params = {};
+      let matched = true;
+      for (let index = 0; index < route.segments.length; index += 1) {
+        const segment = route.segments[index];
+        if (segment.startsWith(':')) {
+          const value = pathParts[index];
+          if (!value) {
+            matched = false;
+            break;
+          }
+          params[segment.slice(1)] = value;
+          continue;
+        }
+        if (segment !== pathParts[index]) {
+          matched = false;
+          break;
+        }
+      }
+      if (matched) {
+        return { handler: route.handler, params };
+      }
+    }
+    return null;
+  };
+
   registerExactRoute('GET', '/api/meta', async () => {
     sendJson(response, 200, {
       generatedAt: new Date().toISOString(),
@@ -2987,14 +3025,8 @@ async function handleApi(request, response, url) {
     );
   });
 
-  if (
-    request.method === 'GET' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'execution-v1' &&
-    pathParts[2] === 'handoff-artifacts' &&
-    pathParts[3]
-  ) {
-    const artifactId = decodePathSegment(pathParts[3]);
+  registerParamRoute('GET', '/api/execution-v1/handoff-artifacts/:artifactId', async (params) => {
+    const artifactId = decodePathSegment(params.artifactId);
     const artifactRecord = resolveExecutionV1ReleaseHandoffArtifact(artifactId);
     if (!artifactRecord) {
       sendNotFound(response);
@@ -3010,8 +3042,7 @@ async function handleApi(request, response, url) {
         'content-disposition': `inline; filename="${path.basename(artifactRecord.artifactPath)}"`,
       },
     );
-    return;
-  }
+  });
 
   registerExactRoute('GET', '/api/execution-v1/release-doc', async () => {
     const docRecord = resolveExecutionV1ReleaseEvidenceDoc(url.searchParams.get('path') || '');
@@ -3326,13 +3357,7 @@ async function handleApi(request, response, url) {
     }));
   });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'actions' &&
-    pathParts[2] === 'learning-promotions' &&
-    pathParts[3] === 'expire'
-  ) {
+  registerParamRoute('POST', '/api/actions/learning-promotions/expire', async () => {
     const body = await readJsonBody(request);
     const result = service.expireLearningPromotions({
       before: String(body.before || '').trim(),
@@ -3344,18 +3369,10 @@ async function handleApi(request, response, url) {
       workspaceId: String(body.workspaceId || '').trim(),
     });
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'actions' &&
-    pathParts[2] === 'learning-promotions' &&
-    pathParts[3] &&
-    pathParts[4] === 'remind'
-  ) {
-    const candidateId = decodePathSegment(pathParts[3]);
+  registerParamRoute('POST', '/api/actions/learning-promotions/:candidateId/remind', async (params) => {
+    const candidateId = decodePathSegment(params.candidateId);
     const body = await readJsonBody(request);
     const result = service.remindLearningPromotionStopConditions(
       {
@@ -3368,18 +3385,10 @@ async function handleApi(request, response, url) {
       String(body.note || '').trim(),
     );
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'actions' &&
-    pathParts[2] === 'learning-promotions' &&
-    pathParts[3] &&
-    pathParts[4] === 'resolve'
-  ) {
-    const candidateId = decodePathSegment(pathParts[3]);
+  registerParamRoute('POST', '/api/actions/learning-promotions/:candidateId/resolve', async (params) => {
+    const candidateId = decodePathSegment(params.candidateId);
     const body = await readJsonBody(request);
     const result = service.resolveLearningPromotion(candidateId, {
       decision: String(body.decision || '').trim(),
@@ -3388,75 +3397,42 @@ async function handleApi(request, response, url) {
       target: String(body.target || '').trim(),
     });
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'actions' &&
-    pathParts[2] === 'learning-promotions' &&
-    pathParts[3] &&
-    pathParts[4] === 'rollback'
-  ) {
-    const candidateId = decodePathSegment(pathParts[3]);
+  registerParamRoute('POST', '/api/actions/learning-promotions/:candidateId/rollback', async (params) => {
+    const candidateId = decodePathSegment(params.candidateId);
     const body = await readJsonBody(request);
     const result = service.rollbackLearningPromotion(candidateId, {
       note: String(body.note || '').trim(),
     });
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'actions' &&
-    pathParts[2] === 'provider-attention' &&
-    pathParts[3] &&
-    pathParts[4] === 'remediate'
-  ) {
-    const actionId = decodePathSegment(pathParts[3]);
+  registerParamRoute('POST', '/api/actions/provider-attention/:actionId/remediate', async (params) => {
+    const actionId = decodePathSegment(params.actionId);
     const body = await readJsonBody(request);
     const result = await service.remediateProviderAttention(actionId, {
       fallbackPolicy: String(body.fallbackPolicy || '').trim(),
       fallbackProvider: String(body.fallbackProvider || '').trim(),
     });
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'actions' &&
-    pathParts[2] === 'specialist-follow-ups' &&
-    pathParts[3] &&
-    pathParts[4] === 'remediate'
-  ) {
-    const actionId = decodePathSegment(pathParts[3]);
+  registerParamRoute('POST', '/api/actions/specialist-follow-ups/:actionId/remediate', async (params) => {
+    const actionId = decodePathSegment(params.actionId);
     const result = await service.remediateSpecialistFollowUp(actionId);
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'actions' &&
-    pathParts[2] === 'reviewer-follow-ups' &&
-    pathParts[3] &&
-    pathParts[4] === 'resolve'
-  ) {
-    const actionId = decodePathSegment(pathParts[3]);
+  registerParamRoute('POST', '/api/actions/reviewer-follow-ups/:actionId/resolve', async (params) => {
+    const actionId = decodePathSegment(params.actionId);
     const body = await readJsonBody(request);
     const result = service.resolveReviewerFollowUp(actionId, {
       kind: String(body.kind || '').trim(),
       note: String(body.note || '').trim(),
     });
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
   registerExactRoute('GET', '/api/missions', async () => {
     sendJson(response, 200, buildMissionListPayload({ tenantId: resolveAuthTenantId(auth) }));
@@ -3484,14 +3460,8 @@ async function handleApi(request, response, url) {
     });
   });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'attachments'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/attachments', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const tenant = evaluateMissionTenantAccess(missionId, auth);
     if (!tenant.allowed) {
       sendTenantDenied(response, tenant);
@@ -3513,60 +3483,36 @@ async function handleApi(request, response, url) {
     sendJson(response, 201, {
       attachments: created,
     });
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathParts[0] === 'api' && pathParts[1] === 'missions' && pathParts[2] && pathParts.length === 3) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/missions/:missionId', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const tenant = evaluateMissionTenantAccess(missionId, auth);
     if (!tenant.allowed) {
       sendTenantDenied(response, tenant);
       return;
     }
     sendJson(response, 200, service.showMission(missionId));
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'execution' &&
-    pathParts[4] === 'rollback'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/execution/rollback', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const body = await readJsonBody(request);
     const result = service.rollbackExecution(missionId, {
       dryRun: Boolean(body.dryRun),
       executionId: decodePathSegment(body.executionId || ''),
     });
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'GET' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'session'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/missions/:missionId/session', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const sessionId = String(url.searchParams.get('sessionId') || '').trim();
     sendJson(response, 200, service.showSession(missionId, { sessionId }));
-    return;
-  }
+  });
 
-  if (
-    request.method === 'GET' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'harness' &&
-    pathParts[4] === 'documents'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/missions/:missionId/harness/documents', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     sendJson(
       response,
       200,
@@ -3578,18 +3524,10 @@ async function handleApi(request, response, url) {
         type: String(url.searchParams.get('type') || '').trim(),
       }),
     );
-    return;
-  }
+  });
 
-  if (
-    request.method === 'GET' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'harness' &&
-    pathParts[4] === 'memory'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/missions/:missionId/harness/memory', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     sendJson(
       response,
       200,
@@ -3602,31 +3540,16 @@ async function handleApi(request, response, url) {
         sort: String(url.searchParams.get('sort') || '').trim(),
       }),
     );
-    return;
-  }
+  });
 
-  if (
-    request.method === 'GET' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'timeline'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/missions/:missionId/timeline', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     sendJson(response, 200, service.getMissionTimeline(missionId));
-    return;
-  }
+  });
 
-  if (
-    request.method === 'PATCH' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'document-log' &&
-    pathParts[4]
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
-    const entryId = decodePathSegment(pathParts[4]);
+  registerParamRoute('PATCH', '/api/missions/:missionId/document-log/:entryId', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
+    const entryId = decodePathSegment(params.entryId);
     const mission = service.showMission(missionId).mission;
     const body = await readJsonBody(request);
     const rawTitle = String(body.title || '').trim();
@@ -3639,121 +3562,58 @@ async function handleApi(request, response, url) {
     });
 
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'DELETE' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'document-log' &&
-    pathParts[4]
-  ) {
-    const entryId = decodePathSegment(pathParts[4]);
+  registerParamRoute('DELETE', '/api/missions/:missionId/document-log/:entryId', async (params) => {
+    const entryId = decodePathSegment(params.entryId);
     const result = service.deleteDocumentLog(entryId);
 
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'execution' &&
-    pathParts[4] === 'preflight'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/execution/preflight', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const body = await readJsonBody(request);
     const result = service.preflightExecution(missionId, {
       requestApproval: Boolean(body.requestApproval),
     });
 
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'execution' &&
-    pathParts[4] === 'start'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/execution/start', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const result = service.startExecution(missionId);
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'execution' &&
-    pathParts[4] === 'stop'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/execution/stop', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const result = service.stopExecution(missionId);
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'GET' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'execution' &&
-    !pathParts[4]
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/missions/:missionId/execution', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     sendJson(response, 200, service.getExecutionStatus(missionId));
-    return;
-  }
+  });
 
-  if (
-    request.method === 'GET' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'execution' &&
-    pathParts[4] === 'logs'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/missions/:missionId/execution/logs', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const executionId = decodePathSegment(url.searchParams.get('executionId') || '');
     sendJson(response, 200, service.getExecutionLogs(missionId, { executionId }));
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'document-log' &&
-    pathParts[4] === 'migrate-legacy'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/document-log/migrate-legacy', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     service.showMission(missionId);
     const result = service.migrateLegacyDocumentLogs();
 
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'document-log'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/document-log', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const mission = service.showMission(missionId).mission;
     const body = await readJsonBody(request);
     const rawTitle = String(body.title || '').trim();
@@ -3765,19 +3625,11 @@ async function handleApi(request, response, url) {
     });
 
     sendJson(response, 201, result);
-    return;
-  }
+  });
 
-  if (
-    request.method === 'PATCH' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'workspaces' &&
-    pathParts[2] &&
-    pathParts[3] === 'memory' &&
-    pathParts[4]
-  ) {
-    const workspaceId = decodePathSegment(pathParts[2]);
-    const memoryId = decodePathSegment(pathParts[4]);
+  registerParamRoute('PATCH', '/api/workspaces/:workspaceId/memory/:memoryId', async (params) => {
+    const workspaceId = decodePathSegment(params.workspaceId);
+    const memoryId = decodePathSegment(params.memoryId);
     const body = await readJsonBody(request);
     const entry = service.updateMemory({
       content: String(body.content || '').trim(),
@@ -3790,19 +3642,11 @@ async function handleApi(request, response, url) {
     sendJson(response, 200, {
       entry,
     });
-    return;
-  }
+  });
 
-  if (
-    request.method === 'DELETE' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'workspaces' &&
-    pathParts[2] &&
-    pathParts[3] === 'memory' &&
-    pathParts[4]
-  ) {
-    const workspaceId = decodePathSegment(pathParts[2]);
-    const memoryId = decodePathSegment(pathParts[4]);
+  registerParamRoute('DELETE', '/api/workspaces/:workspaceId/memory/:memoryId', async (params) => {
+    const workspaceId = decodePathSegment(params.workspaceId);
+    const memoryId = decodePathSegment(params.memoryId);
     const entry = service.deleteMemory({
       memoryId,
       scope: 'workspace',
@@ -3812,17 +3656,10 @@ async function handleApi(request, response, url) {
     sendJson(response, 200, {
       entry,
     });
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'workspaces' &&
-    pathParts[2] &&
-    pathParts[3] === 'memory'
-  ) {
-    const workspaceId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/workspaces/:workspaceId/memory', async (params) => {
+    const workspaceId = decodePathSegment(params.workspaceId);
     const body = await readJsonBody(request);
     const entry = service.addMemory({
       content: String(body.content || '').trim(),
@@ -3834,19 +3671,11 @@ async function handleApi(request, response, url) {
     sendJson(response, 201, {
       entry,
     });
-    return;
-  }
+  });
 
-  if (
-    request.method === 'PATCH' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'memory' &&
-    pathParts[4]
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
-    const memoryId = decodePathSegment(pathParts[4]);
+  registerParamRoute('PATCH', '/api/missions/:missionId/memory/:memoryId', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
+    const memoryId = decodePathSegment(params.memoryId);
     const body = await readJsonBody(request);
     const entry = service.updateMemory({
       content: String(body.content || '').trim(),
@@ -3859,19 +3688,11 @@ async function handleApi(request, response, url) {
     sendJson(response, 200, {
       entry,
     });
-    return;
-  }
+  });
 
-  if (
-    request.method === 'DELETE' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'memory' &&
-    pathParts[4]
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
-    const memoryId = decodePathSegment(pathParts[4]);
+  registerParamRoute('DELETE', '/api/missions/:missionId/memory/:memoryId', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
+    const memoryId = decodePathSegment(params.memoryId);
     const entry = service.deleteMemory({
       memoryId,
       scope: 'mission',
@@ -3881,17 +3702,10 @@ async function handleApi(request, response, url) {
     sendJson(response, 200, {
       entry,
     });
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'memory'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/memory', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const body = await readJsonBody(request);
     const entry = service.addMemory({
       content: String(body.content || '').trim(),
@@ -3903,17 +3717,10 @@ async function handleApi(request, response, url) {
     sendJson(response, 201, {
       entry,
     });
-    return;
-  }
+  });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'missions' &&
-    pathParts[2] &&
-    pathParts[3] === 'run'
-  ) {
-    const missionId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/missions/:missionId/run', async (params) => {
+    const missionId = decodePathSegment(params.missionId);
     const body = await readJsonBody(request);
     const provider = String(body.provider || '').trim();
     const fallbackProvider = String(body.fallbackProvider || '').trim();
@@ -3932,21 +3739,14 @@ async function handleApi(request, response, url) {
     });
 
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
   registerExactRoute('GET', '/api/approvals', async () => {
     sendJson(response, 200, service.getApprovalInbox({}));
   });
 
-  if (
-    request.method === 'POST' &&
-    pathParts[0] === 'api' &&
-    pathParts[1] === 'approvals' &&
-    pathParts[2] &&
-    pathParts[3] === 'resolve'
-  ) {
-    const approvalId = decodePathSegment(pathParts[2]);
+  registerParamRoute('POST', '/api/approvals/:approvalId/resolve', async (params) => {
+    const approvalId = decodePathSegment(params.approvalId);
     const body = await readJsonBody(request);
     const result = service.resolveApproval(approvalId, {
       decision: String(body.decision || '').trim(),
@@ -3954,11 +3754,10 @@ async function handleApi(request, response, url) {
     });
 
     sendJson(response, 200, result);
-    return;
-  }
+  });
 
-  if (request.method === 'GET' && pathParts[0] === 'api' && pathParts[1] === 'artifacts' && pathParts[2]) {
-    const artifactId = decodePathSegment(pathParts[2]);
+  registerParamRoute('GET', '/api/artifacts/:artifactId', async (params) => {
+    const artifactId = decodePathSegment(params.artifactId);
     const { artifact, artifactPath } = resolveArtifactRecord(artifactId);
     const content = fs.readFileSync(artifactPath, 'utf8');
 
@@ -3967,6 +3766,11 @@ async function handleApi(request, response, url) {
       content,
       path: artifactPath,
     });
+  });
+
+  const paramRoute = matchParamRoute();
+  if (paramRoute) {
+    await paramRoute.handler(paramRoute.params);
     return;
   }
 
