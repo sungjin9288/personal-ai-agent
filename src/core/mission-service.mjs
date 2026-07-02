@@ -86,6 +86,17 @@ import {
   buildProviderFallbackRouteDecision,
   summarizeProviderRouteDecisionForTimeline,
 } from './provider-route-decision-service.mjs';
+import {
+  inferMissionAttachmentMimeType,
+  isSupportedMissionAttachment,
+  normalizeMissionAttachmentFileName,
+  sanitizeMissionAttachmentContent,
+} from './mission-attachments.mjs';
+import {
+  compareRetrievalPreviewWithLatestArtifact,
+  formatRetrievalArtifactContent,
+  summarizeStoredRetrievalArtifact,
+} from './retrieval-artifacts.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -145,144 +156,6 @@ const MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS = 5;
 const MISSION_ATTACHMENT_MAX_PROMPT_CHARS = 12_000;
 const MISSION_ATTACHMENT_MAX_PROMPT_CHARS_PER_FILE = 3_000;
 const MISSION_ATTACHMENT_PREVIEW_CHARS = 280;
-const MISSION_ATTACHMENT_ALLOWED_EXTENSIONS = new Set([
-  '.c',
-  '.cc',
-  '.cpp',
-  '.css',
-  '.csv',
-  '.go',
-  '.html',
-  '.java',
-  '.js',
-  '.json',
-  '.jsx',
-  '.log',
-  '.md',
-  '.mjs',
-  '.py',
-  '.rb',
-  '.rs',
-  '.sql',
-  '.text',
-  '.ts',
-  '.tsx',
-  '.txt',
-  '.xml',
-  '.yaml',
-  '.yml',
-]);
-
-function getRetrievalSourceCompareKey(sourceType, sourceLabel) {
-  return `${normalizeText(sourceType)}:${normalizeText(sourceLabel)}`;
-}
-
-function formatRetrievalSourceSummaryLabel(sourceType, sourceLabel) {
-  return `${sourceType === 'memory' ? '메모' : '첨부'} · ${sourceLabel}`;
-}
-
-function summarizeStoredRetrievalArtifact(artifact) {
-  if (!artifact?.path || !fs.existsSync(artifact.path)) {
-    return null;
-  }
-
-  const content = fs.readFileSync(artifact.path, 'utf8');
-  const roleMatch = content.match(/^- role:\s+(.+)$/m);
-  const snippetEntries = [...content.matchAll(/^- \[(memory|attachment)\]\s+(.+)$/gm)]
-    .map((match) => {
-      const sourceType = normalizeText(match[1]);
-      const sourceLabel = String(match[2] || '')
-        .replace(/\s+chunk\s+\d+$/i, '')
-        .trim();
-      return {
-        key: getRetrievalSourceCompareKey(sourceType, sourceLabel),
-        label: formatRetrievalSourceSummaryLabel(sourceType, sourceLabel),
-        sourceLabel,
-        sourceType,
-      };
-    })
-    .filter((entry) => entry.sourceLabel);
-
-  const uniqueEntries = [...new Map(snippetEntries.map((entry) => [entry.key, entry])).values()];
-
-  return {
-    attachmentSourceCount: uniqueEntries.filter((entry) => entry.sourceType === 'attachment').length,
-    memorySourceCount: uniqueEntries.filter((entry) => entry.sourceType === 'memory').length,
-    role: roleMatch?.[1] || artifact.role || null,
-    snippetCount: snippetEntries.length,
-    sourceEntries: uniqueEntries,
-    sourceLabels: uniqueEntries.map((entry) => entry.label),
-    sourceKeys: uniqueEntries.map((entry) => entry.key),
-  };
-}
-
-function compareRetrievalPreviewWithLatestArtifact(previewItems = [], latestSummary = null) {
-  const previewEntries = [...new Map(
-    previewItems
-      .map((item) => {
-        const sourceType = normalizeText(item.sourceType);
-        const sourceLabel = normalizeText(item.sourceLabel);
-        if (!sourceType || !sourceLabel) {
-          return null;
-        }
-        return [
-          getRetrievalSourceCompareKey(sourceType, sourceLabel),
-          {
-            key: getRetrievalSourceCompareKey(sourceType, sourceLabel),
-            label: formatRetrievalSourceSummaryLabel(sourceType, sourceLabel),
-            sourceLabel,
-            sourceType,
-          },
-        ];
-      })
-      .filter(Boolean),
-  ).values()];
-
-  if (!latestSummary) {
-    return {
-      latestSnippetCount: 0,
-      latestSourceCount: 0,
-      previewOnlyCount: previewEntries.length,
-      previewOnlySources: previewEntries.slice(0, 4),
-      previewOnlyLabels: previewEntries.map((entry) => entry.label).slice(0, 3),
-      previewSnippetCount: previewItems.length,
-      previewSourceCount: previewEntries.length,
-      sharedSourceCount: 0,
-      status: 'no-evidence',
-    };
-  }
-
-  const latestEntries = latestSummary.sourceEntries || [];
-  const latestKeys = new Set(latestEntries.map((entry) => entry.key));
-  const previewKeys = new Set(previewEntries.map((entry) => entry.key));
-  const sharedSourceCount = previewEntries.filter((entry) => latestKeys.has(entry.key)).length;
-  const previewOnlyEntries = previewEntries.filter((entry) => !latestKeys.has(entry.key));
-  const latestOnlyEntries = latestEntries.filter((entry) => !previewKeys.has(entry.key));
-  let status = 'aligned';
-
-  if (!previewEntries.length && !latestEntries.length) {
-    status = 'empty';
-  } else if (!sharedSourceCount && (previewEntries.length || latestEntries.length)) {
-    status = 'shifted';
-  } else if (previewOnlyEntries.length || latestOnlyEntries.length) {
-    status = 'partial';
-  }
-
-  return {
-    latestOnlyCount: latestOnlyEntries.length,
-    latestOnlySources: latestOnlyEntries.slice(0, 4),
-    latestOnlyLabels: latestOnlyEntries.map((entry) => entry.label).slice(0, 3),
-    latestSnippetCount: latestSummary.snippetCount || 0,
-    latestSourceCount: latestEntries.length,
-    previewOnlyCount: previewOnlyEntries.length,
-    previewOnlySources: previewOnlyEntries.slice(0, 4),
-    previewOnlyLabels: previewOnlyEntries.map((entry) => entry.label).slice(0, 3),
-    previewSnippetCount: previewItems.length,
-    previewSourceCount: previewEntries.length,
-    sharedSourceCount,
-    status,
-  };
-}
 
 function getRunArtifactFilePrefix({ role, specialistKind }) {
   const normalizedSpecialistKind = normalizeText(specialistKind);
@@ -292,34 +165,6 @@ function getRunArtifactFilePrefix({ role, specialistKind }) {
 
   return normalizeText(role, 'agent');
 }
-
-function formatRetrievalArtifactContent({ providerRole, retrievalContext = [], role, specialistKind = '' }) {
-  const specialistLine = specialistKind ? `- specialist kind: ${specialistKind}\n` : '';
-  return `# Retrieved Context
-
-## Agent
-- role: ${role}
-- provider role: ${providerRole}
-${specialistLine}
-
-## Snippets
-${retrievalContext.length
-  ? retrievalContext
-      .map(
-        (item) =>
-          `- [${item.sourceType}] ${item.sourceLabel}${item.chunkIndex ? ` chunk ${item.chunkIndex}` : ''}\n  - score: ${item.score}\n  - lexicalScore: ${item.lexicalScore ?? item.score}\n  - bm25Score: ${item.bm25Score ?? 0}\n  - phraseBoostScore: ${item.phraseBoostScore ?? 0}\n  - matchTermCount: ${item.matchTermCount ?? 0}\n  - matchedTerms: ${Array.isArray(item.matchedTerms) ? item.matchedTerms.join(', ') : ''}\n  - retrievalReason: ${item.retrievalReason || 'not recorded'}\n  - snippet: ${item.snippet}`,
-      )
-      .join('\n')
-  : '- no retrieval snippets selected'}
-`;
-}
-const MISSION_ATTACHMENT_ALLOWED_MIME_PREFIXES = ['application/', 'text/'];
-const MISSION_ATTACHMENT_ALLOWED_MIME_TYPES = new Set([
-  'application/json',
-  'application/ld+json',
-  'application/sql',
-  'application/xml',
-]);
 
 function summarizeAttachmentText(content, fallback = '내용 없음') {
   const normalized = String(content || '')
@@ -332,74 +177,6 @@ function summarizeAttachmentText(content, fallback = '내용 없음') {
   return normalized.length > MISSION_ATTACHMENT_PREVIEW_CHARS
     ? `${normalized.slice(0, MISSION_ATTACHMENT_PREVIEW_CHARS - 1)}…`
     : normalized;
-}
-
-function normalizeMissionAttachmentFileName(fileName) {
-  const normalized = path.basename(normalizeText(fileName));
-  if (!normalized) {
-    throw new Error('Attachment fileName is required.');
-  }
-
-  return normalized.replace(/[^\w.\- ]+/g, '_');
-}
-
-function inferMissionAttachmentMimeType(fileName) {
-  const extension = path.extname(normalizeMissionAttachmentFileName(fileName)).toLowerCase();
-
-  switch (extension) {
-    case '.json':
-      return 'application/json';
-    case '.xml':
-      return 'application/xml';
-    case '.yaml':
-    case '.yml':
-      return 'application/yaml';
-    case '.csv':
-      return 'text/csv';
-    case '.html':
-      return 'text/html';
-    case '.css':
-      return 'text/css';
-    case '.js':
-    case '.mjs':
-      return 'text/javascript';
-    case '.ts':
-    case '.tsx':
-    case '.jsx':
-      return 'text/plain';
-    case '.sql':
-      return 'application/sql';
-    default:
-      return 'text/plain';
-  }
-}
-
-function isSupportedMissionAttachment({ fileName, mimeType, content }) {
-  const extension = path.extname(normalizeMissionAttachmentFileName(fileName)).toLowerCase();
-  const normalizedMimeType = normalizeText(mimeType).toLowerCase();
-
-  if (MISSION_ATTACHMENT_ALLOWED_EXTENSIONS.has(extension)) {
-    return true;
-  }
-
-  if (
-    normalizedMimeType &&
-    (MISSION_ATTACHMENT_ALLOWED_MIME_TYPES.has(normalizedMimeType) ||
-      MISSION_ATTACHMENT_ALLOWED_MIME_PREFIXES.some((prefix) => normalizedMimeType.startsWith(prefix)))
-  ) {
-    return true;
-  }
-
-  return !String(content || '').includes('\u0000');
-}
-
-function sanitizeMissionAttachmentContent(content) {
-  const normalized = String(content || '').replace(/\r\n/g, '\n');
-  if (!normalizeText(normalized)) {
-    throw new Error('Attachment content is required.');
-  }
-
-  return normalized;
 }
 
 function joinBullets(items, fallback) {
