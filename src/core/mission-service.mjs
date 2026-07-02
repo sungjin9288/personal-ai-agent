@@ -14,7 +14,6 @@ import {
   APPROVAL_DECISIONS,
   EXECUTION_LEASE_STATUSES,
   EXECUTION_SESSION_STATUSES,
-  ESCALATION_REMINDER_CADENCE_HOURS,
   ESCALATION_STATUSES,
   ESCALATION_TIERS,
   GLOBAL_USER_SCOPE_ID,
@@ -28,12 +27,9 @@ import {
   MEMORY_SCOPES,
   MISSION_MODES,
   MISSION_STATUSES,
-  OWNER_HANDOFF_ACK_SLA_HOURS,
-  OWNER_HANDOFF_REMINDER_CADENCE_HOURS,
   MAX_PARALLEL_SPECIALISTS,
   PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS,
   PROVIDER_ATTENTION_STATUSES,
-  PROVIDER_FAILURE_KINDS,
   REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
   SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS,
@@ -72,11 +68,34 @@ import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
 import {
-  deriveRetryCount,
   extractProviderFailure,
   isProviderFailureError,
   roundUsdAmount,
 } from '../providers/provider-runtime-utils.mjs';
+import {
+  extractProviderAttemptMetadata,
+  extractProviderFailureMetadata,
+  extractProviderUsageMetadata,
+  normalizeProviderAttemptHistory,
+  normalizeProviderFailureKind,
+  normalizeTelemetryNumber,
+  summarizeAttemptMetrics,
+  summarizeDurationMetrics,
+  summarizeEstimatedCostBreakdown,
+  summarizeEstimatedCostMetrics,
+  summarizeFailureKinds,
+  summarizeUsageMetrics,
+} from './provider-telemetry.mjs';
+import {
+  buildOwnerHandoffReminderNote,
+  deriveEscalationReminderCadenceHours,
+  deriveOwnerHandoffReminderCadenceHours,
+  deriveOwnerHandoffSlaHours,
+  formatEscalationOwnerChangeDetail,
+  formatEscalationOwnerHandoffDetail,
+  formatEscalationOwnerHandoffReminderDetail,
+  formatEscalationReminderDetail,
+} from './escalation-handoff.mjs';
 import { listOrchestrationProfiles, resolveOrchestrationProfile } from './orchestration-profiles.mjs';
 import {
   buildProviderAttentionRemediationPermissionDecision,
@@ -397,11 +416,6 @@ function normalizeAgentRunStatus(value) {
   return normalized;
 }
 
-function normalizeProviderFailureKind(value) {
-  const normalized = normalizeText(value);
-  return PROVIDER_FAILURE_KINDS.includes(normalized) ? normalized : 'unknown';
-}
-
 function normalizeProviderFallbackPolicy(value) {
   const normalized = normalizeText(value, 'provider-failure-only');
   if (normalized === 'provider-failure-only' || normalized === 'recoverable-provider-failure-only') {
@@ -410,178 +424,6 @@ function normalizeProviderFallbackPolicy(value) {
   throw new Error(
     `Unsupported provider fallback policy: ${normalized}. Use provider-failure-only or recoverable-provider-failure-only.`,
   );
-}
-
-function summarizeFailureKinds(items) {
-  const counts = Object.fromEntries(PROVIDER_FAILURE_KINDS.map((kind) => [kind, 0]));
-
-  for (const item of items) {
-    const failureKind = normalizeProviderFailureKind(item.failureKind);
-    if (item.failureKind) {
-      counts[failureKind] += 1;
-    }
-  }
-
-  return counts;
-}
-
-function normalizeTelemetryNumber(value, fallback = null) {
-  const numericValue = Number(value);
-  return Number.isFinite(numericValue) ? numericValue : fallback;
-}
-
-function normalizeProviderAttemptHistory(items = []) {
-  return Array.isArray(items)
-    ? items
-        .map((item) => {
-          const attempt = Number(item?.attempt || item?.attemptCount || 0);
-          if (!Number.isFinite(attempt) || attempt <= 0) {
-            return null;
-          }
-
-          return {
-            attempt,
-            durationMs: normalizeTelemetryNumber(item?.durationMs),
-            failureKind: normalizeText(item?.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
-            httpStatus: Number.isFinite(Number(item?.httpStatus)) ? Number(item.httpStatus) : null,
-            ok: Boolean(item?.ok),
-            rawMessage: normalizeText(item?.rawMessage) || null,
-            recoverable: typeof item?.recoverable === 'boolean' ? item.recoverable : null,
-            timedOut: Boolean(item?.timedOut),
-          };
-        })
-        .filter(Boolean)
-    : [];
-}
-
-function extractProviderAttemptMetadata(item) {
-  const attemptHistory = normalizeProviderAttemptHistory(item?.attemptHistory);
-  const fallbackAttemptCount = attemptHistory.at(-1)?.attempt || 0;
-  const attemptCount = Number.isFinite(Number(item?.attemptCount))
-    ? Number(item.attemptCount)
-    : fallbackAttemptCount;
-  const retryCount = Number.isFinite(Number(item?.retryCount))
-    ? Number(item.retryCount)
-    : deriveRetryCount(attemptCount);
-
-  return {
-    attemptCount,
-    attemptHistory,
-    attemptHistoryCount: attemptHistory.length,
-    retryCount,
-  };
-}
-
-function summarizeAttemptMetrics(items, isSuccessful = () => false) {
-  return items.reduce(
-    (summary, item) => {
-      const attemptCount = Number(item?.attemptCount || 0);
-      const retryCount = Number.isFinite(Number(item?.retryCount))
-        ? Number(item.retryCount)
-        : deriveRetryCount(attemptCount);
-
-      return {
-        attemptHistoryEntryCountTotal:
-          summary.attemptHistoryEntryCountTotal + normalizeProviderAttemptHistory(item?.attemptHistory).length,
-        maxAttemptCount: Math.max(summary.maxAttemptCount, attemptCount),
-        multiAttemptCount: summary.multiAttemptCount + (attemptCount > 1 ? 1 : 0),
-        retrySucceededCount: summary.retrySucceededCount + (attemptCount > 1 && isSuccessful(item) ? 1 : 0),
-        totalAttemptCount: summary.totalAttemptCount + attemptCount,
-        totalRetryCount: summary.totalRetryCount + retryCount,
-      };
-    },
-    {
-      attemptHistoryEntryCountTotal: 0,
-      maxAttemptCount: 0,
-      multiAttemptCount: 0,
-      retrySucceededCount: 0,
-      totalAttemptCount: 0,
-      totalRetryCount: 0,
-    },
-  );
-}
-
-function extractProviderUsageMetadata(item) {
-  return {
-    estimatedCostUsd: roundUsdAmount(item?.estimatedCostUsd),
-    usageInputTokens: normalizeTelemetryNumber(item?.usageInputTokens),
-    usageOutputTokens: normalizeTelemetryNumber(item?.usageOutputTokens),
-    usageTotalTokens: normalizeTelemetryNumber(item?.usageTotalTokens),
-  };
-}
-
-function summarizeDurationMetrics(items, fieldName = 'durationMs') {
-  const durations = items
-    .map((item) => normalizeTelemetryNumber(item?.[fieldName]))
-    .filter((value) => Number.isFinite(value) && value >= 0);
-
-  const totalDurationMs = durations.reduce((sum, value) => sum + value, 0);
-  return {
-    averageDurationMs: durations.length ? Math.round(totalDurationMs / durations.length) : null,
-    maxDurationMs: durations.length ? Math.max(...durations) : null,
-    totalDurationMs,
-  };
-}
-
-function summarizeUsageMetrics(items) {
-  return items.reduce(
-    (totals, item) => ({
-      usageInputTokensTotal: totals.usageInputTokensTotal + Number(normalizeTelemetryNumber(item?.usageInputTokens, 0) || 0),
-      usageOutputTokensTotal:
-        totals.usageOutputTokensTotal + Number(normalizeTelemetryNumber(item?.usageOutputTokens, 0) || 0),
-      usageTotalTokensTotal: totals.usageTotalTokensTotal + Number(normalizeTelemetryNumber(item?.usageTotalTokens, 0) || 0),
-    }),
-    {
-      usageInputTokensTotal: 0,
-      usageOutputTokensTotal: 0,
-      usageTotalTokensTotal: 0,
-    },
-  );
-}
-
-function summarizeEstimatedCostMetrics(items, fieldName = 'estimatedCostUsd') {
-  const pricedValues = items
-    .map((item) => roundUsdAmount(item?.[fieldName]))
-    .filter((value) => Number.isFinite(value) && value >= 0);
-  const totalEstimatedCostUsd = roundUsdAmount(pricedValues.reduce((sum, value) => sum + value, 0));
-
-  return {
-    estimatedCostUsdAverage: pricedValues.length ? roundUsdAmount(totalEstimatedCostUsd / pricedValues.length) : null,
-    estimatedCostUsdMax: pricedValues.length ? roundUsdAmount(Math.max(...pricedValues)) : null,
-    estimatedCostUsdPricedCount: pricedValues.length,
-    estimatedCostUsdTotal: pricedValues.length ? totalEstimatedCostUsd : null,
-  };
-}
-
-function summarizeEstimatedCostBreakdown(items, keyFieldName, costFieldName = 'estimatedCostUsd') {
-  return items.reduce((totals, item) => {
-    const key = normalizeText(item?.[keyFieldName]);
-    const estimatedCostUsd = roundUsdAmount(item?.[costFieldName]);
-
-    if (!key || !Number.isFinite(estimatedCostUsd) || estimatedCostUsd < 0) {
-      return totals;
-    }
-
-    return {
-      ...totals,
-      [key]: roundUsdAmount(Number(totals[key] || 0) + estimatedCostUsd),
-    };
-  }, {});
-}
-
-function extractProviderFailureMetadata(item) {
-  const attemptMetadata = extractProviderAttemptMetadata(item);
-  return {
-    ...attemptMetadata,
-    durationMs: normalizeTelemetryNumber(item?.durationMs),
-    failureKind: normalizeText(item?.failureKind) ? normalizeProviderFailureKind(item.failureKind) : null,
-    httpStatus: Number.isFinite(Number(item?.httpStatus)) ? Number(item.httpStatus) : null,
-    providerResponseId: normalizeText(item?.providerResponseId) || null,
-    rawMessage: normalizeText(item?.rawMessage) || null,
-    recoverable: typeof item?.recoverable === 'boolean' ? item.recoverable : null,
-    timedOut: Boolean(item?.timedOut),
-    ...extractProviderUsageMetadata(item),
-  };
 }
 
 function formatProviderFailureDetail({ detail, failureKind, httpStatus, timedOut, attemptCount, recoverable }) {
@@ -922,35 +764,6 @@ function buildEscalationReminderNote(escalation, note) {
   return `Reminder issued while escalation is ${tier}.`;
 }
 
-function formatEscalationReminderDetail(reminder) {
-  const tierPrefix = reminder.tier ? `[${reminder.tier}] ` : '';
-  return `${tierPrefix}${reminder.note || 'Escalation reminder issued.'}`;
-}
-
-function formatEscalationOwnerChangeDetail(ownerChange) {
-  const reasonSuffix = ownerChange.reason ? ` (${ownerChange.reason})` : '';
-  return `${ownerChange.from} -> ${ownerChange.to}${reasonSuffix}`;
-}
-
-function formatEscalationOwnerHandoffDetail(handoff) {
-  const overdueSuffix = handoff.wasOverdue ? ' [overdue]' : '';
-  return `${handoff.owner} acknowledged owner handoff${overdueSuffix}: ${handoff.note || 'No explicit note recorded.'}`;
-}
-
-function buildOwnerHandoffReminderNote(escalation, note) {
-  const normalizedNote = normalizeText(note);
-  if (normalizedNote) {
-    return normalizedNote;
-  }
-
-  return `Reminder issued for pending owner handoff to ${escalation.ownerHandoffTargetOwner || escalation.effectiveRecommendedOwner || 'assigned owner'}.`;
-}
-
-function formatEscalationOwnerHandoffReminderDetail(reminder) {
-  const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
-  return `${reminder.owner}${overdueSuffix} owner handoff reminder: ${reminder.note || 'No explicit note recorded.'}`;
-}
-
 function formatMaintenanceRunDetail(run) {
   const noOpSuffix = Number(run.totalRemindedCount || 0) === 0 ? ' [no-op]' : '';
   const noteSuffix = run.note ? ` note=${run.note}` : '';
@@ -988,18 +801,6 @@ function hasPendingOwnerHandoff({ ownerHistory, ownerHandoffHistory }) {
   return !ensureArray(ownerHandoffHistory).some(
     (entry) => entry.transitionAt === latestOwnerTransition.at && entry.owner === latestOwnerTransition.to,
   );
-}
-
-function deriveEscalationReminderCadenceHours(tier) {
-  return ESCALATION_REMINDER_CADENCE_HOURS[tier] || null;
-}
-
-function deriveOwnerHandoffSlaHours(owner) {
-  return OWNER_HANDOFF_ACK_SLA_HOURS[owner] || null;
-}
-
-function deriveOwnerHandoffReminderCadenceHours(owner) {
-  return OWNER_HANDOFF_REMINDER_CADENCE_HOURS[owner] || null;
 }
 
 function deriveProviderAttentionReminderCadenceHours(eventFamily) {
