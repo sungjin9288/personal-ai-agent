@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Local-first personal AI agent scaffold for engineering and knowledge work",
   "scripts": {
+    "test": "node --test test/*.test.mjs",
     "ui": "node src/web/server.mjs",
     "doctor": "node src/cli.mjs doctor",
     "doctor:summary": "node src/cli.mjs doctor summary",
