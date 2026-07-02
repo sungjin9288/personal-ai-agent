@@ -34,6 +34,7 @@
 - [ ] `npm run smoke:provider-events`
 - [ ] `npm run smoke:provider-overview`
 - [ ] `npm run smoke:target-provider-operations`
+- [ ] `npm run smoke:production-provider-readiness`
 - [ ] GitHub Actions `Provider fallback and attention smoke`
 
 ## Notes
