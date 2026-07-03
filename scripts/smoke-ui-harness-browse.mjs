@@ -4024,11 +4024,7 @@ function assertProviderOnlyCopyScopeSource(appJs) {
     'target evidence capture template builder',
   );
 
-  const slicePackageBuilder = getSourceSlice(
-    appJs,
-    'function buildReleaseBlockerSlicePackageText({',
-    'function focusReleaseHistoryEntry(',
-  );
+  const slicePackageBuilder = getFunctionSource(appJs, 'buildReleaseBlockerSlicePackageText');
   assertSourceIncludes(slicePackageBuilder, 'includeShared = true,', 'release blocker slice package builder');
   assertSourceIncludes(slicePackageBuilder, 'includeShared,', 'release blocker slice package builder');
   assertSourceIncludes(
