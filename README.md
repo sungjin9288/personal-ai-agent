@@ -320,6 +320,14 @@ npm run smoke:production-provider-readiness
 npm run smoke:target-provider-evidence-intake
 ```
 
+Support and incident review gates:
+
+```bash
+npm run smoke:support-escalation-review
+npm run smoke:customer-support-operations
+npm run smoke:incident-slo-policy
+```
+
 The repository also includes many narrower smoke scripts in `package.json` for provider operations, release blocker handoff, UI flows, retention, backup, identity/session, tenant isolation, observability, and target evidence gates.
 
 ## Release And Evidence
