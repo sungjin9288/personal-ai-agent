@@ -58,6 +58,7 @@ import { createId } from './id.mjs';
 import { createLearningCandidateAudit } from './learning-candidate-audit.mjs';
 import { createLearningCandidateEmitter } from './learning-candidate-emitter.mjs';
 import { createLearningPromotion } from './learning-promotion.mjs';
+import { createDocumentLog } from './document-log.mjs';
 import { createActionInbox } from './action-inbox.mjs';
 import { createProviderAttention } from './provider-attention.mjs';
 import { summarizeIdentitySessionContextForTimeline } from './identity-session-context-service.mjs';
@@ -1325,6 +1326,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     defaultLearningPromotionTarget,
     normalizeLearningPromotionTarget,
     normalizeLearningPromotionScope,
+  });
+
+  const { logDocument, updateDocumentLog, deleteDocumentLog, migrateLegacyDocumentLogs } = createDocumentLog({
+    docService,
   });
 
   function rollbackLearningPromotion(candidateId, { note = '' } = {}) {
@@ -14536,63 +14541,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
   function listFactGraph(filter = {}) {
     return factGraph.listFactGraph(filter);
-  }
-
-  function logDocument({ type, title, content }) {
-    const normalizedTitle = normalizeText(title);
-    const normalizedContent = normalizeText(content);
-
-    if (!normalizedTitle) {
-      throw new Error('Document log title is required.');
-    }
-    if (!normalizedContent) {
-      throw new Error('Document log content is required.');
-    }
-
-    const entry = docService.createDocumentLogEntry({
-      content: normalizedContent,
-      title: normalizedTitle,
-      type,
-    });
-
-    return {
-      ...entry,
-      title: normalizedTitle,
-      type,
-    };
-  }
-
-  function updateDocumentLog({ entryId, type, title, content }) {
-    const normalizedTitle = normalizeText(title);
-    const normalizedContent = normalizeText(content);
-
-    if (!normalizedTitle) {
-      throw new Error('Document log title is required.');
-    }
-    if (!normalizedContent) {
-      throw new Error('Document log content is required.');
-    }
-
-    const entry = docService.updateDocumentLogEntry({
-      content: normalizedContent,
-      entryId,
-      title: normalizedTitle,
-      type,
-    });
-
-    return {
-      ...entry,
-      title: normalizedTitle,
-      type,
-    };
-  }
-
-  function deleteDocumentLog(entryId) {
-    return docService.deleteDocumentLogEntry(entryId);
-  }
-
-  function migrateLegacyDocumentLogs() {
-    return docService.migrateLegacyDocumentLogEntries();
   }
 
   function showMission(missionId, filter = {}) {
