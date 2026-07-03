@@ -146,6 +146,8 @@ import {
   clearRetrievalSourceFocus,
   focusRetrievalSource,
   wireRetrievalSourceButtons,
+  openRetrievalArtifact,
+  wireRetrievalArtifactButtons,
 } from './lib/retrieval-navigation.js';
 import {
   getReleaseTargetEvidenceIntakeSummaryCopyKey,
@@ -373,6 +375,8 @@ import {
   copyReleaseTargetEvidenceSubmissionManifest,
   copyReleaseTriageLink,
   copyRetrievalSourceLink,
+  copyLearningPromotionAuditPackage,
+  copyMissionActionsViewLink,
 } from './lib/copy-handlers.js';
 
 const RELEASE_HANDOFF_PREVIEWABLE_FORMATS = new Set(['json', 'markdown', 'text']);
@@ -4296,39 +4300,6 @@ async function loadReleaseHandoffPreview(artifactId, { syncUrl = true } = {}) {
   }
 
   renderReleaseStatus();
-}
-
-async function openRetrievalArtifact(artifactId, sessionId, { historyMode = 'push' } = {}) {
-  const targetArtifactId = String(artifactId || '').trim();
-  const targetSessionId = String(sessionId || '').trim();
-
-  if (!state.selectedMissionId || !targetArtifactId || !targetSessionId) {
-    return;
-  }
-
-  if (state.selectedSessionId !== targetSessionId) {
-    await selectSession(targetSessionId, {
-      focusRuns: false,
-      preferredArtifactId: targetArtifactId,
-      syncUrl: false,
-    });
-  } else {
-    await loadArtifact(targetArtifactId, { activateTab: false, syncUrl: false });
-  }
-
-  setActiveStep('step-output', { syncDetailTab: false, syncUrl: false });
-  setActiveDetailTab('artifacts', { syncUrl: false });
-  writeUiStateToUrl({ historyMode });
-}
-
-function wireRetrievalArtifactButtons(scope = document) {
-  scope.querySelectorAll('[data-retrieval-artifact-open]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const artifactId = String(button.dataset.retrievalArtifactOpen || '').trim();
-      const sessionId = String(button.dataset.retrievalSessionId || '').trim();
-      await openRetrievalArtifact(artifactId, sessionId, { historyMode: 'push' });
-    });
-  });
 }
 
 export function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
@@ -11151,20 +11122,6 @@ function inferProviderFromCommand(command = '') {
   return inferCommandOption(command, '--provider');
 }
 
-async function copyLearningPromotionAuditPackage(item) {
-  const packageText = buildLearningPromotionAuditPackageText(item);
-  if (!packageText) {
-    setUiNotice('복사할 learning promotion audit package가 없습니다.');
-    return;
-  }
-
-  await copyPlainTextValue(packageText, {
-    promptMessage: 'learning promotion audit package를 복사하세요.',
-    shownNotice: 'learning promotion audit package를 표시했습니다.',
-    successNotice: 'learning promotion audit package를 복사했습니다.',
-  });
-}
-
 function getMissionActionsFilterLabel(filter = state.missionActionsFilter) {
   if (filter === 'needs-reminder') {
     return '재알림 필요';
@@ -11178,22 +11135,6 @@ function getMissionActionsFilterLabel(filter = state.missionActionsFilter) {
 function applyMissionActionsFilterUrlState({ actionInboxFilter = 'all', actionInboxFallbackStopReason = '' } = {}) {
   state.missionActionsFilter = getSanitizedMissionActionsFilter(actionInboxFilter);
   state.missionActionsFallbackStopReasonFilter = normalizeUiParam(actionInboxFallbackStopReason);
-}
-
-async function copyMissionActionsViewLink() {
-  if (!state.selectedMissionId) {
-    setUiNotice('복사할 action inbox 링크가 없습니다.');
-    return;
-  }
-  const actionInboxUrl = `${window.location.origin}${buildUiStateUrl({
-    detailTab: 'reviews',
-    stepId: 'step-review',
-  })}`;
-  await copyUiLink(actionInboxUrl, {
-    promptMessage: '현재 action inbox 링크를 복사하세요.',
-    shownNotice: '현재 action inbox 링크를 표시했습니다.',
-    successNotice: '현재 action inbox 링크를 복사했습니다.',
-  });
 }
 
 function getMissionActionsVisibleFilterLabel() {
@@ -12127,7 +12068,7 @@ function renderArtifact(payload) {
   renderDetailContextbar();
 }
 
-async function loadArtifact(artifactId, { activateTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
+export async function loadArtifact(artifactId, { activateTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
   if (!artifactId) {
     return;
   }
@@ -12223,7 +12164,7 @@ function renderTimeline() {
   wireTimelineSessionSelectionButtons();
 }
 
-async function selectSession(
+export async function selectSession(
   sessionId,
   { focusRuns = true, preferredArtifactId = null, syncUrl = true, urlMode = 'replace' } = {},
 ) {

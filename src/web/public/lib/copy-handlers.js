@@ -10,6 +10,7 @@
 import { state } from './app-state.js';
 import { normalizeUiParam, getSanitizedRetrievalSourceType } from './ui-params.js';
 import { buildUiStateUrl } from './url-state.js';
+import { buildLearningPromotionAuditPackageText } from './status-labels.js';
 import {
   getReleaseHandoffStructuredSummaryDetails,
   getReleaseHandoffStructuredSummaryOverviewLine,
@@ -2366,4 +2367,34 @@ export async function copyRetrievalSourceLink({
   if (copyResult?.method === 'clipboard') {
     markCopiedRetrievalSource(normalizedType, normalizedLabel);
   }
+}
+
+export async function copyLearningPromotionAuditPackage(item) {
+  const packageText = buildLearningPromotionAuditPackageText(item);
+  if (!packageText) {
+    setUiNotice('복사할 learning promotion audit package가 없습니다.');
+    return;
+  }
+
+  await copyPlainTextValue(packageText, {
+    promptMessage: 'learning promotion audit package를 복사하세요.',
+    shownNotice: 'learning promotion audit package를 표시했습니다.',
+    successNotice: 'learning promotion audit package를 복사했습니다.',
+  });
+}
+
+export async function copyMissionActionsViewLink() {
+  if (!state.selectedMissionId) {
+    setUiNotice('복사할 action inbox 링크가 없습니다.');
+    return;
+  }
+  const actionInboxUrl = `${window.location.origin}${buildUiStateUrl({
+    detailTab: 'reviews',
+    stepId: 'step-review',
+  })}`;
+  await copyUiLink(actionInboxUrl, {
+    promptMessage: '현재 action inbox 링크를 복사하세요.',
+    shownNotice: '현재 action inbox 링크를 표시했습니다.',
+    successNotice: '현재 action inbox 링크를 복사했습니다.',
+  });
 }

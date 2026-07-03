@@ -9,6 +9,8 @@ import {
   renderHarnessPanel,
   setActiveStep,
   setActiveDetailTab,
+  selectSession,
+  loadArtifact,
 } from '../app.js';
 
 export async function applyRetrievalSourceUrlState({
@@ -138,6 +140,39 @@ export function wireRetrievalSourceButtons(scope = document) {
       const sourceType = String(button.dataset.retrievalSourceType || '').trim();
       const sourceLabel = String(button.dataset.retrievalSourceLabel || '').trim();
       await focusRetrievalSource(sourceType, sourceLabel, { historyMode: 'push' });
+    });
+  });
+}
+
+export async function openRetrievalArtifact(artifactId, sessionId, { historyMode = 'push' } = {}) {
+  const targetArtifactId = String(artifactId || '').trim();
+  const targetSessionId = String(sessionId || '').trim();
+
+  if (!state.selectedMissionId || !targetArtifactId || !targetSessionId) {
+    return;
+  }
+
+  if (state.selectedSessionId !== targetSessionId) {
+    await selectSession(targetSessionId, {
+      focusRuns: false,
+      preferredArtifactId: targetArtifactId,
+      syncUrl: false,
+    });
+  } else {
+    await loadArtifact(targetArtifactId, { activateTab: false, syncUrl: false });
+  }
+
+  setActiveStep('step-output', { syncDetailTab: false, syncUrl: false });
+  setActiveDetailTab('artifacts', { syncUrl: false });
+  writeUiStateToUrl({ historyMode });
+}
+
+export function wireRetrievalArtifactButtons(scope = document) {
+  scope.querySelectorAll('[data-retrieval-artifact-open]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const artifactId = String(button.dataset.retrievalArtifactOpen || '').trim();
+      const sessionId = String(button.dataset.retrievalSessionId || '').trim();
+      await openRetrievalArtifact(artifactId, sessionId, { historyMode: 'push' });
     });
   });
 }
