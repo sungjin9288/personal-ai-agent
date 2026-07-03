@@ -51,13 +51,13 @@ import {
 } from './gateway-event-service.mjs';
 import { createId } from './id.mjs';
 import { createLearningCandidateAudit } from './learning-candidate-audit.mjs';
+import { createLearningCandidateEmitter } from './learning-candidate-emitter.mjs';
 import { createLearningPromotion } from './learning-promotion.mjs';
 import { createActionInbox } from './action-inbox.mjs';
 import { createProviderAttention } from './provider-attention.mjs';
 import { summarizeIdentitySessionContextForTimeline } from './identity-session-context-service.mjs';
 import {
   buildProviderFallbackLearningEvidence,
-  buildLearningCandidate,
   formatLearningCandidateArtifactContent,
   formatProviderFallbackLearningSummary,
   hasProviderFallbackProviderFailure,
@@ -3765,60 +3765,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     fs.writeFileSync(candidate.artifactPath, formatLearningCandidateArtifactContent(candidate), 'utf8');
   }
 
-  function emitLearningCandidate({
-    mission,
-    missionStatus = '',
-    outcomeReason = '',
-    providerFallback = null,
-    providerId = '',
-    reviewerVerdict = '',
-    session,
-    workspace,
-  }) {
-    const currentSession = store.getSession(session.id);
-    const existingCandidate = store.listLearningCandidates({ sessionId: currentSession.id }).at(-1);
-
-    if (existingCandidate) {
-      return existingCandidate;
-    }
-
-    const candidate = store.saveLearningCandidate(
-      buildLearningCandidate({
-        agentRuns: store.listAgentRunsBySession(currentSession.id),
-        artifacts: store.listArtifactsBySession(currentSession.id),
-        at: now(),
-        id: createId('learningcandidate'),
-        mission,
-        missionStatus: missionStatus || mission.status,
-        outcomeReason,
-        providerFallback,
-        providerFailure: getSessionProviderFailureSummary(currentSession.id),
-        providerId,
-        reviewerVerdict,
-        session: currentSession,
-        workspace,
-      }),
-    );
-    const artifact = harness.writeArtifact({
-      missionId: mission.id,
-      sessionId: currentSession.id,
-      role: 'reviewer',
-      kind: 'learning-candidate',
-      fileName: 'learning-candidate.json',
-      title: 'Learning Candidate',
-      content: formatLearningCandidateArtifactContent(candidate),
-    });
-    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
-      ...current,
-      artifactId: artifact.id,
-      artifactPath: artifact.path,
-      updatedAt: now(),
-    }));
-
-    writeUpdatedLearningCandidateArtifact(updatedCandidate);
-    return updatedCandidate;
-  }
-
   function attachProviderFallbackToLearningCandidate(candidate, providerFallback) {
     if (!candidate || !providerFallback) {
       return candidate || null;
@@ -4332,6 +4278,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       },
     };
   }
+
+  const { emitLearningCandidate } = createLearningCandidateEmitter({
+    store,
+    now,
+    writeArtifact: harness.writeArtifact,
+    getSessionProviderFailureSummary,
+    writeUpdatedLearningCandidateArtifact,
+  });
 
   const { resolveLearningPromotion, expireLearningPromotions } = createLearningPromotion({
     store,
