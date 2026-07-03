@@ -136,7 +136,17 @@ import {
   applyReleaseProductionBlockerUrlState,
   applyReleaseBlockerFilterUrlState,
   focusReleaseHistoryFlow,
+  focusReleaseProvider,
+  clearReleaseProviderFocus,
+  applyReleaseProviderUrlState,
 } from './lib/release-navigation.js';
+import {
+  applyRetrievalSourceUrlState,
+  getActiveRetrievalSourceFocus,
+  clearRetrievalSourceFocus,
+  focusRetrievalSource,
+  wireRetrievalSourceButtons,
+} from './lib/retrieval-navigation.js';
 import {
   getReleaseTargetEvidenceIntakeSummaryCopyKey,
   isCopiedReleaseTargetEvidenceIntakeSummary,
@@ -7549,83 +7559,6 @@ function buildReleaseBlockerSlicePackageText({
   return `Release blocker slice package\n\n${sections.join('\n\n')}\n`;
 }
 
-function focusReleaseProvider(provider = '', { historyMode = 'replace', scroll = true } = {}) {
-  const normalizedProvider = String(provider || '').trim();
-  if (!normalizedProvider) {
-    return;
-  }
-  state.releaseFocusedProvider = normalizedProvider;
-  renderReleaseStatus();
-  writeUiStateToUrl({ historyMode });
-  if (!scroll || !elements.releaseStatus) {
-    return;
-  }
-  window.requestAnimationFrame(() => {
-    const target = elements.releaseStatus.querySelector(`[data-release-provider="${CSS.escape(normalizedProvider)}"]`);
-    if (target) {
-      target.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-      });
-    }
-  });
-}
-
-function clearReleaseProviderFocus({ historyMode = 'replace' } = {}) {
-  state.releaseFocusedProvider = '';
-  renderReleaseStatus();
-  writeUiStateToUrl({ historyMode });
-}
-
-function applyReleaseProviderUrlState(provider = '') {
-  const normalizedProvider = String(provider || '').trim();
-  const providerReadiness = state.releaseStatus?.providerReadiness || [];
-  if (!normalizedProvider) {
-    const normalizedFilterProvider = String(state.releaseBlockerProviderFilter || '').trim();
-    state.releaseFocusedProvider = providerReadiness.some(
-      (item) => String(item.provider || '').trim() === normalizedFilterProvider,
-    )
-      ? normalizedFilterProvider
-      : '';
-  } else {
-    state.releaseFocusedProvider = providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider)
-      ? normalizedProvider
-      : '';
-  }
-  renderReleaseStatus();
-}
-
-async function applyRetrievalSourceUrlState({
-  sourceLabel = '',
-  sourceType = '',
-} = {}) {
-  const normalizedType = getSanitizedRetrievalSourceType(sourceType);
-  const normalizedLabel = normalizeUiParam(sourceLabel);
-
-  if (!normalizedType || !normalizedLabel || !state.selectedMissionId) {
-    state.retrievalSourceFocusType = '';
-    state.retrievalSourceFocusLabel = '';
-    state.harnessAttachmentFocus = '';
-    return;
-  }
-
-  state.retrievalSourceFocusType = normalizedType;
-  state.retrievalSourceFocusLabel = normalizedLabel;
-
-  if (normalizedType === 'memory') {
-    const [scope = 'all', kind = 'all'] = normalizedLabel.split('/');
-    state.harnessAttachmentFocus = '';
-    state.harnessMemoryFilterScope = ['mission', 'workspace'].includes(scope) ? scope : 'all';
-    state.harnessMemoryFilterKind = ['fact', 'decision', 'preference'].includes(kind) ? kind : 'all';
-    state.harnessMemoryOffset = 0;
-    state.harnessMemoryQuery = '';
-    await loadHarnessMemory();
-    return;
-  }
-
-  state.harnessAttachmentFocus = normalizedLabel;
-}
-
 function getStepLabel(stepId, { short = false } = {}) {
   const meta = STEP_META[stepId];
   if (!meta) {
@@ -8887,107 +8820,7 @@ function wireRetrievalArtifactButtons(scope = document) {
   });
 }
 
-function getActiveRetrievalSourceFocus() {
-  const type = String(state.retrievalSourceFocusType || '').trim();
-  const label = String(state.retrievalSourceFocusLabel || '').trim();
-
-  if (!type || !label) {
-    return null;
-  }
-
-  return {
-    detail:
-      type === 'memory'
-        ? '하네스 메모리 필터가 이 source 기준으로 좁혀져 있습니다.'
-        : '하네스 첨부 목록에서 이 source 파일을 강조하고 있습니다.',
-    label,
-    title: formatRetrievalSourceLabel({ sourceLabel: label, sourceType: type }),
-    type,
-  };
-}
-
-function clearRetrievalSourceFocus({ historyMode = 'push' } = {}) {
-  const activeFocus = getActiveRetrievalSourceFocus();
-  if (!activeFocus) {
-    return;
-  }
-
-  state.retrievalSourceFocusType = '';
-  state.retrievalSourceFocusLabel = '';
-  state.harnessAttachmentFocus = '';
-
-  if (activeFocus.type === 'memory') {
-    resetHarnessMemoryBrowseState();
-  }
-
-  renderHarnessPanel();
-  writeUiStateToUrl({ historyMode });
-  setUiNotice('retrieval source focus를 해제했습니다.');
-}
-
-async function focusRetrievalSource(sourceType, sourceLabel, { historyMode = 'push' } = {}) {
-  const normalizedType = String(sourceType || '').trim().toLowerCase();
-  const normalizedLabel = String(sourceLabel || '').trim();
-
-  if (!state.selectedMissionId || !normalizedType || !normalizedLabel) {
-    return;
-  }
-
-  setActiveStep('step-setup', { syncDetailTab: false, syncUrl: false });
-  setActiveDetailTab('harness', { syncUrl: false });
-
-  if (normalizedType === 'memory') {
-    const [scope = 'all', kind = 'all'] = normalizedLabel.split('/');
-    state.retrievalSourceFocusType = normalizedType;
-    state.retrievalSourceFocusLabel = normalizedLabel;
-    state.harnessAttachmentFocus = '';
-    state.harnessMemoryFilterScope = ['mission', 'workspace'].includes(scope) ? scope : 'all';
-    state.harnessMemoryFilterKind = ['fact', 'decision', 'preference'].includes(kind) ? kind : 'all';
-    state.harnessMemoryOffset = 0;
-    state.harnessMemoryQuery = '';
-    await loadHarnessMemory();
-    renderHarnessPanel();
-    writeUiStateToUrl({ historyMode });
-    window.requestAnimationFrame(() => {
-      elements.harnessMemory?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-      });
-    });
-    setUiNotice(`메모 source ${formatRetrievalSourceLabel({ sourceLabel: normalizedLabel, sourceType: normalizedType })} 기준으로 하네스를 좁혀 봅니다.`);
-    return;
-  }
-
-  state.retrievalSourceFocusType = normalizedType;
-  state.retrievalSourceFocusLabel = normalizedLabel;
-  state.harnessAttachmentFocus = normalizedLabel;
-  renderHarnessPanel();
-  writeUiStateToUrl({ historyMode });
-  window.requestAnimationFrame(() => {
-    const target = elements.harnessSource?.querySelector(
-      `[data-harness-attachment-file="${CSS.escape(normalizedLabel)}"]`,
-    );
-    if (target) {
-      target.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-      });
-    }
-  });
-  setUiNotice(`첨부 source ${normalizedLabel} 위치로 이동했습니다.`);
-}
-
-function wireRetrievalSourceButtons(scope = document) {
-  scope.querySelectorAll('[data-retrieval-source-type]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const sourceType = String(button.dataset.retrievalSourceType || '').trim();
-      const sourceLabel = String(button.dataset.retrievalSourceLabel || '').trim();
-      await focusRetrievalSource(sourceType, sourceLabel, { historyMode: 'push' });
-    });
-  });
-}
-
-function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
+export function setActiveStep(stepId, { syncDetailTab = true, syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeStep = stepId;
   syncStepViewMode();
   elements.stepButtons.forEach((button) => {
@@ -9147,7 +8980,7 @@ function getDetailTabMeta() {
   };
 }
 
-function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
+export function setActiveDetailTab(tabId, { syncUrl = true, urlMode = 'replace' } = {}) {
   state.activeDetailTab = tabId;
   if (state.activeStep === 'step-output' && ['artifacts', 'runs', 'reviews'].includes(tabId)) {
     state.outputPrimaryTabsExpanded = false;
@@ -14486,7 +14319,7 @@ function renderDetailContextbar() {
   });
 }
 
-function renderHarnessPanel() {
+export function renderHarnessPanel() {
   syncHarnessDocumentLogControls();
 
   if (!state.missionDetail?.harness) {
@@ -18041,7 +17874,7 @@ function resetHarnessDocumentBrowseState() {
   state.harnessDocumentVisibleCount = 12;
 }
 
-function resetHarnessMemoryBrowseState() {
+export function resetHarnessMemoryBrowseState() {
   state.harnessAttachmentFocus = '';
   state.retrievalSourceFocusLabel = '';
   state.retrievalSourceFocusType = '';
@@ -20056,7 +19889,7 @@ function buildHarnessMemoryQueryParams() {
   });
 }
 
-async function loadHarnessMemory(missionId = state.selectedMissionId) {
+export async function loadHarnessMemory(missionId = state.selectedMissionId) {
   if (!missionId) {
     state.harnessMemoryResult = null;
     return null;

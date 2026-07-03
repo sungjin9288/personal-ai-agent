@@ -288,3 +288,49 @@ export function focusReleaseHistoryFlow({
   renderReleaseStatus();
   writeUiStateToUrl({ historyMode });
 }
+
+export function focusReleaseProvider(provider = '', { historyMode = 'replace', scroll = true } = {}) {
+  const normalizedProvider = String(provider || '').trim();
+  if (!normalizedProvider) {
+    return;
+  }
+  state.releaseFocusedProvider = normalizedProvider;
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+  if (!scroll || !elements.releaseStatus) {
+    return;
+  }
+  window.requestAnimationFrame(() => {
+    const target = elements.releaseStatus.querySelector(`[data-release-provider="${CSS.escape(normalizedProvider)}"]`);
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  });
+}
+
+export function clearReleaseProviderFocus({ historyMode = 'replace' } = {}) {
+  state.releaseFocusedProvider = '';
+  renderReleaseStatus();
+  writeUiStateToUrl({ historyMode });
+}
+
+export function applyReleaseProviderUrlState(provider = '') {
+  const normalizedProvider = String(provider || '').trim();
+  const providerReadiness = state.releaseStatus?.providerReadiness || [];
+  if (!normalizedProvider) {
+    const normalizedFilterProvider = String(state.releaseBlockerProviderFilter || '').trim();
+    state.releaseFocusedProvider = providerReadiness.some(
+      (item) => String(item.provider || '').trim() === normalizedFilterProvider,
+    )
+      ? normalizedFilterProvider
+      : '';
+  } else {
+    state.releaseFocusedProvider = providerReadiness.some((item) => String(item.provider || '').trim() === normalizedProvider)
+      ? normalizedProvider
+      : '';
+  }
+  renderReleaseStatus();
+}
