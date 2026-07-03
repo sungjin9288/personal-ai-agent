@@ -328,6 +328,88 @@ npm run smoke:customer-support-operations
 npm run smoke:incident-slo-policy
 ```
 
+Target and enterprise evidence gates (each keeps `productionReadyClaim: false` or its target-approval flag `false`; they verify that the required evidence structure is present, not that production is achieved):
+
+```bash
+npm run smoke:target-deployment-contract
+npm run smoke:target-environment-evidence-intake
+npm run smoke:hosted-saas-architecture-decision
+npm run smoke:hosted-identity-session-architecture
+npm run smoke:hosted-tenant-isolation-architecture
+npm run smoke:target-identity-session-operations
+npm run smoke:target-tenant-isolation-operations
+npm run smoke:identity-session-admin
+npm run smoke:tenant-storage-admin
+npm run smoke:secret-management
+npm run smoke:target-secret-manager
+npm run smoke:target-secret-manager-architecture
+npm run smoke:observability-telemetry
+npm run smoke:target-observability-architecture
+npm run smoke:target-observability-operations
+npm run smoke:target-slo-architecture
+npm run smoke:target-slo-operations
+npm run smoke:retention-delete-policy
+npm run smoke:target-data-lifecycle-architecture
+npm run smoke:target-retention-operations
+npm run smoke:target-backup-operations
+npm run smoke:target-support-architecture
+npm run smoke:target-support-operations
+npm run smoke:target-provider-evidence-intake
+npm run smoke:target-openai-provider-account
+npm run smoke:target-anthropic-provider-account
+npm run smoke:target-local-provider-architecture
+npm run smoke:target-hermes-provider-architecture
+npm run smoke:target-clean-deployment-architecture
+npm run smoke:target-clean-deployment-operations
+npm run smoke:production-enterprise-controls
+```
+
+Local target/production rehearsals that regenerate the evidence for the gates above (all keep `productionReadyClaim: false`):
+
+```bash
+npm run rehearsal:production-enterprise-controls
+npm run rehearsal:production-slo-operating
+npm run smoke:production-slo-operating
+npm run rehearsal:production-retention-operating
+npm run smoke:production-retention-operating
+npm run rehearsal:clean-deployment-release
+npm run smoke:clean-deployment-release
+npm run drill:production-like-release
+npm run smoke:production-like-release-drill
+```
+
+Target and enterprise evidence documents verified by the gates above (each keeps its target-approval flag `false` and does not claim production readiness):
+
+- [docs/hosted-saas-architecture-decision-v1.md](docs/hosted-saas-architecture-decision-v1.md)
+- [docs/hosted-identity-session-architecture-v1.md](docs/hosted-identity-session-architecture-v1.md)
+- [docs/hosted-tenant-isolation-architecture-v1.md](docs/hosted-tenant-isolation-architecture-v1.md)
+- [docs/target-identity-session-operations-v1.md](docs/target-identity-session-operations-v1.md)
+- [docs/target-tenant-isolation-operations-v1.md](docs/target-tenant-isolation-operations-v1.md)
+- [docs/target-secret-manager-architecture-v1.md](docs/target-secret-manager-architecture-v1.md)
+- [docs/target-observability-architecture-v1.md](docs/target-observability-architecture-v1.md)
+- [docs/target-slo-architecture-v1.md](docs/target-slo-architecture-v1.md)
+- [docs/target-slo-operations-v1.md](docs/target-slo-operations-v1.md)
+- [docs/target-data-lifecycle-architecture-v1.md](docs/target-data-lifecycle-architecture-v1.md)
+- [docs/target-clean-deployment-architecture-v1.md](docs/target-clean-deployment-architecture-v1.md)
+- [docs/target-clean-deployment-operations-v1.md](docs/target-clean-deployment-operations-v1.md)
+- [docs/target-environment-evidence-intake-v1.md](docs/target-environment-evidence-intake-v1.md)
+- [docs/target-provider-evidence-intake-v1.md](docs/target-provider-evidence-intake-v1.md)
+- [docs/target-openai-provider-account-v1.md](docs/target-openai-provider-account-v1.md)
+- [docs/target-anthropic-provider-account-v1.md](docs/target-anthropic-provider-account-v1.md)
+- [docs/target-local-provider-architecture-v1.md](docs/target-local-provider-architecture-v1.md)
+- [docs/target-hermes-provider-architecture-v1.md](docs/target-hermes-provider-architecture-v1.md)
+- [docs/target-support-architecture-v1.md](docs/target-support-architecture-v1.md)
+
+Provider account and hosted-control target gates prove that the required evidence structure is present while keeping their approval flags `false`:
+
+- hosted identity session architecture evidence can be verified with `npm run smoke:hosted-identity-session-architecture`; it proves customer IdP onboarding proof, user lifecycle proof, session lifecycle proof, role administration proof, permission propagation proof, immutable audit export proof, break-glass governance proof, support impersonation proof, compliance and retention proof, migration plan, rollback, lockout recovery, customer access containment, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `hostedIdentitySessionApproved: false`
+- target secret manager architecture evidence can be verified with `npm run smoke:target-secret-manager-architecture`; it proves approved platform proof, secret class inventory proof, runtime injection proof, least-privilege access policy proof, rotation and revocation event proof, secret access audit log proof, break-glass governance proof, leakage review proof, disaster recovery proof, migration plan, rollback, lockout recovery, credential containment, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetSecretManagerApproved: false`
+- local target provider evidence intake can be verified with `npm run smoke:target-provider-evidence-intake`; it proves provider account approval proof, target secret injection proof, target-boundary live validation proof, quota and cost guard proof, model and endpoint pinning proof, fallback route proof, and blocker closure verification proof requirements are present, but it does not provide target provider account remediation or production live validation proof
+- target OpenAI provider account evidence can be verified with `npm run smoke:target-openai-provider-account`; it proves account ownership proof, billing and quota proof, API key and secret injection proof, OPENAI_MODEL model access proof, provider terms and customer approval proof, usage and cost guard proof, target-boundary OpenAI live validation, telemetry proof, fallback and stop-condition proof, renewal and review audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetOpenAIProviderApproved: false`
+- target Anthropic provider account evidence can be verified with `npm run smoke:target-anthropic-provider-account`; it proves account ownership proof, billing and credit remediation proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary Anthropic live validation, telemetry proof, fallback and stop-condition proof, remediation audit proof, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetAnthropicProviderApproved: false`
+- target local provider architecture evidence can be verified with `npm run smoke:target-local-provider-architecture`; it proves endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local provider live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetLocalProviderApproved: false`
+- target Hermes provider architecture evidence can be verified with `npm run smoke:target-hermes-provider-architecture`; it proves endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof, customer approval proof, target-boundary Hermes live validation, release artifact hygiene, and regenerated execution snapshot evidence requirements are present, but it keeps `targetHermesProviderApproved: false`
+
 The repository also includes many narrower smoke scripts in `package.json` for provider operations, release blocker handoff, UI flows, retention, backup, identity/session, tenant isolation, observability, and target evidence gates.
 
 ## Release And Evidence
