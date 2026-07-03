@@ -27,11 +27,9 @@ import {
   MEMORY_SCOPES,
   MISSION_MODES,
   MISSION_STATUSES,
-  PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS,
   PROVIDER_ATTENTION_STATUSES,
   REVIEWER_FOLLOW_UP_RESOLUTION_KINDS,
   REVIEWER_FOLLOW_UP_STATUSES,
-  SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS,
   SPECIALIST_KINDS,
 } from './constants.mjs';
 import { createDocService } from './doc-service.mjs';
@@ -180,6 +178,24 @@ import {
   isBreachTier,
   summarizeEscalations,
 } from './escalation-analytics.mjs';
+import {
+  buildLearningPromotionStopConditionReminderNote,
+  buildProviderAttentionReminderNote,
+  buildSpecialistFollowUpReminderNote,
+  deriveLearningPromotionStopConditionReminderCadenceHours,
+  deriveProviderAttentionReminderCadenceHours,
+  deriveSpecialistFollowUpReminderCadenceHours,
+  formatAcceptedRiskEscalationTitle,
+  formatApprovalDecisionMemory,
+  formatApprovalResolution,
+  formatApprovedExecutionReadyBrief,
+  formatLearningPromotionStopConditionReminderDetail,
+  formatProviderAttentionReminderDetail,
+  formatReviewerFailureMemory,
+  formatReviewerFollowUpResolutionDetail,
+  formatReviewerFollowUpResolutionMemory,
+  formatSpecialistFollowUpReminderDetail,
+} from './reminder-formatters.mjs';
 
 function now() {
   return new Date().toISOString();
@@ -641,18 +657,6 @@ function formatMaintenanceRunDetail(run) {
   return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, provider-attention=${run.providerAttentionRemindedCount || 0}, specialist-follow-up=${run.specialistFollowUpRemindedCount || 0},${specialistSuffix} acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
 }
 
-function deriveProviderAttentionReminderCadenceHours(eventFamily) {
-  return PROVIDER_ATTENTION_REMINDER_CADENCE_HOURS[eventFamily] || null;
-}
-
-function deriveSpecialistFollowUpReminderCadenceHours(status) {
-  return SPECIALIST_FOLLOW_UP_REMINDER_CADENCE_HOURS[status] || null;
-}
-
-function deriveLearningPromotionStopConditionReminderCadenceHours() {
-  return 12;
-}
-
 function resolveSpecialistFollowUpPolicy({ followUpSource = 'run-status', orchestrationProfile, specialistKind, status }) {
   const retryPolicy = normalizeText(orchestrationProfile?.retryPolicy) || 'resume-blocked-or-failed-branch';
   const normalizedSpecialistKind = normalizeText(specialistKind);
@@ -772,115 +776,6 @@ function normalizeSessionSourceContext(value = {}) {
   }
 
   return sourceContext;
-}
-
-function formatApprovalResolution(decision, reason) {
-  return `# Approval Resolution
-
-## Decision
-- decision: ${decision}
-- reason: ${reason || 'No explicit reason recorded.'}
-`;
-}
-
-function formatReviewerFailureMemory({ mission, findings }) {
-  return `Reviewer failed ${mission.deliverableType} for mission ${mission.id}: ${findings.join(' | ')}`;
-}
-
-function formatLearningPromotionMemory({ candidate, note, target }) {
-  const noteSuffix = note ? ` note=${note}` : '';
-  return `Learning candidate promoted [${target}] for mission ${candidate.missionId}: ${candidate.summary}${noteSuffix}`;
-}
-
-function formatApprovalDecisionMemory({ mission, decision, reason }) {
-  return `Approval ${decision} for mission ${mission.id} (${mission.deliverableType}): ${reason || 'No explicit reason recorded.'}`;
-}
-
-function buildProviderAttentionReminderNote(item, note) {
-  const normalizedNote = normalizeText(note);
-  if (normalizedNote) {
-    return normalizedNote;
-  }
-
-  return item.eventFamily === 'execution'
-    ? `Reminder issued for failed ${item.providerDisplayName} execution attention.`
-    : `Reminder issued for failed ${item.providerDisplayName} probe attention.`;
-}
-
-function formatProviderAttentionReminderDetail(reminder) {
-  const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
-  return `${reminder.providerDisplayName || reminder.providerId}${overdueSuffix} provider attention reminder: ${reminder.note || 'No explicit note recorded.'}`;
-}
-
-function buildSpecialistFollowUpReminderNote(item, note) {
-  const normalizedNote = normalizeText(note);
-  if (normalizedNote) {
-    return normalizedNote;
-  }
-
-  const urgencyPrefix = item.remediationRoute?.routeUrgency === 'fast' ? 'Fast remediation reminder' : 'Reminder';
-  return `${urgencyPrefix} issued for ${item.status} ${item.specialistKind} specialist follow-up.`;
-}
-
-function formatSpecialistFollowUpReminderDetail(reminder) {
-  const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
-  const urgencyPrefix = reminder.remediationRoute?.routeUrgency === 'fast' ? '[fast] ' : '';
-  return `${urgencyPrefix}${reminder.specialistKind}${overdueSuffix} specialist follow-up reminder: ${reminder.note || 'No explicit note recorded.'}`;
-}
-
-function buildLearningPromotionStopConditionReminderNote(item, note) {
-  const normalizedNote = normalizeText(note);
-  if (normalizedNote) {
-    return normalizedNote;
-  }
-
-  return `Reminder issued for blocked learning promotion stop-condition reason=${item.promotionStopReason || 'unknown'}.`;
-}
-
-function formatLearningPromotionStopConditionReminderDetail(reminder) {
-  const overdueSuffix = reminder.overdue ? ' [overdue]' : '';
-  return `${reminder.learningCandidateId}${overdueSuffix} learning promotion stop-condition reminder: ${reminder.note || 'No explicit note recorded.'}`;
-}
-
-function formatReviewerFollowUpResolutionMemory({ mission, note, resolutionKind }) {
-  return `Reviewer follow-up resolved for mission ${mission.id} (${mission.deliverableType}) [${resolutionKind || 'accepted-risk'}]: ${note || 'Resolved without additional note.'}`;
-}
-
-function formatReviewerFollowUpResolutionDetail({ resolutionKind, resolutionNote }) {
-  const prefix = resolutionKind ? `${resolutionKind}: ` : '';
-  return `${prefix}${resolutionNote || 'Reviewer follow-up resolved.'}`;
-}
-
-function formatAcceptedRiskEscalationTitle(missionTitle) {
-  return `Accepted risk monitoring for ${missionTitle}`;
-}
-
-function formatApprovedExecutionReadyBrief({ mission, workspace, approval, deliverableArtifact }) {
-  return `# Execution Ready Brief
-
-## Mission
-- mission id: ${mission.id}
-- title: ${mission.title}
-- workspace: ${workspace.name}
-- path: ${workspace.path}
-
-## Approval
-- approval id: ${approval.id}
-- decision: ${approval.decision}
-- reason: ${approval.decisionReason || 'No explicit reason recorded.'}
-
-## Approved Deliverable
-- artifact: ${deliverableArtifact ? deliverableArtifact.fileName : 'unknown'}
-- path: ${deliverableArtifact ? deliverableArtifact.path : 'unknown'}
-
-## Handoff
-- the bounded proposal has been reviewed and explicitly approved
-- the next execution owner should validate workspace-local commands inside ${workspace.path}
-- keep verification scoped to the proposal and capture exact evidence before any broader mutation
-
-## Next Action
-- open the approved proposal and execute only the bounded path that was reviewed
-`;
 }
 
 function accumulateCountMap(target, source = {}) {
