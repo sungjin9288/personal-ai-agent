@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-03T12:49:53.381Z
+- generatedAt: 2026-07-03T14:18:09.765Z
 - verifiedCommit: 1db91057274db5097ee448fd748f9c5b3cb464cd
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 88a27fbc624ae9933dbb602941f91f6d2252a83e6563e7819887b2f004ed9f90
+- bundleSha256: 1b4244569435cacf1f22cc01513c60916f8419d37fbb4cc151fbdeed9a5e7418
 - fileCount: 75
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 21078 | `f5a326d97b1887db2bf3ff2a08b02435ae802f56f19d250974af3adeeae9ced1` |
-| `CHANGELOG.md` | 4188 | `0e22c58234b0426621afd19edd78577df6e4dde8e48c92a1ee8c126e6208a6dd` |
+| `README.md` | 29405 | `7def3e0c55aada2f304e9988cc845238ce5ae718d70a7bd58108fa9b88eef563` |
+| `CHANGELOG.md` | 4188 | `dd67ea0d2db1bbd9e064c16ff663e75c0db57f2b7d182a5c44abb042f9fac59d` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -110,7 +110,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-backup-operations-v1.md` | 9763 | `2f30be20f210cf3b2a52c2fc19fb2cdee223a4e07105c0d53826cd528952b9e0` |
 | `docs/identity-session-admin-v1.md` | 5290 | `ffed2867d7d61f9e0241c65c056de0109f6b03ea466c9f8c452b5b17e9a88cc4` |
 | `docs/tenant-storage-admin-v1.md` | 5265 | `196643ffccc0778c211d82e063e5c6067444a53f550e1b134eecdfad9b6d7186` |
-| `docs/clean-deployment-release-v1.md` | 11878 | `f4a138e158f8e3a62d1f846dae96f3ef6b02a53295efb5ddea2d9ab17af9dcf8` |
+| `docs/clean-deployment-release-v1.md` | 11838 | `e53d9529d208b72095958c4a5a5ed2263936c99f5747868ffd8145ed67172cf2` |
 | `docs/production-slo-operating-v1.md` | 9996 | `7c6732ff3de75775f9530b5f53524b7919aef52ab19143209c67a4b9fc65935f` |
 | `docs/production-retention-operating-v1.md` | 7732 | `d7c5c7d83dc30968bbf5393cee279a5bc7f9c346eea333c3474e07d4d2854b2d` |
 | `docs/production-provider-readiness-v1.md` | 22133 | `fe0833f66175b97cf4fe61a8a8ca50fa89e66489b9036d578c4f80203b15c6aa` |
