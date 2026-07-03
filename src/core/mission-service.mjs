@@ -32,6 +32,13 @@ import {
   REVIEWER_FOLLOW_UP_STATUSES,
   SPECIALIST_KINDS,
 } from './constants.mjs';
+import {
+  accumulateCountMap,
+  buildCountMapDelta,
+  formatDateUtc,
+  getUtcMonthRange,
+  getUtcWeekRange,
+} from './date-bucket-utils.mjs';
 import { createDocService } from './doc-service.mjs';
 import {
   buildFallbackExecutionManifest,
@@ -242,14 +249,6 @@ function countByNormalizedField(items, fieldName) {
   }, {});
 }
 
-function formatDateUtc(value) {
-  if (!Number.isFinite(value)) {
-    return '';
-  }
-
-  return new Date(value).toISOString().slice(0, 10);
-}
-
 function normalizeStringList(items) {
   return ensureArray(items).map((item) => normalizeText(item)).filter(Boolean);
 }
@@ -411,44 +410,6 @@ function getUtcMonthStartTimestamp(value = now()) {
 
   const date = new Date(parsed);
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString();
-}
-
-function getUtcWeekRange(isoTimestamp) {
-  const parsed = Date.parse(String(isoTimestamp || ''));
-  if (!Number.isFinite(parsed)) {
-    return null;
-  }
-
-  const date = new Date(parsed);
-  const day = date.getUTCDay();
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const start = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + diffToMonday);
-  const end = start + 6 * 24 * 60 * 60 * 1000;
-
-  return {
-    key: formatDateUtc(start),
-    weekEndDate: formatDateUtc(end),
-    weekStartDate: formatDateUtc(start),
-  };
-}
-
-function getUtcMonthRange(isoTimestamp) {
-  const parsed = Date.parse(String(isoTimestamp || ''));
-  if (!Number.isFinite(parsed)) {
-    return null;
-  }
-
-  const date = new Date(parsed);
-  const monthStart = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1);
-  const monthEnd = Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0);
-  const monthKey = formatDateUtc(monthStart).slice(0, 7);
-
-  return {
-    key: monthKey,
-    monthEndDate: formatDateUtc(monthEnd),
-    monthKey,
-    monthStartDate: formatDateUtc(monthStart),
-  };
 }
 
 function dedupeEntries(entries) {
@@ -701,33 +662,6 @@ function normalizeSessionSourceContext(value = {}) {
   }
 
   return sourceContext;
-}
-
-function accumulateCountMap(target, source = {}) {
-  for (const [key, value] of Object.entries(source || {})) {
-    const normalizedValue = Number(value || 0);
-    if (!normalizedValue) {
-      continue;
-    }
-    target[key] = (target[key] || 0) + normalizedValue;
-  }
-
-  return target;
-}
-
-function buildCountMapDelta(currentCounts = {}, previousCounts = {}) {
-  const keys = new Set([...Object.keys(currentCounts || {}), ...Object.keys(previousCounts || {})]);
-  const delta = {};
-
-  for (const key of [...keys].sort((left, right) => String(left).localeCompare(String(right)))) {
-    const normalizedDelta = Number(currentCounts?.[key] || 0) - Number(previousCounts?.[key] || 0);
-    if (!normalizedDelta) {
-      continue;
-    }
-    delta[key] = normalizedDelta;
-  }
-
-  return delta;
 }
 
 export function createMissionService({ store, rootDir = store.rootDir }) {
