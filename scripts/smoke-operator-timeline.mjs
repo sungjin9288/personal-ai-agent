@@ -410,6 +410,7 @@ assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-opened'], 1)
 assert.equal(globalTimeline.summary.eventCounts['reviewer-follow-up-resolved'], 1);
 assert.equal(globalTimeline.summary.eventCounts['sandbox-decision-recorded'], 7);
 assert.equal(globalTimeline.summary.eventCounts['specialist-follow-up-reminded'], 1);
+assert.equal(globalTimeline.summary.eventCounts['identity-session-context-recorded'], 7);
 assert.equal(globalTimeline.summary.maintenanceMonthlyBucketCount, 1);
 assert.equal(globalTimeline.summary.maintenanceLatestMonthlyBucketStartDate, currentUtcMonthStartDate());
 assert.equal(globalTimeline.summary.maintenanceOldestMonthlyBucketStartDate, currentUtcMonthStartDate());
@@ -427,7 +428,7 @@ assert.equal(globalTimeline.summary.sandboxDecisionCount, 7);
 assert.equal(globalTimeline.summary.sandboxDecisionModeCounts['local-runtime'], 7);
 assert.equal(globalTimeline.summary.sandboxDecisionPolicyCounts['local-runtime-sandbox-policy/v1'], 7);
 assert.equal(globalTimeline.summary.workspaceCounts[workspaceOne.id] >= 5, true);
-assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 14);
+assert.equal(globalTimeline.summary.workspaceCounts[workspaceTwo.id], 18);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceOne.id), true);
 assert.equal(globalTimeline.workspaces.some((workspace) => workspace.id === workspaceTwo.id), true);
 assert.equal(
