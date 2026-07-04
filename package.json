@@ -10,6 +10,8 @@
     "doctor": "node src/cli.mjs doctor",
     "doctor:summary": "node src/cli.mjs doctor summary",
     "smoke": "node scripts/smoke.mjs",
+    "smoke:all": "node scripts/run-all-smokes.mjs",
+    "smoke:docs-gates": "node scripts/run-all-smokes.mjs --group docs-gates",
     "smoke:doctor": "node scripts/smoke-doctor.mjs",
     "smoke:ui-doctor-surface": "node scripts/smoke-ui-doctor-surface.mjs",
     "smoke:ui-harness-browse": "node scripts/smoke-ui-harness-browse.mjs",
