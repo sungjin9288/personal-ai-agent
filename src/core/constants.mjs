@@ -12,7 +12,6 @@ export const MISSION_STATUSES = [
   'failed',
 ];
 
-export const SESSION_STATUSES = ['executing', 'awaiting_approval', 'reviewed', 'completed', 'failed'];
 export const EXECUTION_SESSION_STATUSES = [
   'pending',
   'ready',
@@ -38,8 +37,6 @@ export const PROVIDER_FAILURE_KINDS = [
   'schema-invalid',
   'unknown',
 ];
-
-export const APPROVAL_STATUSES = ['pending', 'approved', 'rejected'];
 
 export const APPROVAL_DECISIONS = ['approve', 'reject'];
 export const APPROVAL_KINDS = ['provider_selection', 'workspace_execution', 'execution_lease'];

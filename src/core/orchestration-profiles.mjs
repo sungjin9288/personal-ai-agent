@@ -99,15 +99,6 @@ function cloneProfile(profile) {
   };
 }
 
-export function getOrchestrationProfile(profileId) {
-  const normalizedId = normalizeText(profileId).toLowerCase();
-  if (!normalizedId) {
-    return null;
-  }
-
-  return cloneProfile(PROFILE_BY_ID.get(normalizedId) || null);
-}
-
 export function listOrchestrationProfiles() {
   return ORCHESTRATION_PROFILES.map((profile) => cloneProfile(profile));
 }
