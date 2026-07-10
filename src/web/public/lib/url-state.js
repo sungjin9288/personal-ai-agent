@@ -16,11 +16,21 @@ import {
 import { STEP_META, getSelectedWorkspaceId } from '../app.js';
 
 const DETAIL_TAB_IDS = new Set(['artifacts', 'runs', 'reviews', 'config', 'harness', 'release']);
-const STEP_IDS = new Set(Object.keys(STEP_META));
+
+// STEP_META comes from the circular ../app.js import, so it must not be read at
+// module-evaluation time (temporal dead zone); resolve it lazily on first use.
+let stepIdsCache = null;
+
+function getStepIds() {
+  if (!stepIdsCache) {
+    stepIdsCache = new Set(Object.keys(STEP_META));
+  }
+  return stepIdsCache;
+}
 
 export function getSanitizedStepId(stepId) {
   const normalized = normalizeUiParam(stepId);
-  return normalized && STEP_IDS.has(normalized) ? normalized : null;
+  return normalized && getStepIds().has(normalized) ? normalized : null;
 }
 
 export function getSanitizedDetailTab(tabId) {
