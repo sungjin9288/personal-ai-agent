@@ -112,6 +112,7 @@ import {
   renderTemplateChipButton,
 } from './lib/render-fragments.js';
 import { state, elements } from './lib/app-state.js';
+import { initTheme, toggleTheme } from './lib/theme.js';
 import {
   getSanitizedStepId,
   getSanitizedDetailTab,
@@ -13714,6 +13715,11 @@ function wireBrowserHistoryControls() {
   });
 }
 
+function wireThemeToggleControls() {
+  const themeToggleButton = document.getElementById('theme-toggle-button');
+  themeToggleButton?.addEventListener('click', () => toggleTheme());
+}
+
 function attachEvents() {
   wireWorkspaceComposerActions();
   wireMissionBrowseControls();
@@ -13723,6 +13729,7 @@ function attachEvents() {
   wireMissionRunActions();
   wireNavigationTabControls();
   wireBrowserHistoryControls();
+  wireThemeToggleControls();
 }
 
 function renderBootstrapStaticSurfaces() {
@@ -13756,6 +13763,7 @@ async function hydrateBootstrapDataAndRestoreState() {
 }
 
 async function bootstrap() {
+  initTheme();
   attachEvents();
   renderBootstrapStaticSurfaces();
   await hydrateBootstrapDataAndRestoreState();

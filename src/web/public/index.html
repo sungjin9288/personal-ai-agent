@@ -9,11 +9,34 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%2310182b'/%3E%3Cpath d='M18 22h28v6H18zm0 14h18v6H18z' fill='%23ffffff'/%3E%3Ccircle cx='45' cy='39' r='8' fill='%232563eb'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <script>
+      // Apply the saved theme before first paint to avoid a flash of the wrong theme.
+      // Mirrors lib/theme.js: only an explicit 'light'/'dark' choice sets data-theme;
+      // otherwise the attribute stays absent so the OS preference applies.
+      (function () {
+        try {
+          var saved = window.localStorage.getItem('personal-ai-agent-theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.setAttribute('data-theme', saved);
+          }
+        } catch (error) {
+          /* localStorage unavailable; fall back to system preference. */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div class="app-shell">
       <aside class="nav-rail">
         <div class="brand-block">
+          <button
+            id="theme-toggle-button"
+            class="theme-toggle-button"
+            type="button"
+            aria-label="테마 전환"
+            title="테마 전환"
+            aria-pressed="false"
+          >☾</button>
           <p class="eyebrow">AI 멀티 에이전트 운영</p>
           <h1>에이전트 운영 콘솔</h1>
           <p class="brand-copy">선택, 실행, 검토, 확정을 한 화면에서 처리하는 운영 워크스페이스.</p>
