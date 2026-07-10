@@ -273,6 +273,18 @@ node src/cli.mjs provider probe openai
 
 ## Testing
 
+Full local sweep (all deterministic smoke scripts, excluding the two Playwright browser e2e checks; exits non-zero on any failure):
+
+```bash
+npm run smoke:all
+```
+
+CI-safe documentation gate subset (the target/enterprise gates with no git-history dependency; also run by the `Docs gate smokes` GitHub Actions workflow):
+
+```bash
+npm run smoke:docs-gates
+```
+
 Recommended public-readiness checks:
 
 ```bash
