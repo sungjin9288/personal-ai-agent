@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-10T03:08:58.482Z
+- generatedAt: 2026-07-10T04:25:00.159Z
 - verifiedCommit: 23605160683d17f3846742b3b8be147c0086af74
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 088d2a2c3178b2af83e141887c0dc8dfe5bcd787a9305c89c8f989a17e052771
+- bundleSha256: efcb2dd048efc86cefd862a64dcd3eb2337b2179dfa4f2da2f7ae69ff078102b
 - fileCount: 75
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 29764 | `aa2b89797238e5204b30396e7ab1f8f19abd2c2cccf2cc3c6a8d7a38e939ccae` |
-| `CHANGELOG.md` | 4188 | `e79ea40b823107d5223c14df86a16286bbfe2f7364ee921545fa2948af2c61d6` |
+| `README.md` | 29859 | `f08fcf7aaa79341afb4299ce775322f84fc05d9fa31d76185567f796b0dd1a89` |
+| `CHANGELOG.md` | 4188 | `c51baa4c2aec614a83e548fc82643ed37c39ab39fd0ff6e59104bfd53a3aec0a` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |

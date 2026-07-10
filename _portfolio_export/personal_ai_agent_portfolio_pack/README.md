@@ -136,6 +136,7 @@ Use `npm run demo:local -- --plan` to print the command plan without executing i
 - Provider registry for `stub`, OpenAI, Anthropic, OpenAI-compatible local providers, and Hermes-compatible providers
 - Approval, action inbox, rollback/log, and provider attention surfaces
 - Local web console and CLI over the same service layer
+- Light and dark console themes with a system-preference default and a persisted manual toggle
 - File-backed runtime state and mission artifacts under `var/`
 - Deterministic smoke scripts for execution, provider behavior, release evidence, portfolio claim boundaries, and artifact hygiene
 
