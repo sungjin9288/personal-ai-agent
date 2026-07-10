@@ -6,3 +6,4 @@ output/playwright/
 # Local secrets and runtime configuration
 .env
 .env.local
+.claude/
