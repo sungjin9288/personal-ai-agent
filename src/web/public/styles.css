@@ -330,7 +330,7 @@ button {
   gap: 10px;
   border-radius: var(--radius-xl);
   padding: 10px 12px;
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 247, 0.96));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-veil));
   overflow: hidden;
 }
 
@@ -466,7 +466,7 @@ button {
   border: 1px solid var(--accent-veil);
   background:
     linear-gradient(135deg, rgba(15, 118, 110, 0.1), transparent 52%),
-    linear-gradient(180deg, var(--surface-veil) 0%, rgba(247, 250, 255, 0.94) 100%);
+    linear-gradient(180deg, var(--surface-veil) 0%, var(--surface-tint-blue) 100%);
   box-shadow: none;
 }
 
@@ -679,7 +679,7 @@ button {
 
 .flow-inline-item.is-warning {
   border-color: rgba(184, 105, 23, 0.16);
-  background: rgba(255, 249, 240, 0.9);
+  background: var(--surface-tint-amber);
 }
 
 .flow-inline-item em {
@@ -795,13 +795,13 @@ button {
 .flow-step.is-active,
 .flow-step.is-ready {
   border-color: var(--line-strong);
-  background: linear-gradient(180deg, var(--surface-veil) 0%, rgba(244, 248, 255, 0.96) 100%);
+  background: linear-gradient(180deg, var(--surface-veil) 0%, var(--surface-tint-blue) 100%);
   box-shadow: 0 10px 18px rgba(15, 118, 110, 0.05);
 }
 
 .flow-step.is-done {
   border-color: rgba(15, 138, 95, 0.12);
-  background: linear-gradient(180deg, var(--surface-veil) 0%, rgba(242, 251, 247, 0.94) 100%);
+  background: linear-gradient(180deg, var(--surface-veil) 0%, var(--surface-tint-green) 100%);
 }
 
 .flow-step-no {
@@ -953,7 +953,7 @@ button {
   padding: 7px 10px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(248, 250, 252, 0.86);
+  background: var(--surface-veil-soft);
 }
 
 .detail-toolbar-pill-primary {
@@ -1080,7 +1080,7 @@ button {
 .detail-secondary-nav-button {
   appearance: none;
   border: 1px solid var(--line);
-  background: rgba(248, 250, 252, 0.9);
+  background: var(--surface-veil-soft);
   color: var(--text-3);
   border-radius: 999px;
   padding: 6px 10px;
@@ -1137,7 +1137,7 @@ button {
 }
 
 .workspace-shell.is-output-focus .surface-result-side {
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.68), var(--surface-veil-soft));
+  background: linear-gradient(180deg, var(--surface-veil-weak), var(--surface-veil-soft));
 }
 
 .workspace-shell.is-output-focus .timeline-list {
@@ -1157,7 +1157,7 @@ button {
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
   background:
-    linear-gradient(180deg, var(--surface-veil), rgba(247, 250, 255, 0.94)),
+    linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue)),
     linear-gradient(90deg, rgba(15, 118, 110, 0.06), transparent);
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.04);
 }
@@ -1369,15 +1369,15 @@ button {
   min-height: 0;
   padding: 14px;
   border-radius: var(--radius-md);
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 253, 0.98));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .surface-result-main {
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 247, 0.98));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-neutral));
 }
 
 .surface-result-side {
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), var(--surface-veil));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-veil));
 }
 
 .mission-summary-compact-shell {
@@ -1387,7 +1387,7 @@ button {
   padding: 14px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-veil), rgba(247, 250, 255, 0.96));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .workspace-shell.is-output-focus .mission-summary-compact-shell {
@@ -1429,7 +1429,7 @@ button {
   padding: 12px 14px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-veil), rgba(247, 250, 255, 0.96));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .workspace-shell.is-output-focus .mission-summary-output-ribbon {
@@ -1540,7 +1540,7 @@ button {
 }
 
 .surface-ai-compose {
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 247, 0.96));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-veil));
 }
 
 .agent-blueprint-builder {
@@ -1702,7 +1702,7 @@ button {
   text-align: left;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 253, 0.96));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .agent-blueprint-card:hover,
@@ -1763,7 +1763,7 @@ button {
   padding: 16px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(15, 118, 110, 0.16);
-  background: linear-gradient(180deg, var(--surface-veil), rgba(241, 252, 248, 0.9));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-green));
 }
 
 .loop-engineering-head {
@@ -1962,7 +1962,7 @@ button {
 .agent-learning-note {
   padding: 12px 13px;
   border-radius: var(--radius-md);
-  background: rgba(248, 250, 252, 0.9);
+  background: var(--surface-veil-soft);
   border: 1px solid rgba(15, 23, 42, 0.07);
 }
 
@@ -1976,7 +1976,7 @@ button {
   padding: 12px 13px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(15, 23, 42, 0.07);
-  background: rgba(248, 250, 252, 0.9);
+  background: var(--surface-veil-soft);
 }
 
 .agent-learning-capability strong {
@@ -2016,7 +2016,7 @@ button {
   padding: 10px 12px;
   border-radius: var(--radius-md);
   border: 1px solid rgba(15, 23, 42, 0.07);
-  background: rgba(248, 250, 252, 0.82);
+  background: var(--surface-veil-soft);
 }
 
 .agent-retrieval-meta {
@@ -2459,7 +2459,7 @@ button:disabled {
   padding: 2px 7px;
   border-radius: 999px;
   background: rgba(45, 212, 191, 0.18);
-  color: rgba(239, 246, 255, 0.96);
+  color: var(--surface-tint-blue);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -2694,7 +2694,7 @@ button:disabled {
 }
 
 .surface-review-readiness {
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 253, 0.98));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .status-row,
@@ -3013,7 +3013,7 @@ button.tag:hover {
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
   background:
-    linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 253, 0.98));
+    linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .execution-card-log {
@@ -3376,11 +3376,11 @@ button.tag:hover {
   padding: 14px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(15, 118, 110, 0.1);
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 247, 0.96));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-veil));
 }
 
 .specialist-lane-shell-empty {
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.92), var(--surface-veil));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-veil));
 }
 
 .specialist-lane-head {
@@ -3464,7 +3464,7 @@ button.tag:hover {
   padding: 9px 10px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line-soft);
-  background: rgba(248, 250, 252, 0.76);
+  background: var(--surface-veil-weak);
 }
 
 .detail-context-main {
@@ -3601,7 +3601,7 @@ button.tag:hover {
   padding: 6px 9px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(248, 250, 252, 0.92);
+  background: var(--surface-veil);
   color: var(--text-3);
   font-size: 0.72rem;
   line-height: 1.3;
@@ -3704,7 +3704,7 @@ button.tag:hover {
 
 .session-detail .inspector-block {
   padding: 10px 11px;
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 253, 0.98));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .session-detail .inspector-block h3 {
@@ -3732,7 +3732,7 @@ button.tag:hover {
   padding: 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line-soft);
-  background: rgba(248, 250, 252, 0.9);
+  background: var(--surface-veil-soft);
 }
 
 .memory-form-grid {
@@ -4007,7 +4007,7 @@ button.tag:hover {
 }
 
 .release-handoff-card.is-recommended {
-  background: linear-gradient(180deg, rgba(244, 248, 255, 0.96), var(--surface-veil-soft));
+  background: linear-gradient(180deg, var(--surface-tint-blue), var(--surface-veil-soft));
 }
 
 .release-handoff-card.is-missing {
@@ -4036,7 +4036,7 @@ button.tag:hover {
   padding: 10px 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--line);
-  background: rgba(248, 250, 252, 0.92);
+  background: var(--surface-veil);
 }
 
 .release-handoff-summary .harness-row {
@@ -4114,7 +4114,7 @@ button.tag:hover {
   padding: 16px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(15, 118, 110, 0.18);
-  background: linear-gradient(180deg, rgba(244, 248, 255, 0.96), var(--surface-veil-soft));
+  background: linear-gradient(180deg, var(--surface-tint-blue), var(--surface-veil-soft));
 }
 
 .release-handoff-preview-head {
@@ -4176,12 +4176,12 @@ button.tag:hover {
 
 .release-snapshot-card.is-expanded {
   background:
-    linear-gradient(180deg, var(--surface-veil), rgba(244, 248, 255, 0.96));
+    linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .release-snapshot-card.is-empty {
   border-style: dashed;
-  background: rgba(248, 250, 252, 0.85);
+  background: var(--surface-veil-soft);
 }
 
 .release-provider-card.is-blocked {
@@ -4192,7 +4192,7 @@ button.tag:hover {
   border-color: rgba(15, 118, 110, 0.28);
   box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.14);
   background:
-    linear-gradient(180deg, var(--surface-veil), rgba(244, 248, 255, 0.96));
+    linear-gradient(180deg, var(--surface-veil), var(--surface-tint-blue));
 }
 
 .release-provider-meta {
@@ -4281,7 +4281,7 @@ button.tag:hover {
 .release-recommendation-card.has-attention-flow {
   border-color: rgba(199, 56, 82, 0.18);
   background:
-    linear-gradient(180deg, var(--surface-veil), rgba(255, 247, 249, 0.96));
+    linear-gradient(180deg, var(--surface-veil), var(--surface-tint-pink));
 }
 
 .release-doc-surface {
@@ -4493,7 +4493,7 @@ select:focus-visible,
 
 .command-header {
   padding: 14px;
-  background: linear-gradient(180deg, var(--surface-veil), rgba(248, 250, 247, 0.94));
+  background: linear-gradient(180deg, var(--surface-veil), var(--surface-tint-neutral));
 }
 
 .command-overview h2 {
