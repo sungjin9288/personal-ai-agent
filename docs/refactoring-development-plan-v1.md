@@ -40,10 +40,10 @@
 | R4.3.2c Release preview actions | 완료 | preview action 2개를 분리하고 release surface의 generic listener를 제거 |
 | R4.3.3 Release status rendering | 진행 중 | 상태 요약·검증 결과·runtime job·closeout checklist를 순수 render 모듈로 이동 |
 | R4.3.3a Release overview rendering | 완료 | 첫 화면의 상태 요약과 runtime/checklist 흐름을 `release-status-view.js`로 분리 |
-| R4.3.3b Release evidence triage rendering | 진행 중 | production blocker·gap 표시를 분리하고 current-open triage 이동을 준비 |
+| R4.3.3b Release evidence triage rendering | 완료 | production blocker와 current-open blocker의 view model·표시 조립을 같은 순수 모듈로 이동 |
 | R4.3.3b1 Production blocker rendering | 완료 | blocker filter/focus view model과 production blocker summary·detail·gap을 분리 |
-| R4.3.3b2 Current-open blocker rendering | 다음 작업 | filter action cluster, focused blocker, current-open list를 같은 view model 위로 이동 |
-| R4.3.3c Release history·provider readiness rendering | 예정 | release history와 provider readiness의 필터·표시 경계를 분리 |
+| R4.3.3b2 Current-open blocker rendering | 완료 | filter action cluster, focused blocker, current-open list를 같은 view model 위로 이동 |
+| R4.3.3c Release history·provider readiness rendering | 다음 작업 | release history와 provider readiness의 필터·표시 경계를 분리 |
 | R4.3.3d Release handoff·document rendering | 예정 | snapshot, handoff, 문서 panel을 분리하고 release shell을 정리 |
 
 R1 완료 검증:
@@ -175,6 +175,19 @@ R4.3.3b1 production blocker rendering 구현 검증:
 - 실제 브라우저에서 production blocker 24건의 초기 8건 요약, 전체 24건 확장, 10번 blocker focus, `rpblocker=10` URL, focused row index 9, 근거 문서 링크와 focus action 6개를 확인했다. console error는 없었다.
 - `app.js`는 11,673줄, 새 `release-evidence-triage-view.js`는 382줄이다. 새 모듈은 state, API, permission, URL 모듈을 import하지 않고 release data, view state, selector, copy renderer를 명시적으로 받는다.
 - production-ready claim은 계속 blocked로 표시하며 escaping, 빈 목록, 8건 요약, focus, audit link, gap 빈 상태를 단위 테스트로 고정했다.
+
+R4.3.3b2 current-open blocker rendering 구현 검증:
+
+- `npm test`: 554개 통과
+- evidence triage view, release status/action, frontend module graph·TDZ guard 단위 테스트 29개 통과
+- UI harness browse, learning promotion surface, execution console, production readiness, release blocker handoff smoke 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E의 preview copy·fallback session 38개와 open session 2개가 모두 error-free였고 생성 artifact restore smoke 통과
+- 실제 브라우저에서 전체 7건, `provider-account` category 2건, 상충하는 `release-owner` 조합 0건, category만 유지한 복구 2건, focused blocker와 근거 링크 3개를 확인했다. `rbcategory`, `rbowner`, `rblocker` URL 상태가 유지되었고 console error와 warning은 없었다.
+- `app.js`는 10,704줄, `release-evidence-triage-view.js`는 1,429줄이다. current-open filter action cluster, empty recovery, focused evidence·commands, blocker row list를 view 모듈로 옮겼고 copy button renderer는 명시적인 dependency object로 전달한다.
+- view 모듈은 state, API, permission, URL 모듈을 import하지 않는다. state mutation, URL 기록, clipboard와 prompt fallback은 기존 action·navigation·copy 경계에 유지한다.
+- production-ready claim은 계속 blocked로 표시하며 필터 결과, 빈 조합 복구, 포커스, escaping, 증적 링크, command와 copy payload 전달을 단위 테스트로 고정했다.
 
 ## 3. 변경 원칙
 

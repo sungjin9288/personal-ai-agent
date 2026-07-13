@@ -2754,6 +2754,8 @@ try {
   assert.equal(appJs.includes('export function createReleaseEvidenceTriageViewModel({'), true);
   assert.equal(appJs.includes('export function renderReleaseProductionBlockerSummary({'), true);
   assert.equal(appJs.includes('export function renderReleaseProductionBlockerDetails({'), true);
+  assert.equal(appJs.includes('export function renderReleaseCurrentOpenBlockers({'), true);
+  assert.equal(appJs.includes('copyButtons: releaseEvidenceTriageCopyButtons'), true);
   assert.equal(appJs.includes('view: evidenceTriageView'), true);
   assert.equal(appJs.includes('target evidence intake'), true);
   assert.equal(appJs.includes("triage slice ${context.blockerFilterLabel || 'all current blockers'}"), true);

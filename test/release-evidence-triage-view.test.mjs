@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import {
   createReleaseEvidenceTriageViewModel,
+  renderReleaseCurrentOpenBlockers,
   renderReleaseProductionBlockerDetails,
   renderReleaseProductionBlockerSummary,
 } from '../src/web/public/lib/release-evidence-triage-view.js';
@@ -33,7 +34,9 @@ function createTriageView(overrides = {}) {
         { href: '/hidden', label: 'hidden' },
       ],
       id: 'blocker-provider',
+      nextEvidence: 'capture <provider> proof',
       owner: 'provider-owner',
+      provider: 'openai',
     },
   ];
   const productionBlockers = Array.from({ length: 10 }, (_, index) => `production blocker ${index + 1}`);
@@ -52,7 +55,11 @@ function createTriageView(overrides = {}) {
     },
     getCurrentOpenBlockerActions: () => actions,
     getSliceSummary: ({ blockerActions, totalActions }) => ({
+      closureVerificationCount: blockerActions.length,
       commandCount: blockerActions.length,
+      evidenceDocCount: blockerActions.length,
+      requiredProofCount: blockerActions.length * 2,
+      topVisibleBlockerId: blockerActions[0]?.id || '',
       totalCount: totalActions.length,
       visibleCount: blockerActions.length,
     }),
@@ -117,6 +124,90 @@ test('release evidence triage view model keeps an honest empty filtered slice', 
   assert.equal(view.productionBlockersExpanded, false);
   assert.equal(view.visibleProductionBlockers.length, 8);
   assert.equal(view.hiddenProductionBlockerCount, 2);
+});
+
+test('current open blocker view preserves filters, focus, evidence, and copy contracts', () => {
+  const copyCalls = [];
+  const linkCalls = [];
+  const commandCalls = [];
+  const html = renderReleaseCurrentOpenBlockers({
+    buildReleaseBlockerApiUrl(filters) {
+      return `/blockers?shared=${filters.includeShared}`;
+    },
+    copyButtons: {
+      renderReleaseBlockerClosureChecklistCopyButton(options) {
+        copyCalls.push(options);
+        return `<button data-copy-action="${options.action || 'closure'}"></button>`;
+      },
+      renderReleaseBlockerHandoffCopyButton(options) {
+        copyCalls.push(options);
+        return '<button data-handoff-copy="true"></button>';
+      },
+      renderReleaseBlockerPackageCopyButton(options) {
+        copyCalls.push(options);
+        return '<button data-package-copy="true"></button>';
+      },
+      renderReleaseBlockerSummaryCopyButton(options) {
+        copyCalls.push(options);
+        return `<button data-summary-copy="${options.action}"></button>`;
+      },
+      renderReleaseCommandCopyButton(options) {
+        commandCalls.push(options);
+        return `<button data-command-copy="${options.command}"></button>`;
+      },
+      renderReleaseLinkCopyButton(options) {
+        linkCalls.push(options);
+        return `<button data-link-copy="${options.value}"></button>`;
+      },
+    },
+    view: createTriageView(),
+  });
+
+  assert.match(html, /Open blocker triage · 2 actions/);
+  assert.match(html, /filtered 1\/2/);
+  assert.match(html, /closure verifications 1/);
+  assert.match(html, /required proofs 2/);
+  assert.match(html, /data-release-current-open-blocker-focus="blocker-provider"/);
+  assert.match(html, /data-release-current-open-blocker-action-row="blocker-provider"/);
+  assert.match(html, /capture &lt;provider&gt; proof/);
+  assert.doesNotMatch(html, /capture <provider> proof/);
+  assert.match(html, /data-release-evidence-doc-href="\/one"/);
+  assert.equal(linkCalls.some((item) => item.value === '/blockers?shared=true'), true);
+  assert.equal(linkCalls.some((item) => item.value === '/blockers?shared=false'), true);
+  assert.equal(linkCalls.some((item) => item.value === '/one'), true);
+  assert.equal(commandCalls.some((item) => item.command === 'npm run provider'), true);
+  assert.equal(copyCalls.some((item) => item.action === 'copy-release-blocker-filter-summary'), true);
+});
+
+test('current open blocker view renders recovery actions for an empty filtered slice', () => {
+  const view = createTriageView({
+    filters: {
+      category: 'missing-category',
+      includeShared: false,
+      owner: 'missing-owner',
+      provider: 'openai',
+    },
+    focus: {},
+    isBlockerVisible: () => false,
+  });
+  const html = renderReleaseCurrentOpenBlockers({ view });
+
+  assert.match(html, /data-release-current-open-blocker-filter-empty="true"/);
+  assert.match(html, /data-release-current-open-blocker-filter-empty-category="true"/);
+  assert.match(html, /data-release-current-open-blocker-filter-empty-owner="true"/);
+  assert.match(html, /data-release-current-open-blocker-filter-empty-provider="true"/);
+  assert.match(html, /data-release-current-open-blocker-filter-empty-clear="true"/);
+  assert.match(html, /현재 triage 필터에 맞는 blocker가 없습니다/);
+  assert.doesNotMatch(html, /data-release-current-open-blocker-action-row=/);
+});
+
+test('current open blocker view keeps a safe honest state without view data', () => {
+  const html = renderReleaseCurrentOpenBlockers();
+
+  assert.match(html, /Open blocker triage · 0 actions/);
+  assert.match(html, /current open blocker triage summary가 없습니다/);
+  assert.match(html, /current open blocker가 없습니다/);
+  assert.doesNotMatch(html, /data-release-current-open-blocker-filter-empty="true"/);
 });
 
 test('production blocker summary escapes evidence text and forwards copy contracts', () => {
