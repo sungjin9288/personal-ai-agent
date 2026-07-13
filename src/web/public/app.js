@@ -166,6 +166,11 @@ import {
   renderReleaseProductionBlockerSummary,
 } from './lib/release-evidence-triage-view.js';
 import {
+  createReleaseHistoryProviderViewModel,
+  renderReleaseActionHistory,
+  renderReleaseProviderReadiness,
+} from './lib/release-history-provider-view.js';
+import {
   wireReleaseStatusCopyActions,
   wireReleaseStatusLifecycleActions,
   wireReleaseStatusNavigationActions,
@@ -354,6 +359,15 @@ const releaseEvidenceTriageCopyButtons = {
   renderReleaseTargetEvidenceRiskDecisionRegisterCopyButton,
   renderReleaseTargetEvidenceSanitizedRegisterCopyButton,
   renderReleaseTargetEvidenceSubmissionManifestCopyButton,
+};
+
+const releaseHistoryProviderCopyButtons = {
+  renderReleaseBlockerPackageCopyButton,
+  renderReleaseCommandCopyButton,
+  renderReleaseLinkCopyButton,
+  renderReleaseProviderNavigationButton,
+  renderReleaseProviderReadinessPackageCopyButton,
+  renderReleaseToggleActionButton,
 };
 
 const RELEASE_HANDOFF_PREVIEWABLE_FORMATS = new Set(['json', 'markdown', 'text']);
@@ -6672,48 +6686,6 @@ export function renderReleaseStatus() {
   const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
   const historyFilterScope = String(state.releaseHistoryFilterScope || '').trim();
   const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
-  const focusedProviderEntry = providerReadiness.find((item) => String(item.provider || '').trim() === focusedProvider) || null;
-  const focusedProviderActionLabel = focusedProviderEntry?.label || focusedProvider || 'provider';
-  const focusedProviderPreflight = focusedProviderEntry
-    ? state.releasePreflightResults?.[focusedProviderEntry.provider] || null
-    : null;
-  const focusedProviderBlockerActions = focusedProvider
-    ? getReleaseProviderBlockerActions({ provider: focusedProvider, releaseStatus: release })
-    : [];
-  const focusedProviderClosureSummary = focusedProviderEntry
-    ? getReleaseProviderClosureSummary(focusedProviderEntry, focusedProviderBlockerActions)
-    : null;
-  const focusedProviderTopBlocker = focusedProviderBlockerActions[0] || null;
-  const focusedProviderTopBlockerId = String(focusedProviderTopBlocker?.id || '').trim();
-  const focusedProviderHistory = focusedProvider
-    ? releaseActionHistory.filter((item) => String(item.provider || '').trim() === focusedProvider)
-    : [];
-  const focusedProviderLatestAction = focusedProviderHistory[0] || null;
-  const focusedProviderAttentionHistory = focusedProviderHistory.filter((item) => isReleaseAttentionOutcome(item?.outcome));
-  const focusedProviderLatestAttentionAction = focusedProviderAttentionHistory[0] || null;
-  const focusedProviderLatestActionLabel = focusedProviderLatestAction
-    ? getReleaseActionLabel(focusedProviderLatestAction.action)
-    : 'provider record';
-  const focusedProviderLatestAttentionLabel = focusedProviderLatestAttentionAction
-    ? getReleaseActionLabel(focusedProviderLatestAttentionAction.action)
-    : 'provider attention';
-  const { attentionFlowActive: focusedProviderAttentionFlowActive, sameFlowActive: focusedProviderFlowActive } = focusedProviderLatestAction
-    ? isRecommendationFlowActive({
-        attentionAction: focusedProviderLatestAttentionAction,
-        latestAction: focusedProviderLatestAction,
-      }, {
-        focusedHistoryId,
-        historyFilterOutcome,
-        historyFilterProvider,
-        historyFilterScope,
-      })
-    : { attentionFlowActive: false, sameFlowActive: false };
-  const orderedProviderReadiness = focusedProvider
-    ? [
-        ...providerReadiness.filter((item) => String(item.provider || '').trim() === focusedProvider),
-        ...providerReadiness.filter((item) => String(item.provider || '').trim() !== focusedProvider),
-      ]
-    : providerReadiness;
   const regenerationConfirmArmed = Boolean(state.releaseRegenerationConfirmArmed);
   const snapshotConfirmArmed = Boolean(state.releaseSnapshotConfirmArmed);
   const snapshot = release.snapshot || null;
@@ -6725,6 +6697,32 @@ export function renderReleaseStatus() {
     || evidence?.commit
     || values?.commit
     || 'execution-v1 release';
+  const releaseHistoryProviderView = createReleaseHistoryProviderViewModel({
+    filters: {
+      outcome: historyFilterOutcome,
+      provider: historyFilterProvider,
+      scope: historyFilterScope,
+    },
+    focus: {
+      blockerId: focusedBlockerId,
+      expandedHistoryId,
+      historyId: focusedHistoryId,
+      provider: focusedProvider,
+    },
+    getActionLabel: getReleaseActionLabel,
+    getActionScopeLabel: getReleaseActionScopeLabel,
+    getProviderBlockerActions: getReleaseProviderBlockerActions,
+    getProviderClosureSummary: getReleaseProviderClosureSummary,
+    getProviderLiveCommand,
+    isAttentionOutcome: isReleaseAttentionOutcome,
+    isFlowActive: isRecommendationFlowActive,
+    liveConfirmProvider,
+    liveRefreshPreflight,
+    preflightResults: state.releasePreflightResults,
+    release,
+    releaseActionLabel,
+    releaseAllPreflight,
+  });
   const baseline = release.baseline || null;
   const readyHandoffArtifacts = handoffArtifacts.filter((item) => item.exists);
   const recommendedHandoffArtifacts = handoffArtifacts.filter((item) => item.recommended);
@@ -6746,39 +6744,6 @@ export function renderReleaseStatus() {
   const handoffPreviewStructuredSummarySha = handoffPreviewArtifact
     ? getReleaseHandoffStructuredSummarySha(handoffPreviewArtifact)
     : '';
-  const filteredReleaseActionHistory = releaseActionHistory.filter((item) => {
-    const itemOutcome = String(item?.outcome || '').trim().toLowerCase();
-    const itemScope = String(item?.scope || '').trim();
-    const itemProvider = String(item?.provider || '').trim();
-    if (historyFilterOutcome === 'attention' && !isReleaseAttentionOutcome(itemOutcome)) {
-      return false;
-    }
-    if (historyFilterScope && itemScope !== historyFilterScope) {
-      return false;
-    }
-    if (historyFilterProvider && itemProvider !== historyFilterProvider) {
-      return false;
-    }
-    return true;
-  });
-  const orderedReleaseActionHistory = focusedHistoryId
-    ? [
-        ...filteredReleaseActionHistory.filter((item) => String(item?.id || '').trim() === focusedHistoryId),
-        ...filteredReleaseActionHistory.filter((item) => String(item?.id || '').trim() !== focusedHistoryId),
-      ]
-    : filteredReleaseActionHistory;
-  const aggregatePreflightLabel = releaseAllPreflight
-    ? `${releaseAllPreflight.status || 'unknown'} · ready ${Number(releaseAllPreflight.readyForLiveCount || 0)} · env ${Number(releaseAllPreflight.missingEnvCount || 0)}`
-    : 'not-run';
-  const aggregatePreflightReadyLabel = releaseAllPreflight
-    ? `ready ${Number(releaseAllPreflight.readyForLiveCount || 0)}`
-    : 'ready not tracked';
-  const aggregatePreflightMissingEnvLabel = releaseAllPreflight
-    ? `missing env ${Number(releaseAllPreflight.missingEnvCount || 0)}`
-    : 'missing env not tracked';
-  const aggregatePreflightBlockedLabel = releaseAllPreflight
-    ? `blocked ${Number(releaseAllPreflight.blockedCount || 0)}`
-    : 'blocked not tracked';
 
   elements.releaseStatus.innerHTML = `
     <div class="release-status-shell">
@@ -7088,584 +7053,14 @@ export function renderReleaseStatus() {
               renderToggleActionButton: renderReleaseToggleActionButton,
               view: evidenceTriageView,
             })}
-            <div class="mini-head">
-              <div>
-                <p class="section-kicker">Release Action History</p>
-                <h4>최근 preflight, refresh, snapshot, live action</h4>
-              </div>
-            </div>
-            ${focusedHistoryId
-              ? `
-                  <div class="harness-callout release-history-focus-callout">
-                      <strong>현재 포커스된 release action</strong>
-                      <p>선택한 기록을 리스트 상단에 유지하고 있습니다. 상세를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
-                      <div class="release-history-focus-actions">
-                        ${renderReleaseClearActionButton({
-                          action: 'clear-release-history-focus',
-                          actionLabel: `release history 포커스 해제: ${focusedHistoryId}`,
-                          buttonText: '포커스 해제',
-                        })}
-                        ${renderReleaseLinkCopyButton({
-                          actionLabel: `현재 triage 링크 복사: focused release history ${focusedHistoryId}`,
-                          buttonText: '현재 triage 링크 복사',
-                          value: `focused-history:${focusedHistoryId}`,
-                        })}
-                        ${historyFilterOutcome || historyFilterScope || historyFilterProvider
-                          ? renderReleaseClearActionButton({
-                              action: 'clear-release-history-filter',
-                              actionLabel: `release history 필터 해제: ${releaseActionLabel}`,
-                              buttonText: '필터 해제',
-                            })
-                          : ''}
-                    </div>
-                    ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
-                      ? `
-                          <div class="release-history-filter-chips">
-                            ${historyFilterOutcome === 'attention' ? '<span class="mini-badge status-failed">outcome · 주의 상태만</span>' : ''}
-                            ${historyFilterScope ? `<span class="mini-badge status-running">scope · ${escapeHtml(getReleaseActionScopeLabel(historyFilterScope))}</span>` : ''}
-                            ${historyFilterProvider ? `<span class="mini-badge status-running">provider · ${escapeHtml(historyFilterProvider)}</span>` : ''}
-                          </div>
-                        `
-                      : ''}
-                  </div>
-                `
-              : ''}
-            <div class="release-history-list">
-              ${orderedReleaseActionHistory.length
-                ? orderedReleaseActionHistory
-                  .map(
-                      (item) => {
-                        const itemId = String(item.id || '').trim();
-                        const isFocused = Boolean(focusedHistoryId && itemId === focusedHistoryId);
-                        const isExpanded = Boolean(expandedHistoryId && itemId === expandedHistoryId);
-                        const historyActionLabel = `${itemId || 'release action'} · ${getReleaseActionLabel(item.action)} · ${item.outcome || 'unknown'} · ${getReleaseActionScopeLabel(item.scope)}${item.provider ? ` · ${item.provider}` : ''}`;
-                        return `
-                      <article class="release-snapshot-card ${isFocused ? 'is-highlighted' : ''} ${isExpanded ? 'is-expanded' : ''}" data-release-history-id="${escapeHtml(itemId)}">
-                        <div class="release-provider-meta">
-                          <div>
-                            <div class="item-title">${escapeHtml(getReleaseActionLabel(item.action))}</div>
-                            <div class="item-meta">${escapeHtml(getReleaseActionScopeLabel(item.scope))}${item.provider ? ` · ${escapeHtml(item.provider)}` : ''}</div>
-                          </div>
-                          <div class="release-history-actions">
-                            <span class="mini-badge ${getReleaseStatusBadge(item.outcome)}">${escapeHtml(item.outcome || 'unknown')}</span>
-                            ${isFocused
-                              ? `
-                                  ${renderReleaseClearActionButton({
-                                    action: 'clear-release-history-focus',
-                                    actionLabel: `release history 포커스 해제: ${historyActionLabel}`,
-                                    buttonText: '포커스 해제',
-                                    pressed: isFocused,
-                                  })}
-                                `
-                              : `
-                                  ${renderReleaseProviderNavigationButton({
-                                    action: 'focus-release-history',
-                                    actionLabel: `release history 기록 고정: ${historyActionLabel}`,
-                                    buttonText: '이 기록 고정',
-                                    pressed: isFocused,
-                                    value: itemId,
-                                  })}
-                                `}
-                            ${renderReleaseToggleActionButton({
-                              action: 'toggle-release-history',
-                              actionLabel: `release history ${isExpanded ? '상세 닫기' : '상세 보기'}: ${historyActionLabel}`,
-                              buttonText: isExpanded ? '상세 닫기' : '상세 보기',
-                              expanded: isExpanded,
-                              value: itemId,
-                            })}
-                          </div>
-                        </div>
-                        <div class="item-meta">${escapeHtml(item.summary || 'release action summary가 없습니다.')}</div>
-                        <div class="release-meta release-meta-secondary">
-                          <span class="item-meta">${escapeHtml(formatDate(item.createdAt))}</span>
-                          ${item.branch ? `<span class="item-meta">${escapeHtml(item.branch)}</span>` : ''}
-                          ${item.commit ? `<span class="item-meta mono">${escapeHtml(String(item.commit).slice(0, 12))}</span>` : ''}
-                        </div>
-                        ${isExpanded
-                          ? `
-                              <div class="release-history-detail">
-                                <div class="release-history-filter-actions">
-                                  ${renderReleaseLinkCopyButton({
-                                    action: 'copy-release-history-link',
-                                    actionLabel: `release history 링크 복사: ${historyActionLabel}`,
-                                    buttonText: '이 기록 링크 복사',
-                                    value: itemId,
-                                  })}
-                                  ${renderReleaseLinkCopyButton({
-                                    action: 'copy-release-flow-link',
-                                    actionLabel: `release flow 링크 복사: ${historyActionLabel}`,
-                                    attributes: `data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(item.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(item.scope || '').trim())}" data-ui-provider="${escapeHtml(String(item.provider || '').trim())}"`,
-                                    buttonText: '이 flow 링크 복사',
-                                    value: itemId,
-                                  })}
-                                  ${renderReleaseProviderNavigationButton({
-                                    action: 'filter-release-history-attention',
-                                    actionLabel: `release history 주의 상태만 보기: ${historyActionLabel}`,
-                                    buttonText: '주의 상태만',
-                                    outcome: 'attention',
-                                    pressed: historyFilterOutcome === 'attention',
-                                  })}
-                                  ${renderReleaseProviderNavigationButton({
-                                    action: 'filter-release-history-scope',
-                                    actionLabel: `release history 같은 scope 보기: ${historyActionLabel}`,
-                                    buttonText: '같은 scope 보기',
-                                    pressed: historyFilterScope === String(item.scope || '').trim(),
-                                    scope: String(item.scope || '').trim(),
-                                  })}
-                                  ${item.provider
-                                    ? `
-                                        ${renderReleaseProviderNavigationButton({
-                                          action: 'filter-release-history-provider',
-                                          actionLabel: `release history 같은 provider 보기: ${historyActionLabel}`,
-                                          buttonText: '같은 provider 보기',
-                                          pressed: historyFilterProvider === String(item.provider || '').trim(),
-                                          provider: String(item.provider || '').trim(),
-                                        })}
-                                      `
-                                    : ''}
-                                    ${(historyFilterOutcome || historyFilterScope || historyFilterProvider)
-                                      ? renderReleaseClearActionButton({
-                                          action: 'clear-release-history-filter',
-                                          actionLabel: `release history 필터 해제: ${historyActionLabel}`,
-                                          buttonText: '필터 해제',
-                                        })
-                                      : ''}
-                                </div>
-                                <div class="release-history-detail-grid">
-                                  <div>
-                                    <span class="section-kicker">Action Id</span>
-                                    <div class="item-meta mono">${escapeHtml(itemId || 'id 없음')}</div>
-                                  </div>
-                                  <div>
-                                    <span class="section-kicker">Outcome</span>
-                                    <div class="item-meta">${escapeHtml(item.outcome || 'unknown')}</div>
-                                  </div>
-                                  <div>
-                                    <span class="section-kicker">Scope</span>
-                                    <div class="item-meta">${escapeHtml(getReleaseActionScopeLabel(item.scope))}</div>
-                                  </div>
-                                  <div>
-                                    <span class="section-kicker">Provider</span>
-                                    <div class="item-meta">${escapeHtml(item.provider || '없음')}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            `
-                          : ''}
-                      </article>
-                    `;
-                    },
-                  )
-                  .join('')
-                : `
-                    <article class="release-snapshot-card is-empty">
-                      <div class="item-title">${historyFilterOutcome || historyFilterScope || historyFilterProvider ? '현재 필터와 맞는 release action 기록이 없습니다.' : '최근 release action 기록이 없습니다.'}</div>
-                      <p class="item-meta">${historyFilterOutcome || historyFilterScope || historyFilterProvider ? '필터를 해제하면 전체 history를 다시 볼 수 있습니다.' : 'preflight, current surface 재생성, snapshot 고정, provider live validation을 실행하면 이 영역에 최근 action history가 쌓입니다.'}</p>
-                    </article>
-                  `}
-            </div>
-          ${focusedProvider
-              ? `
-                  <div class="harness-callout release-provider-focus-callout">
-                    <strong>현재 포커스된 provider readiness 카드</strong>
-                    <p>${escapeHtml(focusedProvider)} provider card를 강조하고 있습니다. preflight/live action이나 command handoff를 확인한 뒤 포커스를 해제할 수 있습니다.</p>
-                    ${focusedProviderEntry
-                      ? `
-                          <div class="release-history-filter-chips">
-                            <span class="mini-badge ${getReleaseStatusBadge(focusedProviderEntry.status)}">${escapeHtml(focusedProviderEntry.status)}</span>
-                            <span class="mini-badge ${getReleaseStatusBadge(focusedProviderPreflight?.status || 'not-run')}">${escapeHtml(focusedProviderPreflight?.status || 'not-run')}</span>
-                          </div>
-                        `
-                      : ''}
-                    <p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(focusedProvider)}">
-                      provider blockers ${escapeHtml(String(focusedProviderBlockerActions.length))}
-                      ${focusedProviderTopBlocker
-                        ? ` · top ${escapeHtml(focusedProviderTopBlockerId || 'unknown')}: ${escapeHtml(String(focusedProviderTopBlocker.stopReason || focusedProviderTopBlocker.blocker || '').trim())}`
-                        : ''}
-                    </p>
-                    ${focusedProviderClosureSummary
-                      ? `
-                          <p class="item-meta" data-release-provider-closure-summary="${escapeHtml(focusedProvider)}">
-                            closure verifications ${escapeHtml(String(focusedProviderClosureSummary.closureVerificationCount))}
-                            · required proofs ${escapeHtml(String(focusedProviderClosureSummary.requiredProofCount))}
-                            · commands ${escapeHtml(String(focusedProviderClosureSummary.commandCount))}
-                            · evidence docs ${escapeHtml(String(focusedProviderClosureSummary.evidenceDocCount))}
-                          </p>
-                          <div class="release-history-filter-chips" data-release-provider-closure-metrics="${escapeHtml(focusedProvider)}">
-                            <span class="mini-badge status-failed" data-release-provider-closure-count="${escapeHtml(focusedProvider)}">${escapeHtml(`closure ${focusedProviderClosureSummary.closureVerificationCount}`)}</span>
-                            <span class="mini-badge status-running" data-release-provider-required-proof-count="${escapeHtml(focusedProvider)}">${escapeHtml(`proofs ${focusedProviderClosureSummary.requiredProofCount}`)}</span>
-                            <span class="mini-badge status-running" data-release-provider-command-count="${escapeHtml(focusedProvider)}">${escapeHtml(`commands ${focusedProviderClosureSummary.commandCount}`)}</span>
-                            <span class="mini-badge status-running" data-release-provider-evidence-doc-count="${escapeHtml(focusedProvider)}">${escapeHtml(`evidence ${focusedProviderClosureSummary.evidenceDocCount}`)}</span>
-                            <span class="mini-badge ${focusedProviderClosureSummary.productionReadyClaimAllowed ? 'status-completed' : 'status-failed'}" data-release-provider-production-ready-claim="${escapeHtml(focusedProvider)}">${escapeHtml(focusedProviderClosureSummary.productionReadyClaimAllowed ? 'claim allowed' : 'claim blocked')}</span>
-                            <span class="mini-badge ${focusedProviderClosureSummary.targetBoundaryRequiredCount ? 'status-failed' : 'status-completed'}" data-release-provider-target-boundary-count="${escapeHtml(focusedProvider)}">${escapeHtml(`target boundary ${focusedProviderClosureSummary.targetBoundaryRequiredCount}`)}</span>
-                          </div>
-                        `
-                      : ''}
-                    ${focusedProviderLatestAction
-                      ? `
-                          <div class="item-meta">
-                            최근 provider 시도 · ${escapeHtml(getReleaseActionLabel(focusedProviderLatestAction.action))} · ${escapeHtml(focusedProviderLatestAction.outcome || 'unknown')} · ${escapeHtml(formatDate(focusedProviderLatestAction.createdAt))}
-                          </div>
-                          <div class="item-meta">${escapeHtml(focusedProviderLatestAction.summary || '최근 provider action summary가 없습니다.')}</div>
-                          <div class="release-history-filter-chips">
-                            <span class="mini-badge status-running">같은 provider ${escapeHtml(String(focusedProviderHistory.length))}건</span>
-                            ${focusedProviderAttentionHistory.length
-                              ? `<span class="mini-badge status-failed">문제 흐름 ${escapeHtml(String(focusedProviderAttentionHistory.length))}건</span>`
-                              : ''}
-                            ${focusedProviderFlowActive
-                              ? '<span class="mini-badge status-running">현재 provider flow 적용 중</span>'
-                              : ''}
-                            ${focusedProviderAttentionFlowActive
-                              ? '<span class="mini-badge status-failed">현재 provider 문제 흐름 적용 중</span>'
-                              : ''}
-                          </div>
-                          ${focusedProviderLatestAttentionAction
-                            ? `
-                                <div class="item-meta">
-                                  최근 provider 문제 · ${escapeHtml(getReleaseActionLabel(focusedProviderLatestAttentionAction.action))} · ${escapeHtml(formatDate(focusedProviderLatestAttentionAction.createdAt))}
-                                </div>
-                                <div class="item-meta">${escapeHtml(focusedProviderLatestAttentionAction.summary || '최근 provider 문제 summary가 없습니다.')}</div>
-                              `
-                            : ''}
-                        `
-                      : `
-                          <div class="item-meta">이 provider에 연결된 release action history가 아직 없습니다.</div>
-                        `}
-                    <div class="release-history-focus-actions">
-                      ${focusedProviderEntry
-                        ? `
-                            ${renderReleaseProviderActionButton({
-                              action: 'run-release-preflight',
-                              actionLabel: `provider preflight 실행: ${focusedProviderActionLabel}`,
-                              buttonText: 'preflight 실행',
-                              provider: focusedProviderEntry.provider,
-                            })}
-                            ${renderReleaseCommandCopyButton({
-                              actionLabel: `provider preflight 명령 복사: ${focusedProviderActionLabel}`,
-                              buttonText: 'preflight 명령 복사',
-                              command: focusedProviderEntry.preflightCommand || `npm run preflight:execution-v1:${focusedProviderEntry.provider}`,
-                              label: `${focusedProviderEntry.label} preflight 명령`,
-                            })}
-                            ${renderReleaseProviderActionButton({
-                              action: 'refresh-release-status-live',
-                              actionLabel: focusedProviderEntry.ready
-                                ? (liveConfirmProvider === focusedProviderEntry.provider ? `provider live 검증 확인: ${focusedProviderActionLabel}` : `provider live 검증 실행: ${focusedProviderActionLabel}`)
-                                : `provider env 필요: ${focusedProviderActionLabel}`,
-                              buttonText: focusedProviderEntry.ready ? (liveConfirmProvider === focusedProviderEntry.provider ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요',
-                              className: liveConfirmProvider === focusedProviderEntry.provider ? 'primary-button' : 'ghost-button',
-                              disabled: !focusedProviderEntry.ready,
-                              pressed: liveConfirmProvider === focusedProviderEntry.provider,
-                              provider: focusedProviderEntry.provider,
-                            })}
-                            ${renderReleaseCommandCopyButton({
-                              actionLabel: `provider live 명령 복사: ${focusedProviderActionLabel}`,
-                              buttonText: 'live 명령 복사',
-                              command: getProviderLiveCommand(focusedProviderEntry, focusedProviderPreflight),
-                              label: `${focusedProviderEntry.label} live 명령`,
-                            })}
-                            ${renderReleaseProviderReadinessPackageCopyButton({
-                              actionLabel: `provider package 복사: ${focusedProviderActionLabel}`,
-                              buttonText: 'provider package 복사',
-                              provider: focusedProviderEntry.provider,
-                            })}
-                          `
-                        : ''}
-                      ${focusedProviderTopBlocker
-                        ? `
-                            ${renderReleaseProviderNavigationButton({
-                              action: 'focus-release-blocker',
-                              actionLabel: `provider blocker 보기: ${focusedProviderActionLabel}`,
-                              blocker: focusedProviderTopBlockerId,
-                              buttonText: 'provider blocker 보기',
-                              pressed: focusedProviderTopBlockerId === focusedBlockerId,
-                              provider: focusedProvider,
-                            })}
-                            ${renderReleaseBlockerPackageCopyButton({
-                              actionLabel: `provider blocker package 복사: ${focusedProviderActionLabel}`,
-                              attributes: 'data-release-provider-blocker-package="true"',
-                              blockerId: focusedProviderTopBlockerId,
-                              buttonText: 'provider blocker package 복사',
-                              provider: focusedProvider,
-                            })}
-                          `
-                        : ''}
-                      ${focusedProviderLatestAction
-                        ? `
-                            ${renderReleaseProviderNavigationButton({
-                              action: 'focus-release-history',
-                              actionLabel: `최근 provider 기록 보기: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`,
-                              buttonText: '최근 provider 기록 보기',
-                              pressed: String(focusedProviderLatestAction.id || '').trim() === focusedHistoryId,
-                              value: String(focusedProviderLatestAction.id || '').trim(),
-                            })}
-                            ${renderReleaseProviderNavigationButton({
-                              action: 'filter-release-history-provider',
-                              actionLabel: `같은 provider 기록만 보기: ${focusedProviderActionLabel}`,
-                              buttonText: '같은 provider 기록만 보기',
-                              pressed: historyFilterProvider === focusedProvider,
-                              provider: focusedProvider,
-                            })}
-                            ${renderReleaseProviderNavigationButton({
-                              action: 'focus-release-flow',
-                              actionLabel: focusedProviderFlowActive
-                                ? `현재 provider flow: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`
-                                : `같은 provider flow 보기: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`,
-                              buttonText: focusedProviderFlowActive ? '현재 provider flow' : '같은 provider flow 보기',
-                              disabled: focusedProviderFlowActive,
-                              outcome: isReleaseAttentionOutcome(focusedProviderLatestAction.outcome) ? 'attention' : '',
-                              pressed: focusedProviderFlowActive,
-                              provider: String(focusedProviderLatestAction.provider || '').trim(),
-                              scope: String(focusedProviderLatestAction.scope || '').trim(),
-                              value: String(focusedProviderLatestAction.id || '').trim(),
-                            })}
-                            ${renderReleaseLinkCopyButton({
-                              action: 'copy-release-flow-link',
-                              actionLabel: `provider flow 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestActionLabel}`,
-                              attributes: `data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(focusedProviderLatestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(focusedProviderLatestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAction.provider || '').trim())}"`,
-                              buttonText: 'provider flow 링크 복사',
-                              value: String(focusedProviderLatestAction.id || '').trim(),
-                            })}
-                          `
-                        : ''}
-                      ${focusedProviderLatestAttentionAction
-                        ? `
-                            ${renderReleaseProviderNavigationButton({
-                              action: 'focus-release-history',
-                              actionLabel: `최근 provider 문제 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`,
-                              buttonText: '최근 provider 문제 보기',
-                              pressed: String(focusedProviderLatestAttentionAction.id || '').trim() === focusedHistoryId,
-                              value: String(focusedProviderLatestAttentionAction.id || '').trim(),
-                            })}
-                            ${renderReleaseProviderNavigationButton({
-                              action: 'filter-release-history-attention',
-                              actionLabel: `주의 상태만 보기: ${focusedProviderActionLabel}`,
-                              buttonText: '주의 상태만',
-                              outcome: 'attention',
-                              pressed: historyFilterOutcome === 'attention',
-                            })}
-                            ${renderReleaseProviderNavigationButton({
-                              action: 'focus-release-flow',
-                              actionLabel: focusedProviderAttentionFlowActive
-                                ? `현재 provider 문제 흐름: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`
-                                : `같은 provider 문제 흐름 보기: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`,
-                              buttonText: focusedProviderAttentionFlowActive ? '현재 provider 문제 흐름' : '같은 provider 문제 흐름 보기',
-                              disabled: focusedProviderAttentionFlowActive,
-                              outcome: 'attention',
-                              pressed: focusedProviderAttentionFlowActive,
-                              provider: String(focusedProviderLatestAttentionAction.provider || focusedProviderLatestAction?.provider || '').trim(),
-                              scope: String(focusedProviderLatestAttentionAction.scope || focusedProviderLatestAction?.scope || '').trim(),
-                              value: String(focusedProviderLatestAttentionAction.id || '').trim(),
-                            })}
-                            ${renderReleaseLinkCopyButton({
-                              action: 'copy-release-flow-link',
-                              actionLabel: `provider 문제 흐름 링크 복사: ${focusedProviderActionLabel} ${focusedProviderLatestAttentionLabel}`,
-                              attributes: `data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(focusedProviderLatestAttentionAction.scope || focusedProviderLatestAction?.scope || '').trim())}" data-ui-provider="${escapeHtml(String(focusedProviderLatestAttentionAction.provider || focusedProviderLatestAction?.provider || '').trim())}"`,
-                              buttonText: 'provider 문제 흐름 링크 복사',
-                              value: String(focusedProviderLatestAttentionAction.id || '').trim(),
-                            })}
-                          `
-                        : ''}
-                      ${renderReleaseClearActionButton({
-                        action: 'clear-release-provider-focus',
-                        actionLabel: `provider 포커스 해제: ${focusedProviderActionLabel}`,
-                        buttonText: 'provider 포커스 해제',
-                      })}
-                      ${renderReleaseLinkCopyButton({
-                        action: 'copy-release-provider-link',
-                        actionLabel: `provider 링크 복사: ${focusedProviderActionLabel}`,
-                        attributes: `data-ui-provider="${escapeHtml(focusedProvider)}"`,
-                        buttonText: 'provider 링크 복사',
-                        value: focusedProvider,
-                      })}
-                      ${renderReleaseLinkCopyButton({
-                        actionLabel: `현재 triage 링크 복사: ${focusedProviderActionLabel}`,
-                        buttonText: '현재 triage 링크 복사',
-                        value: `focused-provider:${focusedProvider}`,
-                      })}
-                    </div>
-                  </div>
-                `
-              : ''}
-            <div class="harness-callout release-provider-focus-callout">
-              <strong>전체 provider preflight</strong>
-              <p>OpenAI, Anthropic, local, Hermes live validation prerequisites를 한 번에 확인합니다. 현재 결과: ${escapeHtml(aggregatePreflightLabel)}</p>
-              <div class="release-history-filter-chips">
-                <span class="mini-badge ${getReleaseStatusBadge(releaseAllPreflight?.status || 'not-run')}">${escapeHtml(releaseAllPreflight?.status || 'not-run')}</span>
-                <span class="mini-badge status-running">${escapeHtml(aggregatePreflightReadyLabel)}</span>
-                <span class="mini-badge ${releaseAllPreflight ? 'status-failed' : 'status-running'}">${escapeHtml(aggregatePreflightMissingEnvLabel)}</span>
-                <span class="mini-badge ${releaseAllPreflight?.blockedCount ? 'status-failed' : 'status-completed'}">${escapeHtml(aggregatePreflightBlockedLabel)}</span>
-              </div>
-              <div class="release-history-focus-actions">
-                ${renderReleasePreflightAllButton({
-                  actionLabel: `전체 preflight 실행: ${releaseActionLabel}`,
-                })}
-                ${renderReleaseCommandCopyButton({
-                  actionLabel: `전체 preflight 명령 복사: ${releaseActionLabel}`,
-                  buttonText: '전체 preflight 명령 복사',
-                  command: 'npm run preflight:execution-v1:all',
-                  label: '전체 preflight 명령',
-                })}
-                ${renderReleaseProviderReadinessPackageCopyButton({
-                  actionLabel: `전체 readiness package 복사: ${releaseActionLabel}`,
-                  buttonText: '전체 readiness package 복사',
-                })}
-              </div>
-            </div>
-            <div class="release-provider-grid">
-              ${orderedProviderReadiness
-                .map(
-                  (item) => `
-                    ${(() => {
-                      const preflight = state.releasePreflightResults?.[item.provider] || null;
-                      const liveConfirmArmed = liveConfirmProvider === item.provider;
-                      const isFocusedProvider = focusedProvider === item.provider;
-                      const providerActionLabel = item.label || item.provider || 'provider';
-                      const preflightStatus = preflight?.status || 'not-run';
-                      const liveCommand = getProviderLiveCommand(item, preflight);
-                      const providerLiveButtonLabel = item.ready
-                        ? liveConfirmArmed
-                          ? `provider live 검증 확인: ${providerActionLabel}`
-                          : `provider live 검증 실행: ${providerActionLabel}`
-                        : `provider env 필요: ${providerActionLabel}`;
-                      const providerFocusButtonLabel = isFocusedProvider
-                        ? `provider 포커스 해제: ${providerActionLabel}`
-                        : `이 provider 카드 보기: ${providerActionLabel}`;
-                      const providerBlockerActions = getReleaseProviderBlockerActions({
-                        provider: item.provider,
-                        releaseStatus: release,
-                      });
-                      const providerTopBlocker = providerBlockerActions[0] || null;
-                      const providerTopBlockerId = String(providerTopBlocker?.id || '').trim();
-                      const providerClosureSummary = getReleaseProviderClosureSummary(item, providerBlockerActions);
-                      const preflightSummary = preflight
-                        ? preflight.status === 'ready-for-live-validation'
-                          ? `preflight 통과 · ${preflight.checks?.length || 0}개 smoke passed`
-                          : preflight.status === 'ready-but-missing-env'
-                            ? `preflight 통과 · ${preflight.envKey} 필요`
-                            : preflight.status === 'blocked'
-                              ? `preflight blocked · ${(preflight.checks || []).filter((check) => check.status !== 'passed').length}개 실패`
-                              : `preflight ${preflight.status}`
-                        : 'preflight를 아직 실행하지 않았습니다.';
-                      return `
-                    <article class="release-provider-card ${item.ready ? 'is-ready' : 'is-blocked'} ${isFocusedProvider ? 'is-highlighted' : ''}" data-release-provider="${escapeHtml(item.provider)}">
-                      <div>
-                        <div class="item-title">${escapeHtml(item.label)}</div>
-                        <div class="item-meta mono">${escapeHtml(item.envKey)}</div>
-                      </div>
-                      <div class="release-provider-meta">
-                        <span class="mini-badge ${getReleaseStatusBadge(item.status)}">${escapeHtml(item.status)}</span>
-                        <span class="mini-badge ${getReleaseStatusBadge(preflightStatus)}">${escapeHtml(preflightStatus)}</span>
-                        <span
-                          class="mini-badge ${providerBlockerActions.length ? 'status-failed' : 'status-completed'}"
-                          data-release-provider-blocker-count="${escapeHtml(item.provider)}"
-                        >blockers ${escapeHtml(String(providerBlockerActions.length))}</span>
-                        <span
-                          class="mini-badge ${providerClosureSummary.productionReadyClaimAllowed ? 'status-completed' : 'status-failed'}"
-                          data-release-provider-closure-count="${escapeHtml(item.provider)}"
-                        >closure ${escapeHtml(String(providerClosureSummary.closureVerificationCount))}</span>
-                        <span
-                          class="mini-badge status-running"
-                          data-release-provider-required-proof-count="${escapeHtml(item.provider)}"
-                        >proofs ${escapeHtml(String(providerClosureSummary.requiredProofCount))}</span>
-                      </div>
-                      <div class="release-provider-meta">
-                        ${renderReleaseProviderActionButton({
-                          action: 'run-release-preflight',
-                          actionLabel: `provider preflight 실행: ${providerActionLabel}`,
-                          buttonText: 'preflight 실행',
-                          provider: item.provider,
-                        })}
-                        ${renderReleaseCommandCopyButton({
-                          actionLabel: `provider preflight 명령 복사: ${providerActionLabel}`,
-                          buttonText: 'preflight 명령 복사',
-                          command: item.preflightCommand || `npm run preflight:execution-v1:${item.provider}`,
-                          label: `${item.label} preflight 명령`,
-                        })}
-                        ${renderReleaseProviderActionButton({
-                          action: 'refresh-release-status-live',
-                          actionLabel: providerLiveButtonLabel,
-                          buttonText: item.ready ? (liveConfirmArmed ? 'live 검증 확인' : 'live 검증 실행') : 'env 필요',
-                          className: liveConfirmArmed ? 'primary-button' : 'ghost-button',
-                          disabled: !item.ready,
-                          pressed: liveConfirmArmed,
-                          provider: item.provider,
-                        })}
-                        ${renderReleaseCommandCopyButton({
-                          actionLabel: `provider live 명령 복사: ${providerActionLabel}`,
-                          buttonText: 'live 명령 복사',
-                          command: liveCommand,
-                          label: `${item.label} live 명령`,
-                        })}
-                        ${renderReleaseProviderReadinessPackageCopyButton({
-                          actionLabel: `provider package 복사: ${providerActionLabel}`,
-                          buttonText: 'provider package 복사',
-                          provider: item.provider,
-                        })}
-                        ${providerTopBlocker
-                          ? `
-                              ${renderReleaseBlockerFocusButton({
-                                actionLabel: `provider blocker 보기: ${providerActionLabel}`,
-                                blocker: providerTopBlockerId,
-                                buttonText: 'provider blocker 보기',
-                                pressed: providerTopBlockerId === focusedBlockerId,
-                                provider: item.provider,
-                              })}
-                              ${renderReleaseBlockerPackageCopyButton({
-                                actionLabel: `provider blocker package 복사: ${providerActionLabel}`,
-                                attributes: 'data-release-provider-blocker-package="true"',
-                                blockerId: providerTopBlockerId,
-                                buttonText: 'blocker package 복사',
-                                provider: item.provider,
-                              })}
-                            `
-                          : ''}
-                        ${renderReleaseProviderFocusActionButton({
-                          action: isFocusedProvider ? 'clear-release-provider-focus' : 'focus-release-provider',
-                          actionLabel: providerFocusButtonLabel,
-                          buttonText: isFocusedProvider ? 'provider 포커스 해제' : '이 provider 카드 보기',
-                          pressed: isFocusedProvider,
-                          provider: item.provider,
-                        })}
-                        ${renderReleaseLinkCopyButton({
-                          action: 'copy-release-provider-link',
-                          actionLabel: `provider 링크 복사: ${providerActionLabel}`,
-                          attributes: `data-ui-provider="${escapeHtml(item.provider)}"`,
-                          buttonText: 'provider 링크 복사',
-                          value: item.provider,
-                        })}
-                        ${liveConfirmArmed
-                          ? renderReleaseSimpleActionButton({
-                              action: 'cancel-refresh-release-status-live',
-                              actionLabel: `provider live 검증 취소: ${providerActionLabel}`,
-                              buttonText: '현재 live 검증 취소',
-                            })
-                          : ''}
-                      </div>
-                      <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다 · ${liveCommand}`)}</p>
-                      <p class="item-meta">${escapeHtml(preflightSummary)}</p>
-                      <p class="item-meta" data-release-provider-closure-summary="${escapeHtml(item.provider)}">
-                        ${escapeHtml(`closure verifications ${providerClosureSummary.closureVerificationCount} · required proofs ${providerClosureSummary.requiredProofCount} · commands ${providerClosureSummary.commandCount} · evidence docs ${providerClosureSummary.evidenceDocCount} · target boundary ${providerClosureSummary.targetBoundaryRequiredCount}`)}
-                      </p>
-                      ${providerTopBlocker
-                        ? `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker · ${escapeHtml(providerTopBlockerId || 'unknown')} · ${escapeHtml(String(providerTopBlocker.stopReason || providerTopBlocker.blocker || '').trim())}</p>`
-                        : `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker 없음</p>`}
-                      ${liveConfirmArmed && liveRefreshPreflight
-                        ? `
-                            <div class="release-stale-note">
-                              <div class="release-stale-line">${escapeHtml(liveRefreshPreflight.summary || 'live validation 확인이 준비되었습니다.')}</div>
-                              ${(liveRefreshPreflight.notes || [])
-                                .map((note) => `<div class="release-stale-line">${escapeHtml(note)}</div>`)
-                                .join('')}
-                            </div>
-                          `
-                        : ''}
-                    </article>
-                  `;
-                    })()}
-                  `,
-                )
-                .join('')}
-            </div>
+            ${renderReleaseActionHistory({
+              copyButtons: releaseHistoryProviderCopyButtons,
+              view: releaseHistoryProviderView,
+            })}
+            ${renderReleaseProviderReadiness({
+              copyButtons: releaseHistoryProviderCopyButtons,
+              view: releaseHistoryProviderView,
+            })}
             ${refreshPlan
               ? `
                   <article class="release-snapshot-card">

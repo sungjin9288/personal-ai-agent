@@ -38,13 +38,13 @@
 | R4.3.2a Release navigation/state actions | 완료 | history, blocker, provider의 focus·filter·clear·toggle wiring 17개를 분리 |
 | R4.3.2b Release copy actions | 완료 | copy action 71개의 handler 선택과 dataset payload 정규화를 복사 대상별로 분리 |
 | R4.3.2c Release preview actions | 완료 | preview action 2개를 분리하고 release surface의 generic listener를 제거 |
-| R4.3.3 Release status rendering | 진행 중 | 상태 요약·검증 결과·runtime job·closeout checklist를 순수 render 모듈로 이동 |
+| R4.3.3 Release status rendering | 진행 중 | 상태 요약·검증 결과·blocker·history·provider readiness를 순수 render 모듈로 이동 |
 | R4.3.3a Release overview rendering | 완료 | 첫 화면의 상태 요약과 runtime/checklist 흐름을 `release-status-view.js`로 분리 |
 | R4.3.3b Release evidence triage rendering | 완료 | production blocker와 current-open blocker의 view model·표시 조립을 같은 순수 모듈로 이동 |
 | R4.3.3b1 Production blocker rendering | 완료 | blocker filter/focus view model과 production blocker summary·detail·gap을 분리 |
 | R4.3.3b2 Current-open blocker rendering | 완료 | filter action cluster, focused blocker, current-open list를 같은 view model 위로 이동 |
-| R4.3.3c Release history·provider readiness rendering | 다음 작업 | release history와 provider readiness의 필터·표시 경계를 분리 |
-| R4.3.3d Release handoff·document rendering | 예정 | snapshot, handoff, 문서 panel을 분리하고 release shell을 정리 |
+| R4.3.3c Release history·provider readiness rendering | 완료 | history 필터·포커스·상세와 provider readiness·closure 표시를 같은 순수 view model 위로 이동 |
+| R4.3.3d Release handoff·document rendering | 다음 작업 | snapshot, handoff, 문서 panel을 분리하고 release shell을 정리 |
 
 R1 완료 검증:
 
@@ -188,6 +188,19 @@ R4.3.3b2 current-open blocker rendering 구현 검증:
 - `app.js`는 10,704줄, `release-evidence-triage-view.js`는 1,429줄이다. current-open filter action cluster, empty recovery, focused evidence·commands, blocker row list를 view 모듈로 옮겼고 copy button renderer는 명시적인 dependency object로 전달한다.
 - view 모듈은 state, API, permission, URL 모듈을 import하지 않는다. state mutation, URL 기록, clipboard와 prompt fallback은 기존 action·navigation·copy 경계에 유지한다.
 - production-ready claim은 계속 blocked로 표시하며 필터 결과, 빈 조합 복구, 포커스, escaping, 증적 링크, command와 copy payload 전달을 단위 테스트로 고정했다.
+
+R4.3.3c release history·provider readiness rendering 구현 검증:
+
+- `npm test`: 559개 통과
+- history·provider view, evidence triage view, release status/action, frontend module graph·TDZ guard 단위 테스트 34개 통과
+- UI harness browse, learning promotion surface, execution console, production readiness, release blocker handoff smoke 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E의 preview copy·fallback session 38개와 open session 2개가 모두 error-free였고 생성 artifact restore smoke 통과
+- 실제 브라우저에서 history 5건과 provider card 4개를 확인했다. OpenAI history를 고정하고 상세를 연 뒤 provider 필터를 적용해 1건만 남는 흐름과 `rhistory`, `rprovider` URL 상태를 확인했다.
+- OpenAI provider card를 포커스했을 때 카드가 상단으로 이동하고 `rcard=openai`, `claim blocked`, closure verification 2건, required proof 14건, command 12건, evidence document 5건이 유지되는 것을 확인했다. env가 없는 live action은 disabled였고 console error와 warning은 없었다.
+- `app.js`는 10,099줄, 새 `release-history-provider-view.js`는 722줄이다. 새 모듈은 state, API, permission, URL 모듈을 import하지 않고 release data, view state, label·selector 함수, copy button renderer를 명시적으로 받는다.
+- state mutation, URL 기록, clipboard·prompt fallback, preflight와 live validation은 기존 action·navigation·copy·lifecycle 경계에 유지했다. production-ready claim은 계속 blocked이며 필터·포커스·정렬·빈 상태·escaping·closure 근거·copy payload 전달을 단위 테스트로 고정했다.
 
 ## 3. 변경 원칙
 
