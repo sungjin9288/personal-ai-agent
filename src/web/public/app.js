@@ -89,6 +89,8 @@ import {
   renderTemplateChipButton,
 } from './lib/render-fragments.js';
 import { state, elements } from './lib/app-state.js';
+import { bootstrapApplication } from './lib/application-bootstrap.js';
+import { wireApplicationEvents } from './lib/application-events.js';
 import { initTheme, toggleTheme } from './lib/theme.js';
 import {
   getSanitizedStepId,
@@ -9020,174 +9022,89 @@ function wireMissionAttachmentActions() {
   });
 }
 
-function wireDocumentLogFormActions() {
-  elements.documentLogForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleDocumentLogCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-      elements.documentLogSubmitButton.disabled = false;
-      elements.documentLogSubmitButton.textContent = '문서 기록 저장';
-    }
-  });
+async function handleWorkspaceSelectionChange() {
+  renderMissionList();
+  const visibleMission = filteredMissions();
+  if (!visibleMission.length) {
+    clearMissionSelection({ urlMode: 'push' });
+    openComposer();
+    return;
+  }
+  if (!visibleMission.some(({ mission }) => mission.id === state.selectedMissionId)) {
+    await selectMission(visibleMission[0].mission.id, { urlMode: 'push' });
+    return;
+  }
+  writeUiStateToUrl({ historyMode: 'push' });
+}
 
-  elements.documentLogSearch?.addEventListener('input', async (event) => {
-    try {
-      await handleHarnessDocumentSearch(event);
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
+function showApplicationError(error) {
+  window.alert(error.message);
+}
 
-  elements.documentLogFilter?.addEventListener('change', async (event) => {
-    try {
-      await handleHarnessDocumentFilter(event);
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.documentLogCancelButton?.addEventListener('click', () => resetDocumentLogForm());
-
-  elements.documentLogFile?.addEventListener('change', async (event) => {
-    try {
-      await handleDocumentLogFilePick(event);
-    } catch (error) {
-      window.alert(error.message);
-      if (elements.documentLogFile) {
+function attachApplicationEvents() {
+  wireApplicationEvents({
+    actions: {
+      cancelDocument: resetDocumentLogForm,
+      cancelMissionMemory: () => resetMemoryForm('mission'),
+      cancelWorkspaceMemory: () => resetMemoryForm('workspace'),
+      closeWorkspaceForm: () => setWorkspaceFormOpen(false),
+      createDocument: handleDocumentLogCreate,
+      createMission: handleMissionCreate,
+      createMissionMemory: handleMemoryCreate,
+      createWorkspace: handleWorkspaceCreate,
+      createWorkspaceMemory: handleWorkspaceMemoryCreate,
+      filterDocuments: handleHarnessDocumentFilter,
+      filterMissions: renderMissionList,
+      openMissionComposer: openComposer,
+      renderBlueprint: renderAgentBlueprintBuilder,
+      restoreHistory: () => restoreUiStateFromUrl({ syncUrl: false }),
+      runMission: handleMissionRun,
+      searchDocuments: handleHarnessDocumentSearch,
+      selectDetailTab: (detailTab) => setActiveDetailTab(detailTab, { urlMode: 'push' }),
+      selectDocumentFile: handleDocumentLogFilePick,
+      selectStep: (step) => setActiveStep(step, { urlMode: 'push' }),
+      selectWorkspace: handleWorkspaceSelectionChange,
+      toggleTheme,
+      toggleWorkspaceForm: () => {
+        const nextOpen = Boolean(elements.workspaceForm?.hidden);
+        setWorkspaceFormOpen(nextOpen, { focus: nextOpen });
+      },
+      updateFallbackControls: updateRunFallbackControls,
+    },
+    elements,
+    errors: {
+      createDocument: (error) => {
+        showApplicationError(error);
+        elements.documentLogSubmitButton.disabled = false;
+        elements.documentLogSubmitButton.textContent = '문서 기록 저장';
+      },
+      createMissionMemory: (error) => {
+        showApplicationError(error);
+        elements.memorySubmitButton.disabled = false;
+        elements.memorySubmitButton.textContent = getMemoryFormConfig('mission').submitText;
+      },
+      createWorkspace: (error) => {
+        setWorkspaceFormStatus(error.message || '워크스페이스를 추가하지 못했습니다.');
+        showApplicationError(error);
+      },
+      createWorkspaceMemory: (error) => {
+        showApplicationError(error);
+        elements.workspaceMemorySubmitButton.disabled = false;
+        elements.workspaceMemorySubmitButton.textContent = getMemoryFormConfig('workspace').submitText;
+      },
+      default: showApplicationError,
+      runMission: (error) => {
+        showApplicationError(error);
+        elements.runMissionButton.disabled = false;
+        elements.runMissionButton.textContent = '이 미션 실행';
+      },
+      selectDocumentFile: (error) => {
+        showApplicationError(error);
         elements.documentLogFile.value = '';
-      }
-    }
+      },
+    },
+    historyTarget: window,
   });
-}
-
-function wireMemoryFormActions() {
-  elements.memoryForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleMemoryCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-      elements.memorySubmitButton.disabled = false;
-      elements.memorySubmitButton.textContent = getMemoryFormConfig('mission').submitText;
-    }
-  });
-
-  elements.memoryCancelButton?.addEventListener('click', () => resetMemoryForm('mission'));
-
-  elements.workspaceMemoryForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleWorkspaceMemoryCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-      elements.workspaceMemorySubmitButton.disabled = false;
-      elements.workspaceMemorySubmitButton.textContent = getMemoryFormConfig('workspace').submitText;
-    }
-  });
-
-  elements.workspaceMemoryCancelButton?.addEventListener('click', () => resetMemoryForm('workspace'));
-}
-
-function wireMissionFormActions() {
-  elements.missionForm.addEventListener('submit', async (event) => {
-    try {
-      await handleMissionCreate(event);
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.missionForm.elements.mode?.addEventListener('change', () => {
-    renderAgentBlueprintBuilder();
-  });
-
-  elements.missionAttachmentInput?.addEventListener('change', () => {
-    renderAgentBlueprintBuilder();
-  });
-}
-
-function wireMissionRunActions() {
-  elements.runMissionButton.addEventListener('click', async () => {
-    try {
-      await handleMissionRun();
-    } catch (error) {
-      window.alert(error.message);
-      elements.runMissionButton.disabled = false;
-      elements.runMissionButton.textContent = '이 미션 실행';
-    }
-  });
-
-  elements.runFallbackProviderSelect?.addEventListener('change', updateRunFallbackControls);
-}
-
-function wireWorkspaceComposerActions() {
-  elements.toggleCreateButton.addEventListener('click', () => openComposer());
-  elements.toggleWorkspaceFormButton?.addEventListener('click', () => {
-    const nextOpen = Boolean(elements.workspaceForm?.hidden);
-    setWorkspaceFormOpen(nextOpen, { focus: nextOpen });
-  });
-  elements.cancelWorkspaceFormButton?.addEventListener('click', () => setWorkspaceFormOpen(false));
-  elements.workspaceForm?.addEventListener('submit', async (event) => {
-    try {
-      await handleWorkspaceCreate(event);
-    } catch (error) {
-      setWorkspaceFormStatus(error.message || '워크스페이스를 추가하지 못했습니다.');
-      window.alert(error.message);
-    }
-  });
-}
-
-function wireMissionBrowseControls() {
-  elements.missionFilter.addEventListener('input', renderMissionList);
-  elements.workspaceSelect.addEventListener('change', async () => {
-    renderMissionList();
-    const visibleMission = filteredMissions();
-    if (!visibleMission.length) {
-      clearMissionSelection({ urlMode: 'push' });
-      openComposer();
-      return;
-    }
-    if (!visibleMission.some(({ mission }) => mission.id === state.selectedMissionId)) {
-      await selectMission(visibleMission[0].mission.id, { urlMode: 'push' });
-      return;
-    }
-    writeUiStateToUrl({ historyMode: 'push' });
-  });
-}
-
-function wireNavigationTabControls() {
-  elements.stepButtons.forEach((button) => {
-    button.addEventListener('click', () => setActiveStep(button.dataset.stepTarget, { urlMode: 'push' }));
-  });
-  elements.detailTabButtons.forEach((button) => {
-    button.addEventListener('click', () => setActiveDetailTab(button.dataset.detailTab, { urlMode: 'push' }));
-  });
-}
-
-function wireBrowserHistoryControls() {
-  window.addEventListener('popstate', async () => {
-    try {
-      await restoreUiStateFromUrl({ syncUrl: false });
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-}
-
-function wireThemeToggleControls() {
-  const themeToggleButton = document.getElementById('theme-toggle-button');
-  themeToggleButton?.addEventListener('click', () => toggleTheme());
-}
-
-function attachEvents() {
-  wireWorkspaceComposerActions();
-  wireMissionBrowseControls();
-  wireMissionFormActions();
-  wireMemoryFormActions();
-  wireDocumentLogFormActions();
-  wireMissionRunActions();
-  wireNavigationTabControls();
-  wireBrowserHistoryControls();
-  wireThemeToggleControls();
 }
 
 function renderBootstrapStaticSurfaces() {
@@ -9211,20 +9128,11 @@ async function loadBootstrapData() {
   ]);
 }
 
-async function hydrateBootstrapDataAndRestoreState() {
-  try {
-    await loadBootstrapData();
-    await restoreUiStateFromUrl();
-  } catch (error) {
-    window.alert(error.message);
-  }
-}
-
-async function bootstrap() {
-  initTheme();
-  attachEvents();
-  renderBootstrapStaticSurfaces();
-  await hydrateBootstrapDataAndRestoreState();
-}
-
-bootstrap();
+bootstrapApplication({
+  initializeTheme: initTheme,
+  wireEvents: attachApplicationEvents,
+  renderStaticSurfaces: renderBootstrapStaticSurfaces,
+  loadData: loadBootstrapData,
+  restoreState: restoreUiStateFromUrl,
+  onError: showApplicationError,
+});

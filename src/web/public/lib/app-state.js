@@ -231,6 +231,7 @@ export const elements = {
   stepButtons: Array.from(document.querySelectorAll('[data-step-target]')),
   stepPanels: Array.from(document.querySelectorAll('.step-panel')),
   templateList: document.getElementById('template-list'),
+  themeToggleButton: document.getElementById('theme-toggle-button'),
   timelineList: document.getElementById('timeline-list'),
   toggleCreateButton: document.getElementById('toggle-create-button'),
   outputStageSummary: document.getElementById('output-stage-summary'),
