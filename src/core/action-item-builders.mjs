@@ -1,5 +1,9 @@
 import { deriveSlaHoursFromTimestamps } from './escalation-analytics.mjs';
 
+function normalizeText(value, fallback = '') {
+  return String(value || fallback).trim();
+}
+
 export function addDispatchMetadata(item, { priority, recommendedOwner, recommendedCommand }) {
   return {
     ...item,
@@ -33,6 +37,33 @@ export function addFixedOperationalMetadata(item, { dueAt, escalationRule, slaHo
     escalationRule,
     isOverdue,
     slaHours,
+  };
+}
+
+function addReminderMetadata(item, { reminderCadenceHours, reminderRecords = [], remindCommand }) {
+  const latestReminder = reminderRecords.at(-1) || null;
+  const latestReminderAt = latestReminder?.remindedAt || latestReminder?.createdAt || null;
+  const reminderBaseTimestamp = latestReminderAt || item.dueAt || null;
+  const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
+  const nextReminderAt =
+    item.isOverdue && Number.isFinite(reminderBaseMs)
+      ? latestReminder
+        ? new Date(reminderBaseMs + Number(reminderCadenceHours || 0) * 60 * 60 * 1000).toISOString()
+        : item.dueAt
+      : null;
+  const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
+  const needsReminder = item.isOverdue && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
+
+  return {
+    ...item,
+    lastReminderAt: latestReminderAt,
+    latestReminderAt,
+    needsReminder,
+    nextReminderAt,
+    remindCommand,
+    reminderCadenceHours,
+    reminderCount: reminderRecords.length,
+    reminderHistoryCount: reminderRecords.length,
   };
 }
 
@@ -183,4 +214,170 @@ export function buildReviewerFollowUpItemFromRecord(record) {
       escalationRule: 'If overdue, escalate to the workspace owner and request a narrower remediation plan.',
     },
   );
+}
+
+export function buildSpecialistFollowUpActionItem({
+  actionId,
+  createdAt,
+  detail,
+  followUpPolicy,
+  followUpSource = 'run-status',
+  group,
+  mission,
+  providerId,
+  remediationRoute,
+  reminderRecords = [],
+  run = null,
+  specialistHandoff,
+  specialistKind,
+  status,
+  workspace,
+}) {
+  const baseItem = addOperationalMetadata(
+    addDispatchMetadata(
+      {
+        actionClass: 'specialist-follow-up-required',
+        actionId,
+        actionType: 'specialist-follow-up',
+        createdAt,
+        deliverableType: mission.deliverableType,
+        followUpSource,
+        mergeStatus: normalizeText(run?.mergeStatus) || 'pending',
+        missionId: mission.id,
+        orchestrationProfile: group.orchestrationProfile,
+        parallelGroupId: group.parallelGroupId,
+        parentRunId: normalizeText(run?.parentRunId) || null,
+        providerId,
+        reason: detail,
+        remediationCommand: remediationRoute.preferredCommand,
+        remediationRoute,
+        fallbackRecommendedCommand: remediationRoute.fallbackCommand,
+        retryPolicy: followUpPolicy.retryPolicy,
+        reminderCadenceHours: followUpPolicy.reminderCadenceHours,
+        resumeFromRunId: normalizeText(run?.resumeFromRunId) || null,
+        runId: normalizeText(run?.id) || null,
+        sessionId: normalizeText(run?.sessionId) || null,
+        specialistHandoff,
+        specialistKind,
+        specialistRootRunId: normalizeText(run?.specialistRootRunId) || normalizeText(run?.id) || null,
+        stageKind: normalizeText(run?.stageKind) || 'specialist-branch',
+        status,
+        title: `Specialist follow-up required for ${mission.title} (${specialistKind})`,
+        workspaceId: workspace.id,
+        workspaceName: workspace.name,
+      },
+      {
+        priority: followUpPolicy.priority,
+        recommendedCommand: remediationRoute.preferredCommand,
+        recommendedOwner: 'workspace-owner',
+      },
+    ),
+    {
+      escalationRule:
+        'Resume the mission run to rerun the blocked or failed specialist branch and allow manager-controlled merge to continue.',
+      slaHours: followUpPolicy.slaHours,
+    },
+  );
+
+  return addReminderMetadata(baseItem, {
+    reminderCadenceHours: followUpPolicy.reminderCadenceHours,
+    reminderRecords,
+    remindCommand: `node src/cli.mjs action remind-specialist-follow-ups --mission ${mission.id} --status ${status} --note "<note>"`,
+  });
+}
+
+export function buildProviderAttentionPendingActionItem({
+  actionId,
+  eventRefId,
+  failureMetadata = {},
+  fallbackPolicyId,
+  fallbackProviderId,
+  latestEvent,
+  permissionDecision,
+  provider,
+  reminderCadenceHours,
+  reminderRecords = [],
+}) {
+  const remediationCommand = `node src/cli.mjs action remediate-provider-attention ${actionId}`;
+  const fallbackRecommendedCommand = fallbackProviderId
+    ? `${remediationCommand} --fallback-provider ${fallbackProviderId}`
+    : null;
+  const recoverableFallbackRecommendedCommand = fallbackRecommendedCommand
+    ? `${fallbackRecommendedCommand} --fallback-policy recoverable-provider-failure-only`
+    : null;
+  const isExecutionAttention = latestEvent.eventFamily === 'execution';
+  const inspectCommand = isExecutionAttention
+    ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
+    : `node src/cli.mjs provider history --provider ${provider.id} --ok false`;
+  const recommendedCommand = isExecutionAttention
+    ? remediationCommand
+    : `node src/cli.mjs provider probe ${provider.id}`;
+  const baseItem = addOperationalMetadata(
+    addDispatchMetadata(
+      {
+        acknowledgeCommand: `node src/cli.mjs action acknowledge-provider-attention ${actionId} --note "<note>"`,
+        actionClass: 'provider-attention-required',
+        actionId,
+        actionType: 'provider-attention',
+        createdAt: latestEvent.at,
+        deliverableType: null,
+        eventFamily: latestEvent.eventFamily,
+        eventKind: latestEvent.eventKind,
+        eventRefId,
+        fallbackPolicyId,
+        fallbackPolicyOptions: ['provider-failure-only', 'recoverable-provider-failure-only'],
+        fallbackProviderId: fallbackProviderId || null,
+        fallbackRecommendedCommand,
+        inspectCommand,
+        missionId: latestEvent.missionId || null,
+        permissionDecision,
+        permissionDecisionId: permissionDecision.id,
+        providerDisplayName: provider.displayName,
+        providerId: provider.id,
+        recoverableFallbackRecommendedCommand,
+        remediationCommand,
+        reason: latestEvent.detail,
+        sessionId: latestEvent.sessionId || null,
+        status: 'pending',
+        title: isExecutionAttention
+          ? `Provider execution attention required for ${provider.displayName}`
+          : `Provider probe attention required for ${provider.displayName}`,
+        workspaceId: latestEvent.workspaceId || null,
+        workspaceName: latestEvent.workspaceName || null,
+      },
+      {
+        priority: isExecutionAttention ? 'high' : 'medium',
+        recommendedCommand,
+        recommendedOwner: isExecutionAttention && latestEvent.workspaceId ? 'workspace-owner' : 'human-approver',
+      },
+    ),
+    {
+      escalationRule: isExecutionAttention
+        ? 'Inspect the failed provider execution and decide whether to rerun, switch provider, or narrow scope.'
+        : 'Re-probe the provider and restore provider connectivity before the next external model run.',
+      slaHours: isExecutionAttention ? 12 : 24,
+    },
+  );
+
+  return addReminderMetadata(
+    {
+      ...baseItem,
+      ...failureMetadata,
+    },
+    {
+      reminderCadenceHours,
+      reminderRecords,
+      remindCommand: `node src/cli.mjs action remind-provider-attention --provider ${provider.id} --note "<note>"`,
+    },
+  );
+}
+
+export function buildProviderAttentionStoredActionItem({ failureMetadata = {}, providerDisplayName, record, status }) {
+  return {
+    ...record,
+    actionType: 'provider-attention',
+    ...failureMetadata,
+    providerDisplayName,
+    status,
+  };
 }

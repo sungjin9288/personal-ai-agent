@@ -64,7 +64,10 @@ import {
   buildApprovalActionItem,
   buildBlockedFollowUpActionItem,
   buildMaintenanceActionItem,
+  buildProviderAttentionPendingActionItem,
+  buildProviderAttentionStoredActionItem,
   buildReviewerFollowUpItemFromRecord,
+  buildSpecialistFollowUpActionItem,
 } from './action-item-builders.mjs';
 import { createProviderAttention } from './provider-attention.mjs';
 import { summarizeIdentitySessionContextForTimeline } from './identity-session-context-service.mjs';
@@ -214,7 +217,6 @@ import {
   buildSpecialistFollowUpReminderNote,
   deriveLearningPromotionStopConditionReminderCadenceHours,
   deriveProviderAttentionReminderCadenceHours,
-  deriveSpecialistFollowUpReminderCadenceHours,
   formatAcceptedRiskEscalationTitle,
   formatApprovalDecisionMemory,
   formatApprovalResolution,
@@ -8280,35 +8282,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     });
   }
 
-  function attachSpecialistFollowUpReminderState(baseItem, status) {
-    const reminderRecords = listSpecialistFollowUpRemindersForItem(baseItem);
-    const latestReminder = reminderRecords.at(-1) || null;
-    const reminderCadenceHours =
-      Number(baseItem.reminderCadenceHours || 0) || deriveSpecialistFollowUpReminderCadenceHours(status);
-    const reminderBaseTimestamp = latestReminder?.remindedAt || latestReminder?.createdAt || baseItem.dueAt || null;
-    const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
-    const nextReminderAt =
-      baseItem.isOverdue && Number.isFinite(reminderBaseMs)
-        ? latestReminder
-          ? new Date(reminderBaseMs + Number(reminderCadenceHours || 0) * 60 * 60 * 1000).toISOString()
-          : baseItem.dueAt
-        : null;
-    const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
-    const needsReminder = baseItem.isOverdue && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
-
-    return {
-      ...baseItem,
-      lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
-      latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
-      needsReminder,
-      nextReminderAt,
-      remindCommand: `node src/cli.mjs action remind-specialist-follow-ups --mission ${baseItem.missionId} --status ${status} --note "<note>"`,
-      reminderCadenceHours,
-      reminderCount: reminderRecords.length,
-      reminderHistoryCount: reminderRecords.length,
-    };
-  }
-
   function buildSpecialistFollowUpItem({
     actionId,
     createdAt,
@@ -8317,7 +8290,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     group,
     mission,
     providerId,
-    recommendedOwner = 'workspace-owner',
     run = null,
     specialistHandoff,
     specialistKind,
@@ -8338,54 +8310,25 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       retryPolicy: followUpPolicy.retryPolicy,
       specialistKind,
     });
-    const baseItem = addOperationalMetadata(
-      addDispatchMetadata(
-        {
-          actionClass: 'specialist-follow-up-required',
-          actionId,
-          actionType: 'specialist-follow-up',
-          createdAt,
-          deliverableType: mission.deliverableType,
-          followUpSource,
-          mergeStatus: normalizeText(run?.mergeStatus) || 'pending',
-          missionId: mission.id,
-          orchestrationProfile: group.orchestrationProfile,
-          parallelGroupId: group.parallelGroupId,
-          parentRunId: normalizeText(run?.parentRunId) || null,
-          providerId,
-          reason: detail,
-          remediationCommand: remediationRoute.preferredCommand,
-          remediationRoute,
-          recommendedOwner,
-          fallbackRecommendedCommand: remediationRoute.fallbackCommand,
-          retryPolicy: followUpPolicy.retryPolicy,
-          reminderCadenceHours: followUpPolicy.reminderCadenceHours,
-          resumeFromRunId: normalizeText(run?.resumeFromRunId) || null,
-          runId: normalizeText(run?.id) || null,
-          sessionId: normalizeText(run?.sessionId) || null,
-          specialistHandoff,
-          specialistKind,
-          specialistRootRunId: normalizeText(run?.specialistRootRunId) || normalizeText(run?.id) || null,
-          stageKind: normalizeText(run?.stageKind) || 'specialist-branch',
-          status,
-          title: `Specialist follow-up required for ${mission.title} (${specialistKind})`,
-          workspaceId: workspace.id,
-          workspaceName: workspace.name,
-        },
-        {
-          priority: followUpPolicy.priority,
-          recommendedCommand: remediationRoute.preferredCommand,
-          recommendedOwner: 'workspace-owner',
-        },
-      ),
-      {
-        escalationRule:
-          'Resume the mission run to rerun the blocked or failed specialist branch and allow manager-controlled merge to continue.',
-        slaHours: followUpPolicy.slaHours,
-      },
-    );
+    const reminderRecords = listSpecialistFollowUpRemindersForItem({ actionId });
 
-    return attachSpecialistFollowUpReminderState(baseItem, status);
+    return buildSpecialistFollowUpActionItem({
+      actionId,
+      createdAt,
+      detail,
+      followUpPolicy,
+      followUpSource,
+      group,
+      mission,
+      providerId,
+      remediationRoute,
+      reminderRecords,
+      run,
+      specialistHandoff,
+      specialistKind,
+      status,
+      workspace,
+    });
   }
 
   function buildSpecialistFollowUpItems(filter = {}) {
@@ -8430,7 +8373,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               group,
               mission,
               providerId,
-              recommendedOwner: specialistHandoff?.nextHandoff?.recommendedOwner || 'workspace-owner',
               run,
               specialistHandoff,
               specialistKind,
@@ -8488,7 +8430,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
               group,
               mission,
               providerId,
-              recommendedOwner: specialistHandoff?.nextHandoff?.recommendedOwner || 'workspace-owner',
               run,
               specialistHandoff,
               specialistKind: violation.specialistKind,
@@ -8585,22 +8526,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
         const fallbackPolicyId = 'provider-failure-only';
         const actionId = buildProviderAttentionActionId(latestEvent);
-        const remediationCommand = `node src/cli.mjs action remediate-provider-attention ${actionId}`;
         const fallbackProviderId = latestEvent.eventFamily === 'execution' && provider.id !== 'stub' ? 'stub' : '';
-        const fallbackRecommendedCommand = fallbackProviderId
-          ? `${remediationCommand} --fallback-provider ${fallbackProviderId}`
-          : null;
-        const recoverableFallbackRecommendedCommand = fallbackProviderId
-          ? `${fallbackRecommendedCommand} --fallback-policy recoverable-provider-failure-only`
-          : null;
-        const inspectCommand =
-          latestEvent.eventFamily === 'execution'
-            ? `node src/cli.mjs provider activity --provider ${provider.id} --status failed`
-            : `node src/cli.mjs provider history --provider ${provider.id} --ok false`;
-        const recommendedOwner =
-          latestEvent.eventFamily === 'execution' && latestEvent.workspaceId ? 'workspace-owner' : 'human-approver';
-        const recommendedCommand =
-          latestEvent.eventFamily === 'execution' ? remediationCommand : `node src/cli.mjs provider probe ${provider.id}`;
         const permissionDecision = buildProviderAttentionRemediationPermissionDecision({
           actionId,
           at: latestEvent.at,
@@ -8620,81 +8546,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
                 : 'mission-rerun'
               : 'provider-probe',
         });
-        const baseItem = addOperationalMetadata(
-          addDispatchMetadata(
-            {
-              acknowledgeCommand: `node src/cli.mjs action acknowledge-provider-attention ${actionId} --note "<note>"`,
-              actionClass: 'provider-attention-required',
-              actionId,
-              actionType: 'provider-attention',
-              createdAt: latestEvent.at,
-              deliverableType: null,
-              eventFamily: latestEvent.eventFamily,
-              eventKind: latestEvent.eventKind,
-              eventRefId: getProviderAttentionEventRefId(latestEvent),
-              fallbackPolicyId,
-              fallbackPolicyOptions: ['provider-failure-only', 'recoverable-provider-failure-only'],
-              fallbackProviderId: fallbackProviderId || null,
-              fallbackRecommendedCommand,
-              inspectCommand,
-              missionId: latestEvent.missionId || null,
-              permissionDecision,
-              permissionDecisionId: permissionDecision.id,
-              providerDisplayName: provider.displayName,
-              providerId: provider.id,
-              recoverableFallbackRecommendedCommand,
-              remediationCommand,
-              reason: latestEvent.detail,
-              sessionId: latestEvent.sessionId || null,
-              status: 'pending',
-              title:
-                latestEvent.eventFamily === 'execution'
-                  ? `Provider execution attention required for ${provider.displayName}`
-                  : `Provider probe attention required for ${provider.displayName}`,
-              workspaceId: latestEvent.workspaceId || null,
-              workspaceName: latestEvent.workspaceName || null,
-            },
-            {
-              priority: latestEvent.eventFamily === 'execution' ? 'high' : 'medium',
-              recommendedCommand,
-              recommendedOwner,
-            },
-          ),
-          {
-            escalationRule:
-              latestEvent.eventFamily === 'execution'
-                ? 'Inspect the failed provider execution and decide whether to rerun, switch provider, or narrow scope.'
-                : 'Re-probe the provider and restore provider connectivity before the next external model run.',
-            slaHours: latestEvent.eventFamily === 'execution' ? 12 : 24,
-          },
-        );
         const reminderRecords = listProviderAttentionRemindersForEvent(latestEvent);
-        const latestReminder = reminderRecords.at(-1) || null;
         const reminderCadenceHours = deriveProviderAttentionReminderCadenceHours(latestEvent.eventFamily);
-        const reminderBaseTimestamp = latestReminder?.remindedAt || latestReminder?.createdAt || baseItem.dueAt || null;
-        const reminderBaseMs = reminderBaseTimestamp ? new Date(reminderBaseTimestamp).getTime() : Number.NaN;
-        const nextReminderAt =
-          baseItem.isOverdue && Number.isFinite(reminderBaseMs)
-            ? latestReminder
-              ? new Date(reminderBaseMs + Number(reminderCadenceHours || 0) * 60 * 60 * 1000).toISOString()
-              : baseItem.dueAt
-            : null;
-        const nextReminderMs = nextReminderAt ? new Date(nextReminderAt).getTime() : Number.NaN;
-        const needsReminder =
-          baseItem.isOverdue && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
 
-        return {
-          ...baseItem,
-          ...extractProviderFailureMetadata(latestEvent),
-          lastReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
-          latestReminderAt: latestReminder?.remindedAt || latestReminder?.createdAt || null,
-          needsReminder,
-          nextReminderAt,
-          remindCommand: `node src/cli.mjs action remind-provider-attention --provider ${provider.id} --note "<note>"`,
+        return buildProviderAttentionPendingActionItem({
+          actionId,
+          eventRefId: getProviderAttentionEventRefId(latestEvent),
+          failureMetadata: extractProviderFailureMetadata(latestEvent),
+          fallbackPolicyId,
+          fallbackProviderId,
+          latestEvent,
+          permissionDecision,
+          provider,
           reminderCadenceHours,
-          reminderCount: reminderRecords.length,
-          reminderHistoryCount: reminderRecords.length,
-        };
+          reminderRecords,
+        });
       })
       .filter(Boolean)
       .filter((item) => !filter.needsReminderOnly || item.needsReminder)
@@ -8713,14 +8579,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       })
       .filter((record) => (record.status || 'acknowledged') === 'acknowledged')
       .filter((record) => !recoveredActionIds.has(record.actionId))
-      .map((record) => ({
-        ...record,
-        actionType: 'provider-attention',
-        ...extractProviderFailureMetadata(record),
-        providerDisplayName:
-          record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
-        status: 'acknowledged',
-      }))
+      .map((record) =>
+        buildProviderAttentionStoredActionItem({
+          failureMetadata: extractProviderFailureMetadata(record),
+          providerDisplayName:
+            record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
+          record,
+          status: 'acknowledged',
+        }),
+      )
       .sort((left, right) => String(left.acknowledgedAt || left.createdAt || '').localeCompare(String(right.acknowledgedAt || right.createdAt || '')));
   }
 
@@ -8732,14 +8599,15 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
         workspaceId: filter.workspaceId,
       })
       .filter((record) => (record.status || 'acknowledged') === 'resolved')
-      .map((record) => ({
-        ...record,
-        actionType: 'provider-attention',
-        ...extractProviderFailureMetadata(record),
-        providerDisplayName:
-          record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
-        status: 'resolved',
-      }))
+      .map((record) =>
+        buildProviderAttentionStoredActionItem({
+          failureMetadata: extractProviderFailureMetadata(record),
+          providerDisplayName:
+            record.providerDisplayName || providerRegistry.getProviderStatus(record.providerId).displayName,
+          record,
+          status: 'resolved',
+        }),
+      )
       .sort((left, right) => String(left.resolvedAt || left.acknowledgedAt || left.createdAt || '').localeCompare(String(right.resolvedAt || right.acknowledgedAt || right.createdAt || '')));
   }
 
