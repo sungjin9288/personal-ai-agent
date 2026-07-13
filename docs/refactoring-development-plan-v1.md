@@ -32,7 +32,8 @@
 | R2.2 Specialist·provider attention builder | 완료 | specialist와 provider attention 표시 record를 store·registry·permission 조회에서 분리 |
 | R2.3 Mutation·maintenance orchestration | 완료 | reminder·acknowledgement audit record와 maintenance run 계산을 store write에서 분리 |
 | R3 Timeline assembly | 완료 | gateway·identity/session·sandbox·maintenance event 조립과 timeline 정렬을 순수 모듈로 이동 |
-| R4 Operator UI module boundary | 다음 작업 | `app.js`의 harness·release·mission/action 화면 경계를 점검할 예정 |
+| R4 Operator UI module boundary | 진행 중 | harness browse 조회·pagination·mutation wiring을 explicit dependency 모듈로 이동 |
+| R4.2 Mission/action inbox UI | 다음 작업 | mission/action 표시와 event wiring 경계를 점검할 예정 |
 
 R1 완료 검증:
 
@@ -73,6 +74,16 @@ R3 구현 검증:
 - `npm run smoke:all`: 165개 통과
 - gateway source id, mission/workspace context, permission decision, sandbox decision 계약을 순수 모듈 단위 테스트로 고정
 - specialist와 provider fallback 도메인 로직은 변경하지 않고 기존 event를 같은 정렬 경계에 연결했다.
+
+R4.1 harness browse 구현 검증:
+
+- `npm test`: 520개 통과
+- frontend module graph 및 TDZ guard 2개 통과
+- UI harness browse, execution console, mission attachment, retrieval memory smoke 4개 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E와 생성 artifact restore smoke 통과
+- 새 `harness-browse.js`는 `app.js`를 import하지 않고 state, API, render, mutation callback을 명시적으로 받는다.
 
 ## 3. 변경 원칙
 

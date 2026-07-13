@@ -151,6 +151,14 @@ import {
   wireRetrievalArtifactButtons,
 } from './lib/retrieval-navigation.js';
 import {
+  loadHarnessDocuments as loadHarnessDocumentsFromState,
+  loadHarnessMemory as loadHarnessMemoryFromState,
+  resetHarnessDocumentBrowseState as resetHarnessDocumentBrowseStateValues,
+  resetHarnessMemoryBrowseState as resetHarnessMemoryBrowseStateValues,
+  wireHarnessDocumentBrowseActions,
+  wireHarnessMemoryBrowseActions,
+} from './lib/harness-browse.js';
+import {
   getReleaseTargetEvidenceIntakeSummaryCopyKey,
   isCopiedReleaseTargetEvidenceIntakeSummary,
   markCopiedReleaseTargetEvidenceIntakeSummary,
@@ -10715,251 +10723,44 @@ function wireReleaseStatusActionButtons() {
 }
 
 function wireDocumentRowActions() {
-  if (!elements.harnessSource) {
-    return;
-  }
-
-  wireDocumentMutationActionButtons();
-  wireDocumentBrowsePaginationButtons();
-}
-
-function wireDocumentBrowsePaginationButtons() {
-  elements.harnessSource.querySelector('#document-log-sort')?.addEventListener('change', async (event) => {
-    try {
-      state.harnessDocumentSort = String(event.target.value || 'latest').trim() || 'latest';
-      state.harnessDocumentOffset = 0;
-      await loadHarnessDocuments();
-      renderHarnessPanel();
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.harnessSource.querySelector('#document-log-limit')?.addEventListener('change', async (event) => {
-    try {
-      state.harnessDocumentVisibleCount = Number(event.target.value || 12) || 12;
-      state.harnessDocumentOffset = 0;
-      await loadHarnessDocuments();
-      renderHarnessPanel();
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.harnessSource.querySelectorAll('[data-document-action="reset-browse"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        resetHarnessDocumentBrowseState();
-        await loadHarnessDocuments();
-        renderHarnessPanel();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-
-  elements.harnessSource.querySelectorAll('[data-document-action="prev-page"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        state.harnessDocumentOffset = Math.max(
-          Number(state.harnessDocumentOffset || 0) - Number(state.harnessDocumentVisibleCount || 12),
-          0,
-        );
-        await loadHarnessDocuments();
-        renderHarnessPanel();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-
-  elements.harnessSource.querySelectorAll('[data-document-action="next-page"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        state.harnessDocumentOffset += Number(state.harnessDocumentVisibleCount || 12);
-        await loadHarnessDocuments();
-        renderHarnessPanel();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-}
-
-function wireDocumentMutationActionButtons() {
-  elements.harnessSource.querySelectorAll('[data-document-action="edit"]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const entryId = String(button.dataset.documentId || '').trim();
+  wireHarnessDocumentBrowseActions({
+    container: elements.harnessSource,
+    loadDocuments: loadHarnessDocuments,
+    onDelete: handleDocumentLogDelete,
+    onEdit: (entryId) => {
       const entry = getHarnessDocumentEntry(entryId);
       if (!entry) {
         window.alert('문서 기록을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
         return;
       }
       populateDocumentLogForm(entry);
-    });
-  });
-
-  elements.harnessSource.querySelectorAll('[data-document-action="delete"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const entryId = String(button.dataset.documentId || '').trim();
-      try {
-        await handleDocumentLogDelete(entryId);
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-
-  elements.harnessSource.querySelectorAll('[data-document-action="migrate-legacy"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        await handleLegacyDocumentMigration();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
+    },
+    onError: (error) => window.alert(error.message),
+    onMigrate: handleLegacyDocumentMigration,
+    renderPanel: renderHarnessPanel,
+    resetBrowse: resetHarnessDocumentBrowseState,
+    state,
   });
 }
 
 function wireMemoryRowActions() {
-  if (!elements.harnessMemory) {
-    return;
-  }
-
-  wireMemoryMutationActionButtons();
-  wireMemoryBrowsePaginationButtons();
-}
-
-function wireMemoryBrowsePaginationButtons() {
-  elements.harnessMemory.querySelector('#harness-memory-search')?.addEventListener('input', async (event) => {
-    try {
-      state.retrievalSourceFocusType = '';
-      state.retrievalSourceFocusLabel = '';
-      state.harnessMemoryQuery = String(event.target.value || '');
-      state.harnessMemoryOffset = 0;
-      await loadHarnessMemory();
-      renderHarnessPanel();
-      writeUiStateToUrl();
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.harnessMemory.querySelector('#harness-memory-scope-filter')?.addEventListener('change', async (event) => {
-    try {
-      state.retrievalSourceFocusType = '';
-      state.retrievalSourceFocusLabel = '';
-      state.harnessMemoryFilterScope = String(event.target.value || 'all');
-      state.harnessMemoryOffset = 0;
-      await loadHarnessMemory();
-      renderHarnessPanel();
-      writeUiStateToUrl();
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.harnessMemory.querySelector('#harness-memory-kind-filter')?.addEventListener('change', async (event) => {
-    try {
-      state.retrievalSourceFocusType = '';
-      state.retrievalSourceFocusLabel = '';
-      state.harnessMemoryFilterKind = String(event.target.value || 'all');
-      state.harnessMemoryOffset = 0;
-      await loadHarnessMemory();
-      renderHarnessPanel();
-      writeUiStateToUrl();
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.harnessMemory.querySelector('#harness-memory-limit')?.addEventListener('change', async (event) => {
-    try {
-      state.harnessMemoryVisibleCount = Number(event.target.value || 12) || 12;
-      state.harnessMemoryOffset = 0;
-      await loadHarnessMemory();
-      renderHarnessPanel();
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.harnessMemory.querySelector('#harness-memory-sort')?.addEventListener('change', async (event) => {
-    try {
-      state.harnessMemorySort = String(event.target.value || 'latest').trim() || 'latest';
-      state.harnessMemoryOffset = 0;
-      await loadHarnessMemory();
-      renderHarnessPanel();
-    } catch (error) {
-      window.alert(error.message);
-    }
-  });
-
-  elements.harnessMemory.querySelectorAll('[data-memory-action="reset-browse"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        resetHarnessMemoryBrowseState();
-        await loadHarnessMemory();
-        renderHarnessPanel();
-        writeUiStateToUrl();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-
-  elements.harnessMemory.querySelectorAll('[data-memory-action="prev-page"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        state.harnessMemoryOffset = Math.max(
-          Number(state.harnessMemoryOffset || 0) - Number(state.harnessMemoryVisibleCount || 12),
-          0,
-        );
-        await loadHarnessMemory();
-        renderHarnessPanel();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-
-  elements.harnessMemory.querySelectorAll('[data-memory-action="next-page"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      try {
-        state.harnessMemoryOffset += Number(state.harnessMemoryVisibleCount || 12);
-        await loadHarnessMemory();
-        renderHarnessPanel();
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
-  });
-}
-
-function wireMemoryMutationActionButtons() {
-  elements.harnessMemory.querySelectorAll('[data-memory-action="edit"]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const scope = String(button.dataset.memoryScope || 'mission').trim();
-      const memoryId = String(button.dataset.memoryId || '').trim();
+  wireHarnessMemoryBrowseActions({
+    container: elements.harnessMemory,
+    loadMemory: loadHarnessMemory,
+    onDelete: ({ memoryId, scope }) => handleMemoryDelete(scope, memoryId),
+    onEdit: ({ memoryId, scope }) => {
       const entry = getHarnessMemoryEntry(scope, memoryId);
       if (!entry) {
         window.alert('메모 항목을 다시 불러오지 못했습니다. 화면을 새로고침한 뒤 다시 시도해 주세요.');
         return;
       }
       populateMemoryForm(scope, entry);
-    });
-  });
-
-  elements.harnessMemory.querySelectorAll('[data-memory-action="delete"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const scope = String(button.dataset.memoryScope || 'mission').trim();
-      const memoryId = String(button.dataset.memoryId || '').trim();
-      try {
-        await handleMemoryDelete(scope, memoryId);
-      } catch (error) {
-        window.alert(error.message);
-      }
-    });
+    },
+    onError: (error) => window.alert(error.message),
+    renderPanel: renderHarnessPanel,
+    resetBrowse: resetHarnessMemoryBrowseState,
+    state,
+    syncUrl: writeUiStateToUrl,
   });
 }
 
@@ -10981,23 +10782,11 @@ function resetHarnessFilterState() {
 }
 
 function resetHarnessDocumentBrowseState() {
-  state.harnessDocumentFilter = 'all';
-  state.harnessDocumentOffset = 0;
-  state.harnessDocumentQuery = '';
-  state.harnessDocumentSort = 'latest';
-  state.harnessDocumentVisibleCount = 12;
+  resetHarnessDocumentBrowseStateValues(state);
 }
 
 export function resetHarnessMemoryBrowseState() {
-  state.harnessAttachmentFocus = '';
-  state.retrievalSourceFocusLabel = '';
-  state.retrievalSourceFocusType = '';
-  state.harnessMemoryFilterKind = 'all';
-  state.harnessMemoryFilterScope = 'all';
-  state.harnessMemoryOffset = 0;
-  state.harnessMemoryQuery = '';
-  state.harnessMemorySort = 'latest';
-  state.harnessMemoryVisibleCount = 12;
+  resetHarnessMemoryBrowseStateValues(state);
 }
 
 function resetHarnessFilterInputs() {
@@ -12926,51 +12715,20 @@ async function restoreUiStateFromUrl({ syncUrl = true } = {}) {
   syncRestoredUiStateToUrl(syncUrl);
 }
 
-function buildHarnessDocumentsQueryParams() {
-  return new URLSearchParams({
-    limit: String(state.harnessDocumentVisibleCount || 12),
-    offset: String(state.harnessDocumentOffset || 0),
-    query: String(state.harnessDocumentQuery || ''),
-    sort: String(state.harnessDocumentSort || 'latest'),
-    type: String(state.harnessDocumentFilter || 'all'),
-  });
-}
-
 async function loadHarnessDocuments(missionId = state.selectedMissionId) {
-  if (!missionId) {
-    state.harnessDocumentResult = null;
-    return null;
-  }
-
-  const params = buildHarnessDocumentsQueryParams();
-  const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/documents?${params.toString()}`);
-  state.harnessDocumentOffset = Number(payload.filters?.offset || 0);
-  state.harnessDocumentResult = payload;
-  return payload;
-}
-
-function buildHarnessMemoryQueryParams() {
-  return new URLSearchParams({
-    kind: String(state.harnessMemoryFilterKind || 'all'),
-    limit: String(state.harnessMemoryVisibleCount || 12),
-    offset: String(state.harnessMemoryOffset || 0),
-    query: String(state.harnessMemoryQuery || ''),
-    scope: String(state.harnessMemoryFilterScope || 'all'),
-    sort: String(state.harnessMemorySort || 'latest'),
+  return loadHarnessDocumentsFromState({
+    api,
+    missionId,
+    state,
   });
 }
 
 export async function loadHarnessMemory(missionId = state.selectedMissionId) {
-  if (!missionId) {
-    state.harnessMemoryResult = null;
-    return null;
-  }
-
-  const params = buildHarnessMemoryQueryParams();
-  const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/harness/memory?${params.toString()}`);
-  state.harnessMemoryOffset = Number(payload.filters?.offset || 0);
-  state.harnessMemoryResult = payload;
-  return payload;
+  return loadHarnessMemoryFromState({
+    api,
+    missionId,
+    state,
+  });
 }
 
 async function loadHarnessBrowsers(missionId = state.selectedMissionId) {
