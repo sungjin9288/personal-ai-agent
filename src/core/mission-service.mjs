@@ -57,6 +57,7 @@ import { createLearningCandidateEmitter } from './learning-candidate-emitter.mjs
 import { createLearningPromotion } from './learning-promotion.mjs';
 import { createDocumentLog } from './document-log.mjs';
 import { createActionInbox } from './action-inbox.mjs';
+import { prepareActionMaintenanceRun } from './action-maintenance-run.mjs';
 import {
   addDispatchMetadata,
   addFixedOperationalMetadata,
@@ -69,6 +70,12 @@ import {
   buildReviewerFollowUpItemFromRecord,
   buildSpecialistFollowUpActionItem,
 } from './action-item-builders.mjs';
+import {
+  buildProviderAttentionAcknowledgementRecord,
+  buildProviderAttentionReminderRecord,
+  buildResolvedProviderAttentionRecord,
+  buildSpecialistFollowUpReminderRecord,
+} from './action-mutation-records.mjs';
 import { createProviderAttention } from './provider-attention.mjs';
 import { summarizeIdentitySessionContextForTimeline } from './identity-session-context-service.mjs';
 import {
@@ -213,8 +220,6 @@ import {
 } from './escalation-analytics.mjs';
 import {
   buildLearningPromotionStopConditionReminderNote,
-  buildProviderAttentionReminderNote,
-  buildSpecialistFollowUpReminderNote,
   deriveLearningPromotionStopConditionReminderCadenceHours,
   deriveProviderAttentionReminderCadenceHours,
   formatAcceptedRiskEscalationTitle,
@@ -9266,7 +9271,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       owner: filter.owner,
       workspaceId: filter.workspaceId,
     });
-    const beforePressureSummary = summarizeMaintenancePressure(beforePressure);
     const sync = syncEscalations({
       missionId: filter.missionId,
       owner: filter.owner,
@@ -9313,167 +9317,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       owner: filter.owner,
       workspaceId: filter.workspaceId,
     });
-    const afterPressureSummary = summarizeMaintenancePressure(afterPressure);
-    const afterPressureIds = new Set(afterPressure.map((entry) => entry.actionId));
-    const acknowledgedActionIds = beforePressure.map((entry) => entry.actionId);
-    const resolvedActionIds = acknowledgedActionIds.filter((actionId) => !afterPressureIds.has(actionId));
-    const remainingActionIds = afterPressure.map((entry) => entry.actionId);
-
-    const latestReminderAt = [
-      escalationReminders.summary.latestReminderAt,
-      ownerHandoffReminders.summary.latestReminderAt,
-      providerAttentionReminders.summary.latestReminderAt,
-      specialistFollowUpReminders.summary.latestReminderAt,
-    ]
-      .filter(Boolean)
-      .sort((left, right) => String(left).localeCompare(String(right)))
-      .at(-1) || null;
-    const affectedMissionSummaryMap = new Map();
-
-    for (const item of escalationReminders.items) {
-      if (!item.missionId) {
-        continue;
-      }
-
-      const current = affectedMissionSummaryMap.get(item.missionId) || {
-        escalationRemindedCount: 0,
-        missionId: item.missionId,
-        ownerHandoffRemindedCount: 0,
-        providerAttentionRemindedCount: 0,
-        specialistFollowUpRemindedCount: 0,
-        totalRemindedCount: 0,
-      };
-      current.escalationRemindedCount += 1;
-      current.totalRemindedCount += 1;
-      affectedMissionSummaryMap.set(item.missionId, current);
-    }
-
-    for (const item of ownerHandoffReminders.items) {
-      if (!item.missionId) {
-        continue;
-      }
-
-      const current = affectedMissionSummaryMap.get(item.missionId) || {
-        escalationRemindedCount: 0,
-        missionId: item.missionId,
-        ownerHandoffRemindedCount: 0,
-        providerAttentionRemindedCount: 0,
-        specialistFollowUpRemindedCount: 0,
-        totalRemindedCount: 0,
-      };
-      current.ownerHandoffRemindedCount += 1;
-      current.totalRemindedCount += 1;
-      affectedMissionSummaryMap.set(item.missionId, current);
-    }
-
-    for (const item of providerAttentionReminders.items) {
-      if (!item.missionId) {
-        continue;
-      }
-
-      const current = affectedMissionSummaryMap.get(item.missionId) || {
-        escalationRemindedCount: 0,
-        missionId: item.missionId,
-        ownerHandoffRemindedCount: 0,
-        providerAttentionRemindedCount: 0,
-        specialistFollowUpRemindedCount: 0,
-        totalRemindedCount: 0,
-      };
-      current.providerAttentionRemindedCount += 1;
-      current.totalRemindedCount += 1;
-      affectedMissionSummaryMap.set(item.missionId, current);
-    }
-
-    for (const item of specialistFollowUpReminders.items) {
-      if (!item.missionId) {
-        continue;
-      }
-
-      const current = affectedMissionSummaryMap.get(item.missionId) || {
-        escalationRemindedCount: 0,
-        missionId: item.missionId,
-        ownerHandoffRemindedCount: 0,
-        providerAttentionRemindedCount: 0,
-        specialistFollowUpRemindedCount: 0,
-        totalRemindedCount: 0,
-      };
-      current.specialistFollowUpRemindedCount += 1;
-      current.totalRemindedCount += 1;
-      affectedMissionSummaryMap.set(item.missionId, current);
-    }
-
-    const affectedMissionSummaries = [...affectedMissionSummaryMap.values()].sort((left, right) =>
-      String(left.missionId).localeCompare(String(right.missionId)),
-    );
-    const affectedMissionIds = affectedMissionSummaries.map((item) => item.missionId);
-
-    const summary = {
-      acknowledgedMaintenanceRequiredCount: acknowledgedActionIds.length,
-      afterDueCandidateCountTotal: Number(afterPressureSummary.currentDueCandidateCountTotal || 0),
-      afterMaintenanceRequiredCount: Number(afterPressureSummary.maintenanceRequiredCount || 0),
-      beforeDueCandidateCountTotal: Number(beforePressureSummary.currentDueCandidateCountTotal || 0),
-      beforeMaintenanceRequiredCount: Number(beforePressureSummary.maintenanceRequiredCount || 0),
-      dueCandidateCountTotal:
-        Number(escalationReminders.summary.dueCandidateCount || 0) +
-        Number(ownerHandoffReminders.summary.dueCandidateCount || 0) +
-        Number(providerAttentionReminders.summary.dueCandidateCount || 0) +
-        Number(specialistFollowUpReminders.summary.dueCandidateCount || 0),
-      escalationRemindedCount: Number(escalationReminders.summary.remindedCount || 0),
-      latestReminderAt,
-      ownerHandoffRemindedCount: Number(ownerHandoffReminders.summary.remindedCount || 0),
-      providerAttentionRemindedCount: Number(providerAttentionReminders.summary.remindedCount || 0),
-      specialistFollowUpRemediationRouteCounts: specialistFollowUpReminders.summary.remediationRouteCounts || {},
-      specialistFollowUpRemindedCount: Number(specialistFollowUpReminders.summary.remindedCount || 0),
-      specialistFollowUpRetryPolicyCounts: specialistFollowUpReminders.summary.retryPolicyCounts || {},
-      remainingMaintenanceRequiredCount: remainingActionIds.length,
-      resolvedMaintenanceRequiredCount: resolvedActionIds.length,
-      syncedCount: Number(sync.summary.syncedCount || 0),
-      totalRemindedCount:
-        Number(escalationReminders.summary.remindedCount || 0) +
-        Number(ownerHandoffReminders.summary.remindedCount || 0) +
-        Number(providerAttentionReminders.summary.remindedCount || 0) +
-        Number(specialistFollowUpReminders.summary.remindedCount || 0),
-    };
-
-    const maintenanceRun = store.saveMaintenanceRun({
-      acknowledgedActionIds,
-      acknowledgedMaintenanceRequiredCount: summary.acknowledgedMaintenanceRequiredCount,
-      afterPressureSummary,
-      beforePressureSummary,
+    const preparedRun = prepareActionMaintenanceRun({
+      afterPressure,
+      beforePressure,
       createdAt: now(),
-      dueCandidateCountTotal: summary.dueCandidateCountTotal,
-      escalationRemindedCount: summary.escalationRemindedCount,
-      escalationRemindersSummary: escalationReminders.summary,
-      filters: {
-        missionId: filter.missionId || null,
-        note: note || null,
-        owner: filter.owner || null,
-        workspaceId: filter.workspaceId || null,
-      },
-      affectedMissionIds,
-      affectedMissionSummaries,
+      escalationReminders,
+      filter,
       id: createId('maintenance'),
-      latestReminderAt: summary.latestReminderAt,
-      missionId: filter.missionId || null,
-      note: note || null,
-      owner: filter.owner || null,
-      ownerHandoffRemindedCount: summary.ownerHandoffRemindedCount,
-      ownerHandoffRemindersSummary: ownerHandoffReminders.summary,
-      providerAttentionRemindedCount: summary.providerAttentionRemindedCount,
-      providerAttentionRemindersSummary: providerAttentionReminders.summary,
-      specialistFollowUpRemediationRouteCounts: summary.specialistFollowUpRemediationRouteCounts,
-      specialistFollowUpRemindedCount: summary.specialistFollowUpRemindedCount,
-      specialistFollowUpRemindersSummary: specialistFollowUpReminders.summary,
-      specialistFollowUpRetryPolicyCounts: summary.specialistFollowUpRetryPolicyCounts,
-      remainingActionIds,
-      remainingMaintenanceRequiredCount: summary.remainingMaintenanceRequiredCount,
-      resolvedActionIds,
-      resolvedMaintenanceRequiredCount: summary.resolvedMaintenanceRequiredCount,
-      syncedCount: summary.syncedCount,
+      note,
+      ownerHandoffReminders,
+      providerAttentionReminders,
+      specialistFollowUpReminders,
       syncSummary: sync.summary,
-      totalRemindedCount: summary.totalRemindedCount,
-      workspaceId: filter.workspaceId || null,
     });
+    const maintenanceRun = store.saveMaintenanceRun(preparedRun.record);
+    const summary = preparedRun.summary;
     const maintenanceOverviewRuns = listMaintenanceOverviewRuns({
       missionId: filter.missionId,
       owner: filter.owner,
@@ -9958,32 +9816,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
     const items = candidates
       .map((item) =>
-        store.saveSpecialistFollowUpReminder({
-          actionId: item.actionId,
-          createdAt: reminderTimestamp,
-          dueAt: item.dueAt,
-          fallbackRecommendedCommand: item.fallbackRecommendedCommand || null,
-          id: createId('specialist-follow-up-reminder'),
-          missionId: item.missionId,
-          note: buildSpecialistFollowUpReminderNote(item, normalizedNote),
-          overdue: item.isOverdue,
-          parallelGroupId: item.parallelGroupId,
-          priority: item.priority,
-          providerId: item.providerId || null,
-          recommendedCommand: item.recommendedCommand || null,
-          remediationRoute: item.remediationRoute || null,
-          remindedAt: reminderTimestamp,
-          reminderCadenceHours: item.reminderCadenceHours,
-          retryPolicy: item.retryPolicy || null,
-          runId: item.runId || item.specialistRootRunId || null,
-          sessionId: item.sessionId || null,
-          slaHours: item.slaHours,
-          specialistKind: item.specialistKind,
-          status: item.status,
-          title: item.title,
-          workspaceId: item.workspaceId || null,
-          workspaceName: item.workspaceName || null,
-        }),
+        store.saveSpecialistFollowUpReminder(
+          buildSpecialistFollowUpReminderRecord({
+            id: createId('specialist-follow-up-reminder'),
+            item,
+            note: normalizedNote,
+            remindedAt: reminderTimestamp,
+          }),
+        ),
       )
       .map((record) => ({
         ...record,
@@ -10063,28 +9903,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
 
     const items = candidates
       .map((item) =>
-        store.saveProviderAttentionReminder({
-          actionId: item.actionId,
-          createdAt: reminderTimestamp,
-          dueAt: item.dueAt,
-          eventFamily: item.eventFamily,
-          eventKind: item.eventKind,
-          eventRefId: item.eventRefId,
-          id: createId('provider-attention-reminder'),
-          missionId: item.missionId,
-          note: buildProviderAttentionReminderNote(item, normalizedNote),
-          overdue: item.isOverdue,
-          priority: item.priority,
-          providerDisplayName: item.providerDisplayName,
-          providerId: item.providerId,
-          remindedAt: reminderTimestamp,
-          reminderCadenceHours: item.reminderCadenceHours,
-          sessionId: item.sessionId || null,
-          slaHours: item.slaHours,
-          title: item.title,
-          workspaceId: item.workspaceId || null,
-          workspaceName: item.workspaceName || null,
-        }),
+        store.saveProviderAttentionReminder(
+          buildProviderAttentionReminderRecord({
+            id: createId('provider-attention-reminder'),
+            item,
+            note: normalizedNote,
+            remindedAt: reminderTimestamp,
+          }),
+        ),
       )
       .map((record) => ({
         ...record,
@@ -10206,41 +10032,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     const acknowledgedAt = now();
-    return store.saveProviderAttentionAcknowledgement({
-      acknowledgedAt,
-      actionId: pendingItem.actionId,
-      attemptCount: Number(pendingItem.attemptCount || 0),
-      attemptHistory: normalizeProviderAttemptHistory(pendingItem.attemptHistory),
-      createdAt: acknowledgedAt,
-      durationMs: normalizeTelemetryNumber(pendingItem.durationMs),
-      eventFamily: pendingItem.eventFamily,
-      eventKind: pendingItem.eventKind,
-      eventRefId: pendingItem.eventRefId,
-      failureKind: pendingItem.failureKind || null,
-      httpStatus: Number.isFinite(Number(pendingItem.httpStatus)) ? Number(pendingItem.httpStatus) : null,
-      id: createId('provider-attention-ack'),
-      missionId: pendingItem.missionId,
-      note: normalizeText(note, 'Provider attention acknowledged.'),
-      openedAt: pendingItem.createdAt,
-      priority: pendingItem.priority,
-      providerDisplayName: pendingItem.providerDisplayName,
-      providerId: pendingItem.providerId,
-      providerResponseId: pendingItem.providerResponseId || null,
-      rawMessage: pendingItem.rawMessage || null,
-      reason: pendingItem.reason,
-      recommendedOwner: pendingItem.recommendedOwner,
-      recoverable: typeof pendingItem.recoverable === 'boolean' ? pendingItem.recoverable : null,
-      retryCount: Number(pendingItem.retryCount || 0),
-      sessionId: pendingItem.sessionId,
-      status: 'acknowledged',
-      timedOut: Boolean(pendingItem.timedOut),
-      usageInputTokens: normalizeTelemetryNumber(pendingItem.usageInputTokens),
-      usageOutputTokens: normalizeTelemetryNumber(pendingItem.usageOutputTokens),
-      usageTotalTokens: normalizeTelemetryNumber(pendingItem.usageTotalTokens),
-      title: pendingItem.title,
-      workspaceId: pendingItem.workspaceId,
-      workspaceName: pendingItem.workspaceName,
-    });
+    return store.saveProviderAttentionAcknowledgement(
+      buildProviderAttentionAcknowledgementRecord({
+        acknowledgedAt,
+        id: createId('provider-attention-ack'),
+        note,
+        pendingItem,
+      }),
+    );
   }
 
   function resolveProviderAttention(actionId, { note = '' }) {
@@ -10253,12 +10052,9 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     }
 
     const resolvedAt = now();
-    return store.updateProviderAttentionAcknowledgement(record.id, (current) => ({
-      ...current,
-      resolutionNote: normalizeText(note, 'Provider attention resolved.'),
-      resolvedAt,
-      status: 'resolved',
-    }));
+    return store.updateProviderAttentionAcknowledgement(record.id, (current) =>
+      buildResolvedProviderAttentionRecord({ current, note, resolvedAt }),
+    );
   }
 
   function summarizeProviderAttentionScopedState(filter = {}) {

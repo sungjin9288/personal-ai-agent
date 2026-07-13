@@ -30,7 +30,8 @@
 | R1 Provider execution analytics | 완료 | `mission-service.mjs`의 summary, timeline, bucket, delta를 순수 모듈로 이동 |
 | R2.1 Action item builder | 완료 | approval, blocked, reviewer, maintenance 표시 record를 store 조회에서 분리 |
 | R2.2 Specialist·provider attention builder | 완료 | specialist와 provider attention 표시 record를 store·registry·permission 조회에서 분리 |
-| R2.3 Mutation·maintenance orchestration | 다음 작업 | reminder, acknowledge, resolve, remediate의 write·audit 경계를 점검할 예정 |
+| R2.3 Mutation·maintenance orchestration | 완료 | reminder·acknowledgement audit record와 maintenance run 계산을 store write에서 분리 |
+| R3 Timeline assembly | 다음 작업 | mission·workspace·operator event 수집과 정렬 경계를 점검할 예정 |
 
 R1 완료 검증:
 
@@ -53,6 +54,14 @@ R2.2 구현 검증:
 - `npm run smoke:docs-gates`: 33개 통과
 - `npm run smoke:all`: 165개 통과
 - browser E2E 2개는 `smoke:all`의 명시적 제외 대상이며 이번 작업은 UI를 변경하지 않았다.
+
+R2.3 구현 검증:
+
+- `npm test`: 508개 통과
+- specialist/provider reminder, provider lifecycle/remediation, specialist remediation, action maintenance/history smoke 7개 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- store write는 `mission-service`에 유지하고 async remediation, permission decision, fallback policy는 변경하지 않았다.
 
 ## 3. 변경 원칙
 
