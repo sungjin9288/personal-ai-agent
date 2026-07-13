@@ -3268,8 +3268,21 @@ try {
     true,
     JSON.stringify(fixtureBlockerAction.evidenceDocs),
   );
-  const releaseReadinessDoc = await fetchText(`${baseUrl}/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md`);
+  const releaseReadinessDocResponse = await fetch(
+    `${baseUrl}/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md`,
+  );
+  assert.equal(releaseReadinessDocResponse.status, 200);
+  assert.match(releaseReadinessDocResponse.headers.get('content-type') || '', /text\/markdown/);
+  assert.equal(
+    releaseReadinessDocResponse.headers.get('content-disposition'),
+    'inline; filename="release-readiness-v1.md"',
+  );
+  const releaseReadinessDoc = await releaseReadinessDocResponse.text();
   assert.match(releaseReadinessDoc, /Release Readiness v1/);
+  const traversalReleaseDocResponse = await fetch(
+    `${baseUrl}/api/execution-v1/release-doc?path=docs%2Freleases%2Fexecution-v1%2F..%2F..%2Frelease-readiness-v1.md`,
+  );
+  assert.equal(traversalReleaseDocResponse.status, 404);
   assert.equal(
     fixtureBlockerAction.commands.some(
       (command) => command.command === 'npm run smoke:production-readiness-gate',

@@ -23,6 +23,7 @@ import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
 import { evaluateOidcWebAuth, evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
 import { resolveWithinRoot } from './path-guard.mjs';
+import { createExecutionV1ReleaseArtifactResolver } from './release-artifact-resolver.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -352,6 +353,12 @@ const executionV1ReleaseHandoffArtifactSpecs = [
     recommended: false,
   },
 ];
+const releaseArtifactResolver = createExecutionV1ReleaseArtifactResolver({
+  evidenceDocPaths: executionV1ReleaseEvidenceDocPaths,
+  handoffArtifactSpecs: executionV1ReleaseHandoffArtifactSpecs,
+  mutableArtifactPaths: executionV1MutableArtifactPaths,
+  rootDir,
+});
 const liveValidationProviders = [
   {
     command: 'npm run live:execution-v1:openai',
@@ -693,27 +700,6 @@ function buildExecutionV1ReleaseHandoffArtifacts() {
   });
 }
 
-function resolveExecutionV1ReleaseHandoffArtifact(artifactId) {
-  const entry = executionV1ReleaseHandoffArtifactSpecs.find((item) => item.id === artifactId);
-  if (!entry) {
-    return null;
-  }
-
-  const artifactPath = resolveWithinRoot(rootDir, entry.path);
-  if (!artifactPath) {
-    return null;
-  }
-
-  if (!fs.existsSync(artifactPath) || fs.statSync(artifactPath).isDirectory()) {
-    return null;
-  }
-
-  return {
-    artifactPath,
-    entry,
-  };
-}
-
 function runGit(args) {
   const result = spawnSync('git', args, {
     cwd: rootDir,
@@ -748,43 +734,6 @@ function isGitAncestor(ancestorCommit = '', descendantCommit = '') {
   return result.status === 0;
 }
 
-function normalizeRepoRelativePath(filePath = '') {
-  return String(filePath || '').replace(/\\/g, '/').replace(/^\.\//, '').trim();
-}
-
-function isExecutionV1ReleaseArtifactPath(filePath = '') {
-  const relativePath = normalizeRepoRelativePath(filePath);
-  return executionV1MutableArtifactPaths.has(relativePath)
-    || relativePath.startsWith('docs/releases/execution-v1/');
-}
-
-function isExecutionV1ReleaseEvidenceDocPath(filePath = '') {
-  const relativePath = normalizeRepoRelativePath(filePath);
-  return executionV1ReleaseEvidenceDocPaths.has(relativePath)
-    || relativePath.startsWith('docs/releases/execution-v1/');
-}
-
-function resolveExecutionV1ReleaseEvidenceDoc(filePath = '') {
-  const relativePath = normalizeRepoRelativePath(filePath);
-  if (!isExecutionV1ReleaseEvidenceDocPath(relativePath)) {
-    return null;
-  }
-
-  const docsRoot = path.resolve(rootDir, 'docs');
-  const resolvedPath = resolveWithinRoot(docsRoot, path.resolve(rootDir, relativePath));
-  if (!resolvedPath) {
-    return null;
-  }
-  if (!fs.existsSync(resolvedPath) || !fs.statSync(resolvedPath).isFile()) {
-    return null;
-  }
-
-  return {
-    path: resolvedPath,
-    relativePath,
-  };
-}
-
 function buildExecutionV1ArtifactSyncCommit(currentCommit = '', verifiedCommit = '') {
   if (!currentCommit || !verifiedCommit || currentCommit === verifiedCommit) {
     return {
@@ -809,7 +758,8 @@ function buildExecutionV1ArtifactSyncCommit(currentCommit = '', verifiedCommit =
   const changedPaths = [...new Set(
     commits.flatMap((commit) => runGitLines(['diff-tree', '--no-commit-id', '--name-only', '-r', commit])),
   )].sort();
-  const detected = changedPaths.length > 0 && changedPaths.every(isExecutionV1ReleaseArtifactPath);
+  const detected = changedPaths.length > 0
+    && changedPaths.every((filePath) => releaseArtifactResolver.isReleaseArtifactPath(filePath));
 
   return {
     changedPaths,
@@ -1210,8 +1160,8 @@ function buildReleaseReadinessCommand(label, command, kind = 'verification') {
 }
 
 function buildReleaseReadinessDoc(label, path) {
-  const relativePath = normalizeRepoRelativePath(path);
-  const docRecord = resolveExecutionV1ReleaseEvidenceDoc(relativePath);
+  const relativePath = releaseArtifactResolver.normalizePath(path);
+  const docRecord = releaseArtifactResolver.resolveEvidenceDoc(relativePath);
   return {
     exists: Boolean(docRecord),
     href: docRecord ? `/api/execution-v1/release-doc?path=${encodeURIComponent(relativePath)}` : '',
@@ -3027,7 +2977,7 @@ async function handleApi(request, response, url) {
 
   registerParamRoute('GET', '/api/execution-v1/handoff-artifacts/:artifactId', async (params) => {
     const artifactId = decodePathSegment(params.artifactId);
-    const artifactRecord = resolveExecutionV1ReleaseHandoffArtifact(artifactId);
+    const artifactRecord = releaseArtifactResolver.resolveHandoffArtifact(artifactId);
     if (!artifactRecord) {
       sendNotFound(response);
       return;
@@ -3045,7 +2995,7 @@ async function handleApi(request, response, url) {
   });
 
   registerExactRoute('GET', '/api/execution-v1/release-doc', async () => {
-    const docRecord = resolveExecutionV1ReleaseEvidenceDoc(url.searchParams.get('path') || '');
+    const docRecord = releaseArtifactResolver.resolveEvidenceDoc(url.searchParams.get('path') || '');
     if (!docRecord) {
       sendNotFound(response);
       return;

@@ -46,7 +46,9 @@
 | R4.3.3c Release history·provider readiness rendering | 완료 | history 필터·포커스·상세와 provider readiness·closure 표시를 같은 순수 view model 위로 이동 |
 | R4.3.3d Release recommendation·handoff·document rendering | 완료 | recommendation history 조립과 snapshot, handoff preview, 문서 panel을 두 순수 view 모듈로 이동 |
 | R4.4 Bootstrap·global event wiring | 완료 | 전역 form·navigation listener와 시작 순서를 callback 기반 모듈로 분리 |
-| R5 Web server boundary | 다음 작업 | release read model부터 parser·status assembly·job orchestration 순으로 분리 |
+| R5 Web server boundary | 진행 중 | release artifact resolver부터 parser·status assembly·job orchestration 순으로 분리 |
+| R5.1a Release artifact resolver | 완료 | handoff artifact와 evidence doc allowlist·경로 검증을 HTTP 독립 모듈로 분리 |
+| R5.1b Release markdown parser | 다음 작업 | release markdown의 section·checklist·verification 추출을 순수 parser로 이동 |
 
 R1 완료 검증:
 
@@ -227,6 +229,16 @@ R4.4 bootstrap·global event wiring 구현 검증:
 - API 요청과 state mutation은 기존 app callback에 유지했다. 문서·미션·메모리·워크스페이스 form, 실행 버튼, browser history의 alert와 button/input 복구 문구도 그대로 유지했다.
 - global listener는 각 target에 한 번만 등록되는 것을 단위 테스트로 고정했다. 동적으로 다시 그려지는 mission attachment form listener는 기존 render 경계에 남겨 bootstrap listener와 섞지 않았다.
 
+R5.1a release artifact resolver 구현 검증:
+
+- `npm test`: 575개 통과
+- 새 resolver 단위 테스트 3개에서 mutable artifact, immutable snapshot, evidence doc, missing file, directory, root 밖 artifact, unknown id를 확인했다.
+- `npm run smoke:ui-harness-browse`, `npm run smoke:execution-v1-handoff`, `npm run smoke:all` 165개 통과
+- 실제 HTTP에서 browser report와 release readiness 문서의 200, 기존 content type, `content-disposition` filename을 확인했다. unknown artifact id와 snapshot prefix 안에서 `..`를 사용한 allowlist 우회는 모두 404였다.
+- `server.mjs`는 3,850줄, 새 `release-artifact-resolver.mjs`는 91줄이다. resolver는 root path, artifact catalog, allowlist만 받고 HTTP request/response, auth, RBAC, tenant, provider, release status를 직접 알지 않는다.
+- content type과 filename은 static serving도 공유하는 HTTP 응답 책임이므로 R5.1a로 이동하지 않았다. route는 resolver가 돌려준 안전한 path만 읽고 기존 response header를 그대로 조립한다.
+- auth·RBAC 선검사와 route table은 변경하지 않았다. snapshot prefix는 계속 허용하되 빈 경로, absolute path, `.`·`..` segment를 거부하도록 경로 계약을 명시했다.
+
 ## 3. 변경 원칙
 
 1. 한 번에 하나의 도메인만 옮긴다.
@@ -312,7 +324,7 @@ release 문서 해석, runtime job, API request 처리, static serving을 분리
 
 - 현재 기준: `src/web/server.mjs` 3,900줄. 인증·RBAC 선검사 뒤 `handleApi()` 안에서 exact/param route를 매 요청마다 등록하고, release read model·job 실행·mission/action handler가 같은 파일에 있다.
 - 순서:
-  - R5.1a release artifact resolver: handoff artifact id와 evidence document path를 허용 목록에서 해석하고 content type·파일명 metadata를 반환한다.
+  - R5.1a release artifact resolver: handoff artifact id와 evidence document path를 허용 목록에서 해석하고 안전한 file path와 catalog entry를 반환한다. content type·파일명은 HTTP route에 유지한다.
   - R5.1b release markdown parser: bullet, section, checklist, deterministic/reference/live validation 항목 추출을 순수 parser로 옮긴다.
   - R5.1c release status assembler: parser 결과, provider readiness, blocker closure, git/artifact freshness를 받아 API payload를 만드는 read model로 분리한다.
   - R5.2a runtime job runner: request id, job kind, scope, summary, result/error 기록을 한 service 경계로 옮긴다.
@@ -334,7 +346,7 @@ release 문서 해석, runtime job, API request 처리, static serving을 분리
   - R5.2: runtime request/job registry, refresh preflight, snapshot confirmation, artifact refresh·restore smoke
   - R5.3: web auth/RBAC/OIDC, tenant isolation, action inbox, mission execution·document·memory smoke
   - R5.4: runtime discovery, static UI fetch, port fallback, shutdown smoke
-- 커밋 묶음: R5.1 parser/read model, R5.2 job/orchestration, R5.3 handler domain, R5.4 server bootstrap를 각각 응집된 commit으로 묶고 한 묶음이 검증되기 전에는 다음 경계를 옮기지 않는다.
+- 커밋 묶음: R5.1a resolver, R5.1b parser, R5.1c read model, R5.2 job/orchestration, R5.3 handler domain, R5.4 server bootstrap를 각각 응집된 commit으로 묶고 한 묶음이 검증되기 전에는 다음 경계를 옮기지 않는다.
 
 ### D1. 코드로 닫을 수 있는 후속 개발
 
