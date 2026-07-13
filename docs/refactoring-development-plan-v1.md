@@ -32,8 +32,9 @@
 | R2.2 Specialist·provider attention builder | 완료 | specialist와 provider attention 표시 record를 store·registry·permission 조회에서 분리 |
 | R2.3 Mutation·maintenance orchestration | 완료 | reminder·acknowledgement audit record와 maintenance run 계산을 store write에서 분리 |
 | R3 Timeline assembly | 완료 | gateway·identity/session·sandbox·maintenance event 조립과 timeline 정렬을 순수 모듈로 이동 |
-| R4 Operator UI module boundary | 진행 중 | harness browse 조회·pagination·mutation wiring을 explicit dependency 모듈로 이동 |
-| R4.2 Mission/action inbox UI | 다음 작업 | mission/action 표시와 event wiring 경계를 점검할 예정 |
+| R4 Operator UI module boundary | 진행 중 | harness browse와 mission/action inbox를 explicit dependency 모듈로 이동 |
+| R4.2 Mission/action inbox UI | 완료 | 필터 상태·API query·화면 조립·DOM wiring을 분리하고 mutation 승인은 app callback에 유지 |
+| R4.3 Release status UI | 다음 작업 | release 상태 표시와 event wiring 경계를 점검할 예정 |
 
 R1 완료 검증:
 
@@ -84,6 +85,17 @@ R4.1 harness browse 구현 검증:
 - `npm run smoke:all`: 165개 통과
 - 실제 browser E2E와 생성 artifact restore smoke 통과
 - 새 `harness-browse.js`는 `app.js`를 import하지 않고 state, API, render, mutation callback을 명시적으로 받는다.
+
+R4.2 mission/action inbox 구현 검증:
+
+- `npm test`: 527개 통과
+- frontend module graph 및 TDZ guard 2개 통과
+- action, provider attention, specialist follow-up, learning promotion, reviewer follow-up, UI execution 관련 smoke 12개 통과
+- UI learning promotion surface smoke 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E와 생성 artifact restore smoke 통과
+- 새 `action-inbox.js`는 `app.js`를 import하지 않으며 필터·조회·렌더링·DOM wiring만 맡는다. confirm, prompt, API mutation, permission-sensitive refresh는 `app.js` callback에 유지한다.
 
 ## 3. 변경 원칙
 

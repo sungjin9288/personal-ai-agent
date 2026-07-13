@@ -18,13 +18,11 @@ import {
   getReleaseProductionBlockerVerificationCommands,
 } from './lib/text-format.js';
 import {
-  normalizeUiParam,
   normalizeReleaseProductionBlockerStateIndex,
   normalizeReleaseProductionBlockerQueryIndex,
   getReleaseProductionBlockerOrdinal,
   getSanitizedReleaseHistoryOutcome,
   getSanitizedRetrievalSourceType,
-  getSanitizedMissionActionsFilter,
   getRetrievalSourceKey,
   getRetrievalArtifactTargetLabel,
   getReleaseHandoffStructuredSummaryDetailCopyKey,
@@ -70,11 +68,6 @@ import {
 } from './lib/status-labels.js';
 import {
   emptyStateCard,
-  renderActionInboxEmptyList,
-  renderActionInboxFallbackStopFilterSelect,
-  renderActionInboxList,
-  renderActionInboxSummaryChip,
-  renderActionInboxUnavailableState,
   renderAgentBlueprintCardButton,
   renderAgentIntentPillButton,
   renderApprovalActionButton,
@@ -158,6 +151,11 @@ import {
   wireHarnessDocumentBrowseActions,
   wireHarnessMemoryBrowseActions,
 } from './lib/harness-browse.js';
+import {
+  applyMissionActionsFilterUrlState as applyMissionActionsFilterUrlStateValues,
+  loadMissionActions as loadMissionActionsFromState,
+  renderMissionActions as renderMissionActionsSurface,
+} from './lib/action-inbox.js';
 import {
   getReleaseTargetEvidenceIntakeSummaryCopyKey,
   isCopiedReleaseTargetEvidenceIntakeSummary,
@@ -10912,469 +10910,206 @@ function inferProviderFromCommand(command = '') {
   return inferCommandOption(command, '--provider');
 }
 
-function getMissionActionsFilterLabel(filter = state.missionActionsFilter) {
-  if (filter === 'needs-reminder') {
-    return '재알림 필요';
-  }
-  if (filter === 'overdue') {
-    return '기한 초과';
-  }
-  return '전체';
-}
-
 function applyMissionActionsFilterUrlState({ actionInboxFilter = 'all', actionInboxFallbackStopReason = '' } = {}) {
-  state.missionActionsFilter = getSanitizedMissionActionsFilter(actionInboxFilter);
-  state.missionActionsFallbackStopReasonFilter = normalizeUiParam(actionInboxFallbackStopReason);
+  applyMissionActionsFilterUrlStateValues(state, {
+    actionInboxFallbackStopReason,
+    actionInboxFilter,
+  });
 }
 
-function getMissionActionsVisibleFilterLabel() {
-  const filter = state.missionActionsFilter || 'all';
-  const baseLabel = getMissionActionsFilterLabel(filter);
-  const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
-  if (!fallbackStopReasonFilter) {
-    return baseLabel;
-  }
-  const fallbackStopLabel = `fallback stop ${fallbackStopReasonFilter}`;
-  return filter === 'all' ? fallbackStopLabel : `${baseLabel} · ${fallbackStopLabel}`;
+async function handleActionInboxOpenMission(missionId) {
+  await selectMission(missionId, {
+    preferredDetailTab: 'reviews',
+    preferredStep: 'step-review',
+    urlMode: 'push',
+  });
 }
 
-function hasActiveMissionActionsFilter() {
-  return (
-    (state.missionActionsFilter || 'all') !== 'all' ||
-    Boolean(String(state.missionActionsFallbackStopReasonFilter || '').trim())
+async function handleActionInboxRerun(item) {
+  const provider = inferProviderFromCommand(item.recommendedCommand || item.commandHint || '');
+  const confirmed = window.confirm(
+    provider
+      ? `이 미션을 ${provider} 제공자로 다시 실행할까요?`
+      : '이 미션을 현재 기본 제공자 정책으로 다시 실행할까요?',
   );
-}
-
-function renderMissionActionsFilterButton(filter, label, count) {
-  const active = (state.missionActionsFilter || 'all') === filter;
-  const countLabel = String(count ?? 0);
-  const filterButtonTitle = `${label} action 필터, ${countLabel}건, ${active ? '선택됨' : '선택 안 됨'}`;
-  return `<button class="${active ? 'primary-button' : 'ghost-button'}" type="button" data-action-inbox-filter="${escapeHtml(filter)}" aria-label="${escapeHtml(filterButtonTitle)}" aria-pressed="${active ? 'true' : 'false'}" title="${escapeHtml(filterButtonTitle)}">${escapeHtml(label)} ${escapeHtml(countLabel)}</button>`;
-}
-
-function renderActionInboxCopyLinkButton({
-  buttonText = '현재 action 링크 복사',
-  className = 'ghost-button',
-  hasSelectedMission = Boolean(state.selectedMissionId),
-} = {}) {
-  const copyLinkTitle = hasSelectedMission
-    ? '현재 action inbox 링크 복사'
-    : '선택된 mission이 없어 action inbox 링크를 복사할 수 없습니다';
-  return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-copy-link="true" aria-disabled="${hasSelectedMission ? 'false' : 'true'}" aria-label="${escapeHtml(copyLinkTitle)}" title="${escapeHtml(copyLinkTitle)}" ${hasSelectedMission ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
-}
-
-function renderActionInboxFallbackStopResetButton({
-  buttonText = 'stop 필터 초기화',
-  className = 'ghost-button',
-  hasFallbackStopReason = Boolean(String(state.missionActionsFallbackStopReasonFilter || '').trim()),
-} = {}) {
-  const resetTitle = hasFallbackStopReason
-    ? 'fallback stop 필터 초기화'
-    : '초기화할 fallback stop 필터가 없습니다';
-  return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-fallback-stop-reset="true" aria-disabled="${hasFallbackStopReason ? 'false' : 'true'}" aria-label="${escapeHtml(resetTitle)}" title="${escapeHtml(resetTitle)}" ${hasFallbackStopReason ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
-}
-
-function renderActionInboxClearFiltersButton({
-  buttonText = '필터 전체 초기화',
-  className = 'ghost-button',
-  hasActiveFilter = hasActiveMissionActionsFilter(),
-} = {}) {
-  const clearFiltersTitle = hasActiveFilter
-    ? 'action inbox 필터 전체 초기화'
-    : '초기화할 action inbox 필터가 없습니다';
-  return `<button class="${escapeHtml(className)}" type="button" data-action-inbox-clear-filters="true" aria-disabled="${hasActiveFilter ? 'false' : 'true'}" aria-label="${escapeHtml(clearFiltersTitle)}" title="${escapeHtml(clearFiltersTitle)}" ${hasActiveFilter ? '' : 'disabled'}>${escapeHtml(buttonText)}</button>`;
-}
-
-function getMissionActionsFallbackStopReasonCounts(payload = state.missionActions) {
-  return (payload?.items || []).reduce((counts, item) => {
-    Object.entries(item.providerFallbackStopReasonCounts || {}).forEach(([reason, count]) => {
-      const normalizedReason = String(reason || '').trim();
-      if (!normalizedReason) {
-        return;
-      }
-      counts[normalizedReason] = (counts[normalizedReason] || 0) + Number(count || 0);
-    });
-    return counts;
-  }, {});
-}
-
-function renderMissionActionsFallbackStopReasonOptions() {
-  const counts = getMissionActionsFallbackStopReasonCounts(state.missionActions);
-  const activeReason = String(state.missionActionsFallbackStopReasonFilter || '').trim();
-  if (activeReason && counts[activeReason] === undefined) {
-    counts[activeReason] = 0;
+  if (!confirmed) {
+    return;
   }
-  return Object.entries(counts)
-    .sort(([leftReason, leftCount], [rightReason, rightCount]) =>
-      Number(rightCount || 0) - Number(leftCount || 0) || leftReason.localeCompare(rightReason),
-    )
-    .map(
-      ([reason, count]) =>
-        `<option value="${escapeHtml(reason)}">${escapeHtml(reason)} (${escapeHtml(String(count))})</option>`,
-    )
-    .join('');
+
+  await api(`/api/missions/${encodeURIComponent(item.missionId)}/run`, {
+    body: JSON.stringify({ provider }),
+    method: 'POST',
+  });
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId === item.missionId) {
+    await selectMission(item.missionId, { urlMode: 'replace' });
+  }
 }
 
-function renderActionInboxSummary({
-  fallbackStopReasonFilter = '',
-  fallbackStopReasonOptions = '',
-  fallbackStopReasonPlaceholder = 'fallback stop 없음',
-  fullSummary = {},
-  hasActiveFilter = false,
-  hasFallbackStopReasonOptions = false,
-  hasSelectedMission = false,
-  summary = {},
-} = {}) {
-  return `
-    ${renderActionInboxSummaryChip('전체 작업', fullSummary.pendingActionCount)}
-    ${renderActionInboxSummaryChip('표시 작업', summary.pendingActionCount)}
-    ${renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)}
-    ${renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)}
-    ${renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')}
-    <div class="action-row action-filter-row">
-      ${renderMissionActionsFilterButton('all', '전체', fullSummary.pendingActionCount)}
-      ${renderMissionActionsFilterButton('needs-reminder', '재알림 필요', fullSummary.reminderCounts?.needsReminder)}
-      ${renderMissionActionsFilterButton('overdue', '기한 초과', fullSummary.overdueCounts?.overdue)}
-      ${renderActionInboxFallbackStopFilterSelect({
-        hasFallbackStopReasonOptions,
-        options: fallbackStopReasonOptions,
-        placeholder: fallbackStopReasonPlaceholder,
-      })}
-      ${renderActionInboxFallbackStopResetButton({ hasFallbackStopReason: Boolean(fallbackStopReasonFilter) })}
-      ${renderActionInboxClearFiltersButton({ hasActiveFilter })}
-      ${renderActionInboxCopyLinkButton({ hasSelectedMission })}
-    </div>
-  `;
+async function handleActionInboxProviderAttentionRemediate(item, mode) {
+  const actionId = item.actionId;
+  const payload = getProviderAttentionRemediationPayload(item, mode);
+  if (mode !== 'primary' && !payload.fallbackProvider) {
+    window.alert('fallback provider를 찾을 수 없습니다.');
+    return;
+  }
+
+  const confirmed = window.confirm(
+    mode === 'recoverable-fallback'
+      ? `${item.providerDisplayName || item.providerId || 'provider'} failure가 recoverable일 때만 fallback 복구를 실행할까요?`
+      : mode === 'fallback'
+        ? `${payload.fallbackProvider} fallback provider로 provider attention 복구를 실행할까요?`
+        : `${item.providerDisplayName || item.providerId || 'provider'} remediation을 실행할까요?`,
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  await api(`/api/actions/provider-attention/${encodeURIComponent(actionId)}/remediate`, {
+    body: JSON.stringify(payload),
+    method: 'POST',
+  });
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
 }
 
-function wireMissionActionsFilterControls() {
-  elements.actionSummary.querySelectorAll('[data-action-inbox-filter]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const nextFilter = button.dataset.actionInboxFilter || 'all';
-      if (state.missionActionsFilter === nextFilter) {
-        return;
-      }
-      state.missionActionsFilter = nextFilter;
-      await loadMissionActions(state.selectedMissionId);
-      renderMissionActions();
-      writeUiStateToUrl();
-    });
+async function handleActionInboxSpecialistFollowUpRemediate(item) {
+  const actionId = item.actionId;
+  const specialistLabel = item.specialistKind ? `${item.specialistKind} specialist` : 'specialist';
+  if (!window.confirm(`${specialistLabel} follow-up remediation을 실행할까요?`)) {
+    return;
+  }
+
+  await api(`/api/actions/specialist-follow-ups/${encodeURIComponent(actionId)}/remediate`, {
+    method: 'POST',
   });
-  elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]')?.addEventListener('change', async (event) => {
-    const nextFilter = String(event.target.value || '').trim();
-    if (state.missionActionsFallbackStopReasonFilter === nextFilter) {
-      return;
-    }
-    state.missionActionsFallbackStopReasonFilter = nextFilter;
-    await loadMissionActions(state.selectedMissionId);
-    renderMissionActions();
-    writeUiStateToUrl();
-  });
-  elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-reset]')?.addEventListener('click', async () => {
-    if (!state.missionActionsFallbackStopReasonFilter) {
-      return;
-    }
-    state.missionActionsFallbackStopReasonFilter = '';
-    await loadMissionActions(state.selectedMissionId);
-    renderMissionActions();
-    writeUiStateToUrl();
-  });
-  elements.actionSummary.querySelector('[data-action-inbox-clear-filters]')?.addEventListener('click', async () => {
-    if ((state.missionActionsFilter || 'all') === 'all' && !state.missionActionsFallbackStopReasonFilter) {
-      return;
-    }
-    state.missionActionsFilter = 'all';
-    state.missionActionsFallbackStopReasonFilter = '';
-    await loadMissionActions(state.selectedMissionId);
-    renderMissionActions();
-    writeUiStateToUrl();
-  });
-  elements.actionSummary.querySelector('[data-action-inbox-copy-link]')?.addEventListener('click', () => {
-    void copyMissionActionsViewLink();
-  });
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
 }
 
-function wireActionInboxOpenButtons() {
-  elements.actionList.querySelectorAll('[data-action-open]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      await selectMission(button.dataset.actionOpen, {
-        preferredDetailTab: 'reviews',
-        preferredStep: 'step-review',
-        urlMode: 'push',
-      });
-    });
+async function handleActionInboxLearningPromotionResolve(item, decision) {
+  const note = window.prompt(
+    decision === 'approve' ? '학습 승인 메모를 입력하세요.' : '학습 반려 메모를 입력하세요.',
+    decision === 'approve' ? 'UI에서 검토 후 scoped learning promotion 승인' : 'UI에서 검토 후 learning promotion 반려',
+  );
+  if (!note) {
+    return;
+  }
+
+  const candidateId = getLearningPromotionCandidateId(item);
+  await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve`, {
+    body: JSON.stringify({
+      decision,
+      note,
+      scope: item.scope || 'mission',
+      target: item.proposalTarget || 'memory',
+    }),
+    method: 'POST',
   });
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
 }
 
-function wireActionInboxRerunButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-action-rerun]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const item = items.find((entry) => entry.actionId === button.dataset.actionRerun);
-      if (!item?.missionId) {
-        return;
-      }
-      const provider = inferProviderFromCommand(item.recommendedCommand || item.commandHint || '');
-      const confirmed = window.confirm(
-        provider
-          ? `이 미션을 ${provider} 제공자로 다시 실행할까요?`
-          : '이 미션을 현재 기본 제공자 정책으로 다시 실행할까요?',
-      );
-      if (!confirmed) {
-        return;
-      }
-
-      await api(`/api/missions/${encodeURIComponent(item.missionId)}/run`, {
-        body: JSON.stringify({ provider }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId === item.missionId) {
-        await selectMission(item.missionId, { urlMode: 'replace' });
-      }
-    });
-  });
+function handleActionInboxLearningPromotionAuditCopy(item) {
+  return copyLearningPromotionAuditPackage(item);
 }
 
-function wireActionInboxProviderAttentionButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-provider-attention-remediate]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const actionId = button.dataset.providerAttentionRemediate;
-      const mode = button.dataset.providerAttentionMode || 'primary';
-      const item = items.find((entry) => entry.actionId === actionId);
-      if (!item) {
-        return;
-      }
+async function handleActionInboxLearningPromotionExpire(item) {
+  if (!window.confirm('이 pending learning promotion을 만료 처리할까요?')) {
+    return;
+  }
 
-      const payload = getProviderAttentionRemediationPayload(item, mode);
-      if (mode !== 'primary' && !payload.fallbackProvider) {
-        window.alert('fallback provider를 찾을 수 없습니다.');
-        return;
-      }
+  const note = window.prompt('만료 메모를 입력하세요.', 'UI에서 pending learning promotion 만료');
+  if (!note) {
+    return;
+  }
 
-      const confirmed = window.confirm(
-        mode === 'recoverable-fallback'
-          ? `${item.providerDisplayName || item.providerId || 'provider'} failure가 recoverable일 때만 fallback 복구를 실행할까요?`
-          : mode === 'fallback'
-            ? `${payload.fallbackProvider} fallback provider로 provider attention 복구를 실행할까요?`
-            : `${item.providerDisplayName || item.providerId || 'provider'} remediation을 실행할까요?`,
-      );
-      if (!confirmed) {
-        return;
-      }
-
-      await api(`/api/actions/provider-attention/${encodeURIComponent(actionId)}/remediate`, {
-        body: JSON.stringify(payload),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
+  await api('/api/actions/learning-promotions/expire', {
+    body: JSON.stringify({
+      before: item.expirationPolicy?.expiresAt || new Date().toISOString(),
+      missionId: item.missionId || '',
+      note,
+      recordType: item.recordType || '',
+      scope: item.scope || '',
+      target: item.proposalTarget || '',
+      workspaceId: item.workspaceId || '',
+    }),
+    method: 'POST',
   });
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
 }
 
-function wireActionInboxSpecialistFollowUpButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-specialist-follow-up-remediate]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const actionId = button.dataset.specialistFollowUpRemediate;
-      const item = items.find((entry) => entry.actionId === actionId);
-      if (!item) {
-        return;
-      }
+async function handleActionInboxLearningPromotionRollback(item) {
+  const note = window.prompt('rollback 메모를 입력하세요.', 'UI에서 promoted learning candidate rollback');
+  if (!note) {
+    return;
+  }
 
-      const specialistLabel = item.specialistKind ? `${item.specialistKind} specialist` : 'specialist';
-      const confirmed = window.confirm(`${specialistLabel} follow-up remediation을 실행할까요?`);
-      if (!confirmed) {
-        return;
-      }
-
-      await api(`/api/actions/specialist-follow-ups/${encodeURIComponent(actionId)}/remediate`, {
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
+  const candidateId = getLearningPromotionCandidateId(item);
+  await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback`, {
+    body: JSON.stringify({ note }),
+    method: 'POST',
   });
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
 }
 
-function wireActionInboxLearningPromotionResolveButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-learning-promotion-resolve]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionResolve;
-      const decision = button.dataset.learningPromotionDecision || 'approve';
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
+async function handleActionInboxLearningPromotionRemind(item) {
+  const note = window.prompt(
+    'stop-condition 재알림 메모를 입력하세요.',
+    'UI에서 blocked learning promotion stop-condition 후속 조치 재알림',
+  );
+  if (!note) {
+    return;
+  }
 
-      const note = window.prompt(
-        decision === 'approve' ? '학습 승인 메모를 입력하세요.' : '학습 반려 메모를 입력하세요.',
-        decision === 'approve' ? 'UI에서 검토 후 scoped learning promotion 승인' : 'UI에서 검토 후 learning promotion 반려',
-      );
-      if (!note) {
-        return;
-      }
-
-      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/resolve`, {
-        body: JSON.stringify({
-          decision,
-          note,
-          scope: item.scope || 'mission',
-          target: item.proposalTarget || 'memory',
-        }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
+  const candidateId = getLearningPromotionCandidateId(item);
+  await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind`, {
+    body: JSON.stringify({
+      dueOnly: true,
+      missionId: item.missionId || '',
+      note,
+      workspaceId: item.workspaceId || '',
+    }),
+    method: 'POST',
   });
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
 }
 
-function wireActionInboxLearningPromotionAuditCopyButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-learning-promotion-audit-copy]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionAuditCopy;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      await copyLearningPromotionAuditPackage(item);
-    });
+async function handleActionInboxReviewerFollowUpResolve(actionId) {
+  const kind = window.prompt(
+    'resolution kind를 입력하세요. (rerun-fixed | superseded | scope-reduced | accepted-risk)',
+    'rerun-fixed',
+  );
+  if (!kind) {
+    return;
+  }
+  const note = window.prompt('해소 메모를 입력하세요.', 'UI에서 처리 완료');
+  if (!note) {
+    return;
+  }
+
+  await api(`/api/actions/reviewer-follow-ups/${encodeURIComponent(actionId)}/resolve`, {
+    body: JSON.stringify({ kind, note }),
+    method: 'POST',
   });
-}
-
-function wireActionInboxLearningPromotionExpireButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-learning-promotion-expire]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionExpire;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
-
-      const confirmed = window.confirm('이 pending learning promotion을 만료 처리할까요?');
-      if (!confirmed) {
-        return;
-      }
-
-      const note = window.prompt('만료 메모를 입력하세요.', 'UI에서 pending learning promotion 만료');
-      if (!note) {
-        return;
-      }
-
-      await api('/api/actions/learning-promotions/expire', {
-        body: JSON.stringify({
-          before: item.expirationPolicy?.expiresAt || new Date().toISOString(),
-          missionId: item.missionId || '',
-          note,
-          recordType: item.recordType || '',
-          scope: item.scope || '',
-          target: item.proposalTarget || '',
-          workspaceId: item.workspaceId || '',
-        }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
-}
-
-function wireActionInboxLearningPromotionRollbackButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-learning-promotion-rollback]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionRollback;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
-
-      const note = window.prompt('rollback 메모를 입력하세요.', 'UI에서 promoted learning candidate rollback');
-      if (!note) {
-        return;
-      }
-
-      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback`, {
-        body: JSON.stringify({ note }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
-}
-
-function wireActionInboxLearningPromotionRemindButtons(items = []) {
-  elements.actionList.querySelectorAll('[data-learning-promotion-remind]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const candidateId = button.dataset.learningPromotionRemind;
-      const item = items.find((entry) => getLearningPromotionCandidateId(entry) === candidateId);
-      if (!item) {
-        return;
-      }
-
-      const note = window.prompt(
-        'stop-condition 재알림 메모를 입력하세요.',
-        'UI에서 blocked learning promotion stop-condition 후속 조치 재알림',
-      );
-      if (!note) {
-        return;
-      }
-
-      await api(`/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind`, {
-        body: JSON.stringify({
-          dueOnly: true,
-          missionId: item.missionId || '',
-          note,
-          workspaceId: item.workspaceId || '',
-        }),
-        method: 'POST',
-      });
-
-      await Promise.all([loadMissions(), loadApprovals()]);
-      if (state.selectedMissionId) {
-        await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
-      }
-    });
-  });
-}
-
-function wireActionInboxReviewerFollowUpResolveButtons() {
-  elements.actionList.querySelectorAll('[data-action-resolve]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const actionId = button.dataset.actionResolve;
-      const kind = window.prompt(
-        'resolution kind를 입력하세요. (rerun-fixed | superseded | scope-reduced | accepted-risk)',
-        'rerun-fixed',
-      );
-      if (!kind) {
-        return;
-      }
-      const note = window.prompt('해소 메모를 입력하세요.', 'UI에서 처리 완료');
-      if (!note) {
-        return;
-      }
-      await api(`/api/actions/reviewer-follow-ups/${encodeURIComponent(actionId)}/resolve`, {
-        body: JSON.stringify({ kind, note }),
-        method: 'POST',
-      });
-      if (state.selectedMissionId) {
-        await selectMission(state.selectedMissionId, { urlMode: 'replace' });
-      }
-    });
-  });
+  if (state.selectedMissionId) {
+    await selectMission(state.selectedMissionId, { urlMode: 'replace' });
+  }
 }
 
 function wireApprovalOpenButtons() {
@@ -11438,65 +11173,26 @@ function wireTimelineSessionSelectionButtons() {
 }
 
 function renderMissionActions() {
-  if (!state.missionActions) {
-    const unavailableState = renderActionInboxUnavailableState();
-    elements.actionSummary.innerHTML = unavailableState.summaryHtml;
-    elements.actionList.innerHTML = unavailableState.listHtml;
-    wireQuickActions(elements.actionList);
-    return;
-  }
-
-  const visibleActions = getVisibleMissionActionsPayload() || state.missionActions;
-  const summary = visibleActions.summary || {};
-  const fullSummary = state.missionActions.summary || summary;
-  const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
-  const fallbackStopReasonOptions = renderMissionActionsFallbackStopReasonOptions();
-  const hasFallbackStopReasonOptions = Boolean(fallbackStopReasonOptions.trim());
-  const fallbackStopReasonPlaceholder = hasFallbackStopReasonOptions ? 'fallback stop 전체' : 'fallback stop 없음';
-  const visibleFilterLabel = getMissionActionsVisibleFilterLabel();
-  const hasActiveFilter = hasActiveMissionActionsFilter();
-  const hasSelectedMission = Boolean(state.selectedMissionId);
-  elements.actionSummary.innerHTML = renderActionInboxSummary({
-    fallbackStopReasonFilter,
-    fallbackStopReasonOptions,
-    fallbackStopReasonPlaceholder,
-    fullSummary,
-    hasActiveFilter,
-    hasFallbackStopReasonOptions,
-    hasSelectedMission,
-    summary,
+  renderMissionActionsSurface({
+    actionList: elements.actionList,
+    actionSummary: elements.actionSummary,
+    copyViewLink: copyMissionActionsViewLink,
+    loadActions: loadMissionActions,
+    onLearningPromotionAuditCopy: handleActionInboxLearningPromotionAuditCopy,
+    onLearningPromotionExpire: handleActionInboxLearningPromotionExpire,
+    onLearningPromotionRemind: handleActionInboxLearningPromotionRemind,
+    onLearningPromotionResolve: handleActionInboxLearningPromotionResolve,
+    onLearningPromotionRollback: handleActionInboxLearningPromotionRollback,
+    onOpenMission: handleActionInboxOpenMission,
+    onProviderAttentionRemediate: handleActionInboxProviderAttentionRemediate,
+    onRerun: handleActionInboxRerun,
+    onReviewerFollowUpResolve: handleActionInboxReviewerFollowUpResolve,
+    onSpecialistFollowUpRemediate: handleActionInboxSpecialistFollowUpRemediate,
+    rerender: renderMissionActions,
+    state,
+    syncUrl: writeUiStateToUrl,
+    wireQuickActions,
   });
-  const fallbackStopSelect = elements.actionSummary.querySelector('[data-action-inbox-fallback-stop-filter]');
-  if (fallbackStopSelect) {
-    fallbackStopSelect.value = fallbackStopReasonFilter;
-  }
-  wireMissionActionsFilterControls();
-
-  const items = visibleActions.items || [];
-  if (!items.length) {
-    elements.actionList.innerHTML = renderActionInboxEmptyList({
-      hasActiveFilter,
-      visibleFilterLabel,
-    });
-    return;
-  }
-
-  elements.actionList.innerHTML = renderActionInboxList({
-    hasActiveFilter,
-    items,
-    visibleFilterLabel,
-  });
-
-  wireActionInboxOpenButtons();
-  wireActionInboxRerunButtons(items);
-  wireActionInboxProviderAttentionButtons(items);
-  wireActionInboxSpecialistFollowUpButtons(items);
-  wireActionInboxLearningPromotionResolveButtons(items);
-  wireActionInboxLearningPromotionAuditCopyButtons(items);
-  wireActionInboxLearningPromotionExpireButtons(items);
-  wireActionInboxLearningPromotionRollbackButtons(items);
-  wireActionInboxLearningPromotionRemindButtons(items);
-  wireActionInboxReviewerFollowUpResolveButtons();
 }
 
 function renderApprovalListEmptyState() {
@@ -12736,55 +12432,12 @@ async function loadHarnessBrowsers(missionId = state.selectedMissionId) {
   return { documents, memory };
 }
 
-function buildMissionActionsUrl(missionId, { filter = 'all', includeFallbackStopReason = true } = {}) {
-  const params = new URLSearchParams({
-    missionId: String(missionId || ''),
-    promotionStatus: 'operator-active',
-  });
-
-  if (filter === 'needs-reminder') {
-    params.set('needsReminderOnly', 'true');
-  }
-
-  if (filter === 'overdue') {
-    params.set('overdueOnly', 'true');
-  }
-
-  const fallbackStopReason = includeFallbackStopReason
-    ? String(state.missionActionsFallbackStopReasonFilter || '').trim()
-    : '';
-  if (fallbackStopReason) {
-    params.set('providerFallbackStopReason', fallbackStopReason);
-  }
-
-  return `/api/actions?${params.toString()}`;
-}
-
 async function loadMissionActions(missionId = state.selectedMissionId) {
-  if (!missionId) {
-    state.missionActions = null;
-    state.missionActionsView = null;
-    return null;
-  }
-
-  const filter = state.missionActionsFilter || 'all';
-  const fallbackStopReason = String(state.missionActionsFallbackStopReasonFilter || '').trim();
-  const fullPayloadPromise = api(buildMissionActionsUrl(missionId, { filter: 'all', includeFallbackStopReason: false }));
-  const viewPayloadPromise =
-    filter === 'all' && !fallbackStopReason
-      ? Promise.resolve(null)
-      : api(buildMissionActionsUrl(missionId, { filter }));
-  const [fullPayload, viewPayload] = await Promise.all([fullPayloadPromise, viewPayloadPromise]);
-  state.missionActions = fullPayload;
-  state.missionActionsView = viewPayload;
-  return {
-    fullPayload,
-    viewPayload,
-  };
-}
-
-function getVisibleMissionActionsPayload() {
-  return state.missionActionsView || state.missionActions;
+  return loadMissionActionsFromState({
+    api,
+    missionId,
+    state,
+  });
 }
 
 export async function refreshSelectedMissionContext({ preserveHarnessBrowse = false } = {}) {
