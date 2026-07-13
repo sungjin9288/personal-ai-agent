@@ -242,6 +242,13 @@ try {
   assert.equal(appJs.includes('preflightAll: runReleasePreflightAll'), true);
   assert.equal(appJs.includes('refreshLive: (provider) => refreshReleaseStatusWithOptions(provider, { confirmLiveValidation: true })'), true);
   assert.equal(appJs.includes('armLiveConfirm: armReleaseLiveConfirm'), true);
+  assert.equal(appJs.includes('export function wireReleaseStatusNavigationActions({'), true);
+  assert.equal(appJs.includes("'focus-release-history',"), true);
+  assert.equal(appJs.includes("'filter-release-blockers',"), true);
+  assert.equal(appJs.includes("'clear-release-history-filter',"), true);
+  assert.equal(appJs.includes('focusHistory: focusReleaseHistoryEntry'), true);
+  assert.equal(appJs.includes('filterBlockers: setReleaseBlockerFilter'), true);
+  assert.equal(appJs.includes('filterHistory: setReleaseHistoryFilter'), true);
   assert.equal(appJs.includes('export function wireHarnessDocumentBrowseActions({'), true);
   assert.equal(appJs.includes('container: elements.harnessSource'), true);
   assert.equal(appJs.includes('data-document-action="edit"'), true);

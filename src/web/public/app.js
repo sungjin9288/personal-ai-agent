@@ -156,7 +156,10 @@ import {
   loadMissionActions as loadMissionActionsFromState,
   renderMissionActions as renderMissionActionsSurface,
 } from './lib/action-inbox.js';
-import { wireReleaseStatusLifecycleActions } from './lib/release-status-actions.js';
+import {
+  wireReleaseStatusLifecycleActions,
+  wireReleaseStatusNavigationActions,
+} from './lib/release-status-actions.js';
 import {
   getReleaseTargetEvidenceIntakeSummaryCopyKey,
   isCopiedReleaseTargetEvidenceIntakeSummary,
@@ -3468,111 +3471,6 @@ function wireQuickActions(scope = document) {
         return;
       }
 
-      if (action === 'focus-release-history') {
-        focusReleaseHistoryEntry(value || '', { historyMode: 'push' });
-        setUiNotice('최근 release action 기록으로 이동했습니다.');
-        return;
-      }
-
-      if (action === 'focus-release-blocker') {
-        const providerContext = String(button.dataset.uiProvider || '').trim();
-        if (providerContext) {
-          state.releaseFocusedProvider = providerContext;
-        }
-        focusReleaseBlocker(button.dataset.uiBlocker || value || '', { historyMode: 'push' });
-        setUiNotice('선택한 current open blocker로 이동했습니다.');
-        return;
-      }
-
-      if (action === 'focus-release-production-blocker') {
-        focusReleaseProductionBlocker(button.dataset.uiIndex || value || '', { historyMode: 'push' });
-        setUiNotice('선택한 production-ready blocker로 이동했습니다.');
-        return;
-      }
-
-      if (action === 'filter-release-blockers') {
-        const includeSharedValue = button.dataset.uiIncludeShared;
-        setReleaseBlockerFilter({
-          category: button.dataset.uiCategory || '',
-          historyMode: 'push',
-          includeShared: includeSharedValue === undefined
-            ? state.releaseBlockerIncludeSharedProviderOperations
-            : includeSharedValue !== 'false',
-          owner: button.dataset.uiOwner || '',
-          provider: button.dataset.uiProvider || '',
-        });
-        setUiNotice('current open blocker 목록을 선택한 triage 기준으로 좁혔습니다.');
-        return;
-      }
-
-      if (action === 'toggle-release-production-blockers') {
-        const nextExpanded = !state.releaseProductionBlockersExpanded;
-        state.releaseProductionBlockersExpanded = nextExpanded;
-        if (!nextExpanded && Number(state.releaseFocusedProductionBlockerIndex) >= 8) {
-          state.releaseFocusedProductionBlockerIndex = '';
-        }
-        renderReleaseStatus();
-        setUiNotice(
-          state.releaseProductionBlockersExpanded
-            ? 'production-ready blocker 전체 목록을 펼쳤습니다.'
-            : 'production-ready blocker 목록을 요약 보기로 접었습니다.',
-        );
-        return;
-      }
-
-      if (action === 'focus-release-provider') {
-        focusReleaseProvider(button.dataset.uiProvider || value || '', { historyMode: 'push' });
-        setUiNotice('연결된 provider readiness 카드로 이동했습니다.');
-        return;
-      }
-
-      if (action === 'focus-release-flow') {
-        focusReleaseHistoryFlow({
-          historyId: value || '',
-          historyMode: 'push',
-          outcome: button.dataset.uiOutcome || '',
-          provider: button.dataset.uiProvider || '',
-          scope: button.dataset.uiScope || '',
-        });
-        setUiNotice('같은 release flow 기준으로 history를 좁혀 봅니다.');
-        return;
-      }
-
-      if (action === 'toggle-release-history') {
-        toggleReleaseHistoryEntry(value || '');
-        return;
-      }
-
-      if (action === 'clear-release-history-focus') {
-        clearReleaseHistoryFocus({ historyMode: 'push' });
-        setUiNotice('release action history 포커스를 해제했습니다.');
-        return;
-      }
-
-      if (action === 'clear-release-blocker-focus') {
-        clearReleaseBlockerFocus({ historyMode: 'push' });
-        setUiNotice('current open blocker 포커스를 해제했습니다.');
-        return;
-      }
-
-      if (action === 'clear-release-production-blocker-focus') {
-        clearReleaseProductionBlockerFocus({ historyMode: 'push' });
-        setUiNotice('production-ready blocker 포커스를 해제했습니다.');
-        return;
-      }
-
-      if (action === 'clear-release-blocker-filter') {
-        clearReleaseBlockerFilter({ historyMode: 'push' });
-        setUiNotice('current open blocker triage 필터를 해제했습니다.');
-        return;
-      }
-
-      if (action === 'clear-release-provider-focus') {
-        clearReleaseProviderFocus({ historyMode: 'push' });
-        setUiNotice('provider readiness 카드 포커스를 해제했습니다.');
-        return;
-      }
-
       if (action === 'copy-release-triage-link') {
         void copyReleaseTriageLink({
           copyAction: action,
@@ -4145,45 +4043,6 @@ function wireQuickActions(scope = document) {
           historyScope: '',
           successNotice: '선택한 provider spotlight 링크를 복사했습니다.',
         });
-        return;
-      }
-
-      if (action === 'filter-release-history-scope') {
-        setReleaseHistoryFilter({
-          historyMode: 'push',
-          outcome: state.releaseHistoryFilterOutcome,
-          scope: button.dataset.uiScope || '',
-          provider: state.releaseHistoryFilterProvider,
-        });
-        setUiNotice('같은 scope 기준으로 release action history를 좁혀 봅니다.');
-        return;
-      }
-
-      if (action === 'filter-release-history-provider') {
-        setReleaseHistoryFilter({
-          historyMode: 'push',
-          outcome: state.releaseHistoryFilterOutcome,
-          scope: state.releaseHistoryFilterScope,
-          provider: button.dataset.uiProvider || '',
-        });
-        setUiNotice('같은 provider 기준으로 release action history를 좁혀 봅니다.');
-        return;
-      }
-
-      if (action === 'filter-release-history-attention') {
-        setReleaseHistoryFilter({
-          historyMode: 'push',
-          outcome: button.dataset.uiOutcome || 'attention',
-          scope: state.releaseHistoryFilterScope,
-          provider: state.releaseHistoryFilterProvider,
-        });
-        setUiNotice('주의 상태만 남기도록 release action history를 좁혀 봅니다.');
-        return;
-      }
-
-      if (action === 'clear-release-history-filter') {
-        clearReleaseHistoryFilter({ historyMode: 'push' });
-        setUiNotice('release action history 필터를 해제했습니다.');
         return;
       }
 
@@ -10659,6 +10518,26 @@ function wireReleaseStatusActionButtons() {
     renderStatus: renderReleaseStatus,
     setNotice: setUiNotice,
     state,
+  });
+  wireReleaseStatusNavigationActions({
+    clearBlockerFilter: clearReleaseBlockerFilter,
+    clearBlockerFocus: clearReleaseBlockerFocus,
+    clearHistoryFilter: clearReleaseHistoryFilter,
+    clearHistoryFocus: clearReleaseHistoryFocus,
+    clearProductionBlockerFocus: clearReleaseProductionBlockerFocus,
+    clearProviderFocus: clearReleaseProviderFocus,
+    container: elements.releaseStatus,
+    filterBlockers: setReleaseBlockerFilter,
+    filterHistory: setReleaseHistoryFilter,
+    focusBlocker: focusReleaseBlocker,
+    focusFlow: focusReleaseHistoryFlow,
+    focusHistory: focusReleaseHistoryEntry,
+    focusProductionBlocker: focusReleaseProductionBlocker,
+    focusProvider: focusReleaseProvider,
+    renderStatus: renderReleaseStatus,
+    setNotice: setUiNotice,
+    state,
+    toggleHistory: toggleReleaseHistoryEntry,
   });
 }
 
