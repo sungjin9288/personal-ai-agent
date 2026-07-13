@@ -156,6 +156,7 @@ import {
   loadMissionActions as loadMissionActionsFromState,
   renderMissionActions as renderMissionActionsSurface,
 } from './lib/action-inbox.js';
+import { wireReleaseStatusLifecycleActions } from './lib/release-status-actions.js';
 import {
   getReleaseTargetEvidenceIntakeSummaryCopyKey,
   isCopiedReleaseTargetEvidenceIntakeSummary,
@@ -3464,53 +3465,6 @@ function wireQuickActions(scope = document) {
           sourceLabel: button.dataset.uiSourceLabel || '',
           sourceType: button.dataset.uiSourceType || '',
         });
-        return;
-      }
-
-      if (action === 'refresh-release-status') {
-        void reloadReleaseStatus();
-        return;
-      }
-
-      if (action === 'regenerate-release-surface') {
-        if (!state.releaseRegenerationConfirmArmed) {
-          void armReleaseRegenerationConfirm();
-          return;
-        }
-        void refreshReleaseStatus('', { confirmCurrentSurfaceRewrite: true });
-        return;
-      }
-
-      if (action === 'cancel-regenerate-release-surface') {
-        state.releaseRegenerationConfirmArmed = false;
-        state.releaseRefreshPreflight = null;
-        renderReleaseStatus();
-        setUiNotice('current surface 재생성 확인을 취소했습니다.');
-        return;
-      }
-
-      if (action === 'archive-release-snapshot') {
-        if (!state.releaseSnapshotConfirmArmed) {
-          void armReleaseSnapshotConfirm();
-          return;
-        }
-        void archiveReleaseSnapshot({ confirmSnapshotFreeze: true });
-        return;
-      }
-
-      if (action === 'cancel-archive-release-snapshot') {
-        state.releaseSnapshotConfirmArmed = false;
-        state.releaseSnapshotPreflight = null;
-        renderReleaseStatus();
-        setUiNotice('release snapshot 고정 확인을 취소했습니다.');
-        return;
-      }
-
-      if (action === 'cancel-refresh-release-status-live') {
-        state.releaseLiveConfirmProvider = '';
-        state.releaseLiveRefreshPreflight = null;
-        renderReleaseStatus();
-        setUiNotice('provider live validation 확인을 취소했습니다.');
         return;
       }
 
@@ -10691,32 +10645,20 @@ export function renderReleaseStatus() {
 }
 
 function wireReleaseStatusActionButtons() {
-  elements.releaseStatus.querySelectorAll('[data-ui-action="run-release-preflight"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const provider = String(button.dataset.uiProvider || '').trim();
-      if (!provider) {
-        return;
-      }
-      await runReleasePreflight(provider);
-    });
-  });
-  elements.releaseStatus.querySelectorAll('[data-ui-action="run-release-preflight-all"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      await runReleasePreflightAll();
-    });
-  });
-  elements.releaseStatus.querySelectorAll('[data-ui-action="refresh-release-status-live"]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const provider = String(button.dataset.uiProvider || '').trim();
-      if (!provider) {
-        return;
-      }
-      if (state.releaseLiveConfirmProvider === provider) {
-        await refreshReleaseStatusWithOptions(provider, { confirmLiveValidation: true });
-        return;
-      }
-      await armReleaseLiveConfirm(provider);
-    });
+  wireReleaseStatusLifecycleActions({
+    archiveSnapshot: () => archiveReleaseSnapshot({ confirmSnapshotFreeze: true }),
+    armLiveConfirm: armReleaseLiveConfirm,
+    armRegenerationConfirm: armReleaseRegenerationConfirm,
+    armSnapshotConfirm: armReleaseSnapshotConfirm,
+    container: elements.releaseStatus,
+    preflight: runReleasePreflight,
+    preflightAll: runReleasePreflightAll,
+    refresh: reloadReleaseStatus,
+    refreshLive: (provider) => refreshReleaseStatusWithOptions(provider, { confirmLiveValidation: true }),
+    regenerate: () => refreshReleaseStatus('', { confirmCurrentSurfaceRewrite: true }),
+    renderStatus: renderReleaseStatus,
+    setNotice: setUiNotice,
+    state,
   });
 }
 
