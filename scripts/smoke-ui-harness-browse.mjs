@@ -2750,7 +2750,11 @@ try {
   assert.equal(appJs.includes("button.setAttribute('title', actionLabel)"), true);
   assert.equal(appJs.includes('const blockerFilterLabel = ['), true);
   assert.equal(appJs.includes("const blockerProviderLabel = blockerProviderFilter || focusedProvider || 'provider'"), true);
-  assert.equal(appJs.includes('const focusedBlockerLabel = focusedBlockerEntry'), true);
+  assert.equal(appJs.includes('focusedBlockerLabel: focusedBlockerEntry'), true);
+  assert.equal(appJs.includes('export function createReleaseEvidenceTriageViewModel({'), true);
+  assert.equal(appJs.includes('export function renderReleaseProductionBlockerSummary({'), true);
+  assert.equal(appJs.includes('export function renderReleaseProductionBlockerDetails({'), true);
+  assert.equal(appJs.includes('view: evidenceTriageView'), true);
   assert.equal(appJs.includes('target evidence intake'), true);
   assert.equal(appJs.includes("triage slice ${context.blockerFilterLabel || 'all current blockers'}"), true);
   assert.equal(appJs.includes("provider-only ${context.blockerProviderLabel || provider || 'provider'}"), true);

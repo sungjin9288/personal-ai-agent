@@ -20,7 +20,6 @@ import {
 import {
   normalizeReleaseProductionBlockerStateIndex,
   normalizeReleaseProductionBlockerQueryIndex,
-  getReleaseProductionBlockerOrdinal,
   getSanitizedReleaseHistoryOutcome,
   getSanitizedRetrievalSourceType,
   getRetrievalSourceKey,
@@ -160,6 +159,11 @@ import {
   renderReleaseStatusOverview,
   renderReleaseVerificationSurfaces,
 } from './lib/release-status-view.js';
+import {
+  createReleaseEvidenceTriageViewModel,
+  renderReleaseProductionBlockerDetails,
+  renderReleaseProductionBlockerSummary,
+} from './lib/release-evidence-triage-view.js';
 import {
   wireReleaseStatusCopyActions,
   wireReleaseStatusLifecycleActions,
@@ -6596,67 +6600,55 @@ export function renderReleaseStatus() {
   const values = release.values || {};
   const gaps = release.gaps || [];
   const releaseReadiness = release.releaseReadiness || {};
-  const productionBlockers = Array.isArray(releaseReadiness.productionBlockers)
-    ? releaseReadiness.productionBlockers
-    : [];
-  const currentOpenBlockerActions = getReleaseCurrentOpenBlockerActions(release);
-  const currentOpenBlockerActionSummary = releaseReadiness.currentOpenBlockerActionSummary || {};
-  const currentOpenBlockerCategoryEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.categoryCounts);
-  const currentOpenBlockerOwnerEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.ownerCounts);
-  const currentOpenBlockerProviderEntries = getReleaseCountRecordEntries(currentOpenBlockerActionSummary.providerCounts);
-  const topPriorityBlockerId = String(currentOpenBlockerActionSummary.topPriorityBlockerId || '').trim();
-  const topPriorityBlockerLabel = String(
-    currentOpenBlockerActionSummary.topPriorityBlocker
-      || currentOpenBlockerActionSummary.topPriorityStopReason
-      || 'current open blocker',
-  ).trim();
-  const blockerCategoryFilter = String(state.releaseBlockerCategoryFilter || '').trim();
-  const blockerIncludeSharedProviderOperations = state.releaseBlockerIncludeSharedProviderOperations !== false;
-  const blockerOwnerFilter = String(state.releaseBlockerOwnerFilter || '').trim();
-  const blockerProviderFilter = String(state.releaseBlockerProviderFilter || '').trim();
-  const hasBlockerFilter = Boolean(
-    blockerCategoryFilter || blockerOwnerFilter || blockerProviderFilter || !blockerIncludeSharedProviderOperations,
-  );
-  const visibleCurrentOpenBlockerActions = currentOpenBlockerActions.filter((item) =>
-    isReleaseBlockerActionVisibleForFilter(item, {
-      category: blockerCategoryFilter,
-      includeShared: blockerIncludeSharedProviderOperations,
-      owner: blockerOwnerFilter,
-      provider: blockerProviderFilter,
-    }),
-  );
-  const hasEmptyBlockerFilter = hasBlockerFilter
-    && currentOpenBlockerActions.length > 0
-    && visibleCurrentOpenBlockerActions.length === 0;
-  const currentOpenBlockerSliceSummary = getReleaseBlockerSliceSummary({
-    blockerActions: visibleCurrentOpenBlockerActions,
-    totalActions: currentOpenBlockerActions,
-  });
-  const productionBlockerCount = Number.isFinite(Number(summary.productionBlockerCount))
-    ? Number(summary.productionBlockerCount)
-    : productionBlockers.length;
-  const focusedProductionBlockerIndex = getValidReleaseProductionBlockerIndex(
-    state.releaseFocusedProductionBlockerIndex,
+  const focusedProvider = String(state.releaseFocusedProvider || '').trim();
+  const evidenceTriageView = createReleaseEvidenceTriageViewModel({
+    filters: {
+      category: state.releaseBlockerCategoryFilter,
+      includeShared: state.releaseBlockerIncludeSharedProviderOperations,
+      owner: state.releaseBlockerOwnerFilter,
+      provider: state.releaseBlockerProviderFilter,
+    },
+    focus: {
+      blockerId: state.releaseFocusedBlockerId,
+      productionBlockerIndex: state.releaseFocusedProductionBlockerIndex,
+      provider: focusedProvider,
+    },
+    getCurrentOpenBlockerActions: getReleaseCurrentOpenBlockerActions,
+    getSliceSummary: getReleaseBlockerSliceSummary,
+    getValidProductionBlockerIndex: getValidReleaseProductionBlockerIndex,
+    isBlockerVisible: isReleaseBlockerActionVisibleForFilter,
+    productionBlockersExpanded: state.releaseProductionBlockersExpanded,
     release,
-  );
-  const focusedProductionBlockerIndexNumber =
-    focusedProductionBlockerIndex === '' ? -1 : Number(focusedProductionBlockerIndex);
-  const focusedProductionBlocker = focusedProductionBlockerIndexNumber >= 0
-    ? String(productionBlockers[focusedProductionBlockerIndexNumber] || '').trim()
-    : '';
-  const focusedProductionBlockerOrdinal = getReleaseProductionBlockerOrdinal(focusedProductionBlockerIndex);
-  const productionBlockersExpanded = Boolean(
-    state.releaseProductionBlockersExpanded || focusedProductionBlockerIndexNumber >= 8,
-  );
-  const visibleProductionBlockers = productionBlockersExpanded
-    ? productionBlockers
-    : productionBlockers.slice(0, 8);
-  const hiddenProductionBlockerCount = Math.max(0, productionBlockers.length - visibleProductionBlockers.length);
-  const productionReadyStopReason = String(
-    summary.productionReadyStopReason || releaseReadiness.productionReadyStopReason || productionBlockers[0] || '',
-  ).trim();
-  const productionBlockerEvidenceDocHref = '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md';
-  const productionBlockerEvidenceDocLabel = 'release-readiness production-ready blockers';
+  });
+  const {
+    blockerCategoryFilter,
+    blockerFilterLabel,
+    blockerIncludeSharedProviderOperations,
+    blockerOwnerFilter,
+    blockerProviderFilter,
+    blockerProviderLabel,
+    blockerTriageFilterActionLabel,
+    blockerTriageProviderOnlyActionLabel,
+    currentOpenBlockerActions,
+    currentOpenBlockerActionSummary,
+    currentOpenBlockerCategoryEntries,
+    currentOpenBlockerOwnerEntries,
+    currentOpenBlockerProviderEntries,
+    currentOpenBlockerSliceSummary,
+    focusedBlockerCommands,
+    focusedBlockerEntry,
+    focusedBlockerEvidenceDocs,
+    focusedBlockerId,
+    focusedBlockerLabel,
+    hasBlockerFilter,
+    hasEmptyBlockerFilter,
+    productionBlockers,
+    targetEvidenceActionLabel,
+    targetEvidenceProviderOnlyActionLabel,
+    topPriorityBlockerId,
+    topPriorityBlockerLabel,
+    visibleCurrentOpenBlockerActions,
+  } = evidenceTriageView;
   const liveValidation = release.liveValidation || [];
   const providerReadiness = release.providerReadiness || [];
   const handoffArtifacts = release.handoffArtifacts || [];
@@ -6668,21 +6660,11 @@ export function renderReleaseStatus() {
   const releaseSnapshotPreflight = state.releaseSnapshotPreflight || null;
   const releaseAllPreflight = state.releaseAllPreflight || null;
   const liveConfirmProvider = String(state.releaseLiveConfirmProvider || '').trim();
-  const focusedBlockerId = String(state.releaseFocusedBlockerId || '').trim();
-  const focusedProvider = String(state.releaseFocusedProvider || '').trim();
   const focusedHistoryId = String(state.releaseFocusedHistoryId || '').trim();
   const expandedHistoryId = String(state.releaseExpandedHistoryId || '').trim();
   const historyFilterOutcome = String(state.releaseHistoryFilterOutcome || '').trim();
   const historyFilterScope = String(state.releaseHistoryFilterScope || '').trim();
   const historyFilterProvider = String(state.releaseHistoryFilterProvider || '').trim();
-  const focusedBlockerEntry =
-    currentOpenBlockerActions.find((item) => String(item.id || '').trim() === focusedBlockerId) || null;
-  const focusedBlockerEvidenceDocs = Array.isArray(focusedBlockerEntry?.evidenceDocs)
-    ? focusedBlockerEntry.evidenceDocs.slice(0, 3)
-    : [];
-  const focusedBlockerCommands = Array.isArray(focusedBlockerEntry?.commands)
-    ? focusedBlockerEntry.commands.slice(0, 3)
-    : [];
   const focusedProviderEntry = providerReadiness.find((item) => String(item.provider || '').trim() === focusedProvider) || null;
   const focusedProviderActionLabel = focusedProviderEntry?.label || focusedProvider || 'provider';
   const focusedProviderPreflight = focusedProviderEntry
@@ -6736,25 +6718,6 @@ export function renderReleaseStatus() {
     || evidence?.commit
     || values?.commit
     || 'execution-v1 release';
-  const blockerFilterLabel = [
-    `category ${blockerCategoryFilter || 'all'}`,
-    `owner ${blockerOwnerFilter || 'all'}`,
-    `provider ${blockerProviderFilter || 'all'}`,
-    `shared provider ops ${blockerIncludeSharedProviderOperations ? 'included' : 'excluded'}`,
-  ].join(' · ');
-  const blockerProviderLabel = blockerProviderFilter || focusedProvider || 'provider';
-  const productionBlockerActionLabel = `${productionBlockerCount} production blockers · ${productionReadyStopReason || 'stop reason not recorded'}`;
-  const blockerTriageFilterActionLabel = `current open blocker slice · ${blockerFilterLabel}`;
-  const blockerTriageProviderOnlyActionLabel = `provider-only ${blockerProviderLabel} · ${blockerFilterLabel}`;
-  const targetEvidenceActionLabel = `target evidence intake · ${blockerTriageFilterActionLabel}`;
-  const targetEvidenceProviderOnlyActionLabel = `provider-only target evidence · ${blockerTriageProviderOnlyActionLabel}`;
-  const focusedBlockerLabel = focusedBlockerEntry
-    ? `${focusedBlockerId || 'blocker'} · ${focusedBlockerEntry.blocker || focusedBlockerEntry.stopReason || 'current open blocker'}`
-    : focusedBlockerId || '';
-  const focusedProductionBlockerActionLabel =
-    focusedProductionBlockerIndex !== ''
-      ? `production blocker #${focusedProductionBlockerOrdinal} · ${focusedProductionBlocker || 'production-ready blocker'}`
-      : '';
   const baseline = release.baseline || null;
   const readyHandoffArtifacts = handoffArtifacts.filter((item) => item.exists);
   const recommendedHandoffArtifacts = handoffArtifacts.filter((item) => item.recommended);
@@ -7101,26 +7064,11 @@ export function renderReleaseStatus() {
                     </article>
                   `)}
             </div>
-            <div class="harness-callout" data-release-production-blockers="true">
-              <strong>Production-ready blocker ${escapeHtml(String(productionBlockerCount))}건</strong>
-              <p>${escapeHtml(productionReadyStopReason || 'production-ready stop reason이 release readiness 문서에 아직 기록되지 않았습니다.')}</p>
-                      <div class="release-history-filter-chips">
-                        ${renderReleaseProductionBlockerSummaryCopyButton({
-                          actionLabel: `production blocker summary 복사: ${productionBlockerActionLabel}`,
-                          attributes: 'data-release-production-blocker-summary-copy="true"',
-                          buttonText: 'production summary 복사',
-                          copyKey: 'production-blocker-summary',
-                          disabled: !productionBlockers.length,
-                        })}
-                        ${renderReleaseLinkCopyButton({
-                          action: 'copy-release-evidence-doc-link',
-                          actionLabel: `release-readiness 링크 복사: ${productionBlockerActionLabel}`,
-                          attributes: 'data-release-production-blocker-release-doc="true" data-ui-href="/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md" data-ui-label="release-readiness"',
-                          buttonText: 'release-readiness 링크 복사',
-                          value: '/api/execution-v1/release-doc?path=docs%2Frelease-readiness-v1.md',
-                        })}
-              </div>
-            </div>
+            ${renderReleaseProductionBlockerSummary({
+              renderLinkCopyButton: renderReleaseLinkCopyButton,
+              renderSummaryCopyButton: renderReleaseProductionBlockerSummaryCopyButton,
+              view: evidenceTriageView,
+            })}
             <div class="harness-callout" data-release-current-open-blocker-triage="true">
               <strong>Open blocker triage · ${escapeHtml(String(Number(currentOpenBlockerActionSummary.actionCount || currentOpenBlockerActions.length || 0)))} actions</strong>
               <p>${escapeHtml(topPriorityBlockerId ? `Top priority ${topPriorityBlockerId}: ${topPriorityBlockerLabel}` : 'current open blocker triage summary가 없습니다.')}</p>
@@ -8102,177 +8050,13 @@ export function renderReleaseStatus() {
                     </article>
                   `}
             </div>
-            ${focusedProductionBlockerIndex !== ''
-              ? `
-                  <div class="harness-callout release-blocker-focus-callout" data-release-production-blocker-focus="${escapeHtml(focusedProductionBlockerOrdinal)}">
-                    <strong>Focused production-ready blocker</strong>
-                    <p>${escapeHtml(focusedProductionBlocker || `production-ready blocker #${focusedProductionBlockerOrdinal}`)}</p>
-                    <div class="release-history-focus-actions">
-                      ${renderReleaseProductionBlockerDetailCopyButton({
-                        action: 'copy-release-production-blocker-handoff',
-                        actionLabel: `focused production blocker handoff 복사: ${focusedProductionBlockerActionLabel}`,
-                        attributes: `data-release-production-blocker-handoff="${escapeHtml(focusedProductionBlockerIndex)}"`,
-                        blockerIndex: focusedProductionBlockerIndex,
-                        buttonText: 'handoff 복사',
-                      })}
-                      ${renderReleaseLinkCopyButton({
-                        action: 'copy-release-production-blocker-link',
-                        actionLabel: `focused production blocker 링크 복사: ${focusedProductionBlockerActionLabel}`,
-                        attributes: `data-release-production-blocker-link="${escapeHtml(focusedProductionBlockerIndex)}" data-ui-index="${escapeHtml(focusedProductionBlockerIndex)}"`,
-                        buttonText: 'blocker 링크 복사',
-                        value: focusedProductionBlockerIndex,
-                      })}
-                      <a
-                        class="ghost-button"
-                        href="${escapeHtml(productionBlockerEvidenceDocHref)}"
-                        target="_blank"
-                        rel="noreferrer"
-                        data-release-production-blocker-evidence-doc="${escapeHtml(focusedProductionBlockerIndex)}"
-                        data-release-production-blocker-evidence-doc-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
-                        aria-label="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${focusedProductionBlockerOrdinal}`)}"
-                        title="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${focusedProductionBlockerOrdinal}`)}"
-                      >근거 문서 열기</a>
-                      ${renderReleaseLinkCopyButton({
-                        action: 'copy-release-evidence-doc-link',
-                        actionLabel: `focused production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${focusedProductionBlockerActionLabel}`,
-                        attributes: `data-release-production-blocker-evidence-doc-copy="${escapeHtml(focusedProductionBlockerIndex)}" data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}" data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"`,
-                        buttonText: '근거 링크 복사',
-                        value: productionBlockerEvidenceDocHref,
-                      })}
-                      ${renderReleaseProductionBlockerDetailCopyButton({
-                        action: 'copy-release-production-blocker-commands',
-                        actionLabel: `focused production blocker 검증 명령 복사: ${focusedProductionBlockerActionLabel}`,
-                        attributes: `data-release-production-blocker-commands="${escapeHtml(focusedProductionBlockerIndex)}"`,
-                        blockerIndex: focusedProductionBlockerIndex,
-                        buttonText: '검증 명령 복사',
-                      })}
-                      ${renderReleaseProductionBlockerDetailCopyButton({
-                        action: 'copy-release-production-blocker-package',
-                        actionLabel: `focused production blocker package 복사: ${focusedProductionBlockerActionLabel}`,
-                        attributes: `data-release-production-blocker-package="${escapeHtml(focusedProductionBlockerIndex)}"`,
-                        blockerIndex: focusedProductionBlockerIndex,
-                        buttonText: 'package 복사',
-                      })}
-                      ${renderReleaseClearActionButton({
-                        action: 'clear-release-production-blocker-focus',
-                        actionLabel: `focused production blocker 포커스 해제: ${focusedProductionBlockerActionLabel}`,
-                        buttonText: '포커스 해제',
-                      })}
-                    </div>
-                  </div>
-                `
-              : ''}
-            <div
-              class="release-current-status"
-              data-release-production-blocker-list="true"
-              data-release-production-blocker-list-expanded="${productionBlockersExpanded ? 'true' : 'false'}"
-              data-release-production-blocker-visible-count="${escapeHtml(String(visibleProductionBlockers.length))}"
-            >
-              ${productionBlockers.length
-                ? visibleProductionBlockers
-                  .map(
-                    (item, index) => {
-                      const isFocusedProductionBlocker = index === focusedProductionBlockerIndexNumber;
-                      const productionBlockerRowActionLabel = `production blocker #${index + 1} · ${item || 'production-ready blocker'}`;
-                      return `
-                      <div class="harness-row ${isFocusedProductionBlocker ? 'is-focused-blocker' : ''}" data-release-production-blocker-row="true" data-release-production-blocker-row-index="${escapeHtml(String(index))}" data-release-production-blocker-focused="${isFocusedProductionBlocker ? 'true' : 'false'}">
-                        <div>
-                          <div class="item-title">${escapeHtml(item)}</div>
-                          <div class="item-meta">production-ready claim blocker</div>
-                        </div>
-                        <div class="harness-row-meta">
-                          ${isFocusedProductionBlocker ? '<span class="mini-badge status-running">focused</span>' : ''}
-                          <span class="mini-badge status-failed">blocked</span>
-                          ${renderReleaseBlockerFocusButton({
-                            action: 'focus-release-production-blocker',
-                            actionLabel: `${isFocusedProductionBlocker ? 'production blocker 포커스됨' : 'production blocker 포커스'}: ${productionBlockerRowActionLabel}`,
-                            buttonText: isFocusedProductionBlocker ? '포커스됨' : '포커스',
-                            disabled: isFocusedProductionBlocker,
-                            index,
-                            pressed: isFocusedProductionBlocker,
-                          })}
-                          ${renderReleaseLinkCopyButton({
-                            action: 'copy-release-production-blocker-link',
-                            actionLabel: `production blocker 링크 복사: ${productionBlockerRowActionLabel}`,
-                            attributes: `data-release-production-blocker-link="${escapeHtml(String(index))}" data-ui-index="${escapeHtml(String(index))}"`,
-                            buttonText: '링크 복사',
-                            value: String(index),
-                          })}
-                          <a
-                            class="ghost-button"
-                            href="${escapeHtml(productionBlockerEvidenceDocHref)}"
-                            target="_blank"
-                            rel="noreferrer"
-                            data-release-production-blocker-evidence-doc="${escapeHtml(String(index))}"
-                            data-release-production-blocker-evidence-doc-href="${escapeHtml(productionBlockerEvidenceDocHref)}"
-                            aria-label="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${index + 1}`)}"
-                            title="${escapeHtml(`근거 문서 열기: ${productionBlockerEvidenceDocLabel} · production blocker #${index + 1}`)}"
-                          >근거 문서</a>
-                          ${renderReleaseLinkCopyButton({
-                            action: 'copy-release-evidence-doc-link',
-                            actionLabel: `production blocker 근거 링크 복사: ${productionBlockerEvidenceDocLabel} · ${productionBlockerRowActionLabel}`,
-                            attributes: `data-release-production-blocker-evidence-doc-copy="${escapeHtml(String(index))}" data-ui-href="${escapeHtml(productionBlockerEvidenceDocHref)}" data-ui-label="${escapeHtml(productionBlockerEvidenceDocLabel)}"`,
-                            buttonText: '근거 링크 복사',
-                            value: productionBlockerEvidenceDocHref,
-                          })}
-                          ${renderReleaseProductionBlockerDetailCopyButton({
-                            action: 'copy-release-production-blocker-commands',
-                            actionLabel: `production blocker 검증 명령 복사: ${productionBlockerRowActionLabel}`,
-                            attributes: `data-release-production-blocker-commands="${escapeHtml(String(index))}"`,
-                            blockerIndex: String(index),
-                            buttonText: '검증 명령 복사',
-                          })}
-                          ${renderReleaseProductionBlockerDetailCopyButton({
-                            action: 'copy-release-production-blocker-package',
-                            actionLabel: `production blocker package 복사: ${productionBlockerRowActionLabel}`,
-                            attributes: `data-release-production-blocker-package="${escapeHtml(String(index))}"`,
-                            blockerIndex: String(index),
-                            buttonText: 'package 복사',
-                          })}
-                          ${renderReleaseProductionBlockerDetailCopyButton({
-                            action: 'copy-release-production-blocker-handoff',
-                            actionLabel: `production blocker handoff 복사: ${productionBlockerRowActionLabel}`,
-                            attributes: `data-release-production-blocker-handoff="${escapeHtml(String(index))}"`,
-                            blockerIndex: String(index),
-                            buttonText: 'blocker handoff 복사',
-                          })}
-                        </div>
-                      </div>
-                    `;
-                    },
-                  )
-                  .join('')
-                : `
-                    <article class="release-snapshot-card is-empty">
-                      <div class="item-title">production-ready blocker가 없습니다.</div>
-                      <p class="item-meta">release-readiness 문서의 Production Ready blocker list가 비어 있습니다.</p>
-                    </article>
-                  `}
-              ${productionBlockers.length > 8
-                ? `
-                    <div class="harness-row" data-release-production-blocker-overflow="true" data-release-production-blocker-hidden-count="${escapeHtml(String(hiddenProductionBlockerCount))}">
-                      <div>
-                        <div class="item-title">${productionBlockersExpanded ? '전체 production-ready blocker 표시 중' : `추가 blocker ${escapeHtml(String(hiddenProductionBlockerCount))}건`}</div>
-                        <div class="item-meta">현재 ${escapeHtml(String(visibleProductionBlockers.length))}/${escapeHtml(String(productionBlockers.length))}건을 표시합니다. 전체 목록은 docs/release-readiness-v1.md의 Production Ready 섹션을 기준으로 합니다.</div>
-                      </div>
-                      <div class="harness-row-meta">
-                        <span class="mini-badge status-running">${productionBlockersExpanded ? 'expanded' : 'summarized'}</span>
-                        ${renderReleaseToggleActionButton({
-                          action: 'toggle-release-production-blockers',
-                          actionLabel: `production blocker 목록 ${productionBlockersExpanded ? '축소' : '확장'}: ${visibleProductionBlockers.length}/${productionBlockers.length} 표시`,
-                          attributes: `data-release-production-blocker-toggle="${productionBlockersExpanded ? 'collapse' : 'expand'}"`,
-                          buttonText: productionBlockersExpanded ? '8개만 보기' : '전체 보기',
-                          expanded: productionBlockersExpanded,
-                        })}
-                      </div>
-                    </div>
-                  `
-                : ''}
-            </div>
-            <div class="harness-callout">
-              <strong>남은 gap ${escapeHtml(String(gaps.length))}건</strong>
-              <p>${escapeHtml(gaps[0] || '남은 gap이 없습니다.')}</p>
-            </div>
+            ${renderReleaseProductionBlockerDetails({
+              gaps,
+              renderDetailCopyButton: renderReleaseProductionBlockerDetailCopyButton,
+              renderLinkCopyButton: renderReleaseLinkCopyButton,
+              renderToggleActionButton: renderReleaseToggleActionButton,
+              view: evidenceTriageView,
+            })}
             <div class="mini-head">
               <div>
                 <p class="section-kicker">Release Action History</p>
