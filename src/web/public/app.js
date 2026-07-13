@@ -1,7 +1,6 @@
 import {
   stripFileExtension,
   getFileExtension,
-  formatByteCount,
   getHarnessPageSizeLabel,
   getHarnessPageLabel,
   getHarnessRangeLabel,
@@ -29,16 +28,6 @@ import {
   getReleaseCommandCopyKey,
   getReleaseLinkCopyKey,
 } from './lib/ui-params.js';
-import {
-  getReleaseHandoffStableLineCopyLabel,
-  getReleaseHandoffAdditionalSummaryKeys,
-  appendReleaseHandoffSummaryRow,
-  getReleaseHandoffStructuredSummaryRows,
-  getReleaseHandoffStructuredSummaryDetails,
-  getReleaseHandoffStructuredSummaryDetailOverviewLine,
-  getReleaseHandoffStructuredSummarySha,
-  getReleaseHandoffStructuredSummaryOverviewLine,
-} from './lib/release-handoff-summary.js';
 import {
   escapeHtml,
   formatDate,
@@ -91,7 +80,6 @@ import {
   renderReleasePreflightAllButton,
   renderReleaseProviderActionButton,
   renderReleaseProviderFocusActionButton,
-  renderReleaseRecommendationActionButton,
   renderReleaseSimpleActionButton,
   renderRetrievalArtifactOpenButton,
   renderRetrievalSourceFocusButton,
@@ -153,7 +141,6 @@ import {
   renderMissionActions as renderMissionActionsSurface,
 } from './lib/action-inbox.js';
 import {
-  getReleaseStatusBadge,
   renderReleaseCloseoutChecklist,
   renderReleaseRuntimeJobs,
   renderReleaseStatusOverview,
@@ -170,6 +157,15 @@ import {
   renderReleaseActionHistory,
   renderReleaseProviderReadiness,
 } from './lib/release-history-provider-view.js';
+import {
+  createReleaseHandoffDocumentViewModel,
+  isReleaseHandoffPreviewable,
+  renderReleaseHandoffDocuments,
+} from './lib/release-handoff-document-view.js';
+import {
+  createReleaseRecommendationViewModel,
+  renderReleaseRecommendations,
+} from './lib/release-recommendation-view.js';
 import {
   wireReleaseStatusCopyActions,
   wireReleaseStatusLifecycleActions,
@@ -370,7 +366,19 @@ const releaseHistoryProviderCopyButtons = {
   renderReleaseToggleActionButton,
 };
 
-const RELEASE_HANDOFF_PREVIEWABLE_FORMATS = new Set(['json', 'markdown', 'text']);
+const releaseRecommendationCopyButtons = {
+  renderReleaseCommandCopyButton,
+  renderReleaseLinkCopyButton,
+  renderReleaseProviderNavigationButton,
+};
+
+const releaseHandoffDocumentCopyButtons = {
+  renderReleaseCommandCopyButton,
+  renderReleaseHandoffLinkCopyButton,
+  renderReleaseHandoffStructuredSummaryCopyButton,
+  renderReleaseToggleActionButton,
+};
+
 const RELEASE_HANDOFF_PREVIEW_MAX_CHARACTERS = 20000;
 const RELEASE_HANDOFF_PREVIEW_MAX_LINES = 180;
 const PROVIDER_FALLBACK_POLICY_FILTER_OPTIONS = [
@@ -2140,14 +2148,6 @@ function populateDocumentLogForm(entry) {
   }
 }
 
-export function isReleaseHandoffPreviewable(item = {}) {
-  if (!item || typeof item !== 'object') {
-    return false;
-  }
-  const format = String(item.format || '').trim().toLowerCase();
-  return Boolean(item.exists && item.href && RELEASE_HANDOFF_PREVIEWABLE_FORMATS.has(format));
-}
-
 const releaseHandoffStableLineCopyBaseKey =
   'summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopy';
 
@@ -2405,107 +2405,6 @@ function getReleaseActionScopeLabel(scope = '') {
 export function isReleaseAttentionOutcome(outcome = '') {
   const normalized = String(outcome || '').trim().toLowerCase();
   return normalized === 'blocked' || normalized === 'failed' || normalized === 'confirmation-required';
-}
-
-function matchesReleaseActionRecommendation(item, historyItem, providerReadiness = []) {
-  const action = String(item?.action || '').trim();
-  const actionProvider = String(item?.actionProvider || '').trim();
-  const providerFromEnv = String(
-    providerReadiness.find((entry) => String(entry.envKey || '').trim() === String(item?.envKey || '').trim())?.provider || '',
-  ).trim();
-  const provider = actionProvider || providerFromEnv;
-  const historyAction = String(historyItem?.action || '').trim();
-  const historyScope = String(historyItem?.scope || '').trim();
-  const historyProvider = String(historyItem?.provider || '').trim();
-
-  if (action === 'regenerate-release-surface') {
-    return historyScope === 'current-surface' && (historyAction === 'refresh' || historyAction === 'refresh-preflight');
-  }
-
-  if (action === 'archive-release-snapshot') {
-    return historyScope === 'snapshot' && (historyAction === 'snapshot' || historyAction === 'snapshot-preflight');
-  }
-
-  if (action === 'run-release-preflight' && provider) {
-    return historyAction === 'provider-preflight' && historyProvider === provider;
-  }
-
-  if (!action && provider) {
-    return historyProvider === provider;
-  }
-
-  return false;
-}
-
-function getRecommendationHistoryContext(item, releaseActionHistory = [], providerReadiness = []) {
-  if (!Array.isArray(releaseActionHistory) || !releaseActionHistory.length) {
-    return {
-      attentionCount: 0,
-      latestAction: null,
-      latestAttentionAction: null,
-      matchCount: 0,
-    };
-  }
-
-  const matches = releaseActionHistory.filter((historyItem) => matchesReleaseActionRecommendation(item, historyItem, providerReadiness));
-  const attentionMatches = matches.filter((historyItem) => isReleaseAttentionOutcome(historyItem?.outcome));
-  return {
-    attentionCount: attentionMatches.length,
-    latestAction: matches[0] || null,
-    latestAttentionAction: attentionMatches[0] || null,
-    matchCount: matches.length,
-  };
-}
-
-function getRecommendationProviderEntry(item, providerReadiness = []) {
-  const actionProvider = String(item?.actionProvider || '').trim();
-  const envKey = String(item?.envKey || '').trim();
-  return providerReadiness.find((entry) => {
-    const entryProvider = String(entry?.provider || '').trim();
-    const entryEnvKey = String(entry?.envKey || '').trim();
-    return (actionProvider && entryProvider === actionProvider) || (envKey && entryEnvKey === envKey);
-  });
-}
-
-function getRecommendationCommandContext(item, providerReadiness = []) {
-  const action = String(item?.action || '').trim();
-  const explicitCommand = String(item?.command || '').trim();
-  const envKey = String(item?.envKey || '').trim();
-  const providerEntry = getRecommendationProviderEntry(item, providerReadiness);
-
-  if (explicitCommand) {
-    return {
-      command: explicitCommand,
-      label: item?.label ? `${item.label} 명령` : '권장 액션 명령',
-      buttonLabel: action === 'run-release-preflight' ? 'preflight 명령 복사' : 'live 명령 복사',
-    };
-  }
-
-  if (action === 'run-release-preflight') {
-    if (!providerEntry) {
-      return null;
-    }
-    return {
-      command: String(providerEntry.preflightCommand || '').trim(),
-      label: `${providerEntry.label} preflight 명령`,
-      buttonLabel: 'preflight 명령 복사',
-    };
-  }
-
-  if (envKey) {
-    if (!providerEntry) {
-      return null;
-    }
-    return {
-      command: providerEntry.ready
-        ? String(providerEntry.command || '').trim()
-        : `export ${providerEntry.envKey}="..." && ${providerEntry.command}`,
-      label: `${providerEntry.label} live 명령`,
-      buttonLabel: 'live 명령 복사',
-    };
-  }
-
-  return null;
 }
 
 export function getProviderLiveCommand(providerEntry = {}, preflight = null) {
@@ -6670,12 +6569,6 @@ export function renderReleaseStatus() {
     focusedBlockerId,
     focusedBlockerLabel,
   } = evidenceTriageView;
-  const liveValidation = release.liveValidation || [];
-  const providerReadiness = release.providerReadiness || [];
-  const handoffArtifacts = release.handoffArtifacts || [];
-  const releaseActionHistory = release.releaseActionHistory || [];
-  const recommendedActions = release.recommendedActions || [];
-  const refreshPlan = release.refreshPlan || null;
   const liveRefreshPreflight = state.releaseLiveRefreshPreflight || null;
   const releaseRefreshPreflight = state.releaseRefreshPreflight || null;
   const releaseSnapshotPreflight = state.releaseSnapshotPreflight || null;
@@ -6723,27 +6616,32 @@ export function renderReleaseStatus() {
     releaseActionLabel,
     releaseAllPreflight,
   });
-  const baseline = release.baseline || null;
-  const readyHandoffArtifacts = handoffArtifacts.filter((item) => item.exists);
-  const recommendedHandoffArtifacts = handoffArtifacts.filter((item) => item.recommended);
-  const handoffPreviewArtifactId = String(state.releaseHandoffPreviewId || '').trim();
-  const handoffPreviewArtifact = handoffArtifacts.find(
-    (item) => String(item.id || '').trim() === handoffPreviewArtifactId && isReleaseHandoffPreviewable(item),
-  ) || null;
-  const handoffPreviewStatus = handoffPreviewArtifact ? String(state.releaseHandoffPreviewStatus || 'idle').trim() : 'idle';
-  const handoffPreviewContent = handoffPreviewArtifact ? String(state.releaseHandoffPreviewContent || '') : '';
-  const handoffPreviewError = handoffPreviewArtifact ? String(state.releaseHandoffPreviewError || '') : '';
-  const handoffPreviewLineCount = handoffPreviewArtifact ? Number(state.releaseHandoffPreviewLineCount || 0) : 0;
-  const handoffPreviewTruncated = Boolean(handoffPreviewArtifact && state.releaseHandoffPreviewTruncated);
-  const handoffPreviewStructuredSummaryRows = handoffPreviewArtifact
-    ? getReleaseHandoffStructuredSummaryRows(handoffPreviewArtifact)
-    : [];
-  const handoffPreviewStructuredSummaryOverviewLine = handoffPreviewArtifact
-    ? getReleaseHandoffStructuredSummaryOverviewLine(handoffPreviewArtifact)
-    : '';
-  const handoffPreviewStructuredSummarySha = handoffPreviewArtifact
-    ? getReleaseHandoffStructuredSummarySha(handoffPreviewArtifact)
-    : '';
+  const releaseRecommendationView = createReleaseRecommendationViewModel({
+    filters: {
+      outcome: historyFilterOutcome,
+      provider: historyFilterProvider,
+      scope: historyFilterScope,
+    },
+    focus: {
+      historyId: focusedHistoryId,
+      provider: focusedProvider,
+    },
+    getActionLabel: getReleaseActionLabel,
+    isAttentionOutcome: isReleaseAttentionOutcome,
+    isFlowActive: isRecommendationFlowActive,
+    release,
+  });
+  const releaseHandoffDocumentView = createReleaseHandoffDocumentViewModel({
+    preview: {
+      artifactId: state.releaseHandoffPreviewId,
+      content: state.releaseHandoffPreviewContent,
+      error: state.releaseHandoffPreviewError,
+      lineCount: state.releaseHandoffPreviewLineCount,
+      status: state.releaseHandoffPreviewStatus,
+      truncated: state.releaseHandoffPreviewTruncated,
+    },
+    release,
+  });
 
   elements.releaseStatus.innerHTML = `
     <div class="release-status-shell">
@@ -6772,270 +6670,10 @@ export function renderReleaseStatus() {
             </div>
           </div>
           <div class="release-list">
-            <div class="release-recommendation-list">
-              ${(recommendedActions.length
-                ? recommendedActions
-                  .map(
-                    (item) => {
-                      const historyContext = getRecommendationHistoryContext(item, releaseActionHistory, providerReadiness);
-                      const recommendationCommand = getRecommendationCommandContext(item, providerReadiness);
-                      const recommendationProvider = getRecommendationProviderEntry(item, providerReadiness);
-                      const latestAction = historyContext.latestAction;
-                      const latestAttentionAction = historyContext.latestAttentionAction;
-                      const recommendationProviderId = String(recommendationProvider?.provider || '').trim();
-                      const recommendationProviderActionLabel = recommendationProvider?.label || recommendationProviderId || 'provider';
-                      const sameProviderFocused = Boolean(recommendationProviderId && recommendationProviderId === focusedProvider);
-                      const recommendationProviderFocusLabel = sameProviderFocused
-                        ? `현재 provider 카드: ${recommendationProviderActionLabel}`
-                        : `provider 카드 보기: ${recommendationProviderActionLabel}`;
-                      const recommendationActionTargetLabel = item.label || item.action || recommendationProviderActionLabel || '권장 액션';
-                      const latestActionTargetLabel = latestAction
-                        ? `${getReleaseActionLabel(latestAction.action)} · ${latestAction.provider || 'provider 미지정'} · ${latestAction.id || latestAction.scope || '최근 기록'}`
-                        : '';
-                      const latestAttentionActionTargetLabel = latestAttentionAction
-                        ? `${getReleaseActionLabel(latestAttentionAction.action)} · ${latestAttentionAction.provider || latestAction?.provider || 'provider 미지정'} · ${latestAttentionAction.id || latestAttentionAction.scope || latestAction?.scope || '최근 문제'}`
-                        : '';
-                      const { sameFlowActive, attentionFlowActive } = latestAction
-                        ? isRecommendationFlowActive({
-                          attentionAction: latestAttentionAction,
-                          latestAction,
-                        }, {
-                          focusedHistoryId,
-                          historyFilterOutcome,
-                          historyFilterProvider,
-                          historyFilterScope,
-                        })
-                        : { attentionFlowActive: false, sameFlowActive: false };
-                      return `
-                      <article class="release-recommendation-card release-recommendation-${escapeHtml(item.category || 'info')} ${sameFlowActive || attentionFlowActive ? 'is-active-flow' : ''} ${sameProviderFocused ? 'is-active-provider' : ''} ${historyContext.attentionCount ? 'has-attention-flow' : ''}">
-                        <div>
-                          <div class="item-title">${escapeHtml(item.label || '권장 액션')}</div>
-                          <div class="item-meta">${escapeHtml(item.description || '')}</div>
-                          ${latestAction
-                            ? `
-                                <div class="item-meta">
-                                  최근 시도 · ${escapeHtml(getReleaseActionLabel(latestAction.action))} · ${escapeHtml(latestAction.outcome || 'unknown')} · ${escapeHtml(formatDate(latestAction.createdAt))}
-                                </div>
-                                <div class="item-meta">${escapeHtml(latestAction.summary || '최근 action summary가 없습니다.')}</div>
-                                <div class="release-history-filter-chips">
-                                  <span class="mini-badge status-running">같은 flow ${escapeHtml(String(historyContext.matchCount || 0))}건</span>
-                                  ${historyContext.attentionCount
-                                    ? `<span class="mini-badge status-failed">문제 흐름 ${escapeHtml(String(historyContext.attentionCount))}건</span>`
-                                    : ''}
-                                </div>
-                                ${latestAttentionAction
-                                  ? `
-                                      <div class="item-meta">
-                                        최근 문제 · ${escapeHtml(getReleaseActionLabel(latestAttentionAction.action))} · ${escapeHtml(formatDate(latestAttentionAction.createdAt))}
-                                      </div>
-                                      <div class="item-meta">${escapeHtml(latestAttentionAction.summary || '최근 문제 summary가 없습니다.')}</div>
-                                    `
-                                  : ''}
-                                ${(sameFlowActive || attentionFlowActive)
-                                  ? `
-                                      <div class="release-history-filter-chips">
-                                        ${sameFlowActive ? '<span class="mini-badge status-running">현재 flow 적용 중</span>' : ''}
-                                        ${attentionFlowActive ? '<span class="mini-badge status-failed">현재 문제 흐름 적용 중</span>' : ''}
-                                        ${sameProviderFocused ? '<span class="mini-badge status-running">현재 provider 적용 중</span>' : ''}
-                                      </div>
-                                    `
-                                  : ''}
-                              `
-                            : ''}
-                        </div>
-                        <div class="release-provider-meta">
-                          <span class="mini-badge ${getReleaseStatusBadge(item.category === 'required' ? 'blocked' : item.category === 'release' ? 'ready' : 'not-run')}">${escapeHtml(item.category || 'info')}</span>
-                          ${latestAction
-                            ? `
-                                <div class="release-recommendation-actions">
-                                  ${renderReleaseProviderNavigationButton({
-                                    action: 'focus-release-history',
-                                    actionLabel: `최근 기록 보기: ${latestActionTargetLabel}`,
-                                    buttonText: '최근 기록 보기',
-                                    pressed: String(latestAction.id || '').trim() === focusedHistoryId,
-                                    value: latestAction.id || '',
-                                  })}
-                                  ${renderReleaseLinkCopyButton({
-                                    action: 'copy-release-history-link',
-                                    actionLabel: `기록 링크 복사: ${latestActionTargetLabel}`,
-                                    buttonText: '기록 링크 복사',
-                                    value: latestAction.id || '',
-                                  })}
-                                  ${latestAttentionAction && latestAttentionAction.id !== latestAction.id
-                                    ? `
-                                        ${renderReleaseProviderNavigationButton({
-                                          action: 'focus-release-history',
-                                          actionLabel: `최근 문제 보기: ${latestAttentionActionTargetLabel}`,
-                                          buttonText: '최근 문제 보기',
-                                          pressed: String(latestAttentionAction.id || '').trim() === focusedHistoryId,
-                                          value: latestAttentionAction.id || '',
-                                        })}
-                                        ${renderReleaseLinkCopyButton({
-                                          action: 'copy-release-history-link',
-                                          actionLabel: `문제 기록 링크 복사: ${latestAttentionActionTargetLabel}`,
-                                          buttonText: '문제 기록 링크 복사',
-                                          value: latestAttentionAction.id || '',
-                                        })}
-                                      `
-                                    : ''}
-                                  ${renderReleaseProviderNavigationButton({
-                                    action: 'focus-release-flow',
-                                    actionLabel: sameFlowActive ? `현재 flow: ${latestActionTargetLabel}` : `같은 flow 보기: ${latestActionTargetLabel}`,
-                                    buttonText: sameFlowActive ? '현재 flow' : '같은 flow 보기',
-                                    disabled: sameFlowActive ? true : null,
-                                    outcome: isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '',
-                                    pressed: sameFlowActive,
-                                    provider: String(latestAction.provider || '').trim(),
-                                    scope: String(latestAction.scope || '').trim(),
-                                    value: latestAction.id || '',
-                                  })}
-                                  ${renderReleaseLinkCopyButton({
-                                    action: 'copy-release-flow-link',
-                                    actionLabel: `flow 링크 복사: ${latestActionTargetLabel}`,
-                                    attributes: `data-ui-outcome="${escapeHtml(isReleaseAttentionOutcome(latestAction.outcome) ? 'attention' : '')}" data-ui-scope="${escapeHtml(String(latestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(latestAction.provider || '').trim())}"`,
-                                    buttonText: 'flow 링크 복사',
-                                    value: latestAction.id || '',
-                                  })}
-                                  ${latestAttentionAction
-                                    ? `
-                                        ${renderReleaseProviderNavigationButton({
-                                          action: 'focus-release-flow',
-                                          actionLabel: attentionFlowActive ? `현재 문제 흐름: ${latestAttentionActionTargetLabel}` : `같은 문제 흐름 보기: ${latestAttentionActionTargetLabel}`,
-                                          buttonText: attentionFlowActive ? '현재 문제 흐름' : '같은 문제 흐름 보기',
-                                          disabled: attentionFlowActive ? true : null,
-                                          outcome: 'attention',
-                                          pressed: attentionFlowActive,
-                                          provider: String(latestAttentionAction.provider || latestAction.provider || '').trim(),
-                                          scope: String(latestAttentionAction.scope || latestAction.scope || '').trim(),
-                                          value: latestAttentionAction.id || '',
-                                        })}
-                                        ${renderReleaseLinkCopyButton({
-                                          action: 'copy-release-flow-link',
-                                          actionLabel: `문제 흐름 링크 복사: ${latestAttentionActionTargetLabel}`,
-                                          attributes: `data-ui-outcome="attention" data-ui-scope="${escapeHtml(String(latestAttentionAction.scope || latestAction.scope || '').trim())}" data-ui-provider="${escapeHtml(String(latestAttentionAction.provider || latestAction.provider || '').trim())}"`,
-                                          buttonText: '문제 흐름 링크 복사',
-                                          value: latestAttentionAction.id || '',
-                                        })}
-                                      `
-                                    : ''}
-                                  ${recommendationCommand
-                                    ? `
-                                        ${renderReleaseCommandCopyButton({
-                                          actionLabel: `${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`,
-                                          buttonText: recommendationCommand.buttonLabel,
-                                          command: recommendationCommand.command,
-                                          label: recommendationCommand.label,
-                                        })}
-                                      `
-                                    : ''}
-                                  ${recommendationProviderId
-                                    ? `
-                                        ${renderReleaseProviderFocusActionButton({
-                                          actionLabel: recommendationProviderFocusLabel,
-                                          buttonText: sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기',
-                                          disabled: sameProviderFocused,
-                                          pressed: sameProviderFocused,
-                                          provider: recommendationProviderId,
-                                        })}
-                                        ${renderReleaseLinkCopyButton({
-                                          action: 'copy-release-provider-link',
-                                          actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
-                                          attributes: `data-ui-provider="${escapeHtml(recommendationProviderId)}"`,
-                                          buttonText: 'provider 링크 복사',
-                                          value: recommendationProviderId,
-                                        })}
-                                      `
-                                    : ''}
-                                </div>
-                              `
-                            : item.action
-                              ? `
-                                <div class="release-recommendation-actions">
-                                  ${renderReleaseRecommendationActionButton({
-                                    action: item.action,
-                                    actionLabel: `권장 액션 실행: ${recommendationActionTargetLabel}`,
-                                    provider: item.actionProvider,
-                                  })}
-                                  ${recommendationCommand
-                                    ? `
-                                        ${renderReleaseCommandCopyButton({
-                                          actionLabel: `${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`,
-                                          buttonText: recommendationCommand.buttonLabel,
-                                          command: recommendationCommand.command,
-                                          label: recommendationCommand.label,
-                                        })}
-                                      `
-                                    : ''}
-                                  ${recommendationProviderId
-                                    ? `
-                                        ${renderReleaseProviderFocusActionButton({
-                                          actionLabel: recommendationProviderFocusLabel,
-                                          buttonText: sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기',
-                                          disabled: sameProviderFocused,
-                                          pressed: sameProviderFocused,
-                                          provider: recommendationProviderId,
-                                        })}
-                                        ${renderReleaseLinkCopyButton({
-                                          action: 'copy-release-provider-link',
-                                          actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
-                                          attributes: `data-ui-provider="${escapeHtml(recommendationProviderId)}"`,
-                                          buttonText: 'provider 링크 복사',
-                                          value: recommendationProviderId,
-                                        })}
-                                      `
-                                    : ''}
-                                </div>
-                              `
-                              : item.envKey
-                                ? `
-                                    <div class="release-recommendation-actions">
-                                      <span class="item-meta mono">${escapeHtml(item.envKey)}</span>
-                                      ${recommendationCommand
-                                        ? `
-                                            ${renderReleaseCommandCopyButton({
-                                              actionLabel: `${recommendationCommand.buttonLabel}: ${recommendationCommand.label}`,
-                                              buttonText: recommendationCommand.buttonLabel,
-                                              command: recommendationCommand.command,
-                                              label: recommendationCommand.label,
-                                            })}
-                                      `
-                                        : ''}
-                                      ${recommendationProviderId
-                                        ? `
-                                            ${renderReleaseProviderFocusActionButton({
-                                              actionLabel: recommendationProviderFocusLabel,
-                                              buttonText: sameProviderFocused ? '현재 provider 카드' : 'provider 카드 보기',
-                                              disabled: sameProviderFocused,
-                                              pressed: sameProviderFocused,
-                                              provider: recommendationProviderId,
-                                            })}
-                                            ${renderReleaseLinkCopyButton({
-                                              action: 'copy-release-provider-link',
-                                              actionLabel: `provider 링크 복사: ${recommendationProviderActionLabel}`,
-                                              attributes: `data-ui-provider="${escapeHtml(recommendationProviderId)}"`,
-                                              buttonText: 'provider 링크 복사',
-                                              value: recommendationProviderId,
-                                            })}
-                                          `
-                                        : ''}
-                                    </div>
-                                  `
-                                : ''}
-                        </div>
-                      </article>
-                    `;
-                    },
-                  )
-                  .join('')
-                : `
-                    <article class="release-recommendation-card release-recommendation-release">
-                      <div>
-                        <div class="item-title">필수 다음 액션 없음</div>
-                        <div class="item-meta">verified baseline 기준 필수 closeout은 닫혀 있고, 남은 것은 optional provider expansion 또는 mutable current surface 운영뿐입니다.</div>
-                      </div>
-                    </article>
-                  `)}
-            </div>
+            ${renderReleaseRecommendations({
+              copyButtons: releaseRecommendationCopyButtons,
+              view: releaseRecommendationView,
+            })}
             ${renderReleaseProductionBlockerSummary({
               renderLinkCopyButton: renderReleaseLinkCopyButton,
               renderSummaryCopyButton: renderReleaseProductionBlockerSummaryCopyButton,
@@ -7061,517 +6699,10 @@ export function renderReleaseStatus() {
               copyButtons: releaseHistoryProviderCopyButtons,
               view: releaseHistoryProviderView,
             })}
-            ${refreshPlan
-              ? `
-                  <article class="release-snapshot-card">
-                    <div class="item-title">Current Surface 재생성 영향</div>
-                    <div class="release-doc-status-list">
-                      ${(refreshPlan.affectsPaths || [])
-                        .map(
-                          (item) => `
-                            <div class="harness-row">
-                              <div>
-                                <div class="item-title">rewrite target</div>
-                                <div class="item-meta mono">${escapeHtml(item)}</div>
-                              </div>
-                            </div>
-                          `,
-                        )
-                        .join('')}
-                      <div class="harness-row">
-                        <div>
-                          <div class="item-title">deterministic verification</div>
-                          <div class="item-meta">${escapeHtml(refreshPlan.rerunsDeterministicVerification ? '다시 실행됨' : '다시 실행되지 않음')}</div>
-                        </div>
-                      </div>
-                      <div class="harness-row">
-                        <div>
-                          <div class="item-title">provider live validation</div>
-                          <div class="item-meta">${escapeHtml(refreshPlan.rerunsLiveValidation ? '재실행됨' : '기본 regenerate에서는 재실행되지 않음')}</div>
-                        </div>
-                      </div>
-                      <div class="harness-row">
-                        <div>
-                          <div class="item-title">release snapshot</div>
-                          <div class="item-meta">${escapeHtml(refreshPlan.snapshotChanges ? '같이 갱신됨' : '자동으로 변경되지 않음')}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                `
-              : ''}
-            <div class="release-stale-note">
-              <div class="release-stale-line">${escapeHtml(snapshotEligibility.allowed ? 'current HEAD 기준 evidence/closeout/handoff가 fresh해서 snapshot을 바로 고정할 수 있습니다.' : snapshotEligibility.reason || '현재 상태에서는 snapshot을 고정할 수 없습니다.')}</div>
-            </div>
-            ${snapshot
-              ? `
-                  <article class="release-snapshot-card">
-                    <div class="mini-head">
-                      <div>
-                        <p class="section-kicker">Release Snapshot</p>
-                        <h4>마지막으로 고정한 verified artifact</h4>
-                      </div>
-                    </div>
-                    <div class="release-meta">
-                      <span class="item-meta">verified ${escapeHtml(snapshot.verifiedCommit || '-')}</span>
-                      <span class="item-meta">${escapeHtml(formatDate(snapshot.archivedAt))}</span>
-                    </div>
-                    <div class="release-meta release-meta-secondary">
-                      <span class="mini-badge ${baseline?.ready ? 'status-completed' : 'status-pending'}">${escapeHtml(
-                        baseline?.ready ? 'baseline ready' : 'baseline 검토 필요',
-                      )}</span>
-                      <span class="mini-badge ${snapshot.matchesCurrentHead ? 'status-completed' : 'status-pending'}">${escapeHtml(snapshot.matchesCurrentHead ? 'current head와 일치' : '이전 verified snapshot')}</span>
-                      <span class="mini-badge ${snapshot.matchesGeneratedCommit ? 'status-completed' : 'status-pending'}">${escapeHtml(snapshot.matchesGeneratedCommit ? '현재 evidence와 연결됨' : '현재 evidence와 분리됨')}</span>
-                    </div>
-                    <div class="release-doc-status-list">
-                      <div class="harness-row">
-                        <div>
-                          <div class="item-title">snapshot evidence</div>
-                          <div class="item-meta mono">${escapeHtml(snapshot.evidencePath || '-')}</div>
-                        </div>
-                      </div>
-                      <div class="harness-row">
-                        <div>
-                          <div class="item-title">snapshot closeout</div>
-                          <div class="item-meta mono">${escapeHtml(snapshot.closeoutPath || '-')}</div>
-                        </div>
-                      </div>
-                      <div class="harness-row">
-                        <div>
-                          <div class="item-title">snapshot handoff</div>
-                          <div class="item-meta mono">${escapeHtml(snapshot.handoffPath || '-')}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                `
-              : `
-                  <article class="release-snapshot-card is-empty">
-                    <div class="item-title">Release snapshot이 아직 없습니다.</div>
-                    <p class="item-meta">상태 다시 읽기는 read-only reload이고, current surface evidence/closeout/handoff를 다시 만들려면 위의 current surface 재생성 또는 provider별 live validation을 실행하면 됩니다.</p>
-                  </article>
-                `}
-            <div class="release-live-list">
-              ${(liveValidation.length ? liveValidation : [{ provider: 'live validation', status: 'not requested' }])
-                .map(
-                  (item) => `
-                    <div class="harness-row">
-                      <div>
-                        <div class="item-title">${escapeHtml(item.provider)}</div>
-                      </div>
-                      <div class="harness-row-meta">
-                        <span class="mini-badge ${getReleaseStatusBadge(item.status)}">${escapeHtml(item.status)}</span>
-                      </div>
-                    </div>
-                  `,
-                )
-                .join('')}
-            </div>
-            ${handoffArtifacts.length
-              ? `
-                  <article class="release-snapshot-card">
-                    <div class="mini-head">
-                      <div>
-                        <p class="section-kicker">Release Handoff</p>
-                        <h4>검토용 artifact 바로가기</h4>
-                      </div>
-                    </div>
-                    <div class="release-meta">
-                      <span class="item-meta">ready ${escapeHtml(String(readyHandoffArtifacts.length))}/${escapeHtml(String(handoffArtifacts.length))}</span>
-                      <span class="item-meta">recommended ${escapeHtml(String(recommendedHandoffArtifacts.length))}개</span>
-                    </div>
-                    <div class="release-handoff-grid">
-                      ${handoffArtifacts
-                        .map((item) => {
-                          const previewable = isReleaseHandoffPreviewable(item);
-                          const previewActive = handoffPreviewArtifactId === String(item.id || '').trim();
-                          const structuredSummaryRows = getReleaseHandoffStructuredSummaryRows(item);
-                          const structuredSummaryDetails = getReleaseHandoffStructuredSummaryDetails(item);
-                          const structuredSummaryOverviewLine = getReleaseHandoffStructuredSummaryOverviewLine(item);
-                          const structuredSummarySha = getReleaseHandoffStructuredSummarySha(item);
-                          const handoffActionTargetLabel = item.label || item.id || item.path || 'handoff artifact';
-                          const previewButtonLabel = previewActive
-                            ? (handoffPreviewStatus === 'loading'
-                              ? '미리보는 중'
-                              : handoffPreviewStatus === 'error'
-                                ? '다시 시도'
-                                : '미리보기 닫기')
-                            : '미리보기';
-                          return `
-                            <article class="release-handoff-card ${item.exists ? 'is-ready' : 'is-missing'} ${item.recommended ? 'is-recommended' : ''} ${previewActive ? 'is-preview-active' : ''}" data-release-handoff-id="${escapeHtml(item.id || '')}">
-                              <div class="release-handoff-head">
-                                <div>
-                                  <div class="item-title">${escapeHtml(item.label || '-')}</div>
-                                  <div class="item-meta">${escapeHtml(item.description || '')}</div>
-                                </div>
-                                <div class="release-provider-meta">
-                                  <span class="mini-badge ${getReleaseStatusBadge(item.exists ? 'ready' : 'blocked')}">${escapeHtml(item.exists ? 'ready' : 'missing')}</span>
-                                  <span class="mini-badge status-running">${escapeHtml(item.kind || 'artifact')}</span>
-                                  <span class="mini-badge">${escapeHtml(item.format || 'file')}</span>
-                                  ${item.recommended ? '<span class="mini-badge status-completed">recommended</span>' : ''}
-                                </div>
-                              </div>
-                              <div class="item-meta mono release-handoff-path">${escapeHtml(item.path || '-')}</div>
-                              <div class="release-handoff-meta">
-                                <span class="item-meta">${escapeHtml(item.exists ? formatByteCount(item.bytes) : '파일 없음')}</span>
-                                <span class="item-meta">${escapeHtml(item.updatedAt ? formatDate(item.updatedAt) : '미생성')}</span>
-                              </div>
-                              ${structuredSummaryRows.length
-                                ? `
-                                    <div class="release-handoff-summary">
-                                      ${structuredSummaryRows
-                                        .map(
-                                          (row) => `
-                                            <div class="harness-row">
-                                              <div class="item-title">${escapeHtml(row.label)}</div>
-                                              <div class="item-meta">${escapeHtml(row.value)}</div>
-                                            </div>
-                                          `,
-                                        )
-                                        .join('')}
-                                      ${structuredSummaryDetails.length
-                                        ? `
-                                            <div class="release-handoff-summary-details">
-                                              ${structuredSummaryDetails
-                                                .map(
-                                                  (detail) => `
-                                                    <div class="release-handoff-summary-detail" data-release-handoff-structured-summary-detail="${escapeHtml(item.id || '')}">
-                                                      <div class="release-handoff-summary-detail-head">
-                                                        <span class="item-title">${escapeHtml(detail.label)}</span>
-                                                        ${renderReleaseHandoffStructuredSummaryCopyButton({
-                                                          action: 'copy-release-handoff-structured-summary-detail',
-                                                          actionLabel: `handoff summary line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'}`,
-                                                          artifactId: item.id || '',
-                                                          attributes: `data-release-handoff-structured-summary-detail-copy="${escapeHtml(`${item.id || ''}:${detail.key || ''}`)}"`,
-                                                          buttonText: 'line 복사',
-                                                          detailKey: detail.key || '',
-                                                          successNotice: `${item.label || 'handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`,
-                                                        })}
-                                                      </div>
-                                                      <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
-                                                      ${detail.stableLines?.length
-                                                        ? `
-                                                            <div class="release-handoff-summary-stable-lines">
-                                                              <span class="item-meta">stable lines ${escapeHtml(String(detail.stableLineCount || detail.stableLines.length || 0))}</span>
-                                                              ${detail.stableLines
-                                                                .map(
-                                                                  (line, lineIndex) => `
-                                                                    <div class="release-handoff-summary-stable-line-row">
-                                                                      <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
-                                                                      ${renderReleaseHandoffStructuredSummaryCopyButton({
-                                                                        action: 'copy-release-handoff-structured-summary-stable-line',
-                                                                        actionLabel: `handoff summary stable line 복사: ${handoffActionTargetLabel} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`,
-                                                                        artifactId: item.id || '',
-                                                                        attributes: `data-release-handoff-structured-summary-stable-line-copy="${escapeHtml(`${item.id || ''}:${detail.key || ''}:${lineIndex}`)}"`,
-                                                                        buttonText: 'stable line 복사',
-                                                                        detailKey: detail.key || '',
-                                                                        lineIndex,
-                                                                        successNotice: `${item.label || 'handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`,
-                                                                      })}
-                                                                    </div>
-                                                                  `,
-                                                                )
-                                                                .join('')}
-                                                            </div>
-                                                          `
-                                                        : ''}
-                                                    </div>
-                                                  `,
-                                                )
-                                                .join('')}
-                                            </div>
-                                          `
-                                        : ''}
-                                      ${structuredSummaryOverviewLine
-                                        ? `
-                                            <div class="item-meta mono release-handoff-summary-overview" data-release-handoff-structured-summary-overview="${escapeHtml(item.id || '')}">
-                                              ${escapeHtml(structuredSummaryOverviewLine)}
-                                            </div>
-                                            <div class="release-handoff-summary-actions">
-                                              ${renderReleaseHandoffStructuredSummaryCopyButton({
-                                                action: 'copy-release-handoff-structured-summary',
-                                                actionLabel: `handoff summary overview 복사: ${handoffActionTargetLabel}`,
-                                                artifactId: item.id || '',
-                                                attributes: `data-release-handoff-structured-summary-copy="${escapeHtml(item.id || '')}"`,
-                                                buttonText: 'overview 복사',
-                                                successNotice: `${item.label || 'handoff summary'} overview line을 복사했습니다.`,
-                                              })}
-                                            </div>
-                                          `
-                                        : ''}
-                                      ${structuredSummarySha
-                                        ? `
-                                            <div class="item-meta mono release-handoff-summary-sha" data-release-handoff-structured-summary-sha="${escapeHtml(item.id || '')}">
-                                              sha ${escapeHtml(structuredSummarySha)}
-                                            </div>
-                                          `
-                                        : ''}
-                                    </div>
-                                  `
-                                : ''}
-                              <div class="release-provider-meta">
-                                ${previewable
-                                  ? `
-                                      ${renderReleaseToggleActionButton({
-                                        action: 'toggle-release-handoff-preview',
-                                        actionLabel: `${previewButtonLabel}: ${handoffActionTargetLabel}`,
-                                        attributes: `data-release-handoff-preview-trigger="${escapeHtml(item.id || '')}"`,
-                                        buttonText: previewButtonLabel,
-                                        disabled: previewActive && handoffPreviewStatus === 'loading',
-                                        expanded: previewActive,
-                                        value: item.id || '',
-                                      })}
-                                      ${renderReleaseHandoffLinkCopyButton({
-                                        action: 'copy-release-handoff-preview-link',
-                                        actionLabel: `handoff preview 링크 복사: ${handoffActionTargetLabel}`,
-                                        artifactId: item.id || '',
-                                        attributes: `data-release-handoff-preview-link-copy="${escapeHtml(item.id || '')}"`,
-                                        buttonText: '링크',
-                                        successNotice: `${item.label || 'handoff preview'} 링크를 복사했습니다.`,
-                                      })}
-                                    `
-                                  : ''}
-                                ${item.href
-                                  ? `
-                                      ${!previewable
-                                        ? `
-                                            ${renderReleaseHandoffLinkCopyButton({
-                                              action: 'copy-release-handoff-open-link',
-                                              actionLabel: `handoff artifact 열기 링크 복사: ${handoffActionTargetLabel}`,
-                                              artifactId: item.id || '',
-                                              attributes: `data-release-handoff-open-link-copy="${escapeHtml(item.id || '')}"`,
-                                              buttonText: '링크',
-                                              successNotice: `${item.label || 'handoff artifact'} 열기 링크를 복사했습니다.`,
-                                            })}
-                                          `
-                                        : ''}
-                                      <a
-                                        class="ghost-button"
-                                        data-release-handoff-open="true"
-                                        href="${escapeHtml(item.href)}"
-                                        rel="noreferrer"
-                                        target="_blank"
-                                        aria-label="${escapeHtml(`handoff artifact 열기: ${item.label || item.id || item.path || 'artifact'}`)}"
-                                        title="${escapeHtml(`handoff artifact 열기: ${item.label || item.id || item.path || 'artifact'}`)}"
-                                      >열기</a>
-                                    `
-                                  : ''}
-                                ${renderReleaseCommandCopyButton({
-                                  actionLabel: `handoff artifact 경로 복사: ${handoffActionTargetLabel}`,
-                                  buttonText: '경로 복사',
-                                  command: item.path || '',
-                                  label: `${item.label || 'artifact'} 경로`,
-                                })}
-                              </div>
-                            </article>
-                          `;
-                        })
-                        .join('')}
-                    </div>
-                    ${handoffPreviewArtifact
-                      ? `
-                          <section
-                            class="release-handoff-preview"
-                            data-release-handoff-preview-panel="${escapeHtml(handoffPreviewArtifact.id || '')}"
-                            data-release-handoff-preview-state="${escapeHtml(handoffPreviewStatus || 'idle')}"
-                          >
-                            <div class="release-handoff-preview-head">
-                              <div>
-                                <p class="section-kicker">Inline Preview</p>
-                                <div class="item-title">${escapeHtml(handoffPreviewArtifact.label || '-')}</div>
-                                <div class="item-meta">${escapeHtml(handoffPreviewArtifact.description || '')}</div>
-                              </div>
-                              <div class="release-provider-meta">
-                                <span class="mini-badge status-running" data-release-handoff-preview-format>${escapeHtml(handoffPreviewArtifact.format || 'file')}</span>
-                                <span class="mini-badge">${escapeHtml(handoffPreviewArtifact.kind || 'artifact')}</span>
-                                ${handoffPreviewArtifact.href
-                                  ? `
-                                      <a
-                                        class="ghost-button"
-                                        href="${escapeHtml(handoffPreviewArtifact.href)}"
-                                        rel="noreferrer"
-                                        target="_blank"
-                                        aria-label="${escapeHtml(`handoff preview 새 탭 열기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
-                                        title="${escapeHtml(`handoff preview 새 탭 열기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`)}"
-                                      >새 탭 열기</a>
-                                    `
-                                  : ''}
-                                ${renderReleaseHandoffLinkCopyButton({
-                                  action: 'copy-release-handoff-preview-link',
-                                  actionLabel: `현재 handoff preview 링크 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`,
-                                  artifactId: handoffPreviewArtifact.id || '',
-                                  attributes: 'data-release-handoff-current-preview-link-copy="true"',
-                                  buttonText: '현재 링크 복사',
-                                  copiedText: '현재 링크 복사됨',
-                                  successNotice: `${handoffPreviewArtifact.label || '현재 handoff preview'} 링크를 복사했습니다.`,
-                                })}
-                                ${renderReleaseClearActionButton({
-                                  action: 'clear-release-handoff-preview',
-                                  actionLabel: `handoff preview 닫기: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`,
-                                  buttonText: '미리보기 닫기',
-                                })}
-                              </div>
-                            </div>
-                            <div class="release-handoff-meta">
-                              <span class="item-meta mono">${escapeHtml(handoffPreviewArtifact.path || '-')}</span>
-                              <span class="item-meta">${escapeHtml(handoffPreviewArtifact.updatedAt ? formatDate(handoffPreviewArtifact.updatedAt) : '미생성')}</span>
-                              ${handoffPreviewLineCount
-                                ? `<span class="item-meta">${escapeHtml(String(handoffPreviewLineCount))}줄</span>`
-                                : ''}
-                            </div>
-                            ${handoffPreviewStructuredSummaryRows.length
-                              ? `
-                                  <div class="release-handoff-summary release-handoff-preview-summary">
-                                    ${handoffPreviewStructuredSummaryRows
-                                      .map(
-                                        (row) => `
-                                          <div class="harness-row">
-                                            <div class="item-title">${escapeHtml(row.label)}</div>
-                                            <div class="item-meta">${escapeHtml(row.value)}</div>
-                                          </div>
-                                        `,
-                                      )
-                                      .join('')}
-                                    ${getReleaseHandoffStructuredSummaryDetails(handoffPreviewArtifact).length
-                                      ? `
-                                          <div class="release-handoff-summary-details">
-                                            ${getReleaseHandoffStructuredSummaryDetails(handoffPreviewArtifact)
-                                              .map(
-                                                (detail) => `
-                                                  <div class="release-handoff-summary-detail" data-release-handoff-preview-structured-summary-detail="true">
-                                                    <div class="release-handoff-summary-detail-head">
-                                                      <span class="item-title">${escapeHtml(detail.label)}</span>
-                                                      ${renderReleaseHandoffStructuredSummaryCopyButton({
-                                                        action: 'copy-release-handoff-structured-summary-detail',
-                                                        actionLabel: `현재 handoff summary line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'}`,
-                                                        artifactId: handoffPreviewArtifact.id || '',
-                                                        attributes: `data-release-handoff-current-preview-structured-summary-detail-copy="${escapeHtml(detail.key || '')}"`,
-                                                        buttonText: '현재 line 복사',
-                                                        copiedText: '현재 line 복사됨',
-                                                        detailKey: detail.key || '',
-                                                        successNotice: `${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} line을 복사했습니다.`,
-                                                      })}
-                                                    </div>
-                                                    <span class="item-meta mono">${escapeHtml(detail.overviewLine)}</span>
-                                                    ${detail.stableLines?.length
-                                                      ? `
-                                                          <div class="release-handoff-summary-stable-lines">
-                                                            <span class="item-meta">stable lines ${escapeHtml(String(detail.stableLineCount || detail.stableLines.length || 0))}</span>
-                                                            ${detail.stableLines
-                                                              .map(
-                                                                (line, lineIndex) => `
-                                                                  <div class="release-handoff-summary-stable-line-row">
-                                                                    <span class="item-meta mono release-handoff-summary-stable-line">${escapeHtml(line)}</span>
-                                                                    ${renderReleaseHandoffStructuredSummaryCopyButton({
-                                                                      action: 'copy-release-handoff-structured-summary-stable-line',
-                                                                      actionLabel: `현재 handoff summary stable line 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'} ${detail.label || detail.key || 'detail'} ${lineIndex + 1}`,
-                                                                      artifactId: handoffPreviewArtifact.id || '',
-                                                                      attributes: `data-release-handoff-current-preview-structured-summary-stable-line-copy="${escapeHtml(`${detail.key || ''}:${lineIndex}`)}"`,
-                                                                      buttonText: '현재 stable line 복사',
-                                                                      copiedText: '현재 stable line 복사됨',
-                                                                      detailKey: detail.key || '',
-                                                                      lineIndex,
-                                                                      successNotice: `${handoffPreviewArtifact.label || '현재 handoff summary'} ${detail.label || 'detail'} stable line을 복사했습니다.`,
-                                                                    })}
-                                                                  </div>
-                                                                `,
-                                                              )
-                                                              .join('')}
-                                                          </div>
-                                                        `
-                                                      : ''}
-                                                  </div>
-                                                `,
-                                              )
-                                              .join('')}
-                                          </div>
-                                        `
-                                      : ''}
-                                    ${handoffPreviewStructuredSummaryOverviewLine
-                                      ? `
-                                          <div class="item-meta mono release-handoff-summary-overview" data-release-handoff-preview-structured-summary-overview="true">
-                                            ${escapeHtml(handoffPreviewStructuredSummaryOverviewLine)}
-                                          </div>
-                                          <div class="release-handoff-summary-actions">
-                                            ${renderReleaseHandoffStructuredSummaryCopyButton({
-                                              action: 'copy-release-handoff-structured-summary',
-                                              actionLabel: `현재 handoff summary overview 복사: ${handoffPreviewArtifact.label || handoffPreviewArtifact.id || handoffPreviewArtifact.path || 'artifact'}`,
-                                              artifactId: handoffPreviewArtifact.id || '',
-                                              attributes: 'data-release-handoff-current-preview-structured-summary-copy="true"',
-                                              buttonText: '현재 요약 복사',
-                                              copiedText: '현재 요약 복사됨',
-                                              successNotice: `${handoffPreviewArtifact.label || '현재 handoff summary'} overview line을 복사했습니다.`,
-                                            })}
-                                          </div>
-                                        `
-                                      : ''}
-                                    ${handoffPreviewStructuredSummarySha
-                                      ? `
-                                          <div class="item-meta mono release-handoff-summary-sha" data-release-handoff-preview-structured-summary-sha="true">
-                                            sha ${escapeHtml(handoffPreviewStructuredSummarySha)}
-                                          </div>
-                                        `
-                                      : ''}
-                                  </div>
-                                `
-                              : ''}
-                            ${handoffPreviewStatus === 'loading'
-                              ? `
-                                  <div class="release-handoff-preview-body release-handoff-preview-loading" data-release-handoff-preview-body>
-                                    선택한 artifact를 불러오는 중입니다.
-                                  </div>
-                                `
-                              : handoffPreviewStatus === 'error'
-                                ? `
-                                    <div class="release-stale-note">
-                                      <div class="release-stale-line" data-release-handoff-preview-body>${escapeHtml(handoffPreviewError || 'artifact preview를 불러오지 못했습니다.')}</div>
-                                    </div>
-                                  `
-                                : String(handoffPreviewArtifact.format || '').trim().toLowerCase() === 'markdown'
-                                  ? `
-                                      <div class="release-handoff-preview-body markdown-surface" data-release-handoff-preview-body>
-                                        ${markdownToHtml(handoffPreviewContent || '미리볼 내용이 없습니다.')}
-                                      </div>
-                                    `
-                                  : `
-                                      <pre class="release-handoff-preview-code" data-release-handoff-preview-body>${escapeHtml(handoffPreviewContent || '미리볼 내용이 없습니다.')}</pre>
-                                    `}
-                            ${handoffPreviewStatus === 'ready' && handoffPreviewTruncated
-                              ? `
-                                  <div class="item-meta" data-release-handoff-preview-note>
-                                    총 ${escapeHtml(String(handoffPreviewLineCount))}줄 중 앞부분만 표시했습니다. 전체 내용은 열기 링크로 확인하세요.
-                                  </div>
-                                `
-                              : ''}
-                          </section>
-                        `
-                      : ''}
-                  </article>
-                `
-              : ''}
-            <div class="release-doc-grid">
-              <article class="release-doc-surface markdown-surface" data-release-doc-kind="closeout">
-                <div class="release-doc-head">
-                  <strong>closeout</strong>
-                  <span class="item-meta mono">${escapeHtml(closeout.path || '-')}</span>
-                </div>
-                ${markdownToHtml(closeout.markdown || '문서가 없습니다.')}
-              </article>
-              <article class="release-doc-surface markdown-surface" data-release-doc-kind="evidence">
-                <div class="release-doc-head">
-                  <strong>evidence</strong>
-                  <span class="item-meta mono">${escapeHtml(evidence.path || '-')}</span>
-                </div>
-                ${markdownToHtml(evidence.markdown || '문서가 없습니다.')}
-              </article>
-              <article class="release-doc-surface markdown-surface" data-release-doc-kind="handoff">
-                <div class="release-doc-head">
-                  <strong>handoff</strong>
-                  <span class="item-meta mono">${escapeHtml(handoff.path || '-')}</span>
-                </div>
-                ${markdownToHtml(handoff.markdown || '문서가 없습니다.')}
-              </article>
-            </div>
+            ${renderReleaseHandoffDocuments({
+              copyButtons: releaseHandoffDocumentCopyButtons,
+              view: releaseHandoffDocumentView,
+            })}
           </div>
         </section>
       </div>

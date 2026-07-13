@@ -15,6 +15,7 @@ import {
   getReleaseHandoffStructuredSummaryDetails,
   getReleaseHandoffStructuredSummaryOverviewLine,
 } from './release-handoff-summary.js';
+import { isReleaseHandoffPreviewable } from './release-handoff-document-view.js';
 import {
   markCopiedCurrentViewLink,
   markCopiedReleaseBlockerClosureChecklist,
@@ -98,7 +99,6 @@ import {
   getReleaseCurrentOpenBlockerActions,
   getValidReleaseProductionBlockerIndex,
   isReleaseBlockerActionVisibleForCopyScope,
-  isReleaseHandoffPreviewable,
   setUiNotice,
 } from '../app.js';
 

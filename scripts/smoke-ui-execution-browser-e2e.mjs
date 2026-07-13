@@ -12,6 +12,7 @@ import {
 } from '../src/core/visual-evidence-manifest-service.mjs';
 import { seedExecutionV1Docs } from './execution-v1-test-fixtures.mjs';
 import { runCommandWithHardTimeout } from './process-timeout-utils.mjs';
+import { fetchServedFrontendBundle } from './ui-smoke-helpers.mjs';
 
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
@@ -2336,20 +2337,18 @@ serverProcess.stderr.on('data', (chunk) => {
 try {
   await waitForServer(baseUrl, serverProcess, serverOutput);
 
-  const servedAppJs = await fetch(`${baseUrl}/app.js`).then((response) => response.text());
+  const servedFrontendBundle = await fetchServedFrontendBundle(baseUrl);
   const releaseDocAssetSanity = {
-    closeoutLabelPresent: servedAppJs.includes('>closeout</strong>'),
-    closeoutMarkerPresent: servedAppJs.includes('data-release-doc-kind="closeout"'),
-    evidenceLabelPresent: servedAppJs.includes('>evidence</strong>'),
-    evidenceMarkerPresent: servedAppJs.includes('data-release-doc-kind="evidence"'),
+    documentKindsPresent: servedFrontendBundle.includes("['closeout', 'evidence', 'handoff']"),
+    documentLabelTemplatePresent: servedFrontendBundle.includes('<strong>${kind}</strong>'),
+    documentMarkerTemplatePresent: servedFrontendBundle.includes('data-release-doc-kind="${kind}"'),
   };
   assert.deepEqual(
     releaseDocAssetSanity,
     {
-      closeoutLabelPresent: true,
-      closeoutMarkerPresent: true,
-      evidenceLabelPresent: true,
-      evidenceMarkerPresent: true,
+      documentKindsPresent: true,
+      documentLabelTemplatePresent: true,
+      documentMarkerTemplatePresent: true,
     },
     JSON.stringify(releaseDocAssetSanity),
   );
