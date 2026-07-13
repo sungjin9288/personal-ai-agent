@@ -49,7 +49,6 @@ import { createFactGraphService } from './fact-graph-service.mjs';
 import {
   attachGatewayEventToSourceContext,
   normalizeGatewayEvent,
-  summarizeGatewayEventForTimeline,
 } from './gateway-event-service.mjs';
 import { createId } from './id.mjs';
 import { createLearningCandidateAudit } from './learning-candidate-audit.mjs';
@@ -200,11 +199,16 @@ import {
 import {
   buildGatewayEventAuditRecord,
   buildIdentitySessionAuditRecord,
-  buildIdentitySessionContextTimelineEvent,
-  buildSandboxDecisionTimelineEvent,
   summarizeGatewayEventAudit,
   summarizeIdentitySessionAudit,
 } from './audit-records.mjs';
+import {
+  buildMissionGatewayTimelineEvents,
+  buildMissionMaintenanceTimelineEvents,
+  buildOperatorGatewayTimelineEvents,
+  buildOperatorMaintenanceTimelineEvents,
+  sortTimelineEvents,
+} from './timeline-assembly.mjs';
 import {
   buildEscalationReminderNote,
   buildInitialOwnerHistoryEntry,
@@ -550,10 +554,6 @@ function getLatestOrchestrationProfileMetadata(items, getTimestamp) {
   return latest?.metadata || null;
 }
 
-function sortTimelineEvents(items) {
-  return [...items].sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
-}
-
 function parseMarkdownBulletSection(content, sectionName) {
   const normalizedContent = String(content || '');
   const header = `## ${sectionName}`;
@@ -574,22 +574,6 @@ function parseMarkdownBulletSection(content, sectionName) {
     .filter((line) => line.startsWith('- '))
     .map((line) => line.replace(/^- /, '').trim())
     .filter(Boolean);
-}
-
-function formatMaintenanceRunDetail(run) {
-  const noOpSuffix = Number(run.totalRemindedCount || 0) === 0 ? ' [no-op]' : '';
-  const noteSuffix = run.note ? ` note=${run.note}` : '';
-  const specialistRetrySummary = formatIncidentCountMap(
-    run.specialistFollowUpRetryPolicyCounts || run.specialistFollowUpRemindersSummary?.retryPolicyCounts || {},
-  );
-  const specialistRouteSummary = formatIncidentCountMap(
-    run.specialistFollowUpRemediationRouteCounts || run.specialistFollowUpRemindersSummary?.remediationRouteCounts || {},
-  );
-  const specialistSuffix =
-    specialistRetrySummary || specialistRouteSummary
-      ? ` specialist-retry=${specialistRetrySummary || 'none'}, specialist-routes=${specialistRouteSummary || 'none'},`
-      : '';
-  return `Maintenance sweep${noOpSuffix}: synced=${run.syncedCount || 0}, reminded=${run.totalRemindedCount || 0}, monitoring=${run.escalationRemindedCount || 0}, handoff=${run.ownerHandoffRemindedCount || 0}, provider-attention=${run.providerAttentionRemindedCount || 0}, specialist-follow-up=${run.specialistFollowUpRemindedCount || 0},${specialistSuffix} acknowledged=${run.acknowledgedMaintenanceRequiredCount || 0}, resolved=${run.resolvedMaintenanceRequiredCount || 0}, remaining=${run.remainingMaintenanceRequiredCount || 0}.${noteSuffix}`;
 }
 
 function formatAgentInputSummary({ role, mission, providerId }) {
@@ -12036,49 +12020,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }
     }
 
-    for (const event of gatewayEvents) {
-      const identitySessionTimelineEvent = buildIdentitySessionContextTimelineEvent({ event, mission });
-      const sandboxTimelineEvent = buildSandboxDecisionTimelineEvent({ event, mission });
-      timeline.push({
-        at: event.at,
-        detail: summarizeGatewayEventForTimeline(event),
-        gatewayEventId: event.id,
-        gatewayEventType: event.eventType,
-        identitySessionBindingStatus: event.identitySessionContext?.bindingStatus || null,
-        identitySessionContext: event.identitySessionContext || null,
-        identitySessionContextId: event.identitySessionContext?.id || event.identity?.identitySessionContextId || null,
-        identitySessionContextPolicyId: event.identitySessionContext?.policyId || null,
-        kind: 'gateway-event-recorded',
-        missionId: mission.id,
-        permissionApprovalRequired: Boolean(event.permissionDecision?.approvalRequired),
-        permissionDecision: event.permissionDecision || null,
-        permissionDecisionId: event.permissionDecision?.id || event.permissionPolicy?.permissionDecisionId || null,
-        permissionDecisionResult: event.permissionDecision?.decision || event.permissionPolicy?.decision || null,
-        permissionPolicyId: event.permissionDecision?.policyId || event.permissionPolicy?.policyId || null,
-        providerFallbackPolicy: event.providerRoute?.policyId || null,
-        providerId: event.providerRoute?.providerId || event.bindings?.providerId || null,
-        route: event.route?.name || null,
-        sandboxDecision: event.sandboxDecision || null,
-        sandboxDecisionId: event.sandboxDecision?.id || event.sandboxPolicy?.sandboxDecisionId || null,
-        sandboxDeniedCapabilities:
-          event.sandboxDecision?.capabilities?.deniedCapabilities || event.sandboxPolicy?.deniedCapabilities || [],
-        sandboxMode: event.sandboxDecision?.mode || event.sandboxPolicy?.mode || null,
-        sandboxPolicyId: event.sandboxDecision?.policyId || event.sandboxPolicy?.policyId || null,
-        sandboxReason: event.sandboxDecision?.reason || event.sandboxPolicy?.reason || null,
-        sessionId: event.bindings?.sessionId || null,
-        sourceType: event.source?.sourceType || null,
-        status: event.status || 'recorded',
-        workspaceId: event.bindings?.workspaceId || mission.workspaceId,
-      });
-
-      if (identitySessionTimelineEvent) {
-        timeline.push(identitySessionTimelineEvent);
-      }
-
-      if (sandboxTimelineEvent) {
-        timeline.push(sandboxTimelineEvent);
-      }
-    }
+    timeline.push(...buildMissionGatewayTimelineEvents({ gatewayEvents, mission }));
 
     for (const candidate of learningCandidates) {
       timeline.push({
@@ -12404,45 +12346,12 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }
     }
 
-    for (const maintenanceRun of listRelatedMaintenanceRunsForMission(mission.id)) {
-      const missionEffect = getMaintenanceMissionEffect(maintenanceRun, mission.id);
-      const isDirectMissionRun = maintenanceRun.missionId === mission.id;
-
-      if (isDirectMissionRun && Number(maintenanceRun.acknowledgedMaintenanceRequiredCount || 0) > 0) {
-        timeline.push({
-          acknowledgedCount: maintenanceRun.acknowledgedMaintenanceRequiredCount,
-          at: maintenanceRun.createdAt,
-          detail: `Maintenance sweep acknowledged ${maintenanceRun.acknowledgedMaintenanceRequiredCount} maintenance-required action(s) covering ${maintenanceRun.beforePressureSummary?.currentDueCandidateCountTotal || 0} due candidate(s).`,
-          kind: 'maintenance-required-acknowledged',
-          maintenanceRunId: maintenanceRun.id,
-          missionId: mission.id,
-        });
-      }
-
-      if (isDirectMissionRun && Number(maintenanceRun.resolvedMaintenanceRequiredCount || 0) > 0) {
-        timeline.push({
-          at: maintenanceRun.createdAt,
-          detail: `Maintenance sweep resolved ${maintenanceRun.resolvedMaintenanceRequiredCount} maintenance-required action(s); remaining=${maintenanceRun.remainingMaintenanceRequiredCount || 0}.`,
-          kind: 'maintenance-required-resolved',
-          maintenanceRunId: maintenanceRun.id,
-          missionId: mission.id,
-          resolvedCount: maintenanceRun.resolvedMaintenanceRequiredCount,
-        });
-      }
-
-      timeline.push({
-        at: maintenanceRun.createdAt,
-        detail: isDirectMissionRun
-          ? formatMaintenanceRunDetail(maintenanceRun)
-          : `Workspace maintenance sweep affected this mission: reminded=${missionEffect?.totalRemindedCount || 0}, monitoring=${missionEffect?.escalationRemindedCount || 0}, handoff=${missionEffect?.ownerHandoffRemindedCount || 0}, provider-attention=${missionEffect?.providerAttentionRemindedCount || 0}, specialist-follow-up=${missionEffect?.specialistFollowUpRemindedCount || 0}.${maintenanceRun.note ? ` note=${maintenanceRun.note}` : ''}`,
-        kind: 'maintenance-run',
-        maintenanceRunId: maintenanceRun.id,
-        missionId: mission.id,
-        note: maintenanceRun.note || null,
-        remindedCount: maintenanceRun.totalRemindedCount || 0,
-        status: Number(maintenanceRun.totalRemindedCount || 0) > 0 ? 'completed' : 'no-op',
-      });
-    }
+    timeline.push(
+      ...buildMissionMaintenanceTimelineEvents({
+        mission,
+        runs: listRelatedMaintenanceRunsForMission(mission.id),
+      }),
+    );
 
     for (const entry of memoryEntries) {
       timeline.push({
@@ -12716,36 +12625,17 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }
     }
 
-    for (const event of store.listGatewayEvents({
-      missionId: filter.missionId,
-      workspaceId: filter.workspaceId,
-    })) {
-      const mission = event.bindings?.missionId ? missionById.get(event.bindings.missionId) : null;
-      const workspace = event.bindings?.workspaceId
-        ? workspaceById.get(event.bindings.workspaceId)
-        : mission
-          ? workspaceById.get(mission.workspaceId)
-          : null;
-      if (!workspace) {
-        continue;
-      }
-      if (filter.missionId && event.bindings?.missionId !== filter.missionId) {
-        continue;
-      }
-      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
-        continue;
-      }
-
-      const identitySessionTimelineEvent = buildIdentitySessionContextTimelineEvent({ event, mission, workspace });
-      if (identitySessionTimelineEvent) {
-        events.push(identitySessionTimelineEvent);
-      }
-
-      const sandboxTimelineEvent = buildSandboxDecisionTimelineEvent({ event, mission, workspace });
-      if (sandboxTimelineEvent) {
-        events.push(sandboxTimelineEvent);
-      }
-    }
+    events.push(
+      ...buildOperatorGatewayTimelineEvents({
+        events: store.listGatewayEvents({
+          missionId: filter.missionId,
+          workspaceId: filter.workspaceId,
+        }),
+        filter,
+        missionById,
+        workspaceById,
+      }),
+    );
 
     for (const escalation of store.listEscalations()) {
       const mission = missionById.get(escalation.missionId);
@@ -12917,65 +12807,14 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       });
     }
 
-    for (const maintenanceRun of store.listMaintenanceRuns()) {
-      const workspace = workspaceById.get(maintenanceRun.workspaceId);
-      const mission = maintenanceRun.missionId ? missionById.get(maintenanceRun.missionId) : null;
-      if (!workspace) {
-        continue;
-      }
-      if (filter.workspaceId && workspace.id !== filter.workspaceId) {
-        continue;
-      }
-      if (filter.missionId && maintenanceRun.missionId !== filter.missionId) {
-        continue;
-      }
-
-      if (Number(maintenanceRun.acknowledgedMaintenanceRequiredCount || 0) > 0) {
-        events.push({
-          acknowledgedCount: maintenanceRun.acknowledgedMaintenanceRequiredCount,
-          at: maintenanceRun.createdAt,
-          detail: `Maintenance sweep acknowledged ${maintenanceRun.acknowledgedMaintenanceRequiredCount} maintenance-required action(s) covering ${maintenanceRun.beforePressureSummary?.currentDueCandidateCountTotal || 0} due candidate(s).`,
-          kind: 'maintenance-required-acknowledged',
-          maintenanceRunId: maintenanceRun.id,
-          missionId: mission ? mission.id : maintenanceRun.missionId || null,
-          missionTitle: mission ? mission.title : null,
-          note: maintenanceRun.note || null,
-          status: 'acknowledged',
-          workspaceId: workspace.id,
-          workspaceName: workspace.name,
-        });
-      }
-
-      if (Number(maintenanceRun.resolvedMaintenanceRequiredCount || 0) > 0) {
-        events.push({
-          at: maintenanceRun.createdAt,
-          detail: `Maintenance sweep resolved ${maintenanceRun.resolvedMaintenanceRequiredCount} maintenance-required action(s); remaining=${maintenanceRun.remainingMaintenanceRequiredCount || 0}.`,
-          kind: 'maintenance-required-resolved',
-          maintenanceRunId: maintenanceRun.id,
-          missionId: mission ? mission.id : maintenanceRun.missionId || null,
-          missionTitle: mission ? mission.title : null,
-          note: maintenanceRun.note || null,
-          resolvedCount: maintenanceRun.resolvedMaintenanceRequiredCount,
-          status: 'resolved',
-          workspaceId: workspace.id,
-          workspaceName: workspace.name,
-        });
-      }
-
-      events.push({
-        at: maintenanceRun.createdAt,
-        detail: formatMaintenanceRunDetail(maintenanceRun),
-        kind: 'maintenance-run',
-        maintenanceRunId: maintenanceRun.id,
-        missionId: mission ? mission.id : maintenanceRun.missionId || null,
-        missionTitle: mission ? mission.title : null,
-        note: maintenanceRun.note || null,
-        remindedCount: maintenanceRun.totalRemindedCount || 0,
-        status: Number(maintenanceRun.totalRemindedCount || 0) > 0 ? 'completed' : 'no-op',
-        workspaceId: workspace.id,
-        workspaceName: workspace.name,
-      });
-    }
+    events.push(
+      ...buildOperatorMaintenanceTimelineEvents({
+        filter,
+        missionById,
+        runs: store.listMaintenanceRuns(),
+        workspaceById,
+      }),
+    );
 
     return sortTimelineEvents(events);
   }

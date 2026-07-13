@@ -31,7 +31,8 @@
 | R2.1 Action item builder | 완료 | approval, blocked, reviewer, maintenance 표시 record를 store 조회에서 분리 |
 | R2.2 Specialist·provider attention builder | 완료 | specialist와 provider attention 표시 record를 store·registry·permission 조회에서 분리 |
 | R2.3 Mutation·maintenance orchestration | 완료 | reminder·acknowledgement audit record와 maintenance run 계산을 store write에서 분리 |
-| R3 Timeline assembly | 다음 작업 | mission·workspace·operator event 수집과 정렬 경계를 점검할 예정 |
+| R3 Timeline assembly | 완료 | gateway·identity/session·sandbox·maintenance event 조립과 timeline 정렬을 순수 모듈로 이동 |
+| R4 Operator UI module boundary | 다음 작업 | `app.js`의 harness·release·mission/action 화면 경계를 점검할 예정 |
 
 R1 완료 검증:
 
@@ -62,6 +63,16 @@ R2.3 구현 검증:
 - `npm run smoke:docs-gates`: 33개 통과
 - `npm run smoke:all`: 165개 통과
 - store write는 `mission-service`에 유지하고 async remediation, permission decision, fallback policy는 변경하지 않았다.
+
+R3 구현 검증:
+
+- `npm test`: 513개 통과
+- mission·workspace·operator timeline smoke 3개 통과
+- identity/session·gateway·sandbox audit surface smoke 3개 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- gateway source id, mission/workspace context, permission decision, sandbox decision 계약을 순수 모듈 단위 테스트로 고정
+- specialist와 provider fallback 도메인 로직은 변경하지 않고 기존 event를 같은 정렬 경계에 연결했다.
 
 ## 3. 변경 원칙
 
