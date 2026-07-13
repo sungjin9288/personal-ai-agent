@@ -32,12 +32,12 @@
 | R2.2 Specialist·provider attention builder | 완료 | specialist와 provider attention 표시 record를 store·registry·permission 조회에서 분리 |
 | R2.3 Mutation·maintenance orchestration | 완료 | reminder·acknowledgement audit record와 maintenance run 계산을 store write에서 분리 |
 | R3 Timeline assembly | 완료 | gateway·identity/session·sandbox·maintenance event 조립과 timeline 정렬을 순수 모듈로 이동 |
-| R4 Operator UI module boundary | 진행 중 | harness browse, mission/action inbox, release lifecycle·navigation action을 explicit dependency 모듈로 이동 |
+| R4 Operator UI module boundary | 진행 중 | harness browse, mission/action inbox, release lifecycle·navigation·copy action을 explicit dependency 모듈로 이동 |
 | R4.2 Mission/action inbox UI | 완료 | 필터 상태·API query·화면 조립·DOM wiring을 분리하고 mutation 승인은 app callback에 유지 |
 | R4.3.1 Release lifecycle actions | 완료 | preflight, refresh, regeneration, snapshot 확인·취소 wiring을 분리하고 mutation과 승인 판단은 app callback에 유지 |
 | R4.3.2a Release navigation/state actions | 완료 | history, blocker, provider의 focus·filter·clear·toggle wiring 17개를 분리 |
-| R4.3.2b Release copy actions | 다음 작업 | copy action 71개의 routing을 복사 대상별로 정리 |
-| R4.3.2c Release preview actions | 예정 | preview action 2개를 분리하고 release surface의 generic listener를 제거 |
+| R4.3.2b Release copy actions | 완료 | copy action 71개의 handler 선택과 dataset payload 정규화를 복사 대상별로 분리 |
+| R4.3.2c Release preview actions | 다음 작업 | preview action 2개를 분리하고 release surface의 generic listener를 제거 |
 | R4.3.3 Release status rendering | 예정 | release 화면 조립을 의미가 이어지는 하위 surface 단위로 분리 |
 
 R1 완료 검증:
@@ -122,6 +122,18 @@ R4.3.2a release navigation/state actions 구현 검증:
 - 실제 browser E2E와 생성 artifact restore smoke 통과
 - history, blocker, production blocker, provider의 focus·filter·clear·toggle action 17개를 `release-status-actions.js`로 이동했다. state 변경, URL 기록, scroll target 결정은 기존 `release-navigation.js` callback에 유지한다.
 - 조사된 release action 90개 가운데 copy 71개와 preview 2개는 각각 R4.3.2b와 R4.3.2c에서 검증 가능한 별도 묶음으로 처리한다.
+
+R4.3.2b release copy actions 구현 검증:
+
+- `npm test`: 537개 통과
+- release lifecycle·navigation·copy action과 frontend module graph·TDZ guard 단위 테스트 12개 통과
+- copy action ownership 71개와 provider-only action·handler 25개 일치를 verifier로 확인
+- UI harness browse, learning promotion surface, execution console, production readiness, release blocker handoff smoke 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E의 copy·fallback session 38개가 모두 error-free였고 생성 artifact restore smoke 통과
+- copy action 71개의 handler 선택과 dataset payload 정규화를 `release-status-actions.js`로 이동했다. clipboard, prompt fallback, copied-state, notice 처리는 기존 `copy-handlers.js` namespace에 유지한다.
+- `wireQuickActions()`에는 copy action이 남지 않았으며 preview toggle·clear 2개만 R4.3.2c 대상으로 남아 있다.
 
 ## 3. 변경 원칙
 

@@ -249,6 +249,11 @@ try {
   assert.equal(appJs.includes('focusHistory: focusReleaseHistoryEntry'), true);
   assert.equal(appJs.includes('filterBlockers: setReleaseBlockerFilter'), true);
   assert.equal(appJs.includes('filterHistory: setReleaseHistoryFilter'), true);
+  assert.equal(appJs.includes('export const RELEASE_STATUS_COPY_ACTIONS = Object.freeze(['), true);
+  assert.equal(appJs.includes('export function wireReleaseStatusCopyActions({'), true);
+  assert.equal(appJs.includes("['copy-release-target-evidence-intake-summary', 'copyReleaseTargetEvidenceIntakeSummary']"), true);
+  assert.equal(appJs.includes("['copy-release-blocker-handoff', 'copyReleaseBlockerHandoff']"), true);
+  assert.equal(appJs.includes('handlers: copyHandlers'), true);
   assert.equal(appJs.includes('export function wireHarnessDocumentBrowseActions({'), true);
   assert.equal(appJs.includes('container: elements.harnessSource'), true);
   assert.equal(appJs.includes('data-document-action="edit"'), true);

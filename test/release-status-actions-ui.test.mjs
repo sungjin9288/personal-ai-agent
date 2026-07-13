@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
+  RELEASE_STATUS_COPY_ACTIONS,
+  wireReleaseStatusCopyActions,
   wireReleaseStatusLifecycleActions,
   wireReleaseStatusNavigationActions,
 } from '../src/web/public/lib/release-status-actions.js';
@@ -76,6 +78,32 @@ function createNavigation(buttons, state = {}) {
     toggleHistory: record('toggle-history'),
   });
   return calls;
+}
+
+function createCopyActions(buttons) {
+  const calls = [];
+  const handlers = new Proxy({}, {
+    get(_target, name) {
+      return (options) => calls.push([name, options]);
+    },
+  });
+  wireReleaseStatusCopyActions({
+    container: {
+      querySelectorAll(selector) {
+        assert.equal(selector, '[data-ui-action]');
+        return buttons;
+      },
+    },
+    handlers,
+  });
+  return calls;
+}
+
+async function dispatchCopyAction(action, dataset = {}) {
+  const button = createButton(action, dataset);
+  const calls = createCopyActions([button]);
+  await button.click();
+  return calls[0];
 }
 
 test('release lifecycle wiring ignores unrelated quick actions', async () => {
@@ -324,4 +352,112 @@ test('release history navigation preserves active filters while changing one dim
     ['clear-history-filter', { historyMode: 'push' }],
     ['notice', 'release action history 필터를 해제했습니다.'],
   ]);
+});
+
+test('release copy wiring owns all 71 copy actions and ignores other release actions', async () => {
+  assert.equal(RELEASE_STATUS_COPY_ACTIONS.length, 71);
+  assert.equal(new Set(RELEASE_STATUS_COPY_ACTIONS).size, 71);
+
+  const buttons = RELEASE_STATUS_COPY_ACTIONS.map((action) => createButton(action));
+  const preview = createButton('toggle-release-handoff-preview');
+  const calls = createCopyActions([...buttons, preview]);
+
+  assert.equal(preview.hasListener('click'), false);
+  for (const button of buttons) {
+    assert.equal(button.hasListener('click'), true);
+    await button.click();
+  }
+  assert.equal(calls.length, 71);
+});
+
+test('release copy wiring preserves shared payload families', async () => {
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-target-evidence-intake-summary', { uiCopyKey: 'target-key' }),
+    ['copyReleaseTargetEvidenceIntakeSummary', { copyKey: 'target-key' }],
+  );
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-blocker-handoff', {
+      uiBlocker: 'blocker-1',
+      uiCopyKey: 'blocker-key',
+    }),
+    ['copyReleaseBlockerHandoff', { blockerId: 'blocker-1', copyKey: 'blocker-key' }],
+  );
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-production-blocker-commands', {
+      uiCopyKey: 'production-key',
+      uiIndex: '8',
+    }),
+    ['copyReleaseProductionBlockerCommands', { blockerIndex: '8', copyKey: 'production-key' }],
+  );
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-handoff-preview-link', {
+      uiSuccessNotice: 'copied',
+      uiValue: 'artifact-1',
+    }),
+    ['copyReleaseHandoffPreviewLink', { artifactId: 'artifact-1', successNotice: 'copied' }],
+  );
+});
+
+test('release copy wiring keeps link, command, and structured-summary context explicit', async () => {
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-blocker-link', {
+      uiBlocker: 'blocker-1',
+      uiCopyKey: 'blocker-key',
+    }),
+    ['copyReleaseBlockerLink', {
+      blockerId: 'blocker-1',
+      copyKey: 'blocker-key',
+      successNotice: '선택한 release blocker 링크를 복사했습니다.',
+    }],
+  );
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-production-blocker-link'),
+    ['copyReleaseProductionBlockerLink', {
+      blockerIndex: 0,
+      copyKey: '',
+      successNotice: '선택한 production-ready blocker 링크를 복사했습니다.',
+    }],
+  );
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-flow-link', {
+      uiCopyKey: 'flow-key',
+      uiOutcome: 'blocked',
+      uiProvider: 'openai',
+      uiScope: 'snapshot',
+      uiValue: 'history-1',
+    }),
+    ['copyReleaseTriageLink', {
+      copyAction: 'copy-release-flow-link',
+      copyKey: 'flow-key',
+      focusedBlockerId: '',
+      focusedProductionBlockerIndex: '',
+      focusedProvider: '',
+      focusedHistoryId: 'history-1',
+      historyOutcome: 'blocked',
+      historyProvider: 'openai',
+      historyScope: 'snapshot',
+      successNotice: '선택한 release flow 링크를 복사했습니다.',
+    }],
+  );
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-command', {
+      uiLabel: 'preflight command',
+      uiValue: 'npm run preflight',
+    }),
+    ['copyReleaseCommand', { command: 'npm run preflight', label: 'preflight command' }],
+  );
+  assert.deepEqual(
+    await dispatchCopyAction('copy-release-handoff-structured-summary-stable-line', {
+      uiDetailKey: 'providers',
+      uiLineIndex: '2',
+      uiSuccessNotice: 'line copied',
+      uiValue: 'artifact-2',
+    }),
+    ['copyReleaseHandoffStructuredSummaryStableLine', {
+      artifactId: 'artifact-2',
+      detailKey: 'providers',
+      lineIndex: '2',
+      successNotice: 'line copied',
+    }],
+  );
 });

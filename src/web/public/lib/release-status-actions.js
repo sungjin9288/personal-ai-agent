@@ -30,6 +30,102 @@ const RELEASE_STATUS_NAVIGATION_ACTIONS = new Set([
   'toggle-release-production-blockers',
 ]);
 
+const RELEASE_COPY_KEY_HANDLER_NAMES = new Map([
+  ['copy-release-production-blocker-summary', 'copyReleaseProductionBlockerSummary'],
+  ['copy-release-blocker-filter-summary', 'copyReleaseBlockerFilterSummary'],
+  ['copy-release-blocker-provider-only-summary', 'copyReleaseBlockerProviderOnlySummary'],
+  ['copy-release-blocker-api-link', 'copyReleaseBlockerApiLink'],
+  ['copy-release-blocker-provider-only-api-link', 'copyReleaseBlockerProviderOnlyApiLink'],
+  ['copy-release-blocker-filter-package', 'copyReleaseBlockerFilterPackage'],
+  ['copy-release-blocker-provider-only-package', 'copyReleaseBlockerProviderOnlyPackage'],
+  ['copy-release-blocker-filter-closure-checklist', 'copyReleaseBlockerFilterClosureChecklist'],
+  ['copy-release-blocker-provider-only-closure-checklist', 'copyReleaseBlockerProviderOnlyClosureChecklist'],
+  ['copy-release-blocker-filter-closure-matrix', 'copyReleaseBlockerFilterClosureMatrixPackage'],
+  ['copy-release-blocker-provider-only-closure-matrix', 'copyReleaseBlockerProviderOnlyClosureMatrixPackage'],
+  ['copy-release-target-evidence-intake-summary', 'copyReleaseTargetEvidenceIntakeSummary'],
+  ['copy-release-target-evidence-provider-only-intake-summary', 'copyReleaseTargetEvidenceProviderOnlyIntakeSummary'],
+  ['copy-release-target-evidence-capture-template', 'copyReleaseTargetEvidenceCaptureTemplate'],
+  ['copy-release-target-evidence-provider-only-capture-template', 'copyReleaseTargetEvidenceProviderOnlyCaptureTemplate'],
+  ['copy-release-target-evidence-required-commands', 'copyReleaseTargetEvidenceRequiredCommands'],
+  ['copy-release-target-evidence-provider-only-required-commands', 'copyReleaseTargetEvidenceProviderOnlyRequiredCommands'],
+  ['copy-release-target-evidence-production-gap', 'copyReleaseTargetEvidenceProductionGap'],
+  ['copy-release-target-evidence-provider-only-production-gap', 'copyReleaseTargetEvidenceProviderOnlyProductionGap'],
+  ['copy-release-target-evidence-exception-register', 'copyReleaseTargetEvidenceExceptionRegister'],
+  ['copy-release-target-evidence-provider-only-exception-register', 'copyReleaseTargetEvidenceProviderOnlyExceptionRegister'],
+  ['copy-release-target-evidence-risk-decision-register', 'copyReleaseTargetEvidenceRiskDecisionRegister'],
+  ['copy-release-target-evidence-provider-only-risk-decision-register', 'copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister'],
+  ['copy-release-target-evidence-provider-references', 'copyReleaseTargetEvidenceProviderEvidenceReferences'],
+  ['copy-release-target-evidence-provider-only-provider-references', 'copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences'],
+  ['copy-release-target-evidence-residual-blockers', 'copyReleaseTargetEvidenceResidualBlockers'],
+  ['copy-release-target-evidence-provider-only-residual-blockers', 'copyReleaseTargetEvidenceProviderOnlyResidualBlockers'],
+  ['copy-release-target-evidence-closure-rules', 'copyReleaseTargetEvidenceClosureRules'],
+  ['copy-release-target-evidence-provider-only-closure-rules', 'copyReleaseTargetEvidenceProviderOnlyClosureRules'],
+  ['copy-release-target-evidence-submission-manifest', 'copyReleaseTargetEvidenceSubmissionManifest'],
+  ['copy-release-target-evidence-provider-only-submission-manifest', 'copyReleaseTargetEvidenceProviderOnlySubmissionManifest'],
+  ['copy-release-target-evidence-sanitized-register', 'copyReleaseTargetEvidenceSanitizedRegister'],
+  ['copy-release-target-evidence-provider-only-sanitized-register', 'copyReleaseTargetEvidenceProviderOnlySanitizedRegister'],
+  ['copy-release-target-evidence-boundary-map', 'copyReleaseTargetEvidenceBoundaryMap'],
+  ['copy-release-target-evidence-provider-only-boundary-map', 'copyReleaseTargetEvidenceProviderOnlyBoundaryMap'],
+  ['copy-release-target-evidence-command-rerun-log', 'copyReleaseTargetEvidenceCommandRerunLog'],
+  ['copy-release-target-evidence-provider-only-command-rerun-log', 'copyReleaseTargetEvidenceProviderOnlyCommandRerunLog'],
+  ['copy-release-target-evidence-decision-record', 'copyReleaseTargetEvidenceDecisionRecord'],
+  ['copy-release-target-evidence-provider-only-decision-record', 'copyReleaseTargetEvidenceProviderOnlyDecisionRecord'],
+  ['copy-release-target-evidence-blocker-disposition', 'copyReleaseTargetEvidenceBlockerDispositionRegister'],
+  ['copy-release-target-evidence-provider-only-blocker-disposition', 'copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister'],
+  ['copy-release-target-evidence-release-refresh', 'copyReleaseTargetEvidenceReleaseRefreshEvidence'],
+  ['copy-release-target-evidence-provider-only-release-refresh', 'copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence'],
+  ['copy-release-target-evidence-intake-packet', 'copyReleaseTargetEvidenceIntakePacket'],
+  ['copy-release-target-evidence-provider-only-intake-packet', 'copyReleaseTargetEvidenceProviderOnlyIntakePacket'],
+  ['copy-release-blocker-filter-handoff', 'copyReleaseBlockerFilterHandoff'],
+  ['copy-release-blocker-provider-only-handoff', 'copyReleaseBlockerProviderOnlyHandoff'],
+  ['copy-release-blocker-filter-commands', 'copyReleaseBlockerFilterCommands'],
+  ['copy-release-blocker-provider-only-commands', 'copyReleaseBlockerProviderOnlyCommands'],
+  ['copy-release-blocker-filter-evidence', 'copyReleaseBlockerFilterEvidence'],
+  ['copy-release-blocker-provider-only-evidence', 'copyReleaseBlockerProviderOnlyEvidence'],
+]);
+
+const RELEASE_BLOCKER_COPY_HANDLER_NAMES = new Map([
+  ['copy-release-blocker-handoff', 'copyReleaseBlockerHandoff'],
+  ['copy-release-blocker-closure-checklist', 'copyReleaseBlockerClosureChecklist'],
+  ['copy-release-blocker-package', 'copyReleaseBlockerPackage'],
+]);
+
+const RELEASE_PRODUCTION_BLOCKER_COPY_HANDLER_NAMES = new Map([
+  ['copy-release-production-blocker-handoff', 'copyReleaseProductionBlockerHandoff'],
+  ['copy-release-production-blocker-commands', 'copyReleaseProductionBlockerCommands'],
+  ['copy-release-production-blocker-package', 'copyReleaseProductionBlockerPackage'],
+]);
+
+const RELEASE_HANDOFF_COPY_HANDLER_NAMES = new Map([
+  ['copy-release-handoff-preview-link', 'copyReleaseHandoffPreviewLink'],
+  ['copy-release-handoff-open-link', 'copyReleaseHandoffOpenLink'],
+  ['copy-release-handoff-structured-summary', 'copyReleaseHandoffStructuredSummary'],
+]);
+
+const RELEASE_SPECIAL_COPY_ACTIONS = [
+  'copy-release-triage-link',
+  'copy-release-history-link',
+  'copy-release-blocker-link',
+  'copy-release-production-blocker-link',
+  'copy-release-provider-readiness-package',
+  'copy-release-evidence-doc-link',
+  'copy-release-command',
+  'copy-release-handoff-structured-summary-detail',
+  'copy-release-handoff-structured-summary-stable-line',
+  'copy-release-flow-link',
+  'copy-release-provider-link',
+];
+
+export const RELEASE_STATUS_COPY_ACTIONS = Object.freeze([
+  ...RELEASE_COPY_KEY_HANDLER_NAMES.keys(),
+  ...RELEASE_BLOCKER_COPY_HANDLER_NAMES.keys(),
+  ...RELEASE_PRODUCTION_BLOCKER_COPY_HANDLER_NAMES.keys(),
+  ...RELEASE_HANDOFF_COPY_HANDLER_NAMES.keys(),
+  ...RELEASE_SPECIAL_COPY_ACTIONS,
+]);
+
+const RELEASE_STATUS_COPY_ACTION_SET = new Set(RELEASE_STATUS_COPY_ACTIONS);
+
 export function wireReleaseStatusLifecycleActions({
   archiveSnapshot,
   armLiveConfirm,
@@ -291,6 +387,176 @@ export function wireReleaseStatusNavigationActions({
 
       clearHistoryFilter({ historyMode: 'push' });
       setNotice('release action history 필터를 해제했습니다.');
+    });
+  });
+}
+
+export function wireReleaseStatusCopyActions({
+  container,
+  handlers,
+}) {
+  container.querySelectorAll('[data-ui-action]').forEach((button) => {
+    const action = button.dataset.uiAction || '';
+    if (!RELEASE_STATUS_COPY_ACTION_SET.has(action)) {
+      return;
+    }
+
+    button.addEventListener('click', () => {
+      const value = button.dataset.uiValue || '';
+      const copyKey = button.dataset.uiCopyKey || '';
+      const copyKeyHandlerName = RELEASE_COPY_KEY_HANDLER_NAMES.get(action);
+      if (copyKeyHandlerName) {
+        void handlers[copyKeyHandlerName]({ copyKey });
+        return;
+      }
+
+      const blockerHandlerName = RELEASE_BLOCKER_COPY_HANDLER_NAMES.get(action);
+      if (blockerHandlerName) {
+        const blockerId = button.dataset.uiBlocker || value;
+        void handlers[blockerHandlerName]({
+          blockerId,
+          copyKey: copyKey || blockerId,
+        });
+        return;
+      }
+
+      const productionBlockerHandlerName = RELEASE_PRODUCTION_BLOCKER_COPY_HANDLER_NAMES.get(action);
+      if (productionBlockerHandlerName) {
+        void handlers[productionBlockerHandlerName]({
+          blockerIndex: button.dataset.uiIndex || value || 0,
+          copyKey,
+        });
+        return;
+      }
+
+      const handoffHandlerName = RELEASE_HANDOFF_COPY_HANDLER_NAMES.get(action);
+      if (handoffHandlerName) {
+        void handlers[handoffHandlerName]({
+          artifactId: value,
+          successNotice: button.dataset.uiSuccessNotice || '',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-triage-link') {
+        void handlers.copyReleaseTriageLink({ copyAction: action, copyKey });
+        return;
+      }
+
+      if (action === 'copy-release-history-link') {
+        void handlers.copyReleaseTriageLink({
+          copyAction: action,
+          copyKey,
+          focusedBlockerId: '',
+          focusedProductionBlockerIndex: '',
+          focusedProvider: '',
+          focusedHistoryId: value,
+          historyOutcome: '',
+          historyProvider: '',
+          historyScope: '',
+          successNotice: '선택한 release 기록 링크를 복사했습니다.',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-blocker-link') {
+        const blockerId = button.dataset.uiBlocker || value;
+        void handlers.copyReleaseBlockerLink({
+          blockerId,
+          copyKey: copyKey || blockerId,
+          successNotice: '선택한 release blocker 링크를 복사했습니다.',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-production-blocker-link') {
+        const blockerIndexValue = button.dataset.uiIndex || value;
+        void handlers.copyReleaseProductionBlockerLink({
+          blockerIndex: blockerIndexValue || 0,
+          copyKey: copyKey || blockerIndexValue,
+          successNotice: '선택한 production-ready blocker 링크를 복사했습니다.',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-provider-readiness-package') {
+        const provider = button.dataset.uiProvider || value;
+        void handlers.copyReleaseProviderReadinessPackage({
+          copyKey: copyKey || provider,
+          provider,
+        });
+        return;
+      }
+
+      if (action === 'copy-release-evidence-doc-link') {
+        const href = button.dataset.uiHref || value;
+        void handlers.copyReleaseEvidenceDocLink({
+          copyAction: action,
+          copyKey: copyKey || href,
+          href,
+          label: button.dataset.uiLabel || '',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-command') {
+        void handlers.copyReleaseCommand({
+          command: value,
+          label: button.dataset.uiLabel || 'release command',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-handoff-structured-summary-detail') {
+        void handlers.copyReleaseHandoffStructuredSummaryDetail({
+          artifactId: value,
+          detailKey: button.dataset.uiDetailKey || '',
+          successNotice: button.dataset.uiSuccessNotice || '',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-handoff-structured-summary-stable-line') {
+        void handlers.copyReleaseHandoffStructuredSummaryStableLine({
+          artifactId: value,
+          detailKey: button.dataset.uiDetailKey || '',
+          lineIndex: button.dataset.uiLineIndex || '',
+          successNotice: button.dataset.uiSuccessNotice || '',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-flow-link') {
+        void handlers.copyReleaseTriageLink({
+          copyAction: action,
+          copyKey,
+          focusedBlockerId: '',
+          focusedProductionBlockerIndex: '',
+          focusedProvider: '',
+          focusedHistoryId: value,
+          historyOutcome: button.dataset.uiOutcome || '',
+          historyProvider: button.dataset.uiProvider || '',
+          historyScope: button.dataset.uiScope || '',
+          successNotice: '선택한 release flow 링크를 복사했습니다.',
+        });
+        return;
+      }
+
+      if (action === 'copy-release-provider-link') {
+        const provider = button.dataset.uiProvider || value;
+        void handlers.copyReleaseTriageLink({
+          copyAction: action,
+          copyKey,
+          focusedBlockerId: '',
+          focusedProductionBlockerIndex: '',
+          focusedProvider: provider,
+          focusedHistoryId: '',
+          historyOutcome: '',
+          historyProvider: '',
+          historyScope: '',
+          successNotice: '선택한 provider spotlight 링크를 복사했습니다.',
+        });
+      }
     });
   });
 }

@@ -157,6 +157,7 @@ import {
   renderMissionActions as renderMissionActionsSurface,
 } from './lib/action-inbox.js';
 import {
+  wireReleaseStatusCopyActions,
   wireReleaseStatusLifecycleActions,
   wireReleaseStatusNavigationActions,
 } from './lib/release-status-actions.js';
@@ -314,81 +315,7 @@ import {
   buildReleaseTargetEvidenceSanitizedRegisterText,
   buildReleaseTargetEvidenceSubmissionManifestText,
 } from './lib/release-evidence-text.js';
-import {
-  copyCurrentViewLink,
-  copyProviderFallbackEventAuditPackage,
-  copyReleaseBlockerApiLink,
-  copyReleaseBlockerClosureChecklist,
-  copyReleaseBlockerFilterClosureChecklist,
-  copyReleaseBlockerFilterClosureMatrixPackage,
-  copyReleaseBlockerFilterCommands,
-  copyReleaseBlockerFilterEvidence,
-  copyReleaseBlockerFilterHandoff,
-  copyReleaseBlockerFilterPackage,
-  copyReleaseBlockerFilterSummary,
-  copyReleaseBlockerHandoff,
-  copyReleaseBlockerLink,
-  copyReleaseBlockerPackage,
-  copyReleaseBlockerProviderOnlyApiLink,
-  copyReleaseBlockerProviderOnlyClosureChecklist,
-  copyReleaseBlockerProviderOnlyClosureMatrixPackage,
-  copyReleaseBlockerProviderOnlyCommands,
-  copyReleaseBlockerProviderOnlyEvidence,
-  copyReleaseBlockerProviderOnlyHandoff,
-  copyReleaseBlockerProviderOnlyPackage,
-  copyReleaseBlockerProviderOnlySummary,
-  copyReleaseCommand,
-  copyReleaseEvidenceDocLink,
-  copyReleaseHandoffOpenLink,
-  copyReleaseHandoffPreviewLink,
-  copyReleaseHandoffStructuredSummary,
-  copyReleaseHandoffStructuredSummaryDetail,
-  copyReleaseHandoffStructuredSummaryStableLine,
-  copyReleaseProductionBlockerCommands,
-  copyReleaseProductionBlockerHandoff,
-  copyReleaseProductionBlockerLink,
-  copyReleaseProductionBlockerPackage,
-  copyReleaseProductionBlockerSummary,
-  copyReleaseProviderReadinessPackage,
-  copyReleaseTargetEvidenceBlockerDispositionRegister,
-  copyReleaseTargetEvidenceBoundaryMap,
-  copyReleaseTargetEvidenceCaptureTemplate,
-  copyReleaseTargetEvidenceClosureRules,
-  copyReleaseTargetEvidenceCommandRerunLog,
-  copyReleaseTargetEvidenceDecisionRecord,
-  copyReleaseTargetEvidenceExceptionRegister,
-  copyReleaseTargetEvidenceIntakePacket,
-  copyReleaseTargetEvidenceIntakeSummary,
-  copyReleaseTargetEvidenceProductionGap,
-  copyReleaseTargetEvidenceProviderEvidenceReferences,
-  copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister,
-  copyReleaseTargetEvidenceProviderOnlyBoundaryMap,
-  copyReleaseTargetEvidenceProviderOnlyCaptureTemplate,
-  copyReleaseTargetEvidenceProviderOnlyClosureRules,
-  copyReleaseTargetEvidenceProviderOnlyCommandRerunLog,
-  copyReleaseTargetEvidenceProviderOnlyDecisionRecord,
-  copyReleaseTargetEvidenceProviderOnlyExceptionRegister,
-  copyReleaseTargetEvidenceProviderOnlyIntakePacket,
-  copyReleaseTargetEvidenceProviderOnlyIntakeSummary,
-  copyReleaseTargetEvidenceProviderOnlyProductionGap,
-  copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences,
-  copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence,
-  copyReleaseTargetEvidenceProviderOnlyRequiredCommands,
-  copyReleaseTargetEvidenceProviderOnlyResidualBlockers,
-  copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister,
-  copyReleaseTargetEvidenceProviderOnlySanitizedRegister,
-  copyReleaseTargetEvidenceProviderOnlySubmissionManifest,
-  copyReleaseTargetEvidenceReleaseRefreshEvidence,
-  copyReleaseTargetEvidenceRequiredCommands,
-  copyReleaseTargetEvidenceResidualBlockers,
-  copyReleaseTargetEvidenceRiskDecisionRegister,
-  copyReleaseTargetEvidenceSanitizedRegister,
-  copyReleaseTargetEvidenceSubmissionManifest,
-  copyReleaseTriageLink,
-  copyRetrievalSourceLink,
-  copyLearningPromotionAuditPackage,
-  copyMissionActionsViewLink,
-} from './lib/copy-handlers.js';
+import * as copyHandlers from './lib/copy-handlers.js';
 
 const RELEASE_HANDOFF_PREVIEWABLE_FORMATS = new Set(['json', 'markdown', 'text']);
 const RELEASE_HANDOFF_PREVIEW_MAX_CHARACTERS = 20000;
@@ -3414,7 +3341,7 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-view-link') {
-        void copyCurrentViewLink();
+        void copyHandlers.copyCurrentViewLink();
         return;
       }
 
@@ -3464,482 +3391,9 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'copy-retrieval-source-link') {
-        void copyRetrievalSourceLink({
+        void copyHandlers.copyRetrievalSourceLink({
           sourceLabel: button.dataset.uiSourceLabel || '',
           sourceType: button.dataset.uiSourceType || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-triage-link') {
-        void copyReleaseTriageLink({
-          copyAction: action,
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-history-link') {
-        void copyReleaseTriageLink({
-          copyAction: action,
-          copyKey: button.dataset.uiCopyKey || '',
-          focusedBlockerId: '',
-          focusedProductionBlockerIndex: '',
-          focusedProvider: '',
-          focusedHistoryId: value || '',
-          historyOutcome: '',
-          historyProvider: '',
-          historyScope: '',
-          successNotice: '선택한 release 기록 링크를 복사했습니다.',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-link') {
-        void copyReleaseBlockerLink({
-          blockerId: button.dataset.uiBlocker || value || '',
-          copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || '',
-          successNotice: '선택한 release blocker 링크를 복사했습니다.',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-production-blocker-link') {
-        void copyReleaseProductionBlockerLink({
-          blockerIndex: button.dataset.uiIndex || value || 0,
-          copyKey: button.dataset.uiCopyKey || button.dataset.uiIndex || value || '',
-          successNotice: '선택한 production-ready blocker 링크를 복사했습니다.',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-handoff') {
-        void copyReleaseBlockerHandoff({
-          copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || '',
-          blockerId: button.dataset.uiBlocker || value || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-closure-checklist') {
-        void copyReleaseBlockerClosureChecklist({
-          copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || '',
-          blockerId: button.dataset.uiBlocker || value || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-package') {
-        void copyReleaseBlockerPackage({
-          copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || '',
-          blockerId: button.dataset.uiBlocker || value || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-production-blocker-summary') {
-        void copyReleaseProductionBlockerSummary({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-production-blocker-handoff') {
-        void copyReleaseProductionBlockerHandoff({
-          blockerIndex: button.dataset.uiIndex || value || 0,
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-production-blocker-commands') {
-        void copyReleaseProductionBlockerCommands({
-          blockerIndex: button.dataset.uiIndex || value || 0,
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-production-blocker-package') {
-        void copyReleaseProductionBlockerPackage({
-          blockerIndex: button.dataset.uiIndex || value || 0,
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-provider-readiness-package') {
-        void copyReleaseProviderReadinessPackage({
-          copyKey: button.dataset.uiCopyKey || button.dataset.uiProvider || value || '',
-          provider: button.dataset.uiProvider || value || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-filter-summary') {
-        void copyReleaseBlockerFilterSummary({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-summary') {
-        void copyReleaseBlockerProviderOnlySummary({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-api-link') {
-        void copyReleaseBlockerApiLink({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-api-link') {
-        void copyReleaseBlockerProviderOnlyApiLink({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-filter-package') {
-        void copyReleaseBlockerFilterPackage({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-package') {
-        void copyReleaseBlockerProviderOnlyPackage({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-filter-closure-checklist') {
-        void copyReleaseBlockerFilterClosureChecklist({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-closure-checklist') {
-        void copyReleaseBlockerProviderOnlyClosureChecklist({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-filter-closure-matrix') {
-        void copyReleaseBlockerFilterClosureMatrixPackage({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-closure-matrix') {
-        void copyReleaseBlockerProviderOnlyClosureMatrixPackage({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-intake-summary') {
-        void copyReleaseTargetEvidenceIntakeSummary({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-intake-summary') {
-        void copyReleaseTargetEvidenceProviderOnlyIntakeSummary({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-capture-template') {
-        void copyReleaseTargetEvidenceCaptureTemplate({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-capture-template') {
-        void copyReleaseTargetEvidenceProviderOnlyCaptureTemplate({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-required-commands') {
-        void copyReleaseTargetEvidenceRequiredCommands({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-required-commands') {
-        void copyReleaseTargetEvidenceProviderOnlyRequiredCommands({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-production-gap') {
-        void copyReleaseTargetEvidenceProductionGap({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-production-gap') {
-        void copyReleaseTargetEvidenceProviderOnlyProductionGap({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-exception-register') {
-        void copyReleaseTargetEvidenceExceptionRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-exception-register') {
-        void copyReleaseTargetEvidenceProviderOnlyExceptionRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-risk-decision-register') {
-        void copyReleaseTargetEvidenceRiskDecisionRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-risk-decision-register') {
-        void copyReleaseTargetEvidenceProviderOnlyRiskDecisionRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-references') {
-        void copyReleaseTargetEvidenceProviderEvidenceReferences({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-provider-references') {
-        void copyReleaseTargetEvidenceProviderOnlyProviderEvidenceReferences({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-residual-blockers') {
-        void copyReleaseTargetEvidenceResidualBlockers({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-residual-blockers') {
-        void copyReleaseTargetEvidenceProviderOnlyResidualBlockers({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-closure-rules') {
-        void copyReleaseTargetEvidenceClosureRules({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-closure-rules') {
-        void copyReleaseTargetEvidenceProviderOnlyClosureRules({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-submission-manifest') {
-        void copyReleaseTargetEvidenceSubmissionManifest({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-submission-manifest') {
-        void copyReleaseTargetEvidenceProviderOnlySubmissionManifest({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-sanitized-register') {
-        void copyReleaseTargetEvidenceSanitizedRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-sanitized-register') {
-        void copyReleaseTargetEvidenceProviderOnlySanitizedRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-boundary-map') {
-        void copyReleaseTargetEvidenceBoundaryMap({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-boundary-map') {
-        void copyReleaseTargetEvidenceProviderOnlyBoundaryMap({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-command-rerun-log') {
-        void copyReleaseTargetEvidenceCommandRerunLog({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-command-rerun-log') {
-        void copyReleaseTargetEvidenceProviderOnlyCommandRerunLog({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-decision-record') {
-        void copyReleaseTargetEvidenceDecisionRecord({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-decision-record') {
-        void copyReleaseTargetEvidenceProviderOnlyDecisionRecord({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-blocker-disposition') {
-        void copyReleaseTargetEvidenceBlockerDispositionRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-blocker-disposition') {
-        void copyReleaseTargetEvidenceProviderOnlyBlockerDispositionRegister({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-release-refresh') {
-        void copyReleaseTargetEvidenceReleaseRefreshEvidence({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-release-refresh') {
-        void copyReleaseTargetEvidenceProviderOnlyReleaseRefreshEvidence({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-intake-packet') {
-        void copyReleaseTargetEvidenceIntakePacket({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-target-evidence-provider-only-intake-packet') {
-        void copyReleaseTargetEvidenceProviderOnlyIntakePacket({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-filter-handoff') {
-        void copyReleaseBlockerFilterHandoff({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-handoff') {
-        void copyReleaseBlockerProviderOnlyHandoff({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-filter-commands') {
-        void copyReleaseBlockerFilterCommands({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-commands') {
-        void copyReleaseBlockerProviderOnlyCommands({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-filter-evidence') {
-        void copyReleaseBlockerFilterEvidence({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-blocker-provider-only-evidence') {
-        void copyReleaseBlockerProviderOnlyEvidence({
-          copyKey: button.dataset.uiCopyKey || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-evidence-doc-link') {
-        void copyReleaseEvidenceDocLink({
-          copyAction: action,
-          copyKey: button.dataset.uiCopyKey || button.dataset.uiHref || value || '',
-          href: button.dataset.uiHref || value || '',
-          label: button.dataset.uiLabel || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-command') {
-        void copyReleaseCommand({
-          command: value || '',
-          label: button.dataset.uiLabel || 'release command',
         });
         return;
       }
@@ -3968,81 +3422,6 @@ function wireQuickActions(scope = document) {
         clearReleaseHandoffPreview();
         renderReleaseStatus();
         writeUiStateToUrl();
-        return;
-      }
-
-      if (action === 'copy-release-handoff-preview-link') {
-        void copyReleaseHandoffPreviewLink({
-          artifactId: value || '',
-          successNotice: button.dataset.uiSuccessNotice || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-handoff-open-link') {
-        void copyReleaseHandoffOpenLink({
-          artifactId: value || '',
-          successNotice: button.dataset.uiSuccessNotice || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-handoff-structured-summary') {
-        void copyReleaseHandoffStructuredSummary({
-          artifactId: value || '',
-          successNotice: button.dataset.uiSuccessNotice || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-handoff-structured-summary-detail') {
-        void copyReleaseHandoffStructuredSummaryDetail({
-          artifactId: value || '',
-          detailKey: button.dataset.uiDetailKey || '',
-          successNotice: button.dataset.uiSuccessNotice || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-handoff-structured-summary-stable-line') {
-        void copyReleaseHandoffStructuredSummaryStableLine({
-          artifactId: value || '',
-          detailKey: button.dataset.uiDetailKey || '',
-          lineIndex: button.dataset.uiLineIndex || '',
-          successNotice: button.dataset.uiSuccessNotice || '',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-flow-link') {
-        void copyReleaseTriageLink({
-          copyAction: action,
-          copyKey: button.dataset.uiCopyKey || '',
-          focusedBlockerId: '',
-          focusedProductionBlockerIndex: '',
-          focusedProvider: '',
-          focusedHistoryId: value || '',
-          historyOutcome: button.dataset.uiOutcome || '',
-          historyProvider: button.dataset.uiProvider || '',
-          historyScope: button.dataset.uiScope || '',
-          successNotice: '선택한 release flow 링크를 복사했습니다.',
-        });
-        return;
-      }
-
-      if (action === 'copy-release-provider-link') {
-        void copyReleaseTriageLink({
-          copyAction: action,
-          copyKey: button.dataset.uiCopyKey || '',
-          focusedBlockerId: '',
-          focusedProductionBlockerIndex: '',
-          focusedProvider: button.dataset.uiProvider || value || '',
-          focusedHistoryId: '',
-          historyOutcome: '',
-          historyProvider: '',
-          historyScope: '',
-          successNotice: '선택한 provider spotlight 링크를 복사했습니다.',
-        });
         return;
       }
 
@@ -5442,7 +4821,7 @@ function wireProviderFallbackEventAuditControls() {
     await loadProviderEvents();
   });
   packageButton?.addEventListener('click', () => {
-    void copyProviderFallbackEventAuditPackage();
+    void copyHandlers.copyProviderFallbackEventAuditPackage();
   });
 }
 
@@ -10539,6 +9918,10 @@ function wireReleaseStatusActionButtons() {
     state,
     toggleHistory: toggleReleaseHistoryEntry,
   });
+  wireReleaseStatusCopyActions({
+    container: elements.releaseStatus,
+    handlers: copyHandlers,
+  });
 }
 
 function wireDocumentRowActions() {
@@ -10838,7 +10221,7 @@ async function handleActionInboxLearningPromotionResolve(item, decision) {
 }
 
 function handleActionInboxLearningPromotionAuditCopy(item) {
-  return copyLearningPromotionAuditPackage(item);
+  return copyHandlers.copyLearningPromotionAuditPackage(item);
 }
 
 async function handleActionInboxLearningPromotionExpire(item) {
@@ -10997,7 +10380,7 @@ function renderMissionActions() {
   renderMissionActionsSurface({
     actionList: elements.actionList,
     actionSummary: elements.actionSummary,
-    copyViewLink: copyMissionActionsViewLink,
+    copyViewLink: copyHandlers.copyMissionActionsViewLink,
     loadActions: loadMissionActions,
     onLearningPromotionAuditCopy: handleActionInboxLearningPromotionAuditCopy,
     onLearningPromotionExpire: handleActionInboxLearningPromotionExpire,

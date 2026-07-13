@@ -569,7 +569,8 @@ try {
   assert.equal(appJs.includes('renderReleaseProviderReadinessPackageCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseProviderReadinessPackage'), true);
   assert.equal(appJs.includes('releaseProviderReadinessPackageCopiedKey'), true);
-  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiProvider || value || \'\''), true);
+  assert.equal(appJs.includes("const provider = button.dataset.uiProvider || value;"), true);
+  assert.equal(appJs.includes('copyKey: copyKey || provider'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
   assert.equal(appJs.includes('data-ui-action="copy-release-provider-readiness-package"'), false);
   assert.equal(appJs.includes('provider package 복사: ${providerActionLabel}'), true);
@@ -690,7 +691,7 @@ try {
   assert.equal(appJs.includes('releaseLinkCopiedKey'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(value)}"'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(value)}" data-ui-value="${escapeHtml(value)}"'), true);
-  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || \'\''), true);
+  assert.equal(appJs.includes("const copyKey = button.dataset.uiCopyKey || '';"), true);
   assert.equal(appJs.includes('release flow 링크 복사: ${historyActionLabel}'), true);
   assert.equal(appJs.includes('provider 링크 복사: ${providerActionLabel}'), true);
   assert.equal(appJs.includes('copyReleaseEvidenceDocLink'), true);
@@ -2787,7 +2788,8 @@ try {
   assert.equal(appJs.includes('focus-release-production-blocker'), true);
   assert.equal(appJs.includes('copy-release-production-blocker-link'), true);
   assert.equal(appJs.includes("action: 'copy-release-production-blocker-link'"), true);
-  assert.equal(appJs.includes("copyKey: button.dataset.uiCopyKey || button.dataset.uiIndex || value || ''"), true);
+  assert.equal(appJs.includes('const blockerIndexValue = button.dataset.uiIndex || value;'), true);
+  assert.equal(appJs.includes('copyKey: copyKey || blockerIndexValue'), true);
   assert.equal(appJs.includes('data-ui-action="copy-release-production-blocker-link"'), false);
   assert.equal(appJs.includes('clear-release-production-blocker-focus'), true);
   assert.equal(appJs.includes('data-release-production-blocker-evidence-doc'), true);
@@ -3038,13 +3040,13 @@ try {
   assert.equal(appJs.includes('focus-release-blocker'), true);
   assert.equal(appJs.includes('copy-release-blocker-link'), true);
   assert.equal(appJs.includes("action: 'copy-release-blocker-link'"), true);
-  assert.equal(appJs.includes("copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || ''"), true);
+  assert.equal(appJs.includes('const blockerId = button.dataset.uiBlocker || value;'), true);
+  assert.equal(appJs.includes('copyKey: copyKey || blockerId'), true);
   assert.equal(appJs.includes('data-ui-action="copy-release-blocker-link"'), false);
   assert.equal(appJs.includes('copy-release-blocker-handoff'), true);
   assert.equal(appJs.includes('renderReleaseBlockerHandoffCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseBlockerHandoff'), true);
   assert.equal(appJs.includes('releaseBlockerHandoffCopiedKey'), true);
-  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
   assert.equal(appJs.includes('data-ui-blocker="${escapeHtml(blockerId)}" data-ui-copy-key="${escapeHtml(nextCopyKey)}"'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
   assert.equal(appJs.includes('focused blocker handoff 복사'), true);
@@ -3055,7 +3057,6 @@ try {
   assert.equal(appJs.includes('renderReleaseBlockerClosureChecklistCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseBlockerClosureChecklist'), true);
   assert.equal(appJs.includes('releaseBlockerClosureChecklistCopiedKey'), true);
-  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
   assert.equal(appJs.includes('focused blocker closure 체크리스트 복사'), true);
   assert.equal(appJs.includes('Release blocker closure checklist'), true);
@@ -3070,7 +3071,6 @@ try {
   assert.equal(appJs.includes('renderReleaseBlockerPackageCopyButton'), true);
   assert.equal(appJs.includes('markCopiedReleaseBlockerPackage'), true);
   assert.equal(appJs.includes('releaseBlockerPackageCopiedKey'), true);
-  assert.equal(appJs.includes('copyKey: button.dataset.uiCopyKey || button.dataset.uiBlocker || value || \'\''), true);
   assert.equal(appJs.includes('data-ui-blocker="${escapeHtml(blockerId)}" ${providerAttribute} data-ui-copy-key="${escapeHtml(nextCopyKey)}"'), true);
   assert.equal(appJs.includes('data-ui-copy-key="${escapeHtml(copyKey)}"'), true);
   assert.equal(appJs.includes('aria-pressed="${copied ? \'true\' : \'false\'}"'), true);
@@ -3858,21 +3858,16 @@ function assertProviderOnlyCopyScopeSource(appJs) {
   ).sort((left, right) => left.localeCompare(right));
   const dispatchedProviderOnlyActionNames = getUniqueSortedMatches(
     appJs,
-    /if \(action === '(copy-release-[^']*provider-only[^']*)'\)/g,
+    /\['(copy-release-[^']*provider-only[^']*)', 'copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*'\]/g,
   );
   const declaredProviderOnlyFunctionNames = getUniqueSortedMatches(
     appJs,
     /\basync function (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(/g,
   );
-  const dispatchedProviderOnlyFunctionNames = Array.from(
-    new Set([
-      ...getUniqueSortedMatches(appJs, /\bvoid (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(\);/g),
-      ...getUniqueSortedMatches(
-        appJs,
-        /\bvoid (copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)\(\{\s*[\s\S]*?\n\s*\}\);/g,
-      ),
-    ]),
-  ).sort((left, right) => left.localeCompare(right));
+  const dispatchedProviderOnlyFunctionNames = getUniqueSortedMatches(
+    appJs,
+    /\['copy-release-[^']*provider-only[^']*', '(copyRelease[A-Za-z0-9]*ProviderOnly[A-Za-z0-9]*)'\]/g,
+  );
 
   assert.deepEqual(
     expectedProviderOnlyActionNames,
