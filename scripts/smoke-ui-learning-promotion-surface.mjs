@@ -259,6 +259,11 @@ try {
   assert.equal(appJs.includes('loadPreview: loadReleaseHandoffPreview'), true);
   assert.equal(appJs.includes('syncUrl: writeUiStateToUrl'), true);
   assert.equal(appJs.includes('wireQuickActions(elements.releaseStatus);'), false);
+  assert.equal(appJs.includes('export function renderReleaseStatusOverview({'), true);
+  assert.equal(appJs.includes('export function renderReleaseVerificationSurfaces({'), true);
+  assert.equal(appJs.includes('export function renderReleaseRuntimeJobs({'), true);
+  assert.equal(appJs.includes('export function renderReleaseCloseoutChecklist({'), true);
+  assert.equal(appJs.includes('renderCommandCopyButton: renderReleaseCommandCopyButton'), true);
   assert.equal(appJs.includes('export function wireHarnessDocumentBrowseActions({'), true);
   assert.equal(appJs.includes('container: elements.harnessSource'), true);
   assert.equal(appJs.includes('data-document-action="edit"'), true);

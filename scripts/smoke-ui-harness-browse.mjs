@@ -2129,12 +2129,12 @@ try {
   assert.equal(appJs.includes('releaseActionLabel'), true);
   assert.equal(appJs.includes('renderReleaseStatusRefreshButton'), true);
   assert.equal(appJs.includes('function renderReleaseStatusRefreshButton({'), true);
-  assert.equal(appJs.includes('renderReleaseStatusRefreshButton({\n            actionLabel: `상태 다시 읽기: ${releaseActionLabel}`'), true);
+  assert.equal(appJs.includes('renderReleaseStatusRefreshButton({\n          actionLabel: `상태 다시 읽기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('상태 다시 읽기: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('<button class="primary-button" type="button" data-ui-action="refresh-release-status" aria-label="${escapeHtml(`상태 다시 읽기: ${releaseActionLabel}`)}"'), false);
   assert.equal(appJs.includes('renderReleasePreflightAllButton'), true);
   assert.equal(appJs.includes('function renderReleasePreflightAllButton({'), true);
-  assert.equal(appJs.includes('renderReleasePreflightAllButton({\n            actionLabel: `전체 preflight 실행: ${releaseActionLabel}`'), true);
+  assert.equal(appJs.includes('renderReleasePreflightAllButton({\n          actionLabel: `전체 preflight 실행: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('renderReleasePreflightAllButton({\n                  actionLabel: `전체 preflight 실행: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('전체 preflight 실행: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="run-release-preflight-all" aria-label="${escapeHtml(`전체 preflight 실행: ${releaseActionLabel}`)}"'), false);
@@ -2245,11 +2245,11 @@ try {
   assert.equal(appJs.includes('release snapshot 고정 취소: ${releaseActionLabel}'), true);
   assert.equal(appJs.includes('<button class="ghost-button" type="button" data-ui-action="cancel-archive-release-snapshot" aria-label="${escapeHtml(`release snapshot 고정 취소: ${releaseActionLabel}`)}"'), false);
   assert.equal(appJs.includes('aria-pressed="${pressed ? \'true\' : \'false\'}"'), true);
-  assert.equal(appJs.includes('renderReleaseTabActionButton({\n            actionLabel: `실행 기록 보기: ${releaseActionLabel}`'), true);
+  assert.equal(appJs.includes('renderReleaseTabActionButton({\n          actionLabel: `실행 기록 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('actionLabel: `실행 기록 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes("buttonText: '실행 기록 보기'"), true);
   assert.equal(appJs.includes("value: 'runs'"), true);
-  assert.equal(appJs.includes('renderReleaseTabActionButton({\n            actionLabel: `하네스 보기: ${releaseActionLabel}`'), true);
+  assert.equal(appJs.includes('renderReleaseTabActionButton({\n          actionLabel: `하네스 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes('actionLabel: `하네스 보기: ${releaseActionLabel}`'), true);
   assert.equal(appJs.includes("buttonText: '하네스 보기'"), true);
   assert.equal(appJs.includes("value: 'harness'"), true);
