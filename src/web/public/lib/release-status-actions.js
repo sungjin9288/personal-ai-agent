@@ -126,6 +126,50 @@ export const RELEASE_STATUS_COPY_ACTIONS = Object.freeze([
 
 const RELEASE_STATUS_COPY_ACTION_SET = new Set(RELEASE_STATUS_COPY_ACTIONS);
 
+export function wireReleaseStatusPreviewActions({
+  clearPreview,
+  container,
+  loadPreview,
+  renderStatus,
+  state,
+  syncUrl,
+}) {
+  container.querySelectorAll('[data-ui-action]').forEach((button) => {
+    const action = button.dataset.uiAction;
+    if (action !== 'toggle-release-handoff-preview' && action !== 'clear-release-handoff-preview') {
+      return;
+    }
+
+    button.addEventListener('click', () => {
+      if (action === 'clear-release-handoff-preview') {
+        clearPreview();
+        renderStatus();
+        syncUrl();
+        return;
+      }
+
+      const artifactId = String(button.dataset.uiValue || '').trim();
+      if (!artifactId) {
+        return;
+      }
+
+      if (state.releaseHandoffPreviewId === artifactId) {
+        if (state.releaseHandoffPreviewStatus === 'ready') {
+          clearPreview();
+          renderStatus();
+          syncUrl();
+          return;
+        }
+        if (state.releaseHandoffPreviewStatus === 'loading') {
+          return;
+        }
+      }
+
+      void loadPreview(artifactId);
+    });
+  });
+}
+
 export function wireReleaseStatusLifecycleActions({
   archiveSnapshot,
   armLiveConfirm,

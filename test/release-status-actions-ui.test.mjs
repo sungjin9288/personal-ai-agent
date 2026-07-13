@@ -6,6 +6,7 @@ import {
   wireReleaseStatusCopyActions,
   wireReleaseStatusLifecycleActions,
   wireReleaseStatusNavigationActions,
+  wireReleaseStatusPreviewActions,
 } from '../src/web/public/lib/release-status-actions.js';
 
 function createButton(action, dataset = {}) {
@@ -104,6 +105,24 @@ async function dispatchCopyAction(action, dataset = {}) {
   const calls = createCopyActions([button]);
   await button.click();
   return calls[0];
+}
+
+function createPreview(buttons, state = {}) {
+  const calls = [];
+  wireReleaseStatusPreviewActions({
+    clearPreview: () => calls.push('clear'),
+    container: {
+      querySelectorAll(selector) {
+        assert.equal(selector, '[data-ui-action]');
+        return buttons;
+      },
+    },
+    loadPreview: async (artifactId) => calls.push(`load:${artifactId}`),
+    renderStatus: () => calls.push('render'),
+    state,
+    syncUrl: () => calls.push('sync-url'),
+  });
+  return calls;
 }
 
 test('release lifecycle wiring ignores unrelated quick actions', async () => {
@@ -307,6 +326,56 @@ test('release navigation routes history toggles and focus clearing with push his
     ['notice', 'current open blocker triage 필터를 해제했습니다.'],
     ['clear-provider-focus', { historyMode: 'push' }],
     ['notice', 'provider readiness 카드 포커스를 해제했습니다.'],
+  ]);
+});
+
+test('release preview wiring ignores unrelated actions and empty artifact ids', async () => {
+  const unrelated = createButton('copy-release-triage-link');
+  const empty = createButton('toggle-release-handoff-preview', { uiValue: '   ' });
+  const calls = createPreview([unrelated, empty]);
+
+  assert.equal(unrelated.hasListener('click'), false);
+  assert.equal(empty.hasListener('click'), true);
+  await empty.click();
+  assert.deepEqual(calls, []);
+});
+
+test('release preview wiring loads new and retryable previews but ignores active loading', async () => {
+  const next = createButton('toggle-release-handoff-preview', { uiValue: ' artifact-2 ' });
+  const same = createButton('toggle-release-handoff-preview', { uiValue: 'artifact-1' });
+  const state = {
+    releaseHandoffPreviewId: 'artifact-1',
+    releaseHandoffPreviewStatus: 'loading',
+  };
+  const calls = createPreview([next, same], state);
+
+  await next.click();
+  await same.click();
+  state.releaseHandoffPreviewStatus = 'error';
+  await same.click();
+
+  assert.deepEqual(calls, ['load:artifact-2', 'load:artifact-1']);
+});
+
+test('release preview wiring closes ready and explicitly cleared previews', async () => {
+  const toggle = createButton('toggle-release-handoff-preview', { uiValue: 'artifact-1' });
+  const clear = createButton('clear-release-handoff-preview');
+  const state = {
+    releaseHandoffPreviewId: 'artifact-1',
+    releaseHandoffPreviewStatus: 'ready',
+  };
+  const calls = createPreview([toggle, clear], state);
+
+  await toggle.click();
+  await clear.click();
+
+  assert.deepEqual(calls, [
+    'clear',
+    'render',
+    'sync-url',
+    'clear',
+    'render',
+    'sync-url',
   ]);
 });
 

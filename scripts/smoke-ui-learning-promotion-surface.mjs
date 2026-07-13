@@ -254,6 +254,11 @@ try {
   assert.equal(appJs.includes("['copy-release-target-evidence-intake-summary', 'copyReleaseTargetEvidenceIntakeSummary']"), true);
   assert.equal(appJs.includes("['copy-release-blocker-handoff', 'copyReleaseBlockerHandoff']"), true);
   assert.equal(appJs.includes('handlers: copyHandlers'), true);
+  assert.equal(appJs.includes('export function wireReleaseStatusPreviewActions({'), true);
+  assert.equal(appJs.includes('clearPreview: clearReleaseHandoffPreview'), true);
+  assert.equal(appJs.includes('loadPreview: loadReleaseHandoffPreview'), true);
+  assert.equal(appJs.includes('syncUrl: writeUiStateToUrl'), true);
+  assert.equal(appJs.includes('wireQuickActions(elements.releaseStatus);'), false);
   assert.equal(appJs.includes('export function wireHarnessDocumentBrowseActions({'), true);
   assert.equal(appJs.includes('container: elements.harnessSource'), true);
   assert.equal(appJs.includes('data-document-action="edit"'), true);

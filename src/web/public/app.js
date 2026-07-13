@@ -160,6 +160,7 @@ import {
   wireReleaseStatusCopyActions,
   wireReleaseStatusLifecycleActions,
   wireReleaseStatusNavigationActions,
+  wireReleaseStatusPreviewActions,
 } from './lib/release-status-actions.js';
 import {
   getReleaseTargetEvidenceIntakeSummaryCopyKey,
@@ -3395,33 +3396,6 @@ function wireQuickActions(scope = document) {
           sourceLabel: button.dataset.uiSourceLabel || '',
           sourceType: button.dataset.uiSourceType || '',
         });
-        return;
-      }
-
-      if (action === 'toggle-release-handoff-preview') {
-        const targetArtifactId = String(value || '').trim();
-        if (!targetArtifactId) {
-          return;
-        }
-        if (state.releaseHandoffPreviewId === targetArtifactId) {
-          if (state.releaseHandoffPreviewStatus === 'ready') {
-            clearReleaseHandoffPreview();
-            renderReleaseStatus();
-            writeUiStateToUrl();
-            return;
-          }
-          if (state.releaseHandoffPreviewStatus === 'loading') {
-            return;
-          }
-        }
-        void loadReleaseHandoffPreview(targetArtifactId);
-        return;
-      }
-
-      if (action === 'clear-release-handoff-preview') {
-        clearReleaseHandoffPreview();
-        renderReleaseStatus();
-        writeUiStateToUrl();
         return;
       }
 
@@ -6668,7 +6642,7 @@ export function renderReleaseStatus() {
 
   if (!state.releaseStatus) {
     elements.releaseStatus.innerHTML = renderReleaseStatusEmptyState();
-    wireQuickActions(elements.releaseStatus);
+    wireReleaseStatusActionButtons();
     return;
   }
 
@@ -9878,7 +9852,6 @@ export function renderReleaseStatus() {
     focusedBlockerLabel,
     releaseActionLabel,
   });
-  wireQuickActions(elements.releaseStatus);
   wireReleaseStatusActionButtons();
 }
 
@@ -9921,6 +9894,14 @@ function wireReleaseStatusActionButtons() {
   wireReleaseStatusCopyActions({
     container: elements.releaseStatus,
     handlers: copyHandlers,
+  });
+  wireReleaseStatusPreviewActions({
+    clearPreview: clearReleaseHandoffPreview,
+    container: elements.releaseStatus,
+    loadPreview: loadReleaseHandoffPreview,
+    renderStatus: renderReleaseStatus,
+    state,
+    syncUrl: writeUiStateToUrl,
   });
 }
 
