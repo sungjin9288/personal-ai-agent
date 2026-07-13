@@ -48,7 +48,8 @@
 | R4.4 Bootstrap·global event wiring | 완료 | 전역 form·navigation listener와 시작 순서를 callback 기반 모듈로 분리 |
 | R5 Web server boundary | 진행 중 | release artifact resolver부터 parser·status assembly·job orchestration 순으로 분리 |
 | R5.1a Release artifact resolver | 완료 | handoff artifact와 evidence doc allowlist·경로 검증을 HTTP 독립 모듈로 분리 |
-| R5.1b Release markdown parser | 다음 작업 | release markdown의 section·checklist·verification 추출을 순수 parser로 이동 |
+| R5.1b Release markdown parser | 완료 | release markdown의 section·checklist·deterministic·reference·live validation 추출을 순수 parser로 이동 |
+| R5.1c Release status assembler | 다음 작업 | parser 결과와 provider·blocker·artifact freshness를 받아 API payload를 만드는 read model 분리 |
 
 R1 완료 검증:
 
@@ -238,6 +239,16 @@ R5.1a release artifact resolver 구현 검증:
 - `server.mjs`는 3,850줄, 새 `release-artifact-resolver.mjs`는 91줄이다. resolver는 root path, artifact catalog, allowlist만 받고 HTTP request/response, auth, RBAC, tenant, provider, release status를 직접 알지 않는다.
 - content type과 filename은 static serving도 공유하는 HTTP 응답 책임이므로 R5.1a로 이동하지 않았다. route는 resolver가 돌려준 안전한 path만 읽고 기존 response header를 그대로 조립한다.
 - auth·RBAC 선검사와 route table은 변경하지 않았다. snapshot prefix는 계속 허용하되 빈 경로, absolute path, `.`·`..` segment를 거부하도록 경로 계약을 명시했다.
+
+R5.1b release markdown parser 구현 검증:
+
+- `npm test`: 580개 통과
+- 새 parser fixture 테스트 5개에서 metadata, heading level, section bullet, labeled blocker, checklist, status map, deterministic/runtime, reference adoption, live validation과 malformed input 기본값을 확인했다.
+- execution-v1 status·handoff, production readiness, release blocker handoff, artifact hygiene 집중 smoke 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E 생성 artifact restore smoke 통과
+- `server.mjs`는 3,657줄, 새 `release-markdown-parser.mjs`는 205줄이다. parser는 문자열만 받고 filesystem, HTTP, auth, RBAC, tenant, process global을 직접 알지 않는다.
+- verification 분류, blocker closure, provider readiness, git·artifact freshness와 API payload 조립은 R5.1c 대상이므로 `server.mjs`에 유지했다. auth·RBAC 선검사와 route table은 변경하지 않았다.
 
 ## 3. 변경 원칙
 
