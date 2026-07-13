@@ -49,7 +49,8 @@
 | R5 Web server boundary | 진행 중 | release artifact resolver부터 parser·status assembly·job orchestration 순으로 분리 |
 | R5.1a Release artifact resolver | 완료 | handoff artifact와 evidence doc allowlist·경로 검증을 HTTP 독립 모듈로 분리 |
 | R5.1b Release markdown parser | 완료 | release markdown의 section·checklist·deterministic·reference·live validation 추출을 순수 parser로 이동 |
-| R5.1c Release status assembler | 다음 작업 | parser 결과와 provider·blocker·artifact freshness를 받아 API payload를 만드는 read model 분리 |
+| R5.1c Release status assembler | 완료 | parser 결과와 provider·blocker·artifact freshness를 받는 순수 API read model로 분리 |
+| R5.2a Runtime job runner | 다음 작업 | request id·job kind·scope·result/error 기록을 service 경계로 이동 |
 
 R1 완료 검증:
 
@@ -249,6 +250,17 @@ R5.1b release markdown parser 구현 검증:
 - 실제 browser E2E 생성 artifact restore smoke 통과
 - `server.mjs`는 3,657줄, 새 `release-markdown-parser.mjs`는 205줄이다. parser는 문자열만 받고 filesystem, HTTP, auth, RBAC, tenant, process global을 직접 알지 않는다.
 - verification 분류, blocker closure, provider readiness, git·artifact freshness와 API payload 조립은 R5.1c 대상이므로 `server.mjs`에 유지했다. auth·RBAC 선검사와 route table은 변경하지 않았다.
+
+R5.1c release status assembler 구현 검증:
+
+- `npm test`: 585개 통과
+- 새 assembler fixture 테스트 5개에서 verification 분류, required·optional gap, artifact-sync current, commit mismatch stale, snapshot 추천, provider preflight·env 추천과 missing document 기본값을 확인했다.
+- execution-v1 status·handoff, production readiness, release blocker handoff, artifact hygiene 집중 smoke 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E 생성 artifact restore smoke 통과
+- `server.mjs`는 3,287줄, 새 `release-status-assembler.mjs`는 422줄이다. server는 markdown·git·env·snapshot·store·runtime job을 읽어 명시적인 입력으로 넘기고 assembler는 parser 결과와 전달받은 값만으로 기존 API payload를 만든다.
+- artifact freshness, handoff 일치, stale reason, refresh plan, snapshot eligibility, provider recommendation과 current·baseline summary를 순수 read model에서 조립한다. filesystem, HTTP request/response, process global, store, runtime registry는 직접 알지 않는다.
+- auth·RBAC·tenant 선검사, route table, artifact resolver, blocker closure 문구와 `productionReadyClaim=false` 경계는 변경하지 않았다.
 
 ## 3. 변경 원칙
 
