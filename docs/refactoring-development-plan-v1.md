@@ -28,7 +28,8 @@
 |---|---|---|
 | 기준선 확인 | 완료 | clean `main`, `64466813`, origin과 일치 |
 | R1 Provider execution analytics | 완료 | `mission-service.mjs`의 summary, timeline, bucket, delta를 순수 모듈로 이동 |
-| R2 Mission action과 maintenance | 다음 작업 | 아직 변경하지 않음 |
+| R2.1 Action item builder | 완료 | approval, blocked, reviewer, maintenance 표시 record를 store 조회에서 분리 |
+| R2.2 Specialist·provider attention builder | 다음 작업 | 아직 변경하지 않음 |
 
 R1 완료 검증:
 
@@ -36,6 +37,13 @@ R1 완료 검증:
 - `npm run smoke:docs-gates`: 33개 통과
 - `npm run smoke:all`: 165개 통과
 - browser E2E 2개는 `smoke:all`의 명시적 제외 대상이며 이번 작업은 UI를 변경하지 않았다.
+
+R2.1 구현 검증:
+
+- `npm test`: 499개 통과
+- action, maintenance, approval, reviewer, provider attention, specialist 관련 smoke 12개 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- 구현 commit 전 `npm run smoke:all`: 163개 통과, 2개 실패는 이전 commit을 가리키는 clean deployment와 production-like drill artifact이며 구현 commit 후 표준 artifact refresh 대상으로 분리
 
 ## 3. 변경 원칙
 
