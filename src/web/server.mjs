@@ -17,6 +17,7 @@ import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/r
 import { getReleaseBlockerHandoff } from '../core/release-readiness-service.mjs';
 import { resolveRootDir } from '../core/root.mjs';
 import { evaluateTenantAccess, extractTenantClaim, normalizeTenantMode } from '../core/tenant-policy.mjs';
+import { createRuntimeJobRunner } from '../core/runtime-job-runner.mjs';
 import { createRuntimeJobRegistry } from '../core/runtime-job-registry.mjs';
 import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.mjs';
 import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
@@ -405,6 +406,7 @@ const requestedPort = Number(process.env.PERSONAL_AI_AGENT_UI_PORT || 4317);
 let activePort = requestedPort;
 const serverDiscoveryPath = path.join(rootDir, 'var', 'server.json');
 const runtimeJobRegistry = createRuntimeJobRegistry({ rootDir });
+const runtimeJobRunner = createRuntimeJobRunner({ registry: runtimeJobRegistry });
 const runtimeRequestRegistry = createRuntimeRequestRegistry({ rootDir });
 const runtimeStatus = createRuntimeStatusService({ rootDir });
 
@@ -834,62 +836,6 @@ function recordReleaseAction({
     scope: String(scope || '').trim(),
     summary: String(summary || '').trim(),
   });
-}
-
-function runRuntimeJob({
-  details = null,
-  jobKind,
-  requestId = '',
-  scope = '',
-  summary = '',
-  task,
-}) {
-  const job = runtimeJobRegistry.startJob({
-    details,
-    kind: jobKind,
-    requestId,
-    scope,
-    source: 'web-ui',
-    summary,
-  });
-
-  try {
-    const result = task(job);
-    runtimeJobRegistry.finishJob(job.id, {
-      details: {
-        ...job.details,
-        result: summarizeRuntimeJobResult(result),
-      },
-      status: 'completed',
-      summary,
-    });
-    return {
-      job,
-      result,
-    };
-  } catch (error) {
-    runtimeJobRegistry.finishJob(job.id, {
-      error: error instanceof Error ? error.message : 'unknown runtime job error',
-      status: 'failed',
-      summary,
-    });
-    throw error;
-  }
-}
-
-function summarizeRuntimeJobResult(result) {
-  if (!result || typeof result !== 'object') {
-    return null;
-  }
-
-  return {
-    archiveCommit: String(result.archiveResult?.verifiedCommit || '').trim(),
-    evidencePath: String(result.evidencePath || result.evidenceResult?.outputPath || '').trim(),
-    generatedAt: String(result.generatedAt || result.closeoutResult?.generatedAt || '').trim(),
-    keyCount: Object.keys(result).length,
-    ok: Boolean(result.ok),
-    outputPath: String(result.outputPath || result.closeoutResult?.checklistPath || '').trim(),
-  };
 }
 
 function readExecutionV1Snapshot(preferredCommit = '', currentCommit = '') {
@@ -2520,7 +2466,7 @@ async function handleApi(request, response, url) {
       return;
     }
     try {
-      const { job, result: payload } = runRuntimeJob({
+      const { job, result: payload } = runtimeJobRunner.run({
         details: {
           args,
           preflight,
@@ -2652,7 +2598,7 @@ async function handleApi(request, response, url) {
       return;
     }
     try {
-      const { job, result: payload } = runRuntimeJob({
+      const { job, result: payload } = runtimeJobRunner.run({
         details: {
           preflight,
         },

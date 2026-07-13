@@ -50,7 +50,8 @@
 | R5.1a Release artifact resolver | 완료 | handoff artifact와 evidence doc allowlist·경로 검증을 HTTP 독립 모듈로 분리 |
 | R5.1b Release markdown parser | 완료 | release markdown의 section·checklist·deterministic·reference·live validation 추출을 순수 parser로 이동 |
 | R5.1c Release status assembler | 완료 | parser 결과와 provider·blocker·artifact freshness를 받는 순수 API read model로 분리 |
-| R5.2a Runtime job runner | 다음 작업 | request id·job kind·scope·result/error 기록을 service 경계로 이동 |
+| R5.2a Runtime job runner | 완료 | request id·job kind·scope·result/error lifecycle을 registry-backed service로 이동 |
+| R5.2b Release command orchestration | 다음 작업 | refresh·preflight·snapshot 확인 조건과 release action audit 흐름을 handler에서 분리 |
 
 R1 완료 검증:
 
@@ -261,6 +262,17 @@ R5.1c release status assembler 구현 검증:
 - `server.mjs`는 3,287줄, 새 `release-status-assembler.mjs`는 422줄이다. server는 markdown·git·env·snapshot·store·runtime job을 읽어 명시적인 입력으로 넘기고 assembler는 parser 결과와 전달받은 값만으로 기존 API payload를 만든다.
 - artifact freshness, handoff 일치, stale reason, refresh plan, snapshot eligibility, provider recommendation과 current·baseline summary를 순수 read model에서 조립한다. filesystem, HTTP request/response, process global, store, runtime registry는 직접 알지 않는다.
 - auth·RBAC·tenant 선검사, route table, artifact resolver, blocker closure 문구와 `productionReadyClaim=false` 경계는 변경하지 않았다.
+
+R5.2a runtime job runner 구현 검증:
+
+- `npm test`: 588개 통과
+- 새 runner 단위 테스트 3개에서 완료 결과 요약, request id·kind·scope·source 연결, 실패 terminal 기록 후 원본 오류 재전파, non-object 결과 기본값을 실제 temp registry로 확인했다.
+- runtime discovery, execution-v1 artifact refresh 8단계, snapshot, status, UI execution console과 UI harness browse 집중 smoke 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E 생성 artifact restore smoke 통과
+- `server.mjs`는 3,233줄, 새 `runtime-job-runner.mjs`는 61줄이다. server는 job 입력과 task만 넘기고 runner가 start → task → completed/failed terminal 기록 순서를 소유한다.
+- registry 영속 형식, active·terminal history, runtime job id, request id, release API 응답과 release action audit 연결을 유지했다. runner는 HTTP request/response, route, 승인 조건, release command 구현을 직접 알지 않는다.
+- refresh·preflight·snapshot 확인 조건과 release action audit orchestration은 R5.2b 대상으로 handler에 유지했다.
 
 ## 3. 변경 원칙
 
