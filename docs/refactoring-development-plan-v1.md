@@ -54,9 +54,10 @@
 | R5.2b Release command orchestration | 완료 | refresh·preflight·snapshot 확인 조건, runtime job 호출, release action audit 순서를 HTTP 독립 service로 이동 |
 | R5.3a Route registry | 완료 | exact/param route 등록·match를 HTTP 독립 registry로 이동하고 auth·RBAC 이후 dispatch 순서를 유지 |
 | R5.3b Release handlers | 완료 | status·blocker·artifact/doc read·refresh·preflight·snapshot 응답을 request-scoped handler factory로 이동 |
-| R5.3c Mission/action handlers | 진행 중 | action과 mission을 독립 factory·검증·commit 경계로 나눠 이동 |
+| R5.3c Mission/action handlers | 완료 | action과 mission을 독립 factory·검증·commit 경계로 나눠 이동 |
 | R5.3c1 Action handlers | 완료 | inbox query·optional workspace tenant 검사와 learning/provider/specialist/reviewer mutation 응답을 request-scoped factory로 이동 |
-| R5.3c2 Mission handlers | 다음 작업 | mission tenant 검사·attachment 변환·document/memory/execution payload와 status code 선택을 별도 factory로 이동 |
+| R5.3c2 Mission handlers | 완료 | mission tenant 검사·attachment 변환·document/memory/execution payload와 status code 선택을 request-scoped factory로 이동 |
+| R5.4 Static/server bootstrap | 다음 작업 | static path guard, discovery file, port fallback, shutdown 순서를 현재 동작 그대로 작은 bootstrap 경계로 정리 |
 
 R1 완료 검증:
 
@@ -331,6 +332,19 @@ R5.3c1 action handlers 구현 검증:
 - `server.mjs`는 2,834줄, 새 `action-handlers.mjs`는 132줄이다. server는 route registry에 8개의 named handler만 등록하고 factory가 query·body·raw path parameter를 기존 helper로 해석한다.
 - 기존 learning promotion 기본값과 Boolean 변환, provider fallback field, async remediation 대기, tenant response helper, status code와 JSON payload를 변경하지 않았다.
 - mission tenant·attachment·document·memory·execution handler, workspace·approval·artifact route, static serving과 global error 처리는 R5.3c2 이후 경계로 남겼다.
+
+R5.3c2 mission handlers 구현 검증:
+
+- `npm test`: 623개 통과
+- 새 handler 단위 테스트 9개에서 mission list·create, workspace/mission tenant 차단 순서, attachment conversion·source fallback, session·harness query, execution rollback/preflight/start/stop/status/logs, document title prefix·legacy migration, mission memory scope, provider fallback과 web request id lineage를 확인했다.
+- 구현 전후 전체 route 등록 55개를 직접 비교해 kind·method·path·순서가 모두 같음을 확인했다. Mission route는 exact 2개와 param 20개를 기존 위치에 유지한다.
+- execution flow·CLI·UI console, harness browse, mission/UI attachment, session history, mission timeline, memory rerun·retrieval·fact graph, document conversion 집중 smoke가 통과했다.
+- web tenant isolation·RBAC·auth/RBAC·OIDC/RBAC smoke가 통과했다. auth 401·RBAC 403은 mission handler 생성보다 먼저 적용되고 기존 workspace/mission tenant 검사는 attachment 변환과 service 호출보다 먼저 종료된다.
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E에서 mission create·run·approval·execution console과 retrieval restore가 통과했고 console error와 page error가 0건이었다. handoff 6개, release preview 38개, release artifact open 2개 세션이 모두 error-free였으며 생성 artifact restore smoke도 통과했다.
+- `server.mjs`는 2,677줄, 새 `mission-handlers.mjs`는 280줄이다. Server는 22개의 named mission handler만 route registry에 등록하고 factory가 기존 helper와 service 결과를 HTTP response로 변환한다.
+- 기존 attachment conversion, constraint parse, document title prefix, memory scope, Boolean coercion, raw path decode, provider fallback field, request id·route source context, 200/201 status와 JSON payload를 변경하지 않았다.
+- workspace memory·approval·artifact route, static serving, discovery file, port fallback, shutdown과 global error 처리는 R5.4 이후 경계로 남겼다.
 
 ## 3. 변경 원칙
 

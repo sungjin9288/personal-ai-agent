@@ -25,6 +25,7 @@ import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
 import { evaluateOidcWebAuth, evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
 import { createActionHandlerFactory } from './action-handlers.mjs';
+import { createMissionHandlerFactory } from './mission-handlers.mjs';
 import { resolveWithinRoot } from './path-guard.mjs';
 import { createExecutionV1ReleaseArtifactResolver } from './release-artifact-resolver.mjs';
 import { createExecutionV1ReleaseHandlerFactory } from './release-handlers.mjs';
@@ -875,6 +876,20 @@ const buildActionHandlers = createActionHandlerFactory({
   evaluateWorkspaceTenantAccess,
   parseOptionalBooleanQueryParam,
   readJsonBody,
+  sendJson,
+  sendTenantDenied,
+  service,
+});
+
+const buildMissionHandlers = createMissionHandlerFactory({
+  buildMissionListPayload,
+  convertMissionAttachmentPayloads,
+  decodePathSegment,
+  evaluateMissionTenantAccess,
+  evaluateWorkspaceTenantAccess,
+  parseConstraints,
+  readJsonBody,
+  resolveAuthTenantId,
   sendJson,
   sendTenantDenied,
   service,
@@ -2154,6 +2169,7 @@ async function handleApi(request, response, url) {
     registerParamRoute,
   } = createRouteRegistry();
   const actionHandlers = buildActionHandlers({ auth, request, response, url });
+  const missionHandlers = buildMissionHandlers({ auth, request, response, url });
   const releaseHandlers = buildExecutionV1ReleaseHandlers({ request, response, url });
 
   registerExactRoute('GET', '/api/meta', async () => {
@@ -2374,198 +2390,76 @@ async function handleApi(request, response, url) {
     actionHandlers.resolveReviewerFollowUp,
   );
 
-  registerExactRoute('GET', '/api/missions', async () => {
-    sendJson(response, 200, buildMissionListPayload({ tenantId: resolveAuthTenantId(auth) }));
-  });
-
-  registerExactRoute('POST', '/api/missions', async () => {
-    const body = await readJsonBody(request);
-    const tenant = evaluateWorkspaceTenantAccess(String(body.workspaceId || '').trim(), auth);
-    if (!tenant.allowed) {
-      sendTenantDenied(response, tenant);
-      return;
-    }
-    const mission = service.createMission({
-      attachments: await convertMissionAttachmentPayloads(body.attachments),
-      constraints: parseConstraints(body.constraints),
-      deliverableType: String(body.deliverableType || '').trim(),
-      mode: String(body.mode || '').trim(),
-      objective: String(body.objective || '').trim(),
-      title: String(body.title || '').trim(),
-      workspaceId: String(body.workspaceId || '').trim(),
-    });
-
-    sendJson(response, 201, {
-      mission,
-    });
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/attachments', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const tenant = evaluateMissionTenantAccess(missionId, auth);
-    if (!tenant.allowed) {
-      sendTenantDenied(response, tenant);
-      return;
-    }
-    const body = await readJsonBody(request);
-    const attachments = await convertMissionAttachmentPayloads(body.attachments);
-    const created = attachments.map((attachment) =>
-      service.addMissionAttachment({
-        content: attachment.content,
-        conversion: attachment.conversion,
-        fileName: attachment.fileName,
-        mimeType: attachment.mimeType,
-        missionId,
-        source: attachment.source || 'ui-upload',
-      }),
-    );
-
-    sendJson(response, 201, {
-      attachments: created,
-    });
-  });
-
-  registerParamRoute('GET', '/api/missions/:missionId', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const tenant = evaluateMissionTenantAccess(missionId, auth);
-    if (!tenant.allowed) {
-      sendTenantDenied(response, tenant);
-      return;
-    }
-    sendJson(response, 200, service.showMission(missionId));
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/execution/rollback', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const body = await readJsonBody(request);
-    const result = service.rollbackExecution(missionId, {
-      dryRun: Boolean(body.dryRun),
-      executionId: decodePathSegment(body.executionId || ''),
-    });
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('GET', '/api/missions/:missionId/session', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const sessionId = String(url.searchParams.get('sessionId') || '').trim();
-    sendJson(response, 200, service.showSession(missionId, { sessionId }));
-  });
-
-  registerParamRoute('GET', '/api/missions/:missionId/harness/documents', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    sendJson(
-      response,
-      200,
-      service.browseMissionHarnessDocuments(missionId, {
-        limit: String(url.searchParams.get('limit') || '').trim(),
-        offset: String(url.searchParams.get('offset') || '').trim(),
-        query: String(url.searchParams.get('query') || '').trim(),
-        sort: String(url.searchParams.get('sort') || '').trim(),
-        type: String(url.searchParams.get('type') || '').trim(),
-      }),
-    );
-  });
-
-  registerParamRoute('GET', '/api/missions/:missionId/harness/memory', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    sendJson(
-      response,
-      200,
-      service.browseMissionHarnessMemory(missionId, {
-        kind: String(url.searchParams.get('kind') || '').trim(),
-        limit: String(url.searchParams.get('limit') || '').trim(),
-        offset: String(url.searchParams.get('offset') || '').trim(),
-        query: String(url.searchParams.get('query') || '').trim(),
-        scope: String(url.searchParams.get('scope') || '').trim(),
-        sort: String(url.searchParams.get('sort') || '').trim(),
-      }),
-    );
-  });
-
-  registerParamRoute('GET', '/api/missions/:missionId/timeline', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    sendJson(response, 200, service.getMissionTimeline(missionId));
-  });
-
-  registerParamRoute('PATCH', '/api/missions/:missionId/document-log/:entryId', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const entryId = decodePathSegment(params.entryId);
-    const mission = service.showMission(missionId).mission;
-    const body = await readJsonBody(request);
-    const rawTitle = String(body.title || '').trim();
-    const prefixedTitle = rawTitle.startsWith(`${mission.title} · `) ? rawTitle : `${mission.title} · ${rawTitle}`;
-    const result = service.updateDocumentLog({
-      content: String(body.content || '').trim(),
-      entryId,
-      title: prefixedTitle,
-      type: String(body.type || '').trim(),
-    });
-
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('DELETE', '/api/missions/:missionId/document-log/:entryId', async (params) => {
-    const entryId = decodePathSegment(params.entryId);
-    const result = service.deleteDocumentLog(entryId);
-
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/execution/preflight', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const body = await readJsonBody(request);
-    const result = service.preflightExecution(missionId, {
-      requestApproval: Boolean(body.requestApproval),
-    });
-
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/execution/start', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const result = service.startExecution(missionId);
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/execution/stop', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const result = service.stopExecution(missionId);
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('GET', '/api/missions/:missionId/execution', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    sendJson(response, 200, service.getExecutionStatus(missionId));
-  });
-
-  registerParamRoute('GET', '/api/missions/:missionId/execution/logs', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const executionId = decodePathSegment(url.searchParams.get('executionId') || '');
-    sendJson(response, 200, service.getExecutionLogs(missionId, { executionId }));
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/document-log/migrate-legacy', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    service.showMission(missionId);
-    const result = service.migrateLegacyDocumentLogs();
-
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/document-log', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const mission = service.showMission(missionId).mission;
-    const body = await readJsonBody(request);
-    const rawTitle = String(body.title || '').trim();
-    const prefixedTitle = rawTitle.startsWith(`${mission.title} · `) ? rawTitle : `${mission.title} · ${rawTitle}`;
-    const result = service.logDocument({
-      content: String(body.content || '').trim(),
-      title: prefixedTitle,
-      type: String(body.type || '').trim(),
-    });
-
-    sendJson(response, 201, result);
-  });
+  registerExactRoute('GET', '/api/missions', missionHandlers.listMissions);
+  registerExactRoute('POST', '/api/missions', missionHandlers.createMission);
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/attachments',
+    missionHandlers.addAttachments,
+  );
+  registerParamRoute('GET', '/api/missions/:missionId', missionHandlers.getMission);
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/execution/rollback',
+    missionHandlers.rollbackExecution,
+  );
+  registerParamRoute('GET', '/api/missions/:missionId/session', missionHandlers.getSession);
+  registerParamRoute(
+    'GET',
+    '/api/missions/:missionId/harness/documents',
+    missionHandlers.browseDocuments,
+  );
+  registerParamRoute(
+    'GET',
+    '/api/missions/:missionId/harness/memory',
+    missionHandlers.browseMemory,
+  );
+  registerParamRoute('GET', '/api/missions/:missionId/timeline', missionHandlers.getTimeline);
+  registerParamRoute(
+    'PATCH',
+    '/api/missions/:missionId/document-log/:entryId',
+    missionHandlers.updateDocument,
+  );
+  registerParamRoute(
+    'DELETE',
+    '/api/missions/:missionId/document-log/:entryId',
+    missionHandlers.deleteDocument,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/execution/preflight',
+    missionHandlers.preflightExecution,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/execution/start',
+    missionHandlers.startExecution,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/execution/stop',
+    missionHandlers.stopExecution,
+  );
+  registerParamRoute(
+    'GET',
+    '/api/missions/:missionId/execution',
+    missionHandlers.getExecutionStatus,
+  );
+  registerParamRoute(
+    'GET',
+    '/api/missions/:missionId/execution/logs',
+    missionHandlers.getExecutionLogs,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/document-log/migrate-legacy',
+    missionHandlers.migrateLegacyDocuments,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/document-log',
+    missionHandlers.createDocument,
+  );
 
   registerParamRoute('PATCH', '/api/workspaces/:workspaceId/memory/:memoryId', async (params) => {
     const workspaceId = decodePathSegment(params.workspaceId);
@@ -2613,73 +2507,22 @@ async function handleApi(request, response, url) {
     });
   });
 
-  registerParamRoute('PATCH', '/api/missions/:missionId/memory/:memoryId', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const memoryId = decodePathSegment(params.memoryId);
-    const body = await readJsonBody(request);
-    const entry = service.updateMemory({
-      content: String(body.content || '').trim(),
-      kind: String(body.kind || '').trim(),
-      memoryId,
-      scope: 'mission',
-      scopeId: missionId,
-    });
-
-    sendJson(response, 200, {
-      entry,
-    });
-  });
-
-  registerParamRoute('DELETE', '/api/missions/:missionId/memory/:memoryId', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const memoryId = decodePathSegment(params.memoryId);
-    const entry = service.deleteMemory({
-      memoryId,
-      scope: 'mission',
-      scopeId: missionId,
-    });
-
-    sendJson(response, 200, {
-      entry,
-    });
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/memory', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const body = await readJsonBody(request);
-    const entry = service.addMemory({
-      content: String(body.content || '').trim(),
-      kind: String(body.kind || '').trim(),
-      scope: 'mission',
-      scopeId: missionId,
-    });
-
-    sendJson(response, 201, {
-      entry,
-    });
-  });
-
-  registerParamRoute('POST', '/api/missions/:missionId/run', async (params) => {
-    const missionId = decodePathSegment(params.missionId);
-    const body = await readJsonBody(request);
-    const provider = String(body.provider || '').trim();
-    const fallbackProvider = String(body.fallbackProvider || '').trim();
-    const fallbackPolicy = String(body.fallbackPolicy || '').trim();
-    const result = await service.runMission(missionId, {
-      fallbackProvider,
-      fallbackPolicy,
-      provider,
-      providerSpecified: Boolean(provider),
-      sourceContext: {
-        channel: 'web',
-        requestId: request.id,
-        route: pathname,
-        sourceType: 'web',
-      },
-    });
-
-    sendJson(response, 200, result);
-  });
+  registerParamRoute(
+    'PATCH',
+    '/api/missions/:missionId/memory/:memoryId',
+    missionHandlers.updateMemory,
+  );
+  registerParamRoute(
+    'DELETE',
+    '/api/missions/:missionId/memory/:memoryId',
+    missionHandlers.deleteMemory,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/missions/:missionId/memory',
+    missionHandlers.createMemory,
+  );
+  registerParamRoute('POST', '/api/missions/:missionId/run', missionHandlers.runMission);
 
   registerExactRoute('GET', '/api/approvals', async () => {
     sendJson(response, 200, service.getApprovalInbox({}));
