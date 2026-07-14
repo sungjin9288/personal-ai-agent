@@ -838,6 +838,9 @@ try {
   assert.equal(appJs.includes("renderActionInboxSummaryChip('표시 작업', summary.pendingActionCount)"), true);
   assert.equal(appJs.includes("renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)"), true);
   assert.equal(appJs.includes("renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('즉시 실행', guidanceSummary.operatorRemediation)"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('외부 승인·인계', guidanceSummary.externalHandoff)"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('검토 필요', guidanceSummary.operatorReview)"), true);
   assert.equal(appJs.includes("renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')"), true);
   assert.equal(appJs.includes('renderActionInboxSummary'), true);
   assert.equal(appJs.includes('function renderActionInboxSummary({'), true);
@@ -882,8 +885,10 @@ try {
   assert.equal(appJs.includes('renderActionInboxItemHeader(item)'), true);
   assert.equal(appJs.includes('item-title">${escapeHtml(item.title || item.actionId || item.id)}</div>'), true);
   assert.equal(appJs.includes("item-subtitle\">${escapeHtml(item.reason || '')}</div>"), true);
-  assert.equal(appJs.includes("담당 ${escapeHtml(item.recommendedOwner || '-')}"), true);
+  assert.equal(appJs.includes("유형 ${escapeHtml(item.actionType || '-')}"), true);
   assert.equal(appJs.includes('기한 ${escapeHtml(formatDate(item.dueAt))}'), true);
+  assert.equal(appJs.includes('renderActionInboxGuidance(item)'), true);
+  assert.equal(appJs.includes('data-action-inbox-guidance='), true);
   assert.equal(appJs.includes('renderActionInboxItemCommandMeta'), true);
   assert.equal(appJs.includes('function renderActionInboxItemCommandMeta(item = {})'), true);
   assert.equal(appJs.includes('renderActionInboxItemCommandMeta(item)'), true);
@@ -896,10 +901,10 @@ try {
   assert.equal(appJs.includes('function renderActionInboxItemActions(item = {})'), true);
   assert.equal(appJs.includes('renderActionInboxItemActions(item)'), true);
   assert.equal(appJs.includes('const actionButtons = ['), true);
-  assert.equal(appJs.includes("item.actionType === 'provider-attention' && item.fallbackRecommendedCommand"), true);
-  assert.equal(appJs.includes("item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand"), true);
+  assert.equal(appJs.includes('canRunProviderAttentionRemediation(item) && item.fallbackRecommendedCommand'), true);
+  assert.equal(appJs.includes('canRunProviderAttentionRemediation(item) && item.recoverableFallbackRecommendedCommand'), true);
   assert.equal(appJs.includes("item.actionType === 'specialist-follow-up'"), true);
-  assert.equal(appJs.includes("!['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)"), true);
+  assert.equal(appJs.includes('canRunActionInboxRerun(item)'), true);
   assert.equal(appJs.includes("item.actionType === 'reviewer-follow-up'"), true);
   assert.equal(appJs.includes("actionButtons.filter(Boolean).join('')"), true);
   assert.equal(appJs.includes('renderActionInboxItem'), true);
@@ -995,7 +1000,7 @@ try {
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/rollback'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind'), true);
   assert.equal(appJs.includes("promotionStatus: 'operator-active'"), true);
-  assert.match(appJs, /\['provider-attention', 'specialist-follow-up', 'learning-promotion'\]/);
+  assert.equal(appJs.includes("normalizeText(item.actionType) === 'reviewer-follow-up'"), true);
 
   const initialInbox = await fetchJson(
     `${baseUrl}/api/actions?missionId=${encodeURIComponent(promotedMission.id)}&promotionStatus=all`,

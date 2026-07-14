@@ -2492,6 +2492,11 @@ try {
   assert.equal(appJs.includes("function renderActionInboxFilteredEmptyState(visibleFilterLabel = '전체')"), true);
   assert.equal(appJs.includes('? renderActionInboxFilteredEmptyState(visibleFilterLabel)'), true);
   assert.equal(appJs.includes(': renderActionInboxOpenQueueEmptyState();'), true);
+  assert.equal(appJs.includes('data-action-inbox-guidance='), true);
+  assert.equal(appJs.includes('function canRunActionInboxRerun'), true);
+  assert.equal(appJs.includes('function canRunProviderAttentionRemediation'), true);
+  assert.equal(appJs.includes('즉시 실행 가능'), true);
+  assert.equal(appJs.includes('외부 승인·인계'), true);
   assert.equal(appJs.includes('function renderOutputCloseoutState(closeoutItems = [], { isOutputFocus = false } = {})'), true);
   assert.equal(appJs.includes('elements.outputCloseout.innerHTML = renderOutputCloseoutState(closeoutItems, { isOutputFocus });'), true);
   assert.equal(appJs.includes('function renderSessionListEmptyState()'), true);

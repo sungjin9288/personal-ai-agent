@@ -58,10 +58,10 @@
 | R5.3c1 Action handlers | 완료 | inbox query·optional workspace tenant 검사와 learning/provider/specialist/reviewer mutation 응답을 request-scoped factory로 이동 |
 | R5.3c2 Mission handlers | 완료 | mission tenant 검사·attachment 변환·document/memory/execution payload와 status code 선택을 request-scoped factory로 이동 |
 | R5.4 Static/server bootstrap | 완료 | static path guard·content type·404와 discovery·port fallback·shutdown을 두 작은 경계로 분리 |
-| D1 코드로 닫을 수 있는 후속 개발 | 진행 중 | D1.1 provider·blocker 검증 흐름 완료, D1.2 action inbox 경계가 다음 작업 |
+| D1 코드로 닫을 수 있는 후속 개발 | 진행 중 | D1.1 provider·blocker와 D1.2 action inbox 경계 완료, D1.3 lineage가 다음 작업 |
 | D1.1 Provider·blocker 검증 흐름 | 완료 | 필요한 증적 → 다음 검증 명령 → closure 판정을 같은 source-backed 화면 흐름으로 연결 |
-| D1.2 Action inbox remediation·handoff | 다음 작업 | 실행 가능한 remediation과 외부 승인 handoff의 행동·권한 경계를 분리 |
-| D1.3 Session·log lineage | 대기 | mission, provider response, retry, artifact provenance의 한 문맥 추적 여부 점검 |
+| D1.2 Action inbox remediation·handoff | 완료 | 즉시 실행, 외부 승인·인계, 검토 후 실행을 기존 permission·owner·audit record로 구분 |
+| D1.3 Session·log lineage | 다음 작업 | mission, provider response, retry, artifact provenance의 한 문맥 추적 여부 점검 |
 
 R1 완료 검증:
 
@@ -492,14 +492,25 @@ D1.1 구현 검증:
 - provider readiness, release blocker handoff, UI harness browse, web auth·RBAC 관련 smoke를 통과했다.
 - 사용자 입력과 증적 경로는 escape하고 외부 링크에 accessible label과 `rel="noreferrer"`를 유지했다. API mutation, live validation 승인, clipboard fallback 권한 경계는 변경하지 않았다.
 
-#### D1.2 Action inbox remediation·handoff — 다음 작업
+#### D1.2 Action inbox remediation·handoff — 완료
 
-- 현재 action type, 실행 command, permission metadata, external owner·approval 필드를 먼저 조사한다.
-- operator가 지금 실행할 수 있는 remediation과 외부 계정·승인·target evidence가 필요한 handoff를 같은 문구나 버튼으로 섞지 않는다.
-- 완료 조건: action item이 실행 주체, 필요한 권한, 다음 행동, 종료 증적을 한눈에 구분하며 기존 mutation·audit 경계를 유지한다.
-- 검증: action inbox 단위 테스트, provider attention·specialist follow-up·approval·remediation smoke, web auth·RBAC, 실제 browser 흐름.
+- 기존 action type, action class, permission decision만 읽는 순수 guidance 계약으로 `즉시 실행 가능`, `외부 승인·인계 필요`, `검토 후 실행`을 구분한다.
+- 각 action card에 담당, 권한 record, 다음 command, 종료 증적을 같은 순서로 표시하고 summary에서 세 lane의 전체 건수를 보여준다.
+- provider remediation은 `permission allow`가 기록된 경우에만 버튼을 노출한다. permission이 없거나 approval-required·deny이면 직접 실행하지 않는다.
+- generic 미션 재실행은 실제 command가 `mission run`인 reviewer retry에만 허용한다. approval, owner handoff, maintenance, blocked follow-up, provider drift는 각 record의 command와 종료 증적을 안내한다.
+- API mutation, confirmation prompt, web RBAC, reminder, audit record 생성 경계는 변경하지 않았다.
 
-#### D1.3 Session·log lineage — 대기
+D1.2 구현 검증:
+
+- `npm test`: 642개 통과
+- action inbox guidance·UI·frontend module graph focused test 16개 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- action inbox 13개 항목, provider action, provider attention remediation, specialist remediation, approval·approval inbox, learning promotion UI, web auth·RBAC smoke를 통과했다.
+- 실제 browser E2E에서 pending approval card가 `external-handoff`, 담당 `human-approver`, resolution record로 표시되고 잘못된 rerun action이 없음을 확인했다. console error 0건, page error 0건, release artifact preview 38회, open 2회가 모두 error-free였고 생성 artifact를 복원했다.
+- 문자열과 identifier는 escape하며 저장 schema, permission contract, provider contract, production-ready claim은 변경하지 않았다.
+
+#### D1.3 Session·log lineage — 다음 작업
 
 - mission, provider response, retry, artifact가 현재 어떤 id와 timestamp로 연결되는지 read model과 화면을 먼저 조사한다.
 - 이미 저장된 provenance를 한 문맥으로 읽는 데 필요한 최소 표시만 추가하고 새 저장 schema나 추정 lineage는 만들지 않는다.

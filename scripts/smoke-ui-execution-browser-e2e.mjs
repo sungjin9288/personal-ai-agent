@@ -2561,6 +2561,21 @@ try {
           reviewState: await page.evaluate(() => document.querySelector('#review-stage-summary')?.innerText || ''),
         };
       }
+      await page.waitForFunction((targetApprovalId) => {
+        const actionListText = document.querySelector('#action-list')?.innerText || '';
+        return actionListText.includes('approval ' + targetApprovalId + ' resolution record');
+      }, approvalId, { timeout: 15000 });
+      const approvalGuidance = await page.evaluate((targetApprovalId) => {
+        const actionItem = [...document.querySelectorAll('#action-list .action-item')].find((item) =>
+          (item.innerText || '').includes('approval ' + targetApprovalId + ' resolution record'),
+        );
+        const guidance = actionItem?.querySelector('[data-action-inbox-guidance]') || null;
+        return {
+          hasRerunAction: Boolean(actionItem?.querySelector('[data-action-rerun]')),
+          lane: guidance?.dataset.actionInboxGuidance || '',
+          text: guidance?.innerText || '',
+        };
+      }, approvalId);
       await page.evaluate(async (targetApprovalId) => {
         const response = await fetch('/api/approvals/' + encodeURIComponent(targetApprovalId) + '/resolve', {
           method: 'POST',
@@ -2583,6 +2598,7 @@ try {
         if (payload.execution?.currentLease?.status === 'active' || payload.execution?.latestLease?.status === 'active') {
           return {
             approvalId,
+            approvalGuidance,
             href: page.url(),
             ok: true,
             reviewState: await page.evaluate(() => document.querySelector('#review-stage-summary')?.innerText || ''),
@@ -2592,6 +2608,7 @@ try {
       }
       return {
         approvalId,
+        approvalGuidance,
         error: 'execution lease did not become active',
         href: page.url(),
         ok: false,
@@ -2600,6 +2617,11 @@ try {
     }`,
   ]);
   assert.equal(approvalResolutionState.ok, true, JSON.stringify(approvalResolutionState));
+  assert.equal(approvalResolutionState.approvalGuidance?.lane, 'external-handoff');
+  assert.equal(approvalResolutionState.approvalGuidance?.hasRerunAction, false);
+  assert.match(approvalResolutionState.approvalGuidance?.text || '', /외부 승인·인계 필요/);
+  assert.match(approvalResolutionState.approvalGuidance?.text || '', /human-approver/);
+  assert.match(approvalResolutionState.approvalGuidance?.text || '', /resolution record/);
 
   console.error('[smoke-ui-execution-browser-e2e] reload after approval and start execution');
   const runStageState = runPwJson([

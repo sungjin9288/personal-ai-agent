@@ -1,6 +1,11 @@
 // Extracted pure UI helpers (round 2). Byte-identical function/const bodies moved
 // from app.js; served as an ES module under /lib/.
 import {
+  canRunActionInboxRerun,
+  canRunProviderAttentionRemediation,
+  renderActionInboxGuidance,
+} from './action-inbox-guidance.js';
+import {
   escapeHtml,
   formatDate,
   getDisplayLabel,
@@ -879,7 +884,7 @@ export function renderActionInboxFallbackStopFilterSelect({
 
 export function renderActionInboxCallout({ count = 0, hasActiveFilter = false, visibleFilterLabel = '전체' } = {}) {
   const message = !hasActiveFilter
-    ? '재실행 권장이나 reviewer follow-up 같은 열린 작업을 정리하면 검토 단계가 더 깔끔하게 닫힙니다.'
+    ? '즉시 실행 가능한 복구는 기존 action 경계에서 처리하고, 외부 승인·인계는 담당자의 결정 기록을 먼저 남깁니다.'
     : `${visibleFilterLabel} 필터로 표시 중입니다. 전체 작업 수는 summary chip에서 유지됩니다.`;
   return `
     <div class="review-callout review-callout-action">
@@ -903,12 +908,11 @@ export function renderActionInboxItemHeader(item = {}) {
   return `
           <div class="item-title">${escapeHtml(item.title || item.actionId || item.id)}</div>
           <div class="item-subtitle">${escapeHtml(item.reason || '')}</div>
-          <div class="item-meta">담당 ${escapeHtml(item.recommendedOwner || '-')} · 기한 ${escapeHtml(formatDate(item.dueAt))}</div>`;
+          <div class="item-meta">유형 ${escapeHtml(item.actionType || '-')} · 기한 ${escapeHtml(formatDate(item.dueAt))}</div>`;
 }
 
 export function renderActionInboxItemCommandMeta(item = {}) {
   const metaRows = [
-    [item.recommendedCommand, 'item-meta mono'],
     [item.fallbackRecommendedCommand ? `fallback: ${item.fallbackRecommendedCommand}` : '', 'item-meta mono'],
     [
       item.recoverableFallbackRecommendedCommand
@@ -943,10 +947,10 @@ export function renderActionInboxItemActions(item = {}) {
           item,
         })
       : '',
-    item.actionType === 'provider-attention'
+    canRunProviderAttentionRemediation(item)
       ? renderProviderAttentionRemediationButton({ item })
       : '',
-    item.actionType === 'provider-attention' && item.fallbackRecommendedCommand
+    canRunProviderAttentionRemediation(item) && item.fallbackRecommendedCommand
       ? renderProviderAttentionRemediationButton({
           actionLabelPrefix: 'fallback 복구',
           buttonText: 'fallback 복구',
@@ -955,7 +959,7 @@ export function renderActionInboxItemActions(item = {}) {
           mode: 'fallback',
         })
       : '',
-    item.actionType === 'provider-attention' && item.recoverableFallbackRecommendedCommand
+    canRunProviderAttentionRemediation(item) && item.recoverableFallbackRecommendedCommand
       ? renderProviderAttentionRemediationButton({
           actionLabelPrefix: '복구성 fallback',
           buttonText: '복구성 fallback',
@@ -974,7 +978,7 @@ export function renderActionInboxItemActions(item = {}) {
           item,
         })
       : '',
-    item.missionId && !['provider-attention', 'specialist-follow-up', 'learning-promotion'].includes(item.actionType)
+    canRunActionInboxRerun(item)
       ? renderMissionActionItemButton({
           actionLabelPrefix: '권장 재실행',
           buttonText: '권장 재실행',
@@ -1006,6 +1010,7 @@ export function renderActionInboxItem(item = {}) {
         <div class="action-item">
           ${renderActionInboxItemStatus(item)}
           ${renderActionInboxItemHeader(item)}
+          ${renderActionInboxGuidance(item)}
           ${renderActionInboxItemCommandMeta(item)}
           ${renderLearningPromotionCommandMeta(item)}
           ${renderActionInboxItemActions(item)}

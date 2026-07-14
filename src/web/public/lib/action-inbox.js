@@ -1,4 +1,5 @@
 import { escapeHtml } from './html-format.js';
+import { summarizeActionInboxGuidance } from './action-inbox-guidance.js';
 import {
   renderActionInboxEmptyList,
   renderActionInboxFallbackStopFilterSelect,
@@ -179,6 +180,7 @@ function renderActionInboxSummary({
   fallbackStopReasonOptions = '',
   fallbackStopReasonPlaceholder = 'fallback stop 없음',
   fullSummary = {},
+  guidanceSummary = {},
   hasActiveFilter = false,
   hasFallbackStopReasonOptions = false,
   hasSelectedMission = false,
@@ -190,6 +192,9 @@ function renderActionInboxSummary({
     ${renderActionInboxSummaryChip('표시 작업', summary.pendingActionCount)}
     ${renderActionInboxSummaryChip('재알림 필요', fullSummary.reminderCounts?.needsReminder)}
     ${renderActionInboxSummaryChip('기한 초과', fullSummary.overdueCounts?.overdue)}
+    ${renderActionInboxSummaryChip('즉시 실행', guidanceSummary.operatorRemediation)}
+    ${renderActionInboxSummaryChip('외부 승인·인계', guidanceSummary.externalHandoff)}
+    ${renderActionInboxSummaryChip('검토 필요', guidanceSummary.operatorReview)}
     ${renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')}
     <div class="action-row action-filter-row">
       ${renderMissionActionsFilterButton(state, 'all', '전체', fullSummary.pendingActionCount)}
@@ -397,6 +402,7 @@ export function renderMissionActions({
   const visibleActions = getVisibleMissionActionsPayload(state) || state.missionActions;
   const summary = visibleActions.summary || {};
   const fullSummary = state.missionActions.summary || summary;
+  const guidanceSummary = summarizeActionInboxGuidance(state.missionActions.items || []);
   const fallbackStopReasonFilter = String(state.missionActionsFallbackStopReasonFilter || '').trim();
   const fallbackStopReasonOptions = renderMissionActionsFallbackStopReasonOptions(state);
   const hasFallbackStopReasonOptions = Boolean(fallbackStopReasonOptions.trim());
@@ -409,6 +415,7 @@ export function renderMissionActions({
     fallbackStopReasonOptions,
     fallbackStopReasonPlaceholder,
     fullSummary,
+    guidanceSummary,
     hasActiveFilter,
     hasFallbackStopReasonOptions,
     hasSelectedMission,
