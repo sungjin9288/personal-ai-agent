@@ -26,6 +26,7 @@ import { createStore } from '../core/store.mjs';
 import { evaluateOidcWebAuth, evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
 import { resolveWithinRoot } from './path-guard.mjs';
 import { createExecutionV1ReleaseArtifactResolver } from './release-artifact-resolver.mjs';
+import { createExecutionV1ReleaseHandlerFactory } from './release-handlers.mjs';
 import {
   extractBulletValue,
   extractBulletsAfterLabel,
@@ -849,6 +850,23 @@ const releaseCommandOrchestrator = createReleaseCommandOrchestrator({
   refreshArtifacts: refreshExecutionV1Artifacts,
   runProviderPreflight: runExecutionV1Preflight,
   runtimeJobRunner,
+});
+
+const buildExecutionV1ReleaseHandlers = createExecutionV1ReleaseHandlerFactory({
+  buildBlockerHandoff: getReleaseBlockerHandoff,
+  buildLiveValidationArgs,
+  buildStatus: buildExecutionV1Status,
+  decodePathSegment,
+  getContentType,
+  parseOptionalBooleanQueryParam,
+  readFile: fs.readFileSync,
+  readJsonBody,
+  releaseArtifactResolver,
+  releaseCommandOrchestrator,
+  rootDir,
+  sendBuffer,
+  sendJson,
+  sendNotFound,
 });
 
 function readExecutionV1Snapshot(preferredCommit = '', currentCommit = '') {
@@ -2124,6 +2142,7 @@ async function handleApi(request, response, url) {
     registerExactRoute,
     registerParamRoute,
   } = createRouteRegistry();
+  const releaseHandlers = buildExecutionV1ReleaseHandlers({ request, response, url });
 
   registerExactRoute('GET', '/api/meta', async () => {
     sendJson(response, 200, {
@@ -2292,139 +2311,19 @@ async function handleApi(request, response, url) {
     );
   });
 
-  registerExactRoute('GET', '/api/execution-v1/status', async () => {
-    sendJson(response, 200, buildExecutionV1Status());
-  });
-
-  registerExactRoute('GET', '/api/execution-v1/release-blockers', async () => {
-    const includeSharedQuery =
-      parseOptionalBooleanQueryParam(url.searchParams, 'includeShared') ??
-      parseOptionalBooleanQueryParam(url.searchParams, 'include-shared');
-    const withoutSharedQuery =
-      parseOptionalBooleanQueryParam(url.searchParams, 'withoutShared') ??
-      parseOptionalBooleanQueryParam(url.searchParams, 'without-shared');
-    const includeShared = withoutSharedQuery === true ? false : includeSharedQuery !== false;
-
-    sendJson(
-      response,
-      200,
-      getReleaseBlockerHandoff({
-        category: String(url.searchParams.get('category') || '').trim(),
-        docHrefBase: '/api/execution-v1/release-doc?path=',
-        includeShared,
-        owner: String(url.searchParams.get('owner') || '').trim(),
-        provider: String(url.searchParams.get('provider') || '').trim(),
-        rootDir,
-      }),
-    );
-  });
-
-  registerParamRoute('GET', '/api/execution-v1/handoff-artifacts/:artifactId', async (params) => {
-    const artifactId = decodePathSegment(params.artifactId);
-    const artifactRecord = releaseArtifactResolver.resolveHandoffArtifact(artifactId);
-    if (!artifactRecord) {
-      sendNotFound(response);
-      return;
-    }
-
-    sendBuffer(
-      response,
-      200,
-      fs.readFileSync(artifactRecord.artifactPath),
-      getContentType(artifactRecord.artifactPath),
-      {
-        'content-disposition': `inline; filename="${path.basename(artifactRecord.artifactPath)}"`,
-      },
-    );
-  });
-
-  registerExactRoute('GET', '/api/execution-v1/release-doc', async () => {
-    const docRecord = releaseArtifactResolver.resolveEvidenceDoc(url.searchParams.get('path') || '');
-    if (!docRecord) {
-      sendNotFound(response);
-      return;
-    }
-
-    sendBuffer(
-      response,
-      200,
-      fs.readFileSync(docRecord.path),
-      getContentType(docRecord.path),
-      {
-        'content-disposition': `inline; filename="${path.basename(docRecord.path)}"`,
-      },
-    );
-  });
-
-  registerExactRoute('POST', '/api/execution-v1/refresh', async () => {
-    const body = await readJsonBody(request);
-    const args = buildLiveValidationArgs(body);
-    const command = releaseCommandOrchestrator.refresh({
-      args,
-      confirmCurrentSurfaceRewrite: body.confirmCurrentSurfaceRewrite,
-      confirmLiveValidation: body.confirmLiveValidation,
-      requestId: request.id,
-    });
-    if (!command.ok) {
-      sendJson(response, 409, {
-        error: command.error,
-        message: command.message,
-        preflight: command.preflight,
-        status: command.releaseStatus,
-      });
-      return;
-    }
-    sendJson(response, 200, {
-      ...command.result,
-      runtimeJobId: command.runtimeJobId,
-    });
-  });
-
-  registerExactRoute('POST', '/api/execution-v1/refresh/preflight', async () => {
-    const body = await readJsonBody(request);
-    const args = buildLiveValidationArgs(body);
-    const command = releaseCommandOrchestrator.inspectRefresh({ args });
-    sendJson(response, 200, {
-      preflight: command.preflight,
-      status: command.releaseStatus,
-    });
-  });
-
-  registerExactRoute('POST', '/api/execution-v1/preflight', async () => {
-    const body = await readJsonBody(request);
-    sendJson(response, 200, {
-      preflight: releaseCommandOrchestrator.preflightProvider(body.provider),
-    });
-  });
-
-  registerExactRoute('POST', '/api/execution-v1/snapshot', async () => {
-    const body = await readJsonBody(request);
-    const command = releaseCommandOrchestrator.snapshot({
-      confirmSnapshotFreeze: body.confirmSnapshotFreeze,
-      requestId: request.id,
-    });
-    if (command.ok) {
-      sendJson(response, 200, {
-        ...command.result,
-        runtimeJobId: command.runtimeJobId,
-      });
-      return;
-    }
-    sendJson(response, 409, {
-      error: command.error,
-      message: command.message,
-      ...(command.preflight ? { preflight: command.preflight } : {}),
-      status: command.releaseStatus,
-    });
-  });
-
-  registerExactRoute('POST', '/api/execution-v1/snapshot/preflight', async () => {
-    const command = releaseCommandOrchestrator.inspectSnapshot();
-    sendJson(response, 200, {
-      preflight: command.preflight,
-      status: command.releaseStatus,
-    });
-  });
+  registerExactRoute('GET', '/api/execution-v1/status', releaseHandlers.getStatus);
+  registerExactRoute('GET', '/api/execution-v1/release-blockers', releaseHandlers.getBlockers);
+  registerParamRoute(
+    'GET',
+    '/api/execution-v1/handoff-artifacts/:artifactId',
+    releaseHandlers.getHandoffArtifact,
+  );
+  registerExactRoute('GET', '/api/execution-v1/release-doc', releaseHandlers.getDocument);
+  registerExactRoute('POST', '/api/execution-v1/refresh', releaseHandlers.refresh);
+  registerExactRoute('POST', '/api/execution-v1/refresh/preflight', releaseHandlers.inspectRefresh);
+  registerExactRoute('POST', '/api/execution-v1/preflight', releaseHandlers.preflightProvider);
+  registerExactRoute('POST', '/api/execution-v1/snapshot', releaseHandlers.snapshot);
+  registerExactRoute('POST', '/api/execution-v1/snapshot/preflight', releaseHandlers.inspectSnapshot);
 
   registerExactRoute('GET', '/api/actions', async () => {
     const workspaceId = String(url.searchParams.get('workspaceId') || '').trim();

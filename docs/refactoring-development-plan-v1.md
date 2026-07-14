@@ -53,7 +53,8 @@
 | R5.2a Runtime job runner | 완료 | request id·job kind·scope·result/error lifecycle을 registry-backed service로 이동 |
 | R5.2b Release command orchestration | 완료 | refresh·preflight·snapshot 확인 조건, runtime job 호출, release action audit 순서를 HTTP 독립 service로 이동 |
 | R5.3a Route registry | 완료 | exact/param route 등록·match를 HTTP 독립 registry로 이동하고 auth·RBAC 이후 dispatch 순서를 유지 |
-| R5.3b Release handlers | 다음 작업 | status·blocker·artifact/doc read·refresh·preflight·snapshot 응답을 handler factory로 묶음 |
+| R5.3b Release handlers | 완료 | status·blocker·artifact/doc read·refresh·preflight·snapshot 응답을 request-scoped handler factory로 이동 |
+| R5.3c Mission/action handlers | 다음 작업 | tenant 검사·payload parse·service 호출·status code 선택을 도메인별 handler factory로 이동 |
 
 R1 완료 검증:
 
@@ -301,6 +302,20 @@ R5.3a route registry 구현 검증:
 - exact route를 param route보다 먼저 평가한다. 현재 route table에는 두 종류가 같은 method/path에서 충돌하는 항목이 없어 기존 응답은 유지하면서 precedence를 명시적인 계약으로 고정했다.
 - param 값은 decode하거나 검증하지 않고 raw segment로 전달해 기존 handler의 `decodePathSegment` 경계를 유지한다. param route끼리는 기존 등록 순서대로 평가한다.
 - auth·RBAC·tenant 검사, handler 본문, route path, status code, response payload, 404와 error 처리, static serving은 변경하지 않았다.
+
+R5.3b release handlers 구현 검증:
+
+- `npm test`: 609개 통과
+- 새 handler 단위 테스트 7개에서 status와 blocker query, handoff artifact raw id decode와 content disposition, evidence doc read, allowlist miss 404, refresh confirmation 409·성공 200, provider/refresh preflight, snapshot 성공·실패·preflight 응답을 확인했다.
+- 구현 전후 release route 등록을 직접 비교해 exact 8개와 param 1개의 kind·method·path·순서가 모두 같음을 확인했다.
+- execution-v1 status·artifact refresh 8단계·snapshot, release blocker handoff, artifact hygiene, production readiness, UI execution console과 UI harness browse 집중 smoke 통과
+- web RBAC·auth/RBAC·OIDC/RBAC smoke에서 release handler 생성과 dispatch보다 auth 401·RBAC 403 검사가 계속 먼저 적용되는 것을 확인했다.
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E 생성 artifact restore smoke 통과
+- `server.mjs`는 2,893줄, 새 `release-handlers.mjs`는 168줄이다. server는 auth·RBAC 통과 뒤 request-scoped handler를 만들고 route registry에 named handler만 등록한다.
+- factory는 request body·query·path parameter를 기존 helper로 해석하고 resolver·read model·command orchestrator 결과를 기존 status code와 JSON/buffer payload로 변환한다.
+- resolver allowlist, raw path decode, refresh·snapshot confirmation, runtime request id, release action audit, content type·filename, `productionReadyClaim=false` 경계는 변경하지 않았다.
+- tenant 검사, mission/action route, static serving, global error 처리와 release 이외 handler는 이번 범위에서 이동하지 않았다.
 
 ## 3. 변경 원칙
 
