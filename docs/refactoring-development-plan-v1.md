@@ -51,7 +51,8 @@
 | R5.1b Release markdown parser | 완료 | release markdown의 section·checklist·deterministic·reference·live validation 추출을 순수 parser로 이동 |
 | R5.1c Release status assembler | 완료 | parser 결과와 provider·blocker·artifact freshness를 받는 순수 API read model로 분리 |
 | R5.2a Runtime job runner | 완료 | request id·job kind·scope·result/error lifecycle을 registry-backed service로 이동 |
-| R5.2b Release command orchestration | 다음 작업 | refresh·preflight·snapshot 확인 조건과 release action audit 흐름을 handler에서 분리 |
+| R5.2b Release command orchestration | 완료 | refresh·preflight·snapshot 확인 조건, runtime job 호출, release action audit 순서를 HTTP 독립 service로 이동 |
+| R5.3a Route registry | 다음 작업 | exact/param route 등록과 match를 분리하고 기존 auth·RBAC 이후 dispatch 순서를 유지 |
 
 R1 완료 검증:
 
@@ -273,6 +274,19 @@ R5.2a runtime job runner 구현 검증:
 - `server.mjs`는 3,233줄, 새 `runtime-job-runner.mjs`는 61줄이다. server는 job 입력과 task만 넘기고 runner가 start → task → completed/failed terminal 기록 순서를 소유한다.
 - registry 영속 형식, active·terminal history, runtime job id, request id, release API 응답과 release action audit 연결을 유지했다. runner는 HTTP request/response, route, 승인 조건, release command 구현을 직접 알지 않는다.
 - refresh·preflight·snapshot 확인 조건과 release action audit orchestration은 R5.2b 대상으로 handler에 유지했다.
+
+R5.2b release command orchestration 구현 검증:
+
+- `npm test`: 596개 통과
+- 새 orchestrator 단위 테스트 8개에서 current surface·live refresh 확인, provider 차단, runtime job request id 연결, refresh 성공·실패 audit, refresh/provider/snapshot preflight audit, snapshot eligibility·확인·성공·실패를 확인했다.
+- runtime discovery, execution-v1 artifact refresh 8단계, snapshot, status, UI execution console과 UI harness browse 집중 smoke 통과
+- web RBAC smoke에서 operator의 admin-only snapshot 실행이 service 진입 전에 계속 403으로 차단되는 것을 확인했다.
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E 생성 artifact restore smoke 통과
+- `server.mjs`는 3,037줄, 새 `release-command-orchestrator.mjs`는 285줄이다. handler는 body와 request id를 넘기고 service 결과를 기존 status code와 JSON payload로 옮긴다.
+- orchestrator는 refresh·preflight·snapshot의 blocked → confirmation-required → runtime job → completed/failed audit 순서를 소유한다. command 실행 함수, status read model, runtime job runner, audit writer는 명시적으로 주입받는다.
+- refresh 실행 실패는 기존처럼 release action에 기록한 뒤 원본 오류를 재전파하고, snapshot 실행 실패는 audit 기록 뒤 기존 409 `snapshot-not-ready` 응답으로 정리한다.
+- auth·RBAC·tenant 선검사, route table, confirmation field, runtime job kind·scope·request id, release action 저장 형식과 `productionReadyClaim=false` 경계는 변경하지 않았다.
 
 ## 3. 변경 원칙
 

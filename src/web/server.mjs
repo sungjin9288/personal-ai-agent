@@ -14,6 +14,7 @@ import { buildDoctorDiagnosticsSummary, runDoctor } from '../core/doctor-service
 import { createId } from '../core/id.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
+import { createReleaseCommandOrchestrator } from '../core/release-command-orchestrator.mjs';
 import { getReleaseBlockerHandoff } from '../core/release-readiness-service.mjs';
 import { resolveRootDir } from '../core/root.mjs';
 import { evaluateTenantAccess, extractTenantClaim, normalizeTenantMode } from '../core/tenant-policy.mjs';
@@ -837,6 +838,17 @@ function recordReleaseAction({
     summary: String(summary || '').trim(),
   });
 }
+
+const releaseCommandOrchestrator = createReleaseCommandOrchestrator({
+  archiveSnapshot: archiveExecutionV1Snapshot,
+  buildRefreshPreflight: buildExecutionV1RefreshPreflight,
+  buildSnapshotPreflight: buildExecutionV1SnapshotPreflight,
+  buildStatus: buildExecutionV1Status,
+  recordAction: recordReleaseAction,
+  refreshArtifacts: refreshExecutionV1Artifacts,
+  runProviderPreflight: runExecutionV1Preflight,
+  runtimeJobRunner,
+});
 
 function readExecutionV1Snapshot(preferredCommit = '', currentCommit = '') {
   if (!fs.existsSync(executionV1SnapshotsRoot)) {
@@ -1723,15 +1735,6 @@ function buildExecutionV1SnapshotPreflight() {
 }
 
 function refreshExecutionV1Artifacts(args = []) {
-  const preflight = buildExecutionV1RefreshPreflight(args);
-  if (!preflight.allowed) {
-    const reason = preflight.providerPreflight?.status === 'ready-but-missing-env'
-      ? `${preflight.providerPreflight.envKey}가 필요합니다.`
-      : preflight.providerPreflight?.status === 'blocked'
-        ? 'provider live validation preflight가 통과되지 않았습니다.'
-        : 'execution-v1 refresh preflight가 통과되지 않았습니다.';
-    throw new Error(reason);
-  }
   const result = spawnSync(process.execPath, [closeoutScriptPath, ...args], {
     cwd: rootDir,
     encoding: 'utf8',
@@ -1756,11 +1759,6 @@ function refreshExecutionV1Artifacts(args = []) {
 }
 
 function archiveExecutionV1Snapshot() {
-  const preflight = buildExecutionV1SnapshotPreflight();
-  if (!preflight.allowed) {
-    throw new Error(preflight.snapshotEligibility?.reason || '현재 상태에서는 release snapshot을 고정할 수 없습니다.');
-  }
-
   const result = spawnSync(process.execPath, [snapshotScriptPath], {
     cwd: rootDir,
     encoding: 'utf8',
@@ -2398,264 +2396,70 @@ async function handleApi(request, response, url) {
   registerExactRoute('POST', '/api/execution-v1/refresh', async () => {
     const body = await readJsonBody(request);
     const args = buildLiveValidationArgs(body);
-    const preflight = buildExecutionV1RefreshPreflight(args);
-    const isLiveValidationRefresh = Boolean(args.length);
-    const isCurrentSurfaceRefresh = !args.length;
-    const refreshScope = isLiveValidationRefresh ? 'live-validation' : 'current-surface';
-    const provider = preflight.provider || '';
-    if (!preflight.allowed) {
-      recordReleaseAction({
-        action: 'refresh',
-        details: {
-          args,
-          preflight,
-        },
-        outcome: 'blocked',
-        provider,
-        scope: refreshScope,
-        summary: preflight.summary,
-      });
+    const command = releaseCommandOrchestrator.refresh({
+      args,
+      confirmCurrentSurfaceRewrite: body.confirmCurrentSurfaceRewrite,
+      confirmLiveValidation: body.confirmLiveValidation,
+      requestId: request.id,
+    });
+    if (!command.ok) {
       sendJson(response, 409, {
-        error: 'refresh-not-allowed',
-        message: preflight.summary,
-        preflight,
-        status: buildExecutionV1Status(),
+        error: command.error,
+        message: command.message,
+        preflight: command.preflight,
+        status: command.releaseStatus,
       });
       return;
     }
-    if (isLiveValidationRefresh && !body.confirmLiveValidation) {
-      recordReleaseAction({
-        action: 'refresh',
-        details: {
-          args,
-          confirmField: 'confirmLiveValidation',
-          preflight,
-        },
-        outcome: 'confirmation-required',
-        provider,
-        scope: refreshScope,
-        summary: `${provider || 'provider'} live validation 실행은 명시적 확인이 필요합니다.`,
-      });
-      sendJson(response, 409, {
-        error: 'live-validation-confirmation-required',
-        message: `${preflight.provider || 'provider'} live validation 실행은 명시적 확인이 필요합니다.`,
-        preflight,
-        status: buildExecutionV1Status(),
-      });
-      return;
-    }
-    if (isCurrentSurfaceRefresh && !body.confirmCurrentSurfaceRewrite) {
-      recordReleaseAction({
-        action: 'refresh',
-        details: {
-          args,
-          confirmField: 'confirmCurrentSurfaceRewrite',
-          preflight,
-        },
-        outcome: 'confirmation-required',
-        provider,
-        scope: refreshScope,
-        summary: 'current surface evidence/closeout/handoff 재생성은 명시적 확인이 필요합니다.',
-      });
-      sendJson(response, 409, {
-        error: 'refresh-confirmation-required',
-        message: 'current surface evidence/closeout/handoff 재생성은 명시적 확인이 필요합니다.',
-        preflight,
-        status: buildExecutionV1Status(),
-      });
-      return;
-    }
-    try {
-      const { job, result: payload } = runtimeJobRunner.run({
-        details: {
-          args,
-          preflight,
-          provider,
-        },
-        jobKind: 'execution-v1-refresh',
-        requestId: request.id,
-        scope: refreshScope,
-        summary: isLiveValidationRefresh
-          ? `${provider} live validation과 current surface 재생성을 실행합니다.`
-          : 'current surface evidence/closeout/handoff 재생성을 실행합니다.',
-        task: () => refreshExecutionV1Artifacts(args),
-      });
-      recordReleaseAction({
-        action: 'refresh',
-        details: {
-          args,
-          runtimeJobId: job.id,
-          preflight,
-        },
-        outcome: 'completed',
-        provider,
-        scope: refreshScope,
-        summary: isLiveValidationRefresh
-          ? `${provider} live validation과 current surface 재생성을 완료했습니다.`
-          : 'current surface evidence/closeout/handoff 재생성을 완료했습니다.',
-      });
-      sendJson(response, 200, {
-        ...payload,
-        runtimeJobId: job.id,
-      });
-    } catch (error) {
-      recordReleaseAction({
-        action: 'refresh',
-        details: {
-          args,
-          error: error instanceof Error ? error.message : 'unknown error',
-          preflight,
-        },
-        outcome: 'failed',
-        provider,
-        scope: refreshScope,
-        summary: error instanceof Error ? error.message : 'execution-v1 refresh failed',
-      });
-      throw error;
-    }
+    sendJson(response, 200, {
+      ...command.result,
+      runtimeJobId: command.runtimeJobId,
+    });
   });
 
   registerExactRoute('POST', '/api/execution-v1/refresh/preflight', async () => {
     const body = await readJsonBody(request);
     const args = buildLiveValidationArgs(body);
-    const preflight = buildExecutionV1RefreshPreflight(args);
-    recordReleaseAction({
-      action: 'refresh-preflight',
-      details: {
-        args,
-        preflight,
-      },
-      outcome: preflight.allowed ? 'allowed' : 'blocked',
-      provider: preflight.provider || '',
-      scope: preflight.provider ? 'live-validation' : 'current-surface',
-      summary: preflight.summary,
-    });
+    const command = releaseCommandOrchestrator.inspectRefresh({ args });
     sendJson(response, 200, {
-      preflight,
-      status: buildExecutionV1Status(),
+      preflight: command.preflight,
+      status: command.releaseStatus,
     });
   });
 
   registerExactRoute('POST', '/api/execution-v1/preflight', async () => {
     const body = await readJsonBody(request);
-    const requestedProvider = String(body.provider || '').trim();
-    const preflight = runExecutionV1Preflight(requestedProvider);
-    recordReleaseAction({
-      action: requestedProvider === 'all' ? 'aggregate-provider-preflight' : 'provider-preflight',
-      details: {
-        preflight,
-      },
-      outcome: preflight.status || 'unknown',
-      provider: requestedProvider === 'all' ? '' : requestedProvider,
-      scope: 'provider-readiness',
-      summary: requestedProvider === 'all'
-        ? `all provider preflight ${preflight.status || 'unknown'} · missing env ${preflight.missingEnvCount ?? 'unknown'}`
-        : `${requestedProvider || 'provider'} preflight ${preflight.status || 'unknown'}`,
-    });
     sendJson(response, 200, {
-      preflight,
+      preflight: releaseCommandOrchestrator.preflightProvider(body.provider),
     });
   });
 
   registerExactRoute('POST', '/api/execution-v1/snapshot', async () => {
     const body = await readJsonBody(request);
-    const preflight = buildExecutionV1SnapshotPreflight();
-    if (!preflight.allowed) {
-      recordReleaseAction({
-        action: 'snapshot',
-        details: {
-          preflight,
-        },
-        outcome: 'blocked',
-        scope: 'snapshot',
-        summary: preflight.summary,
-      });
-      sendJson(response, 409, {
-        error: 'snapshot-not-ready',
-        message: preflight.summary,
-        preflight,
-        status: buildExecutionV1Status(),
-      });
-      return;
-    }
-    if (!body.confirmSnapshotFreeze) {
-      recordReleaseAction({
-        action: 'snapshot',
-        details: {
-          confirmField: 'confirmSnapshotFreeze',
-          preflight,
-        },
-        outcome: 'confirmation-required',
-        scope: 'snapshot',
-        summary: 'release snapshot 고정은 명시적 확인이 필요합니다.',
-      });
-      sendJson(response, 409, {
-        error: 'snapshot-confirmation-required',
-        message: 'release snapshot 고정은 명시적 확인이 필요합니다.',
-        preflight,
-        status: buildExecutionV1Status(),
-      });
-      return;
-    }
-    try {
-      const { job, result: payload } = runtimeJobRunner.run({
-        details: {
-          preflight,
-        },
-        jobKind: 'execution-v1-snapshot',
-        requestId: request.id,
-        scope: 'snapshot',
-        summary: 'release snapshot 고정을 실행합니다.',
-        task: () => archiveExecutionV1Snapshot(),
-      });
-      recordReleaseAction({
-        action: 'snapshot',
-        details: {
-          archiveResult: payload.archiveResult || null,
-          runtimeJobId: job.id,
-          preflight,
-        },
-        outcome: 'completed',
-        scope: 'snapshot',
-        summary: `release snapshot을 고정했습니다. (${String(payload.archiveResult?.verifiedCommit || '').slice(0, 7) || 'verified'})`,
-      });
+    const command = releaseCommandOrchestrator.snapshot({
+      confirmSnapshotFreeze: body.confirmSnapshotFreeze,
+      requestId: request.id,
+    });
+    if (command.ok) {
       sendJson(response, 200, {
-        ...payload,
-        runtimeJobId: job.id,
+        ...command.result,
+        runtimeJobId: command.runtimeJobId,
       });
-    } catch (error) {
-      recordReleaseAction({
-        action: 'snapshot',
-        details: {
-          error: error instanceof Error ? error.message : 'unknown error',
-          preflight,
-        },
-        outcome: 'failed',
-        scope: 'snapshot',
-        summary: error instanceof Error ? error.message : 'snapshot을 생성할 수 없습니다.',
-      });
-      sendJson(response, 409, {
-        error: 'snapshot-not-ready',
-        message: error instanceof Error ? error.message : 'snapshot을 생성할 수 없습니다.',
-        status: buildExecutionV1Status(),
-      });
+      return;
     }
+    sendJson(response, 409, {
+      error: command.error,
+      message: command.message,
+      ...(command.preflight ? { preflight: command.preflight } : {}),
+      status: command.releaseStatus,
+    });
   });
 
   registerExactRoute('POST', '/api/execution-v1/snapshot/preflight', async () => {
-    const preflight = buildExecutionV1SnapshotPreflight();
-    recordReleaseAction({
-      action: 'snapshot-preflight',
-      details: {
-        preflight,
-      },
-      outcome: preflight.allowed ? 'allowed' : 'blocked',
-      scope: 'snapshot',
-      summary: preflight.summary,
-    });
+    const command = releaseCommandOrchestrator.inspectSnapshot();
     sendJson(response, 200, {
-      preflight,
-      status: buildExecutionV1Status(),
+      preflight: command.preflight,
+      status: command.releaseStatus,
     });
   });
 
