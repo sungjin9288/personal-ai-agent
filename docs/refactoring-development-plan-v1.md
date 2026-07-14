@@ -54,7 +54,9 @@
 | R5.2b Release command orchestration | 완료 | refresh·preflight·snapshot 확인 조건, runtime job 호출, release action audit 순서를 HTTP 독립 service로 이동 |
 | R5.3a Route registry | 완료 | exact/param route 등록·match를 HTTP 독립 registry로 이동하고 auth·RBAC 이후 dispatch 순서를 유지 |
 | R5.3b Release handlers | 완료 | status·blocker·artifact/doc read·refresh·preflight·snapshot 응답을 request-scoped handler factory로 이동 |
-| R5.3c Mission/action handlers | 다음 작업 | tenant 검사·payload parse·service 호출·status code 선택을 도메인별 handler factory로 이동 |
+| R5.3c Mission/action handlers | 진행 중 | action과 mission을 독립 factory·검증·commit 경계로 나눠 이동 |
+| R5.3c1 Action handlers | 완료 | inbox query·optional workspace tenant 검사와 learning/provider/specialist/reviewer mutation 응답을 request-scoped factory로 이동 |
+| R5.3c2 Mission handlers | 다음 작업 | mission tenant 검사·attachment 변환·document/memory/execution payload와 status code 선택을 별도 factory로 이동 |
 
 R1 완료 검증:
 
@@ -317,6 +319,19 @@ R5.3b release handlers 구현 검증:
 - resolver allowlist, raw path decode, refresh·snapshot confirmation, runtime request id, release action audit, content type·filename, `productionReadyClaim=false` 경계는 변경하지 않았다.
 - tenant 검사, mission/action route, static serving, global error 처리와 release 이외 handler는 이번 범위에서 이동하지 않았다.
 
+R5.3c1 action handlers 구현 검증:
+
+- `npm test`: 614개 통과
+- 새 handler 단위 테스트 5개에서 inbox query alias와 optional workspace tenant 차단, expire filter trim, learning promotion path decode·remind·resolve·rollback payload, provider·specialist·reviewer remediation service argument와 200 응답을 확인했다.
+- 구현 전후 action route 등록을 직접 비교해 exact 1개와 기존 static pattern을 포함한 param 7개의 kind·method·path·순서가 모두 같음을 확인했다.
+- UI learning promotion surface에서 실제 HTTP inbox filter, promote·reject·expire·rollback mutation을 확인했고 action inbox·maintenance, reviewer lifecycle, provider attention, specialist follow-up 집중 smoke가 통과했다.
+- web tenant isolation·RBAC·auth/RBAC·OIDC/RBAC smoke가 통과했다. auth 401·RBAC 403은 action handler 생성보다 먼저 적용되고, optional workspace tenant 거부는 inbox service 호출 전에 응답을 끝낸다.
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E에서 console error와 page error가 0건이었고 handoff 6개, release preview 38개, release artifact open 2개 세션이 모두 error-free였다. 생성 artifact restore smoke도 통과했다.
+- `server.mjs`는 2,834줄, 새 `action-handlers.mjs`는 132줄이다. server는 route registry에 8개의 named handler만 등록하고 factory가 query·body·raw path parameter를 기존 helper로 해석한다.
+- 기존 learning promotion 기본값과 Boolean 변환, provider fallback field, async remediation 대기, tenant response helper, status code와 JSON payload를 변경하지 않았다.
+- mission tenant·attachment·document·memory·execution handler, workspace·approval·artifact route, static serving과 global error 처리는 R5.3c2 이후 경계로 남겼다.
+
 ## 3. 변경 원칙
 
 1. 한 번에 하나의 도메인만 옮긴다.
@@ -409,7 +424,8 @@ release 문서 해석, runtime job, API request 처리, static serving을 분리
   - R5.2b release command orchestration: refresh·preflight·snapshot의 확인 조건, runtime job 호출, release action audit 기록을 분리한다.
   - R5.3a route registry: exact/param route 등록과 match만 담당하고 auth·RBAC 이후에 dispatch한다.
   - R5.3b release handlers: status, blocker, artifact/doc read, refresh, preflight, snapshot 응답을 handler factory로 묶는다.
-  - R5.3c mission/action handlers: tenant 검사, payload parse, service 호출, status code 선택을 도메인별 handler factory로 옮긴다.
+  - R5.3c1 action handlers: inbox query와 optional workspace tenant 검사, learning/provider/specialist/reviewer mutation 응답을 action factory로 옮긴다.
+  - R5.3c2 mission handlers: mission tenant 검사, attachment 변환, document·memory·execution payload와 status code 선택을 mission factory로 옮긴다.
   - R5.4 static/server bootstrap: static path guard, discovery file, port fallback, shutdown 순서를 마지막에 정리한다.
 - 완료 조건:
   - auth·RBAC·tenant 검사가 handler보다 먼저 실행된다.
@@ -424,7 +440,7 @@ release 문서 해석, runtime job, API request 처리, static serving을 분리
   - R5.2: runtime request/job registry, refresh preflight, snapshot confirmation, artifact refresh·restore smoke
   - R5.3: web auth/RBAC/OIDC, tenant isolation, action inbox, mission execution·document·memory smoke
   - R5.4: runtime discovery, static UI fetch, port fallback, shutdown smoke
-- 커밋 묶음: R5.1a resolver, R5.1b parser, R5.1c read model, R5.2 job/orchestration, R5.3 handler domain, R5.4 server bootstrap를 각각 응집된 commit으로 묶고 한 묶음이 검증되기 전에는 다음 경계를 옮기지 않는다.
+- 커밋 묶음: R5.1a resolver, R5.1b parser, R5.1c read model, R5.2 job/orchestration, R5.3c1 action handler, R5.3c2 mission handler, R5.4 server bootstrap를 각각 응집된 commit으로 묶고 한 묶음이 검증되기 전에는 다음 경계를 옮기지 않는다.
 
 ### D1. 코드로 닫을 수 있는 후속 개발
 

@@ -24,6 +24,7 @@ import { createRuntimeRequestRegistry } from '../core/runtime-request-registry.m
 import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
 import { evaluateOidcWebAuth, evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
+import { createActionHandlerFactory } from './action-handlers.mjs';
 import { resolveWithinRoot } from './path-guard.mjs';
 import { createExecutionV1ReleaseArtifactResolver } from './release-artifact-resolver.mjs';
 import { createExecutionV1ReleaseHandlerFactory } from './release-handlers.mjs';
@@ -867,6 +868,16 @@ const buildExecutionV1ReleaseHandlers = createExecutionV1ReleaseHandlerFactory({
   sendBuffer,
   sendJson,
   sendNotFound,
+});
+
+const buildActionHandlers = createActionHandlerFactory({
+  decodePathSegment,
+  evaluateWorkspaceTenantAccess,
+  parseOptionalBooleanQueryParam,
+  readJsonBody,
+  sendJson,
+  sendTenantDenied,
+  service,
 });
 
 function readExecutionV1Snapshot(preferredCommit = '', currentCommit = '') {
@@ -2142,6 +2153,7 @@ async function handleApi(request, response, url) {
     registerExactRoute,
     registerParamRoute,
   } = createRouteRegistry();
+  const actionHandlers = buildActionHandlers({ auth, request, response, url });
   const releaseHandlers = buildExecutionV1ReleaseHandlers({ request, response, url });
 
   registerExactRoute('GET', '/api/meta', async () => {
@@ -2325,113 +2337,42 @@ async function handleApi(request, response, url) {
   registerExactRoute('POST', '/api/execution-v1/snapshot', releaseHandlers.snapshot);
   registerExactRoute('POST', '/api/execution-v1/snapshot/preflight', releaseHandlers.inspectSnapshot);
 
-  registerExactRoute('GET', '/api/actions', async () => {
-    const workspaceId = String(url.searchParams.get('workspaceId') || '').trim();
-    if (workspaceId) {
-      const tenant = evaluateWorkspaceTenantAccess(workspaceId, auth);
-      if (!tenant.allowed) {
-        sendTenantDenied(response, tenant);
-        return;
-      }
-    }
-    const needsReminderOnly =
-      parseOptionalBooleanQueryParam(url.searchParams, 'needsReminderOnly') ??
-      parseOptionalBooleanQueryParam(url.searchParams, 'needsReminder');
-    sendJson(response, 200, service.getActionInbox({
-      actionClass: String(url.searchParams.get('actionClass') || '').trim(),
-      effectiveOwner: String(url.searchParams.get('effectiveOwner') || '').trim(),
-      missionId: String(url.searchParams.get('missionId') || '').trim(),
-      needsReminderOnly,
-      overdueOnly: parseOptionalBooleanQueryParam(url.searchParams, 'overdueOnly'),
-      owner: String(url.searchParams.get('owner') || '').trim(),
-      priority: String(url.searchParams.get('priority') || '').trim(),
-      providerId: String(url.searchParams.get('providerId') || '').trim(),
-      providerFallbackStopReason: String(
-        url.searchParams.get('providerFallbackStopReason') ||
-          url.searchParams.get('provider-fallback-stop-reason') ||
-          '',
-      ).trim(),
-      promotionStatus: String(url.searchParams.get('promotionStatus') || '').trim(),
-      workspaceId,
-    }));
-  });
-
-  registerParamRoute('POST', '/api/actions/learning-promotions/expire', async () => {
-    const body = await readJsonBody(request);
-    const result = service.expireLearningPromotions({
-      before: String(body.before || '').trim(),
-      missionId: String(body.missionId || '').trim(),
-      note: String(body.note || '').trim(),
-      recordType: String(body.recordType || '').trim(),
-      scope: String(body.scope || '').trim(),
-      target: String(body.target || '').trim(),
-      workspaceId: String(body.workspaceId || '').trim(),
-    });
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/actions/learning-promotions/:candidateId/remind', async (params) => {
-    const candidateId = decodePathSegment(params.candidateId);
-    const body = await readJsonBody(request);
-    const result = service.remindLearningPromotionStopConditions(
-      {
-        dueOnly: body.dueOnly !== false,
-        learningCandidateId: candidateId,
-        missionId: String(body.missionId || '').trim(),
-        overdueOnly: Boolean(body.overdueOnly),
-        workspaceId: String(body.workspaceId || '').trim(),
-      },
-      String(body.note || '').trim(),
-    );
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/actions/learning-promotions/:candidateId/resolve', async (params) => {
-    const candidateId = decodePathSegment(params.candidateId);
-    const body = await readJsonBody(request);
-    const result = service.resolveLearningPromotion(candidateId, {
-      decision: String(body.decision || '').trim(),
-      note: String(body.note || '').trim(),
-      scope: String(body.scope || '').trim(),
-      target: String(body.target || '').trim(),
-    });
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/actions/learning-promotions/:candidateId/rollback', async (params) => {
-    const candidateId = decodePathSegment(params.candidateId);
-    const body = await readJsonBody(request);
-    const result = service.rollbackLearningPromotion(candidateId, {
-      note: String(body.note || '').trim(),
-    });
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/actions/provider-attention/:actionId/remediate', async (params) => {
-    const actionId = decodePathSegment(params.actionId);
-    const body = await readJsonBody(request);
-    const result = await service.remediateProviderAttention(actionId, {
-      fallbackPolicy: String(body.fallbackPolicy || '').trim(),
-      fallbackProvider: String(body.fallbackProvider || '').trim(),
-    });
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/actions/specialist-follow-ups/:actionId/remediate', async (params) => {
-    const actionId = decodePathSegment(params.actionId);
-    const result = await service.remediateSpecialistFollowUp(actionId);
-    sendJson(response, 200, result);
-  });
-
-  registerParamRoute('POST', '/api/actions/reviewer-follow-ups/:actionId/resolve', async (params) => {
-    const actionId = decodePathSegment(params.actionId);
-    const body = await readJsonBody(request);
-    const result = service.resolveReviewerFollowUp(actionId, {
-      kind: String(body.kind || '').trim(),
-      note: String(body.note || '').trim(),
-    });
-    sendJson(response, 200, result);
-  });
+  registerExactRoute('GET', '/api/actions', actionHandlers.getInbox);
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/expire',
+    actionHandlers.expireLearningPromotions,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/remind',
+    actionHandlers.remindLearningPromotion,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/resolve',
+    actionHandlers.resolveLearningPromotion,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/rollback',
+    actionHandlers.rollbackLearningPromotion,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/provider-attention/:actionId/remediate',
+    actionHandlers.remediateProviderAttention,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/specialist-follow-ups/:actionId/remediate',
+    actionHandlers.remediateSpecialistFollowUp,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/reviewer-follow-ups/:actionId/resolve',
+    actionHandlers.resolveReviewerFollowUp,
+  );
 
   registerExactRoute('GET', '/api/missions', async () => {
     sendJson(response, 200, buildMissionListPayload({ tenantId: resolveAuthTenantId(auth) }));
