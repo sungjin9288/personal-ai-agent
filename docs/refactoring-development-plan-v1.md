@@ -52,7 +52,8 @@
 | R5.1c Release status assembler | 완료 | parser 결과와 provider·blocker·artifact freshness를 받는 순수 API read model로 분리 |
 | R5.2a Runtime job runner | 완료 | request id·job kind·scope·result/error lifecycle을 registry-backed service로 이동 |
 | R5.2b Release command orchestration | 완료 | refresh·preflight·snapshot 확인 조건, runtime job 호출, release action audit 순서를 HTTP 독립 service로 이동 |
-| R5.3a Route registry | 다음 작업 | exact/param route 등록과 match를 분리하고 기존 auth·RBAC 이후 dispatch 순서를 유지 |
+| R5.3a Route registry | 완료 | exact/param route 등록·match를 HTTP 독립 registry로 이동하고 auth·RBAC 이후 dispatch 순서를 유지 |
+| R5.3b Release handlers | 다음 작업 | status·blocker·artifact/doc read·refresh·preflight·snapshot 응답을 handler factory로 묶음 |
 
 R1 완료 검증:
 
@@ -287,6 +288,19 @@ R5.2b release command orchestration 구현 검증:
 - orchestrator는 refresh·preflight·snapshot의 blocked → confirmation-required → runtime job → completed/failed audit 순서를 소유한다. command 실행 함수, status read model, runtime job runner, audit writer는 명시적으로 주입받는다.
 - refresh 실행 실패는 기존처럼 release action에 기록한 뒤 원본 오류를 재전파하고, snapshot 실행 실패는 audit 기록 뒤 기존 409 `snapshot-not-ready` 응답으로 정리한다.
 - auth·RBAC·tenant 선검사, route table, confirmation field, runtime job kind·scope·request id, release action 저장 형식과 `productionReadyClaim=false` 경계는 변경하지 않았다.
+
+R5.3a route registry 구현 검증:
+
+- `npm test`: 602개 통과
+- 새 registry 단위 테스트 6개에서 exact match, raw param 추출, exact 우선, param 등록 순서, static param pattern, exact replacement, method·segment 불일치를 확인했다.
+- 구현 전후 `registerExactRoute`·`registerParamRoute` 호출을 직접 비교해 exact 22개와 param/static-pattern 33개의 method·path·등록 순서가 바뀌지 않았음을 확인했다.
+- runtime discovery, UI harness browse, UI execution console, web RBAC·auth/RBAC·OIDC/RBAC·tenant isolation, action inbox, execution flow 집중 smoke 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E 생성 artifact restore smoke 통과
+- `server.mjs`는 2,994줄, 새 `route-registry.mjs`는 76줄이다. server는 auth·RBAC 통과 후 handler closure를 등록하고 registry match 결과만 dispatch한다.
+- exact route를 param route보다 먼저 평가한다. 현재 route table에는 두 종류가 같은 method/path에서 충돌하는 항목이 없어 기존 응답은 유지하면서 precedence를 명시적인 계약으로 고정했다.
+- param 값은 decode하거나 검증하지 않고 raw segment로 전달해 기존 handler의 `decodePathSegment` 경계를 유지한다. param route끼리는 기존 등록 순서대로 평가한다.
+- auth·RBAC·tenant 검사, handler 본문, route path, status code, response payload, 404와 error 처리, static serving은 변경하지 않았다.
 
 ## 3. 변경 원칙
 

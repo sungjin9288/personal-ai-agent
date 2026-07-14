@@ -37,6 +37,7 @@ import {
   assembleExecutionV1Status,
   buildExecutionV1ArtifactSummary,
 } from './release-status-assembler.mjs';
+import { createRouteRegistry } from './route-registry.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2072,7 +2073,6 @@ function serveStatic(response, pathname) {
 
 async function handleApi(request, response, url) {
   const pathname = url.pathname;
-  const pathParts = pathname.split('/').filter(Boolean);
   const auth =
     webAuthMode === 'oidc'
       ? await evaluateOidcWebAuth({
@@ -2119,48 +2119,11 @@ async function handleApi(request, response, url) {
     return;
   }
 
-  const exactRoutes = new Map();
-  const registerExactRoute = (method, routePath, handler) => {
-    exactRoutes.set(`${method} ${routePath}`, handler);
-  };
-
-  const paramRoutes = [];
-  const registerParamRoute = (method, pattern, handler) => {
-    const segments = pattern.split('/').filter(Boolean);
-    paramRoutes.push({ handler, method, segments });
-  };
-  const matchParamRoute = () => {
-    for (const route of paramRoutes) {
-      if (route.method !== request.method) {
-        continue;
-      }
-      if (route.segments.length !== pathParts.length) {
-        continue;
-      }
-      const params = {};
-      let matched = true;
-      for (let index = 0; index < route.segments.length; index += 1) {
-        const segment = route.segments[index];
-        if (segment.startsWith(':')) {
-          const value = pathParts[index];
-          if (!value) {
-            matched = false;
-            break;
-          }
-          params[segment.slice(1)] = value;
-          continue;
-        }
-        if (segment !== pathParts[index]) {
-          matched = false;
-          break;
-        }
-      }
-      if (matched) {
-        return { handler: route.handler, params };
-      }
-    }
-    return null;
-  };
+  const {
+    matchRoute,
+    registerExactRoute,
+    registerParamRoute,
+  } = createRouteRegistry();
 
   registerExactRoute('GET', '/api/meta', async () => {
     sendJson(response, 200, {
@@ -2905,15 +2868,9 @@ async function handleApi(request, response, url) {
     });
   });
 
-  const paramRoute = matchParamRoute();
-  if (paramRoute) {
-    await paramRoute.handler(paramRoute.params);
-    return;
-  }
-
-  const exactRoute = exactRoutes.get(`${request.method} ${pathname}`);
-  if (exactRoute) {
-    await exactRoute();
+  const route = matchRoute(request.method, pathname);
+  if (route) {
+    await route.handler(route.params);
     return;
   }
 
