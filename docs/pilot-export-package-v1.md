@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-14T00:31:03.618Z
-- verifiedCommit: f0bfe54cc4eed6c053778006f5cee219066c3d5f
+- generatedAt: 2026-07-14T00:54:57.791Z
+- verifiedCommit: b5a3837e4e75eae889e0a816fc0edf0a7fe02655
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 1af2b6478014cb704f3a951deaf0afad9eab8b47627a0d5461f191f670c89eec
+- bundleSha256: 6434a9833c893f8ae222c209433565321818819a240b12a63c0daf228b91793d
 - fileCount: 75
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -110,10 +110,10 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-backup-operations-v1.md` | 9763 | `2f30be20f210cf3b2a52c2fc19fb2cdee223a4e07105c0d53826cd528952b9e0` |
 | `docs/identity-session-admin-v1.md` | 5290 | `ffed2867d7d61f9e0241c65c056de0109f6b03ea466c9f8c452b5b17e9a88cc4` |
 | `docs/tenant-storage-admin-v1.md` | 5265 | `196643ffccc0778c211d82e063e5c6067444a53f550e1b134eecdfad9b6d7186` |
-| `docs/clean-deployment-release-v1.md` | 11809 | `a10c1703a0cfdb5dc73c11e5c6f02b4f635230ad92892a94f692ae43325308ce` |
+| `docs/clean-deployment-release-v1.md` | 11813 | `6878701fac604d5bb11116c0ce0e9a145c7880ab81f18917fd4a8ab0cceceb7f` |
 | `docs/production-slo-operating-v1.md` | 9996 | `7c6732ff3de75775f9530b5f53524b7919aef52ab19143209c67a4b9fc65935f` |
 | `docs/production-retention-operating-v1.md` | 7732 | `d7c5c7d83dc30968bbf5393cee279a5bc7f9c346eea333c3474e07d4d2854b2d` |
-| `docs/production-provider-readiness-v1.md` | 22089 | `4d32c54cf8c66328639ed0b256a8084d4440d3283adad2c62425102a42368605` |
+| `docs/production-provider-readiness-v1.md` | 22089 | `c6b6d5458e97b7c64d68f45ccf724bea4079b80878852f086b54441473d42166` |
 | `docs/target-provider-evidence-intake-v1.md` | 13617 | `17f4750fe722f151743181f94a7d58f149f47976e7175c2772bbac1f8732b4c1` |
 | `docs/target-provider-operations-v1.md` | 22263 | `2cbf909fd2cad9803048f801066d1fd46d2dc00b985a9aea746eda87c2fa0ef7` |
 | `docs/target-openai-provider-account-v1.md` | 14039 | `15f7eb72f44b2fd93d1dfbe8eea2c7fca708afd3d7c8061644863b3bbe1b7b0b` |
@@ -130,14 +130,14 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-secret-manager-architecture-v1.md` | 9085 | `805cf311fb11c26b7ec03f35241d40c41546d835cf0109809a2bddcfc099de1d` |
 | `docs/target-environment-evidence-intake-v1.md` | 48284 | `e619d472a8b17ecccf5eb793aac1fa828fe04c987e38422f98050cc4c100db05` |
 | `docs/release-readiness-v1.md` | 92579 | `5c65024e30def571fe6d43b96c271c1ccc7c07e156695c8418da7526022bc4f0` |
-| `docs/production-like-release-drill-v1.md` | 56050 | `92ea48397916299d40ef94efee989dd8a66272e7cdf8d7ff8a4b2f4c839456cd` |
-| `docs/execution-v1-evidence.md` | 14485 | `a6ec2dbd7955773a15be5ca8b22a9bd81d7dc2f56a7aa73e1e1802f2d46f87df` |
-| `docs/execution-v1-closeout.md` | 3211 | `1d3d4444d0272c4f2c79deb1ace6657630ac8fc92b3218fbfab78d978c784fb7` |
-| `docs/execution-v1-handoff.md` | 8824 | `6665216b359008125811cd7fecdcd2b254c64e678c5aa3b2710c56e982db2b63` |
-| `docs/releases/execution-v1/f0bfe54cc4eed6c053778006f5cee219066c3d5f/execution-v1-evidence.md` | 14569 | `490a2576415f2326c3ffa70b4bc3622a4c96835dee7651a78343181923456866` |
-| `docs/releases/execution-v1/f0bfe54cc4eed6c053778006f5cee219066c3d5f/execution-v1-closeout.md` | 3363 | `9f30e1c40bf99f4a1c527e244d17c0734239d3f9a476367551ca75999171a73c` |
-| `docs/releases/execution-v1/f0bfe54cc4eed6c053778006f5cee219066c3d5f/execution-v1-handoff.md` | 9053 | `65b7c915f802d70720dcbec3866854088f1534cb8078ed1aa7b63ad982867736` |
-| `docs/releases/execution-v1/f0bfe54cc4eed6c053778006f5cee219066c3d5f/snapshot.json` | 487 | `fbe2fe09370705594920f3e7d7b1960e2d80e04334e4ae1c26579d2388aaf8d6` |
+| `docs/production-like-release-drill-v1.md` | 56050 | `557a880cb0a4f5a9eb8c5f076770014fa4672ccd3b89882e4990e3ce1c725be2` |
+| `docs/execution-v1-evidence.md` | 14485 | `ad3e43fb12cad81ba81df131ad2b65203237ed5801f86097d40b6f6c75a299f5` |
+| `docs/execution-v1-closeout.md` | 3211 | `8fb44b131ab8b07ee4394ee18aaaa0d20b03ece28591b9780711069be349ac1c` |
+| `docs/execution-v1-handoff.md` | 8824 | `dece84ead3ed7a1b63f6d129501bbe54ef5110750ea9992ce092e5ca3b1510ba` |
+| `docs/releases/execution-v1/b5a3837e4e75eae889e0a816fc0edf0a7fe02655/execution-v1-evidence.md` | 14569 | `9fc6855e74740b746b3c2448a4f1b12b0101665e510a188c5ed03ad4ff0eb787` |
+| `docs/releases/execution-v1/b5a3837e4e75eae889e0a816fc0edf0a7fe02655/execution-v1-closeout.md` | 3363 | `055b7ead3f345362e26bde2528582a006b28c853174768fbdc7d84513c377bda` |
+| `docs/releases/execution-v1/b5a3837e4e75eae889e0a816fc0edf0a7fe02655/execution-v1-handoff.md` | 9053 | `3b3cafbbb6e6a9f12bfdf11aacccf38533385a91c71de923a9322261a4c1bf1f` |
+| `docs/releases/execution-v1/b5a3837e4e75eae889e0a816fc0edf0a7fe02655/snapshot.json` | 487 | `14b0093f472f338773f2096757feeee15609ef7306d39e577a24044bb7310ef2` |
 
 ## Operator Re-Run
 
