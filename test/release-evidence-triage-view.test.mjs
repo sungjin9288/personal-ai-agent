@@ -21,6 +21,13 @@ function createTriageView(overrides = {}) {
     {
       blocker: 'provider blocker',
       category: 'provider',
+      closureVerification: {
+        productionReadyClaimAllowed: false,
+        requiredCommands: [{ command: 'npm run closure', label: 'closure command' }],
+        requiredEvidenceDocs: [{ href: '/closure', label: 'closure evidence', path: 'docs/closure.md' }],
+        requiredProofs: ['approved provider proof'],
+        targetBoundaryRequired: true,
+      },
       commands: [
         { command: 'npm run provider', label: 'provider command' },
         { command: 'npm run verify', label: 'verify command' },
@@ -98,6 +105,9 @@ test('release evidence triage view model keeps filters, focus, and display limit
   assert.equal(view.focusedBlockerLabel, 'blocker-provider · provider blocker');
   assert.equal(view.focusedBlockerCommands.length, 3);
   assert.equal(view.focusedBlockerEvidenceDocs.length, 3);
+  assert.equal(view.focusedBlockerVerificationFlow.command.command, 'npm run closure');
+  assert.equal(view.focusedBlockerVerificationFlow.nextEvidence, 'capture <provider> proof');
+  assert.equal(view.focusedBlockerVerificationFlow.productionReadyClaimAllowed, false);
   assert.equal(view.focusedProductionBlocker, 'production blocker 10');
   assert.equal(view.focusedProductionBlockerOrdinal, '10');
   assert.equal(view.productionBlockersExpanded, true);
@@ -168,6 +178,8 @@ test('current open blocker view preserves filters, focus, evidence, and copy con
   assert.match(html, /closure verifications 1/);
   assert.match(html, /required proofs 2/);
   assert.match(html, /data-release-current-open-blocker-focus="blocker-provider"/);
+  assert.match(html, /data-release-verification-flow="blocker:blocker-provider"/);
+  assert.match(html, /승인된 target boundary/);
   assert.match(html, /data-release-current-open-blocker-action-row="blocker-provider"/);
   assert.match(html, /capture &lt;provider&gt; proof/);
   assert.doesNotMatch(html, /capture <provider> proof/);
@@ -175,7 +187,9 @@ test('current open blocker view preserves filters, focus, evidence, and copy con
   assert.equal(linkCalls.some((item) => item.value === '/blockers?shared=true'), true);
   assert.equal(linkCalls.some((item) => item.value === '/blockers?shared=false'), true);
   assert.equal(linkCalls.some((item) => item.value === '/one'), true);
+  assert.equal(linkCalls.some((item) => item.value === '/closure'), true);
   assert.equal(commandCalls.some((item) => item.command === 'npm run provider'), true);
+  assert.equal(commandCalls.some((item) => item.command === 'npm run closure'), true);
   assert.equal(copyCalls.some((item) => item.action === 'copy-release-blocker-filter-summary'), true);
 });
 

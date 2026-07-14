@@ -72,7 +72,18 @@ function createView(overrides = {}) {
     getActionLabel: (action) => `action ${action}`,
     getActionScopeLabel: (scope) => `scope ${scope}`,
     getProviderBlockerActions: ({ provider }) => provider === 'openai'
-      ? [{ blocker: 'target proof', id: 'blocker-openai', stopReason: 'target <proof>' }]
+      ? [{
+          blocker: 'target proof',
+          closureVerification: {
+            productionReadyClaimAllowed: false,
+            requiredCommands: [{ command: 'npm run target:openai', label: 'OpenAI target gate' }],
+            requiredEvidenceDocs: [{ href: '/target-openai', path: 'docs/target-openai.md' }],
+            requiredProofs: ['approved OpenAI target proof'],
+            targetBoundaryRequired: true,
+          },
+          id: 'blocker-openai',
+          stopReason: 'target <proof>',
+        }]
       : [],
     getProviderClosureSummary: (_entry, blockers) => ({
       closureVerificationCount: blockers.length,
@@ -112,6 +123,8 @@ test('history and provider view model keeps filtering, focus order, and closure 
   assert.deepEqual(view.providers.entries.map((item) => item.provider), ['openai', 'local']);
   assert.equal(view.providers.entries[0].liveConfirmArmed, true);
   assert.equal(view.providers.entries[0].preflightSummary, 'preflight 통과 · 1개 smoke passed');
+  assert.equal(view.providers.entries[0].verificationFlow.command.command, 'npm run target:openai');
+  assert.equal(view.providers.entries[0].verificationFlow.nextEvidence, 'approved OpenAI target proof');
   assert.equal(view.providers.focused.topBlockerId, 'blocker-openai');
   assert.equal(view.providers.focused.closureSummary.productionReadyClaimAllowed, false);
   assert.equal(view.providers.focused.sameFlowActive, true);
@@ -193,8 +206,13 @@ test('provider view preserves blocked claims, live confirmation, blocker focus, 
   assert.match(html, /data-release-provider="local"/);
   assert.match(html, /confirm live/);
   assert.match(html, /target &lt;proof&gt;/);
+  assert.match(html, /data-release-verification-flow="provider:openai"/);
+  assert.match(html, /approved OpenAI target proof/);
+  assert.match(html, /data-release-provider-next-command="openai"/);
   assert.equal(commandCalls.some((item) => item.command === 'npm run live:openai'), true);
+  assert.equal(commandCalls.some((item) => item.command === 'npm run target:openai'), true);
   assert.equal(linkCalls.some((item) => item.value === 'openai'), true);
+  assert.equal(linkCalls.some((item) => item.value === '/target-openai'), true);
   assert.equal(packageCalls.some((item) => item.blockerId === 'blocker-openai'), true);
 });
 

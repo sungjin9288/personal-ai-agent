@@ -6,6 +6,10 @@ import {
 } from './render-fragments.js';
 import { getReleaseCountRecordEntries } from './text-format.js';
 import { getReleaseProductionBlockerOrdinal } from './ui-params.js';
+import {
+  createReleaseVerificationFlow,
+  renderReleaseVerificationFlow,
+} from './release-verification-flow.js';
 
 export function createReleaseEvidenceTriageViewModel({
   filters = {},
@@ -118,6 +122,7 @@ export function createReleaseEvidenceTriageViewModel({
     focusedBlockerLabel: focusedBlockerEntry
       ? `${focusedBlockerId || 'blocker'} · ${focusedBlockerEntry.blocker || focusedBlockerEntry.stopReason || 'current open blocker'}`
       : focusedBlockerId,
+    focusedBlockerVerificationFlow: createReleaseVerificationFlow(focusedBlockerEntry),
     focusedProductionBlocker,
     focusedProductionBlockerActionLabel: focusedProductionBlockerIndex !== ''
       ? `production blocker #${focusedProductionBlockerOrdinal} · ${focusedProductionBlocker || 'production-ready blocker'}`
@@ -406,6 +411,7 @@ export function renderReleaseCurrentOpenBlockers({
     focusedBlockerEvidenceDocs = [],
     focusedBlockerId = '',
     focusedBlockerLabel = '',
+    focusedBlockerVerificationFlow = {},
     hasBlockerFilter = false,
     hasEmptyBlockerFilter = false,
     targetEvidenceActionLabel = '',
@@ -1208,6 +1214,13 @@ export function renderReleaseCurrentOpenBlockers({
                   <div class="harness-callout release-blocker-focus-callout" data-release-current-open-blocker-focus="${escapeHtml(focusedBlockerId)}">
                     <strong>Focused current open blocker</strong>
                     <p>${escapeHtml(focusedBlockerEntry?.blocker || focusedBlockerEntry?.stopReason || focusedBlockerId)}</p>
+                    ${renderReleaseVerificationFlow({
+                      actionLabel: focusedBlockerLabel || focusedBlockerId,
+                      context: `blocker:${focusedBlockerId}`,
+                      flow: focusedBlockerVerificationFlow,
+                      renderCommandCopyButton: renderReleaseCommandCopyButton,
+                      renderLinkCopyButton: renderReleaseLinkCopyButton,
+                    })}
                     ${focusedBlockerEvidenceDocs.length
                       ? `
                           <div class="release-history-filter-chips release-evidence-doc-chips" data-release-current-open-blocker-focus-evidence-list="${escapeHtml(focusedBlockerId)}">

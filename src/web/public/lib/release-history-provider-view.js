@@ -8,6 +8,10 @@ import {
   renderReleaseSimpleActionButton,
 } from './render-fragments.js';
 import { getReleaseStatusBadge } from './release-status-view.js';
+import {
+  createReleaseVerificationFlow,
+  renderReleaseVerificationFlow,
+} from './release-verification-flow.js';
 
 function getProviderPreflightSummary(preflight) {
   if (!preflight) {
@@ -118,6 +122,13 @@ export function createReleaseHistoryProviderViewModel({
     const topBlocker = blockerActions[0] || null;
     const topBlockerId = String(topBlocker?.id || '').trim();
     const closureSummary = getProviderClosureSummary(item, blockerActions);
+    const verificationFlow = createReleaseVerificationFlow(topBlocker, {
+      fallbackCommand: {
+        command: item.preflightCommand || `npm run preflight:execution-v1:${provider}`,
+        kind: 'preflight',
+        label: `${actionLabel} preflight`,
+      },
+    });
     return {
       ...item,
       actionLabel,
@@ -140,6 +151,7 @@ export function createReleaseHistoryProviderViewModel({
       provider,
       topBlocker,
       topBlockerId,
+      verificationFlow,
     };
   });
   const focusedProviderEntry = providerEntries.find((item) => item.provider === focusedProviderId) || null;
@@ -461,6 +473,15 @@ export function renderReleaseProviderReadiness({ copyButtons = {}, view = {} } =
                   </div>
                 `
               : ''}
+            ${focused.entry
+              ? renderReleaseVerificationFlow({
+                  actionLabel: focused.actionLabel,
+                  context: `provider:${focused.id}`,
+                  flow: focused.entry.verificationFlow,
+                  renderCommandCopyButton: renderReleaseCommandCopyButton,
+                  renderLinkCopyButton: renderReleaseLinkCopyButton,
+                })
+              : ''}
             ${focused.latestAction
               ? `
                   <div class="item-meta">
@@ -698,6 +719,8 @@ export function renderReleaseProviderReadiness({ copyButtons = {}, view = {} } =
               <p class="item-meta">${escapeHtml(item.ready ? `준비됨 · ${item.command}` : `실행 전 ${item.envKey}가 필요합니다 · ${item.liveCommand}`)}</p>
               <p class="item-meta">${escapeHtml(item.preflightSummary)}</p>
               <p class="item-meta" data-release-provider-closure-summary="${escapeHtml(item.provider)}">${escapeHtml(`closure verifications ${item.closureSummary.closureVerificationCount} · required proofs ${item.closureSummary.requiredProofCount} · commands ${item.closureSummary.commandCount} · evidence docs ${item.closureSummary.evidenceDocCount} · target boundary ${item.closureSummary.targetBoundaryRequiredCount}`)}</p>
+              <p class="item-meta" data-release-provider-next-evidence="${escapeHtml(item.provider)}">${escapeHtml(`필요 증적 · ${item.verificationFlow.nextEvidence || 'blocker에 연결된 필요 증적 없음'}`)}</p>
+              <p class="item-meta" data-release-provider-next-command="${escapeHtml(item.provider)}">${escapeHtml(`다음 검증 · ${item.verificationFlow.command ? `${item.verificationFlow.command.label} · ${item.verificationFlow.command.command}` : 'blocker에 연결된 검증 명령 없음'}`)}</p>
               ${item.topBlocker
                 ? `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker · ${escapeHtml(item.topBlockerId || 'unknown')} · ${escapeHtml(String(item.topBlocker.stopReason || item.topBlocker.blocker || '').trim())}</p>`
                 : `<p class="item-meta" data-release-provider-blocker-summary="${escapeHtml(item.provider)}">linked blocker 없음</p>`}

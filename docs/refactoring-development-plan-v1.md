@@ -58,7 +58,10 @@
 | R5.3c1 Action handlers | 완료 | inbox query·optional workspace tenant 검사와 learning/provider/specialist/reviewer mutation 응답을 request-scoped factory로 이동 |
 | R5.3c2 Mission handlers | 완료 | mission tenant 검사·attachment 변환·document/memory/execution payload와 status code 선택을 request-scoped factory로 이동 |
 | R5.4 Static/server bootstrap | 완료 | static path guard·content type·404와 discovery·port fallback·shutdown을 두 작은 경계로 분리 |
-| D1 코드로 닫을 수 있는 후속 개발 | 다음 작업 | provider readiness와 blocker의 검증 명령·필요 증적 흐름부터 실제 사용자 경계를 점검 |
+| D1 코드로 닫을 수 있는 후속 개발 | 진행 중 | D1.1 provider·blocker 검증 흐름 완료, D1.2 action inbox 경계가 다음 작업 |
+| D1.1 Provider·blocker 검증 흐름 | 완료 | 필요한 증적 → 다음 검증 명령 → closure 판정을 같은 source-backed 화면 흐름으로 연결 |
+| D1.2 Action inbox remediation·handoff | 다음 작업 | 실행 가능한 remediation과 외부 승인 handoff의 행동·권한 경계를 분리 |
+| D1.3 Session·log lineage | 대기 | mission, provider response, retry, artifact provenance의 한 문맥 추적 여부 점검 |
 
 R1 완료 검증:
 
@@ -472,10 +475,38 @@ release 문서 해석, runtime job, API request 처리, static serving을 분리
 
 리팩토링 묶음 사이에는 사용자 흐름을 실제로 단순하게 만드는 기능만 넣는다.
 
-- provider readiness와 blocker 화면에서 다음 검증 명령과 필요한 증적을 한 흐름으로 연결한다.
-- action inbox에서 실행 가능한 remediation과 외부 승인이 필요한 handoff를 명확히 나눈다.
-- session history와 logs에서 mission, provider response, retry lineage, artifact provenance를 같은 문맥으로 추적할 수 있는지 점검한다.
-- 변경 전 관련 smoke가 현재 동작을 고정하지 못하면 먼저 회귀 검증을 추가한다.
+#### D1.1 Provider·blocker 검증 흐름 — 완료
+
+- blocker의 기존 `closureVerification`, command, evidence document, required proof만 읽는 순수 흐름을 만든다. 화면에서 새 증거나 완료 상태를 추정하지 않는다.
+- focused provider와 focused blocker에 필요한 증적 → 다음 검증 명령 → closure 판정을 같은 순서로 표시한다.
+- provider에 blocker가 없으면 기존 preflight 명령만 안내하고, 존재하지 않는 증적이나 claim 판정을 만들지 않는다.
+- 링크·명령은 복사와 열기만 제공한다. 실행, 승인, 권한 변경은 기존 lifecycle 경계에 둔다.
+- 완료 조건: 두 화면이 같은 helper 계약을 사용하고, `productionReadyClaimAllowed`와 target boundary가 명시되지 않았을 때 이를 완료로 표시하지 않는다.
+
+D1.1 구현 검증:
+
+- `npm test`: 635개 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E에서 console error 0건, page error 0건, release artifact preview 38회, open 2회가 모두 error-free였고 생성 artifact restore smoke를 통과했다.
+- provider readiness, release blocker handoff, UI harness browse, web auth·RBAC 관련 smoke를 통과했다.
+- 사용자 입력과 증적 경로는 escape하고 외부 링크에 accessible label과 `rel="noreferrer"`를 유지했다. API mutation, live validation 승인, clipboard fallback 권한 경계는 변경하지 않았다.
+
+#### D1.2 Action inbox remediation·handoff — 다음 작업
+
+- 현재 action type, 실행 command, permission metadata, external owner·approval 필드를 먼저 조사한다.
+- operator가 지금 실행할 수 있는 remediation과 외부 계정·승인·target evidence가 필요한 handoff를 같은 문구나 버튼으로 섞지 않는다.
+- 완료 조건: action item이 실행 주체, 필요한 권한, 다음 행동, 종료 증적을 한눈에 구분하며 기존 mutation·audit 경계를 유지한다.
+- 검증: action inbox 단위 테스트, provider attention·specialist follow-up·approval·remediation smoke, web auth·RBAC, 실제 browser 흐름.
+
+#### D1.3 Session·log lineage — 대기
+
+- mission, provider response, retry, artifact가 현재 어떤 id와 timestamp로 연결되는지 read model과 화면을 먼저 조사한다.
+- 이미 저장된 provenance를 한 문맥으로 읽는 데 필요한 최소 표시만 추가하고 새 저장 schema나 추정 lineage는 만들지 않는다.
+- 완료 조건: 한 실행의 mission → provider response → retry → artifact를 기존 식별자로 추적할 수 있고, 누락된 연결은 누락으로 드러난다.
+- 검증: session history·provider history·timeline·artifact smoke와 실제 browser 탐색.
+
+모든 D1 작업은 변경 전 관련 smoke가 현재 동작을 고정하지 못하면 먼저 회귀 검증을 추가한다. 커밋은 D1.1, D1.2, D1.3처럼 사용자 흐름 단위로 묶고, 검증되지 않은 외부 상태는 같은 커밋에서 완료로 올리지 않는다.
 
 ### D2. 외부 증적이 필요한 개발
 
