@@ -58,10 +58,10 @@
 | R5.3c1 Action handlers | 완료 | inbox query·optional workspace tenant 검사와 learning/provider/specialist/reviewer mutation 응답을 request-scoped factory로 이동 |
 | R5.3c2 Mission handlers | 완료 | mission tenant 검사·attachment 변환·document/memory/execution payload와 status code 선택을 request-scoped factory로 이동 |
 | R5.4 Static/server bootstrap | 완료 | static path guard·content type·404와 discovery·port fallback·shutdown을 두 작은 경계로 분리 |
-| D1 코드로 닫을 수 있는 후속 개발 | 진행 중 | D1.1 provider·blocker와 D1.2 action inbox 경계 완료, D1.3 lineage가 다음 작업 |
+| D1 코드로 닫을 수 있는 후속 개발 | 완료 | provider 검증, action 실행 경계, session lineage를 기존 증적과 권한 계약 위에서 연결 |
 | D1.1 Provider·blocker 검증 흐름 | 완료 | 필요한 증적 → 다음 검증 명령 → closure 판정을 같은 source-backed 화면 흐름으로 연결 |
 | D1.2 Action inbox remediation·handoff | 완료 | 즉시 실행, 외부 승인·인계, 검토 후 실행을 기존 permission·owner·audit record로 구분 |
-| D1.3 Session·log lineage | 다음 작업 | mission, provider response, retry, artifact provenance의 한 문맥 추적 여부 점검 |
+| D1.3 Session·log lineage | 완료 | run이 보유한 mission·session·provider response·retry·artifact 식별자를 한 문맥으로 표시하고 누락 연결을 분리 |
 
 R1 완료 검증:
 
@@ -510,12 +510,23 @@ D1.2 구현 검증:
 - 실제 browser E2E에서 pending approval card가 `external-handoff`, 담당 `human-approver`, resolution record로 표시되고 잘못된 rerun action이 없음을 확인했다. console error 0건, page error 0건, release artifact preview 38회, open 2회가 모두 error-free였고 생성 artifact를 복원했다.
 - 문자열과 identifier는 escape하며 저장 schema, permission contract, provider contract, production-ready claim은 변경하지 않았다.
 
-#### D1.3 Session·log lineage — 다음 작업
+#### D1.3 Session·log lineage — 완료
 
-- mission, provider response, retry, artifact가 현재 어떤 id와 timestamp로 연결되는지 read model과 화면을 먼저 조사한다.
-- 이미 저장된 provenance를 한 문맥으로 읽는 데 필요한 최소 표시만 추가하고 새 저장 schema나 추정 lineage는 만들지 않는다.
-- 완료 조건: 한 실행의 mission → provider response → retry → artifact를 기존 식별자로 추적할 수 있고, 누락된 연결은 누락으로 드러난다.
-- 검증: session history·provider history·timeline·artifact smoke와 실제 browser 탐색.
+- 기존 `agentRun`의 `missionId`, `sessionId`, `providerResponseId`, `attemptHistory`, `parentRunId`, `resumeFromRunId`, `artifactIds`만 읽는 순수 lineage 계약을 추가했다.
+- 산출물 연결은 `agentRun.artifactIds`에 기록된 ID만 사용한다. 같은 세션에 있지만 run이 참조하지 않은 산출물은 별도 목록으로 두고 연결을 추정하지 않는다.
+- provider response ID는 run의 실제 `endedAt`과 구분해 함께 표시하고, 산출물은 artifact의 실제 `createdAt`을 표시한다. response 자체 시각과 개별 retry timestamp처럼 저장되지 않은 값은 만들지 않는다.
+- mission·session 불일치, response ID·시각 누락, retry 상세 누락, artifact record 누락을 run별로 함께 표시한다.
+- 저장 schema, session API payload, provider contract, permission·RBAC·tenant 경계는 변경하지 않았다.
+
+D1.3 구현 검증:
+
+- `npm test`: 645개 통과
+- session lineage·frontend module graph 집중 테스트 5개 통과
+- session history, provider history·activity·retry telemetry, mission timeline 집중 smoke 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: 165개 통과
+- 실제 browser E2E에서 선택 세션의 mission·session과 각 run의 provider response·retry·artifact 단계가 표시되고, stub provider의 미기록 response ID가 `연결 기록 없음`으로 드러나는 것을 확인했다. console error 0건, page error 0건, release artifact preview 38회, open 2회가 모두 error-free였고 생성 artifact를 복원했다.
+- 문자열과 identifier는 escape하며 새 mutation, 외부 요청, 권한 변경, production-ready claim을 추가하지 않았다.
 
 모든 D1 작업은 변경 전 관련 smoke가 현재 동작을 고정하지 못하면 먼저 회귀 검증을 추가한다. 커밋은 D1.1, D1.2, D1.3처럼 사용자 흐름 단위로 묶고, 검증되지 않은 외부 상태는 같은 커밋에서 완료로 올리지 않는다.
 

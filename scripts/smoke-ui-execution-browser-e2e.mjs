@@ -2516,6 +2516,43 @@ try {
   assert.equal(missionRunState.ok, true, JSON.stringify(missionRunState));
   assert.match(missionRunState.href, new RegExp(`mission=`));
 
+  console.error('[smoke-ui-execution-browser-e2e] verify session lineage');
+  const sessionLineageState = runPwJson([
+    '--raw',
+    'run-code',
+    `async (page) => {
+      await page.locator('[data-detail-tab="runs"]').click();
+      await page.waitForFunction(() => {
+        const lineage = document.querySelector('[data-session-lineage]');
+        return Boolean(lineage && document.querySelectorAll('[data-session-lineage-run]').length > 0);
+      }, null, { timeout: 15000 });
+      return await page.evaluate(() => {
+        const lineage = document.querySelector('[data-session-lineage]');
+        const runs = [...document.querySelectorAll('[data-session-lineage-run]')];
+        return {
+          artifactStepCount: document.querySelectorAll('[data-lineage-step="artifact"]').length,
+          detailVisible: document.querySelector('#detail-runs')?.getAttribute('aria-hidden') === 'false',
+          missionText: document.querySelector('[data-lineage-step="mission"]')?.textContent || '',
+          missingProviderResponseCount: runs.filter((run) =>
+            (run.querySelector('[data-lineage-step="provider-response"]')?.textContent || '').includes('연결 기록 없음'),
+          ).length,
+          providerResponseStepCount: document.querySelectorAll('[data-lineage-step="provider-response"]').length,
+          retryStepCount: document.querySelectorAll('[data-lineage-step="retry"]').length,
+          runCount: runs.length,
+          sessionId: lineage?.getAttribute('data-session-lineage') || '',
+        };
+      });
+    }`,
+  ]);
+  assert.equal(sessionLineageState.detailVisible, true, JSON.stringify(sessionLineageState));
+  assert.match(sessionLineageState.missionText, new RegExp(missionId));
+  assert.ok(sessionLineageState.sessionId);
+  assert.ok(sessionLineageState.runCount > 0, JSON.stringify(sessionLineageState));
+  assert.equal(sessionLineageState.providerResponseStepCount, sessionLineageState.runCount);
+  assert.equal(sessionLineageState.retryStepCount, sessionLineageState.runCount);
+  assert.equal(sessionLineageState.artifactStepCount, sessionLineageState.runCount);
+  assert.equal(sessionLineageState.missingProviderResponseCount, sessionLineageState.runCount);
+
   console.error('[smoke-ui-execution-browser-e2e] request execution approval');
   runPw([
     '--raw',
@@ -11829,6 +11866,7 @@ summaryStableLineCopyPreviewBodyLineCopyBodyLineCopyBodyLineCopyBodyLineCopyLine
     port,
     reportPath,
     releaseDocAssetSanity,
+    sessionLineageState,
     releaseHandoffCoverageSummary,
     releaseHandoffLinkVerificationSummary,
     releaseHandoffOpenCoverageSummary,

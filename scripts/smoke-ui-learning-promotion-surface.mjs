@@ -458,7 +458,7 @@ try {
   assert.equal(appJs.includes('approvalCount = 0'), true);
   assert.equal(appJs.includes('artifactCount = 0'), true);
   assert.equal(appJs.includes('function renderSessionDetailRunListEmptyState()'), true);
-  assert.equal(appJs.includes('runs || renderSessionDetailRunListEmptyState()'), true);
+  assert.equal(appJs.includes('lineage || renderSessionDetailRunListEmptyState()'), true);
   assert.equal(appJs.includes('function renderSessionDetailApprovalListEmptyState()'), true);
   assert.equal(appJs.includes('approvals || renderSessionDetailApprovalListEmptyState()'), true);
   assert.equal(appJs.includes('function renderSessionDetailArtifactListEmptyState()'), true);
@@ -466,12 +466,11 @@ try {
   assert.equal(appJs.includes('실행 정보가 없습니다.'), true);
   assert.equal(appJs.includes('승인 이력이 없습니다.'), true);
   assert.equal(appJs.includes('산출물이 없습니다.'), true);
-  assert.equal(appJs.includes("function renderSessionDetailRunList(agentRuns = [], fallbackProvider = '-')"), true);
-  assert.equal(
-    appJs.includes("const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');"),
-    true,
-  );
-  assert.equal(appJs.includes('run.providerId || fallbackProvider'), true);
+  assert.equal(appJs.includes('export function renderSessionLineage(sessionPayload = {})'), true);
+  assert.equal(appJs.includes('const lineage = renderSessionLineage(sessionPayload);'), true);
+  assert.equal(appJs.includes('data-lineage-step="provider-response"'), true);
+  assert.equal(appJs.includes('data-lineage-step="retry"'), true);
+  assert.equal(appJs.includes('data-lineage-step="artifact"'), true);
   assert.equal(appJs.includes('function renderSessionDetailApprovalList(approvals = [])'), true);
   assert.equal(appJs.includes('const approvals = renderSessionDetailApprovalList(sessionPayload.approvals || []);'), true);
   assert.equal(appJs.includes('approval.title || approval.id'), true);

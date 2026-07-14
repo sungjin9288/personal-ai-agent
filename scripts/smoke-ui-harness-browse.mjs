@@ -409,11 +409,11 @@ try {
   assert.equal(appJs.includes('미션 선택: ${mission.title} · ${snapshot.stage}'), true);
   assert.equal(appJs.includes('현재 세션 선택됨: ${sessionTitle} · ${providerUiLabel}'), true);
   assert.equal(appJs.includes('세션 선택: ${sessionTitle} · ${providerUiLabel}'), true);
-  assert.equal(appJs.includes("function renderSessionDetailRunList(agentRuns = [], fallbackProvider = '-')"), true);
-  assert.equal(
-    appJs.includes("const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');"),
-    true,
-  );
+  assert.equal(appJs.includes('export function renderSessionLineage(sessionPayload = {})'), true);
+  assert.equal(appJs.includes('const lineage = renderSessionLineage(sessionPayload);'), true);
+  assert.equal(appJs.includes('data-lineage-step="provider-response"'), true);
+  assert.equal(appJs.includes('data-lineage-step="retry"'), true);
+  assert.equal(appJs.includes('data-lineage-step="artifact"'), true);
   assert.equal(appJs.includes('function renderSessionDetailApprovalList(approvals = [])'), true);
   assert.equal(appJs.includes('const approvals = renderSessionDetailApprovalList(sessionPayload.approvals || []);'), true);
   assert.equal(appJs.includes('현재 산출물 선택됨: ${artifactTitle}'), true);
@@ -2516,7 +2516,7 @@ try {
   assert.equal(appJs.includes('approvalCount = 0'), true);
   assert.equal(appJs.includes('artifactCount = 0'), true);
   assert.equal(appJs.includes('function renderSessionDetailRunListEmptyState()'), true);
-  assert.equal(appJs.includes('runs || renderSessionDetailRunListEmptyState()'), true);
+  assert.equal(appJs.includes('lineage || renderSessionDetailRunListEmptyState()'), true);
   assert.equal(appJs.includes('function renderSessionDetailApprovalListEmptyState()'), true);
   assert.equal(appJs.includes('approvals || renderSessionDetailApprovalListEmptyState()'), true);
   assert.equal(appJs.includes('function renderSessionDetailArtifactListEmptyState()'), true);

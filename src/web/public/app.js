@@ -91,6 +91,7 @@ import {
 import { state, elements } from './lib/app-state.js';
 import { bootstrapApplication } from './lib/application-bootstrap.js';
 import { wireApplicationEvents } from './lib/application-events.js';
+import { renderSessionLineage } from './lib/session-lineage.js';
 import { initTheme, toggleTheme } from './lib/theme.js';
 import {
   getSanitizedStepId,
@@ -7402,14 +7403,14 @@ function renderSessionDetailState({
   approvals = '',
   artifactCount = 0,
   artifacts = '',
+  lineage = '',
   runCount = 0,
-  runs = '',
 } = {}) {
   return `
     <div class="inspector-stack">
       <div class="inspector-group">
-        <h4>실행 이력 <span class="section-count">${escapeHtml(String(runCount))}</span></h4>
-        ${runs || renderSessionDetailRunListEmptyState()}
+        <h4>실행 계보 <span class="section-count">${escapeHtml(String(runCount))}</span></h4>
+        ${lineage || renderSessionDetailRunListEmptyState()}
       </div>
       <div class="inspector-group">
         <h4>승인 이력 <span class="section-count">${escapeHtml(String(approvalCount))}</span></h4>
@@ -7421,24 +7422,6 @@ function renderSessionDetailState({
       </div>
     </div>
   `;
-}
-
-function renderSessionDetailRunList(agentRuns = [], fallbackProvider = '-') {
-  return agentRuns
-    .slice()
-    .reverse()
-    .map(
-      (run) => `
-        <div class="inspector-block">
-          <h3>${escapeHtml(getDisplayLabel(run.role || run.workflowRole || run.id, run.role || run.workflowRole || run.id))}</h3>
-          <div class="item-meta">
-            ${escapeHtml(getDisplayLabel(run.status))} · ${escapeHtml(run.providerId || fallbackProvider)} · ${formatDate(run.startedAt)}
-          </div>
-          <div class="item-meta">${escapeHtml(run.outputSummary || run.inputSummary || '')}</div>
-        </div>
-      `,
-    )
-    .join('');
 }
 
 function renderSessionDetailApprovalList(approvals = []) {
@@ -7502,7 +7485,7 @@ function renderSessionDetail(sessionPayload) {
   const approvalCount = (sessionPayload.approvals || []).length;
   const artifactCount = (sessionPayload.artifacts || []).length;
 
-  const runs = renderSessionDetailRunList(sessionPayload.agentRuns || [], sessionPayload.session?.provider || '-');
+  const lineage = renderSessionLineage(sessionPayload);
 
   const approvals = renderSessionDetailApprovalList(sessionPayload.approvals || []);
 
@@ -7513,8 +7496,8 @@ function renderSessionDetail(sessionPayload) {
     approvals,
     artifactCount,
     artifacts,
+    lineage,
     runCount,
-    runs,
   });
 
   wireSessionArtifactSelectionButtons();
