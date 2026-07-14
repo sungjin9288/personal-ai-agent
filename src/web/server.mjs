@@ -41,6 +41,8 @@ import {
   buildExecutionV1ArtifactSummary,
 } from './release-status-assembler.mjs';
 import { createRouteRegistry } from './route-registry.mjs';
+import { createServerBootstrap } from './server-bootstrap.mjs';
+import { createStaticFileHandler, getContentType } from './static-file-handler.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -408,7 +410,6 @@ const liveValidationProviders = [
 ];
 const host = String(process.env.PERSONAL_AI_AGENT_UI_HOST || '127.0.0.1').trim() || '127.0.0.1';
 const requestedPort = Number(process.env.PERSONAL_AI_AGENT_UI_PORT || 4317);
-let activePort = requestedPort;
 const serverDiscoveryPath = path.join(rootDir, 'var', 'server.json');
 const runtimeJobRegistry = createRuntimeJobRegistry({ rootDir });
 const runtimeJobRunner = createRuntimeJobRunner({ registry: runtimeJobRegistry });
@@ -444,42 +445,19 @@ function resolveRequestRbacRole(request, auth = {}) {
   );
 }
 
-function writeServerDiscovery({ actualPort, fallback = false }) {
-  const url = `http://${host}:${actualPort}`;
-  fs.mkdirSync(path.dirname(serverDiscoveryPath), { recursive: true });
-  fs.writeFileSync(
-    serverDiscoveryPath,
-    `${JSON.stringify(
-      {
-        actualPort,
-        fallback,
-        host,
-        pid: process.pid,
-        requestedPort,
-        rootDir,
-        runtimeJobRegistryPath: runtimeJobRegistry.registryPath,
-        runtimeRequestRegistryPath: runtimeRequestRegistry.registryPath,
-        staleRuntimeJobCount: recoveredRuntimeJobs.recoveredCount,
-        staleRuntimeRequestCount: recoveredRuntimeRequests.recoveredCount,
-        runtimeStatusPath: runtimeStatus.statusPath,
-        startedAt: new Date().toISOString(),
-        status: 'listening',
-        url,
-      },
-      null,
-      2,
-    )}\n`,
-    'utf8',
-  );
-  return url;
-}
-
-runtimeStatus.startRuntime({
+const serverBootstrap = createServerBootstrap({
+  discoveryDetails: {
+    runtimeJobRegistryPath: runtimeJobRegistry.registryPath,
+    runtimeRequestRegistryPath: runtimeRequestRegistry.registryPath,
+    staleRuntimeJobCount: recoveredRuntimeJobs.recoveredCount,
+    staleRuntimeRequestCount: recoveredRuntimeRequests.recoveredCount,
+    runtimeStatusPath: runtimeStatus.statusPath,
+  },
   discoveryPath: serverDiscoveryPath,
   host,
-  kind: 'web-ui',
   requestedPort,
-  rootPath: rootDir,
+  rootDir,
+  runtimeStatus,
 });
 
 function getRequestPath(request) {
@@ -2076,47 +2054,15 @@ function resolveArtifactRecord(artifactId) {
   };
 }
 
-function getContentType(filePath) {
-  if (filePath.endsWith('.js')) {
-    return 'application/javascript; charset=utf-8';
-  }
-  if (filePath.endsWith('.css')) {
-    return 'text/css; charset=utf-8';
-  }
-  if (filePath.endsWith('.html')) {
-    return 'text/html; charset=utf-8';
-  }
-  if (filePath.endsWith('.json')) {
-    return 'application/json; charset=utf-8';
-  }
-  if (filePath.endsWith('.md')) {
-    return 'text/markdown; charset=utf-8';
-  }
-  if (filePath.endsWith('.png')) {
-    return 'image/png';
-  }
-  return 'text/plain; charset=utf-8';
-}
-
-function serveStatic(response, pathname) {
-  const relativePath = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
-  const filePath = resolveWithinRoot(publicDir, path.resolve(publicDir, relativePath));
-
-  if (!filePath) {
-    sendNotFound(response);
-    return;
-  }
-
-  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
-    sendNotFound(response);
-    return;
-  }
-
-  sendText(response, 200, fs.readFileSync(filePath, 'utf8'), getContentType(filePath));
-}
+const staticFileHandler = createStaticFileHandler({
+  publicDir,
+  sendFile: sendBuffer,
+  sendNotFound,
+});
 
 async function handleApi(request, response, url) {
   const pathname = url.pathname;
+  const activePort = serverBootstrap.getActivePort();
   const auth =
     webAuthMode === 'oidc'
       ? await evaluateOidcWebAuth({
@@ -2570,7 +2516,10 @@ const server = http.createServer(async (request, response) => {
   request.id = requestId;
   response.setHeader('X-Request-Id', requestId);
 
-  const url = new URL(request.url, `http://${request.headers.host || `${host}:${activePort}`}`);
+  const url = new URL(
+    request.url,
+    `http://${request.headers.host || `${host}:${serverBootstrap.getActivePort()}`}`,
+  );
   startRuntimeRequest(request, response, url);
 
   try {
@@ -2587,89 +2536,23 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
-    serveStatic(response, url.pathname);
+    staticFileHandler.serveStatic(response, url.pathname);
   } catch (error) {
     sendError(response, error, 500);
   }
 });
 
-function listenOnce(serverInstance, portToTry) {
-  return new Promise((resolve, reject) => {
-    const onError = (error) => {
-      serverInstance.off('listening', onListening);
-      reject(error);
-    };
-    const onListening = () => {
-      serverInstance.off('error', onError);
-      resolve();
-    };
-
-    serverInstance.once('error', onError);
-    serverInstance.once('listening', onListening);
-    serverInstance.listen(portToTry, host);
-  });
-}
-
-async function listenWithPortFallback(serverInstance, startPort, maxAttempts = 20) {
-  for (let offset = 0; offset <= maxAttempts; offset += 1) {
-    const candidatePort = startPort + offset;
-    try {
-      await listenOnce(serverInstance, candidatePort);
-      return {
-        fallback: offset > 0,
-        port: candidatePort,
-      };
-    } catch (error) {
-      if (error?.code !== 'EADDRINUSE' || offset >= maxAttempts) {
-        throw error;
-      }
-    }
-  }
-
-  throw new Error(`No available UI port found from ${startPort}.`);
-}
-
-const listenResult = await listenWithPortFallback(server, requestedPort);
-activePort = listenResult.port;
-const consoleUrl = writeServerDiscovery({
-  actualPort: activePort,
-  fallback: listenResult.fallback,
-});
-runtimeStatus.markListening({
-  discoveryPath: serverDiscoveryPath,
-  host,
-  port: activePort,
-  requestedPort,
-  rootPath: rootDir,
-  url: consoleUrl,
-});
-
-function shutdownRuntime(reason) {
-  try {
-    runtimeStatus.markStopped(reason);
-  } catch {
-    // Shutdown should not be blocked by status-file best-effort cleanup.
-  }
-}
-
-process.once('SIGINT', () => {
-  shutdownRuntime('SIGINT');
-  process.exit(130);
-});
-
-process.once('SIGTERM', () => {
-  shutdownRuntime('SIGTERM');
-  process.exit(143);
-});
+const serverInfo = await serverBootstrap.start(server);
+serverBootstrap.installShutdownHandlers();
 
 console.log(
   JSON.stringify(
     {
-      discoveryPath: serverDiscoveryPath,
-      requestedPort,
-      rootDir,
+      discoveryPath: serverInfo.discoveryPath,
+      requestedPort: serverInfo.requestedPort,
+      rootDir: serverInfo.rootDir,
       status: 'listening',
-      url: consoleUrl,
+      url: serverInfo.url,
     },
     null,
     2,

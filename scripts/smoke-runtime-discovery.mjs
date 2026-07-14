@@ -115,8 +115,10 @@ serverProcess.stderr.on('data', (chunk) => {
   serverOutput.stderr += String(chunk);
 });
 
+let discovery;
+
 try {
-  const discovery = await waitForDiscovery(discoveryPath, serverProcess);
+  discovery = await waitForDiscovery(discoveryPath, serverProcess);
 
   assert.equal(discovery.status, 'listening');
   assert.equal(discovery.host, '127.0.0.1');
@@ -129,6 +131,20 @@ try {
   assert.equal(discovery.staleRuntimeJobCount, 1);
   assert.equal(discovery.staleRuntimeRequestCount, 1);
   assert.match(discovery.url, /^http:\/\/127\.0\.0\.1:\d+$/);
+
+  const indexResponse = await fetch(`${discovery.url}/`);
+  assert.equal(indexResponse.status, 200);
+  assert.equal(indexResponse.headers.get('content-type'), 'text/html; charset=utf-8');
+  assert.match(await indexResponse.text(), /<title>에이전트 운영 콘솔<\/title>/);
+
+  const appModuleResponse = await fetch(`${discovery.url}/app.js`);
+  assert.equal(appModuleResponse.status, 200);
+  assert.equal(appModuleResponse.headers.get('content-type'), 'application/javascript; charset=utf-8');
+  assert.match(await appModuleResponse.text(), /application-bootstrap\.js/);
+
+  const missingStaticResponse = await fetch(`${discovery.url}/missing-static-file.js`);
+  assert.equal(missingStaticResponse.status, 404);
+  assert.equal((await missingStaticResponse.json()).error, 'not-found');
 
   const requestId = 'runtime-smoke-request';
   const healthResponse = await fetch(`${discovery.url}/api/health`, {
@@ -424,18 +440,6 @@ try {
   assert.equal(specialistRemediationResult.result.provider, 'stub');
   assert.equal(specialistRemediationResult.postFollowUp.status, 'clear');
 
-  console.log(
-    JSON.stringify(
-      {
-        actualPort: discovery.actualPort,
-        mode: 'runtime-discovery',
-        ok: true,
-        requestedPort,
-      },
-      null,
-      2,
-    ),
-  );
 } finally {
   if (!serverProcess.killed) {
     serverProcess.kill('SIGTERM');
@@ -443,6 +447,26 @@ try {
   blocker.close();
   await waitForExit(serverProcess);
 }
+
+const stoppedRuntime = JSON.parse(fs.readFileSync(runtimeStatusPath, 'utf8'));
+assert.equal(stoppedRuntime.state, 'stopped');
+assert.equal(stoppedRuntime.status, 'stopped');
+assert.equal(stoppedRuntime.exitReason, 'SIGTERM');
+
+console.log(
+  JSON.stringify(
+    {
+      actualPort: discovery.actualPort,
+      mode: 'runtime-discovery',
+      ok: true,
+      requestedPort,
+      shutdown: stoppedRuntime.exitReason,
+      staticUi: true,
+    },
+    null,
+    2,
+  ),
+);
 
 async function postJson(url, payload) {
   const response = await fetch(url, {

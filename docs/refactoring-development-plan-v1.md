@@ -46,7 +46,7 @@
 | R4.3.3c Release history·provider readiness rendering | 완료 | history 필터·포커스·상세와 provider readiness·closure 표시를 같은 순수 view model 위로 이동 |
 | R4.3.3d Release recommendation·handoff·document rendering | 완료 | recommendation history 조립과 snapshot, handoff preview, 문서 panel을 두 순수 view 모듈로 이동 |
 | R4.4 Bootstrap·global event wiring | 완료 | 전역 form·navigation listener와 시작 순서를 callback 기반 모듈로 분리 |
-| R5 Web server boundary | 진행 중 | release artifact resolver부터 parser·status assembly·job orchestration 순으로 분리 |
+| R5 Web server boundary | 완료 | release read model, runtime job, route handler, static serving, process bootstrap을 책임별 모듈로 분리 |
 | R5.1a Release artifact resolver | 완료 | handoff artifact와 evidence doc allowlist·경로 검증을 HTTP 독립 모듈로 분리 |
 | R5.1b Release markdown parser | 완료 | release markdown의 section·checklist·deterministic·reference·live validation 추출을 순수 parser로 이동 |
 | R5.1c Release status assembler | 완료 | parser 결과와 provider·blocker·artifact freshness를 받는 순수 API read model로 분리 |
@@ -57,7 +57,8 @@
 | R5.3c Mission/action handlers | 완료 | action과 mission을 독립 factory·검증·commit 경계로 나눠 이동 |
 | R5.3c1 Action handlers | 완료 | inbox query·optional workspace tenant 검사와 learning/provider/specialist/reviewer mutation 응답을 request-scoped factory로 이동 |
 | R5.3c2 Mission handlers | 완료 | mission tenant 검사·attachment 변환·document/memory/execution payload와 status code 선택을 request-scoped factory로 이동 |
-| R5.4 Static/server bootstrap | 다음 작업 | static path guard, discovery file, port fallback, shutdown 순서를 현재 동작 그대로 작은 bootstrap 경계로 정리 |
+| R5.4 Static/server bootstrap | 완료 | static path guard·content type·404와 discovery·port fallback·shutdown을 두 작은 경계로 분리 |
+| D1 코드로 닫을 수 있는 후속 개발 | 다음 작업 | provider readiness와 blocker의 검증 명령·필요 증적 흐름부터 실제 사용자 경계를 점검 |
 
 R1 완료 검증:
 
@@ -345,6 +346,17 @@ R5.3c2 mission handlers 구현 검증:
 - `server.mjs`는 2,677줄, 새 `mission-handlers.mjs`는 280줄이다. Server는 22개의 named mission handler만 route registry에 등록하고 factory가 기존 helper와 service 결과를 HTTP response로 변환한다.
 - 기존 attachment conversion, constraint parse, document title prefix, memory scope, Boolean coercion, raw path decode, provider fallback field, request id·route source context, 200/201 status와 JSON payload를 변경하지 않았다.
 - workspace memory·approval·artifact route, static serving, discovery file, port fallback, shutdown과 global error 처리는 R5.4 이후 경계로 남겼다.
+
+R5.4 static/server bootstrap 구현 검증:
+
+- `npm test`: 631개 통과. 새 단위 테스트 8개에서 public root·nested module·content type·404, traversal·외부 symlink 차단, 연속 port fallback·비대상 오류 중단, discovery payload·runtime 상태 순서, shutdown best-effort 처리를 확인했다.
+- 구현 전후 전체 route 등록 55개를 직접 비교해 kind·method·path·순서가 모두 같음을 확인했다. auth·RBAC·tenant 검사와 API error payload는 변경하지 않았다.
+- `smoke:runtime-discovery`에서 요청 포트 점유 시 다음 포트 선택, `var/server.json`의 기존 필드, `/`와 `/app.js`의 실제 content type·본문, missing static 404, SIGTERM 이후 runtime status의 `stopped` 기록을 한 프로세스에서 확인했다.
+- `npm run smoke:all`: 165개 통과. 실제 browser E2E에서 console error와 page error가 0건이었고 release handoff preview 38개와 artifact open 2개 세션이 모두 error-free였다. 강제 실패 시 생성 artifact restore smoke도 통과했다.
+- `server.mjs`는 2,560줄, 새 `server-bootstrap.mjs`는 139줄이다. bootstrap은 starting 기록 → listener와 port fallback → discovery 기록 → listening 기록 → signal shutdown 순서를 소유한다.
+- 새 `static-file-handler.mjs`는 66줄이다. 기존 `path-guard`로 lexical path와 real path를 모두 검사해 public root 밖의 직접 경로와 symlink target을 열지 않으며, 텍스트·PNG 응답을 같은 content type으로 buffer-safe하게 전달한다.
+- discovery JSON field, requested/actual port, stale runtime request/job count, request URL의 active port, SIGINT 130·SIGTERM 143 종료 코드와 status 기록의 best-effort 성격은 유지했다.
+- R5 web server 경계 정리는 완료했다. 다음 구현은 D1의 provider readiness·blocker 검증 흐름이며, 외부 provider 계정이나 production claim은 실제 승인·증적 없이 변경하지 않는다.
 
 ## 3. 변경 원칙
 
