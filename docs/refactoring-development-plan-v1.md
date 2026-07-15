@@ -64,6 +64,7 @@
 | D1.3 Session·log lineage | 완료 | run이 보유한 mission·session·provider response·retry·artifact 식별자를 한 문맥으로 표시하고 누락 연결을 분리 |
 | D3 API 비용 없는 내부 경계 정리 | 진행 중 | 외부 provider 호출 없이 mission service의 남은 도메인을 검증 가능한 순서로 분리 |
 | D3.1 Memory write·fact graph sync | 완료 | memory 검증·저장·fact graph 동기화를 독립 service로 이동 |
+| D3.2a Execution mutation primitives | 완료 | content 계산, rollback preview, mutation audit·batch summary를 순수 모듈로 이동 |
 
 R1 완료 검증:
 
@@ -570,6 +571,25 @@ D3.1 구현 검증:
 - manifest에서 mutation bundle을 만드는 계산, path state·audit·rollback plan 조립, 실제 filesystem write와 child process 실행을 순서대로 분리한다.
 - 먼저 순수 계산을 옮기고, 실행·중단·rollback lifecycle과 path guard는 검증이 갖춰진 뒤 이동한다.
 - 완료 조건: approval, execution lease, path containment, secret-like path 차단, mutation audit, rollback preview·실행 결과가 기존과 동일하다.
+
+D3.2는 아래 순서로 진행한다.
+
+1. D3.2a mutation primitives: edit content 계산, text hash·line count, rollback preview, mutation audit, preview·execution batch summary를 I/O 없는 모듈로 옮긴다.
+2. D3.2b filesystem state·bundle: directory/file state 수집과 mutation bundle 예측을 묶되 path containment와 secret-like path 차단은 그대로 유지한다.
+3. D3.2c rollback plan·execution: 현재 상태 hash guard, snapshot 검증, reverse order plan과 실제 restore/delete를 분리한다.
+4. D3.2d runner lifecycle: step 실행, verification, log, stop, lease·session 종료 기록을 명시적인 lifecycle 순서로 정리한다.
+
+각 하위 단계는 앞 단계가 전체 execution smoke까지 통과한 뒤 시작한다. 파일 쓰기와 child process를 다루는 D3.2b 이후에는 dry-run과 실제 temp workspace 실행을 모두 검증하며, path·secret·approval guard를 약화하는 변경은 중단 조건으로 취급한다.
+
+D3.2a 구현 검증:
+
+- 순수 mutation primitive 단위 테스트 `24/24` 통과
+- 전체 unit test `679/679` 통과
+- docs gate `33/33` 통과
+- 전체 smoke `165`개 중 `163`개 통과, 구현 중 artifact commit 불일치만 감지한 release freshness gate `2`개는 evidence refresh 단계로 이월
+- execution flow·CLI smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.3 Provider read model·event aggregation
 
