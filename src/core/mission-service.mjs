@@ -81,6 +81,10 @@ import { createLearningCandidateEmitter } from './learning-candidate-emitter.mjs
 import { createLearningPromotion } from './learning-promotion.mjs';
 import { createDocumentLog } from './document-log.mjs';
 import { createActionInbox } from './action-inbox.mjs';
+import {
+  buildEscalatedInboxReadModel,
+  selectEscalatedInboxItems,
+} from './escalation-inbox-read-model.mjs';
 import { prepareActionMaintenanceRun } from './action-maintenance-run.mjs';
 import {
   addDispatchMetadata,
@@ -1132,9 +1136,9 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   });
 
   const {
+    buildActionInboxReadModel,
     summarizeProviderHealthDriftItems,
-    getActionInboxReminderState,
-    summarizeActionInbox,
+    selectActionInboxItems,
   } = createActionInbox({
     summarizeSpecialistFollowUpItems,
   });
@@ -6750,7 +6754,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceId: filter.workspaceId,
     });
 
-    const items = [
+    const collectedItems = [
       ...buildApprovalInboxItems(filter),
       ...buildMaintenanceActionItems(filter),
       ...buildOwnerHandoffActionItems(filter),
@@ -6761,75 +6765,28 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       ...buildAcceptedRiskMonitoringItems(filter),
       ...buildBlockedFollowUpItems(filter),
       ...buildReviewerFollowUpItems(filter),
-    ]
-      .filter((item) => {
-        if (filter.actionClass && item.actionClass !== filter.actionClass) {
-          return false;
-        }
-        if (filter.providerId && item.providerId !== filter.providerId) {
-          return false;
-        }
-        if (filter.priority && item.priority !== filter.priority) {
-          return false;
-        }
-        if (filter.owner && item.recommendedOwner !== filter.owner) {
-          return false;
-        }
-        if (filter.effectiveOwner && (item.effectiveRecommendedOwner || item.recommendedOwner) !== filter.effectiveOwner) {
-          return false;
-        }
-        if (filter.needsReminderOnly && !getActionInboxReminderState(item).needsReminder) {
-          return false;
-        }
-        if (filter.overdueOnly && !item.isOverdue) {
-          return false;
-        }
-        if (
-          providerFallbackStopReason &&
-          Number(item.providerFallbackStopReasonCounts?.[providerFallbackStopReason] || 0) <= 0
-        ) {
-          return false;
-        }
-        return true;
-      })
-      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    ];
+    const items = selectActionInboxItems(collectedItems, { filter, providerFallbackStopReason });
+    let maintenanceLatestMonthlyBucketDelta = null;
+    let maintenanceMonthlyBuckets = [];
 
-    const summary = summarizeActionInbox(items);
     if (items.some((item) => item.actionType === 'maintenance-sweep') && !filter.providerId) {
       const maintenanceOverviewRuns = listMaintenanceOverviewRuns({
         missionId: filter.missionId,
         owner: filter.owner,
         workspaceId: filter.workspaceId,
       });
-      const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceOverviewRuns);
-      summary.maintenanceMonthlyBucketCount = maintenanceMonthlyBuckets.length;
-      summary.maintenanceLatestMonthlyBucketStartDate = maintenanceMonthlyBuckets[0]?.monthStartDate || null;
-      summary.maintenanceOldestMonthlyBucketStartDate = maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null;
-      summary.maintenanceLatestMonthlyBucketDelta =
-        buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
-    } else {
-      summary.maintenanceMonthlyBucketCount = 0;
-      summary.maintenanceLatestMonthlyBucketStartDate = null;
-      summary.maintenanceOldestMonthlyBucketStartDate = null;
-      summary.maintenanceLatestMonthlyBucketDelta = null;
+      maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceOverviewRuns);
+      maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
     }
 
-    return {
-      filters: {
-        actionClass: filter.actionClass || null,
-        effectiveOwner: filter.effectiveOwner || null,
-        missionId: filter.missionId || null,
-        needsReminderOnly: Boolean(filter.needsReminderOnly),
-        owner: filter.owner || null,
-        overdueOnly: Boolean(filter.overdueOnly),
-        providerId: filter.providerId || null,
-        providerFallbackStopReason: providerFallbackStopReason || null,
-        priority: filter.priority || null,
-        workspaceId: filter.workspaceId || null,
-      },
+    return buildActionInboxReadModel({
+      filter,
       items,
-      summary,
-    };
+      maintenanceLatestMonthlyBucketDelta,
+      maintenanceMonthlyBuckets,
+      providerFallbackStopReason,
+    });
   }
 
   function logOverdueActions(filter = {}) {
@@ -6958,45 +6915,23 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       workspaceId: filter.workspaceId,
     });
 
-    const effectiveStatus = filter.status || 'open';
-    const items = store
-      .listEscalations({
-        missionId: filter.missionId,
-        owner: filter.owner,
-        status: effectiveStatus,
-        workspaceId: filter.workspaceId,
-      })
-      .map((item) => enrichEscalation(item))
-      .filter((item) => {
-        if (filter.effectiveOwner && item.effectiveRecommendedOwner !== filter.effectiveOwner) {
-          return false;
-        }
-        if (filter.tier && item.escalationTier !== filter.tier) {
-          return false;
-        }
-        if (filter.needsReminderOnly && !item.needsReminder) {
-          return false;
-        }
-        return true;
-      })
-      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+    const items = selectEscalatedInboxItems(
+      store
+        .listEscalations({
+          missionId: filter.missionId,
+          owner: filter.owner,
+          status: filter.status || 'open',
+          workspaceId: filter.workspaceId,
+        })
+        .map((item) => enrichEscalation(item)),
+      filter,
+    );
 
-    return {
-      filters: {
-        missionId: filter.missionId || null,
-        effectiveOwner: filter.effectiveOwner || null,
-        needsReminderOnly: Boolean(filter.needsReminderOnly),
-        owner: filter.owner || null,
-        status: effectiveStatus,
-        tier: filter.tier || null,
-        workspaceId: filter.workspaceId || null,
-      },
+    return buildEscalatedInboxReadModel({
+      filter,
       items,
-      summary: {
-        ...summarizeEscalations(items),
-        sync: syncResult.summary,
-      },
-    };
+      syncSummary: syncResult.summary,
+    });
   }
 
   function remindEscalations(filter = {}) {

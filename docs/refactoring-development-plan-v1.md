@@ -753,6 +753,15 @@ D3.5b 구현 검증:
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - mission/session record, document registry, action inbox, fact graph, retrieval, artifact, memory, maintenance, provider 조회는 mission service에 유지한다. 새 모듈은 전달받은 record와 이미 계산된 summary만 API·harness panel payload로 조립함
 
+D3.5c 구현 검증:
+
+- action inbox filter·sort·summary·maintenance trend와 escalation inbox filter·summary read model 집중 테스트 `18/18` 통과
+- 전체 unit test `765/765` 통과
+- 전체 deterministic smoke `165/165` 통과
+- action inbox·approval inbox·maintenance·overdue log, escalation sync·reminder·owner handoff·history·chain, provider attention, specialist follow-up 관련 smoke `20/20` 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- provider·workspace·mission·owner·tier 입력 검증, escalation sync, store 조회와 item builder, reminder·acknowledgement·resolution·incident 기록은 mission service에 유지한다. 새 read model은 전달받은 action·escalation record의 filter·sort·summary와 API payload만 조립함
+
 D3는 D3.1부터 순서대로 진행한다. 각 묶음은 focused unit test와 deterministic smoke를 먼저 통과한 뒤 `npm test`, `npm run smoke:docs-gates`, `npm run smoke:all`로 닫는다. provider live 명령, 유료 배포, release claim 갱신은 포함하지 않는다.
 
 ## 5. 모델 운용

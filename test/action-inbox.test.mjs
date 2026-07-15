@@ -194,3 +194,91 @@ test('summarizeActionInbox', async (t) => {
     assert.equal(summary.specialistFollowUpNeedsReminderCount, 1);
   });
 });
+
+test('action inbox read model', async (t) => {
+  const { buildActionInboxReadModel, selectActionInboxItems } = makeInbox();
+
+  await t.test('selects matching items and preserves chronological order', () => {
+    const items = selectActionInboxItems(
+      [
+        {
+          actionClass: 'monitoring-required',
+          actionId: 'later',
+          createdAt: '2026-03-02T00:00:00.000Z',
+          effectiveRecommendedOwner: 'workspace-owner',
+          isOverdue: true,
+          needsReminder: true,
+          priority: 'high',
+          providerFallbackStopReasonCounts: { 'provider-timeout': 1 },
+          recommendedOwner: 'mission-owner',
+        },
+        {
+          actionClass: 'monitoring-required',
+          actionId: 'earlier',
+          createdAt: '2026-03-01T00:00:00.000Z',
+          effectiveRecommendedOwner: 'workspace-owner',
+          isOverdue: true,
+          needsReminder: true,
+          priority: 'high',
+          providerFallbackStopReasonCounts: { 'provider-timeout': 2 },
+          recommendedOwner: 'mission-owner',
+        },
+        {
+          actionClass: 'blocked',
+          actionId: 'excluded',
+          createdAt: '2026-02-28T00:00:00.000Z',
+          priority: 'high',
+          recommendedOwner: 'mission-owner',
+        },
+      ],
+      {
+        filter: {
+          actionClass: 'monitoring-required',
+          effectiveOwner: 'workspace-owner',
+          needsReminderOnly: true,
+          overdueOnly: true,
+          owner: 'mission-owner',
+          priority: 'high',
+        },
+        providerFallbackStopReason: 'provider-timeout',
+      },
+    );
+
+    assert.deepEqual(items.map((item) => item.actionId), ['earlier', 'later']);
+  });
+
+  await t.test('assembles filters, summary, and maintenance trend without store access', () => {
+    const items = [
+      {
+        actionClass: 'maintenance-required',
+        actionId: 'maintenance-1',
+        actionType: 'maintenance-sweep',
+        createdAt: '2026-03-01T00:00:00.000Z',
+        isOverdue: false,
+        priority: 'high',
+        recommendedOwner: 'workspace-owner',
+        workspaceId: 'workspace-1',
+      },
+    ];
+    const delta = { remindedCount: 2 };
+    const readModel = buildActionInboxReadModel({
+      filter: { missionId: 'mission-1', needsReminderOnly: true },
+      items,
+      maintenanceLatestMonthlyBucketDelta: delta,
+      maintenanceMonthlyBuckets: [
+        { monthStartDate: '2026-03-01' },
+        { monthStartDate: '2026-02-01' },
+      ],
+      providerFallbackStopReason: 'provider-timeout',
+    });
+
+    assert.equal(readModel.filters.missionId, 'mission-1');
+    assert.equal(readModel.filters.needsReminderOnly, true);
+    assert.equal(readModel.filters.providerFallbackStopReason, 'provider-timeout');
+    assert.equal(readModel.summary.pendingActionCount, 1);
+    assert.equal(readModel.summary.maintenanceMonthlyBucketCount, 2);
+    assert.equal(readModel.summary.maintenanceLatestMonthlyBucketStartDate, '2026-03-01');
+    assert.equal(readModel.summary.maintenanceOldestMonthlyBucketStartDate, '2026-02-01');
+    assert.equal(readModel.summary.maintenanceLatestMonthlyBucketDelta, delta);
+  });
+});

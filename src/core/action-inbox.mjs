@@ -12,12 +12,9 @@ function ensureArray(value) {
  * derivation, the provider-health-drift summarizer, and the top-level
  * `summarizeActionInbox` roll-up.
  *
- * The large `getActionInbox` builder stays in mission-service because it is
- * deeply entangled with mutable store state (it calls ~10 `build*Items`
- * builders, `syncEscalations`, `providerRegistry`, and the maintenance
- * overview helpers). Extracting it would push the injected-dependency list
- * well past a maintainable size, so only the smaller cohesive subset is
- * factored out here.
+ * Mission-service retains validation, escalation sync, store access, and the
+ * action item builders. This module receives those collected items and owns
+ * the filtering, ordering, summary, and response payload.
  *
  * `summarizeSpecialistFollowUpItems` is a pure module-scope helper in
  * mission-service that the roll-up needs; it is INJECTED rather than moved so
@@ -291,9 +288,78 @@ export function createActionInbox({ summarizeSpecialistFollowUpItems }) {
     };
   }
 
+  function selectActionInboxItems(items, { filter = {}, providerFallbackStopReason = '' } = {}) {
+    return items
+      .filter((item) => {
+        if (filter.actionClass && item.actionClass !== filter.actionClass) {
+          return false;
+        }
+        if (filter.providerId && item.providerId !== filter.providerId) {
+          return false;
+        }
+        if (filter.priority && item.priority !== filter.priority) {
+          return false;
+        }
+        if (filter.owner && item.recommendedOwner !== filter.owner) {
+          return false;
+        }
+        if (filter.effectiveOwner && (item.effectiveRecommendedOwner || item.recommendedOwner) !== filter.effectiveOwner) {
+          return false;
+        }
+        if (filter.needsReminderOnly && !getActionInboxReminderState(item).needsReminder) {
+          return false;
+        }
+        if (filter.overdueOnly && !item.isOverdue) {
+          return false;
+        }
+        if (
+          providerFallbackStopReason &&
+          Number(item.providerFallbackStopReasonCounts?.[providerFallbackStopReason] || 0) <= 0
+        ) {
+          return false;
+        }
+        return true;
+      })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function buildActionInboxReadModel({
+    filter = {},
+    items,
+    maintenanceLatestMonthlyBucketDelta = null,
+    maintenanceMonthlyBuckets = [],
+    providerFallbackStopReason = '',
+  }) {
+    const summary = summarizeActionInbox(items);
+
+    summary.maintenanceMonthlyBucketCount = maintenanceMonthlyBuckets.length;
+    summary.maintenanceLatestMonthlyBucketStartDate = maintenanceMonthlyBuckets[0]?.monthStartDate || null;
+    summary.maintenanceOldestMonthlyBucketStartDate = maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null;
+    summary.maintenanceLatestMonthlyBucketDelta = maintenanceLatestMonthlyBucketDelta;
+
+    return {
+      filters: {
+        actionClass: filter.actionClass || null,
+        effectiveOwner: filter.effectiveOwner || null,
+        missionId: filter.missionId || null,
+        needsReminderOnly: Boolean(filter.needsReminderOnly),
+        owner: filter.owner || null,
+        overdueOnly: Boolean(filter.overdueOnly),
+        providerId: filter.providerId || null,
+        providerFallbackStopReason: providerFallbackStopReason || null,
+        priority: filter.priority || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary,
+    };
+  }
+
   return {
+    buildActionInboxReadModel,
     summarizeProviderHealthDriftItems,
     getActionInboxReminderState,
+    selectActionInboxItems,
     summarizeActionInbox,
   };
 }
