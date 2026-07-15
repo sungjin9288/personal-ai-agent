@@ -79,6 +79,7 @@
 | D3.4d Review·session closeout | 완료 | deterministic reviewer 보정, follow-up, execution manifest, approval 대기, completed 결과 조립을 명시적 closeout 경계로 분리 |
 | D3.5 Harness·action·timeline read boundaries | 진행 중 | harness browse부터 summary, inbox, timeline 순서로 read model 조립을 저장·mutation 경계에서 분리 |
 | D3.5a Harness document·memory browse | 완료 | document·memory 검색, 정렬, pagination, summary 조립을 store·filesystem 조회에서 분리 |
+| D3.5b Mission·harness summary composition | 완료 | session·mission 운영 지표와 harness panel payload 조립을 store·fact graph·retrieval 조회에서 분리 |
 
 R1 완료 검증:
 
@@ -742,6 +743,15 @@ D3.5a 구현 검증:
 - harness browse, mission memory rerun, retrieval memory, fact graph memory smoke 통과
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - mission 존재 확인, document registry filesystem 조회, document log·memory store 조회는 mission service에 유지한다. 새 모듈은 전달받은 record만 검색·정렬·page result로 조립함
+
+D3.5b 구현 검증:
+
+- session·mission summary와 harness document·attachment·loop·memory·retrieval·recommendation payload 단위 테스트 `10/10` 통과
+- 전체 unit test `760/760` 통과
+- 전체 deterministic smoke `165/165` 통과
+- session history, mission timeline, workspace·global overview, harness browse, identity·sandbox·learning, fact graph·retrieval memory smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- mission/session record, document registry, action inbox, fact graph, retrieval, artifact, memory, maintenance, provider 조회는 mission service에 유지한다. 새 모듈은 전달받은 record와 이미 계산된 summary만 API·harness panel payload로 조립함
 
 D3는 D3.1부터 순서대로 진행한다. 각 묶음은 focused unit test와 deterministic smoke를 먼저 통과한 뒤 `npm test`, `npm run smoke:docs-gates`, `npm run smoke:all`로 닫는다. provider live 명령, 유료 배포, release claim 갱신은 포함하지 않는다.
 

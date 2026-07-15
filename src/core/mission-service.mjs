@@ -65,7 +65,12 @@ import {
   buildHarnessDocumentBrowseResult,
   buildHarnessMemoryBrowseResult,
 } from './mission-harness-browse.mjs';
+import { buildMissionHarnessSummary } from './mission-harness-summary.mjs';
 import { createMissionMemoryService } from './mission-memory-service.mjs';
+import {
+  buildMissionSummary,
+  buildSessionSummary,
+} from './mission-summary-read-model.mjs';
 import {
   attachGatewayEventToSourceContext,
   normalizeGatewayEvent,
@@ -4868,50 +4873,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   }
 
   function summarizeSession(session, missionId) {
-    const agentRuns = store.listAgentRunsBySession(session.id);
-    const approvals = store.listApprovals({ missionId, sessionId: session.id });
-    const artifacts = store.listArtifactsBySession(session.id);
-    const gatewayEvents = store.listGatewayEvents({ sessionId: session.id });
-    const identitySessionContexts = gatewayEvents.map((event) => event.identitySessionContext).filter(Boolean);
-    const sandboxDecisions = gatewayEvents.map((event) => event.sandboxDecision).filter(Boolean);
-    const learningCandidates = store.listLearningCandidates({ sessionId: session.id });
-    const latestApproval = getLatestItem(approvals, 'createdAt');
-    const latestArtifact = getLatestItem(artifacts, 'createdAt');
-    const latestGatewayEvent = getLatestItem(gatewayEvents, 'at');
-    const latestIdentitySessionContext = getLatestItem(identitySessionContexts, 'at');
-    const latestSandboxDecision = getLatestItem(sandboxDecisions, 'at');
-    const latestLearningCandidate = getLatestItem(learningCandidates, 'createdAt');
-    const reviewerRun = agentRuns.find((run) => run.role === 'reviewer') || null;
-
-    return {
-      agentRunCount: agentRuns.length,
-      approvalCount: approvals.length,
-      currentStage: session.currentStage,
-      endedAt: session.endedAt,
-      id: session.id,
-      latestApprovalStatus: latestApproval ? latestApproval.status : null,
-      latestArtifactFileName: latestArtifact ? latestArtifact.fileName : null,
-      gatewayEventCount: gatewayEvents.length,
-      gatewayEventId: latestGatewayEvent?.id || session.sourceContext?.gatewayEventId || null,
-      gatewayEventType: latestGatewayEvent?.eventType || session.sourceContext?.gatewayEventType || null,
-      identitySessionContextBindingStatusCounts: countByNormalizedField(identitySessionContexts, 'bindingStatus'),
-      identitySessionContextCount: identitySessionContexts.length,
-      identitySessionContextId:
-        latestIdentitySessionContext?.id || session.sourceContext?.gatewayIdentitySessionContextId || null,
-      identitySessionContextPolicyCounts: countByNormalizedField(identitySessionContexts, 'policyId'),
-      latestIdentitySessionContext,
-      latestSandboxDecision,
-      learningCandidateCount: learningCandidates.length,
-      latestLearningCandidateId: latestLearningCandidate?.id || null,
-      latestLearningCandidateRecordType: latestLearningCandidate?.recordType || null,
-      provider: session.provider,
-      sandboxDecisionCount: sandboxDecisions.length,
-      sandboxDecisionModeCounts: countByNormalizedField(sandboxDecisions, 'mode'),
-      reviewerStatus: reviewerRun ? reviewerRun.status : null,
-      reviewerSummary: reviewerRun ? reviewerRun.outputSummary : null,
-      startedAt: session.startedAt,
-      status: session.status,
-    };
+    return buildSessionSummary({
+      agentRuns: store.listAgentRunsBySession(session.id),
+      approvals: store.listApprovals({ missionId, sessionId: session.id }),
+      artifacts: store.listArtifactsBySession(session.id),
+      gatewayEvents: store.listGatewayEvents({ sessionId: session.id }),
+      learningCandidates: store.listLearningCandidates({ sessionId: session.id }),
+      session,
+    });
   }
 
   function summarizeMission(mission, filter = {}) {
@@ -4964,232 +4933,38 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       recentWindow: providerRecentWindow,
     });
 
-    return {
-      approvalCounts: {
-        approved: approvals.filter((approval) => approval.status === 'approved').length,
-        pending: approvals.filter((approval) => approval.status === 'pending').length,
-        rejected: approvals.filter((approval) => approval.status === 'rejected').length,
-        total: approvals.length,
-      },
-      escalationCounts: escalationSummary.statusCounts,
-      escalationBreachCountTotal: escalationSummary.breachCountTotal,
-      escalationLatestOwnerHandoffAt: escalationSummary.latestOwnerHandoffAt,
-      escalationLatestOwnerHandoffReminderAt: escalationSummary.latestOwnerHandoffReminderAt,
-      escalationLatestReminderAt: escalationSummary.latestReminderAt,
-      escalationLatestOwnerEscalatedAt: escalationSummary.latestOwnerEscalatedAt,
-      escalationNeedsReminderCount: escalationSummary.needsReminderCount,
-      escalationNextPendingOwnerHandoffDueAt: escalationSummary.nextPendingOwnerHandoffDueAt,
-      escalationNextPendingOwnerHandoffReminderAt: escalationSummary.nextPendingOwnerHandoffReminderAt,
-      escalationOwnerHandoffCountTotal: escalationSummary.ownerHandoffCountTotal,
-      escalationOwnerHandoffReminderCountTotal: escalationSummary.ownerHandoffReminderCountTotal,
-      escalationOwnerTransitionCountTotal: escalationSummary.ownerTransitionCountTotal,
-      escalationPendingOwnerHandoffCount: escalationSummary.pendingOwnerHandoffCount,
-      escalationPendingOwnerHandoffNeedsReminderCount: escalationSummary.pendingOwnerHandoffNeedsReminderCount,
-      escalationPendingOwnerHandoffOverdueCount: escalationSummary.pendingOwnerHandoffOverdueCount,
-      escalationReminderCountTotal: escalationSummary.reminderCountTotal,
-      escalationTierCounts: escalationSummary.tierCounts,
-      id: mission.id,
-      gatewayEventCount: gatewayEvents.length,
-      gatewayEventTypeCounts: countByNormalizedField(gatewayEvents, 'eventType'),
-      identitySessionContextBindingStatusCounts: countByNormalizedField(identitySessionContexts, 'bindingStatus'),
-      identitySessionContextCount: identitySessionContexts.length,
-      identitySessionContextPolicyCounts: countByNormalizedField(identitySessionContexts, 'policyId'),
+    return buildMissionSummary({
+      approvals,
+      escalationSummary,
+      filter,
+      gatewayEvents,
+      identitySessionContexts,
       latestGatewayEvent,
       latestIdentitySessionContext,
-      latestSandboxDecision,
-      learningCandidateCount: learningCandidates.length,
-      learningCandidateRecordTypeCounts: countByNormalizedField(learningCandidates, 'recordType'),
-      learningCandidateStatusCounts: countByNormalizedField(learningCandidates, 'status'),
-      learningCandidatePromotionStatusCounts: countByNormalizedField(learningCandidates, 'promotionStatus'),
       latestLearningCandidate,
-      latestEscalation: escalationSummary.latestEscalation,
-      latestMaintenanceImpactRun: maintenanceImpactSummary.latestRun,
-      latestMaintenanceImpactRunAt: maintenanceImpactSummary.latestRunAt,
       latestRelatedMaintenanceRun,
-      latestRelatedMaintenanceRunAt: latestRelatedMaintenanceRun?.createdAt || null,
-      latestMaintenanceRequiredAction: maintenancePressureSummary.latestRequiredAction,
-      latestMaintenanceRequiredActionAt: maintenancePressureSummary.latestRequiredActionAt,
-      latestMaintenanceRun: maintenanceSummary.latestRun,
-      latestMaintenanceRunAt: maintenanceSummary.latestRunAt,
+      latestSandboxDecision,
       latestSession,
-      maintenanceAcknowledgedMaintenanceRequiredCountTotal:
-        maintenanceSummary.acknowledgedMaintenanceRequiredCountTotal,
-      maintenanceDueCandidateCountTotal: maintenanceSummary.dueCandidateCountTotal,
-      maintenanceEscalationRemindedCountTotal: maintenanceSummary.escalationRemindedCountTotal,
-      maintenanceImpactEscalationRemindedCountTotal: maintenanceImpactSummary.escalationRemindedCountTotal,
-      maintenanceImpactOwnerHandoffRemindedCountTotal: maintenanceImpactSummary.ownerHandoffRemindedCountTotal,
-      maintenanceImpactProviderAttentionRemindedCountTotal:
-        maintenanceImpactSummary.providerAttentionRemindedCountTotal,
-      maintenanceImpactSpecialistFollowUpRemindedCountTotal:
-        maintenanceImpactSummary.specialistFollowUpRemindedCountTotal,
-      maintenanceImpactRunCount: maintenanceImpactSummary.runCount,
-      maintenanceImpactTotalRemindedCount: maintenanceImpactSummary.totalRemindedCount,
-      maintenanceRequiredCount: maintenancePressureSummary.maintenanceRequiredCount,
-      sandboxDecisionCount: sandboxDecisions.length,
-      sandboxDecisionModeCounts: countByNormalizedField(sandboxDecisions, 'mode'),
-      sandboxDecisionPolicyCounts: countByNormalizedField(sandboxDecisions, 'policyId'),
-      maintenanceResolvedMaintenanceRequiredCountTotal:
-        maintenanceSummary.resolvedMaintenanceRequiredCountTotal,
-      maintenanceRemainingMaintenanceRequiredCountTotal:
-        maintenanceSummary.remainingMaintenanceRequiredCountTotal,
-      maintenanceRelatedRunCount: relatedMaintenanceRuns.length,
-      maintenanceOwnerHandoffRemindedCountTotal: maintenanceSummary.ownerHandoffRemindedCountTotal,
-      maintenanceProviderAttentionRemindedCountTotal: maintenanceSummary.providerAttentionRemindedCountTotal,
-      maintenanceSpecialistFollowUpRemindedCountTotal: maintenanceSummary.specialistFollowUpRemindedCountTotal,
-      maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
-      maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
-      maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
-      maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
-      maintenanceRunCount: maintenanceSummary.runCount,
-      maintenanceSyncedCountTotal: maintenanceSummary.syncedCountTotal,
-      maintenanceNextDueAt: maintenancePressureSummary.nextDueAt,
-      maintenanceCurrentDueSpecialistFollowUpCountTotal:
-        maintenancePressureSummary.currentDueSpecialistFollowUpCountTotal,
-      maintenanceTotalRemindedCount: maintenanceSummary.totalRemindedCount,
-      memoryCounts: {
-        decision: memoryEntries.filter((entry) => entry.kind === 'decision').length,
-        fact: memoryEntries.filter((entry) => entry.kind === 'fact').length,
-        preference: memoryEntries.filter((entry) => entry.kind === 'preference').length,
-        total: memoryEntries.length,
-      },
-      attachmentCounts: {
-        total: missionAttachments.length,
-        truncated: missionAttachments.filter((attachment) => attachment.truncated).length,
-        totalChars: missionAttachments.reduce((sum, attachment) => sum + Number(attachment.charCount || 0), 0),
-      },
-      latestProviderAttentionAcknowledgement: providerActivity.latestAttentionAcknowledgement,
-      latestProviderAttentionRecovery: providerActivity.latestAttentionRecovery,
-      latestProviderAttentionReminder: providerActivity.latestAttentionReminder,
-      latestProviderAttentionRequiredEvent: providerActivity.latestAttentionRequiredEvent,
-      latestProviderAttentionResolution: providerActivity.latestAttentionResolution,
-      latestProviderExecution: providerActivity.latestExecution,
-      latestProviderExecutionEvent: providerActivity.latestExecutionEvent,
-      latestFailedProviderExecution: providerActivity.latestFailedExecution,
-      latestRecentProviderEvent: providerRecentWindow?.latestEvent || null,
-      latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
-      latestSuccessfulProviderExecution: providerActivity.latestSuccessfulExecution,
-      providerAttentionAcknowledgedCount: providerActivity.summary.attentionAcknowledgedCount,
-      providerAttentionNeedsReminderCount: providerActivity.summary.attentionNeedsReminderCount,
-      providerAttentionNextReminderAt: providerActivity.summary.attentionNextReminderAt,
-      providerAttentionOverdueCount: providerActivity.summary.attentionOverdueCount,
-      providerAttentionAttemptHistoryEntryCountTotal: providerActivity.summary.attentionAttemptHistoryEntryCountTotal,
-      providerAttentionMaxAttemptCount: providerActivity.summary.attentionMaxAttemptCount,
-      providerAttentionMultiAttemptCount: providerActivity.summary.attentionMultiAttemptCount,
-      providerAttentionReminderCount: providerActivity.summary.attentionReminderCount,
-      providerAttentionRequiredCount: providerActivity.summary.attentionRequiredCount,
-      providerAttentionRecoveredCount: providerActivity.summary.attentionRecoveredCount,
-      providerAttentionResolvedCount: providerActivity.summary.attentionResolvedCount,
-      providerAttentionStatusCounts: providerActivity.summary.attentionStatusCounts,
-      providerAttentionTotalAttemptCount: providerActivity.summary.attentionTotalAttemptCount,
-      providerAttentionTotalRetryCount: providerActivity.summary.attentionTotalRetryCount,
-      providerEventCount: providerActivity.summary.eventCount,
-      providerEventFamilyCounts: providerActivity.summary.eventFamilyCounts,
-      providerRecentEventCount: providerRecentWindow?.eventCount || 0,
-      providerRecentEventFamilyCounts:
-        providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
-      providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
-      providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
-      providerRecentExecutionLatestMonthlyBucketDelta:
-        providerRecentWindow?.executionLatestMonthlyBucketDelta || null,
-      providerRecentExecutionLatestMonthlyBucketStartDate:
-        providerRecentWindow?.executionLatestMonthlyBucketStartDate || null,
-      providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
-      providerRecentExecutionOldestMonthlyBucketStartDate:
-        providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
-      providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
-      providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
-      providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
-      providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
-      providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
-      providerHealthDriftRecentExecutionCurrentMonthStartDate:
-        providerHealthDrift.recentExecutionCurrentMonthStartDate,
-      providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
-        providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
-      providerHealthDriftRecentExecutionFailedCountDelta:
-        providerHealthDrift.recentExecutionFailedCountDelta,
-      providerHealthDriftRecentExecutionMonthlyBucketCount:
-        providerHealthDrift.recentExecutionMonthlyBucketCount,
-      providerHealthDriftRecentExecutionOldestMonthStartDate:
-        providerHealthDrift.recentExecutionOldestMonthStartDate,
-      providerHealthDriftRecentExecutionPreviousMonthStartDate:
-        providerHealthDrift.recentExecutionPreviousMonthStartDate,
-      providerHealthDriftStatus: providerHealthDrift.status,
-      providerRecentSince: filter.providerSince || null,
-      providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
-      providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
-      providerExecutionAverageDurationMs: providerActivity.summary.executionAverageDurationMs,
-      providerExecutionCompletedCount: providerActivity.summary.executionCompletedCount,
-      providerExecutionCount: providerActivity.summary.executionCount,
-      providerExecutionFailureKindCounts: providerActivity.summary.executionFailureKindCounts,
-      providerExecutionFailedCount: providerActivity.summary.executionFailedCount,
-      providerExecutionAttemptHistoryEntryCountTotal: providerActivity.summary.executionAttemptHistoryEntryCountTotal,
-      providerExecutionMaxDurationMs: providerActivity.summary.executionMaxDurationMs,
-      providerExecutionMaxAttemptCount: providerActivity.summary.executionMaxAttemptCount,
-      providerExecutionMultiAttemptCount: providerActivity.summary.executionMultiAttemptCount,
-      providerExecutionRetryableFailureCount: providerActivity.summary.executionRetryableFailureCount,
-      providerExecutionRetrySucceededCount: providerActivity.summary.executionRetrySucceededCount,
-      providerExecutionTotalAttemptCount: providerActivity.summary.executionTotalAttemptCount,
-      providerExecutionTotalDurationMs: providerActivity.summary.executionTotalDurationMs,
-      providerExecutionTotalRetryCount: providerActivity.summary.executionTotalRetryCount,
-      providerExecutionTimedOutFailureCount: providerActivity.summary.executionTimedOutFailureCount,
-      providerExecutionEstimatedCostUsdAverage: providerActivity.summary.executionEstimatedCostUsdAverage,
-      providerExecutionEstimatedCostUsdByProviderId: providerActivity.summary.executionEstimatedCostUsdByProviderId,
-      providerExecutionEstimatedCostUsdByRole: providerActivity.summary.executionEstimatedCostUsdByRole,
-      providerExecutionEstimatedCostUsdMax: providerActivity.summary.executionEstimatedCostUsdMax,
-      providerExecutionEstimatedCostUsdPricedCount: providerActivity.summary.executionEstimatedCostUsdPricedCount,
-      providerExecutionEstimatedCostUsdTotal: providerActivity.summary.executionEstimatedCostUsdTotal,
-      providerExecutionUsageInputTokensTotal: providerActivity.summary.usageInputTokensTotal,
-      providerExecutionUsageOutputTokensTotal: providerActivity.summary.usageOutputTokensTotal,
-      providerExecutionUsageTotalTokensTotal: providerActivity.summary.usageTotalTokensTotal,
-      ...summarizeMissionProviderFallback({ mission, sessions: rawSessions }),
-      specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
-      specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
-      specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
-      specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
-      specialistConfiguredKinds: parallelPlan.effectiveKinds,
-      specialistKindCounts: parallelActivity.specialistKindCounts,
-      specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
-      specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
-      specialistLatestFollowUp: parallelActivity.latestFollowUp,
-      specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
-      specialistLatestMergeRun: parallelActivity.latestMergeRun,
-      specialistLatestParallelGroup: parallelActivity.latestParallelGroup,
-      specialistMergeCompletedCount: parallelActivity.mergeCompletedCount,
-      specialistMergeRunCount: parallelActivity.mergeRunCount,
-      specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
-      specialistQualityGate: missionQualityGate.qualityGate,
-      specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
-      specialistQualityGateRequiredKinds: missionQualityGate.requiredKinds,
-      specialistQualityGateStatus: missionQualityGate.status,
-      specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
-      specialistQualityGateViolationCount: missionQualityGate.violationCount,
-      specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
-      specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
-      specialistOrchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
-      specialistOrchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
-      specialistOrchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
-      specialistOrchestrationProfileHarnessPatterns: parallelPlan.orchestrationProfile?.harnessPatterns || [],
-      specialistOrchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
-      specialistOrchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
-      specialistOrchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
-      specialistOrchestrationProfilePresetKinds: parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
-      specialistOrchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
-      specialistOrchestrationProfileRecommendedProvider:
-        parallelPlan.orchestrationProfile?.recommendedProvider || null,
-      specialistOrchestrationProfileRuntimeBlueprint: parallelPlan.orchestrationProfile?.runtimeBlueprint || null,
-      specialistOrchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
-      specialistOrchestrationProfileSource: parallelPlan.source,
-      specialistRunCount: parallelActivity.specialistRunCount,
-      specialistStatusCounts: parallelActivity.statusCounts,
-      specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
-      specialistTouchedKinds: parallelActivity.touchedSpecialistKinds,
-      specialistTotalGroupCount: parallelActivity.totalGroupCount,
-      providerTouchedCount: providerActivity.summary.touchedProviderCount,
-      providerTouchedIds: providerActivity.summary.touchedProviderIds,
-      sessionCount: sessions.length,
-      status: mission.status,
-      updatedAt: mission.updatedAt,
-    };
+      learningCandidates,
+      maintenanceImpactSummary,
+      maintenanceLatestMonthlyBucketDelta,
+      maintenanceMonthlyBuckets,
+      maintenancePressureSummary,
+      maintenanceSummary,
+      memoryEntries,
+      mission,
+      missionAttachments,
+      missionQualityGate,
+      parallelActivity,
+      parallelPlan,
+      providerActivity,
+      providerFallbackSummary: summarizeMissionProviderFallback({ mission, sessions: rawSessions }),
+      providerHealthDrift,
+      providerRecentWindow,
+      relatedMaintenanceRuns,
+      sandboxDecisions,
+      sessions,
+    });
   }
 
   function buildHarnessDocumentRegistry() {
@@ -5330,235 +5105,30 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       retrievalPreview.previewItems,
       latestRetrievalSummary,
     );
-    const recommendations = [];
 
-    if (!latestArtifact) {
-      recommendations.push({
-        code: 'missing-artifact',
-        level: 'attention',
-        title: '최종 산출물이 source-of-record로 아직 고정되지 않았습니다.',
-      });
-    }
-
-    if (Number(summary.approvalCounts?.pending || 0) > 0) {
-      recommendations.push({
-        code: 'pending-approvals',
-        level: 'attention',
-        title: `사람의 승인 ${summary.approvalCounts.pending}건을 먼저 해소해야 하네스가 닫힙니다.`,
-      });
-    }
-
-    if (Number(actionInbox.summary?.pendingActionCount || 0) > 0) {
-      recommendations.push({
-        code: 'pending-actions',
-        level: 'attention',
-        title: `후속 작업 ${actionInbox.summary.pendingActionCount}건이 남아 있습니다. review loop를 먼저 닫아야 결과를 확정할 수 있습니다.`,
-      });
-    }
-
-    if (Number(summary.maintenanceRequiredCount || 0) > 0) {
-      recommendations.push({
-        code: 'maintenance-required',
-        level: 'warning',
-        title: `유지보수 루프가 ${summary.maintenanceRequiredCount}건 열려 있습니다. 정기 sweep 결과를 확인해야 합니다.`,
-      });
-    }
-
-    if (summary.providerHealthDriftStatus !== 'stable') {
-      recommendations.push({
-        code: 'provider-health-drift',
-        level: 'warning',
-        title: 'provider health drift가 안정 상태가 아닙니다. 최근 attention/retry 이력을 확인해야 합니다.',
-      });
-    }
-
-    if (!missionMemoryEntries.length) {
-      recommendations.push({
-        code: 'empty-memory',
-        level: 'info',
-        title: '미션 메모리가 비어 있습니다. 핵심 결정과 사실을 memory로 남기면 다음 실행 품질이 올라갑니다.',
-      });
-    }
-
-    const allFactGraph = factGraph.listFactGraph({ status: 'all' });
-    const missionFactGraph = factGraph.listFactGraph({ scope: 'mission', scopeId: mission.id, status: 'all' });
-    const workspaceFactGraph = factGraph.listFactGraph({
-      scope: 'workspace',
-      scopeId: mission.workspaceId,
-      status: 'all',
+    return buildMissionHarnessSummary({
+      actionInbox,
+      allFactGraph: factGraph.listFactGraph({ status: 'all' }),
+      documentRegistry,
+      latestArtifact,
+      latestRetrievalArtifact,
+      latestRetrievalSession,
+      latestRetrievalSummary,
+      learningCandidates,
+      missionAttachments,
+      missionFactGraph: factGraph.listFactGraph({ scope: 'mission', scopeId: mission.id, status: 'all' }),
+      missionMemoryEntries,
+      retrievalCompare,
+      retrievalPreview,
+      rootDir,
+      summary,
+      workspaceFactGraph: factGraph.listFactGraph({
+        scope: 'workspace',
+        scopeId: mission.workspaceId,
+        status: 'all',
+      }),
+      workspaceMemoryEntries,
     });
-    const compactFactGraphPreview = (graph) => {
-      const nodeById = new Map((graph.nodes || []).map((node) => [node.id, node]));
-      const nodes = (graph.nodes || [])
-        .filter((node) => node.status === 'active')
-        .sort((left, right) => String(right.updatedAt || right.createdAt || '').localeCompare(String(left.updatedAt || left.createdAt || '')))
-        .slice(0, 5)
-        .map((node) => ({
-          id: node.id,
-          provenance: Array.isArray(node.provenance) ? node.provenance.slice(0, 1) : [],
-          scope: node.scope,
-          scopeId: node.scopeId,
-          sourceId: node.sourceId,
-          statement: node.statement,
-          updatedAt: node.updatedAt || node.createdAt || null,
-          version: node.version || 1,
-        }));
-      const edges = (graph.edges || [])
-        .filter((edge) => edge.status === 'active')
-        .sort((left, right) => Number(right.weight || 0) - Number(left.weight || 0))
-        .slice(0, 5)
-        .map((edge) => ({
-          fromNodeId: edge.fromNodeId,
-          fromStatement: nodeById.get(edge.fromNodeId)?.statement || '',
-          id: edge.id,
-          relation: edge.relation,
-          relationReason: edge.relationReason || `related by shared fact terms: ${(edge.sharedTokens || []).slice(0, 8).join(', ')}`,
-          scope: edge.scope,
-          scopeId: edge.scopeId,
-          sharedTokens: Array.isArray(edge.sharedTokens) ? edge.sharedTokens.slice(0, 8) : [],
-          toNodeId: edge.toNodeId,
-          toStatement: nodeById.get(edge.toNodeId)?.statement || '',
-          weight: edge.weight || 0,
-        }));
-
-      return {
-        edges,
-        nodes,
-        summary: graph.summary,
-      };
-    };
-
-    return {
-      adoptedPatterns: [
-        {
-          detail: '비정형 입력은 작업용 Markdown으로 정규화한 뒤 docs/와 artifact 경로를 source-of-record로 유지합니다.',
-          label: 'Markdown source-of-record',
-        },
-        {
-          detail: '세션, 승인, 산출물, 유지보수 이벤트를 분리하지 않고 하나의 운영 루프로 관찰합니다.',
-          label: 'Session-first harness loop',
-        },
-        {
-          detail: '결정/사실/선호 메모를 mission 단위로 누적하고, 필요한 경우 workspace 메모리까지 확장합니다.',
-          label: 'Layered memory recall',
-        },
-      ],
-      documents: {
-        items: documentRegistry.items,
-        recentEntries: documentRegistry.recentEntries,
-        latestArtifact: latestArtifact
-          ? {
-              kind: latestArtifact.kind,
-              path: latestArtifact.path ? path.relative(rootDir, latestArtifact.path) : null,
-              title: latestArtifact.title || latestArtifact.fileName || latestArtifact.id,
-              updatedAt: latestArtifact.createdAt || null,
-            }
-          : null,
-      },
-      attachments: {
-        recentEntries: missionAttachments.slice(-5).reverse().map((attachment) => ({
-          charCount: attachment.charCount,
-          createdAt: attachment.createdAt,
-          excerpt: attachment.excerpt,
-          fileName: attachment.fileName,
-          id: attachment.id,
-          lineCount: attachment.lineCount,
-          mimeType: attachment.mimeType,
-          source: attachment.source,
-          truncated: attachment.truncated,
-          updatedAt: attachment.updatedAt || null,
-        })),
-        summary: {
-          latestCreatedAt: missionAttachments.at(-1)?.createdAt || null,
-          total: missionAttachments.length,
-          totalChars: missionAttachments.reduce((sum, attachment) => sum + Number(attachment.charCount || 0), 0),
-          truncatedCount: missionAttachments.filter((attachment) => attachment.truncated).length,
-        },
-      },
-      loops: {
-        maintenance: {
-          latestRunAt: summary.latestMaintenanceRunAt || null,
-          nextDueAt: summary.maintenanceNextDueAt || null,
-          requiredCount: summary.maintenanceRequiredCount || 0,
-        },
-        provider: {
-          healthDriftStatus: summary.providerHealthDriftStatus || 'stable',
-          latestFailureAt: summary.latestFailedProviderExecution?.endedAt || null,
-          latestFailureKind: summary.latestFailedProviderExecution?.failureKind || null,
-          latestSuccessAt: summary.latestSuccessfulProviderExecution?.endedAt || null,
-        },
-        quality: {
-          blockedCount: summary.specialistQualityGateBlockedCount || 0,
-          latestViolation: summary.specialistLatestQualityGateViolation || null,
-          status: summary.specialistQualityGateStatus || 'none',
-        },
-        review: {
-          latestReviewerSummary: summary.latestSession?.reviewerSummary || null,
-          latestReviewerStatus: summary.latestSession?.reviewerStatus || null,
-          pendingActions: actionInbox.summary?.pendingActionCount || 0,
-          pendingApprovals: summary.approvalCounts?.pending || 0,
-        },
-        learning: {
-          candidateCount: learningCandidates.length,
-          latestCandidateId: learningCandidates.at(-1)?.id || null,
-          latestRecordType: learningCandidates.at(-1)?.recordType || null,
-          pendingReviewCount: Number(summary.learningCandidatePromotionStatusCounts?.['pending-review'] || 0),
-        },
-      },
-      memory: {
-        factGraph: allFactGraph.summary,
-        factGraphPreview: {
-          all: compactFactGraphPreview(allFactGraph),
-          mission: compactFactGraphPreview(missionFactGraph),
-          workspace: compactFactGraphPreview(workspaceFactGraph),
-        },
-        missionFactGraph: missionFactGraph.summary,
-        workspaceFactGraph: workspaceFactGraph.summary,
-        missionCounts: summary.memoryCounts,
-        recentMissionEntries: missionMemoryEntries.slice(-5).reverse().map((entry) => ({
-          createdAt: entry.createdAt,
-          id: entry.id,
-          kind: entry.kind,
-          content: entry.content,
-          updatedAt: entry.updatedAt || null,
-        })),
-        recentWorkspaceEntries: workspaceMemoryEntries.slice(-3).reverse().map((entry) => ({
-          createdAt: entry.createdAt,
-          id: entry.id,
-          kind: entry.kind,
-          content: entry.content,
-          updatedAt: entry.updatedAt || null,
-        })),
-        workspaceCount: workspaceMemoryEntries.length,
-      },
-      retrieval: {
-        ...retrievalPreview,
-        compare: retrievalCompare,
-        latestArtifact: latestRetrievalArtifact
-          ? {
-              id: latestRetrievalArtifact.id,
-              fileName: latestRetrievalArtifact.fileName,
-              kind: latestRetrievalArtifact.kind,
-              path: latestRetrievalArtifact.path ? path.relative(rootDir, latestRetrievalArtifact.path) : null,
-              role: latestRetrievalArtifact.role || null,
-              sessionId: latestRetrievalArtifact.sessionId,
-              sessionStatus: latestRetrievalSession?.status || null,
-              summary: latestRetrievalSummary
-                ? {
-                    attachmentSourceCount: latestRetrievalSummary.attachmentSourceCount,
-                    memorySourceCount: latestRetrievalSummary.memorySourceCount,
-                    role: latestRetrievalSummary.role,
-                    snippetCount: latestRetrievalSummary.snippetCount,
-                    sourceLabels: latestRetrievalSummary.sourceLabels.slice(0, 4),
-                  }
-                : null,
-              title: latestRetrievalArtifact.title || latestRetrievalArtifact.fileName || latestRetrievalArtifact.id,
-              updatedAt: latestRetrievalArtifact.createdAt || null,
-            }
-          : null,
-      },
-      recommendations,
-    };
   }
 
   function listMissionSummariesByWorkspace(workspaceId) {
