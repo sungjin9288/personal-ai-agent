@@ -67,6 +67,7 @@
 | D3.2a Execution mutation primitives | 완료 | content 계산, rollback preview, mutation audit·batch summary를 순수 모듈로 이동 |
 | D3.2b Execution filesystem state·bundle | 완료 | 읽기 전용 file/directory state 수집과 mutation bundle 예측을 독립 builder로 이동 |
 | D3.2c Execution rollback plan | 완료 | reverse order state simulation, hash·snapshot guard와 rollback batch 조립을 실제 restore/delete I/O에서 분리 |
+| D3.2d Execution runner lifecycle | 완료 | session·step의 start·complete·fail·stop 상태 전이를 순수 lifecycle 모듈로 이동하고 runner의 lease·mission·log 종료 순서를 유지 |
 
 R1 완료 검증:
 
@@ -608,6 +609,15 @@ D3.2c 구현 검증:
 - 전체 unit test `700/700` 통과
 - 전체 smoke `165/165` 통과
 - execution flow·CLI smoke에서 reverse-order restore/delete, file/directory move, hash·snapshot guard와 실제 rollback 통과
+- provider live 명령과 외부 API 호출은 실행하지 않음
+
+D3.2d 구현 검증:
+
+- runner lifecycle 단위 테스트 `6/6` 통과
+- 전체 unit test `706/706` 통과
+- 전체 smoke `165/165` 통과
+- execution flow·CLI smoke에서 step 실행, mutation audit, approval·lease와 session 종료 계약 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.3 Provider read model·event aggregation

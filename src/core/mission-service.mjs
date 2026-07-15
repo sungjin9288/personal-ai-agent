@@ -52,6 +52,14 @@ import {
 } from './execution-mutation.mjs';
 import { createExecutionMutationBundleBuilder } from './execution-mutation-bundle.mjs';
 import { buildExecutionRollbackPlan as assembleExecutionRollbackPlan } from './execution-rollback-plan.mjs';
+import {
+  completeExecutionSession,
+  completeExecutionStep,
+  failExecutionSession,
+  failExecutionStep,
+  startExecutionSession,
+  startExecutionStep,
+} from './execution-runner-lifecycle.mjs';
 import { createFactGraphService } from './fact-graph-service.mjs';
 import { createMissionMemoryService } from './mission-memory-service.mjs';
 import {
@@ -1989,12 +1997,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         return;
       }
 
-      store.updateExecutionSession(executionSessionId, (current) => ({
-        ...current,
-        startedAt: current.startedAt || now(),
-        status: 'running',
-        updatedAt: now(),
-      }));
+      store.updateExecutionSession(executionSessionId, (current) => startExecutionSession(current, now()));
       appendExecutionLog(executionSessionId, `[${now()}] execution started`);
 
       try {
@@ -2014,11 +2017,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
             currentStepIndex: index,
             updatedAt: now(),
           }));
-          updateExecutionStepRecord(executionSessionId, index, (current) => ({
-            ...current,
-            startedAt: now(),
-            status: 'running',
-          }));
+          updateExecutionStepRecord(executionSessionId, index, (current) => startExecutionStep(current, now()));
           appendExecutionLog(executionSessionId, `[${now()}] ${step.id} start :: ${step.title}`);
 
           try {
@@ -2073,39 +2072,36 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
               });
             }
 
-            updateExecutionStepRecord(executionSessionId, index, (current) => ({
-              ...current,
-              endedAt: now(),
-              exitCode: 0,
-              mutationAudit: mutationAudit || current.mutationAudit || null,
-              status: 'completed',
-            }));
+            updateExecutionStepRecord(executionSessionId, index, (current) =>
+              completeExecutionStep(current, {
+                at: now(),
+                mutationAudit,
+              }),
+            );
           } catch (error) {
-            updateExecutionStepRecord(executionSessionId, index, (current) => ({
-              ...current,
-              endedAt: now(),
-              error: error instanceof Error ? error.message : String(error),
-              exitCode: 1,
-              status: runtimeState.stopRequested ? 'stopped' : 'failed',
-            }));
+            updateExecutionStepRecord(executionSessionId, index, (current) =>
+              failExecutionStep(current, {
+                at: now(),
+                error,
+                stopRequested: runtimeState.stopRequested,
+              }),
+            );
             throw error;
           }
         }
 
         const completedSession = store.updateExecutionSession(executionSessionId, (current) => {
           const mutationAudits = collectExecutionMutationAudits(current.steps);
-          return {
-            ...current,
+          return completeExecutionSession(current, {
+            at: now(),
             changedFiles: captureChangedFiles(current.workspacePath),
-            endedAt: now(),
             mutationAudits,
             mutationBatchAudit: buildExecutionMutationBatchAudit({
               mutationAudits,
               mutationBundle: current.mutationBundle,
             }),
-            status: 'completed',
             verification: computeExecutionVerification(current.steps),
-          };
+          });
         });
         harness.updateExecutionLease(completedSession.leaseId, {
           status: 'used',
@@ -2118,19 +2114,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         const finalStatus = runtimeState.stopRequested ? 'stopped' : 'failed';
         store.updateExecutionSession(executionSessionId, (session) => {
           const mutationAudits = collectExecutionMutationAudits(session.steps);
-          return {
-            ...session,
-            blockedReasons: finalStatus === 'failed' ? [error instanceof Error ? error.message : String(error)] : [],
+          return failExecutionSession(session, {
+            at: now(),
             changedFiles: captureChangedFiles(session.workspacePath),
-            endedAt: now(),
+            error,
             mutationAudits,
             mutationBatchAudit: buildExecutionMutationBatchAudit({
               mutationAudits,
               mutationBundle: session.mutationBundle,
             }),
-            status: finalStatus,
+            stopRequested: runtimeState.stopRequested,
             verification: computeExecutionVerification(session.steps),
-          };
+          });
         });
         if (current?.leaseId) {
           harness.updateExecutionLease(current.leaseId, {
