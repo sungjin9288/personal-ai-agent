@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-15T18:55:46.241Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-15T18:55:45.348Z
 - localDate: 2026-07-16
 - branch: codex/d4-6-composition-closeout
 - commit: b232c4ed60f44c51570fd1f08ad7091949037e2f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b232c4ed60f44c51570fd1f08ad7091949037e2f](releases/execution-v1/b232c4ed60f44c51570fd1f08ad7091949037e2f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/b232c4ed60f44c51570fd1f08ad7091949037e2f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/b232c4ed60f44c51570fd1f08ad7091949037e2f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/b232c4ed60f44c51570fd1f08ad7091949037e2f](docs/releases/execution-v1/b232c4ed60f44c51570fd1f08ad7091949037e2f)
 - visualArtifactSetSha256: 236202a53593e8dd8dcb8e09693bdb3db897a778c750f17a8707067a63f4c57b
 - commitPushStatus: not pushed, origin/codex/d4-6-composition-closeout not found
 

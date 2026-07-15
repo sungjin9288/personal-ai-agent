@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-15T18:55:46.241Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-15T18:55:20.867Z
 - branch: codex/d4-6-composition-closeout
 - commit: b232c4ed60f44c51570fd1f08ad7091949037e2f
