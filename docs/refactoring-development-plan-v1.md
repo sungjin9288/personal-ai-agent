@@ -1,7 +1,8 @@
 # 리팩토링·개발 실행 계획 v1
 
 > 기준 시점: 2026-07-16
-> 기준 커밋: `3cfdbd05`
+> D4 시작 기준 커밋: `3cfdbd05`
+> D4.6 시작 커밋: `0a23fabe`
 > 현재 경계: local-first pilot이며 `production-ready` 또는 all-provider complete로 설명하지 않는다.
 
 ## 1. 목표
@@ -14,10 +15,11 @@
 
 | 항목 | 현재 측정값 | 측정 방법 |
 |---|---:|---|
-| `mission-service.mjs` | 10,626줄 | `wc -l src/core/mission-service.mjs` |
+| `mission-service.mjs` | 433줄 | `wc -l src/core/mission-service.mjs` |
+| `mission-read-service.mjs` | 3,765줄 | `wc -l src/core/mission-read-service.mjs` |
 | `app.js` | 9,121줄 | `wc -l src/web/public/app.js` |
 | `server.mjs` | 2,560줄 | `wc -l src/web/server.mjs` |
-| 단위 테스트 | 774개 통과 | `npm test` |
+| 단위 테스트 | 811개 통과 | `npm test` |
 | 문서 게이트 | 33개 통과 | `npm run smoke:docs-gates` |
 
 2026-06-30 점검 이후 attachment, retrieval artifact, provider telemetry, escalation, maintenance, learning promotion, frontend copy/navigation/state, web path guard와 API route table의 1차 분리는 완료되었다. 이 계획은 완료된 작업을 반복하지 않고 남은 경계만 다룬다.
@@ -82,8 +84,15 @@
 | D3.5b Mission·harness summary composition | 완료 | session·mission 운영 지표와 harness panel payload 조립을 store·fact graph·retrieval 조회에서 분리 |
 | D3.5c Action·escalation inbox | 완료 | action item 수집과 summary 조립을 reminder·acknowledgement·resolution mutation에서 분리 |
 | D3.5d Mission·workspace·operator timeline | 완료 | event 수집과 scope 적용, 정렬·summary 조립을 audit write 경계에서 분리 |
-| D4 Stateful domain service boundaries | 진행 중 | 외부 provider 호출 없이 상태 변경 책임을 도메인 service로 이동 |
+| D4 Stateful domain service boundaries | 완료 | 상태 변경, 실행 context, provider 관측, read model을 도메인 service로 이동하고 composition facade를 닫음 |
 | D4.1 Learning promotion domain | 완료 | queue, reminder, resolve, expire, rollback lifecycle을 한 service로 통합 |
+| D4.2 Execution runtime | 완료 | preflight, lease, process, session, log, rollback lifecycle을 execution runtime service로 이동 |
+| D4.3 Provider runtime | 완료 | probe, execution history, timeline, overview, attention mutation을 provider runtime service로 통합 |
+| D4.4a Escalation·handoff | 완료 | escalation sync, reminder, owner handoff, acknowledgement, resolution을 한 service로 이동 |
+| D4.4b Specialist·reviewer | 완료 | specialist remediation·reminder와 reviewer follow-up resolution을 한 service로 이동 |
+| D4.4c Action maintenance | 완료 | action inbox read aggregation과 overdue·maintenance orchestration을 분리 |
+| D4.5 Mission run·catalog | 완료 | mission stage·approval closeout과 workspace·mission·attachment CRUD를 분리 |
+| D4.6 Composition closeout | 완료 | mission service를 dependency composition과 77개 공개 facade 위임으로 축소 |
 
 R1 완료 검증:
 
@@ -793,7 +802,25 @@ D3에서 분리한 순수 계산과 read model을 그대로 사용하면서, `mi
 - learning promotion queue·audit·verification·stop-condition·UI surface smoke `5/5` 통과
 - HTTP route와 browser UI 코드는 변경하지 않았고 provider live·preflight·deploy 명령은 실행하지 않았다.
 
-D4의 다음 순서는 execution runtime, provider runtime, escalation·follow-up·action maintenance, mission run·catalog, composition closeout이다. 각 단계는 관련 stateful effect 순서를 focused test로 고정한 뒤 전체 로컬 게이트를 통과해야 다음 단계로 넘어간다.
+#### D4.2–D4.5 Stateful service extraction — 완료
+
+- `execution-runtime-service.mjs`가 preflight, lease, process·session lifecycle, log, rollback을 소유한다. workspace containment, secret 차단, snapshot/hash guard와 approval 순서를 유지했다.
+- `provider-runtime-service.mjs`가 probe, execution history·timeline, overview, provider attention과 fallback 관측을 소유한다. provider 호출과 fallback 실행 자체는 기존 registry와 mission run 경계를 그대로 사용한다.
+- `escalation-service.mjs`, `follow-up-service.mjs`, `action-inbox-service.mjs`, `action-maintenance-service.mjs`로 escalation, owner handoff, specialist·reviewer follow-up, read aggregation과 maintenance mutation을 분리했다.
+- `mission-catalog-service.mjs`는 workspace·mission·attachment CRUD를, `mission-run-service.mjs`는 stage 실행, retrieval context, parallel group, review·approval closeout을 소유한다.
+- 각 단계에서 공개 API, CLI·HTTP payload, store schema, 오류 문구와 audit ordering을 focused unit과 deterministic smoke로 고정했다.
+
+#### D4.6 Composition closeout — 완료
+
+- `mission-service.mjs`는 filesystem, store, clock, harness, provider registry와 도메인 service 생성 순서를 한 곳에서 조립하고 기존 77개 공개 method를 같은 순서로 위임한다.
+- `mission-read-service.mjs`는 channel, summary, harness, maintenance, inbox, overview, orchestration, timeline, audit, session read model을 소유한다.
+- gateway event는 저장 후 session source context를 갱신하고, learning candidate는 store 갱신 후 artifact를 덮어쓰는 기존 effect ordering을 독립 coordinator unit test로 고정했다.
+- mission run은 memory·attachment retrieval context와 parallel group state를 소유하고, provider runtime은 fallback timeline·summary를 소유해 read service와의 순환 의존을 만들지 않았다.
+- `createMissionService`의 facade method 목록·순서는 D4.6 시작 커밋과 기계적으로 일치한다.
+- 전체 unit test `811/811`, 문서 게이트 `33/33`, deterministic smoke `165/165` 통과. final evidence는 implementation commit 기준 artifact refresh에 기록한다.
+- HTTP·UI 계약은 변경하지 않았으며 외부 provider API, live validation, 유료 cloud와 배포 명령은 실행하지 않았다.
+
+D4 이후에도 provider credit, hosted identity, production deploy 증적은 구현 완료로 간주하지 않는다. `productionReadyClaim: false`를 유지하며 외부 계정·승인·환경이 준비된 별도 작업에서만 검증한다.
 
 ## 5. 모델 운용
 

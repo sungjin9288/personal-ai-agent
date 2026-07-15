@@ -2,7 +2,7 @@
 
 - status: code-walkthrough-current
 - productionReadyClaim: false
-- scope: local-first CLI/web runtime, mission composition, mission catalog and run services, runtime harness, provider registry, local store, smoke/evidence pipeline
+- scope: local-first CLI/web runtime, mission composition, domain and read services, runtime harness, provider registry, local store, smoke/evidence pipeline
 - relatedReadme: [README.md](../README.md)
 - relatedEvidenceGallery: [evidence-gallery.md](evidence-gallery.md)
 - relatedRuntimeEvidence: [agent-runtime-evidence.md](agent-runtime-evidence.md)
@@ -20,7 +20,7 @@ The intended use is interview preparation, fork onboarding, and reviewer navigat
 Operator
   -> CLI (`src/cli.mjs`) or local Web UI/API (`src/web/server.mjs`, `src/web/public/*`)
   -> Mission Composition Facade (`src/core/mission-service.mjs`)
-  -> Mission Catalog (`src/core/mission-catalog-service.mjs`) or Mission Run (`src/core/mission-run-service.mjs`)
+  -> Mission Catalog, Run, Read, Provider, Execution, Action, and Follow-up services (`src/core/*-service.mjs`)
   -> Runtime Harness (`src/harness/runtime-harness.mjs`)
   -> Agent roles and optional specialist lanes (`src/agents/*`, `src/packs/*`)
   -> Provider Registry (`src/providers/index.mjs`)
@@ -38,10 +38,12 @@ Operator
 | 3. Mission composition | `src/core/mission-service.mjs` | `createMissionService` | Dependencies are assembled once and the stable public facade delegates catalog, run, provider, action, execution, and read-model work | `evidence/cli-logs/mission-show-runtime.log` |
 | 4. Mission catalog | `src/core/mission-catalog-service.mjs` | `createMissionCatalogService` | Workspace, mission, and attachment validation and persistence keep gateway-event binding order explicit | `npm run smoke:mission-attachments` |
 | 5. Mission run | `src/core/mission-run-service.mjs` | `createMissionRunService`, `runMission`, `resolveApproval` | Manager, planner, specialist, executor, reviewer, provider fallback, approval, and closeout state transitions are coordinated here | `evidence/cli-logs/session-show-runtime.log` |
-| 6. Runtime harness | `src/harness/runtime-harness.mjs` | `createRuntimeHarness` | Session, agent run, approval primitives, memory entries, and prompt, retrieval, and output artifact writes are persisted here | `evidence/cli-logs/session-show-runtime.log` |
-| 7. Provider registry | `src/providers/index.mjs` | `createProviderRegistry` | Stub, OpenAI, Anthropic, local OpenAI-compatible, and Hermes-compatible providers are selected behind one contract | `evidence/cli-logs/provider-list.log`, `evidence/api-responses/api-providers.json` |
-| 8. Local persistence | `src/core/store.mjs` | `createStore` | JSON-backed state and file artifacts provide a reproducible local-first source of record | `evidence/output-artifacts/runtime-mission-artifact-list.log` |
-| 9. Evidence pipeline | `scripts/smoke-*.mjs`, `scripts/build-*.mjs` | smoke and evidence commands | Deterministic scripts verify README claims, demo evidence, release hygiene, pilot export, and portfolio ZIP freshness | `npm run smoke:demo-local`, `npm run smoke:portfolio-zip` |
+| 6. Mission read models | `src/core/mission-read-service.mjs` | `createMissionReadService` | Summary, harness, inbox, overview, timeline, audit, and session payloads are assembled without owning domain mutations | `npm run smoke:mission-timeline`, `npm run smoke:global-overview` |
+| 7. Provider runtime | `src/core/provider-runtime-service.mjs` | `createProviderRuntimeService` | Probe, execution history, fallback observation, overview, and attention lifecycle share one provider coordinator | `npm run smoke:provider-surface`, `npm run smoke:provider-events` |
+| 8. Runtime harness | `src/harness/runtime-harness.mjs` | `createRuntimeHarness` | Session, agent run, approval primitives, memory entries, and prompt, retrieval, and output artifact writes are persisted here | `evidence/cli-logs/session-show-runtime.log` |
+| 9. Provider registry | `src/providers/index.mjs` | `createProviderRegistry` | Stub, OpenAI, Anthropic, local OpenAI-compatible, and Hermes-compatible providers are selected behind one contract | `evidence/cli-logs/provider-list.log`, `evidence/api-responses/api-providers.json` |
+| 10. Local persistence | `src/core/store.mjs` | `createStore` | JSON-backed state and file artifacts provide a reproducible local-first source of record | `evidence/output-artifacts/runtime-mission-artifact-list.log` |
+| 11. Evidence pipeline | `scripts/smoke-*.mjs`, `scripts/build-*.mjs` | smoke and evidence commands | Deterministic scripts verify README claims, demo evidence, release hygiene, pilot export, and portfolio ZIP freshness | `npm run smoke:demo-local`, `npm run smoke:portfolio-zip` |
 
 ## Request Flow
 
@@ -53,15 +55,15 @@ Operator
 5. Mission run service calls the configured provider selected through the provider registry.
 6. Provider adapter returns normalized output or a failure envelope.
 7. Mission run service records output, approval, and closeout state through the runtime harness and local store.
-8. CLI/web read models expose mission status, artifacts, provider events, approvals, and release evidence.
+8. Mission read service assembles mission status, artifacts, provider events, approvals, timelines, and audits for CLI/web callers.
 9. Smoke/evidence scripts verify the surfaces without requiring a hosted deployment.
 ```
 
 ## What To Explain In An Interview
 
 - Why the system is a managed multi-agent harness instead of an unbounded autonomous loop.
-- How `createMissionService` preserves one public facade while delegating catalog and run ownership to focused services.
-- How `createMissionCatalogService` and `createMissionRunService` keep persistence and lifecycle state transitions independently reviewable.
+- How `createMissionService` preserves one public facade while delegating catalog, run, provider, execution, action, follow-up, and read ownership to focused services.
+- How `createMissionCatalogService`, `createMissionRunService`, and `createMissionReadService` keep persistence, lifecycle state transitions, and read-model assembly independently reviewable.
 - How `createRuntimeHarness` turns role execution into persisted session artifacts.
 - How `createProviderRegistry` keeps provider-specific configuration and failure handling behind one contract.
 - How `createStore` keeps the MVP reproducible without introducing a database dependency.

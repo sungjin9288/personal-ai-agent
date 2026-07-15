@@ -47,6 +47,9 @@ function createFixture({ probeResult = {} } = {}) {
           (filter.ok === undefined || record.ok === filter.ok),
       );
     },
+    listMissions: () => [],
+    listSessionsByMission: () => [],
+    listWorkspaces: () => [],
     loadState() {
       return { agentRuns: [], missions: [], sessions: [], workspaces: [] };
     },
@@ -97,8 +100,8 @@ function createFixture({ probeResult = {} } = {}) {
   };
 
   const service = createProviderRuntimeService({
-    buildProviderFallbackEventTimeline: () => [],
     getMission: (missionId) => ({ id: missionId, workspaceId: 'workspace-1' }),
+    getSessionProviderFailureSummary: () => null,
     getWorkspace: (workspaceId) => ({ id: workspaceId, name: 'Workspace' }),
     now: () => NOW,
     providerRegistry,

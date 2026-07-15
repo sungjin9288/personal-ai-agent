@@ -102,6 +102,38 @@ test('resolveApproval rejects an unsupported decision before reading approval st
   assert.deepEqual(fixture.effects, []);
 });
 
+test('mission attachment context reads stored attachments through the injected filesystem', () => {
+  const reads = [];
+  const service = createMissionRunService({
+    attachProviderFallbackSummary: (result) => result,
+    buildExecutionContext: () => null,
+    completeExecutionLeaseApproval: (result) => result,
+    createReviewerFollowUpRecord: () => null,
+    emitLearningCandidate: () => null,
+    fileSystem: {
+      readFileSync(filePath, encoding) {
+        reads.push({ encoding, filePath });
+        return 'attachment evidence';
+      },
+    },
+    getMission: () => null,
+    getWorkspace: () => null,
+    harness: { listMemoryEntries: () => [] },
+    isExecutionCapableMission: () => false,
+    now: () => NOW,
+    providerRegistry: {},
+    recordGatewayEvent: () => null,
+    store: {
+      listMissionAttachments: () => [{ id: 'attachment-1', path: '/attachments/evidence.md' }],
+    },
+  });
+
+  const context = service.collectMissionAttachmentContext('mission-1');
+
+  assert.deepEqual(reads, [{ encoding: 'utf8', filePath: '/attachments/evidence.md' }]);
+  assert.equal(context[0].promptContent, 'attachment evidence');
+});
+
 test('resolveApproval records approval and artifacts before memory and completed state', () => {
   const fixture = createFixture();
 

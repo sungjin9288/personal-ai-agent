@@ -1,4 +1,8 @@
-import { APPROVAL_DECISIONS } from './constants.mjs';
+import {
+  APPROVAL_DECISIONS,
+  GLOBAL_USER_SCOPE_ID,
+  SPECIALIST_KINDS,
+} from './constants.mjs';
 import { createId } from './id.mjs';
 import {
   buildFallbackSpecialistHandoff,
@@ -18,6 +22,7 @@ import {
   normalizeTelemetryNumber,
 } from './provider-telemetry.mjs';
 import {
+  evaluateParallelQualityGate,
   parseMissionConstraintDirectives,
   resolveMissionParallelPlan,
 } from './mission-parallel-plan.mjs';
@@ -77,6 +82,71 @@ function normalizeAgentRunStatus(value) {
   const normalized = normalizeText(value);
   return normalized === 'executing' ? 'running' : normalized;
 }
+
+function normalizeStringList(items) {
+  return ensureArray(items).map((item) => normalizeText(item)).filter(Boolean);
+}
+
+function dedupeEntries(entries) {
+  const seenIds = new Set();
+  return entries.filter((entry) => {
+    if (seenIds.has(entry.id)) {
+      return false;
+    }
+    seenIds.add(entry.id);
+    return true;
+  });
+}
+
+function extractOrchestrationProfileMetadata(item) {
+  const profileId = normalizeText(item?.orchestrationProfileId).toLowerCase();
+  if (!profileId) {
+    return null;
+  }
+
+  return {
+    deliverableTypes: normalizeStringList(item?.orchestrationProfileDeliverableTypes),
+    description: normalizeText(item?.orchestrationProfileDescription) || null,
+    displayName: normalizeText(item?.orchestrationProfileDisplayName, profileId),
+    harnessPatterns: normalizeStringList(item?.orchestrationProfileHarnessPatterns),
+    id: profileId,
+    mergeOwner: normalizeText(item?.orchestrationProfileMergeOwner) || null,
+    mode: normalizeText(item?.orchestrationProfileMode) || null,
+    parallelSpecialistKinds: normalizeStringList(item?.orchestrationProfileParallelSpecialistKinds).filter((kind) =>
+      SPECIALIST_KINDS.includes(kind),
+    ),
+    qualityGate: normalizeText(item?.orchestrationProfileQualityGate) || null,
+    recommendedProvider: normalizeText(item?.orchestrationProfileRecommendedProvider) || null,
+    runtimeBlueprint: normalizeText(item?.orchestrationProfileRuntimeBlueprint) || null,
+    retryPolicy: normalizeText(item?.orchestrationProfileRetryPolicy) || null,
+    source: normalizeText(item?.orchestrationProfileSource) || null,
+  };
+}
+
+function getLatestOrchestrationProfileMetadata(items, getTimestamp) {
+  let latest = null;
+
+  for (const item of ensureArray(items)) {
+    const metadata = extractOrchestrationProfileMetadata(item);
+    if (!metadata) {
+      continue;
+    }
+
+    const at = normalizeText(getTimestamp(item));
+    if (!latest || String(latest.at) <= at) {
+      latest = {
+        at,
+        metadata,
+      };
+    }
+  }
+
+  return latest?.metadata || null;
+}
+
+const MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS = 5;
+const MISSION_ATTACHMENT_MAX_PROMPT_CHARS = 12_000;
+const MISSION_ATTACHMENT_MAX_PROMPT_CHARS_PER_FILE = 3_000;
 
 function getRunArtifactFilePrefix({ role, specialistKind }) {
   const normalizedSpecialistKind = normalizeText(specialistKind);
@@ -159,13 +229,10 @@ function normalizeSessionSourceContext(value = {}) {
 export function createMissionRunService({
   attachProviderFallbackSummary,
   buildExecutionContext,
-  collectMissionAttachmentContext,
-  collectRelevantMemoryEntries,
   completeExecutionLeaseApproval,
   createReviewerFollowUpRecord,
   emitLearningCandidate,
   fileSystem,
-  getLatestParallelGroupState,
   getMission,
   getWorkspace,
   harness,
@@ -175,6 +242,236 @@ export function createMissionRunService({
   recordGatewayEvent,
   store,
 }) {
+  function collectRelevantMemoryEntries({ mission, workspace }) {
+    return dedupeEntries([
+      ...harness.listMemoryEntries({ scope: 'user', scopeId: GLOBAL_USER_SCOPE_ID }),
+      ...harness.listMemoryEntries({ scope: 'workspace', scopeId: workspace.id }),
+      ...harness.listMemoryEntries({ scope: 'mission', scopeId: mission.id }),
+    ]);
+  }
+
+  function collectMissionAttachmentContext(missionId) {
+    const attachments = store.listMissionAttachments({ missionId }).slice(-MISSION_ATTACHMENT_MAX_PROMPT_ATTACHMENTS);
+    let remainingChars = MISSION_ATTACHMENT_MAX_PROMPT_CHARS;
+
+    return attachments
+      .map((attachment) => {
+        if (!remainingChars) {
+          return null;
+        }
+
+        let content = '';
+        try {
+          content = fileSystem.readFileSync(attachment.path, 'utf8');
+        } catch {
+          content = '';
+        }
+
+        const promptContent = String(content || '').slice(
+          0,
+          Math.min(MISSION_ATTACHMENT_MAX_PROMPT_CHARS_PER_FILE, remainingChars),
+        );
+
+        remainingChars = Math.max(remainingChars - promptContent.length, 0);
+
+        return {
+          ...attachment,
+          promptContent,
+        };
+      })
+      .filter((attachment) => attachment && normalizeText(attachment.promptContent));
+  }
+
+  function getParallelSpecialistKinds(mission) {
+    return resolveMissionParallelPlan(mission).effectiveKinds;
+  }
+
+  function getLatestParallelGroupState(missionId) {
+    const runs = store
+      .loadState()
+      .agentRuns.filter((run) => run.missionId === missionId && normalizeText(run.parallelGroupId));
+
+    if (!runs.length) {
+      return null;
+    }
+
+    const latestGroupById = new Map();
+    for (const run of runs) {
+      const groupId = normalizeText(run.parallelGroupId);
+      const at = String(run.endedAt || run.startedAt || '');
+      const current = latestGroupById.get(groupId);
+      if (!current || String(current.at) <= at) {
+        latestGroupById.set(groupId, {
+          at,
+          groupId,
+        });
+      }
+    }
+    const latestGroupId =
+      [...latestGroupById.values()]
+        .sort((left, right) => String(left.at).localeCompare(String(right.at)))
+        .at(-1)?.groupId || null;
+    if (!latestGroupId) {
+      return null;
+    }
+
+    const groupRuns = runs.filter((run) => run.parallelGroupId === latestGroupId);
+    const latestByKind = new Map();
+    const mergeRuns = [];
+
+    for (const run of groupRuns) {
+      if (normalizeText(run.stageKind) === 'parallel-merge') {
+        mergeRuns.push(run);
+        continue;
+      }
+
+      const specialistKind = normalizeText(run.specialistKind);
+      if (!specialistKind) {
+        continue;
+      }
+
+      const current = latestByKind.get(specialistKind);
+      const currentAt = String(current?.endedAt || current?.startedAt || '');
+      const nextAt = String(run.endedAt || run.startedAt || '');
+      if (!current || currentAt <= nextAt) {
+        latestByKind.set(specialistKind, run);
+      }
+    }
+
+    const latestMergeRun =
+      [...mergeRuns].sort((left, right) =>
+        String(left.endedAt || left.startedAt || '').localeCompare(String(right.endedAt || right.startedAt || '')),
+      ).at(-1) || null;
+    const orchestrationProfile = getLatestOrchestrationProfileMetadata(groupRuns, (run) => run.endedAt || run.startedAt || '');
+    const requiredKinds = latestMergeRun?.parallelRequiredKinds?.length
+      ? ensureArray(latestMergeRun.parallelRequiredKinds)
+      : [...new Set(groupRuns.flatMap((run) => ensureArray(run.parallelRequiredKinds).concat(normalizeText(run.specialistKind))))]
+          .filter(Boolean)
+          .filter((kind) => SPECIALIST_KINDS.includes(kind));
+    const latestRuns = [...latestByKind.values()];
+    const qualityGate = evaluateParallelQualityGate({
+      latestByKind,
+      orchestrationProfile,
+      requiredKinds,
+    });
+    const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
+
+    return {
+      latestMergeRun,
+      latestRuns,
+      orchestrationProfile,
+      parallelGroupId: latestGroupId,
+      qualityGate,
+      requiredKinds,
+      unresolvedRuns,
+      wasMerged: Boolean(latestMergeRun && ['completed', 'merged'].includes(normalizeAgentRunStatus(latestMergeRun.status))),
+    };
+  }
+
+  function buildParallelGroupStates(filter = {}) {
+    const state = store.loadState();
+    const missionById = new Map(state.missions.map((mission) => [mission.id, mission]));
+    const sessionById = new Map(state.sessions.map((session) => [session.id, session]));
+    const workspaceById = new Map(state.workspaces.map((workspace) => [workspace.id, workspace]));
+    const groups = new Map();
+
+    for (const run of ensureArray(state.agentRuns)) {
+      const parallelGroupId = normalizeText(run.parallelGroupId);
+      if (!parallelGroupId) {
+        continue;
+      }
+      if (filter.parallelGroupId && parallelGroupId !== filter.parallelGroupId) {
+        continue;
+      }
+      const mission = missionById.get(run.missionId) || null;
+      const workspace = mission ? workspaceById.get(mission.workspaceId) || null : null;
+      if (filter.missionId && mission?.id !== filter.missionId) {
+        continue;
+      }
+      if (filter.workspaceId && workspace?.id !== filter.workspaceId) {
+        continue;
+      }
+
+      const current = groups.get(parallelGroupId) || {
+        mission,
+        orchestrationProfile: null,
+        orchestrationProfileAt: '',
+        parallelGroupId,
+        requiredKinds: [],
+        runs: [],
+        sessionById,
+        workspace,
+      };
+      current.runs.push(run);
+      current.requiredKinds = [
+        ...new Set(
+          [...current.requiredKinds, ...ensureArray(run.parallelRequiredKinds), normalizeText(run.specialistKind)]
+            .filter(Boolean)
+            .filter((kind) => SPECIALIST_KINDS.includes(kind)),
+        ),
+      ];
+      const orchestrationProfile = extractOrchestrationProfileMetadata(run);
+      const orchestrationProfileAt = normalizeText(run.endedAt || run.startedAt || '');
+      if (orchestrationProfile && (!current.orchestrationProfile || String(current.orchestrationProfileAt) <= orchestrationProfileAt)) {
+        current.orchestrationProfile = orchestrationProfile;
+        current.orchestrationProfileAt = orchestrationProfileAt;
+      }
+      groups.set(parallelGroupId, current);
+    }
+
+    return [...groups.values()].map((group) => {
+      const latestByKind = new Map();
+      let latestMergeRun = null;
+
+      for (const run of group.runs) {
+        if (normalizeText(run.stageKind) === 'parallel-merge') {
+          const currentAt = String(latestMergeRun?.endedAt || latestMergeRun?.startedAt || '');
+          const nextAt = String(run.endedAt || run.startedAt || '');
+          if (!latestMergeRun || currentAt <= nextAt) {
+            latestMergeRun = run;
+          }
+          continue;
+        }
+
+        const specialistKind = normalizeText(run.specialistKind);
+        if (!specialistKind) {
+          continue;
+        }
+        const current = latestByKind.get(specialistKind);
+        const currentAt = String(current?.endedAt || current?.startedAt || '');
+        const nextAt = String(run.endedAt || run.startedAt || '');
+        if (!current || currentAt <= nextAt) {
+          latestByKind.set(specialistKind, run);
+        }
+      }
+
+      const latestRuns = [...latestByKind.values()];
+      const qualityGate = evaluateParallelQualityGate({
+        latestByKind,
+        orchestrationProfile: group.orchestrationProfile,
+        requiredKinds: group.requiredKinds,
+      });
+      const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
+
+      return {
+        latestByKind,
+        latestMergeRun,
+        latestRuns,
+        mission: group.mission,
+        orchestrationProfile: group.orchestrationProfile,
+        parallelGroupId: group.parallelGroupId,
+        qualityGate,
+        requiredKinds: group.requiredKinds,
+        runs: group.runs,
+        unresolvedRuns,
+        wasMerged: Boolean(
+          latestMergeRun && ['completed', 'merged'].includes(normalizeAgentRunStatus(latestMergeRun.status)),
+        ),
+        workspace: group.workspace,
+      };
+    });
+  }
+
   function getRunArtifact(run, kind = 'deliverable') {
     const artifactId = ensureArray(run?.artifactIds)
       .map((artifactId) => store.getArtifact(artifactId))
@@ -1266,6 +1563,11 @@ export function createMissionRunService({
 
 
   return {
+    buildParallelGroupStates,
+    collectMissionAttachmentContext,
+    collectRelevantMemoryEntries,
+    getLatestParallelGroupState,
+    getParallelSpecialistKinds,
     getSessionProviderFailureSummary,
     listApprovals,
     resolveApproval,

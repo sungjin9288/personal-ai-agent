@@ -57,7 +57,14 @@ import {
 import {
   buildProviderAttentionRemediationPermissionDecision,
 } from './permission-decision-service.mjs';
-import { normalizeProviderFallbackPolicy } from './provider-fallback-policy.mjs';
+import {
+  evaluateProviderFallbackPolicy,
+  normalizeProviderFallbackPolicy,
+} from './provider-fallback-policy.mjs';
+import {
+  buildProviderFallbackRouteDecision,
+  summarizeProviderRouteDecisionForTimeline,
+} from './provider-route-decision-service.mjs';
 import {
   deriveProviderAttentionReminderCadenceHours,
   formatProviderAttentionReminderDetail,
@@ -102,8 +109,8 @@ function normalizeAgentRunStatus(value) {
 }
 
 export function createProviderRuntimeService({
-  buildProviderFallbackEventTimeline,
   getMission,
+  getSessionProviderFailureSummary,
   getWorkspace,
   now,
   providerRegistry,
@@ -1880,8 +1887,175 @@ export function createProviderRuntimeService({
   }
 
 
+  function buildProviderFallbackTimelineEvents({ mission, sessions }) {
+    return sessions
+      .filter((session) => session.sourceContext?.providerFallbackRequested)
+      .map((session) => {
+        const sourceContext = session.sourceContext || {};
+        const attempt = Number.isFinite(Number(sourceContext.providerFallbackAttempt))
+          ? Number(sourceContext.providerFallbackAttempt)
+          : 1;
+        const attemptCount = Number.isFinite(Number(sourceContext.providerFallbackAttemptCount))
+          ? Number(sourceContext.providerFallbackAttemptCount)
+          : 1;
+        const primaryProviderId = normalizeText(sourceContext.providerFallbackPrimary) || session.provider;
+        const fallbackPolicy = normalizeProviderFallbackPolicy(sourceContext.providerFallbackPolicy);
+        const fallbackProviderIds = ensureArray(sourceContext.providerFallbackFallbacks)
+          .map((providerId) => normalizeText(providerId))
+          .filter(Boolean);
+        const providerFailure = getSessionProviderFailureSummary(session.id);
+        const isFallbackAttempt = attempt > 1;
+        const policyDecision = evaluateProviderFallbackPolicy({
+          isLastAttempt: attempt >= attemptCount,
+          missionStatus: session.status,
+          policyId: fallbackPolicy,
+          providerFailure,
+        });
+        const nextProviderId =
+          policyDecision.eligible && fallbackProviderIds[attempt - 1] ? fallbackProviderIds[attempt - 1] : null;
+        const providerRouteDecision = buildProviderFallbackRouteDecision({
+          attempt,
+          attemptCount,
+          fallbackEligible: policyDecision.eligible,
+          fallbackProviderIds,
+          mission,
+          missionStatus: session.status,
+          nextProviderId,
+          policyId: policyDecision.policyId,
+          primaryProviderId,
+          providerFailure,
+          providerId: session.provider,
+          session,
+          stopReason: policyDecision.reason,
+          workspace: mission.workspaceId ? { id: mission.workspaceId } : null,
+        });
+        const stopReasonSuffix = !policyDecision.eligible
+          ? ` fallbackStopReason=${policyDecision.reason}.`
+          : ` fallbackPolicy=${policyDecision.policyId}; next provider eligible.`;
+        const providerFailureSuffix = providerFailure
+          ? ` providerFailure=${providerFailure.failureKind}; role=${providerFailure.role || 'unknown'}.`
+          : '';
+        const routeDecisionSuffix = providerRouteDecision.id
+          ? ` providerRouteDecision=${providerRouteDecision.id}.`
+          : '';
+        const routeSummary = summarizeProviderRouteDecisionForTimeline(providerRouteDecision);
+
+        return {
+          at: session.endedAt || session.startedAt,
+          attempt,
+          attemptCount,
+          detail: isFallbackAttempt
+            ? `Provider fallback attempt ${attempt}/${attemptCount} used ${session.provider} after primary ${primaryProviderId}; status=${session.status}; policy=${fallbackPolicy}.${providerFailureSuffix}${stopReasonSuffix}${routeSummary ? ` ${routeSummary}.` : ''}${routeDecisionSuffix}`
+            : `Provider fallback primary attempt ${attempt}/${attemptCount} used ${session.provider}; status=${session.status}; policy=${fallbackPolicy}.${providerFailureSuffix}${stopReasonSuffix}${routeSummary ? ` ${routeSummary}.` : ''}${routeDecisionSuffix}`,
+          fallbackEligible: policyDecision.eligible,
+          fallbackNextProviderId: nextProviderId,
+          fallbackPolicy,
+          fallbackProviderIds,
+          fallbackStopReason: policyDecision.reason,
+          gatewayEventId: sourceContext.gatewayEventId || null,
+          gatewayEventRoute: sourceContext.gatewayEventRoute || sourceContext.route || null,
+          gatewayPermissionDecisionId: sourceContext.gatewayPermissionDecisionId || null,
+          gatewaySandboxDecisionId: sourceContext.gatewaySandboxDecisionId || null,
+          kind: isFallbackAttempt ? 'provider-fallback-used' : 'provider-fallback-attempted',
+          missionId: mission.id,
+          primaryProviderId,
+          providerFailure,
+          providerFailureKind: providerFailure?.failureKind || null,
+          providerId: session.provider,
+          providerRouteDecision,
+          providerRouteDecisionId: providerRouteDecision.id,
+          providerRouteName: providerRouteDecision.action.route,
+          sessionId: session.id,
+          status: session.status,
+          workspaceId: mission.workspaceId || null,
+        };
+      })
+      .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
+  }
+
+  function buildProviderFallbackEventTimeline(filter = {}) {
+    const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
+
+    return store
+      .listMissions()
+      .filter((mission) => !filter.missionId || mission.id === filter.missionId)
+      .filter((mission) => !filter.workspaceId || mission.workspaceId === filter.workspaceId)
+      .flatMap((mission) => {
+        const workspace = workspaceById.get(mission.workspaceId) || null;
+        return buildProviderFallbackTimelineEvents({
+          mission,
+          sessions: store.listSessionsByMission(mission.id),
+        }).map((event) => ({
+          ...event,
+          attempted: null,
+          eventFamily: 'fallback',
+          eventKind: event.kind,
+          executionStatus: null,
+          missionTitle: mission.title,
+          ok: event.kind === 'provider-fallback-used' ? true : null,
+          probeId: null,
+          role: null,
+          runId: null,
+          workspaceName: workspace?.name || null,
+        }));
+      })
+      .filter((event) => !filter.providerId || event.providerId === filter.providerId)
+      .sort((left, right) => String(left.at || '').localeCompare(String(right.at || '')));
+  }
+
+  function summarizeMissionProviderFallback({ mission, sessions }) {
+    const events = buildProviderFallbackTimelineEvents({
+      mission,
+      sessions,
+    });
+    const usedEvents = events.filter((event) => event.kind === 'provider-fallback-used');
+    const fallbackPolicyCounts = {};
+    const fallbackStopReasonCounts = {};
+    const providerRouteDecisionPolicyCounts = {};
+    const providerRouteDecisionRouteCounts = {};
+    const providerRouteDecisionEvents = [];
+
+    for (const event of events) {
+      if (event.fallbackPolicy) {
+        fallbackPolicyCounts[event.fallbackPolicy] = (fallbackPolicyCounts[event.fallbackPolicy] || 0) + 1;
+      }
+      if (event.fallbackStopReason) {
+        fallbackStopReasonCounts[event.fallbackStopReason] =
+          (fallbackStopReasonCounts[event.fallbackStopReason] || 0) + 1;
+      }
+      if (event.providerRouteDecision) {
+        providerRouteDecisionEvents.push(event);
+        const routeName = normalizeText(event.providerRouteDecision.action?.route || event.providerRouteName);
+        if (routeName) {
+          providerRouteDecisionRouteCounts[routeName] = (providerRouteDecisionRouteCounts[routeName] || 0) + 1;
+        }
+        const policyId = normalizeText(event.providerRouteDecision.policyId || event.fallbackPolicy);
+        if (policyId) {
+          providerRouteDecisionPolicyCounts[policyId] = (providerRouteDecisionPolicyCounts[policyId] || 0) + 1;
+        }
+      }
+    }
+
+    return {
+      latestProviderFallbackEvent: getLatestItem(events, 'at'),
+      latestProviderRouteDecisionEvent: getLatestItem(providerRouteDecisionEvents, 'at'),
+      providerFallbackAttemptCount: events.length,
+      providerFallbackPolicyCounts: fallbackPolicyCounts,
+      providerFallbackPrimaryProviderIds: [...new Set(events.map((event) => event.primaryProviderId).filter(Boolean))],
+      providerFallbackRequested: events.length > 0,
+      providerFallbackStopReasonCounts: fallbackStopReasonCounts,
+      providerFallbackUsedCount: usedEvents.length,
+      providerFallbackUsedProviderIds: [...new Set(usedEvents.map((event) => event.providerId).filter(Boolean))],
+      providerRouteDecisionCount: providerRouteDecisionEvents.length,
+      providerRouteDecisionPolicyCounts,
+      providerRouteDecisionRouteCounts,
+    };
+  }
+
   return {
     acknowledgeProviderAttention,
+    buildProviderFallbackEventTimeline,
+    buildProviderFallbackTimelineEvents,
     buildProviderAttentionItems,
     buildProviderAttentionOpenedTimeline,
     buildProviderAttentionPendingItems,
@@ -1906,6 +2080,7 @@ export function createProviderRuntimeService({
     remindProviderAttention,
     resolveProviderAttention,
     summarizeMissionProviderActivity,
+    summarizeMissionProviderFallback,
     summarizeProviderHealthDrift,
     summarizeProviderAttentionScopedState,
     summarizeWorkspaceProviderActivity,
