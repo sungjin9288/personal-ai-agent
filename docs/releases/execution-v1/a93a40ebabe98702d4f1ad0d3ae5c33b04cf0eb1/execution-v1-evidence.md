@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-15T18:13:48.317Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-15T18:13:35.487Z
 - branch: codex/d4-5-mission-run-catalog
 - commit: a93a40ebabe98702d4f1ad0d3ae5c33b04cf0eb1
