@@ -170,6 +170,12 @@ import {
   resolveMissionParallelPlan,
 } from './mission-parallel-plan.mjs';
 import {
+  buildMissionStageFailure,
+  buildMissionStageRequest,
+  buildParallelSpecialistRetryPlan,
+  buildParallelStageMetadata,
+} from './mission-stage-pipeline.mjs';
+import {
   buildProviderAttentionRemediationPermissionDecision,
 } from './permission-decision-service.mjs';
 import { summarizeSandboxDecisionForTimeline } from './sandbox-decision-service.mjs';
@@ -4072,6 +4078,23 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
   }
 
+  async function runRequiredMissionStage({ artifactPath = null, currentStage, stageRequest }) {
+    const stage = await runAgentStage(stageRequest);
+    const failure = buildMissionStageFailure({
+      artifactPath,
+      currentStage,
+      mission: stageRequest.mission,
+      providerId: stageRequest.providerId,
+      session: stageRequest.session,
+      stage,
+    });
+
+    return {
+      failure: failure ? finalizeMissionFailure(failure) : null,
+      stage,
+    };
+  }
+
   function ensureNoPendingApproval(missionId) {
     const latestSession = getLatestSession(store.listSessionsByMission(missionId));
     if (!latestSession || latestSession.status !== 'awaiting_approval') {
@@ -4185,55 +4208,39 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     session = gatewayRecord.session || session;
 
     const previousOutputs = {};
-
-    const managerStage = await runAgentStage({
-      role: 'manager',
-      mission,
-      workspace,
-      session,
-      provider,
-      providerId,
-      pack,
+    const stageContext = {
       attachments,
       memoryEntries,
+      mission,
+      pack,
       previousOutputs,
+      provider,
+      providerId,
+      session,
+      workspace,
+    };
+
+    const managerResult = await runRequiredMissionStage({
+      currentStage: 'manager',
+      stageRequest: buildMissionStageRequest({ context: stageContext, role: 'manager' }),
     });
-    if (managerStage.error) {
-      return finalizeMissionFailure({
-        artifactPath: null,
-        currentStage: 'manager',
-        mission,
-        providerId,
-        session,
-      });
+    if (managerResult.failure) {
+      return managerResult.failure;
     }
-    previousOutputs.manager = managerStage.output;
+    previousOutputs.manager = managerResult.stage.output;
 
     harness.updateSession(session.id, {
       currentStage: 'planner',
     });
 
-    const plannerStage = await runAgentStage({
-      role: 'planner',
-      mission,
-      workspace,
-      session,
-      provider,
-      providerId,
-      pack,
-      attachments,
-      memoryEntries,
-      previousOutputs,
+    const plannerResult = await runRequiredMissionStage({
+      currentStage: 'planner',
+      stageRequest: buildMissionStageRequest({ context: stageContext, role: 'planner' }),
     });
-    if (plannerStage.error) {
-      return finalizeMissionFailure({
-        artifactPath: null,
-        currentStage: 'planner',
-        mission,
-        providerId,
-        session,
-      });
+    if (plannerResult.failure) {
+      return plannerResult.failure;
     }
+    const plannerStage = plannerResult.stage;
     previousOutputs.planner = plannerStage.output;
     harness.touchMission(mission.id, 'planned');
 
@@ -4245,70 +4252,40 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         previousParallelGroup && !previousParallelGroup.wasMerged
           ? previousParallelGroup.parallelGroupId
           : createId('parallel-group');
-      const unresolvedByKind = new Map(
-        ensureArray(previousParallelGroup?.unresolvedRuns).map((run) => [normalizeText(run.specialistKind), run]),
-      );
-      const latestRunByKind = new Map(
-        ensureArray(previousParallelGroup?.latestRuns).map((run) => [normalizeText(run.specialistKind), run]),
-      );
-      const qualityGateRerunKinds = new Set(ensureArray(previousParallelGroup?.qualityGate?.rerunKinds));
-      const specialistKindsToRun =
-        previousParallelGroup && !previousParallelGroup.wasMerged
-          ? parallelSpecialistKinds.filter((kind) => unresolvedByKind.has(kind) || qualityGateRerunKinds.has(kind))
-          : parallelSpecialistKinds;
-      const completedBranchOutputs = ensureArray(previousParallelGroup?.latestRuns)
-        .filter((run) => ['completed', 'abandoned'].includes(normalizeAgentRunStatus(run.status)))
-        .filter((run) => !specialistKindsToRun.includes(normalizeText(run.specialistKind)))
-        .map((run) => buildSpecialistOutputEntry(run));
+      const specialistRetryPlan = buildParallelSpecialistRetryPlan({
+        parallelSpecialistKinds,
+        previousParallelGroup,
+      });
 
-      previousOutputs.specialists = [...completedBranchOutputs];
+      previousOutputs.specialists = specialistRetryPlan.completedRuns.map((run) => buildSpecialistOutputEntry(run));
 
       harness.updateSession(session.id, {
         currentStage: 'specialist',
       });
 
-      for (const specialistKind of specialistKindsToRun) {
-        const previousBranchRun = unresolvedByKind.get(specialistKind) || latestRunByKind.get(specialistKind) || null;
-        const stage = await runAgentStage({
-          role: 'specialist',
-          providerRole: 'executor',
-          mission,
-          workspace,
-          session,
-          provider,
-          providerId,
-          pack,
-          attachments,
-          memoryEntries,
-          previousOutputs,
-          promptFileName: `specialist-${specialistKind}-prompt.md`,
-          outputFileName: `specialist-${specialistKind}-${pack.artifactFileName}`,
-          outputTitle: `${specialistKind} specialist ${pack.artifactTitle}`,
-          runMetadata: {
-            mergeStatus: 'pending',
-            orchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
-            orchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
-            orchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
-            orchestrationProfileHarnessPatterns: parallelPlan.orchestrationProfile?.harnessPatterns || [],
-            orchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
-            orchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
-            orchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
-            orchestrationProfileParallelSpecialistKinds:
-              parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
-            orchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
-            orchestrationProfileRecommendedProvider: parallelPlan.orchestrationProfile?.recommendedProvider || null,
-            orchestrationProfileRuntimeBlueprint: parallelPlan.orchestrationProfile?.runtimeBlueprint || null,
-            orchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
-            orchestrationProfileSource: parallelPlan.source,
-            parallelGroupId,
-            parallelRequiredKinds: parallelSpecialistKinds,
-            parentRunId: plannerStage.run.id,
-            resumeFromRunId: previousBranchRun?.id || null,
-            specialistKind,
-            specialistRootRunId: previousBranchRun?.specialistRootRunId || previousBranchRun?.id || null,
-            stageKind: 'specialist-branch',
-          },
-        });
+      for (const specialistKind of specialistRetryPlan.specialistKindsToRun) {
+        const previousBranchRun = specialistRetryPlan.previousRunByKind[specialistKind] || null;
+        const stage = await runAgentStage(
+          buildMissionStageRequest({
+            context: stageContext,
+            role: 'specialist',
+            stageOptions: {
+              providerRole: 'executor',
+              promptFileName: `specialist-${specialistKind}-prompt.md`,
+              outputFileName: `specialist-${specialistKind}-${pack.artifactFileName}`,
+              outputTitle: `${specialistKind} specialist ${pack.artifactTitle}`,
+              runMetadata: buildParallelStageMetadata({
+                parallelGroupId,
+                parallelPlan,
+                parallelSpecialistKinds,
+                parentRunId: plannerStage.run.id,
+                previousBranchRun,
+                specialistKind,
+                stageKind: 'specialist-branch',
+              }),
+            },
+          }),
+        );
         const normalizedStage = applySpecialistOutcomeDirective({
           mission,
           parallelGroupId,
@@ -4342,47 +4319,26 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         currentStage: 'executor',
       });
 
-      const executorStage = await runAgentStage({
-        role: 'executor',
-        mission,
-        workspace,
-        session,
-        provider,
-        providerId,
-        pack,
-        attachments,
-        memoryEntries,
-        previousOutputs,
-        runMetadata: {
-          mergeStatus: 'merged',
-          orchestrationProfileDeliverableTypes: parallelPlan.orchestrationProfile?.deliverableTypes || [],
-          orchestrationProfileDescription: parallelPlan.orchestrationProfile?.description || null,
-          orchestrationProfileDisplayName: parallelPlan.orchestrationProfile?.displayName || null,
-          orchestrationProfileHarnessPatterns: parallelPlan.orchestrationProfile?.harnessPatterns || [],
-          orchestrationProfileId: parallelPlan.orchestrationProfile?.id || null,
-          orchestrationProfileMergeOwner: parallelPlan.orchestrationProfile?.mergeOwner || null,
-          orchestrationProfileMode: parallelPlan.orchestrationProfile?.mode || null,
-          orchestrationProfileParallelSpecialistKinds: parallelPlan.orchestrationProfile?.parallelSpecialistKinds || [],
-          orchestrationProfileQualityGate: parallelPlan.orchestrationProfile?.qualityGate || null,
-          orchestrationProfileRecommendedProvider: parallelPlan.orchestrationProfile?.recommendedProvider || null,
-          orchestrationProfileRuntimeBlueprint: parallelPlan.orchestrationProfile?.runtimeBlueprint || null,
-          orchestrationProfileRetryPolicy: parallelPlan.orchestrationProfile?.retryPolicy || null,
-          orchestrationProfileSource: parallelPlan.source,
-          parallelGroupId,
-          parallelRequiredKinds: parallelSpecialistKinds,
-          parentRunId: plannerStage.run.id,
-          stageKind: 'parallel-merge',
-        },
+      const executorResult = await runRequiredMissionStage({
+        currentStage: 'executor',
+        stageRequest: buildMissionStageRequest({
+          context: stageContext,
+          role: 'executor',
+          stageOptions: {
+            runMetadata: buildParallelStageMetadata({
+              parallelGroupId,
+              parallelPlan,
+              parallelSpecialistKinds,
+              parentRunId: plannerStage.run.id,
+              stageKind: 'parallel-merge',
+            }),
+          },
+        }),
       });
-      if (executorStage.error) {
-        return finalizeMissionFailure({
-          artifactPath: null,
-          currentStage: 'executor',
-          mission,
-          providerId,
-          session,
-        });
+      if (executorResult.failure) {
+        return executorResult.failure;
       }
+      const executorStage = executorResult.stage;
 
       markParallelGroupBranchesMerged(parallelGroupId);
       executorArtifactPath = executorStage.artifact.path;
@@ -4393,27 +4349,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         currentStage: 'executor',
       });
 
-      const executorStage = await runAgentStage({
-        role: 'executor',
-        mission,
-        workspace,
-        session,
-        provider,
-        providerId,
-        pack,
-        attachments,
-        memoryEntries,
-        previousOutputs,
+      const executorResult = await runRequiredMissionStage({
+        currentStage: 'executor',
+        stageRequest: buildMissionStageRequest({ context: stageContext, role: 'executor' }),
       });
-      if (executorStage.error) {
-        return finalizeMissionFailure({
-          artifactPath: null,
-          currentStage: 'executor',
-          mission,
-          providerId,
-          session,
-        });
+      if (executorResult.failure) {
+        return executorResult.failure;
       }
+      const executorStage = executorResult.stage;
 
       executorArtifactPath = executorStage.artifact.path;
       executorOutput = executorStage.output;
@@ -4426,27 +4369,15 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       currentStage: 'reviewer',
     });
 
-    const reviewerStage = await runAgentStage({
-      role: 'reviewer',
-      mission,
-      workspace,
-      session,
-      provider,
-      providerId,
-      pack,
-      attachments,
-      memoryEntries,
-      previousOutputs,
+    const reviewerResult = await runRequiredMissionStage({
+      artifactPath: executorArtifactPath,
+      currentStage: 'reviewer',
+      stageRequest: buildMissionStageRequest({ context: stageContext, role: 'reviewer' }),
     });
-    if (reviewerStage.error) {
-      return finalizeMissionFailure({
-        artifactPath: executorArtifactPath,
-        currentStage: 'reviewer',
-        mission,
-        providerId,
-        session,
-      });
+    if (reviewerResult.failure) {
+      return reviewerResult.failure;
     }
+    const reviewerStage = reviewerResult.stage;
     const deterministicReview = evaluateArtifactContent({
       artifactContent: executorOutput?.artifactContent || '',
       pack,

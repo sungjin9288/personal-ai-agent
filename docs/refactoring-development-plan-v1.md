@@ -75,6 +75,7 @@
 | D3.4 Mission run·fallback orchestration | 진행 중 | fallback policy부터 attempt loop, stage pipeline, review·closeout 순서로 승인·lineage 경계를 보존하며 분리 |
 | D3.4a Provider fallback plan·policy | 완료 | provider id·policy 정규화, distinct fallback plan, eligibility stop reason, route-decision summary를 순수 모듈로 이동 |
 | D3.4b Provider fallback attempt orchestration | 완료 | attempt source context, failure evidence, 다음 provider 선택, route-decision record 조립을 순수 builder로 이동 |
+| D3.4c Mission stage pipeline | 완료 | manager·planner·specialist/executor·reviewer 요청, stage failure 반환, specialist retry·merge metadata를 실행 I/O에서 분리 |
 
 R1 완료 검증:
 
@@ -696,6 +697,16 @@ D3.4b 구현 검증:
 - fallback policy·route decision, provider attention remediation, runtime discovery, gateway audit, permission decision, operator timeline smoke 통과
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - async mission run, store 기반 failure evidence 조회, gateway audit record는 mission service에 유지한다. 새 builder는 source context·policy decision·route-decision payload만 조립하며 provider live 명령과 외부 API 호출은 실행하지 않음
+
+D3.4c 구현 검증:
+
+- mission stage request·failure, specialist retry plan, parallel metadata 단위 테스트 `7/7` 통과
+- 전체 unit test `735/735` 통과
+- 전체 deterministic smoke `165/165` 통과
+- execution flow, parallel specialists, mission quality gate, reviewer failure, approval 대기·승인, provider fallback, gateway learning candidate smoke 통과
+- OpenAI·Anthropic·local·Hermes adapter의 missing-config와 mock request smoke 통과, 외부 endpoint 호출 없음
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- provider 실행, session·mission 상태 변경, artifact write, approval·learning audit는 mission service에 유지한다. 새 모듈은 stage 요청·실패 인자·specialist 재개 계획·merge metadata만 조립함
 
 #### D3.5 Harness·action·timeline read boundaries
 
