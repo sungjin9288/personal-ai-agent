@@ -1,4 +1,11 @@
 import { LEARNING_PROMOTION_STATUSES } from './constants.mjs';
+import {
+  defaultLearningPromotionTarget,
+  getLearningPromotionExpirationPolicy,
+  learningPromotionPriority,
+  normalizeLearningPromotionScope,
+  normalizeLearningPromotionTarget,
+} from './learning-promotion.mjs';
 
 function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
@@ -33,20 +40,13 @@ function getLatestItem(items, fieldName = 'createdAt') {
 /**
  * Learning candidate audit domain (read/summarize half of learning promotion).
  *
- * Instantiated once inside createMissionService. Captures `store` plus the
- * shared learning-promotion pure helpers (which stay defined in
- * mission-service because the rest of the domain also depends on them) and the
- * store-reader wrappers `getMission`/`getWorkspace`.
+ * Instantiated once inside createMissionService. Captures the store-reader
+ * wrappers and imports the shared promotion policy directly from its domain.
  */
 export function createLearningCandidateAudit({
   store,
   getMission,
   getWorkspace,
-  getLearningPromotionExpirationPolicy,
-  defaultLearningPromotionTarget,
-  learningPromotionPriority,
-  normalizeLearningPromotionTarget,
-  normalizeLearningPromotionScope,
 }) {
   function buildLearningCandidateAuditRecord(candidate) {
     const mission = store.getMission(candidate.missionId);

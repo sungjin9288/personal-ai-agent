@@ -1,7 +1,7 @@
 # 리팩토링·개발 실행 계획 v1
 
-> 기준 시점: 2026-07-13
-> 기준 커밋: `64466813`
+> 기준 시점: 2026-07-16
+> 기준 커밋: `3cfdbd05`
 > 현재 경계: local-first pilot이며 `production-ready` 또는 all-provider complete로 설명하지 않는다.
 
 ## 1. 목표
@@ -14,10 +14,10 @@
 
 | 항목 | 현재 측정값 | 측정 방법 |
 |---|---:|---|
-| `mission-service.mjs` | 14,676줄 | `wc -l src/core/mission-service.mjs` |
-| `app.js` | 13,772줄 | `wc -l src/web/public/app.js` |
-| `server.mjs` | 3,900줄 | `wc -l src/web/server.mjs` |
-| 단위 테스트 | 484개 통과 | `npm test` |
+| `mission-service.mjs` | 10,626줄 | `wc -l src/core/mission-service.mjs` |
+| `app.js` | 9,121줄 | `wc -l src/web/public/app.js` |
+| `server.mjs` | 2,560줄 | `wc -l src/web/server.mjs` |
+| 단위 테스트 | 774개 통과 | `npm test` |
 | 문서 게이트 | 33개 통과 | `npm run smoke:docs-gates` |
 
 2026-06-30 점검 이후 attachment, retrieval artifact, provider telemetry, escalation, maintenance, learning promotion, frontend copy/navigation/state, web path guard와 API route table의 1차 분리는 완료되었다. 이 계획은 완료된 작업을 반복하지 않고 남은 경계만 다룬다.
@@ -26,7 +26,7 @@
 
 | 작업 | 상태 | 현재 증거 |
 |---|---|---|
-| 기준선 확인 | 완료 | R4.4 시작 시 clean `main`, `148688d0`, origin과 일치 |
+| 기준선 확인 | 완료 | D4.1 시작 시 clean `main`, `3cfdbd05`, origin과 일치 |
 | R1 Provider execution analytics | 완료 | `mission-service.mjs`의 summary, timeline, bucket, delta를 순수 모듈로 이동 |
 | R2.1 Action item builder | 완료 | approval, blocked, reviewer, maintenance 표시 record를 store 조회에서 분리 |
 | R2.2 Specialist·provider attention builder | 완료 | specialist와 provider attention 표시 record를 store·registry·permission 조회에서 분리 |
@@ -62,7 +62,7 @@
 | D1.1 Provider·blocker 검증 흐름 | 완료 | 필요한 증적 → 다음 검증 명령 → closure 판정을 같은 source-backed 화면 흐름으로 연결 |
 | D1.2 Action inbox remediation·handoff | 완료 | 즉시 실행, 외부 승인·인계, 검토 후 실행을 기존 permission·owner·audit record로 구분 |
 | D1.3 Session·log lineage | 완료 | run이 보유한 mission·session·provider response·retry·artifact 식별자를 한 문맥으로 표시하고 누락 연결을 분리 |
-| D3 API 비용 없는 내부 경계 정리 | 진행 중 | 외부 provider 호출 없이 mission service의 남은 도메인을 검증 가능한 순서로 분리 |
+| D3 API 비용 없는 내부 경계 정리 | 완료 | 외부 provider 호출 없이 mission service의 순수 계산·read model 경계를 검증 가능한 순서로 분리 |
 | D3.1 Memory write·fact graph sync | 완료 | memory 검증·저장·fact graph 동기화를 독립 service로 이동 |
 | D3.2a Execution mutation primitives | 완료 | content 계산, rollback preview, mutation audit·batch summary를 순수 모듈로 이동 |
 | D3.2b Execution filesystem state·bundle | 완료 | 읽기 전용 file/directory state 수집과 mutation bundle 예측을 독립 builder로 이동 |
@@ -77,9 +77,13 @@
 | D3.4b Provider fallback attempt orchestration | 완료 | attempt source context, failure evidence, 다음 provider 선택, route-decision record 조립을 순수 builder로 이동 |
 | D3.4c Mission stage pipeline | 완료 | manager·planner·specialist/executor·reviewer 요청, stage failure 반환, specialist retry·merge metadata를 실행 I/O에서 분리 |
 | D3.4d Review·session closeout | 완료 | deterministic reviewer 보정, follow-up, execution manifest, approval 대기, completed 결과 조립을 명시적 closeout 경계로 분리 |
-| D3.5 Harness·action·timeline read boundaries | 진행 중 | harness browse부터 summary, inbox, timeline 순서로 read model 조립을 저장·mutation 경계에서 분리 |
+| D3.5 Harness·action·timeline read boundaries | 완료 | harness browse부터 summary, inbox, timeline 순서로 read model 조립을 저장·mutation 경계에서 분리 |
 | D3.5a Harness document·memory browse | 완료 | document·memory 검색, 정렬, pagination, summary 조립을 store·filesystem 조회에서 분리 |
 | D3.5b Mission·harness summary composition | 완료 | session·mission 운영 지표와 harness panel payload 조립을 store·fact graph·retrieval 조회에서 분리 |
+| D3.5c Action·escalation inbox | 완료 | action item 수집과 summary 조립을 reminder·acknowledgement·resolution mutation에서 분리 |
+| D3.5d Mission·workspace·operator timeline | 완료 | event 수집과 scope 적용, 정렬·summary 조립을 audit write 경계에서 분리 |
+| D4 Stateful domain service boundaries | 진행 중 | 외부 provider 호출 없이 상태 변경 책임을 도메인 service로 이동 |
+| D4.1 Learning promotion domain | 완료 | queue, reminder, resolve, expire, rollback lifecycle을 한 service로 통합 |
 
 R1 완료 검증:
 
@@ -774,6 +778,22 @@ D3.5d 구현 검증:
 D3.5의 harness browse, mission·harness summary, action·escalation inbox, mission·workspace·operator timeline read boundary를 순서대로 완료했다. 모든 slice에서 tenant·RBAC·permission, owner handoff, reminder cadence, audit event ordering과 UI payload 계약을 유지했다.
 
 D3는 D3.1부터 순서대로 진행한다. 각 묶음은 focused unit test와 deterministic smoke를 먼저 통과한 뒤 `npm test`, `npm run smoke:docs-gates`, `npm run smoke:all`로 닫는다. provider live 명령, 유료 배포, release claim 갱신은 포함하지 않는다.
+
+### D4. 상태 변경 도메인 경계
+
+D3에서 분리한 순수 계산과 read model을 그대로 사용하면서, `mission-service.mjs`에 남아 있는 상태 변경 흐름을 도메인별 service로 이동한다. 공개 service method, CLI·HTTP payload, store schema, error message와 audit ordering은 바꾸지 않는다.
+
+#### D4.1 Learning promotion domain — 완료
+
+- queue 조회, stop-condition reminder, 승인·거절, 만료, rollback lifecycle을 `learning-promotion.mjs`가 함께 소유한다.
+- `mission-service.mjs`는 store, clock, memory, mission·workspace 조회와 artifact writer를 주입하고 공개 method를 그대로 위임한다.
+- learning candidate audit은 같은 모듈의 순수 promotion policy를 직접 사용하며 mutation service의 closure에 의존하지 않는다.
+- queue·resolve·reminder·expire·rollback effect ordering을 포함한 learning promotion unit test `17/17` 통과
+- 전체 unit test `774/774`, 문서 게이트 `33/33`, deterministic smoke `165/165` 통과
+- learning promotion queue·audit·verification·stop-condition·UI surface smoke `5/5` 통과
+- HTTP route와 browser UI 코드는 변경하지 않았고 provider live·preflight·deploy 명령은 실행하지 않았다.
+
+D4의 다음 순서는 execution runtime, provider runtime, escalation·follow-up·action maintenance, mission run·catalog, composition closeout이다. 각 단계는 관련 stateful effect 순서를 focused test로 고정한 뒤 전체 로컬 게이트를 통과해야 다음 단계로 넘어간다.
 
 ## 5. 모델 운용
 
