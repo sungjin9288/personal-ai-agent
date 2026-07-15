@@ -176,6 +176,13 @@ import {
   buildParallelStageMetadata,
 } from './mission-stage-pipeline.mjs';
 import {
+  buildApprovalRequest,
+  buildExecutionManifestArtifact,
+  buildMissionCloseoutResult,
+  buildReviewerFollowUpSeed,
+  buildReviewerReconciliation,
+} from './mission-review-closeout.mjs';
+import {
   buildProviderAttentionRemediationPermissionDecision,
 } from './permission-decision-service.mjs';
 import { summarizeSandboxDecisionForTimeline } from './sandbox-decision-service.mjs';
@@ -358,15 +365,6 @@ function summarizeAttachmentText(content, fallback = '내용 없음') {
     : normalized;
 }
 
-function joinBullets(items, fallback) {
-  const list = ensureArray(items).filter(Boolean);
-  if (!list.length) {
-    return `- ${fallback}`;
-  }
-
-  return list.map((item) => `- ${item}`).join('\n');
-}
-
 function evaluateArtifactContent({ artifactContent, pack }) {
   const content = normalizeText(artifactContent);
   const requiredSections = ensureArray(pack?.requiredSections);
@@ -397,26 +395,6 @@ function evaluateArtifactContent({ artifactContent, pack }) {
     findings,
     checks,
   };
-}
-
-function renderReviewerReport({ verdict, findings, checks }) {
-  return `# Reviewer Report
-
-## Verdict
-- verdict: ${verdict}
-
-## Checks
-${joinBullets(
-  ensureArray(checks).map((check) => `${check.passed ? 'pass' : 'fail'}: ${check.id} - ${check.description}`),
-  'No additional rubric checks recorded.',
-)}
-
-## Findings
-${joinBullets(findings, 'No findings. The draft preserves required sections and includes a next action.')}
-
-## Next Action
-${verdict === 'pass' ? '- continue to completion or approval gate' : '- revise the draft before proceeding'}
-`;
 }
 
 function normalizeActionOwner(value, fallback = 'workspace-owner') {
@@ -4095,6 +4073,182 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
+  function reconcileMissionReviewerStage({ deterministicReview, reviewerStage }) {
+    const reconciliation = buildReviewerReconciliation({
+      deterministicReview,
+      reviewerStage,
+      updatedAt: now(),
+    });
+    if (!reconciliation) {
+      return reviewerStage;
+    }
+
+    if (reviewerStage.artifact?.path) {
+      fs.writeFileSync(reviewerStage.artifact.path, reconciliation.output.artifactContent, 'utf8');
+    }
+    if (reviewerStage.artifact?.id) {
+      store.updateArtifact(reviewerStage.artifact.id, (current) => ({
+        ...current,
+        title: normalizeText(current.title, 'Reviewer Report'),
+      }));
+    }
+    const updatedRun = store.updateAgentRun(reviewerStage.run.id, (current) => ({
+      ...current,
+      ...reconciliation.runPatch,
+    }));
+
+    return {
+      ...reviewerStage,
+      output: reconciliation.output,
+      run: updatedRun,
+    };
+  }
+
+  function finalizeReviewerFailure({ artifactPath, mission, providerId, reviewerStage, session, workspace }) {
+    const followUpAt = reviewerStage.artifact.createdAt || now();
+    createReviewerFollowUpRecord(
+      buildReviewerFollowUpSeed({
+        at: followUpAt,
+        mission,
+        reviewerStage,
+        session,
+        workspace,
+      }),
+    );
+    harness.addMemoryEntry({
+      scope: 'mission',
+      scopeId: mission.id,
+      kind: 'fact',
+      content: formatReviewerFailureMemory({
+        mission,
+        findings: reviewerStage.output.findings,
+      }),
+    });
+    harness.updateSession(session.id, {
+      currentStage: 'reviewer',
+      status: 'failed',
+      endedAt: now(),
+    });
+
+    const failedMission = harness.touchMission(mission.id, 'failed');
+    const failedSession = store.getSession(session.id);
+    const learningCandidate = emitLearningCandidate({
+      mission: failedMission,
+      missionStatus: failedMission.status,
+      outcomeReason: reviewerStage.run.outputSummary,
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: failedSession,
+      workspace,
+    });
+
+    return buildMissionCloseoutResult({
+      artifactPath,
+      learningCandidate,
+      mission: failedMission,
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+    });
+  }
+
+  function finalizeExecutionCapableReview({ artifactPath, mission, providerId, reviewerStage, session, workspace }) {
+    const execution = buildExecutionContext(mission.id);
+    const manifestArtifact = buildExecutionManifestArtifact({
+      executionContext: execution,
+      generatedAt: now(),
+      mission,
+      session,
+      workspace,
+    });
+    if (manifestArtifact) {
+      harness.writeArtifact(manifestArtifact);
+    }
+
+    const learningCandidate = emitLearningCandidate({
+      mission,
+      missionStatus: mission.status,
+      outcomeReason: 'Mission review completed and execution manifest was prepared.',
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+      workspace,
+    });
+
+    return buildMissionCloseoutResult({
+      artifactPath,
+      execution,
+      learningCandidate,
+      mission,
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+    });
+  }
+
+  function finalizeAwaitingApprovalReview({
+    artifactPath,
+    mission,
+    providerId,
+    reviewerStage,
+    risk,
+    session,
+    workspace,
+  }) {
+    const approval = harness.createApproval(buildApprovalRequest({ mission, risk, session }));
+    const awaitingMission = harness.touchMission(mission.id, 'awaiting_approval');
+    harness.updateSession(session.id, {
+      currentStage: 'reviewer',
+      status: 'awaiting_approval',
+    });
+    const learningCandidate = emitLearningCandidate({
+      mission: awaitingMission,
+      missionStatus: awaitingMission.status,
+      outcomeReason: risk.reason,
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+      workspace,
+    });
+
+    return buildMissionCloseoutResult({
+      approval,
+      artifactPath,
+      learningCandidate,
+      mission: awaitingMission,
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+    });
+  }
+
+  function finalizeCompletedReview({ artifactPath, mission, providerId, reviewerStage, session, workspace }) {
+    const completedMission = harness.touchMission(mission.id, 'completed');
+    harness.updateSession(session.id, {
+      currentStage: 'reviewer',
+      status: 'completed',
+      endedAt: now(),
+    });
+    const learningCandidate = emitLearningCandidate({
+      mission: completedMission,
+      missionStatus: completedMission.status,
+      outcomeReason: 'Mission completed successfully.',
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+      workspace,
+    });
+
+    return buildMissionCloseoutResult({
+      artifactPath,
+      learningCandidate,
+      mission: completedMission,
+      providerId,
+      reviewerVerdict: reviewerStage.output.verdict,
+      session: store.getSession(session.id),
+    });
+  }
+
   function ensureNoPendingApproval(missionId) {
     const latestSession = getLatestSession(store.listSessionsByMission(missionId));
     if (!latestSession || latestSession.status !== 'awaiting_approval') {
@@ -4377,111 +4531,29 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     if (reviewerResult.failure) {
       return reviewerResult.failure;
     }
-    const reviewerStage = reviewerResult.stage;
     const deterministicReview = evaluateArtifactContent({
       artifactContent: executorOutput?.artifactContent || '',
       pack,
     });
-    const reviewerVerdict = normalizeText(reviewerStage.output?.verdict);
-    if (reviewerVerdict && reviewerVerdict !== deterministicReview.verdict) {
-      const report = renderReviewerReport(deterministicReview);
-      if (reviewerStage.artifact?.path) {
-        fs.writeFileSync(reviewerStage.artifact.path, report, 'utf8');
-      }
-      if (reviewerStage.artifact?.id) {
-        store.updateArtifact(reviewerStage.artifact.id, (current) => ({
-          ...current,
-          title: normalizeText(current.title, 'Reviewer Report'),
-        }));
-      }
-      const updatedRun = store.updateAgentRun(reviewerStage.run.id, (current) => ({
-        ...current,
-        status: deterministicReview.verdict === 'fail' ? 'failed' : 'completed',
-        outputSummary:
-          deterministicReview.verdict === 'fail'
-            ? 'Deterministic review failed after provider mismatch.'
-            : 'Deterministic review passed after provider mismatch.',
-        updatedAt: now(),
-      }));
-      reviewerStage.run = updatedRun;
-      reviewerStage.output = {
-        ...reviewerStage.output,
-        verdict: deterministicReview.verdict,
-        findings: deterministicReview.findings,
-        checks: deterministicReview.checks,
-        summaryText: updatedRun.outputSummary,
-        artifactContent: report,
-      };
-    }
+    const reviewerStage = reconcileMissionReviewerStage({
+      deterministicReview,
+      reviewerStage: reviewerResult.stage,
+    });
     previousOutputs.reviewer = reviewerStage.output;
 
     if (reviewerStage.output.verdict === 'fail') {
-      createReviewerFollowUpRecord({
-        actionClass: 'retry-ready',
-        actionId: `reviewer-follow-up:${mission.id}:${session.id}`,
-        actionType: 'reviewer-follow-up',
-        createdAt: reviewerStage.artifact.createdAt || now(),
-        deliverableType: mission.deliverableType,
-        findings: reviewerStage.output.findings,
-        missionId: mission.id,
-        missionStatus: 'failed',
-        missionTitle: mission.title,
-        mode: mission.mode,
-        reason: reviewerStage.run.outputSummary,
-        reportPath: reviewerStage.artifact.path,
-        requestedByRole: 'reviewer',
-        resolutionNote: '',
-        resolvedAt: null,
-        sessionId: session.id,
-        sessionStatus: 'failed',
-        status: 'open',
-      title: `Reviewer follow-up required for ${mission.title}`,
-      updatedAt: reviewerStage.artifact.createdAt || now(),
-      workspaceId: workspace.id,
-      workspaceName: workspace.name,
-      resolutionKind: '',
-    });
-
-      harness.addMemoryEntry({
-        scope: 'mission',
-        scopeId: mission.id,
-        kind: 'fact',
-        content: formatReviewerFailureMemory({
-          mission,
-          findings: reviewerStage.output.findings,
-        }),
-      });
-
-      harness.updateSession(session.id, {
-        currentStage: 'reviewer',
-        status: 'failed',
-        endedAt: now(),
-      });
-      const failedMission = harness.touchMission(mission.id, 'failed');
-      const failedSession = store.getSession(session.id);
-      const learningCandidate = emitLearningCandidate({
-        mission: failedMission,
-        missionStatus: failedMission.status,
-        outcomeReason: reviewerStage.run.outputSummary,
+      return finalizeReviewerFailure({
+        artifactPath: executorArtifactPath,
+        mission,
         providerId,
-        reviewerVerdict: reviewerStage.output.verdict,
-        session: failedSession,
+        reviewerStage,
+        session,
         workspace,
       });
-
-      return {
-        approval: null,
-        artifactPath: executorArtifactPath,
-        learningCandidate,
-        mission: failedMission,
-        provider: providerId,
-        reviewerVerdict: reviewerStage.output.verdict,
-        session: store.getSession(session.id),
-      };
     }
 
     const executionCapable = isExecutionCapableMission(mission, workspace);
-    const reviewedMission = harness.touchMission(mission.id, executionCapable ? 'reviewed' : 'reviewed');
+    const reviewedMission = harness.touchMission(mission.id, 'reviewed');
     harness.updateSession(session.id, {
       currentStage: 'reviewer',
       endedAt: executionCapable ? now() : null,
@@ -4489,50 +4561,14 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
 
     if (executionCapable) {
-      const executionContext = buildExecutionContext(mission.id);
-      if (executionContext.manifest) {
-        harness.writeArtifact({
-          missionId: mission.id,
-          sessionId: session.id,
-          role: 'executor',
-          kind: 'execution-manifest',
-          fileName: 'execution-manifest.json',
-          title: 'Execution Manifest',
-          content: `${JSON.stringify(
-            {
-              generatedAt: now(),
-              manifestHash: executionContext.manifestHash,
-              missionId: mission.id,
-              reviewSessionId: executionContext.reviewSession?.id || null,
-              workspacePath: workspace.path,
-              ...executionContext.manifest,
-            },
-            null,
-            2,
-          )}\n`,
-        });
-      }
-
-      const learningCandidate = emitLearningCandidate({
+      return finalizeExecutionCapableReview({
+        artifactPath: executorArtifactPath,
         mission: reviewedMission,
-        missionStatus: reviewedMission.status,
-        outcomeReason: 'Mission review completed and execution manifest was prepared.',
         providerId,
-        reviewerVerdict: reviewerStage.output.verdict,
-        session: store.getSession(session.id),
+        reviewerStage,
+        session,
         workspace,
       });
-
-      return {
-        approval: null,
-        artifactPath: executorArtifactPath,
-        execution: buildExecutionContext(mission.id),
-        learningCandidate,
-        mission: reviewedMission,
-        provider: providerId,
-        reviewerVerdict: reviewerStage.output.verdict,
-        session: store.getSession(session.id),
-      };
     }
 
     const risk = harness.classifyRisk({
@@ -4542,66 +4578,25 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     });
 
     if (risk.approvalRequired) {
-      const approval = harness.createApproval({
-        missionId: mission.id,
-        sessionId: session.id,
-        requestedByRole: 'reviewer',
-        kind: risk.kind,
-        title: risk.title,
-        reason: risk.reason,
-      });
-
-      const awaitingMission = harness.touchMission(mission.id, 'awaiting_approval');
-      harness.updateSession(session.id, {
-        currentStage: 'reviewer',
-        status: 'awaiting_approval',
-      });
-      const learningCandidate = emitLearningCandidate({
-        mission: awaitingMission,
-        missionStatus: awaitingMission.status,
-        outcomeReason: risk.reason,
+      return finalizeAwaitingApprovalReview({
+        artifactPath: executorArtifactPath,
+        mission,
         providerId,
-        reviewerVerdict: reviewerStage.output.verdict,
-        session: store.getSession(session.id),
+        reviewerStage,
+        risk,
+        session,
         workspace,
       });
-
-      return {
-        approval,
-        artifactPath: executorArtifactPath,
-        learningCandidate,
-        mission: awaitingMission,
-        provider: providerId,
-        reviewerVerdict: reviewerStage.output.verdict,
-        session: store.getSession(session.id),
-      };
     }
 
-    const completedMission = harness.touchMission(mission.id, 'completed');
-    harness.updateSession(session.id, {
-      currentStage: 'reviewer',
-      status: 'completed',
-      endedAt: now(),
-    });
-    const learningCandidate = emitLearningCandidate({
-      mission: completedMission,
-      missionStatus: completedMission.status,
-      outcomeReason: 'Mission completed successfully.',
+    return finalizeCompletedReview({
+      artifactPath: executorArtifactPath,
+      mission,
       providerId,
-      reviewerVerdict: reviewerStage.output.verdict,
-      session: store.getSession(session.id),
+      reviewerStage,
+      session,
       workspace,
     });
-
-    return {
-      approval: null,
-      artifactPath: executorArtifactPath,
-      learningCandidate,
-      mission: completedMission,
-      provider: providerId,
-      reviewerVerdict: reviewerStage.output.verdict,
-      session: store.getSession(session.id),
-    };
   }
 
   async function runMission(missionId, options = {}) {

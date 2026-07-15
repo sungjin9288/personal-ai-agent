@@ -72,10 +72,11 @@
 | D3.3a Provider probe·event summary | 완료 | probe timeline과 probe·execution·attention·fallback 통합 집계를 저장·registry·live probe에서 분리 |
 | D3.3b Provider status·overview composition | 완료 | attention 우선순위, capability·readiness 요약, provider overview와 recent·health payload 조립을 순수 모듈로 이동 |
 | D3.3c Provider history·timeline query assembly | 완료 | probe·execution·event history·timeline 결과와 filter payload 조립을 store 조회·입력 검증에서 분리 |
-| D3.4 Mission run·fallback orchestration | 진행 중 | fallback policy부터 attempt loop, stage pipeline, review·closeout 순서로 승인·lineage 경계를 보존하며 분리 |
+| D3.4 Mission run·fallback orchestration | 완료 | fallback policy, attempt loop, stage pipeline, review·closeout을 승인·lineage 경계를 보존한 독립 계산·실행 흐름으로 분리 |
 | D3.4a Provider fallback plan·policy | 완료 | provider id·policy 정규화, distinct fallback plan, eligibility stop reason, route-decision summary를 순수 모듈로 이동 |
 | D3.4b Provider fallback attempt orchestration | 완료 | attempt source context, failure evidence, 다음 provider 선택, route-decision record 조립을 순수 builder로 이동 |
 | D3.4c Mission stage pipeline | 완료 | manager·planner·specialist/executor·reviewer 요청, stage failure 반환, specialist retry·merge metadata를 실행 I/O에서 분리 |
+| D3.4d Review·session closeout | 완료 | deterministic reviewer 보정, follow-up, execution manifest, approval 대기, completed 결과 조립을 명시적 closeout 경계로 분리 |
 
 R1 완료 검증:
 
@@ -707,6 +708,16 @@ D3.4c 구현 검증:
 - OpenAI·Anthropic·local·Hermes adapter의 missing-config와 mock request smoke 통과, 외부 endpoint 호출 없음
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - provider 실행, session·mission 상태 변경, artifact write, approval·learning audit는 mission service에 유지한다. 새 모듈은 stage 요청·실패 인자·specialist 재개 계획·merge metadata만 조립함
+
+D3.4d 구현 검증:
+
+- reviewer reconciliation·follow-up, execution manifest, approval request, closeout result 단위 테스트 `9/9` 통과
+- 전체 unit test `744/744` 통과
+- 전체 deterministic smoke `165/165` 통과
+- reviewer failure·follow-up lifecycle·accepted risk, execution flow, approval 대기·승인·거절·inbox, gateway learning candidate·learning audit smoke 통과
+- execution manifest의 generatedAt·hash·mission·review session·workspace lineage는 provider-derived manifest보다 trusted runtime 값을 우선하도록 단위 테스트로 고정
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- reviewer artifact·run 보정, follow-up·memory·learning record 저장, session·mission mutation, approval 생성은 mission service에 유지한다. 새 모듈은 report·record·artifact·result payload만 조립함
 
 #### D3.5 Harness·action·timeline read boundaries
 
