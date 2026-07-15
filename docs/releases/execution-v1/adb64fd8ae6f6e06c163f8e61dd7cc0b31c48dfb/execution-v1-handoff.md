@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-15T17:44:51.200Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-15T17:44:50.309Z
 - localDate: 2026-07-16
 - branch: codex/d4-4c-action-maintenance
 - commit: adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb](releases/execution-v1/adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb](docs/releases/execution-v1/adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb)
 - visualArtifactSetSha256: 592c46251776a8c87a4b69e9227882ea6b078d9b80a4ae6739be3fda221abc59
 - commitPushStatus: not pushed, origin/codex/d4-4c-action-maintenance not found
 

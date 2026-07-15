@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-15T17:44:51.200Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-15T17:44:43.519Z
 - branch: codex/d4-4c-action-maintenance
 - commit: adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

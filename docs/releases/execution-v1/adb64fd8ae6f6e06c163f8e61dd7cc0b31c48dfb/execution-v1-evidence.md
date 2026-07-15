@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-15T17:44:51.200Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-15T17:44:39.542Z
 - branch: codex/d4-4c-action-maintenance
 - commit: adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb
