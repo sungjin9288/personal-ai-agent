@@ -77,6 +77,8 @@
 | D3.4b Provider fallback attempt orchestration | 완료 | attempt source context, failure evidence, 다음 provider 선택, route-decision record 조립을 순수 builder로 이동 |
 | D3.4c Mission stage pipeline | 완료 | manager·planner·specialist/executor·reviewer 요청, stage failure 반환, specialist retry·merge metadata를 실행 I/O에서 분리 |
 | D3.4d Review·session closeout | 완료 | deterministic reviewer 보정, follow-up, execution manifest, approval 대기, completed 결과 조립을 명시적 closeout 경계로 분리 |
+| D3.5 Harness·action·timeline read boundaries | 진행 중 | harness browse부터 summary, inbox, timeline 순서로 read model 조립을 저장·mutation 경계에서 분리 |
+| D3.5a Harness document·memory browse | 완료 | document·memory 검색, 정렬, pagination, summary 조립을 store·filesystem 조회에서 분리 |
 
 R1 완료 검증:
 
@@ -724,6 +726,22 @@ D3.4d 구현 검증:
 - harness document/memory browse와 mission summary, action/escalation inbox, mission/workspace/operator timeline을 서로 다른 read model로 정리한다.
 - reminder·acknowledgement·resolution처럼 기록을 쓰는 동작은 읽기 조립과 함께 옮기지 않는다.
 - 완료 조건: tenant·RBAC·permission 판단, owner handoff, reminder cadence, audit event ordering, UI payload가 바뀌지 않는다.
+
+D3.5는 아래 순서로 진행한다.
+
+1. D3.5a harness browse: document·memory record를 읽은 뒤 적용하는 query, sort, pagination, summary 조립을 순수 read model로 옮긴다.
+2. D3.5b mission·harness summary: session·mission·harness summary의 입력 수집과 payload 조립을 분리한다.
+3. D3.5c action·escalation inbox: action item 수집과 summary 조립을 reminder·acknowledgement·resolution mutation에서 분리한다.
+4. D3.5d mission·workspace·operator timeline: event 수집과 scope 적용, 정렬·summary 조립을 audit write 경계에서 분리한다.
+
+D3.5a 구현 검증:
+
+- document·memory filter, sort, pagination, scope별 summary 단위 테스트 `6/6` 통과
+- 전체 unit test `750/750` 통과
+- 전체 deterministic smoke `165/165` 통과
+- harness browse, mission memory rerun, retrieval memory, fact graph memory smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- mission 존재 확인, document registry filesystem 조회, document log·memory store 조회는 mission service에 유지한다. 새 모듈은 전달받은 record만 검색·정렬·page result로 조립함
 
 D3는 D3.1부터 순서대로 진행한다. 각 묶음은 focused unit test와 deterministic smoke를 먼저 통과한 뒤 `npm test`, `npm run smoke:docs-gates`, `npm run smoke:all`로 닫는다. provider live 명령, 유료 배포, release claim 갱신은 포함하지 않는다.
 

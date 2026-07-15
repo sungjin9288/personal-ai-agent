@@ -61,6 +61,10 @@ import {
   startExecutionStep,
 } from './execution-runner-lifecycle.mjs';
 import { createFactGraphService } from './fact-graph-service.mjs';
+import {
+  buildHarnessDocumentBrowseResult,
+  buildHarnessMemoryBrowseResult,
+} from './mission-harness-browse.mjs';
 import { createMissionMemoryService } from './mission-memory-service.mjs';
 import {
   attachGatewayEventToSourceContext,
@@ -5265,226 +5269,26 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
-  function normalizeHarnessBrowseLimit(value, fallback = 12) {
-    const numericValue = Number(value);
-    if (!Number.isFinite(numericValue) || numericValue <= 0) {
-      return fallback;
-    }
-
-    return Math.min(Math.max(Math.trunc(numericValue), 1), 200);
-  }
-
-  function normalizeHarnessBrowseOffset(value, fallback = 0) {
-    const numericValue = Number(value);
-    if (!Number.isFinite(numericValue) || numericValue < 0) {
-      return fallback;
-    }
-
-    return Math.max(Math.trunc(numericValue), 0);
-  }
-
-  function resolveHarnessBrowseOffset(offset, totalCount, limit) {
-    if (!totalCount) {
-      return 0;
-    }
-
-    const lastPageOffset = Math.floor((totalCount - 1) / limit) * limit;
-    return Math.min(offset, lastPageOffset);
-  }
-
   function browseMissionHarnessDocuments(missionId, filter = {}) {
     getMission(missionId);
 
     const documentRegistry = buildHarnessDocumentRegistry();
-    const query = normalizeText(filter.query).toLowerCase();
-    const type = normalizeText(filter.type, 'all').toLowerCase() || 'all';
-    const sort = normalizeText(filter.sort, 'latest').toLowerCase() || 'latest';
-    const limit = normalizeHarnessBrowseLimit(filter.limit, 12);
 
-    const filteredEntries = documentRegistry.entries.filter((entry) => {
-      if (type !== 'all' && normalizeText(entry.type).toLowerCase() !== type) {
-        return false;
-      }
-
-      if (!query) {
-        return true;
-      }
-
-      const haystack = [entry.title, entry.type, entry.path, entry.content]
-        .map((value) => normalizeText(value).toLowerCase())
-        .join('\n');
-
-      return haystack.includes(query);
+    return buildHarnessDocumentBrowseResult({
+      entries: documentRegistry.entries,
+      filter,
+      registrySummary: documentRegistry.summary,
     });
-
-    filteredEntries.sort((left, right) => {
-      const leftTimestamp = Date.parse(String(left.updatedAt || left.createdAt || '')) || 0;
-      const rightTimestamp = Date.parse(String(right.updatedAt || right.createdAt || '')) || 0;
-
-      if (sort === 'oldest') {
-        return leftTimestamp - rightTimestamp;
-      }
-      if (sort === 'title') {
-        return normalizeText(left.title).localeCompare(normalizeText(right.title), 'ko');
-      }
-      if (sort === 'type') {
-        const typeOrder = normalizeText(left.type).localeCompare(normalizeText(right.type), 'ko');
-        return typeOrder || normalizeText(left.title).localeCompare(normalizeText(right.title), 'ko');
-      }
-
-      return rightTimestamp - leftTimestamp;
-    });
-
-    const offset = resolveHarnessBrowseOffset(
-      normalizeHarnessBrowseOffset(filter.offset, 0),
-      filteredEntries.length,
-      limit,
-    );
-    const entries = filteredEntries.slice(offset, offset + limit);
-    const pageCount = entries.length;
-    const visibleEnd = offset + pageCount;
-    const totalPages = pageCount ? Math.ceil(filteredEntries.length / limit) : 0;
-    const hasPrev = offset > 0;
-    const hasNext = visibleEnd < filteredEntries.length;
-    const pageStart = pageCount ? offset + 1 : 0;
-    const pageEnd = pageCount ? visibleEnd : 0;
-
-    return {
-      entries,
-      filters: {
-        limit,
-        offset,
-        query: normalizeText(filter.query),
-        sort,
-        type,
-      },
-      hasMore: hasNext,
-      summary: {
-        ...documentRegistry.summary,
-        currentPage: totalPages ? Math.floor(offset / limit) + 1 : 0,
-        filteredCount: filteredEntries.length,
-        hasNext,
-        hasPrev,
-        offset,
-        pageCount,
-        pageEnd,
-        pageStart,
-        remainingCount: Math.max(filteredEntries.length - visibleEnd, 0),
-        totalPages,
-        visibleCount: pageCount,
-      },
-    };
   }
 
   function browseMissionHarnessMemory(missionId, filter = {}) {
     const mission = getMission(missionId);
-    const query = normalizeText(filter.query).toLowerCase();
-    const scope = normalizeText(filter.scope, 'all').toLowerCase() || 'all';
-    const kind = normalizeText(filter.kind, 'all').toLowerCase() || 'all';
-    const sort = normalizeText(filter.sort, 'latest').toLowerCase() || 'latest';
-    const limit = normalizeHarnessBrowseLimit(filter.limit, 12);
 
-    const missionEntries = store.listMemoryEntries({ scope: 'mission', scopeId: mission.id }).map((entry) => ({
-      content: entry.content,
-      createdAt: entry.createdAt,
-      id: entry.id,
-      kind: entry.kind,
-      scope: 'mission',
-      updatedAt: entry.updatedAt || null,
-    }));
-    const workspaceEntries = store
-      .listMemoryEntries({ scope: 'workspace', scopeId: mission.workspaceId })
-      .map((entry) => ({
-        content: entry.content,
-        createdAt: entry.createdAt,
-        id: entry.id,
-        kind: entry.kind,
-        scope: 'workspace',
-        updatedAt: entry.updatedAt || null,
-      }));
-    const allEntries = [...missionEntries, ...workspaceEntries];
-
-    const filteredEntries = allEntries.filter((entry) => {
-      if (scope !== 'all' && entry.scope !== scope) {
-        return false;
-      }
-      if (kind !== 'all' && normalizeText(entry.kind).toLowerCase() !== kind) {
-        return false;
-      }
-      if (!query) {
-        return true;
-      }
-
-      const haystack = [entry.kind, entry.content]
-        .map((value) => normalizeText(value).toLowerCase())
-        .join('\n');
-
-      return haystack.includes(query);
+    return buildHarnessMemoryBrowseResult({
+      filter,
+      missionEntries: store.listMemoryEntries({ scope: 'mission', scopeId: mission.id }),
+      workspaceEntries: store.listMemoryEntries({ scope: 'workspace', scopeId: mission.workspaceId }),
     });
-
-    filteredEntries.sort((left, right) => {
-      const leftTimestamp = Date.parse(String(left.updatedAt || left.createdAt || '')) || 0;
-      const rightTimestamp = Date.parse(String(right.updatedAt || right.createdAt || '')) || 0;
-
-      if (sort === 'oldest') {
-        return leftTimestamp - rightTimestamp;
-      }
-      if (sort === 'kind') {
-        const kindOrder = normalizeText(left.kind).localeCompare(normalizeText(right.kind), 'ko');
-        return kindOrder || rightTimestamp - leftTimestamp;
-      }
-
-      return rightTimestamp - leftTimestamp;
-    });
-
-    const offset = resolveHarnessBrowseOffset(
-      normalizeHarnessBrowseOffset(filter.offset, 0),
-      filteredEntries.length,
-      limit,
-    );
-    const entries = filteredEntries.slice(offset, offset + limit);
-    const pageCount = entries.length;
-    const visibleEnd = offset + pageCount;
-    const totalPages = pageCount ? Math.ceil(filteredEntries.length / limit) : 0;
-    const filteredMissionCount = filteredEntries.filter((entry) => entry.scope === 'mission').length;
-    const filteredWorkspaceCount = filteredEntries.filter((entry) => entry.scope === 'workspace').length;
-    const hasPrev = offset > 0;
-    const hasNext = visibleEnd < filteredEntries.length;
-    const pageStart = pageCount ? offset + 1 : 0;
-    const pageEnd = pageCount ? visibleEnd : 0;
-
-    return {
-      entries,
-      filters: {
-        kind,
-        limit,
-        offset,
-        query: normalizeText(filter.query),
-        scope,
-        sort,
-      },
-      hasMore: hasNext,
-      missionEntries: entries.filter((entry) => entry.scope === 'mission'),
-      summary: {
-        currentPage: totalPages ? Math.floor(offset / limit) + 1 : 0,
-        filteredMissionCount,
-        filteredTotal: filteredEntries.length,
-        filteredWorkspaceCount,
-        hasNext,
-        hasPrev,
-        missionTotal: missionEntries.length,
-        offset,
-        pageCount,
-        pageEnd,
-        pageStart,
-        remainingCount: Math.max(filteredEntries.length - visibleEnd, 0),
-        total: allEntries.length,
-        totalPages,
-        visibleCount: pageCount,
-        workspaceTotal: workspaceEntries.length,
-      },
-      workspaceEntries: entries.filter((entry) => entry.scope === 'workspace'),
-    };
   }
 
   function summarizeMissionHarness(mission, summary) {
