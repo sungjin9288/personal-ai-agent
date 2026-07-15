@@ -65,6 +65,7 @@
 | D3 API 비용 없는 내부 경계 정리 | 진행 중 | 외부 provider 호출 없이 mission service의 남은 도메인을 검증 가능한 순서로 분리 |
 | D3.1 Memory write·fact graph sync | 완료 | memory 검증·저장·fact graph 동기화를 독립 service로 이동 |
 | D3.2a Execution mutation primitives | 완료 | content 계산, rollback preview, mutation audit·batch summary를 순수 모듈로 이동 |
+| D3.2b Execution filesystem state·bundle | 완료 | 읽기 전용 file/directory state 수집과 mutation bundle 예측을 독립 builder로 이동 |
 
 R1 완료 검증:
 
@@ -588,6 +589,15 @@ D3.2a 구현 검증:
 - docs gate `33/33` 통과
 - 전체 smoke `165`개 중 `163`개 통과, 구현 중 artifact commit 불일치만 감지한 release freshness gate `2`개는 evidence refresh 단계로 이월
 - execution flow·CLI smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- provider live 명령과 외부 API 호출은 실행하지 않음
+
+D3.2b 구현 검증:
+
+- temp workspace 기반 filesystem state·bundle 단위 테스트 `13/13` 통과
+- 전체 unit test `692/692` 통과
+- 전체 smoke `165/165` 통과
+- execution flow·CLI smoke에서 file/directory move, rollback, approval·lease, secret descendant 차단 계약 통과
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - provider live 명령과 외부 API 호출은 실행하지 않음
 
