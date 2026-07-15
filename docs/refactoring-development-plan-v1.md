@@ -72,6 +72,8 @@
 | D3.3a Provider probe·event summary | 완료 | probe timeline과 probe·execution·attention·fallback 통합 집계를 저장·registry·live probe에서 분리 |
 | D3.3b Provider status·overview composition | 완료 | attention 우선순위, capability·readiness 요약, provider overview와 recent·health payload 조립을 순수 모듈로 이동 |
 | D3.3c Provider history·timeline query assembly | 완료 | probe·execution·event history·timeline 결과와 filter payload 조립을 store 조회·입력 검증에서 분리 |
+| D3.4 Mission run·fallback orchestration | 진행 중 | fallback policy부터 attempt loop, stage pipeline, review·closeout 순서로 승인·lineage 경계를 보존하며 분리 |
+| D3.4a Provider fallback plan·policy | 완료 | provider id·policy 정규화, distinct fallback plan, eligibility stop reason, route-decision summary를 순수 모듈로 이동 |
 
 R1 완료 검증:
 
@@ -668,6 +670,22 @@ D3.3c 구현 검증:
 - specialist stage, quality gate, provider attempt, fallback policy, session closeout의 순서를 작은 orchestration 경계로 나눈다.
 - live provider는 호출하지 않고 stub provider와 deterministic failure fixture만 사용한다.
 - 완료 조건: approval 대기, reviewer failure, parallel specialist merge, `provider-failure-only`, `recoverable-provider-failure-only`, artifact lineage가 유지된다.
+
+D3.4는 아래 순서로 진행한다.
+
+1. D3.4a fallback plan·policy: provider id·policy 정규화, distinct fallback 검증, eligibility와 summary 집계를 순수 경계로 옮긴다.
+2. D3.4b fallback attempt orchestration: attempt source context, provider failure evidence, route decision, 다음 provider 선택을 한 흐름으로 정리한다.
+3. D3.4c mission stage pipeline: manager → planner → specialist/executor → reviewer 순서와 stage failure 반환을 작은 단계로 나눈다.
+4. D3.4d review·session closeout: deterministic review mismatch, reviewer follow-up, execution manifest, approval 대기, completed closeout을 명시적으로 분리한다.
+
+D3.4a 구현 검증:
+
+- provider fallback plan·policy·summary 단위 테스트 `4/4` 통과
+- 전체 unit test `724/724` 통과
+- 전체 deterministic smoke `165/165` 통과
+- fallback policy·route decision, runtime discovery, mission quality gate, parallel specialists, approval, reviewer failure, execution flow smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- provider registry validation과 store 기반 failure evidence 조회는 mission service에 유지한다. 새 모듈은 policy decision과 summary만 계산하며 provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.5 Harness·action·timeline read boundaries
 

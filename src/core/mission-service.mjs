@@ -178,6 +178,13 @@ import {
   summarizeProviderRouteDecisionForTimeline,
 } from './provider-route-decision-service.mjs';
 import {
+  buildMissionProviderFallbackPlan,
+  buildProviderFallbackSummary,
+  evaluateProviderFallbackPolicy,
+  normalizeProviderFallbackIds,
+  normalizeProviderFallbackPolicy,
+} from './provider-fallback-policy.mjs';
+import {
   inferMissionAttachmentMimeType,
   isSupportedMissionAttachment,
   normalizeMissionAttachmentFileName,
@@ -519,16 +526,6 @@ function normalizeAgentRunStatus(value) {
     return 'running';
   }
   return normalized;
-}
-
-function normalizeProviderFallbackPolicy(value) {
-  const normalized = normalizeText(value, 'provider-failure-only');
-  if (normalized === 'provider-failure-only' || normalized === 'recoverable-provider-failure-only') {
-    return normalized;
-  }
-  throw new Error(
-    `Unsupported provider fallback policy: ${normalized}. Use provider-failure-only or recoverable-provider-failure-only.`,
-  );
 }
 
 function extractOrchestrationProfileMetadata(item) {
@@ -4086,11 +4083,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     }
   }
 
-  function normalizeProviderFallbackIds(value) {
-    const rawItems = Array.isArray(value) ? value : String(value || '').split(',');
-    return rawItems.map((providerId) => normalizeText(providerId)).filter(Boolean);
-  }
-
   function resolveMissionProviderFallbackPlan(options = {}) {
     const primaryProviderId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
     const explicitPolicyId = normalizeText(options.fallbackPolicy || options.providerFallbackPolicy);
@@ -4109,62 +4101,10 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
     }
 
-    if (explicitPolicyId && providerIds.length <= 1) {
-      throw new Error('--fallback-policy requires --fallback-provider with at least one distinct fallback provider.');
-    }
-
-    const policyId = normalizeProviderFallbackPolicy(explicitPolicyId || 'provider-failure-only');
-
-    return {
-      enabled: providerIds.length > 1,
-      fallbackProviderIds: providerIds.slice(1),
-      policyId,
-      primaryProviderId,
+    return buildMissionProviderFallbackPlan({
+      explicitPolicyId,
       providerIds,
-    };
-  }
-
-  function evaluateProviderFallbackPolicy({ isLastAttempt = false, missionStatus, policyId, providerFailure }) {
-    const normalizedPolicyId = normalizeProviderFallbackPolicy(policyId);
-    const normalizedMissionStatus = normalizeText(missionStatus);
-
-    if (normalizedMissionStatus !== 'failed') {
-      return {
-        eligible: false,
-        policyId: normalizedPolicyId,
-        reason: `mission-status-${normalizedMissionStatus || 'unknown'}`,
-      };
-    }
-
-    if (!providerFailure) {
-      return {
-        eligible: false,
-        policyId: normalizedPolicyId,
-        reason: 'no-provider-failure-metadata',
-      };
-    }
-
-    if (isLastAttempt) {
-      return {
-        eligible: false,
-        policyId: normalizedPolicyId,
-        reason: 'fallback-provider-exhausted',
-      };
-    }
-
-    if (normalizedPolicyId === 'recoverable-provider-failure-only' && providerFailure.recoverable !== true) {
-      return {
-        eligible: false,
-        policyId: normalizedPolicyId,
-        reason: 'non-recoverable-provider-failure',
-      };
-    }
-
-    return {
-      eligible: true,
-      policyId: normalizedPolicyId,
-      reason: 'eligible-provider-failure',
-    };
+    });
   }
 
   function getSessionProviderFailureSummary(sessionId) {
@@ -4201,49 +4141,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       role: normalizeText(latestFailedRun.role),
       runId: latestFailedRun.id,
       timedOut: Boolean(latestFailedRun.metadata?.timedOut || latestFailedRun.timedOut),
-    };
-  }
-
-  function buildProviderFallbackSummary({ attempts, fallbackProviderIds, policyId, primaryProviderId, result }) {
-    const selectedProviderId = normalizeText(result?.provider);
-    const stopReasonCounts = {};
-    const providerRouteDecisionPolicyCounts = {};
-    const providerRouteDecisionRouteCounts = {};
-    const providerRouteDecisions = [];
-    for (const attempt of attempts) {
-      const stopReason = normalizeText(attempt.fallbackStopReason);
-      if (stopReason) {
-        stopReasonCounts[stopReason] = (stopReasonCounts[stopReason] || 0) + 1;
-      }
-      if (attempt.providerRouteDecision) {
-        providerRouteDecisions.push(attempt.providerRouteDecision);
-        const routeName = normalizeText(attempt.providerRouteDecision.action?.route);
-        if (routeName) {
-          providerRouteDecisionRouteCounts[routeName] = (providerRouteDecisionRouteCounts[routeName] || 0) + 1;
-        }
-        const routePolicyId = normalizeText(attempt.providerRouteDecision.policyId);
-        if (routePolicyId) {
-          providerRouteDecisionPolicyCounts[routePolicyId] =
-            (providerRouteDecisionPolicyCounts[routePolicyId] || 0) + 1;
-        }
-      }
-    }
-
-    return {
-      attemptedProviderIds: attempts.map((attempt) => attempt.providerId),
-      attempts,
-      enabled: fallbackProviderIds.length > 0,
-      fallbackProviderIds,
-      fallbackStopReasonCounts: stopReasonCounts,
-      fallbackUsed: selectedProviderId !== primaryProviderId,
-      finalStatus: normalizeText(result?.mission?.status),
-      latestProviderRouteDecision: getLatestItem(providerRouteDecisions, 'at'),
-      policyId: normalizeProviderFallbackPolicy(policyId),
-      primaryProviderId,
-      providerRouteDecisionCount: providerRouteDecisions.length,
-      providerRouteDecisionPolicyCounts,
-      providerRouteDecisionRouteCounts,
-      selectedProviderId,
     };
   }
 
