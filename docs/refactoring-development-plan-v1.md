@@ -66,6 +66,7 @@
 | D3.1 Memory write·fact graph sync | 완료 | memory 검증·저장·fact graph 동기화를 독립 service로 이동 |
 | D3.2a Execution mutation primitives | 완료 | content 계산, rollback preview, mutation audit·batch summary를 순수 모듈로 이동 |
 | D3.2b Execution filesystem state·bundle | 완료 | 읽기 전용 file/directory state 수집과 mutation bundle 예측을 독립 builder로 이동 |
+| D3.2c Execution rollback plan | 완료 | reverse order state simulation, hash·snapshot guard와 rollback batch 조립을 실제 restore/delete I/O에서 분리 |
 
 R1 완료 검증:
 
@@ -599,6 +600,14 @@ D3.2b 구현 검증:
 - 전체 smoke `165/165` 통과
 - execution flow·CLI smoke에서 file/directory move, rollback, approval·lease, secret descendant 차단 계약 통과
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- provider live 명령과 외부 API 호출은 실행하지 않음
+
+D3.2c 구현 검증:
+
+- rollback plan 단위 테스트 `8/8` 통과
+- 전체 unit test `700/700` 통과
+- 전체 smoke `165/165` 통과
+- execution flow·CLI smoke에서 reverse-order restore/delete, file/directory move, hash·snapshot guard와 실제 rollback 통과
 - provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.3 Provider read model·event aggregation
