@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-15T16:33:44.009Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-15T16:33:34.043Z
 - branch: codex/d4-2-execution-runtime
 - commit: 361b6d626d9cba441cffe80fe7bf7ce57fef0033

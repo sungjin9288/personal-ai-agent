@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-15T16:33:44.009Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-15T16:33:43.057Z
 - localDate: 2026-07-16
 - branch: codex/d4-2-execution-runtime
 - commit: 361b6d626d9cba441cffe80fe7bf7ce57fef0033
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/361b6d626d9cba441cffe80fe7bf7ce57fef0033](releases/execution-v1/361b6d626d9cba441cffe80fe7bf7ce57fef0033)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/361b6d626d9cba441cffe80fe7bf7ce57fef0033/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/361b6d626d9cba441cffe80fe7bf7ce57fef0033/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/361b6d626d9cba441cffe80fe7bf7ce57fef0033](docs/releases/execution-v1/361b6d626d9cba441cffe80fe7bf7ce57fef0033)
 - visualArtifactSetSha256: 16d64ee829e52a3644499b5e6314e79ffcf41fc46958153050131ea5220d83d6
 - commitPushStatus: not pushed, origin/codex/d4-2-execution-runtime not found
 
