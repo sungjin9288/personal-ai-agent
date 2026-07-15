@@ -120,20 +120,18 @@ import {
   normalizeProviderFailureKind,
   normalizeTelemetryNumber,
   summarizeAttemptMetrics,
-  summarizeDurationMetrics,
-  summarizeEstimatedCostBreakdown,
-  summarizeEstimatedCostMetrics,
-  summarizeFailureKinds,
-  summarizeUsageMetrics,
 } from './provider-telemetry.mjs';
 import {
   buildProviderExecutionTimeline,
+  buildProviderProbeTimeline,
   formatProviderFailureDetail,
   getLatestMatchingRecord,
   summarizeProviderExecutionTimeline,
   summarizeProviderExecutions,
+  summarizeProviderProbeTimeline,
   summarizeProviderProbes,
 } from './provider-execution-summary.mjs';
+import { summarizeProviderEvents } from './provider-event-summary.mjs';
 import {
   buildProviderExecutionDailyBuckets,
   buildProviderExecutionLatestBucketDelta,
@@ -2996,95 +2994,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     };
   }
 
-  function buildProviderProbeTimeline(probes) {
-    return probes.map((probe) => {
-      const kind = probe.attempted
-        ? probe.ok
-          ? 'provider-probe-succeeded'
-          : 'provider-probe-failed'
-        : 'provider-probe-skipped';
-
-      return {
-        at: probe.checkedAt || probe.createdAt,
-        attempted: probe.attempted,
-        attemptHistory: normalizeProviderAttemptHistory(probe.attemptHistory),
-        attemptHistoryCount: normalizeProviderAttemptHistory(probe.attemptHistory).length,
-        durationMs: normalizeTelemetryNumber(probe.durationMs),
-        detail: formatProviderFailureDetail({
-          attemptCount: probe.attemptCount,
-          detail: probe.reason || (probe.ok ? 'Provider probe succeeded.' : 'Provider probe failed.'),
-          failureKind: probe.ok ? null : probe.failureKind,
-          httpStatus: probe.httpStatus,
-          recoverable: probe.recoverable,
-          timedOut: probe.timedOut,
-        }),
-        endpoint: probe.endpoint || null,
-        failureKind: probe.failureKind || null,
-        httpStatus: Number.isFinite(Number(probe.httpStatus)) ? Number(probe.httpStatus) : null,
-        id: probe.id,
-        kind,
-        model: probe.model || null,
-        modelAvailable: probe.modelAvailable,
-        modelCount: probe.modelCount,
-        ok: probe.ok,
-        providerId: probe.providerId,
-        providerResponseId: probe.providerResponseId || null,
-        rawMessage: probe.rawMessage || null,
-        recoverable: typeof probe.recoverable === 'boolean' ? probe.recoverable : null,
-        retryCount: Number(probe.retryCount || 0),
-        sampleModels: ensureArray(probe.sampleModels),
-        timedOut: Boolean(probe.timedOut),
-        transport: probe.transport || null,
-        attemptCount: Number(probe.attemptCount || 0),
-      };
-    });
-  }
-
-  function summarizeProviderProbeTimeline(events) {
-    const eventCounts = {};
-    const providerCounts = {};
-    let attemptedCount = 0;
-    let failureCount = 0;
-    let successCount = 0;
-    const durationSummary = summarizeDurationMetrics(events);
-    const attemptSummary = summarizeAttemptMetrics(events, (event) => event.ok);
-
-    for (const event of events) {
-      eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
-      providerCounts[event.providerId] = (providerCounts[event.providerId] || 0) + 1;
-      if (event.attempted) {
-        attemptedCount += 1;
-      }
-      if (event.ok) {
-        successCount += 1;
-      } else {
-        failureCount += 1;
-      }
-    }
-
-    return {
-      attemptedCount,
-      averageDurationMs: durationSummary.averageDurationMs,
-      eventCounts,
-      failureKindCounts: summarizeFailureKinds(events.filter((event) => event.attempted && !event.ok)),
-      failureCount,
-      latestEvent: events.at(-1) || null,
-      maxDurationMs: durationSummary.maxDurationMs,
-      providerCounts,
-      retryableFailureCount: events.filter((event) => event.attempted && !event.ok && event.recoverable).length,
-      totalAttemptCount: attemptSummary.totalAttemptCount,
-      totalRetryCount: attemptSummary.totalRetryCount,
-      successCount,
-      retrySucceededCount: attemptSummary.retrySucceededCount,
-      multiAttemptCount: attemptSummary.multiAttemptCount,
-      timedOutFailureCount: events.filter((event) => event.attempted && !event.ok && event.timedOut).length,
-      maxAttemptCount: attemptSummary.maxAttemptCount || null,
-      attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
-      total: events.length,
-      totalDurationMs: durationSummary.totalDurationMs,
-    };
-  }
-
   function buildSpecialistFollowUpReminderTimeline(records) {
     return records.map((record) => ({
       actionId: record.actionId,
@@ -3288,189 +3197,6 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       }
       return String(event.at || '') >= normalizedSinceFilter;
     });
-  }
-
-  function summarizeProviderEvents(events) {
-    const eventCounts = {};
-    const familyCounts = { attention: 0, execution: 0, fallback: 0, probe: 0 };
-    const fallbackPolicyCounts = {};
-    const fallbackStopReasonCounts = {};
-    const providerRouteDecisionPolicyCounts = {};
-    const providerRouteDecisionRouteCounts = {};
-    const providerCounts = {};
-    const executionEvents = events.filter((event) => event.eventFamily === 'execution');
-    const probeEvents = events.filter((event) => event.eventFamily === 'probe');
-    const executionDurationSummary = summarizeDurationMetrics(
-      executionEvents,
-    );
-    const executionAttemptSummary = summarizeAttemptMetrics(
-      executionEvents,
-      (event) => event.executionStatus === 'completed',
-    );
-    const executionUsageSummary = summarizeUsageMetrics(executionEvents);
-    const executionEstimatedCostSummary = summarizeEstimatedCostMetrics(executionEvents);
-    const executionEstimatedCostByProviderId = summarizeEstimatedCostBreakdown(executionEvents, 'providerId');
-    const executionEstimatedCostByRole = summarizeEstimatedCostBreakdown(executionEvents, 'role');
-    const probeDurationSummary = summarizeDurationMetrics(probeEvents);
-    const probeAttemptSummary = summarizeAttemptMetrics(probeEvents, (event) => event.ok);
-    const executionStatusCounts = {
-      ...Object.fromEntries(AGENT_RUN_STATUSES.map((status) => [status, 0])),
-      total: 0,
-    };
-    let probeAttemptedCount = 0;
-    let probeFailureCount = 0;
-    let probeSkippedCount = 0;
-    let probeSuccessCount = 0;
-    const attentionStatusCounts = {
-      acknowledged: 0,
-      opened: 0,
-      recovered: 0,
-      reminded: 0,
-      resolved: 0,
-      total: 0,
-    };
-
-    for (const event of events) {
-      eventCounts[event.eventKind] = (eventCounts[event.eventKind] || 0) + 1;
-      providerCounts[event.providerId] = (providerCounts[event.providerId] || 0) + 1;
-
-      if (event.eventFamily === 'probe') {
-        familyCounts.probe += 1;
-        if (event.attempted) {
-          probeAttemptedCount += 1;
-        } else {
-          probeSkippedCount += 1;
-          continue;
-        }
-        if (event.ok) {
-          probeSuccessCount += 1;
-        } else {
-          probeFailureCount += 1;
-        }
-        continue;
-      }
-
-      if (event.eventFamily === 'attention') {
-        familyCounts.attention += 1;
-        attentionStatusCounts.total += 1;
-        if (event.eventKind === 'provider-attention-opened') {
-          attentionStatusCounts.opened += 1;
-        } else if (event.eventKind === 'provider-attention-acknowledged') {
-          attentionStatusCounts.acknowledged += 1;
-        } else if (event.eventKind === 'provider-attention-reminded') {
-          attentionStatusCounts.reminded += 1;
-        } else if (event.eventKind === 'provider-attention-recovered') {
-          attentionStatusCounts.recovered += 1;
-        } else if (event.eventKind === 'provider-attention-resolved') {
-          attentionStatusCounts.resolved += 1;
-        }
-        continue;
-      }
-
-      if (event.eventFamily === 'fallback') {
-        familyCounts.fallback += 1;
-        const fallbackPolicy = normalizeText(event.fallbackPolicy);
-        if (fallbackPolicy) {
-          fallbackPolicyCounts[fallbackPolicy] = (fallbackPolicyCounts[fallbackPolicy] || 0) + 1;
-        }
-        const fallbackStopReason = normalizeText(event.fallbackStopReason);
-        if (fallbackStopReason) {
-          fallbackStopReasonCounts[fallbackStopReason] = (fallbackStopReasonCounts[fallbackStopReason] || 0) + 1;
-        }
-        if (event.providerRouteDecision) {
-          const routeName = normalizeText(event.providerRouteDecision.action?.route || event.providerRouteName);
-          if (routeName) {
-            providerRouteDecisionRouteCounts[routeName] = (providerRouteDecisionRouteCounts[routeName] || 0) + 1;
-          }
-          const routePolicyId = normalizeText(event.providerRouteDecision.policyId || event.fallbackPolicy);
-          if (routePolicyId) {
-            providerRouteDecisionPolicyCounts[routePolicyId] =
-              (providerRouteDecisionPolicyCounts[routePolicyId] || 0) + 1;
-          }
-        }
-        continue;
-      }
-
-      familyCounts.execution += 1;
-      executionStatusCounts.total += 1;
-      if (executionStatusCounts[event.executionStatus] !== undefined) {
-        executionStatusCounts[event.executionStatus] += 1;
-      }
-    }
-
-    return {
-      attentionStatusCounts,
-      eventCounts,
-      executionAverageDurationMs: executionDurationSummary.averageDurationMs,
-      executionCompletedCount: executionStatusCounts.completed,
-      executionFailureKindCounts: summarizeFailureKinds(
-        events.filter((event) => event.eventFamily === 'execution' && event.executionStatus === 'failed'),
-      ),
-      executionFailedCount: executionStatusCounts.failed,
-      executionMaxDurationMs: executionDurationSummary.maxDurationMs,
-      executionMaxAttemptCount: executionAttemptSummary.maxAttemptCount || null,
-      executionMultiAttemptCount: executionAttemptSummary.multiAttemptCount,
-      executionRetryableFailureCount: events.filter(
-        (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.recoverable,
-      ).length,
-      executionRetrySucceededCount: executionAttemptSummary.retrySucceededCount,
-      executionStatusCounts,
-      executionTotalAttemptCount: executionAttemptSummary.totalAttemptCount,
-      executionTotalDurationMs: executionDurationSummary.totalDurationMs,
-      executionTotalRetryCount: executionAttemptSummary.totalRetryCount,
-      executionAttemptHistoryEntryCountTotal: executionAttemptSummary.attemptHistoryEntryCountTotal,
-      executionEstimatedCostUsdAverage: executionEstimatedCostSummary.estimatedCostUsdAverage,
-      executionEstimatedCostUsdByProviderId: executionEstimatedCostByProviderId,
-      executionEstimatedCostUsdByRole: executionEstimatedCostByRole,
-      executionEstimatedCostUsdMax: executionEstimatedCostSummary.estimatedCostUsdMax,
-      executionEstimatedCostUsdPricedCount: executionEstimatedCostSummary.estimatedCostUsdPricedCount,
-      executionEstimatedCostUsdTotal: executionEstimatedCostSummary.estimatedCostUsdTotal,
-      executionTimedOutFailureCount: events.filter(
-        (event) => event.eventFamily === 'execution' && event.executionStatus === 'failed' && event.timedOut,
-      ).length,
-      familyCounts,
-      fallbackPolicyCounts,
-      fallbackStopReasonCounts,
-      latestAttentionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'attention'),
-      latestEvent: events.at(-1) || null,
-      latestExecutionEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'execution'),
-      latestFallbackEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'fallback'),
-      latestProviderRouteDecisionEvent: getLatestMatchingRecord(
-        events,
-        (event) => event.eventFamily === 'fallback' && Boolean(event.providerRouteDecision),
-      ),
-      latestProbeEvent: getLatestMatchingRecord(events, (event) => event.eventFamily === 'probe'),
-      probeAttemptedCount,
-      probeAverageDurationMs: probeDurationSummary.averageDurationMs,
-      probeFailureCount,
-      probeFailureKindCounts: summarizeFailureKinds(
-        events.filter((event) => event.eventFamily === 'probe' && event.attempted && !event.ok),
-      ),
-      probeMaxAttemptCount: probeAttemptSummary.maxAttemptCount || null,
-      probeMaxDurationMs: probeDurationSummary.maxDurationMs,
-      probeMultiAttemptCount: probeAttemptSummary.multiAttemptCount,
-      probeRetryableFailureCount: events.filter(
-        (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.recoverable,
-      ).length,
-      probeRetrySucceededCount: probeAttemptSummary.retrySucceededCount,
-      probeSkippedCount,
-      probeSuccessCount,
-      probeTotalAttemptCount: probeAttemptSummary.totalAttemptCount,
-      probeTotalDurationMs: probeDurationSummary.totalDurationMs,
-      probeTotalRetryCount: probeAttemptSummary.totalRetryCount,
-      probeAttemptHistoryEntryCountTotal: probeAttemptSummary.attemptHistoryEntryCountTotal,
-      probeTimedOutFailureCount: events.filter(
-        (event) => event.eventFamily === 'probe' && event.attempted && !event.ok && event.timedOut,
-      ).length,
-      providerCounts,
-      providerRouteDecisionCount: events.filter(
-        (event) => event.eventFamily === 'fallback' && Boolean(event.providerRouteDecision),
-      ).length,
-      providerRouteDecisionPolicyCounts,
-      providerRouteDecisionRouteCounts,
-      total: events.length,
-      ...executionUsageSummary,
-    };
   }
 
   function listProviders() {

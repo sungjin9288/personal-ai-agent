@@ -203,6 +203,96 @@ export function summarizeProviderExecutionTimeline(events) {
   };
 }
 
+export function buildProviderProbeTimeline(probes) {
+  return probes.map((probe) => {
+    const attemptHistory = normalizeProviderAttemptHistory(probe.attemptHistory);
+    const kind = probe.attempted
+      ? probe.ok
+        ? 'provider-probe-succeeded'
+        : 'provider-probe-failed'
+      : 'provider-probe-skipped';
+
+    return {
+      at: probe.checkedAt || probe.createdAt,
+      attempted: probe.attempted,
+      attemptCount: Number(probe.attemptCount || 0),
+      attemptHistory,
+      attemptHistoryCount: attemptHistory.length,
+      durationMs: normalizeTelemetryNumber(probe.durationMs),
+      detail: formatProviderFailureDetail({
+        attemptCount: probe.attemptCount,
+        detail: probe.reason || (probe.ok ? 'Provider probe succeeded.' : 'Provider probe failed.'),
+        failureKind: probe.ok ? null : probe.failureKind,
+        httpStatus: probe.httpStatus,
+        recoverable: probe.recoverable,
+        timedOut: probe.timedOut,
+      }),
+      endpoint: probe.endpoint || null,
+      failureKind: probe.failureKind || null,
+      httpStatus: Number.isFinite(Number(probe.httpStatus)) ? Number(probe.httpStatus) : null,
+      id: probe.id,
+      kind,
+      model: probe.model || null,
+      modelAvailable: probe.modelAvailable,
+      modelCount: probe.modelCount,
+      ok: probe.ok,
+      providerId: probe.providerId,
+      providerResponseId: probe.providerResponseId || null,
+      rawMessage: probe.rawMessage || null,
+      recoverable: typeof probe.recoverable === 'boolean' ? probe.recoverable : null,
+      retryCount: Number(probe.retryCount || 0),
+      sampleModels: Array.isArray(probe.sampleModels) ? probe.sampleModels : [],
+      timedOut: Boolean(probe.timedOut),
+      transport: probe.transport || null,
+    };
+  });
+}
+
+export function summarizeProviderProbeTimeline(events) {
+  const eventCounts = {};
+  const providerCounts = {};
+  let attemptedCount = 0;
+  let failureCount = 0;
+  let successCount = 0;
+  const durationSummary = summarizeDurationMetrics(events);
+  const attemptSummary = summarizeAttemptMetrics(events, (event) => event.ok);
+
+  for (const event of events) {
+    eventCounts[event.kind] = (eventCounts[event.kind] || 0) + 1;
+    providerCounts[event.providerId] = (providerCounts[event.providerId] || 0) + 1;
+    if (event.attempted) {
+      attemptedCount += 1;
+    }
+    if (event.ok) {
+      successCount += 1;
+    } else {
+      failureCount += 1;
+    }
+  }
+
+  return {
+    attemptedCount,
+    attemptHistoryEntryCountTotal: attemptSummary.attemptHistoryEntryCountTotal,
+    averageDurationMs: durationSummary.averageDurationMs,
+    eventCounts,
+    failureCount,
+    failureKindCounts: summarizeFailureKinds(events.filter((event) => event.attempted && !event.ok)),
+    latestEvent: events.at(-1) || null,
+    maxAttemptCount: attemptSummary.maxAttemptCount || null,
+    maxDurationMs: durationSummary.maxDurationMs,
+    multiAttemptCount: attemptSummary.multiAttemptCount,
+    providerCounts,
+    retryableFailureCount: events.filter((event) => event.attempted && !event.ok && event.recoverable).length,
+    retrySucceededCount: attemptSummary.retrySucceededCount,
+    successCount,
+    timedOutFailureCount: events.filter((event) => event.attempted && !event.ok && event.timedOut).length,
+    total: events.length,
+    totalAttemptCount: attemptSummary.totalAttemptCount,
+    totalDurationMs: durationSummary.totalDurationMs,
+    totalRetryCount: attemptSummary.totalRetryCount,
+  };
+}
+
 export function summarizeProviderProbes(probes) {
   const providerCounts = {};
   let attemptedCount = 0;

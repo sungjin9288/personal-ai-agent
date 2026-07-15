@@ -68,6 +68,8 @@
 | D3.2b Execution filesystem state·bundle | 완료 | 읽기 전용 file/directory state 수집과 mutation bundle 예측을 독립 builder로 이동 |
 | D3.2c Execution rollback plan | 완료 | reverse order state simulation, hash·snapshot guard와 rollback batch 조립을 실제 restore/delete I/O에서 분리 |
 | D3.2d Execution runner lifecycle | 완료 | session·step의 start·complete·fail·stop 상태 전이를 순수 lifecycle 모듈로 이동하고 runner의 lease·mission·log 종료 순서를 유지 |
+| D3.3 Provider read model·event aggregation | 진행 중 | probe·event 순수 집계를 먼저 분리하고 status·overview와 store 기반 query 조립을 후속 경계로 유지 |
+| D3.3a Provider probe·event summary | 완료 | probe timeline과 probe·execution·attention·fallback 통합 집계를 저장·registry·live probe에서 분리 |
 
 R1 완료 검증:
 
@@ -625,6 +627,21 @@ D3.2d 구현 검증:
 - 저장된 probe·run·attention·fallback record를 provider status, overview, history, timeline으로 바꾸는 읽기 흐름을 live probe 실행과 분리한다.
 - provider registry 조회와 `probeProvider` mutation은 기존 경계에 남기고, read model은 전달받은 record만 해석한다.
 - 완료 조건: failure taxonomy, retry·cost telemetry, attention recovery, fallback stop reason, filter 결과가 기존 smoke와 동일하다.
+
+D3.3은 아래 순서로 진행한다.
+
+1. D3.3a probe·event summary: probe timeline과 provider event family 집계를 순수 read model로 옮긴다.
+2. D3.3b status·overview composition: provider 상태와 전체 overview를 전달받은 provider·probe·execution·attention record로 조립한다.
+3. D3.3c history·timeline query assembly: store 조회와 filter 정규화를 남은 history·timeline read model 호출에서 분리한다.
+
+D3.3a 구현 검증:
+
+- provider probe·event read model 집중 단위 테스트 `10/10` 통과
+- 전체 unit test `710/710` 통과
+- 전체 deterministic smoke `165/165` 통과
+- provider events·history·timeline·overview, telemetry·cost·retry, attention recovery, fallback policy smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- registry 조회, `probeProvider` mutation, 저장 schema, CLI/API payload는 변경하지 않았고 provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.4 Mission run·fallback orchestration
 

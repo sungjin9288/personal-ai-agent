@@ -3,8 +3,10 @@ import { test } from 'node:test';
 
 import {
   buildProviderExecutionTimeline,
+  buildProviderProbeTimeline,
   formatProviderFailureDetail,
   getLatestMatchingRecord,
+  summarizeProviderProbeTimeline,
   summarizeProviderExecutionTimeline,
   summarizeProviderExecutions,
   summarizeProviderProbes,
@@ -210,4 +212,75 @@ test('summarizeProviderProbes keeps skipped and retried probe outcomes visible',
   assert.equal(summary.totalRetryCount, 1);
   assert.equal(summary.failureKindCounts['http-status'], 1);
   assert.deepEqual(summary.providerCounts, { anthropic: 1, local: 1, stub: 1 });
+});
+
+test('provider probe timeline preserves normalized failure evidence', () => {
+  const timeline = buildProviderProbeTimeline([
+    {
+      attemptCount: 2,
+      attempted: true,
+      attemptHistory: [
+        { attempt: 1, failureKind: 'timeout', ok: false },
+        { attempt: 2, failureKind: 'timeout', ok: false },
+      ],
+      checkedAt: '2026-07-15T00:00:00.000Z',
+      durationMs: 250,
+      failureKind: 'timeout',
+      httpStatus: 504,
+      id: 'probe-1',
+      ok: false,
+      providerId: 'anthropic',
+      reason: 'provider timed out',
+      recoverable: true,
+      retryCount: 1,
+      timedOut: true,
+    },
+  ]);
+
+  assert.equal(timeline[0].kind, 'provider-probe-failed');
+  assert.equal(timeline[0].attemptHistoryCount, 2);
+  assert.equal(timeline[0].providerId, 'anthropic');
+  assert.match(timeline[0].detail, /kind=timeout/);
+  assert.match(timeline[0].detail, /recoverable=true/);
+});
+
+test('provider probe timeline summary distinguishes skipped, successful, and failed probes', () => {
+  const timeline = buildProviderProbeTimeline([
+    {
+      attempted: false,
+      checkedAt: '2026-07-15T00:00:00.000Z',
+      id: 'probe-1',
+      ok: false,
+      providerId: 'stub',
+    },
+    {
+      attemptCount: 2,
+      attempted: true,
+      checkedAt: '2026-07-15T00:01:00.000Z',
+      id: 'probe-2',
+      ok: true,
+      providerId: 'local',
+      retryCount: 1,
+    },
+    {
+      attemptCount: 1,
+      attempted: true,
+      checkedAt: '2026-07-15T00:02:00.000Z',
+      failureKind: 'config',
+      id: 'probe-3',
+      ok: false,
+      providerId: 'openai',
+    },
+  ]);
+  const summary = summarizeProviderProbeTimeline(timeline);
+
+  assert.equal(summary.total, 3);
+  assert.equal(summary.attemptedCount, 2);
+  assert.equal(summary.successCount, 1);
+  assert.equal(summary.failureCount, 2);
+  assert.equal(summary.eventCounts['provider-probe-skipped'], 1);
+  assert.equal(summary.eventCounts['provider-probe-succeeded'], 1);
+  assert.equal(summary.eventCounts['provider-probe-failed'], 1);
+  assert.equal(summary.retrySucceededCount, 1);
+  assert.equal(summary.latestEvent.id, 'probe-3');
 });
