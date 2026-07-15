@@ -133,6 +133,13 @@ import {
 } from './provider-execution-summary.mjs';
 import { summarizeProviderEvents } from './provider-event-summary.mjs';
 import {
+  buildProviderOverviewResult,
+  buildProviderStatusEntry,
+  enrichProviderStatusEntries as enrichProviderStatusReadModel,
+  summarizeProviderOverview as summarizeProviderOverviewReadModel,
+  summarizeProviderStatusEntries as summarizeProviderStatusReadModel,
+} from './provider-status-overview.mjs';
+import {
   buildProviderExecutionDailyBuckets,
   buildProviderExecutionLatestBucketDelta,
   buildProviderExecutionLatestMonthlyBucketDelta,
@@ -2601,21 +2608,8 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       const latestAttentionAcknowledgement = getLatestProviderAttentionAcknowledgement(provider.id);
       const latestAttentionResolution = getLatestProviderAttentionResolution(provider.id);
       const latestAttentionReminder = store.listProviderAttentionReminders({ providerId: provider.id }).at(-1) || null;
-      const attentionStatus =
-        latestAttentionStateEvent?.eventKind === 'provider-attention-resolved'
-          ? 'resolved'
-          : latestAttentionRecovery
-            ? 'recovered'
-          : latestAttentionStateEvent?.eventKind === 'provider-attention-acknowledged'
-            ? 'acknowledged'
-            : latestAttentionStateEvent &&
-                ['provider-probe-failed', 'provider-execution-failed'].includes(latestAttentionStateEvent.eventKind)
-              ? 'pending'
-              : 'clear';
 
-      return {
-        ...provider,
-        attentionStatus,
+      return buildProviderStatusEntry({
         latestAttentionAcknowledgement,
         latestAttentionRecovery,
         latestAttentionRecord,
@@ -2625,53 +2619,24 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
         latestEvent,
         latestExecution: getLatestProviderExecution(provider.id),
         latestProbe: getLatestProviderProbe(provider.id),
-      };
+        provider,
+      });
     });
   }
 
   function summarizeProviderStatusEntries(providers) {
-    return {
-      capabilityCostTelemetryCount: providers.filter((provider) => provider.capabilities?.costTelemetry).length,
-      capabilityStructuredJsonCount: providers.filter((provider) => provider.capabilities?.structuredJson).length,
-      capabilityUsageMetricsCount: providers.filter((provider) => provider.capabilities?.usageMetrics).length,
-      configuredCount: providers.filter((provider) => provider.configured).length,
+    return summarizeProviderStatusReadModel(providers, {
       defaultProviderId: providerRegistry.getDefaultProviderId(),
-      implementedCount: providers.filter((provider) => provider.implemented).length,
-      rateLimitedProviderCount: providers.filter((provider) => Number(provider.rateLimit?.maxRequests || 0) > 0).length,
-      total: providers.length,
-    };
+    });
   }
 
   function enrichProviderStatusEntries(providers) {
     const pendingAttentionItems = buildProviderAttentionPendingItemsFromProviders(providers, {});
     const recoveredAttentionItems = buildProviderAttentionRecoveredItemsFromProviders(providers, {});
-    const pendingAttentionByProviderId = new Map(
-      pendingAttentionItems.map((item) => [item.providerId, item]),
-    );
-    const recoveredAttentionByProviderId = new Map(
-      recoveredAttentionItems.map((item) => [item.providerId, item]),
-    );
 
-    return providers.map((provider) => {
-      const pendingAttention = pendingAttentionByProviderId.get(provider.id) || null;
-      const recoveredAttention = recoveredAttentionByProviderId.get(provider.id) || null;
-      const attentionStatus = pendingAttention ? 'pending' : recoveredAttention ? 'recovered' : provider.attentionStatus;
-
-      return {
-        ...provider,
-        attentionStatus,
-        latestAttentionRecovery: recoveredAttention || provider.latestAttentionRecovery || null,
-        latestRecoveredAttention: recoveredAttention || provider.latestAttentionRecovery || null,
-        latestPendingAttention: pendingAttention,
-        pendingAttentionDueAt: pendingAttention?.dueAt || null,
-        pendingAttentionIsOverdue: Boolean(pendingAttention?.isOverdue),
-        pendingAttentionLatestReminderAt: pendingAttention?.latestReminderAt || null,
-        pendingAttentionNeedsReminder: Boolean(pendingAttention?.needsReminder),
-        pendingAttentionNextReminderAt: pendingAttention?.nextReminderAt || null,
-        pendingAttentionReminderCadenceHours: pendingAttention?.reminderCadenceHours || null,
-        pendingAttentionReminderCount: Number(pendingAttention?.reminderCount || 0),
-        pendingAttentionSlaHours: pendingAttention?.slaHours || null,
-      };
+    return enrichProviderStatusReadModel(providers, {
+      pendingAttentionItems,
+      recoveredAttentionItems,
     });
   }
 
@@ -2679,188 +2644,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     const pendingAttentionItems = buildProviderAttentionPendingItemsFromProviders(providers, {});
     const recoveredAttentionItems = buildProviderAttentionRecoveredItemsFromProviders(providers, {});
     const pendingAttentionSummary = summarizeProviderAttentionItems(pendingAttentionItems);
-    const attentionEvents = pendingAttentionItems.map((item) => ({
-      at: item.createdAt,
-      eventFamily: item.eventFamily,
-      eventKind: item.eventKind,
-      missionId: item.missionId,
-      providerDisplayName: item.providerDisplayName,
-      providerId: item.providerId,
-      sessionId: item.sessionId,
-      workspaceId: item.workspaceId,
-      workspaceName: item.workspaceName,
-    }));
-    const acknowledgedAttentionRecords = store.listProviderAttentionAcknowledgements();
-    const configuredProviderIds = [];
-    const latestProbeFailureProviderIds = [];
-    const latestProbeSkippedProviderIds = [];
-    const latestProbeSuccessProviderIds = [];
-    const readyProviderIds = [];
-    const acknowledgedAttentionProviderIds = [];
-    const recoveredAttentionProviderIds = [];
-    const resolvedAttentionProviderIds = [];
-    const unconfiguredProviderIds = [];
-    const unprobedProviderIds = [];
 
-    for (const provider of providers) {
-      if (provider.configured) {
-        configuredProviderIds.push(provider.id);
-      } else {
-        unconfiguredProviderIds.push(provider.id);
-      }
-
-      if (provider.configured && provider.implemented) {
-        readyProviderIds.push(provider.id);
-      }
-
-      if (provider.attentionStatus === 'acknowledged') {
-        acknowledgedAttentionProviderIds.push(provider.id);
-      }
-
-      if (provider.attentionStatus === 'recovered') {
-        recoveredAttentionProviderIds.push(provider.id);
-      }
-
-      if (provider.attentionStatus === 'resolved') {
-        resolvedAttentionProviderIds.push(provider.id);
-      }
-
-      if (!provider.latestProbe) {
-        unprobedProviderIds.push(provider.id);
-        continue;
-      }
-
-      if (provider.latestProbe.ok) {
-        latestProbeSuccessProviderIds.push(provider.id);
-        continue;
-      }
-
-      if (provider.latestProbe.attempted) {
-        latestProbeFailureProviderIds.push(provider.id);
-        continue;
-      }
-
-      latestProbeSkippedProviderIds.push(provider.id);
-    }
-
-    const probeSummary = summarizeProviderProbes(probes);
-    const executions = buildProviderExecutionEntries();
-    const executionSummary = summarizeProviderExecutions(executions);
-    const eventSummary = summarizeProviderEvents(buildProviderEvents());
-
-    return {
-      ...summarizeProviderStatusEntries(providers),
-      acknowledgedAttentionCount: acknowledgedAttentionProviderIds.length,
-      acknowledgedAttentionProviderIds,
-      attentionStatusCounts: {
-        acknowledged: acknowledgedAttentionProviderIds.length,
-        clear: providers.filter((provider) => provider.attentionStatus === 'clear').length,
-        pending: pendingAttentionItems.length,
-        recovered: recoveredAttentionProviderIds.length,
-        resolved: resolvedAttentionProviderIds.length,
-        total: providers.length,
-      },
-      attentionOverdueCount: pendingAttentionSummary.overdueCount,
-      attentionOverdueProviderIds: pendingAttentionSummary.overdueProviderIds,
-      attentionNeedsReminderCount: pendingAttentionSummary.needsReminderCount,
-      attentionNextDueAt: pendingAttentionSummary.nextDueAt,
-      attentionNextReminderAt: pendingAttentionSummary.nextReminderAt,
-      attentionAttemptHistoryEntryCountTotal: pendingAttentionSummary.attemptHistoryEntryCountTotal,
-      attentionMaxAttemptCount: pendingAttentionSummary.maxAttemptCount,
-      attentionMultiAttemptCount: pendingAttentionSummary.multiAttemptCount,
-      attentionReminderCountTotal: pendingAttentionSummary.reminderCountTotal,
-      attentionTotalAttemptCount: pendingAttentionSummary.totalAttemptCount,
-      attentionTotalRetryCount: pendingAttentionSummary.retryCountTotal,
-      attentionRequiredCount: attentionEvents.length,
-      attentionRequiredProviderIds: pendingAttentionItems.map((item) => item.providerId),
-      configuredProviderIds,
-      eventCounts: eventSummary.eventCounts,
-      eventFamilyCounts: eventSummary.familyCounts,
-      executionAverageDurationMs: executionSummary.averageDurationMs,
-      executionCompletedCount: executionSummary.statusCounts.completed,
-      executionFailedCount: executionSummary.statusCounts.failed,
-      executionFailureKindCounts: executionSummary.failureKindCounts,
-      executionMaxDurationMs: executionSummary.maxDurationMs,
-      executionMaxAttemptCount: executionSummary.maxAttemptCount,
-      executionMultiAttemptCount: executionSummary.multiAttemptCount,
-      executionRetrySucceededCount: executionSummary.retrySucceededCount,
-      executionStatusCounts: executionSummary.statusCounts,
-      executionTotal: executionSummary.total,
-      executionTotalAttemptCount: executionSummary.totalAttemptCount,
-      executionTotalDurationMs: executionSummary.totalDurationMs,
-      executionTotalRetryCount: executionSummary.totalRetryCount,
-      executionAttemptHistoryEntryCountTotal: executionSummary.attemptHistoryEntryCountTotal,
-      eventTotal: eventSummary.total,
-      fallbackPolicyCounts: eventSummary.fallbackPolicyCounts,
-      fallbackStopReasonCounts: eventSummary.fallbackStopReasonCounts,
-      providerRouteDecisionCount: eventSummary.providerRouteDecisionCount,
-      providerRouteDecisionPolicyCounts: eventSummary.providerRouteDecisionPolicyCounts,
-      providerRouteDecisionRouteCounts: eventSummary.providerRouteDecisionRouteCounts,
-      latestFailedProbe: getLatestMatchingRecord(probes, (probe) => probe.attempted && !probe.ok),
-      latestFailedExecution: executionSummary.latestFailedExecution,
-      latestEvent: eventSummary.latestEvent,
-      latestAttentionAcknowledgement: getLatestItem(acknowledgedAttentionRecords, 'acknowledgedAt'),
-      latestAttentionRecovery: getLatestItem(recoveredAttentionItems, 'recoveredAt'),
-      latestAttentionReminder: getLatestItem(store.listProviderAttentionReminders(), 'remindedAt'),
-      latestAttentionResolution: getLatestItem(
-        acknowledgedAttentionRecords.filter((record) => (record.status || 'acknowledged') === 'resolved'),
-        'resolvedAt',
-      ),
-      latestAttentionRequiredEvent: getLatestItem(attentionEvents, 'at'),
-      latestAttentionEvent: eventSummary.latestAttentionEvent,
-      latestExecutionEvent: eventSummary.latestExecutionEvent,
-      latestFallbackEvent: eventSummary.latestFallbackEvent,
-      latestProviderRouteDecisionEvent: eventSummary.latestProviderRouteDecisionEvent,
-      latestProbe: probes.at(-1) || null,
-      latestProbeFailureCount: latestProbeFailureProviderIds.length,
-      latestProbeFailureProviderIds,
-      latestProbeEvent: eventSummary.latestProbeEvent,
-      latestProbeSkippedCount: latestProbeSkippedProviderIds.length,
-      latestProbeSkippedProviderIds,
-      latestProbeSuccessCount: latestProbeSuccessProviderIds.length,
-      latestProbeSuccessProviderIds,
-      latestExecution: executionSummary.latestExecution,
-      latestSkippedProbe: getLatestMatchingRecord(probes, (probe) => !probe.attempted),
-      latestSuccessfulExecution: executionSummary.latestSuccessfulExecution,
-      latestSuccessfulProbe: getLatestMatchingRecord(probes, (probe) => probe.ok),
-      probeAttemptedCount: probeSummary.attemptedCount,
-      probeAverageDurationMs: probeSummary.averageDurationMs,
-      probeFailureCount: probeSummary.failureCount,
-      probeFailureKindCounts: probeSummary.failureKindCounts,
-      probeMaxAttemptCount: probeSummary.maxAttemptCount,
-      probeMaxDurationMs: probeSummary.maxDurationMs,
-      probeMultiAttemptCount: probeSummary.multiAttemptCount,
-      probeSuccessCount: probeSummary.successCount,
-      probeRetryableFailureCount: probeSummary.retryableFailureCount,
-      probeRetrySucceededCount: probeSummary.retrySucceededCount,
-      probeTimedOutFailureCount: probeSummary.timedOutFailureCount,
-      probeTotalAttemptCount: probeSummary.totalAttemptCount,
-      executionRetryableFailureCount: executionSummary.retryableFailureCount,
-      executionTimedOutFailureCount: executionSummary.timedOutFailureCount,
-      executionEstimatedCostUsdAverage: executionSummary.estimatedCostUsdAverage,
-      executionEstimatedCostUsdByProviderId: executionSummary.estimatedCostUsdByProviderId,
-      executionEstimatedCostUsdByRole: executionSummary.estimatedCostUsdByRole,
-      executionEstimatedCostUsdMax: executionSummary.estimatedCostUsdMax,
-      executionEstimatedCostUsdPricedCount: executionSummary.estimatedCostUsdPricedCount,
-      executionEstimatedCostUsdTotal: executionSummary.estimatedCostUsdTotal,
-      probeTotalDurationMs: probeSummary.totalDurationMs,
-      probeTotalRetryCount: probeSummary.totalRetryCount,
-      probeAttemptHistoryEntryCountTotal: probeSummary.attemptHistoryEntryCountTotal,
-      probeTotal: probeSummary.total,
-      readyCount: readyProviderIds.length,
-      readyProviderIds,
-      recoveredAttentionCount: recoveredAttentionProviderIds.length,
-      recoveredAttentionProviderIds,
-      resolvedAttentionCount: resolvedAttentionProviderIds.length,
-      resolvedAttentionProviderIds,
-      unconfiguredCount: unconfiguredProviderIds.length,
-      unconfiguredProviderIds,
-      usageInputTokensTotal: executionSummary.usageInputTokensTotal,
-      usageOutputTokensTotal: executionSummary.usageOutputTokensTotal,
-      usageTotalTokensTotal: executionSummary.usageTotalTokensTotal,
-      unprobedCount: unprobedProviderIds.length,
-      unprobedProviderIds,
-    };
+    return summarizeProviderOverviewReadModel({
+      acknowledgedAttentionRecords: store.listProviderAttentionAcknowledgements(),
+      attentionReminderRecords: store.listProviderAttentionReminders(),
+      defaultProviderId: providerRegistry.getDefaultProviderId(),
+      events: buildProviderEvents(),
+      executions: buildProviderExecutionEntries(),
+      pendingAttentionItems,
+      pendingAttentionSummary,
+      probes,
+      providers,
+      recoveredAttentionItems,
+    });
   }
 
   function buildProviderOverviewRecentWindow(since) {
@@ -3220,53 +3016,13 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       recentWindow,
     });
 
-    return {
-      filters: {
-        since: since || null,
-      },
+    return buildProviderOverviewResult({
       healthDrift,
+      overviewSummary,
       providers,
       recentWindow,
-      summary: {
-        ...overviewSummary,
-        latestRecentProviderEvent: recentWindow?.latestEvent || null,
-        latestRecentProviderExecution: recentWindow?.latestExecution || null,
-        latestRecentProviderFallbackEvent: recentWindow?.latestFallbackEvent || null,
-        latestRecentProviderProbe: recentWindow?.latestProbe || null,
-        providerHealthDriftAttentionNeedsReminderCount: healthDrift.attentionNeedsReminderCount,
-        providerHealthDriftAttentionOverdueCount: healthDrift.attentionOverdueCount,
-        providerHealthDriftAttentionRequiredCount: healthDrift.attentionRequiredCount,
-        providerHealthDriftReasonCodes: healthDrift.reasonCodes,
-        providerHealthDriftRecentExecutionCountDelta: healthDrift.recentExecutionCountDelta,
-        providerHealthDriftRecentExecutionCurrentMonthStartDate:
-          healthDrift.recentExecutionCurrentMonthStartDate,
-        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
-          healthDrift.recentExecutionEstimatedCostUsdTotalDelta,
-        providerHealthDriftRecentExecutionFailedCountDelta: healthDrift.recentExecutionFailedCountDelta,
-        providerHealthDriftRecentExecutionMonthlyBucketCount: healthDrift.recentExecutionMonthlyBucketCount,
-        providerHealthDriftRecentExecutionOldestMonthStartDate:
-          healthDrift.recentExecutionOldestMonthStartDate,
-        providerHealthDriftRecentExecutionPreviousMonthStartDate:
-          healthDrift.recentExecutionPreviousMonthStartDate,
-        providerHealthDriftStatus: healthDrift.status,
-        providerRecentEventCount: recentWindow?.eventTotal || 0,
-        providerRecentEventFamilyCounts:
-          recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
-        providerRecentExecutionCount: recentWindow?.executionTotal || 0,
-        providerRecentExecutionEstimatedCostUsdTotal: recentWindow?.executionEstimatedCostUsdTotal || 0,
-        providerRecentExecutionLatestMonthlyBucketDelta:
-          recentWindow?.executionLatestMonthlyBucketDelta || null,
-        providerRecentExecutionLatestMonthlyBucketStartDate:
-          recentWindow?.executionLatestMonthlyBucketStartDate || null,
-        providerRecentExecutionMonthlyBucketCount: recentWindow?.executionMonthlyBucketCount || 0,
-        providerRecentExecutionOldestMonthlyBucketStartDate:
-          recentWindow?.executionOldestMonthlyBucketStartDate || null,
-        providerRecentProbeTotal: recentWindow?.probeTotal || 0,
-        providerRecentSince: since || null,
-        providerRecentTouchedProviderCount: recentWindow?.touchedProviderCount || 0,
-        providerRecentTouchedProviderIds: recentWindow?.touchedProviderIds || [],
-      },
-    };
+      since,
+    });
   }
 
   function summarizeScopedProviderActivity(filter = {}) {

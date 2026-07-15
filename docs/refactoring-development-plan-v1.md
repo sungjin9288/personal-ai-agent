@@ -70,6 +70,7 @@
 | D3.2d Execution runner lifecycle | 완료 | session·step의 start·complete·fail·stop 상태 전이를 순수 lifecycle 모듈로 이동하고 runner의 lease·mission·log 종료 순서를 유지 |
 | D3.3 Provider read model·event aggregation | 진행 중 | probe·event 순수 집계를 먼저 분리하고 status·overview와 store 기반 query 조립을 후속 경계로 유지 |
 | D3.3a Provider probe·event summary | 완료 | probe timeline과 probe·execution·attention·fallback 통합 집계를 저장·registry·live probe에서 분리 |
+| D3.3b Provider status·overview composition | 완료 | attention 우선순위, capability·readiness 요약, provider overview와 recent·health payload 조립을 순수 모듈로 이동 |
 
 R1 완료 검증:
 
@@ -642,6 +643,15 @@ D3.3a 구현 검증:
 - provider events·history·timeline·overview, telemetry·cost·retry, attention recovery, fallback policy smoke 통과
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - registry 조회, `probeProvider` mutation, 저장 schema, CLI/API payload는 변경하지 않았고 provider live 명령과 외부 API 호출은 실행하지 않음
+
+D3.3b 구현 검증:
+
+- provider status·overview composition 단위 테스트 `5/5`, 전체 provider read-model 집중 테스트 `15/15` 통과
+- 전체 unit test `715/715` 통과
+- 전체 deterministic smoke `165/165` 통과
+- provider surface·overview·events, global overview, telemetry·cost·retry, attention recovery, fallback policy smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- store·registry 조회는 mission service에 유지하고 새 모듈은 전달받은 record만 조립한다. provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.4 Mission run·fallback orchestration
 
