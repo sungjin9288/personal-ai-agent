@@ -12,9 +12,9 @@ function ensureArray(value) {
  * derivation, the provider-health-drift summarizer, and the top-level
  * `summarizeActionInbox` roll-up.
  *
- * Mission-service retains validation, escalation sync, store access, and the
- * action item builders. This module receives those collected items and owns
- * the filtering, ordering, summary, and response payload.
+ * The action-inbox service validates scope, synchronizes escalation state,
+ * and collects source items. This module then owns filtering, ordering,
+ * summary calculation, and the response payload.
  *
  * `summarizeSpecialistFollowUpItems` is a pure module-scope helper in
  * mission-service that the roll-up needs; it is INJECTED rather than moved so

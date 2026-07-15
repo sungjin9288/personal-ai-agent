@@ -3,16 +3,12 @@ import path from 'node:path';
 
 import {
   AGENT_RUN_STATUSES,
-  ACTION_CLASSES,
   APPROVAL_KINDS,
-  ACTION_OWNERS,
-  ACTION_PRIORITIES,
   APPROVAL_DECISIONS,
   EXECUTION_LEASE_STATUSES,
   EXECUTION_SESSION_STATUSES,
   GLOBAL_USER_SCOPE_ID,
   KNOWLEDGE_DELIVERABLE_TYPES,
-  MAINTENANCE_RUN_OUTCOMES,
   MISSION_MODES,
   MISSION_STATUSES,
   SPECIALIST_KINDS,
@@ -22,6 +18,8 @@ import {
   buildCountMapDelta,
 } from './date-bucket-utils.mjs';
 import { createDocService } from './doc-service.mjs';
+import { createActionInboxService } from './action-inbox-service.mjs';
+import { createActionMaintenanceService } from './action-maintenance-service.mjs';
 import { createExecutionRuntimeService } from './execution-runtime-service.mjs';
 import { createEscalationService } from './escalation-service.mjs';
 import { createFollowUpService } from './follow-up-service.mjs';
@@ -51,7 +49,6 @@ import { createLearningCandidateEmitter } from './learning-candidate-emitter.mjs
 import { createLearningPromotion } from './learning-promotion.mjs';
 import { createDocumentLog } from './document-log.mjs';
 import { createActionInbox } from './action-inbox.mjs';
-import { prepareActionMaintenanceRun } from './action-maintenance-run.mjs';
 import {
   addDispatchMetadata,
   addFixedOperationalMetadata,
@@ -145,12 +142,8 @@ import {
   summarizeStoredRetrievalArtifact,
 } from './retrieval-artifacts.mjs';
 import {
-  buildMaintenanceDailyBuckets,
-  buildMaintenanceLatestBucketDelta,
   buildMaintenanceLatestMonthlyBucketDelta,
-  buildMaintenanceLatestWeeklyBucketDelta,
   buildMaintenanceMonthlyBuckets,
-  buildMaintenanceWeeklyBuckets,
   getMaintenanceRunAffectedMissionIds,
   isMaintenanceRunEffective,
   isMaintenanceRunImpactful,
@@ -197,10 +190,7 @@ import {
   buildWorkspaceTimelineReadModel,
 } from './timeline-read-model.mjs';
 import {
-  buildOverdueIncidentContent,
-  buildOverdueIncidentTitle,
   enrichEscalation,
-  formatIncidentCountMap,
   summarizeEscalations,
 } from './escalation-analytics.mjs';
 import {
@@ -713,6 +703,51 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     getMission,
     getWorkspace,
     writeUpdatedLearningCandidateArtifact,
+  });
+
+  const { getActionInbox } = createActionInboxService({
+    buildAcceptedRiskMonitoringItems,
+    buildActionInboxReadModel,
+    buildApprovalInboxItems,
+    buildBlockedFollowUpItems,
+    buildMaintenanceActionItems,
+    buildOwnerHandoffActionItems,
+    buildProviderAttentionItems,
+    buildProviderHealthDriftActionItems,
+    buildReviewerFollowUpItems,
+    buildSpecialistFollowUpItems,
+    getMission,
+    getWorkspace,
+    listLearningPromotionItems,
+    listMaintenanceOverviewRuns,
+    providerRegistry,
+    selectActionInboxItems,
+    syncEscalations,
+  });
+
+  const {
+    getMaintenanceOverview,
+    logOverdueActions,
+    runActionMaintenance,
+  } = createActionMaintenanceService({
+    getActionInbox,
+    getMission,
+    getWorkspace,
+    listMaintenanceOverviewRuns,
+    listMaintenancePressureEntries,
+    logIncidentDocument: ({ content, title }) => docService.logDocument({
+      content,
+      title,
+      type: 'incident',
+    }),
+    now,
+    remindEscalations,
+    remindOwnerHandoffs,
+    remindProviderAttention,
+    remindSpecialistFollowUps,
+    store,
+    summarizeMissionMaintenanceImpact,
+    syncEscalations,
   });
 
   const { logDocument, updateDocumentLog, deleteDocumentLog, migrateLegacyDocumentLogs } = createDocumentLog({
@@ -3142,351 +3177,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       summary: {
         pendingCount: items.length,
         workspaceCounts: byWorkspace,
-      },
-    };
-  }
-
-  function getActionInbox(filter = {}) {
-    const providerFallbackStopReason = normalizeText(filter.providerFallbackStopReason || filter.fallbackStopReason);
-    if (filter.providerId) {
-      providerRegistry.getProviderStatus(filter.providerId);
-    }
-    if (filter.workspaceId) {
-      getWorkspace(filter.workspaceId);
-    }
-    if (filter.missionId) {
-      getMission(filter.missionId);
-    }
-    if (filter.actionClass && !ACTION_CLASSES.includes(filter.actionClass)) {
-      throw new Error(`Unsupported action class: ${filter.actionClass}`);
-    }
-    if (filter.priority && !ACTION_PRIORITIES.includes(filter.priority)) {
-      throw new Error(`Unsupported action priority: ${filter.priority}`);
-    }
-    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
-      throw new Error(`Unsupported action owner: ${filter.owner}`);
-    }
-    if (filter.effectiveOwner && !ACTION_OWNERS.includes(filter.effectiveOwner)) {
-      throw new Error(`Unsupported effective action owner: ${filter.effectiveOwner}`);
-    }
-
-    syncEscalations({
-      missionId: filter.missionId,
-      workspaceId: filter.workspaceId,
-    });
-
-    const collectedItems = [
-      ...buildApprovalInboxItems(filter),
-      ...buildMaintenanceActionItems(filter),
-      ...buildOwnerHandoffActionItems(filter),
-      ...buildProviderAttentionItems(filter),
-      ...buildProviderHealthDriftActionItems(filter),
-      ...buildSpecialistFollowUpItems(filter),
-      ...listLearningPromotionItems({ ...filter, promotionStatus: filter.promotionStatus || 'operator-active' }),
-      ...buildAcceptedRiskMonitoringItems(filter),
-      ...buildBlockedFollowUpItems(filter),
-      ...buildReviewerFollowUpItems(filter),
-    ];
-    const items = selectActionInboxItems(collectedItems, { filter, providerFallbackStopReason });
-    let maintenanceLatestMonthlyBucketDelta = null;
-    let maintenanceMonthlyBuckets = [];
-
-    if (items.some((item) => item.actionType === 'maintenance-sweep') && !filter.providerId) {
-      const maintenanceOverviewRuns = listMaintenanceOverviewRuns({
-        missionId: filter.missionId,
-        owner: filter.owner,
-        workspaceId: filter.workspaceId,
-      });
-      maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceOverviewRuns);
-      maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
-    }
-
-    return buildActionInboxReadModel({
-      filter,
-      items,
-      maintenanceLatestMonthlyBucketDelta,
-      maintenanceMonthlyBuckets,
-      providerFallbackStopReason,
-    });
-  }
-
-  function logOverdueActions(filter = {}) {
-    const overdueInbox = getActionInbox({
-      ...filter,
-      overdueOnly: true,
-    });
-
-    if (!overdueInbox.items.length) {
-      return {
-        count: 0,
-        filters: overdueInbox.filters,
-        logged: false,
-        path: null,
-        title: null,
-      };
-    }
-
-    const title = buildOverdueIncidentTitle(overdueInbox.items.length);
-    const summary = overdueInbox.summary;
-    const content = buildOverdueIncidentContent({
-      filters: overdueInbox.filters,
-      items: overdueInbox.items,
-      summary,
-    });
-    const path = docService.logDocument({
-      type: 'incident',
-      title,
-      content,
-    });
-    const escalationIds = overdueInbox.items.map((item) => {
-      const existingOpenEscalation =
-        store
-          .listEscalations({
-            actionId: item.actionId,
-            status: 'open',
-          })
-          .at(-1) || null;
-
-      if (existingOpenEscalation) {
-        const updatedEscalation = store.updateEscalation(existingOpenEscalation.id, (escalation) => ({
-          ...escalation,
-          dueAt: item.dueAt,
-          escalationRule: item.escalationRule,
-          incidentPath: path,
-          incidentTitle: title,
-          isOverdue: item.isOverdue,
-          lastSeenAt: now(),
-          priority: item.priority,
-          recommendedCommand: item.recommendedCommand,
-          recommendedOwner: item.recommendedOwner,
-          title: item.title,
-          updatedAt: now(),
-        }));
-
-        return updatedEscalation.id;
-      }
-
-      return store.saveEscalation({
-        id: createId('escalation'),
-        actionId: item.actionId,
-        actionClass: item.actionClass,
-        actionType: item.actionType,
-        dueAt: item.dueAt,
-        escalationRule: item.escalationRule,
-        incidentPath: path,
-        incidentTitle: title,
-        isOverdue: item.isOverdue,
-        lastSeenAt: now(),
-        missionId: item.missionId,
-        priority: item.priority,
-        reason: item.reason,
-        recommendedCommand: item.recommendedCommand,
-        recommendedOwner: item.recommendedOwner,
-        resolutionNote: '',
-        resolvedAt: null,
-        sessionId: item.sessionId,
-        status: 'open',
-        title: item.title,
-        workspaceId: item.workspaceId,
-        workspaceName: item.workspaceName,
-        reminderCount: 0,
-        reminderHistory: [],
-        lastReminderAt: null,
-        createdAt: now(),
-        updatedAt: now(),
-      }).id;
-    });
-
-    return {
-      count: overdueInbox.items.length,
-      escalationIds,
-      filters: overdueInbox.filters,
-      itemIds: overdueInbox.items.map((item) => item.actionId),
-      logged: true,
-      path,
-      summary,
-      title,
-    };
-  }
-
-  function runActionMaintenance(filter = {}) {
-    if (filter.workspaceId) {
-      getWorkspace(filter.workspaceId);
-    }
-    if (filter.missionId) {
-      getMission(filter.missionId);
-    }
-    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
-      throw new Error(`Unsupported action owner: ${filter.owner}`);
-    }
-
-    const note = normalizeText(filter.note);
-    const beforePressure = listMaintenancePressureEntries({
-      missionId: filter.missionId,
-      owner: filter.owner,
-      workspaceId: filter.workspaceId,
-    });
-    const sync = syncEscalations({
-      missionId: filter.missionId,
-      owner: filter.owner,
-      status: 'open',
-      workspaceId: filter.workspaceId,
-    });
-    const escalationReminders = remindEscalations({
-      dueOnly: true,
-      excludePendingOwnerHandoff: true,
-      missionId: filter.missionId,
-      note,
-      owner: filter.owner,
-      workspaceId: filter.workspaceId,
-    });
-    const ownerHandoffReminders = remindOwnerHandoffs(
-      {
-        dueOnly: true,
-        missionId: filter.missionId,
-        owner: filter.owner,
-        workspaceId: filter.workspaceId,
-      },
-      note,
-    );
-    const providerAttentionReminders = remindProviderAttention(
-      {
-        dueOnly: true,
-        missionId: filter.missionId,
-        owner: filter.owner,
-        workspaceId: filter.workspaceId,
-      },
-      note,
-    );
-    const specialistFollowUpReminders = remindSpecialistFollowUps(
-      {
-        dueOnly: true,
-        missionId: filter.missionId,
-        owner: filter.owner,
-        workspaceId: filter.workspaceId,
-      },
-      note,
-    );
-    const afterPressure = listMaintenancePressureEntries({
-      missionId: filter.missionId,
-      owner: filter.owner,
-      workspaceId: filter.workspaceId,
-    });
-    const preparedRun = prepareActionMaintenanceRun({
-      afterPressure,
-      beforePressure,
-      createdAt: now(),
-      escalationReminders,
-      filter,
-      id: createId('maintenance'),
-      note,
-      ownerHandoffReminders,
-      providerAttentionReminders,
-      specialistFollowUpReminders,
-      syncSummary: sync.summary,
-    });
-    const maintenanceRun = store.saveMaintenanceRun(preparedRun.record);
-    const summary = preparedRun.summary;
-    const maintenanceOverviewRuns = listMaintenanceOverviewRuns({
-      missionId: filter.missionId,
-      owner: filter.owner,
-      workspaceId: filter.workspaceId,
-    });
-    const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceOverviewRuns);
-    const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
-
-    summary.maintenanceMonthlyBucketCount = maintenanceMonthlyBuckets.length;
-    summary.maintenanceLatestMonthlyBucketStartDate = maintenanceMonthlyBuckets[0]?.monthStartDate || null;
-    summary.maintenanceOldestMonthlyBucketStartDate = maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null;
-    summary.maintenanceLatestMonthlyBucketDelta = maintenanceLatestMonthlyBucketDelta;
-
-    return {
-      escalationReminders,
-      filters: {
-        missionId: filter.missionId || null,
-        note: note || null,
-        owner: filter.owner || null,
-        workspaceId: filter.workspaceId || null,
-      },
-      maintenanceRun,
-      ownerHandoffReminders,
-      providerAttentionReminders,
-      specialistFollowUpReminders,
-      summary,
-      sync,
-    };
-  }
-
-  function getMaintenanceOverview(filter = {}) {
-    if (filter.workspaceId) {
-      getWorkspace(filter.workspaceId);
-    }
-    if (filter.missionId) {
-      getMission(filter.missionId);
-    }
-    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
-      throw new Error(`Unsupported action owner: ${filter.owner}`);
-    }
-    if (filter.outcome && !MAINTENANCE_RUN_OUTCOMES.includes(filter.outcome)) {
-      throw new Error(`Unsupported maintenance run outcome: ${filter.outcome}`);
-    }
-    const since = normalizeTimestampFilter(filter.since, 'maintenance since timestamp');
-
-    const items = listMaintenanceOverviewRuns({
-      ...filter,
-      since,
-    });
-    const current = listMaintenancePressureEntries(filter);
-    const dailyBuckets = buildMaintenanceDailyBuckets(items);
-    const weeklyBuckets = buildMaintenanceWeeklyBuckets(items);
-    const monthlyBuckets = buildMaintenanceMonthlyBuckets(items);
-    const latestBucketDelta = buildMaintenanceLatestBucketDelta(dailyBuckets);
-    const latestWeeklyBucketDelta = buildMaintenanceLatestWeeklyBucketDelta(weeklyBuckets);
-    const latestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(monthlyBuckets);
-    const missionImpactSummary = filter.missionId ? summarizeMissionMaintenanceImpact(filter.missionId, items) : null;
-
-    return {
-      current,
-      filters: {
-        missionId: filter.missionId || null,
-        outcome: filter.outcome || null,
-        owner: filter.owner || null,
-        since: since || null,
-        workspaceId: filter.workspaceId || null,
-      },
-      items,
-      summary: {
-        ...summarizeMaintenanceRuns(items),
-        ...summarizeMaintenancePressure(current),
-        bucketCount: dailyBuckets.length,
-        dailyBuckets,
-        latestBucketDate: dailyBuckets[0]?.date || null,
-        latestBucketDelta,
-        latestMonthlyBucketDelta,
-        latestWeeklyBucketDelta,
-        latestMonthlyBucketStartDate: monthlyBuckets[0]?.monthStartDate || null,
-        oldestBucketDate: dailyBuckets.at(-1)?.date || null,
-        oldestMonthlyBucketStartDate: monthlyBuckets.at(-1)?.monthStartDate || null,
-        oldestWeeklyBucketStartDate: weeklyBuckets.at(-1)?.weekStartDate || null,
-        monthlyBucketCount: monthlyBuckets.length,
-        monthlyBuckets,
-        weeklyBucketCount: weeklyBuckets.length,
-        weeklyBuckets,
-        latestWeeklyBucketStartDate: weeklyBuckets[0]?.weekStartDate || null,
-        ...(missionImpactSummary
-          ? {
-              latestMissionImpactRun: missionImpactSummary.latestRun,
-              latestMissionImpactRunAt: missionImpactSummary.latestRunAt,
-              missionImpactEscalationRemindedCountTotal: missionImpactSummary.escalationRemindedCountTotal,
-              missionImpactOwnerHandoffRemindedCountTotal: missionImpactSummary.ownerHandoffRemindedCountTotal,
-              missionImpactProviderAttentionRemindedCountTotal:
-                missionImpactSummary.providerAttentionRemindedCountTotal,
-              missionImpactSpecialistFollowUpRemindedCountTotal:
-                missionImpactSummary.specialistFollowUpRemindedCountTotal,
-              missionImpactRunCount: missionImpactSummary.runCount,
-              missionImpactTotalRemindedCount: missionImpactSummary.totalRemindedCount,
-            }
-          : {}),
       },
     };
   }
