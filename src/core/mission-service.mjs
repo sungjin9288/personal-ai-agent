@@ -273,6 +273,11 @@ import {
   sortTimelineEvents,
 } from './timeline-assembly.mjs';
 import {
+  buildGlobalOperatorTimelineReadModel,
+  buildMissionTimelineReadModel,
+  buildWorkspaceTimelineReadModel,
+} from './timeline-read-model.mjs';
+import {
   buildEscalationReminderNote,
   buildInitialOwnerHistoryEntry,
   buildInitialTierHistoryEntry,
@@ -303,7 +308,6 @@ import {
 import {
   resolveSpecialistFollowUpPolicy,
   resolveSpecialistFollowUpRoute,
-  summarizeOperatorTimeline,
   summarizeReviewerFollowUps,
   summarizeSpecialistFollowUpItems,
 } from './follow-up-analytics.mjs';
@@ -9723,7 +9727,7 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     };
   }
 
-  function buildMissionTimeline(mission) {
+  function collectMissionTimelineEvents(mission) {
     const sessions = listSessions(mission.id);
     const rawSessions = store.listSessionsByMission(mission.id);
     const approvals = store.listApprovals({ missionId: mission.id });
@@ -10161,10 +10165,10 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       });
     }
 
-    return sortTimelineEvents(timeline);
+    return timeline;
   }
 
-  function buildOperatorTimelineEvents(filter = {}) {
+  function collectOperatorTimelineEvents(filter = {}) {
     const workspaceById = new Map(store.listWorkspaces().map((workspace) => [workspace.id, workspace]));
     const missionById = new Map(store.listMissions().map((mission) => [mission.id, mission]));
     const reviewerFollowUps = listReviewerFollowUpRecords(filter);
@@ -10613,13 +10617,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       }),
     );
 
-    return sortTimelineEvents(events);
+    return events;
   }
 
   function getWorkspaceTimeline(workspaceId, filter = {}) {
     const workspace = getWorkspace(workspaceId);
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'workspace timeline provider since timestamp');
-    const timeline = buildOperatorTimelineEvents({ workspaceId: workspace.id });
+    const timelineEvents = collectOperatorTimelineEvents({ workspaceId: workspace.id });
     const maintenanceRuns = listMaintenanceRunsForWorkspaceImpact(workspace.id);
     const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceRuns);
     const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
@@ -10636,73 +10640,21 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       recentWindow: providerRecentWindow,
     });
 
-    return {
+    return buildWorkspaceTimelineReadModel({
+      maintenanceLatestMonthlyBucketDelta,
+      maintenanceMonthlyBuckets,
+      parallelActivity,
       providerHealthDrift,
       providerRecentWindow,
-      summary: {
-        ...summarizeOperatorTimeline(timeline),
-        specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
-        specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
-        specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
-        specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
-        specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
-        specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
-        specialistLatestFollowUp: parallelActivity.latestFollowUp,
-        specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
-        specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
-        specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
-        specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
-        specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
-        specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
-        specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
-        latestRecentProviderEvent: providerRecentWindow?.latestEvent || null,
-        latestRecentProviderExecution: providerRecentWindow?.latestExecution || null,
-        providerRecentEventCount: providerRecentWindow?.eventCount || 0,
-        providerRecentEventFamilyCounts:
-          providerRecentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
-        providerRecentExecutionCount: providerRecentWindow?.executionCount || 0,
-        providerRecentExecutionEstimatedCostUsdTotal: providerRecentWindow?.executionEstimatedCostUsdTotal || 0,
-        providerRecentExecutionLatestMonthlyBucketDelta:
-          providerRecentWindow?.executionLatestMonthlyBucketDelta || null,
-        providerRecentExecutionLatestMonthlyBucketStartDate:
-          providerRecentWindow?.executionLatestMonthlyBucketStartDate || null,
-        providerRecentExecutionMonthlyBucketCount: providerRecentWindow?.executionMonthlyBucketCount || 0,
-        providerRecentExecutionOldestMonthlyBucketStartDate:
-          providerRecentWindow?.executionOldestMonthlyBucketStartDate || null,
-        providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
-        providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
-        providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
-        providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
-        providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
-        providerHealthDriftRecentExecutionCurrentMonthStartDate:
-          providerHealthDrift.recentExecutionCurrentMonthStartDate,
-        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
-          providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
-        providerHealthDriftRecentExecutionFailedCountDelta:
-          providerHealthDrift.recentExecutionFailedCountDelta,
-        providerHealthDriftRecentExecutionMonthlyBucketCount:
-          providerHealthDrift.recentExecutionMonthlyBucketCount,
-        providerHealthDriftRecentExecutionOldestMonthStartDate:
-          providerHealthDrift.recentExecutionOldestMonthStartDate,
-        providerHealthDriftRecentExecutionPreviousMonthStartDate:
-          providerHealthDrift.recentExecutionPreviousMonthStartDate,
-        providerHealthDriftStatus: providerHealthDrift.status,
-        maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
-        maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
-        maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
-        maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
-        providerRecentSince: providerSince || null,
-        providerRecentTouchedProviderCount: providerRecentWindow?.touchedProviderCount || 0,
-        providerRecentTouchedProviderIds: providerRecentWindow?.touchedProviderIds || [],
-      },
-      timeline,
+      providerSince,
+      timelineEvents,
       workspace,
-    };
+    });
   }
 
   function getGlobalOperatorTimeline(filter = {}) {
     const providerSince = normalizeTimestampFilter(filter.providerSince, 'operator timeline provider since timestamp');
-    const timeline = buildOperatorTimelineEvents();
+    const timelineEvents = collectOperatorTimelineEvents();
     const maintenanceRuns = store.listMaintenanceRuns();
     const maintenanceMonthlyBuckets = buildMaintenanceMonthlyBuckets(maintenanceRuns);
     const maintenanceLatestMonthlyBucketDelta = buildMaintenanceLatestMonthlyBucketDelta(maintenanceMonthlyBuckets);
@@ -10712,71 +10664,16 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
     });
     const providerHealthDrift = providerOverview.healthDrift;
 
-    return {
+    return buildGlobalOperatorTimelineReadModel({
+      maintenanceLatestMonthlyBucketDelta,
+      maintenanceMonthlyBuckets,
+      parallelActivity,
       providerHealthDrift,
       providerRecentWindow: providerOverview.recentWindow,
-      summary: {
-        ...summarizeOperatorTimeline(timeline),
-        specialistFollowUpRequiredCount: parallelActivity.specialistFollowUpRequiredCount,
-        specialistFollowUpNeedsReminderCount: parallelActivity.specialistFollowUpNeedsReminderCount,
-        specialistFollowUpOverdueCount: parallelActivity.specialistFollowUpOverdueCount,
-        specialistFollowUpReminderCountTotal: parallelActivity.specialistFollowUpReminderCountTotal,
-        specialistLatestQualityGateViolation: parallelActivity.latestQualityGateViolation,
-        specialistLatestOrchestrationProfile: parallelActivity.latestOrchestrationProfile,
-        specialistLatestFollowUp: parallelActivity.latestFollowUp,
-        specialistLatestReminderAt: parallelActivity.specialistLatestReminderAt,
-        specialistNextReminderAt: parallelActivity.specialistNextReminderAt,
-        specialistQualityGateBlockedCount: parallelActivity.qualityGateBlockedCount,
-        specialistQualityGateStatusCounts: parallelActivity.qualityGateStatusCounts,
-        specialistOrchestrationProfileCounts: parallelActivity.orchestrationProfileCounts,
-        specialistOrchestrationProfileCount: parallelActivity.specialistOrchestrationProfileCount,
-        specialistTouchedOrchestrationProfileIds: parallelActivity.touchedOrchestrationProfileIds,
-        latestRecentProviderEvent: providerOverview.recentWindow?.latestEvent || null,
-        latestRecentProviderExecution: providerOverview.recentWindow?.latestExecution || null,
-        latestRecentProviderProbe: providerOverview.recentWindow?.latestProbe || null,
-        providerRecentEventCount: providerOverview.recentWindow?.eventTotal || 0,
-        providerRecentEventFamilyCounts:
-          providerOverview.recentWindow?.eventFamilyCounts || { attention: 0, execution: 0, fallback: 0, probe: 0 },
-        providerRecentExecutionCount: providerOverview.recentWindow?.executionTotal || 0,
-        providerRecentExecutionEstimatedCostUsdTotal: providerOverview.recentWindow?.executionEstimatedCostUsdTotal || 0,
-        providerRecentExecutionLatestMonthlyBucketDelta:
-          providerOverview.recentWindow?.executionLatestMonthlyBucketDelta || null,
-        providerRecentExecutionLatestMonthlyBucketStartDate:
-          providerOverview.recentWindow?.executionLatestMonthlyBucketStartDate || null,
-        providerRecentExecutionMonthlyBucketCount:
-          providerOverview.recentWindow?.executionMonthlyBucketCount || 0,
-        providerRecentExecutionOldestMonthlyBucketStartDate:
-          providerOverview.recentWindow?.executionOldestMonthlyBucketStartDate || null,
-        providerHealthDriftAttentionNeedsReminderCount: providerHealthDrift.attentionNeedsReminderCount,
-        providerHealthDriftAttentionOverdueCount: providerHealthDrift.attentionOverdueCount,
-        providerHealthDriftAttentionRequiredCount: providerHealthDrift.attentionRequiredCount,
-        providerHealthDriftReasonCodes: providerHealthDrift.reasonCodes,
-        providerHealthDriftRecentExecutionCountDelta: providerHealthDrift.recentExecutionCountDelta,
-        providerHealthDriftRecentExecutionCurrentMonthStartDate:
-          providerHealthDrift.recentExecutionCurrentMonthStartDate,
-        providerHealthDriftRecentExecutionEstimatedCostUsdTotalDelta:
-          providerHealthDrift.recentExecutionEstimatedCostUsdTotalDelta,
-        providerHealthDriftRecentExecutionFailedCountDelta:
-          providerHealthDrift.recentExecutionFailedCountDelta,
-        providerHealthDriftRecentExecutionMonthlyBucketCount:
-          providerHealthDrift.recentExecutionMonthlyBucketCount,
-        providerHealthDriftRecentExecutionOldestMonthStartDate:
-          providerHealthDrift.recentExecutionOldestMonthStartDate,
-        providerHealthDriftRecentExecutionPreviousMonthStartDate:
-          providerHealthDrift.recentExecutionPreviousMonthStartDate,
-        providerHealthDriftStatus: providerHealthDrift.status,
-        maintenanceLatestMonthlyBucketDelta: maintenanceLatestMonthlyBucketDelta,
-        maintenanceLatestMonthlyBucketStartDate: maintenanceMonthlyBuckets[0]?.monthStartDate || null,
-        maintenanceMonthlyBucketCount: maintenanceMonthlyBuckets.length,
-        maintenanceOldestMonthlyBucketStartDate: maintenanceMonthlyBuckets.at(-1)?.monthStartDate || null,
-        providerRecentProbeTotal: providerOverview.recentWindow?.probeTotal || 0,
-        providerRecentSince: providerSince || null,
-        providerRecentTouchedProviderCount: providerOverview.recentWindow?.touchedProviderCount || 0,
-        providerRecentTouchedProviderIds: providerOverview.recentWindow?.touchedProviderIds || [],
-      },
-      timeline,
+      providerSince,
+      timelineEvents,
       workspaces: store.listWorkspaces(),
-    };
+    });
   }
 
   function getIdentitySessionAudit(filter = {}) {
@@ -11150,13 +11047,13 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       recentWindow: providerRecentWindow,
     });
     syncEscalations({ missionId: mission.id });
-    return {
+    return buildMissionTimelineReadModel({
       mission,
       providerHealthDrift,
       providerRecentWindow,
       summary: summarizeMission(mission, { providerSince }),
-      timeline: buildMissionTimeline(mission),
-    };
+      timelineEvents: collectMissionTimelineEvents(mission),
+    });
   }
 
   return {

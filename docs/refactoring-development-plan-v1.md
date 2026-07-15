@@ -762,6 +762,17 @@ D3.5c 구현 검증:
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - provider·workspace·mission·owner·tier 입력 검증, escalation sync, store 조회와 item builder, reminder·acknowledgement·resolution·incident 기록은 mission service에 유지한다. 새 read model은 전달받은 action·escalation record의 filter·sort·summary와 API payload만 조립함
 
+D3.5d 구현 검증:
+
+- mission·workspace·global operator timeline 정렬·summary·scope payload 집중 테스트 `8/8` 통과
+- 전체 unit test `768/768` 통과
+- 전체 deterministic smoke `165/165` 통과
+- mission·workspace·operator·provider timeline, session history, workspace·global overview, gateway·identity·sandbox·learning audit 관련 smoke `11/11` 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- workspace·mission·session·provider·approval·escalation·maintenance·gateway·audit record 조회와 event 문맥 조립은 mission service에 유지한다. 새 read model은 전달받은 event를 시간순으로 정렬하고 이미 계산된 provider·specialist·maintenance 지표를 mission·workspace·global API payload로 조립함
+
+D3.5의 harness browse, mission·harness summary, action·escalation inbox, mission·workspace·operator timeline read boundary를 순서대로 완료했다. 모든 slice에서 tenant·RBAC·permission, owner handoff, reminder cadence, audit event ordering과 UI payload 계약을 유지했다.
+
 D3는 D3.1부터 순서대로 진행한다. 각 묶음은 focused unit test와 deterministic smoke를 먼저 통과한 뒤 `npm test`, `npm run smoke:docs-gates`, `npm run smoke:all`로 닫는다. provider live 명령, 유료 배포, release claim 갱신은 포함하지 않는다.
 
 ## 5. 모델 운용
