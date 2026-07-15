@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-15T17:05:26.366Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-15T17:05:25.455Z
 - localDate: 2026-07-16
 - branch: codex/d4-3-provider-runtime
 - commit: 834790c77039b13172aad7ca396565f6e3678dc9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/834790c77039b13172aad7ca396565f6e3678dc9](releases/execution-v1/834790c77039b13172aad7ca396565f6e3678dc9)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/834790c77039b13172aad7ca396565f6e3678dc9/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/834790c77039b13172aad7ca396565f6e3678dc9/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/834790c77039b13172aad7ca396565f6e3678dc9](docs/releases/execution-v1/834790c77039b13172aad7ca396565f6e3678dc9)
 - visualArtifactSetSha256: 592c46251776a8c87a4b69e9227882ea6b078d9b80a4ae6739be3fda221abc59
 - commitPushStatus: not pushed, origin/codex/d4-3-provider-runtime not found
 
