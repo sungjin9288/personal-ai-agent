@@ -68,9 +68,10 @@
 | D3.2b Execution filesystem state·bundle | 완료 | 읽기 전용 file/directory state 수집과 mutation bundle 예측을 독립 builder로 이동 |
 | D3.2c Execution rollback plan | 완료 | reverse order state simulation, hash·snapshot guard와 rollback batch 조립을 실제 restore/delete I/O에서 분리 |
 | D3.2d Execution runner lifecycle | 완료 | session·step의 start·complete·fail·stop 상태 전이를 순수 lifecycle 모듈로 이동하고 runner의 lease·mission·log 종료 순서를 유지 |
-| D3.3 Provider read model·event aggregation | 진행 중 | probe·event 순수 집계를 먼저 분리하고 status·overview와 store 기반 query 조립을 후속 경계로 유지 |
+| D3.3 Provider read model·event aggregation | 완료 | probe·event, status·overview, history·timeline 결과 조립을 store·registry·live provider 경계에서 분리 |
 | D3.3a Provider probe·event summary | 완료 | probe timeline과 probe·execution·attention·fallback 통합 집계를 저장·registry·live probe에서 분리 |
 | D3.3b Provider status·overview composition | 완료 | attention 우선순위, capability·readiness 요약, provider overview와 recent·health payload 조립을 순수 모듈로 이동 |
+| D3.3c Provider history·timeline query assembly | 완료 | probe·execution·event history·timeline 결과와 filter payload 조립을 store 조회·입력 검증에서 분리 |
 
 R1 완료 검증:
 
@@ -652,6 +653,15 @@ D3.3b 구현 검증:
 - provider surface·overview·events, global overview, telemetry·cost·retry, attention recovery, fallback policy smoke 통과
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - store·registry 조회는 mission service에 유지하고 새 모듈은 전달받은 record만 조립한다. provider live 명령과 외부 API 호출은 실행하지 않음
+
+D3.3c 구현 검증:
+
+- provider history·timeline query result 단위 테스트 `5/5`, 전체 provider read-model 집중 테스트 `20/20` 통과
+- 전체 unit test `720/720` 통과
+- 전체 deterministic smoke `165/165` 통과
+- provider history·timeline·events·activity와 telemetry·cost·retry smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- store 조회와 timestamp·fallback policy 검증은 mission service에 유지하고 새 모듈은 전달받은 record와 정규화된 filter만 조립한다. provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.4 Mission run·fallback orchestration
 

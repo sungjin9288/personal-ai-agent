@@ -126,12 +126,17 @@ import {
   buildProviderProbeTimeline,
   formatProviderFailureDetail,
   getLatestMatchingRecord,
-  summarizeProviderExecutionTimeline,
   summarizeProviderExecutions,
-  summarizeProviderProbeTimeline,
   summarizeProviderProbes,
 } from './provider-execution-summary.mjs';
 import { summarizeProviderEvents } from './provider-event-summary.mjs';
+import {
+  buildProviderEventTimelineResult,
+  buildProviderExecutionHistoryResult,
+  buildProviderExecutionTimelineResult,
+  buildProviderProbeHistoryResult,
+  buildProviderProbeTimelineResult,
+} from './provider-history-timeline.mjs';
 import {
   buildProviderOverviewResult,
   buildProviderStatusEntry,
@@ -3522,19 +3527,12 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
 
   function listProviderProbeHistory(filter = {}) {
     const probes = store.listProviderProbes(filter);
-    return {
-      probes,
-      summary: summarizeProviderProbes(probes),
-    };
+    return buildProviderProbeHistoryResult(probes);
   }
 
   function getProviderProbeTimeline(filter = {}) {
     const probes = store.listProviderProbes(filter);
-    const timeline = buildProviderProbeTimeline(probes);
-    return {
-      summary: summarizeProviderProbeTimeline(timeline),
-      timeline,
-    };
+    return buildProviderProbeTimelineResult(probes);
   }
 
   function getProviderExecutionHistory(filter = {}) {
@@ -3543,26 +3541,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ...filter,
       since,
     });
-    const dailyBuckets = buildProviderExecutionDailyBuckets(executions);
-    return {
-      executions,
-      filters: {
-        missionId: filter.missionId || null,
-        providerId: filter.providerId || null,
-        role: filter.role || null,
-        since: since || null,
-        status: filter.status || null,
-        workspaceId: filter.workspaceId || null,
-      },
-      summary: {
-        ...summarizeProviderExecutions(executions),
-        bucketCount: dailyBuckets.length,
-        dailyBuckets,
-        latestBucketDate: dailyBuckets[0]?.date || null,
-        latestBucketDelta: buildProviderExecutionLatestBucketDelta(dailyBuckets),
-        oldestBucketDate: dailyBuckets.at(-1)?.date || null,
-      },
-    };
+    return buildProviderExecutionHistoryResult(executions, { ...filter, since });
   }
 
   function getProviderExecutionTimeline(filter = {}) {
@@ -3571,44 +3550,18 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
       ...filter,
       since,
     });
-    const timeline = buildProviderExecutionTimeline(executions);
-    return {
-      filters: {
-        missionId: filter.missionId || null,
-        providerId: filter.providerId || null,
-        role: filter.role || null,
-        since: since || null,
-        status: filter.status || null,
-        workspaceId: filter.workspaceId || null,
-      },
-      summary: summarizeProviderExecutionTimeline(timeline),
-      timeline,
-    };
+    return buildProviderExecutionTimelineResult(executions, { ...filter, since });
   }
 
   function getProviderEventTimeline(filter = {}) {
     const since = normalizeTimestampFilter(filter.since, 'provider event since timestamp');
+    const fallbackPolicy = filter.fallbackPolicy ? normalizeProviderFallbackPolicy(filter.fallbackPolicy) : null;
     const timeline = buildProviderEvents({
       ...filter,
+      fallbackPolicy,
       since,
     });
-    return {
-      filters: {
-        attempted: typeof filter.attempted === 'boolean' ? filter.attempted : null,
-        family: filter.family || null,
-        fallbackPolicy: filter.fallbackPolicy ? normalizeProviderFallbackPolicy(filter.fallbackPolicy) : null,
-        fallbackStopReason: filter.fallbackStopReason || null,
-        missionId: filter.missionId || null,
-        ok: typeof filter.ok === 'boolean' ? filter.ok : null,
-        providerId: filter.providerId || null,
-        role: filter.role || null,
-        since: since || null,
-        status: filter.status || null,
-        workspaceId: filter.workspaceId || null,
-      },
-      summary: summarizeProviderEvents(timeline),
-      timeline,
-    };
+    return buildProviderEventTimelineResult(timeline, { ...filter, fallbackPolicy, since });
   }
 
   function getMission(missionId) {
