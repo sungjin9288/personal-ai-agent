@@ -62,6 +62,8 @@
 | D1.1 Provider·blocker 검증 흐름 | 완료 | 필요한 증적 → 다음 검증 명령 → closure 판정을 같은 source-backed 화면 흐름으로 연결 |
 | D1.2 Action inbox remediation·handoff | 완료 | 즉시 실행, 외부 승인·인계, 검토 후 실행을 기존 permission·owner·audit record로 구분 |
 | D1.3 Session·log lineage | 완료 | run이 보유한 mission·session·provider response·retry·artifact 식별자를 한 문맥으로 표시하고 누락 연결을 분리 |
+| D3 API 비용 없는 내부 경계 정리 | 진행 중 | 외부 provider 호출 없이 mission service의 남은 도메인을 검증 가능한 순서로 분리 |
+| D3.1 Memory write·fact graph sync | 완료 | memory 검증·저장·fact graph 동기화를 독립 service로 이동 |
 
 R1 완료 검증:
 
@@ -540,6 +542,54 @@ D1.3 구현 검증:
 - production-like environment에서 나온 deployment·rollback·support evidence
 
 각 항목은 preflight → live validation → artifact hygiene → snapshot refresh → 문서 claim 갱신 순서로 닫는다. 중간 단계가 실패하면 기존 release label을 유지한다.
+
+### D3. API 비용 없는 내부 경계 정리
+
+D2를 기다리는 동안 외부 API와 배포 환경이 필요 없는 리팩토링을 이어간다. 대상은 `mission-service.mjs` 안에서 이미 한 도메인으로 모여 있고, 기존 public API와 저장 schema를 바꾸지 않고 분리할 수 있는 흐름으로 한정한다.
+
+#### D3.1 Memory write·fact graph sync — 완료
+
+- memory scope·kind·content 검증, 부모 workspace·mission 확인, CRUD, fact graph 동기화·retire를 하나의 작은 service로 옮긴다.
+- `mission-service.mjs`는 새 service를 조립하고 기존 `addMemory`, `updateMemory`, `deleteMemory`, `listMemory`, `listFactGraph` API를 그대로 노출한다.
+- 단위 테스트는 잘못된 scope·kind·빈 content가 저장 전에 중단되는지, workspace·mission 검증이 유지되는지, update·delete가 fact graph에 이전 record를 전달하는지 확인한다.
+- 완료 조건: 저장 형식, error message, CLI/API payload가 바뀌지 않고 fact graph와 retrieval 관련 smoke가 통과한다.
+
+D3.1 구현 검증:
+
+- `mission-memory-service.mjs`가 기존 memory public method 5개를 소유하고, `mission-service.mjs`는 같은 이름으로 조립해 노출한다.
+- 새 단위 테스트 10개와 mission memory handler를 포함한 집중 테스트 19개가 통과했다.
+- `npm run smoke:fact-graph-memory`: graph node 3개, edge 1개, retired node 2개로 통과했다.
+- `npm test`: 655개 통과
+- `npm run smoke:docs-gates`: 33개 통과
+- `npm run smoke:all`: live provider와 browser E2E를 제외한 deterministic smoke 165개 통과
+- 실제 browser E2E에서 memory·attachment retrieval handoff 6개, release artifact preview 38개, open 2개가 모두 error-free였고 console error와 page error는 0건이었다. timeout 실패 시 기존 artifact를 복원하는 smoke도 통과했다.
+- 외부 provider 호출, 저장 schema, CLI/API payload, tenant·RBAC·permission 경계, release claim은 변경하지 않았다.
+
+#### D3.2 Execution mutation·rollback boundary
+
+- manifest에서 mutation bundle을 만드는 계산, path state·audit·rollback plan 조립, 실제 filesystem write와 child process 실행을 순서대로 분리한다.
+- 먼저 순수 계산을 옮기고, 실행·중단·rollback lifecycle과 path guard는 검증이 갖춰진 뒤 이동한다.
+- 완료 조건: approval, execution lease, path containment, secret-like path 차단, mutation audit, rollback preview·실행 결과가 기존과 동일하다.
+
+#### D3.3 Provider read model·event aggregation
+
+- 저장된 probe·run·attention·fallback record를 provider status, overview, history, timeline으로 바꾸는 읽기 흐름을 live probe 실행과 분리한다.
+- provider registry 조회와 `probeProvider` mutation은 기존 경계에 남기고, read model은 전달받은 record만 해석한다.
+- 완료 조건: failure taxonomy, retry·cost telemetry, attention recovery, fallback stop reason, filter 결과가 기존 smoke와 동일하다.
+
+#### D3.4 Mission run·fallback orchestration
+
+- specialist stage, quality gate, provider attempt, fallback policy, session closeout의 순서를 작은 orchestration 경계로 나눈다.
+- live provider는 호출하지 않고 stub provider와 deterministic failure fixture만 사용한다.
+- 완료 조건: approval 대기, reviewer failure, parallel specialist merge, `provider-failure-only`, `recoverable-provider-failure-only`, artifact lineage가 유지된다.
+
+#### D3.5 Harness·action·timeline read boundaries
+
+- harness document/memory browse와 mission summary, action/escalation inbox, mission/workspace/operator timeline을 서로 다른 read model로 정리한다.
+- reminder·acknowledgement·resolution처럼 기록을 쓰는 동작은 읽기 조립과 함께 옮기지 않는다.
+- 완료 조건: tenant·RBAC·permission 판단, owner handoff, reminder cadence, audit event ordering, UI payload가 바뀌지 않는다.
+
+D3는 D3.1부터 순서대로 진행한다. 각 묶음은 focused unit test와 deterministic smoke를 먼저 통과한 뒤 `npm test`, `npm run smoke:docs-gates`, `npm run smoke:all`로 닫는다. provider live 명령, 유료 배포, release claim 갱신은 포함하지 않는다.
 
 ## 5. 모델 운용
 

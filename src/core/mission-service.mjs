@@ -22,7 +22,6 @@ import {
   LEARNING_PROMOTION_STATUSES,
   LEARNING_PROMOTION_TARGETS,
   MAINTENANCE_RUN_OUTCOMES,
-  MEMORY_KINDS,
   MEMORY_SCOPES,
   MISSION_MODES,
   MISSION_STATUSES,
@@ -46,6 +45,7 @@ import {
   normalizeExecutionManifest,
 } from './execution-utils.mjs';
 import { createFactGraphService } from './fact-graph-service.mjs';
+import { createMissionMemoryService } from './mission-memory-service.mjs';
 import {
   attachGatewayEventToSourceContext,
   normalizeGatewayEvent,
@@ -620,6 +620,19 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   const factGraph = createFactGraphService({ store });
   const providerRegistry = createProviderRegistry({ rootDir });
   const harness = createRuntimeHarness({ store });
+  const {
+    addMemory,
+    deleteMemory,
+    listFactGraph,
+    listMemory,
+    updateMemory,
+  } = createMissionMemoryService({
+    factGraph,
+    getMission,
+    getWorkspace,
+    harness,
+    store,
+  });
   const activeExecutionRuntimes = new Map();
   const executionRepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
   const executionWorkspaceRoot = path.resolve(executionRepoRoot, '..');
@@ -13309,99 +13322,6 @@ function summarizeMissionMaintenanceImpact(missionId, runs = null) {
       mission: failedMission,
       session: store.getSession(session.id),
     };
-  }
-
-  function addMemory({ scope, scopeId, kind, content }) {
-    if (!MEMORY_SCOPES.includes(scope)) {
-      throw new Error(`Unsupported memory scope: ${scope}`);
-    }
-    if (!MEMORY_KINDS.includes(kind)) {
-      throw new Error(`Unsupported memory kind: ${kind}`);
-    }
-    if (!normalizeText(content)) {
-      throw new Error('Memory content is required.');
-    }
-
-    if (scope === 'workspace') {
-      getWorkspace(scopeId);
-    }
-    if (scope === 'mission') {
-      getMission(scopeId);
-    }
-
-    const entry = harness.addMemoryEntry({
-      scope,
-      scopeId,
-      kind,
-      content: normalizeText(content),
-    });
-    factGraph.syncMemoryFact(entry);
-    return entry;
-  }
-
-  function getScopedMemoryEntryOrThrow({ scope, scopeId, memoryId }) {
-    const entry = store.listMemoryEntries({ scope, scopeId }).find((item) => item.id === memoryId);
-
-    if (!entry) {
-      throw new Error(`Memory entry not found: ${memoryId}`);
-    }
-
-    return entry;
-  }
-
-  function updateMemory({ scope, scopeId, memoryId, kind, content }) {
-    if (!MEMORY_SCOPES.includes(scope)) {
-      throw new Error(`Unsupported memory scope: ${scope}`);
-    }
-    if (!MEMORY_KINDS.includes(kind)) {
-      throw new Error(`Unsupported memory kind: ${kind}`);
-    }
-    if (!normalizeText(content)) {
-      throw new Error('Memory content is required.');
-    }
-
-    if (scope === 'workspace') {
-      getWorkspace(scopeId);
-    }
-    if (scope === 'mission') {
-      getMission(scopeId);
-    }
-
-    const previousEntry = getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
-    const updatedEntry = store.updateMemoryEntry(memoryId, (entry) => ({
-      ...entry,
-      content: normalizeText(content),
-      kind,
-      updatedAt: now(),
-    }));
-    factGraph.syncMemoryFact(updatedEntry, { previousEntry });
-    return updatedEntry;
-  }
-
-  function deleteMemory({ scope, scopeId, memoryId }) {
-    if (!MEMORY_SCOPES.includes(scope)) {
-      throw new Error(`Unsupported memory scope: ${scope}`);
-    }
-
-    if (scope === 'workspace') {
-      getWorkspace(scopeId);
-    }
-    if (scope === 'mission') {
-      getMission(scopeId);
-    }
-
-    const previousEntry = getScopedMemoryEntryOrThrow({ memoryId, scope, scopeId });
-    const removedEntry = store.deleteMemoryEntry(memoryId);
-    factGraph.retireMemoryFact(previousEntry, { reason: 'memory-deleted' });
-    return removedEntry;
-  }
-
-  function listMemory(filter = {}) {
-    return store.listMemoryEntries(filter);
-  }
-
-  function listFactGraph(filter = {}) {
-    return factGraph.listFactGraph(filter);
   }
 
   function showMission(missionId, filter = {}) {
