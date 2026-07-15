@@ -185,6 +185,10 @@ import {
   normalizeProviderFallbackPolicy,
 } from './provider-fallback-policy.mjs';
 import {
+  buildProviderFallbackAttemptOptions,
+  buildProviderFallbackAttemptRecord,
+} from './provider-fallback-attempt.mjs';
+import {
   inferMissionAttachmentMimeType,
   isSupportedMissionAttachment,
   normalizeMissionAttachmentFileName,
@@ -4685,69 +4689,25 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     let latestResult = null;
 
     for (const [index, providerId] of fallbackPlan.providerIds.entries()) {
-      const result = await runMissionAttempt(missionId, {
-        ...options,
-        provider: providerId,
-        providerSpecified: true,
-        sourceContext: {
-          ...options.sourceContext,
-          providerFallbackAttempt: index + 1,
-          providerFallbackAttemptCount: fallbackPlan.providerIds.length,
-          providerFallbackFallbacks: fallbackPlan.fallbackProviderIds,
-          providerFallbackPolicy: fallbackPlan.policyId,
-          providerFallbackPrimary: fallbackPlan.primaryProviderId,
-          providerFallbackRequested: true,
-        },
-      });
+      const result = await runMissionAttempt(
+        missionId,
+        buildProviderFallbackAttemptOptions({ fallbackPlan, index, options, providerId }),
+      );
       const providerFailure = getSessionProviderFailureSummary(result.session.id);
-      const missionStatus = normalizeText(result.mission?.status);
-      const fallbackPolicyDecision = evaluateProviderFallbackPolicy({
-        isLastAttempt: index >= fallbackPlan.providerIds.length - 1,
-        missionStatus,
-        policyId: fallbackPlan.policyId,
-        providerFailure,
-      });
-      const providerRouteDecision = buildProviderFallbackRouteDecision({
-        attempt: index + 1,
-        attemptCount: fallbackPlan.providerIds.length,
-        fallbackEligible: fallbackPolicyDecision.eligible,
-        fallbackProviderIds: fallbackPlan.fallbackProviderIds,
-        mission: result.mission || fallbackMission,
-        missionStatus,
-        nextProviderId:
-          fallbackPolicyDecision.eligible && fallbackPlan.providerIds[index + 1]
-            ? fallbackPlan.providerIds[index + 1]
-            : null,
-        policyId: fallbackPolicyDecision.policyId,
-        primaryProviderId: fallbackPlan.primaryProviderId,
+      const attempt = buildProviderFallbackAttemptRecord({
+        fallbackMission,
+        fallbackPlan,
+        fallbackWorkspace,
+        index,
         providerFailure,
         providerId,
-        session: result.session,
-        stopReason: fallbackPolicyDecision.reason,
-        workspace: fallbackWorkspace,
+        result,
       });
 
       latestResult = result;
-      attempts.push({
-        fallbackEligible: fallbackPolicyDecision.eligible,
-        fallbackAttempt: index + 1,
-        fallbackPolicy: fallbackPolicyDecision.policyId,
-        fallbackStopReason: fallbackPolicyDecision.reason,
-        gatewayEventId: result.session?.sourceContext?.gatewayEventId || null,
-        missionStatus,
-        nextProviderId:
-          fallbackPolicyDecision.eligible && fallbackPlan.providerIds[index + 1]
-            ? fallbackPlan.providerIds[index + 1]
-            : null,
-        providerFailure,
-        providerId,
-        providerRouteDecision,
-        providerRouteDecisionId: providerRouteDecision.id,
-        sessionId: result.session.id,
-        status: normalizeText(result.session?.status),
-      });
+      attempts.push(attempt);
 
-      if (!fallbackPolicyDecision.eligible) {
+      if (!attempt.fallbackEligible) {
         return attachProviderFallbackSummary(
           result,
           buildProviderFallbackSummary({

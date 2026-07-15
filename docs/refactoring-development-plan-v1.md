@@ -74,6 +74,7 @@
 | D3.3c Provider history·timeline query assembly | 완료 | probe·execution·event history·timeline 결과와 filter payload 조립을 store 조회·입력 검증에서 분리 |
 | D3.4 Mission run·fallback orchestration | 진행 중 | fallback policy부터 attempt loop, stage pipeline, review·closeout 순서로 승인·lineage 경계를 보존하며 분리 |
 | D3.4a Provider fallback plan·policy | 완료 | provider id·policy 정규화, distinct fallback plan, eligibility stop reason, route-decision summary를 순수 모듈로 이동 |
+| D3.4b Provider fallback attempt orchestration | 완료 | attempt source context, failure evidence, 다음 provider 선택, route-decision record 조립을 순수 builder로 이동 |
 
 R1 완료 검증:
 
@@ -686,6 +687,15 @@ D3.4a 구현 검증:
 - fallback policy·route decision, runtime discovery, mission quality gate, parallel specialists, approval, reviewer failure, execution flow smoke 통과
 - 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
 - provider registry validation과 store 기반 failure evidence 조회는 mission service에 유지한다. 새 모듈은 policy decision과 summary만 계산하며 provider live 명령과 외부 API 호출은 실행하지 않음
+
+D3.4b 구현 검증:
+
+- provider fallback attempt options·record 단위 테스트 `4/4`, 전체 fallback 집중 테스트 `8/8` 통과
+- 전체 unit test `728/728` 통과
+- 전체 deterministic smoke `165/165` 통과
+- fallback policy·route decision, provider attention remediation, runtime discovery, gateway audit, permission decision, operator timeline smoke 통과
+- 실제 browser E2E와 artifact restore 통과, browser console/page error `0`건
+- async mission run, store 기반 failure evidence 조회, gateway audit record는 mission service에 유지한다. 새 builder는 source context·policy decision·route-decision payload만 조립하며 provider live 명령과 외부 API 호출은 실행하지 않음
 
 #### D3.5 Harness·action·timeline read boundaries
 
