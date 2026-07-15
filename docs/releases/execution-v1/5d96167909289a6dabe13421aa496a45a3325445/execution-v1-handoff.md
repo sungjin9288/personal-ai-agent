@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-15T17:16:58.756Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-15T17:16:57.809Z
 - localDate: 2026-07-16
 - branch: codex/d4-4a-escalation-handoff
 - commit: 5d96167909289a6dabe13421aa496a45a3325445
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5d96167909289a6dabe13421aa496a45a3325445](releases/execution-v1/5d96167909289a6dabe13421aa496a45a3325445)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5d96167909289a6dabe13421aa496a45a3325445/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5d96167909289a6dabe13421aa496a45a3325445/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5d96167909289a6dabe13421aa496a45a3325445](docs/releases/execution-v1/5d96167909289a6dabe13421aa496a45a3325445)
 - visualArtifactSetSha256: 592c46251776a8c87a4b69e9227882ea6b078d9b80a4ae6739be3fda221abc59
 - commitPushStatus: not pushed, origin/codex/d4-4a-escalation-handoff not found
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-15T17:16:58.756Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-15T17:16:50.578Z
 - branch: codex/d4-4a-escalation-handoff
 - commit: 5d96167909289a6dabe13421aa496a45a3325445

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-15T17:16:58.756Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-15T17:16:50.741Z
 - branch: codex/d4-4a-escalation-handoff
 - commit: 5d96167909289a6dabe13421aa496a45a3325445
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5d96167909289a6dabe13421aa496a45a3325445/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
