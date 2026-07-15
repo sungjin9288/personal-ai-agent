@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-15T17:27:57.442Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-15T17:27:48.768Z
 - branch: codex/d4-4b-follow-up-service
 - commit: e6ac16a1a59cdee60680451dca85804d8e55c3b0

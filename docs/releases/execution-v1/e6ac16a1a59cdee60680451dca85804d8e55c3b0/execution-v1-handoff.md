@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-15T17:27:57.442Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-15T17:27:56.549Z
 - localDate: 2026-07-16
 - branch: codex/d4-4b-follow-up-service
 - commit: e6ac16a1a59cdee60680451dca85804d8e55c3b0
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e6ac16a1a59cdee60680451dca85804d8e55c3b0](releases/execution-v1/e6ac16a1a59cdee60680451dca85804d8e55c3b0)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e6ac16a1a59cdee60680451dca85804d8e55c3b0/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e6ac16a1a59cdee60680451dca85804d8e55c3b0/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e6ac16a1a59cdee60680451dca85804d8e55c3b0](docs/releases/execution-v1/e6ac16a1a59cdee60680451dca85804d8e55c3b0)
 - visualArtifactSetSha256: 592c46251776a8c87a4b69e9227882ea6b078d9b80a4ae6739be3fda221abc59
 - commitPushStatus: not pushed, origin/codex/d4-4b-follow-up-service not found
 
