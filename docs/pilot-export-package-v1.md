@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-15T17:45:19.062Z
+- generatedAt: 2026-07-15T18:12:22.278Z
 - verifiedCommit: adb64fd8ae6f6e06c163f8e61dd7cc0b31c48dfb
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: c00cce4746b76d9a3f2f5a44e3e939998c2ea619de60d609836a74f94bee9ac3
+- bundleSha256: 5292eff158d16a6a33426902225c281640e70f639895b878106280fcf9a0ecba
 - fileCount: 75
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -64,7 +64,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
 | `README.md` | 29859 | `f08fcf7aaa79341afb4299ce775322f84fc05d9fa31d76185567f796b0dd1a89` |
-| `CHANGELOG.md` | 4188 | `c51baa4c2aec614a83e548fc82643ed37c39ab39fd0ff6e59104bfd53a3aec0a` |
+| `CHANGELOG.md` | 4188 | `188de7543e57ae9a2084d04233d5de2030e0a461ed7be36686d8512da6eff0ba` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -80,7 +80,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/demo-scenarios-v1.md` | 20536 | `5e01fa6f993b6ef7790f19bc945e9b3c774fa3ce6c2da374e81b09c87a06fe9e` |
 | `docs/demo-evidence-index-v1.md` | 4010 | `0244e4b23fba823f168e339cc08bafaffb4811cf05e0762201e6a4651be553b1` |
 | `docs/recorded-walkthrough-v1.md` | 5378 | `cc3fe2615d81a6af5bcaad7b3489aebd294a941dcbb192d81e4772447dd43ea5` |
-| `docs/architecture-code-walkthrough-v1.md` | 5756 | `fb82a8b47503bb5556101e39de2156da5248d7a5692df03c8c292f942dce0fb0` |
+| `docs/architecture-code-walkthrough-v1.md` | 6797 | `6265b956e176a27359bca420cca9b64ece7d7013ff871898b01e2c08a173f92c` |
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
 | `docs/memory-retrieval-quality-fixture-v1.md` | 4867 | `681fb5b3c41929787b951b80fdb61c62e08683724290eebbe2f107e329248709` |

@@ -21,10 +21,14 @@ for (const term of [
   'src/cli.mjs',
   'src/web/server.mjs',
   'src/core/mission-service.mjs',
+  'src/core/mission-catalog-service.mjs',
+  'src/core/mission-run-service.mjs',
   'src/harness/runtime-harness.mjs',
   'src/providers/index.mjs',
   'src/core/store.mjs',
   'createMissionService',
+  'createMissionCatalogService',
+  'createMissionRunService',
   'createRuntimeHarness',
   'createProviderRegistry',
   'createStore',
@@ -41,7 +45,8 @@ for (const term of [
 
 for (const [filePath, pattern] of [
   ['src/core/mission-service.mjs', /export function createMissionService\(/],
-  ['src/core/mission-service.mjs', /async function runMission\(/],
+  ['src/core/mission-catalog-service.mjs', /export function createMissionCatalogService\(/],
+  ['src/core/mission-run-service.mjs', /async function runMission\(/],
   ['src/harness/runtime-harness.mjs', /export function createRuntimeHarness\(/],
   ['src/providers/index.mjs', /export function createProviderRegistry\(/],
   ['src/core/store.mjs', /export function createStore\(/],
@@ -99,7 +104,7 @@ console.log(
     {
       mode: 'architecture-code-walkthrough-smoke',
       ok: true,
-      checkedSymbols: 8,
+      checkedSymbols: 9,
       productionReadyClaim: false,
     },
     null,
