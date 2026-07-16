@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T17:04:50.849Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T17:04:49.924Z
 - localDate: 2026-07-17
 - branch: codex/rag-shadow-score-cache
 - commit: a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8](releases/execution-v1/a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8](docs/releases/execution-v1/a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8)
 - visualArtifactSetSha256: d3d357460c74690faca72c2c702842073f2eb4edf067dcab3ed97e5b82bc5f07
 - commitPushStatus: not pushed, origin/codex/rag-shadow-score-cache not found
 

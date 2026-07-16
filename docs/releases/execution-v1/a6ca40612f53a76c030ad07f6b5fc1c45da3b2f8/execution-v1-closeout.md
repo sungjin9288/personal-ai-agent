@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T17:04:50.849Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T17:04:43.571Z
 - branch: codex/rag-shadow-score-cache
 - commit: a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

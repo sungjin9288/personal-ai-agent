@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T17:04:50.849Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T17:04:43.522Z
 - branch: codex/rag-shadow-score-cache
 - commit: a6ca40612f53a76c030ad07f6b5fc1c45da3b2f8
