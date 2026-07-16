@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 RAG Corpus Contract
+
+- added a provider-neutral corpus record for memory, attachment, and fact sources with deterministic revision, chunk identity, content hash, scope, and controlled provenance
+- connected corpus lineage to retrieval artifacts without changing the persisted store, serialized retrieval item, ranking order, or provider input contract
+- added unit and credential-free smoke coverage for deterministic replay, content revision changes, path exclusion, artifact lineage, and the existing retrieval flow
+
 ## 2026-06-22 Operator Surface Demo Evidence Map
 
 - added `docs/operator-surface-demo-evidence-v1.md` to connect representative demo follow-up questions to mission, provider, action, API, and UI evidence files

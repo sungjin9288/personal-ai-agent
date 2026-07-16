@@ -4,7 +4,7 @@
 - productionReadyClaim: false
 - publicHostedDemoUrl: none
 - credentialFreeReplay: yes
-- scope: retrieval ranking, source diversity, fact graph provenance, fact revision lifecycle, instruction boundary
+- scope: retrieval ranking, corpus identity, source diversity, fact graph provenance, fact revision lifecycle, instruction boundary
 - relatedSecurityModel: [security-model-v1.md](security-model-v1.md)
 - relatedArchitectureWalkthrough: [architecture-code-walkthrough-v1.md](architecture-code-walkthrough-v1.md)
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
@@ -21,6 +21,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 |---|---|---|---|
 | Retrieval memory | Does retrieval prefer relevant memory and attachment chunks over unrelated text? | Workspace facts and incident-note chunks with provider drift/prompt normalization terms are selected; unrelated mission preference and appendix text are excluded | `npm run smoke:retrieval-memory` |
 | Retrieval ranking | Are scoring signals inspectable? | Retrieval artifact includes lexical score, BM25 score, phrase boost score, matched terms, match count, and retrieval reason | `npm run smoke:retrieval-memory` |
+| Corpus contract | Can the same source revision and chunk be identified without changing persisted data? | Memory, attachment, and fact records receive deterministic corpus/chunk ids, content hashes, scope, revision, and path-free provenance | `npm run smoke:retrieval-corpus-contract` |
 | Source diversity | Can a non-dominant source remain visible? | A mission decision source remains in the selected context even when many workspace facts match the same query | `npm run smoke:retrieval-memory` |
 | Fact graph memory | Are facts mirrored with provenance? | Fact memories become active graph nodes with memory provenance and shared-keyword edges | `npm run smoke:fact-graph-memory` |
 | Fact lifecycle | Are revisions and deletions auditable? | Fact updates preserve revisions, kind changes retire nodes, deleted memory retires graph entries and edges | `npm run smoke:fact-graph-memory` |
@@ -30,6 +31,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 
 ```bash
 npm run smoke:memory-retrieval-quality-fixture
+npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:instruction-boundary
@@ -46,7 +48,7 @@ npm run smoke:release-artifact-hygiene
 ## Reviewer Walkthrough
 
 1. Start with `src/core/retrieval-service.mjs`: retrieval context is built from mission objective, memory entries, attachments, pack requirements, and previous outputs.
-2. Open the retrieval artifact from the fixture run: it preserves source labels, scores, matched terms, and retrieval reasons for operator review.
+2. Open the retrieval artifact from the fixture run: it preserves source labels, scores, matched terms, retrieval reasons, corpus/chunk ids, content hashes, scope, revision, and provenance for operator review.
 3. Inspect `memory facts`: fact graph nodes retain memory provenance, revisions, active/retired state, and shared-keyword edges.
 4. Check the instruction-boundary fixture: red-team-like retrieved text is visible as untrusted data but does not become the deliverable instruction.
 5. Close with the boundary: this fixture proves deterministic retrieval and provenance behavior, not live model accuracy, production search relevance, or customer impact.
@@ -57,6 +59,7 @@ Safe to claim:
 
 - Retrieval memory fixtures verify relevant memory/attachment selection and unrelated context exclusion.
 - Retrieval artifacts expose inspectable ranking signals and source labels.
+- Corpus fixtures verify deterministic source/chunk identity without changing the store or serialized retrieval payload.
 - Fact graph fixtures verify provenance, revisions, retirement, and CLI compact output.
 - Instruction-boundary fixtures verify retrieved red-team-like content remains untrusted context in the local harness.
 
@@ -71,4 +74,4 @@ Do not claim:
 
 ## Acceptance Rule
 
-This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.
+This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.

@@ -124,8 +124,17 @@ assert.match(managerRetrievalContent, /matchTermCount:/);
 assert.match(managerRetrievalContent, /matchedTerms: .*provider.*drift/i);
 assert.match(managerRetrievalContent, /retrievalReason: matched \d+ query terms?:/);
 assert.match(managerRetrievalContent, /retrievalReason: .*phraseBoost/i);
+assert.match(managerRetrievalContent, /corpusSchema: personal-ai-agent-retrieval-corpus\/v1/);
+assert.match(managerRetrievalContent, /corpusId: corpus-[a-f0-9]{64}/);
+assert.match(managerRetrievalContent, /chunkId: chunk-[a-f0-9]{64}/);
+assert.match(managerRetrievalContent, /contentHash: [a-f0-9]{64}/);
+assert.match(managerRetrievalContent, /snippetHash: [a-f0-9]{64}/);
+assert.match(managerRetrievalContent, /scope: (workspace|mission)\//);
+assert.match(managerRetrievalContent, /revision: revision-[a-f0-9]{64}/);
+assert.match(managerRetrievalContent, /provenance: \{/);
 assert.match(managerRetrievalContent, /verification evidence bundle captured provider drift remediation/i);
 assert.doesNotMatch(managerRetrievalContent, /weekend hiking route/i);
+assert.doesNotMatch(managerRetrievalContent, /\/private\//);
 
 assert.equal(missionDetail.harness?.retrieval?.summary?.ready, true);
 assert.ok((missionDetail.harness?.retrieval?.roles || []).length >= 4);
@@ -137,6 +146,8 @@ assert.equal(Number(missionDetail.harness?.retrieval?.compare?.sharedSourceCount
 assert.equal(Number(missionDetail.harness?.retrieval?.compare?.latestSnippetCount || 0) >= 1, true);
 assert.equal(Array.isArray(missionDetail.harness?.retrieval?.compare?.previewOnlySources), true);
 assert.equal(Array.isArray(missionDetail.harness?.retrieval?.compare?.latestOnlySources), true);
+assert.equal(JSON.stringify(missionDetail.harness?.retrieval?.previewItems || []).includes('corpusId'), false);
+assert.equal(JSON.stringify(missionDetail.harness?.retrieval?.previewItems || []).includes('contentHash'), false);
 assert.equal(
   (missionDetail.harness?.retrieval?.previewItems || []).some((item) => String(item.sourceLabel || '').includes('workspace/fact')),
   true,

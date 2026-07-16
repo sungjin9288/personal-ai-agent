@@ -92,6 +92,7 @@
 - Provider failure recovery demo: verified with `npm run smoke:provider-failure-recovery-demo`
 - Memory retrieval quality fixture: verified with `npm run smoke:memory-retrieval-quality-fixture`
 - Answer quality evaluation foundation: verified with `npm run smoke:answer-quality-evaluation`
+- RAG corpus contract: verified with `npm run smoke:retrieval-corpus-contract`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

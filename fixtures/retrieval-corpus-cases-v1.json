@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "personal-ai-agent-retrieval-corpus-fixture/v1",
+  "memory": {
+    "id": "memory-provider-recovery",
+    "scope": "workspace",
+    "scopeId": "workspace-fixture",
+    "kind": "fact",
+    "content": "Provider drift recovery requires prompt normalization evidence.",
+    "createdAt": "2026-07-16T00:00:00.000Z",
+    "updatedAt": "2026-07-16T01:00:00.000Z"
+  },
+  "attachment": {
+    "id": "attachment-incident-notes",
+    "missionId": "mission-fixture",
+    "fileName": "incident-notes.md",
+    "mimeType": "text/markdown",
+    "source": "ui",
+    "createdAt": "2026-07-16T00:00:00.000Z",
+    "promptContent": "Prompt normalization resolved provider drift.\n\nVerification evidence preserved the recovery path."
+  },
+  "fact": {
+    "id": "fact-provider-recovery",
+    "scope": "workspace",
+    "scopeId": "workspace-fixture",
+    "sourceId": "memory-provider-recovery",
+    "sourceType": "memory",
+    "statement": "Provider drift recovery requires prompt normalization evidence.",
+    "status": "active",
+    "createdAt": "2026-07-16T00:00:00.000Z",
+    "updatedAt": "2026-07-16T01:00:00.000Z",
+    "validFrom": "2026-07-16T00:00:00.000Z",
+    "version": 2,
+    "provenance": [
+      {
+        "kind": "fact",
+        "sourceCreatedAt": "2026-07-16T00:00:00.000Z",
+        "sourceId": "memory-provider-recovery",
+        "sourceType": "memory",
+        "sourceUpdatedAt": "2026-07-16T01:00:00.000Z"
+      }
+    ]
+  },
+  "mission": {
+    "title": "Provider recovery",
+    "objective": "Explain provider drift recovery and prompt normalization evidence.",
+    "deliverableType": "decision-memo",
+    "mode": "knowledge",
+    "constraints": []
+  }
+}

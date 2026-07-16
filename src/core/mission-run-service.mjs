@@ -8,7 +8,7 @@ import {
   buildFallbackSpecialistHandoff,
   normalizeSpecialistHandoff,
 } from './specialist-handoff.mjs';
-import { buildRetrievalContext } from './retrieval-service.mjs';
+import { buildRetrievalContextWithCorpus } from './retrieval-service.mjs';
 import { formatRetrievalArtifactContent } from './retrieval-artifacts.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import {
@@ -662,7 +662,7 @@ export function createMissionRunService({
       role,
       specialistKind: runMetadata.specialistKind,
     });
-    const retrievalContext = buildRetrievalContext({
+    const { corpusRecords: retrievalCorpusRecords, items: retrievalContext } = buildRetrievalContextWithCorpus({
       attachments,
       memoryEntries,
       mission,
@@ -722,6 +722,7 @@ export function createMissionRunService({
           content: formatRetrievalArtifactContent({
             providerRole,
             retrievalContext,
+            retrievalCorpusRecords,
             role,
             specialistKind: normalizeText(runMetadata.specialistKind),
           }),

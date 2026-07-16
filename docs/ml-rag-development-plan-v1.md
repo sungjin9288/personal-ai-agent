@@ -1,17 +1,18 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: answer-quality-foundation-current
+- status: rag-corpus-contract-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
 - paidCloudExecution: none
 - currentFixture: `fixtures/answer-quality-cases-v1.json`
+- currentCorpusFixture: `fixtures/retrieval-corpus-cases-v1.json`
 
 ## 목적
 
 이 계획은 답변 품질을 먼저 측정하고, 그 근거로 RAG와 학습 기능을 단계적으로 개선하기 위한 개발 순서를 정한다. 지식 검색과 모델 학습을 한꺼번에 묶지 않는다. 최신 사실과 출처 문제는 RAG로, 반복되는 형식·판단·도구 사용 문제는 승인된 학습 데이터와 fine-tuning으로 다룬다.
 
-현재 구현은 memory와 attachment를 lexical score, BM25 score, phrase boost score로 정렬하고, 선택된 source와 provenance를 retrieval artifact에 남긴다. fact graph는 revision과 retirement 이력을 보존하며, learning candidate는 reviewer·approval·verification을 통과해야 promotion될 수 있다. 이번 단계는 이 기능을 바꾸지 않고, 개선 전후를 같은 기준으로 비교할 수 있는 answer quality evaluation 계층을 추가한다.
+현재 구현은 memory와 attachment를 lexical score, BM25 score, phrase boost score로 정렬한다. 검색 후보는 같은 저장 데이터를 바꾸지 않고 corpus record로 정규화되며, retrieval artifact는 source revision, chunk id, content hash, scope, provenance를 함께 남긴다. fact graph는 revision과 retirement 이력을 보존하며, learning candidate는 reviewer·approval·verification을 통과해야 promotion될 수 있다.
 
 아직 구현되었다고 주장하지 않는 범위는 embedding index, vector database, learned reranker, 학습용 dataset export, local training runtime, 외부 fine-tuning 실행, model registry, production A/B rollout이다.
 
@@ -28,6 +29,10 @@
 7. training과 model rollout은 별도 승인, 비용 한도, rollback 근거가 있을 때만 실행한다.
 
 평가기는 runtime, store, provider를 알지 못하는 순수 모듈이다. fixture가 retrieval 결과와 답변, 기대 source, reviewer verdict를 전달한다. 따라서 외부 API와 credential 없이 같은 입력에서 같은 결과를 재현할 수 있다.
+
+`src/core/retrieval-corpus.mjs`도 store와 provider를 모르는 순수 계약 모듈이다. memory, attachment, fact source를 `personal-ai-agent-retrieval-corpus/v1` record로 변환한다. record에는 source와 scope, revision, provenance, 원문 기반 content hash, deterministic corpus/chunk id가 들어간다. 저장된 source id가 없는 fixture는 내용과 scope에서 파생한 id를 명시적으로 사용한다.
+
+실제 retrieval payload와 mission read model에는 corpus metadata를 추가하지 않는다. 선택된 item과 corpus record의 연결은 runtime 내부에서만 유지하고 retrieval artifact를 쓸 때 사용한다. attachment의 로컬 path는 provenance에 포함하지 않는다. 인접 chunk가 합쳐진 표시 snippet은 원래 index chunk의 `contentHash`와 혼동하지 않도록 별도 `snippetHash`로 기록한다.
 
 ## 현재 평가 기준선
 
@@ -53,8 +58,8 @@
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
 |---|---|---|---|
 | Q1 Answer quality foundation | 완료 | 순수 evaluator, fixture, unit test, deterministic smoke | passing baseline과 의도적 regression을 모두 판정 |
-| R1 Corpus contract | 다음 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식 변경 없이 index 입력을 재생성 가능 |
-| R2 Retrieval evaluation | 예정 | fixture 확장, recall·noise·source diversity 기준, 현재 BM25/lexical baseline 비교 | ranking 변경이 품질 gate를 통과할 때만 반영 |
+| R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
+| R2 Retrieval evaluation | 다음 | fixture 확장, recall·noise·source diversity 기준, 현재 BM25/lexical baseline 비교 | ranking 변경이 품질 gate를 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 예정 | provider-neutral embedding adapter와 local/offline 구현 가능성 검증 | 새 dependency 전 승인, measured gain 없으면 도입하지 않음 |
 | R4 Reranking | 예정 | deterministic feature baseline 후 선택적 local reranker 실험 | latency·품질·rollback 비교 자료 확보 |
 | L1 승인된 학습 데이터 | 예정 | approved learning candidate와 reviewer evidence만 dataset record로 변환 | raw secret·customer payload 차단, lineage와 hash 보존 |
@@ -91,7 +96,9 @@ dataset export와 실제 학습 제출은 다른 권한으로 분리한다. expo
 
 ```bash
 node --test test/answer-quality-evaluation.test.mjs
+node --test test/retrieval-corpus.test.mjs test/retrieval-artifacts.test.mjs
 npm run smoke:answer-quality-evaluation
+npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```
@@ -111,6 +118,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 ## Claim Boundary
 
-현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사한다는 것이다.
+현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성한다는 것이다.
 
 이 결과는 일반적인 답변 정확도, 모델 성능 향상, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. `productionReadyClaim: false`는 모든 단계에서 유지한다.

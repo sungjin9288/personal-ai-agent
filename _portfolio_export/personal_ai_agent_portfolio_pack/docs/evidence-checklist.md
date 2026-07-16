@@ -24,6 +24,7 @@
 | Provider failure recovery demo | 완료 | `docs/provider-failure-recovery-demo-v1.md` | attention remediation, fallback policy, timeline/event audit verified by `npm run smoke:provider-failure-recovery-demo` |
 | Memory retrieval quality fixture | 완료 | `docs/memory-retrieval-quality-fixture-v1.md` | retrieval ranking, source diversity, fact graph provenance, and instruction boundary verified by `npm run smoke:memory-retrieval-quality-fixture` |
 | Answer quality evaluation foundation | 완료 | `docs/ml-rag-development-plan-v1.md`, `fixtures/answer-quality-cases-v1.json` | retrieval, citation, required-content, irrelevant-source, and reviewer regression gate verified by `npm run smoke:answer-quality-evaluation` |
+| RAG corpus contract | 완료 | `src/core/retrieval-corpus.mjs`, `fixtures/retrieval-corpus-cases-v1.json` | deterministic source revision, chunk id, content hash, scope, and provenance verified by `npm run smoke:retrieval-corpus-contract` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |

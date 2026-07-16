@@ -50,6 +50,7 @@
 | Provider failure recovery demo | `docs/provider-failure-recovery-demo-v1.md` | provider execution failure, attention remediation, fallback policy, timeline/event audit, and claim boundary |
 | Memory retrieval quality fixture | `docs/memory-retrieval-quality-fixture-v1.md` | retrieval ranking signals, source diversity, fact graph provenance, revision lifecycle, and instruction-boundary fixture |
 | Answer quality evaluation foundation | `docs/ml-rag-development-plan-v1.md` | credential-free retrieval hit, citation grounding, required-content, and reviewer regression gate |
+| RAG corpus contract | `src/core/retrieval-corpus.mjs` | deterministic memory, attachment, and fact source revision, chunk identity, content hash, scope, and provenance |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
 | External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
 
