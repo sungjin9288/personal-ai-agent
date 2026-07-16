@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T09:47:16.691Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T09:47:09.301Z
 - branch: codex/rag-deterministic-reranking
 - commit: 390775e0bd94cb7d7a78c5bfa74f8c79d7ee4ac5
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/390775e0bd94cb7d7a78c5bfa74f8c79d7ee4ac5/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

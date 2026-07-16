@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T09:47:16.691Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T09:47:09.250Z
 - branch: codex/rag-deterministic-reranking
 - commit: 390775e0bd94cb7d7a78c5bfa74f8c79d7ee4ac5
