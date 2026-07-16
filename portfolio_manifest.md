@@ -49,6 +49,7 @@
 - evidence/output-artifacts/local-retrieval-robustness.json
 - evidence/output-artifacts/local-relevance-reranker-evaluation.json
 - evidence/output-artifacts/local-reranker-resource-envelope.json
+- evidence/output-artifacts/local-reranker-runtime-stability.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함
@@ -77,6 +78,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 2,281,257 bytes
-- 압축 파일 SHA-256: `2937bda3d33a638426e64832d6f8820f021a82002f403698886ab89315dc5097`
+- 압축 파일 크기: 2,295,180 bytes
+- 압축 파일 SHA-256: `22300f7b726a3abdcba781c0487e85b203003ebb1f4d2aa5214b8429c73fd4e0`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

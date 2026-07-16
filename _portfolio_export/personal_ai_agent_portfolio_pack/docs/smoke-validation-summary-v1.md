@@ -47,6 +47,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Local retrieval robustness | `npm run smoke:local-retrieval-robustness` | Verifies recorded 15-case query variation coverage, selected model binding, hard-negative regression, content-free integrity, and failed-keep-lexical decision |
 | Local relevance reranker | `npm run smoke:local-relevance-reranker` | Verifies independent pair scoring, repeated score stability, 15-case and hard-negative pass, content-free evidence, and governance-blocked activation |
 | Local reranker resource envelope | `npm run smoke:local-reranker-resource-envelope` | Verifies top-2 expected-source preflight, R8 quality parity, inference and p50/p95/total reduction, loaded-model footprint, maximum regression disclosure, and governance-blocked activation |
+| Local reranker runtime stability | `npm run smoke:local-reranker-runtime-stability` | Verifies cold 1, warm 3, concurrent client worker 2, 360 inference quality/resource parity, bounded latency gates, and explicit production parallelism, long-soak, and thermal limitations |
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
@@ -87,6 +88,7 @@ npm run smoke:local-embedding-model-qualification
 npm run smoke:local-retrieval-robustness
 npm run smoke:local-relevance-reranker
 npm run smoke:local-reranker-resource-envelope
+npm run smoke:local-reranker-runtime-stability
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness

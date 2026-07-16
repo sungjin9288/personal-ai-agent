@@ -22,6 +22,7 @@ const localModelQualificationSmoke = readRequiredFile('scripts/smoke-local-embed
 const localRetrievalRobustnessSmoke = readRequiredFile('scripts/smoke-local-retrieval-robustness.mjs');
 const localRelevanceRerankerSmoke = readRequiredFile('scripts/smoke-local-relevance-reranker.mjs');
 const localRerankerResourceEnvelopeSmoke = readRequiredFile('scripts/smoke-local-reranker-resource-envelope.mjs');
+const localRerankerRuntimeStabilitySmoke = readRequiredFile('scripts/smoke-local-reranker-runtime-stability.mjs');
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
@@ -64,6 +65,10 @@ assert.equal(
   packageJson.scripts['smoke:local-reranker-resource-envelope'],
   'node scripts/smoke-local-reranker-resource-envelope.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:local-reranker-runtime-stability'],
+  'node scripts/smoke-local-reranker-runtime-stability.mjs',
+);
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
   packageJson.scripts['smoke:instruction-boundary'],
@@ -93,6 +98,7 @@ for (const term of [
   'npm run smoke:local-retrieval-robustness',
   'npm run smoke:local-relevance-reranker',
   'npm run smoke:local-reranker-resource-envelope',
+  'npm run smoke:local-reranker-runtime-stability',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -119,6 +125,19 @@ for (const smokeTerm of [
   'mission/decision',
 ]) {
   assertContains(retrievalSmoke, smokeTerm, `retrieval smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of [
+  'modelInferenceCount',
+  'warmP95DriftRate',
+  'concurrencyP95WarmMultiplier',
+  'productionSustainedConcurrencyValidated',
+]) {
+  assertContains(
+    localRerankerRuntimeStabilitySmoke,
+    smokeTerm,
+    `local reranker runtime stability smoke missing ${smokeTerm}`,
+  );
 }
 
 for (const smokeTerm of ['buildFactCorpusRecord', 'contentHash', 'chunkId', 'revision', 'provenance']) {

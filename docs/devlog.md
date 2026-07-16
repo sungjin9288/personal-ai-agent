@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Local Reranker Runtime Stability
+
+- added a loopback-only Ollama lifecycle check and six-run stability envelope covering one cold, three warm, and two concurrent-client evaluations without changing the mission runtime
+- repeated the R9 top-2 15-case suite for 360 local inferences, preserving every quality result and loaded-model snapshot while recording cold first-pass, warm drift, and bounded concurrency latency
+- kept production server parallelism, long-duration soak, thermal telemetry, license, network isolation, rollback ownership, activation, and production claims explicitly unverified
+
 ## 2026-07-16 Local Reranker Resource Envelope
 
 - added a lexical-baseline top-2 candidate selector and shared local relevance benchmark runner that verify expected-source coverage before any model scoring

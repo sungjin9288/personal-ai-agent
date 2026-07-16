@@ -70,7 +70,7 @@ assert.doesNotMatch(evidenceText, /Qwen RESEARCH LICENSE AGREEMENT Release Date/
 assert.doesNotMatch(evidenceText, /sk-|OPENAI_API_KEY|ANTHROPIC_API_KEY/);
 
 for (const term of [
-  'status: local-reranker-resource-envelope-current',
+  'status: local-reranker-runtime-stability-current',
   '| R6 Local embedding model qualification | 완료 |',
   'actualLocalEmbeddingModelQualityValidated: true',
   'actualLocalEmbeddingModelQualified: false',
