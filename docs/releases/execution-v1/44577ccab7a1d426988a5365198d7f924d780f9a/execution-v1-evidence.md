@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T11:11:47.979Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T11:11:40.761Z
 - branch: codex/fine-tuning-readiness-export
 - commit: 44577ccab7a1d426988a5365198d7f924d780f9a

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T11:11:47.979Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T11:11:40.819Z
 - branch: codex/fine-tuning-readiness-export
 - commit: 44577ccab7a1d426988a5365198d7f924d780f9a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/44577ccab7a1d426988a5365198d7f924d780f9a/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

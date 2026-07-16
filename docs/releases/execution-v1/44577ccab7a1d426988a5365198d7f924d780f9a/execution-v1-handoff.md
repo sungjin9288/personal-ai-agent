@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T11:11:47.979Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T11:11:47.111Z
 - localDate: 2026-07-16
 - branch: codex/fine-tuning-readiness-export
 - commit: 44577ccab7a1d426988a5365198d7f924d780f9a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/44577ccab7a1d426988a5365198d7f924d780f9a](releases/execution-v1/44577ccab7a1d426988a5365198d7f924d780f9a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/44577ccab7a1d426988a5365198d7f924d780f9a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/44577ccab7a1d426988a5365198d7f924d780f9a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/44577ccab7a1d426988a5365198d7f924d780f9a](docs/releases/execution-v1/44577ccab7a1d426988a5365198d7f924d780f9a)
 - visualArtifactSetSha256: 0c1146df412dc5f822c3071197f44ef6a099f4ad5c06f25261bc458e6e855543
 - commitPushStatus: not pushed, origin/codex/fine-tuning-readiness-export not found
 
