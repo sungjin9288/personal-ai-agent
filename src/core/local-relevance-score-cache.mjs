@@ -5,6 +5,12 @@ export const LOCAL_RELEVANCE_SCORE_CACHE_SCHEMA_VERSION =
 
 const DEFAULT_MAX_ENTRIES = 64;
 const MAX_ENTRIES = 4_096;
+const INVALIDATION_REASONS = new Set([
+  'manual',
+  'model-or-prompt-replaced',
+  'rollback',
+  'shutdown',
+]);
 
 function hashRecord(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -55,6 +61,14 @@ function normalizeScoreResult(result) {
   return { score };
 }
 
+function normalizeInvalidationReason(value) {
+  const reason = normalizeText(value);
+  if (!INVALIDATION_REASONS.has(reason)) {
+    throw new Error('Local relevance score cache requires a supported invalidation reason.');
+  }
+  return reason;
+}
+
 function cloneScore(result) {
   return { score: result.score };
 }
@@ -69,14 +83,21 @@ export function createCachedLocalRelevanceScorer({
   const bindingHash = hashRecord(binding);
   const completed = new Map();
   const inFlight = new Map();
+  let closed = false;
+  let generation = 0;
+  let lastInvalidationReason = null;
   const metrics = {
     evictionCount: 0,
     failureCount: 0,
     hitCount: 0,
     inFlightHitCount: 0,
+    invalidatedCompletedEntryCount: 0,
+    invalidatedInFlightEntryCount: 0,
+    invalidationCount: 0,
     missCount: 0,
     modelInferenceCount: 0,
     requestCount: 0,
+    staleResultDropCount: 0,
   };
 
   function cacheKey({ documentText, queryText } = {}) {
@@ -108,6 +129,9 @@ export function createCachedLocalRelevanceScorer({
   }
 
   async function scoreDocument(input = {}) {
+    if (closed) {
+      throw new Error('Local relevance score cache is closed.');
+    }
     metrics.requestCount += 1;
     const key = cacheKey(input);
     const cached = readCompleted(key);
@@ -122,11 +146,16 @@ export function createCachedLocalRelevanceScorer({
 
     metrics.missCount += 1;
     metrics.modelInferenceCount += 1;
+    const requestGeneration = generation;
     const pending = Promise.resolve()
       .then(() => scorer.scoreDocument(input))
       .then(normalizeScoreResult)
       .then((result) => {
-        storeCompleted(key, result);
+        if (!closed && requestGeneration === generation) {
+          storeCompleted(key, result);
+        } else {
+          metrics.staleResultDropCount += 1;
+        }
         return result;
       })
       .catch((error) => {
@@ -137,18 +166,50 @@ export function createCachedLocalRelevanceScorer({
     try {
       return cloneScore(await pending);
     } finally {
-      inFlight.delete(key);
+      if (inFlight.get(key) === pending) {
+        inFlight.delete(key);
+      }
     }
+  }
+
+  function invalidateEntries(reason) {
+    const invalidationReason = normalizeInvalidationReason(reason);
+    metrics.invalidatedCompletedEntryCount += completed.size;
+    metrics.invalidatedInFlightEntryCount += inFlight.size;
+    metrics.invalidationCount += 1;
+    generation += 1;
+    lastInvalidationReason = invalidationReason;
+    completed.clear();
+    inFlight.clear();
+  }
+
+  function invalidateCache({ reason } = {}) {
+    if (closed) {
+      throw new Error('Local relevance score cache is closed.');
+    }
+    invalidateEntries(reason);
+    return getCacheSnapshot();
+  }
+
+  function closeCache({ reason = 'shutdown' } = {}) {
+    if (!closed) {
+      invalidateEntries(reason);
+      closed = true;
+    }
+    return getCacheSnapshot();
   }
 
   function getCacheSnapshot() {
     return {
       binding: { ...binding, bindingHash },
+      closed,
       completedEntryCount: completed.size,
       completedEntryContentRetained: false,
       externalProviderCalls: 'none',
       maxEntries: capacity,
       metrics: { ...metrics },
+      generation,
+      lastInvalidationReason,
       pendingEntryCount: inFlight.size,
       persistent: false,
       productionReadyClaim: false,
@@ -163,7 +224,9 @@ export function createCachedLocalRelevanceScorer({
     modelId: binding.modelId,
     promptHash: binding.promptHash,
     promptVersion: binding.promptVersion,
+    closeCache,
     getCacheSnapshot,
+    invalidateCache,
     scoreDocument,
   };
 }

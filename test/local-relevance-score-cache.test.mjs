@@ -51,9 +51,13 @@ test('exact scorer, query, and document pairs reuse one content-free score', asy
     failureCount: 0,
     hitCount: 4,
     inFlightHitCount: 0,
+    invalidatedCompletedEntryCount: 0,
+    invalidatedInFlightEntryCount: 0,
+    invalidationCount: 0,
     missCount: 1,
     modelInferenceCount: 1,
     requestCount: 5,
+    staleResultDropCount: 0,
   });
   assert.equal(snapshot.completedEntryCount, 1);
   assert.equal(snapshot.completedEntryContentRetained, false);
@@ -208,4 +212,90 @@ test('four-role shadow observation reuses scores without changing lexical provid
   assert.equal(observations.every((item) => item.status === 'observed'), true);
   assert.equal(observations.every((item) => item.providerInput.changed === false), true);
   assert.equal(new Set(observations.map((item) => item.selection.shadowSourceKeyHashes[0])).size, 1);
+});
+
+test('invalidation drops an older in-flight result and forces a fresh score', async () => {
+  const releases = [];
+  let callCount = 0;
+  const cache = createCache({
+    scoreDocument() {
+      callCount += 1;
+      return new Promise((resolve) => releases.push(resolve));
+    },
+  });
+  const input = { documentText: 'document', queryText: 'query' };
+
+  const oldRequest = cache.scoreDocument(input);
+  await Promise.resolve();
+  const invalidated = cache.invalidateCache({ reason: 'model-or-prompt-replaced' });
+  const freshRequest = cache.scoreDocument(input);
+  await Promise.resolve();
+  releases[0]({ score: 11 });
+  assert.deepEqual(await oldRequest, { score: 11 });
+  releases[1]({ score: 91 });
+  assert.deepEqual(await freshRequest, { score: 91 });
+  assert.deepEqual(await cache.scoreDocument(input), { score: 91 });
+
+  const snapshot = cache.getCacheSnapshot();
+  assert.equal(callCount, 2);
+  assert.equal(invalidated.completedEntryCount, 0);
+  assert.equal(invalidated.pendingEntryCount, 0);
+  assert.equal(snapshot.metrics.invalidationCount, 1);
+  assert.equal(snapshot.metrics.invalidatedInFlightEntryCount, 1);
+  assert.equal(snapshot.metrics.staleResultDropCount, 1);
+  assert.equal(snapshot.metrics.modelInferenceCount, 2);
+  assert.equal(snapshot.metrics.hitCount, 1);
+  assert.equal(snapshot.completedEntryCount, 1);
+  assert.equal(snapshot.lastInvalidationReason, 'model-or-prompt-replaced');
+});
+
+test('different model and prompt bindings never share completed scores', async () => {
+  let callCount = 0;
+  const scorer = createScorer(async () => {
+    callCount += 1;
+    return { score: 70 + callCount };
+  });
+  const first = createCachedLocalRelevanceScorer({
+    modelDigest: 'b'.repeat(64),
+    scorer,
+  });
+  const second = createCachedLocalRelevanceScorer({
+    modelDigest: 'c'.repeat(64),
+    scorer: { ...scorer, promptHash: 'd'.repeat(64) },
+  });
+  const input = { documentText: 'document', queryText: 'query' };
+
+  assert.deepEqual(await first.scoreDocument(input), { score: 71 });
+  assert.deepEqual(await first.scoreDocument(input), { score: 71 });
+  assert.deepEqual(await second.scoreDocument(input), { score: 72 });
+  assert.equal(callCount, 2);
+  assert.notEqual(
+    first.getCacheSnapshot().binding.bindingHash,
+    second.getCacheSnapshot().binding.bindingHash,
+  );
+});
+
+test('rollback close clears state, stays idempotent, and rejects future cache use', async () => {
+  const cache = createCache();
+  await cache.scoreDocument({ documentText: 'document', queryText: 'query' });
+
+  const closed = cache.closeCache({ reason: 'rollback' });
+  const closedAgain = cache.closeCache({ reason: 'rollback' });
+
+  assert.equal(closed.closed, true);
+  assert.equal(closed.completedEntryCount, 0);
+  assert.equal(closed.lastInvalidationReason, 'rollback');
+  assert.equal(closed.metrics.invalidationCount, 1);
+  assert.deepEqual(closedAgain, closed);
+  await assert.rejects(
+    cache.scoreDocument({ documentText: 'document', queryText: 'query' }),
+    /cache is closed/,
+  );
+  assert.throws(() => cache.invalidateCache({ reason: 'manual' }), /cache is closed/);
+});
+
+test('cache lifecycle rejects unsupported invalidation reasons', async () => {
+  const cache = createCache();
+  assert.throws(() => cache.invalidateCache({ reason: 'unknown' }), /supported invalidation reason/);
+  assert.throws(() => cache.closeCache({ reason: 'unknown' }), /supported invalidation reason/);
 });

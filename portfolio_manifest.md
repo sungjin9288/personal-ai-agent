@@ -54,6 +54,7 @@
 - evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json
 - evidence/output-artifacts/local-relevance-shadow-replay.json
 - evidence/output-artifacts/local-relevance-shadow-cache.json
+- evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함
@@ -82,6 +83,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 2,355,783 bytes
-- 압축 파일 SHA-256: `13ad2f62ec36406dc8c6f6502b5b12a1e51d38238cc6c653d30d99d29c0b28a8`
+- 압축 파일 크기: 2,375,236 bytes
+- 압축 파일 SHA-256: `5936d33912a55ed3be93aa31de5d0f0a10cdec8177b3b5eabc74bc4b340dcca1`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

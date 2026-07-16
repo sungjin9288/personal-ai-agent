@@ -25,6 +25,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Connected the R10-bound scorer to one controlled four-role stub mission as an observation-only shadow path while preserving lexical provider input, store shape, artifacts, public contracts, and fail-open behavior.
 - Replayed 3 controlled scenarios, 15 stub missions, and 60 role observations; retained the full-query 12/15 hard-negative failure as evidence, corrected the scorer query to the qualified mission-objective contract, and passed 15/15 without enabling provider input or production claims.
 - Added a content-free 64-entry process-local shadow score cache with exact model, prompt, query, and document binding; the controlled replay retained 15/15 while reducing 120 score requests to 30 model inferences with 90 hits, and disclosed the observed maximum-latency regression without enabling provider input.
+- Added generation-based invalidation and rollback close to the shadow score cache; an 8-entry actual replay retained 15/15 with 22 LRU evictions, while a concurrent local probe dropped a pre-invalidation stale result and closed with zero entries without enabling provider input.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -47,8 +48,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,355,783 bytes`
-- SHA-256: `13ad2f62ec36406dc8c6f6502b5b12a1e51d38238cc6c653d30d99d29c0b28a8`
+- Size: `2,375,236 bytes`
+- SHA-256: `5936d33912a55ed3be93aa31de5d0f0a10cdec8177b3b5eabc74bc4b340dcca1`
 
 Included public surfaces:
 

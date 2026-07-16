@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Local Relevance Shadow Cache Lifecycle Stress
+
+- extended the process-local score cache with generation-based invalidation and idempotent close so pre-invalidation in-flight results cannot repopulate the cache and rollback rejects later cache use
+- replayed the same 15 missions with an 8-entry capacity, preserving 15/15, 60/60 expected top-1, 120 requests, 30 model inferences, and 90 hits while recording 22 LRU evictions and 8 final entries
+- ran an actual concurrent local scorer probe that joined three requests into one inference, invalidated one in-flight entry, dropped one stale result, refilled fresh, and closed with zero entries while leaving provider-input activation and production claims blocked
+
 ## 2026-07-17 Bounded Local Relevance Shadow Score Cache
 
 - added a 64-entry process-local LRU keyed by model digest, scorer and prompt identity, query hash, and document hash; completed entries retain only integer scores, failures are not cached, and identical concurrent requests share one in-flight score

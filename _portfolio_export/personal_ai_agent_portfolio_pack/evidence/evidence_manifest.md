@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay and bounded score reuse
-- Source code modified: yes, R13 content-free process-local score cache and comparison evidence
-- New feature development: yes, cost-free bounded shadow score cache
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded score reuse, and cache lifecycle stress
+- Source code modified: yes, R14 eviction, invalidation, stale-result protection, and rollback close lifecycle
+- New feature development: yes, cost-free shadow score cache lifecycle controls
 
 ## Generated Evidence Files
 
@@ -60,6 +60,7 @@
 - `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache.json`
+- `evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json`
 
 ### Architecture
 
@@ -114,6 +115,7 @@
 - Local relevance shadow integration: verified with `npm run smoke:local-relevance-shadow-integration`
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
+- Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

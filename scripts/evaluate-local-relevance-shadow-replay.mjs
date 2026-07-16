@@ -25,6 +25,11 @@ import {
   buildLocalRelevanceShadowCacheEvidence,
   LOCAL_RELEVANCE_SHADOW_CACHE_EVIDENCE_SCHEMA_VERSION,
 } from '../src/core/local-relevance-shadow-cache-evidence.mjs';
+import {
+  assertLocalRelevanceShadowCacheLifecycleEvidence,
+  buildLocalRelevanceShadowCacheLifecycleEvidence,
+  LOCAL_RELEVANCE_SHADOW_CACHE_LIFECYCLE_SCHEMA_VERSION,
+} from '../src/core/local-relevance-shadow-cache-lifecycle.mjs';
 import { requestLoopbackJson } from '../src/core/loopback-json-client.mjs';
 import { createMissionService } from '../src/core/mission-service.mjs';
 import { createOllamaRelevanceScorer } from '../src/core/ollama-relevance-scorer.mjs';
@@ -48,6 +53,12 @@ const priorReplayPath = path.join(
   'evidence',
   'output-artifacts',
   'local-relevance-shadow-replay.json',
+);
+const priorCacheEvidencePath = path.join(
+  repoDir,
+  'evidence',
+  'output-artifacts',
+  'local-relevance-shadow-cache.json',
 );
 const options = parseOptions(process.argv.slice(2));
 const fixtureText = fs.readFileSync(fixturePath, 'utf8');
@@ -130,6 +141,9 @@ try {
       ? [
           LOCAL_RELEVANCE_SCORE_CACHE_SCHEMA_VERSION,
           LOCAL_RELEVANCE_SHADOW_CACHE_EVIDENCE_SCHEMA_VERSION,
+          ...(options.cacheLifecycleStress
+            ? [LOCAL_RELEVANCE_SHADOW_CACHE_LIFECYCLE_SCHEMA_VERSION]
+            : []),
           'bounded-process-local-lru',
         ]
       : []),
@@ -164,13 +178,24 @@ try {
       version: runtimeVersion.version,
     },
   });
-  const output = options.cacheMaxEntries
-    ? buildLocalRelevanceShadowCacheEvidence({
+  const output = options.cacheLifecycleStress
+    ? buildLocalRelevanceShadowCacheLifecycleEvidence({
+        lifecycleProbe: await runLifecycleProbe({
+          baseScorer,
+          fixture,
+          modelDigest: inventoryModel.digest,
+        }),
+        priorCacheEvidence: JSON.parse(fs.readFileSync(priorCacheEvidencePath, 'utf8')),
+        stressCacheSnapshot: scorer.getCacheSnapshot(),
+        stressReplay: replay,
+      })
+    : options.cacheMaxEntries
+      ? buildLocalRelevanceShadowCacheEvidence({
         cacheReplay: replay,
         cacheSnapshot: scorer.getCacheSnapshot(),
         priorReplay: JSON.parse(fs.readFileSync(priorReplayPath, 'utf8')),
       })
-    : replay;
+      : replay;
   if (options.outputPath) {
     fs.mkdirSync(path.dirname(options.outputPath), { recursive: true });
     fs.writeFileSync(options.outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
@@ -197,8 +222,38 @@ try {
     status: replay.status,
     variationMetrics: replay.variationMetrics,
   };
-  const summary = options.cacheMaxEntries
+  const summary = options.cacheLifecycleStress
     ? {
+        actualLocalRelevanceShadowCacheLifecycleQualified:
+          output.actualLocalRelevanceShadowCacheLifecycleQualified,
+        actualLocalRelevanceShadowCacheLifecycleValidated:
+          output.actualLocalRelevanceShadowCacheLifecycleValidated,
+        costFree: true,
+        decision: output.decision,
+        lifecycle: {
+          invalidatedInFlightEntryCount:
+            output.lifecycleProbe.afterClose.metrics.invalidatedInFlightEntryCount,
+          invalidationCount: output.lifecycleProbe.afterClose.metrics.invalidationCount,
+          postCloseScoreRejected: output.lifecycleProbe.postCloseScoreRejected,
+          staleResultDropCount: output.lifecycleProbe.afterClose.metrics.staleResultDropCount,
+        },
+        mode: 'local-relevance-shadow-cache-lifecycle',
+        ok: true,
+        outputPath: options.outputPath ? path.relative(repoDir, options.outputPath) : null,
+        productionReadyClaim: false,
+        runtimeActivation: false,
+        status: output.status,
+        stress: {
+          casePassRate: replay.quality.casePassRate,
+          completedEntryCount: output.stress.cacheSnapshot.completedEntryCount,
+          evictionCount: output.stress.evictionCount,
+          hitCount: output.stress.cacheSnapshot.metrics.hitCount,
+          modelInferenceCount: output.stress.cacheSnapshot.metrics.modelInferenceCount,
+          requestCount: output.stress.cacheSnapshot.metrics.requestCount,
+        },
+      }
+    : options.cacheMaxEntries
+      ? {
         actualLocalRelevanceShadowCacheQualified:
           output.actualLocalRelevanceShadowCacheQualified,
         actualLocalRelevanceShadowCacheValidated:
@@ -217,10 +272,15 @@ try {
         scenarioCount: replay.quality.scenarioCount,
         status: output.status,
       }
-    : replaySummary;
+      : replaySummary;
   console.log(JSON.stringify(summary, null, 2));
   assertLocalRelevanceShadowReplay(replay);
-  if (options.cacheMaxEntries) {
+  if (options.cacheLifecycleStress) {
+    assertLocalRelevanceShadowCacheLifecycleEvidence(output);
+    if (!output.actualLocalRelevanceShadowCacheLifecycleValidated) {
+      throw new Error('Shadow cache lifecycle gate failed; lexical runtime remains active.');
+    }
+  } else if (options.cacheMaxEntries) {
     assertLocalRelevanceShadowCacheEvidence(output);
     if (!output.actualLocalRelevanceShadowCacheValidated) {
       throw new Error('Shadow cache quality or resource gate failed; lexical runtime remains active.');
@@ -304,6 +364,51 @@ function hashValue(value) {
   return createHash('sha256').update(String(value)).digest('hex');
 }
 
+async function runLifecycleProbe({ baseScorer, fixture, modelDigest }) {
+  const cache = createCachedLocalRelevanceScorer({
+    maxEntries: 4,
+    modelDigest,
+    scorer: baseScorer,
+  });
+  const scenario = fixture.scenarios[0];
+  const input = {
+    documentText: scenario.memoryEntries[0].content,
+    queryText: scenario.queries[0].text,
+  };
+  const concurrent = [
+    cache.scoreDocument(input),
+    cache.scoreDocument(input),
+    cache.scoreDocument(input),
+  ];
+  const beforeInvalidation = cache.getCacheSnapshot();
+  const afterInvalidation = cache.invalidateCache({ reason: 'model-or-prompt-replaced' });
+  const refill = cache.scoreDocument(input);
+  const concurrentResults = await Promise.all(concurrent);
+  const refillResult = await refill;
+  const cachedResult = await cache.scoreDocument(input);
+  const afterRefill = cache.getCacheSnapshot();
+  const afterClose = cache.closeCache({ reason: 'rollback' });
+  let postCloseScoreRejected = false;
+  try {
+    await cache.scoreDocument(input);
+  } catch (error) {
+    postCloseScoreRejected = /cache is closed/.test(error.message);
+  }
+  return {
+    afterClose,
+    afterInvalidation,
+    afterRefill,
+    beforeInvalidation,
+    concurrentScoreParity: concurrentResults.every(
+      (result) => result.score === concurrentResults[0].score,
+    ),
+    postCloseScoreRejected,
+    refillScoreParity:
+      refillResult.score === concurrentResults[0].score &&
+      cachedResult.score === refillResult.score,
+  };
+}
+
 function parseOptions(args) {
   const allowed = new Set([
     '--cache-max-entries',
@@ -315,6 +420,7 @@ function parseOptions(args) {
   ]);
   const values = new Map();
   let cloudFeaturesDisabled = false;
+  let cacheLifecycleStress = false;
   for (let index = 0; index < args.length;) {
     const key = args[index];
     if (key === '--cloud-features-disabled') {
@@ -322,6 +428,14 @@ function parseOptions(args) {
         throw new Error('Expected unique shadow replay options.');
       }
       cloudFeaturesDisabled = true;
+      index += 1;
+      continue;
+    }
+    if (key === '--cache-lifecycle-stress') {
+      if (cacheLifecycleStress) {
+        throw new Error('Expected unique shadow replay options.');
+      }
+      cacheLifecycleStress = true;
       index += 1;
       continue;
     }
@@ -350,6 +464,9 @@ function parseOptions(args) {
   ) {
     throw new Error('Shadow replay cache max entries must be between 1 and 4096.');
   }
+  if (cacheLifecycleStress && cacheMaxEntries !== 8) {
+    throw new Error('Shadow replay lifecycle stress requires exactly 8 cache entries.');
+  }
   const outputValue = normalizeOption(values.get('--output'));
   const queryContract = normalizeOption(
     values.get('--query-contract') || LOCAL_RELEVANCE_SHADOW_QUERY_CONTRACTS.MISSION_OBJECTIVE,
@@ -369,6 +486,7 @@ function parseOptions(args) {
   }
   return {
     cacheMaxEntries,
+    cacheLifecycleStress,
     cloudFeaturesDisabled,
     endpoint,
     model,

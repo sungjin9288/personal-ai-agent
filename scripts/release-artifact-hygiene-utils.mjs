@@ -66,6 +66,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json',
   'evidence/output-artifacts/local-relevance-shadow-replay.json',
   'evidence/output-artifacts/local-relevance-shadow-cache.json',
+  'evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/fork-onboarding-v1.md',
