@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T18:33:22.957Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T18:33:15.531Z
 - branch: codex/rag-cache-termination-soak
 - commit: 16380f6dbfc361e33cd9e1f67746795f9dcd2f4b

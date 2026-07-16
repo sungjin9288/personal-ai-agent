@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T18:33:22.957Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T18:33:21.955Z
 - localDate: 2026-07-17
 - branch: codex/rag-cache-termination-soak
 - commit: 16380f6dbfc361e33cd9e1f67746795f9dcd2f4b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/16380f6dbfc361e33cd9e1f67746795f9dcd2f4b](releases/execution-v1/16380f6dbfc361e33cd9e1f67746795f9dcd2f4b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/16380f6dbfc361e33cd9e1f67746795f9dcd2f4b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/16380f6dbfc361e33cd9e1f67746795f9dcd2f4b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/16380f6dbfc361e33cd9e1f67746795f9dcd2f4b](docs/releases/execution-v1/16380f6dbfc361e33cd9e1f67746795f9dcd2f4b)
 - visualArtifactSetSha256: 2a32550c85ef3b8e7d1235bd1dcbe417a8b06a197fd0ec7a18ed17d3759590c4
 - commitPushStatus: not pushed, origin/codex/rag-cache-termination-soak not found
 

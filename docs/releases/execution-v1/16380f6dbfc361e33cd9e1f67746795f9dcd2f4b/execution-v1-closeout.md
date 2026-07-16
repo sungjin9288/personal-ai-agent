@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T18:33:22.957Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T18:33:15.580Z
 - branch: codex/rag-cache-termination-soak
 - commit: 16380f6dbfc361e33cd9e1f67746795f9dcd2f4b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/16380f6dbfc361e33cd9e1f67746795f9dcd2f4b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
