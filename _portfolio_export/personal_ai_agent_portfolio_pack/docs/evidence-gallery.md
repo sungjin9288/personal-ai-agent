@@ -53,6 +53,7 @@
 | RAG corpus contract | `src/core/retrieval-corpus.mjs` | deterministic memory, attachment, and fact source revision, chunk identity, content hash, scope, and provenance |
 | Retrieval quality evaluation | `docs/ml-rag-development-plan-v1.md` | controlled precision, recall, noise, source diversity, frozen baseline replay, and ranking regression gate |
 | Semantic retrieval experiment | `docs/ml-rag-development-plan-v1.md` | bounded local embedding command protocol, scope-locked cosine experiment, controlled synonym comparison, and inactive runtime boundary |
+| Retrieval reranking experiment | `docs/ml-rag-development-plan-v1.md` | deterministic semantic+lexical scoring, controlled tie quality comparison, measured local latency, exact baseline rollback order, and inactive runtime boundary |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
 | External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
 

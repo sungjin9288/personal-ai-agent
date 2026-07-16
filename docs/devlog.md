@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Retrieval Reranking Experiment
+
+- added a content-free reranking contract that combines semantic and lexical scores with fixed, inspectable weights and deterministic tie handling
+- measured three controlled semantic-tie cases with the existing retrieval evaluator and recorded the exact baseline source order for state-free rollback
+- measured local reranking overhead against the fixture semantic command while keeping runtimeActivation false, adding no dependency, and making no external provider calls
+
 ## 2026-07-16 Semantic Retrieval Experiment
 
 - added a provider-neutral embedding protocol and bounded local-process adapter with shell disabled, environment allowlisting, input/output limits, and hard timeout

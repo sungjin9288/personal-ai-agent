@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "personal-ai-agent-retrieval-reranking-fixture/v1",
+  "productionReadyClaim": false,
+  "runtimeActivation": false,
+  "embeddingModelId": "fixture-semantic-map-v1",
+  "benchmarkIterations": 1000,
+  "expectedMetrics": {
+    "semanticBaseline": {
+      "casePassRate": 0,
+      "noiseRateAtK": 1,
+      "precisionAtK": 0,
+      "recallAtK": 0,
+      "sourceDiversityRate": 0,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "rerankedCandidate": {
+      "casePassRate": 1,
+      "noiseRateAtK": 0,
+      "precisionAtK": 1,
+      "recallAtK": 1,
+      "sourceDiversityRate": 1,
+      "unlabeledRetrievedSourceCount": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "authentication-semantic-tie",
+      "k": 1,
+      "allowedScopes": ["mission:mission-auth-tie"],
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-auth-synonym",
+            "missionId": "mission-auth-tie",
+            "fileName": "credential-renewal.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Renew expired authentication credentials."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-auth-exact",
+            "content": "Recover a sign-in token after timeout.",
+            "kind": "fact",
+            "scope": "mission",
+            "scopeId": "mission-auth-tie"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Recover a sign-in token after timeout.",
+          "title": "Authentication recovery"
+        },
+        "pack": { "requiredSections": [], "reviewRules": [] },
+        "previousOutputs": {},
+        "providerRole": "manager",
+        "role": "manager"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-auth-exact", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-auth-synonym", "type": "attachment" }
+      ]
+    },
+    {
+      "id": "payment-semantic-tie",
+      "k": 1,
+      "allowedScopes": ["mission:mission-payment-tie"],
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-payment-synonym",
+            "missionId": "mission-payment-tie",
+            "fileName": "reimbursement.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Issue a payment reimbursement."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-payment-exact",
+            "content": "Reverse a purchase charge.",
+            "kind": "decision",
+            "scope": "mission",
+            "scopeId": "mission-payment-tie"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Reverse a purchase charge.",
+          "title": "Payment reversal"
+        },
+        "pack": { "requiredSections": [], "reviewRules": [] },
+        "previousOutputs": {},
+        "providerRole": "manager",
+        "role": "manager"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-payment-exact", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-payment-synonym", "type": "attachment" }
+      ]
+    },
+    {
+      "id": "handoff-semantic-tie",
+      "k": 1,
+      "allowedScopes": ["mission:mission-handoff-tie"],
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-handoff-synonym",
+            "missionId": "mission-handoff-tie",
+            "fileName": "ownership-transfer.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Transfer ownership after work becomes overdue."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-handoff-exact",
+            "content": "Handle a missed handoff.",
+            "kind": "decision",
+            "scope": "mission",
+            "scopeId": "mission-handoff-tie"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Handle a missed handoff.",
+          "title": "Deadline handoff"
+        },
+        "pack": { "requiredSections": [], "reviewRules": [] },
+        "previousOutputs": {},
+        "providerRole": "reviewer",
+        "role": "reviewer"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-handoff-exact", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-handoff-synonym", "type": "attachment" }
+      ]
+    }
+  ]
+}

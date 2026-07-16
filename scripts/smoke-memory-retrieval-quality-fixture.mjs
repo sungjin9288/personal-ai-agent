@@ -16,6 +16,7 @@ const instructionBoundarySmoke = readRequiredFile('scripts/smoke-instruction-bou
 const corpusContractSmoke = readRequiredFile('scripts/smoke-retrieval-corpus-contract.mjs');
 const retrievalQualitySmoke = readRequiredFile('scripts/smoke-retrieval-quality-evaluation.mjs');
 const semanticRetrievalSmoke = readRequiredFile('scripts/smoke-semantic-retrieval-experiment.mjs');
+const rerankingSmoke = readRequiredFile('scripts/smoke-retrieval-reranking-experiment.mjs');
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
@@ -33,6 +34,10 @@ assert.equal(
 assert.equal(
   packageJson.scripts['smoke:semantic-retrieval-experiment'],
   'node scripts/smoke-semantic-retrieval-experiment.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:retrieval-reranking-experiment'],
+  'node scripts/smoke-retrieval-reranking-experiment.mjs',
 );
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
@@ -57,6 +62,7 @@ for (const term of [
   'npm run smoke:retrieval-corpus-contract',
   'npm run smoke:retrieval-quality-evaluation',
   'npm run smoke:semantic-retrieval-experiment',
+  'npm run smoke:retrieval-reranking-experiment',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -95,6 +101,10 @@ for (const smokeTerm of ['precisionAtK', 'recallAtK', 'noiseRateAtK', 'sourceDiv
 
 for (const smokeTerm of ['createLocalCommandEmbeddingAdapter', 'allowedScopes', 'runtimeActivation']) {
   assertContains(semanticRetrievalSmoke, smokeTerm, `semantic retrieval smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['rerankRetrievalCandidates', 'rerankingAverageMs', 'rollback.sourceKeys']) {
+  assertContains(rerankingSmoke, smokeTerm, `retrieval reranking smoke missing ${smokeTerm}`);
 }
 
 for (const smokeTerm of [

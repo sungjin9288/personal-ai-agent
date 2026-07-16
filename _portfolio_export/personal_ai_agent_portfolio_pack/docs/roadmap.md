@@ -102,7 +102,8 @@
 - 완료: store와 공개 retrieval payload를 바꾸지 않고 source hash·revision·scope·provenance를 보존하는 RAG corpus contract
 - 완료: 3개 controlled fixture에서 precision·recall·noise·source diversity와 lexical·BM25·phrase frozen baseline을 비교하는 retrieval evaluation gate
 - 완료: dependency 없는 provider-neutral embedding contract, bounded local command adapter, scope-locked semantic experiment와 controlled synonym comparison
-- 다음: semantic·lexical signal을 deterministic하게 결합하는 reranking baseline과 latency·rollback 비교
+- 완료: semantic·lexical signal을 고정 가중치로 결합한 deterministic reranking baseline과 controlled quality·latency·rollback 비교
+- 다음: reviewer·approval·verification evidence를 요구하는 sanitized training dataset record와 lineage contract
 - 완료: core smoke validation summary와 command guard
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence

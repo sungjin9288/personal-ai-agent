@@ -24,6 +24,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 | Corpus contract | Can the same source revision and chunk be identified without changing persisted data? | Memory, attachment, and fact records receive deterministic corpus/chunk ids, content hashes, scope, revision, and path-free provenance | `npm run smoke:retrieval-corpus-contract` |
 | Retrieval evaluation | Does a ranking candidate preserve measured relevance and diversity? | Three controlled cases measure precision, recall, noise, source-type diversity, and compare candidates against the frozen lexical/BM25/phrase baseline | `npm run smoke:retrieval-quality-evaluation` |
 | Semantic experiment | Can a local embedding command improve controlled synonym retrieval without changing runtime ranking? | Scope-locked local-process adapter and cosine scorer improve three fixture cases while runtime activation remains false | `npm run smoke:semantic-retrieval-experiment` |
+| Reranking experiment | Can exact lexical evidence resolve a semantic tie without changing runtime ranking? | A deterministic semantic+lexical scorer improves three controlled tie cases, measures local overhead, and records the baseline rollback order | `npm run smoke:retrieval-reranking-experiment` |
 | Source diversity | Can a non-dominant source remain visible? | A mission decision source remains in the selected context even when many workspace facts match the same query | `npm run smoke:retrieval-memory` |
 | Fact graph memory | Are facts mirrored with provenance? | Fact memories become active graph nodes with memory provenance and shared-keyword edges | `npm run smoke:fact-graph-memory` |
 | Fact lifecycle | Are revisions and deletions auditable? | Fact updates preserve revisions, kind changes retire nodes, deleted memory retires graph entries and edges | `npm run smoke:fact-graph-memory` |
@@ -36,6 +37,7 @@ npm run smoke:memory-retrieval-quality-fixture
 npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-quality-evaluation
 npm run smoke:semantic-retrieval-experiment
+npm run smoke:retrieval-reranking-experiment
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:instruction-boundary
@@ -80,4 +82,4 @@ Do not claim:
 
 ## Acceptance Rule
 
-This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-quality-evaluation`, `npm run smoke:semantic-retrieval-experiment`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.
+This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-quality-evaluation`, `npm run smoke:semantic-retrieval-experiment`, `npm run smoke:retrieval-reranking-experiment`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.
