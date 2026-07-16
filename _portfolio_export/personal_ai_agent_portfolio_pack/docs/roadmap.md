@@ -105,6 +105,7 @@
 - 완료: semantic·lexical signal을 고정 가중치로 결합한 deterministic reranking baseline과 controlled quality·latency·rollback 비교
 - 완료: 기본 lexical parity를 보존하고 명시적 local command에서만 동작하는 mission semantic·rerank runtime, scope 거부, failure-before-provider와 state-free rollback
 - 완료: 설치된 qwen2.5 3종을 동일 retrieval suite로 비교한 local embedding qualification, 3B quality pass와 license·network·resource·rollback governance blocker 분리
+- 완료: qwen2.5 3B를 canonical·paraphrase·noisy·cross-language·hard-negative 15-case로 확장 평가하고 lexical보다 낮은 결과를 failed-keep-lexical 기준선으로 고정
 - 완료: reviewer pass·operator approval·promotion verification·artifact lineage를 요구하는 sanitized training record와 content·lineage hash contract
 - 완료: deterministic content·lineage·near-response deduplication, mission-scope train·validation split, leakage 검사와 content-free dataset manifest
 - 완료: provider-neutral train·validation JSONL, Q1 answer-quality baseline, content-free evaluation manifest와 reviewer-pending fine-tuning readiness packet

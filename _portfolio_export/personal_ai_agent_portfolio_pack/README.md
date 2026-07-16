@@ -311,6 +311,7 @@ npm run smoke:semantic-retrieval-experiment
 npm run smoke:retrieval-reranking-experiment
 npm run smoke:semantic-retrieval-runtime
 npm run smoke:local-embedding-model-qualification
+npm run smoke:local-retrieval-robustness
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
@@ -488,7 +489,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - There is no public hosted demo URL. The current demo is the credential-free representative replay and evidence package.
 - The recorded walkthrough is currently a recording script and acceptance checklist, not a published video URL.
 - Customer usage metrics, cost reduction claims, and production SLA claims are intentionally not included because this repository does not contain supporting evidence for them.
-- The answer-quality and semantic runtime fixtures are not general benchmarks. A recorded localhost Ollama qualification found `qwen2.5:3b` passed the controlled 3-case retrieval gate, but license, egress isolation, resource, rollback-owner, and activation approval remain blocked; this is not proof of production RAG quality.
+- The answer-quality and semantic runtime fixtures are not general benchmarks. Although `qwen2.5:3b` passed the original controlled 3-case gate, it scored a 0.5333 case pass rate against the lexical baseline's 0.6667 on the recorded 15-case robustness suite (`npm run smoke:local-retrieval-robustness`). The result is `failed-keep-lexical`; license, OS-level egress isolation, resource, rollback-owner, and activation approval remain blocked.
 
 ## Links
 

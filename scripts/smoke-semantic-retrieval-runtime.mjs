@@ -93,7 +93,7 @@ try {
     'utf8',
   );
   for (const term of [
-    'status: local-model-qualification-current',
+    'status: local-retrieval-robustness-current',
     '| R5 Local semantic runtime opt-in | 완료 |',
     'PERSONAL_AI_AGENT_RETRIEVAL_MODE=semantic-rerank',
     'npm run smoke:semantic-retrieval-runtime',

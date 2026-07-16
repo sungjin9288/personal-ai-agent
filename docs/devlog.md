@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Local Retrieval Robustness Evaluation
+
+- expanded the selected qwen2.5 3B evaluation from three synonym cases to 15 canonical, paraphrase, noisy, Korean cross-language, and hard-negative cases without downloading a model or calling an external provider
+- bound model digest, R6 qualification evidence, coverage, quality, and latency into a content-free integrity record
+- recorded the semantic-plus-lexical candidate below the lexical baseline and kept lexical rollback, activation denial, and productionReadyClaim false instead of weakening the quality gate
+
 ## 2026-07-16 Local Embedding Model Qualification
 
 - added a loopback-only Ollama embedding command and tamper-evident qualification gate without downloading models or calling an external provider

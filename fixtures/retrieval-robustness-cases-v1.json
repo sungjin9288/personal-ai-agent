@@ -1,0 +1,224 @@
+{
+  "schemaVersion": "personal-ai-agent-retrieval-robustness-fixture/v1",
+  "productionReadyClaim": false,
+  "runtimeActivation": false,
+  "coverage": {
+    "minimumScenarioCount": 3,
+    "minimumCasesPerVariation": 3,
+    "requiredVariationTypes": [
+      "canonical",
+      "paraphrase",
+      "noisy-query",
+      "cross-language",
+      "hard-negative"
+    ]
+  },
+  "thresholds": {
+    "maximumNoiseRateAtK": 0,
+    "maximumUnlabeledRetrievedSourceCount": 0,
+    "minimumCasePassRate": 1,
+    "minimumPrecisionAtK": 1,
+    "minimumRecallAtK": 1,
+    "minimumSourceDiversityRate": 1
+  },
+  "scenarios": [
+    {
+      "id": "authentication-recovery",
+      "missionId": "mission-robust-auth-recovery",
+      "role": "manager",
+      "memoryEntries": [
+        {
+          "id": "memory-robust-auth-procedure",
+          "content": "When an authentication token expires, renew the credential, revalidate identity, and preserve the verification audit trail. This recovery procedure restores access.",
+          "kind": "decision",
+          "scope": "mission",
+          "scopeId": "mission-robust-auth-recovery"
+        }
+      ],
+      "attachments": [
+        {
+          "id": "attachment-robust-auth-style",
+          "missionId": "mission-robust-auth-recovery",
+          "fileName": "authentication-screen-style.md",
+          "mimeType": "text/markdown",
+          "source": "fixture",
+          "promptContent": "Authentication token recovery screen style guide: use a blue button, compact typography, and centered layout. This visual document does not define the access restoration procedure."
+        },
+        {
+          "id": "attachment-robust-auth-office",
+          "missionId": "mission-robust-auth-recovery",
+          "fileName": "office-access.md",
+          "mimeType": "text/markdown",
+          "source": "fixture",
+          "promptContent": "Office badge colors, lobby opening hours, and visitor desk locations."
+        }
+      ],
+      "expectedSources": [
+        { "key": "memory:memory-robust-auth-procedure", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-robust-auth-style", "type": "attachment" },
+        { "key": "attachment:attachment-robust-auth-office", "type": "attachment" }
+      ],
+      "queries": [
+        {
+          "id": "canonical",
+          "variationType": "canonical",
+          "text": "How should an expired authentication token be renewed while preserving audit evidence?"
+        },
+        {
+          "id": "paraphrase",
+          "variationType": "paraphrase",
+          "text": "Restore access after sign-in credentials time out and keep the verification trail."
+        },
+        {
+          "id": "noisy",
+          "variationType": "noisy-query",
+          "text": "expird auth token renew keep audit evdence"
+        },
+        {
+          "id": "korean",
+          "variationType": "cross-language",
+          "text": "만료된 인증 토큰을 갱신하고 감사 기록을 보존하는 절차는?"
+        },
+        {
+          "id": "hard-negative",
+          "variationType": "hard-negative",
+          "text": "For the authentication token recovery page, explain the credential renewal and audit procedure rather than its blue visual layout."
+        }
+      ]
+    },
+    {
+      "id": "payment-refund",
+      "missionId": "mission-robust-payment-refund",
+      "role": "manager",
+      "memoryEntries": [
+        {
+          "id": "memory-robust-refund-procedure",
+          "content": "To reverse a settled purchase charge, approve the reimbursement, issue the refund, and retain the transaction evidence and approval record.",
+          "kind": "decision",
+          "scope": "mission",
+          "scopeId": "mission-robust-payment-refund"
+        }
+      ],
+      "attachments": [
+        {
+          "id": "attachment-robust-refund-dashboard",
+          "missionId": "mission-robust-payment-refund",
+          "fileName": "refund-dashboard-style.md",
+          "mimeType": "text/markdown",
+          "source": "fixture",
+          "promptContent": "Purchase charge and refund analytics dashboard: category charts, monthly colors, and report layout. This dashboard does not define reimbursement approval or transaction reversal."
+        },
+        {
+          "id": "attachment-robust-refund-catering",
+          "missionId": "mission-robust-payment-refund",
+          "fileName": "catering-plan.md",
+          "mimeType": "text/markdown",
+          "source": "fixture",
+          "promptContent": "Lunch menu, beverage quantities, and Friday delivery times."
+        }
+      ],
+      "expectedSources": [
+        { "key": "memory:memory-robust-refund-procedure", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-robust-refund-dashboard", "type": "attachment" },
+        { "key": "attachment:attachment-robust-refund-catering", "type": "attachment" }
+      ],
+      "queries": [
+        {
+          "id": "canonical",
+          "variationType": "canonical",
+          "text": "How do we reverse a settled purchase charge and retain approval evidence?"
+        },
+        {
+          "id": "paraphrase",
+          "variationType": "paraphrase",
+          "text": "Reimburse a completed payment and keep proof of the authorized transaction reversal."
+        },
+        {
+          "id": "noisy",
+          "variationType": "noisy-query",
+          "text": "puchase chrage revers refund apprval proof"
+        },
+        {
+          "id": "korean",
+          "variationType": "cross-language",
+          "text": "결제된 구매 건을 환불하고 승인 기록을 남기는 방법은?"
+        },
+        {
+          "id": "hard-negative",
+          "variationType": "hard-negative",
+          "text": "Using the purchase refund dashboard context, explain reimbursement approval and charge reversal, not chart colors or report layout."
+        }
+      ]
+    },
+    {
+      "id": "overdue-owner-handoff",
+      "missionId": "mission-robust-overdue-handoff",
+      "role": "reviewer",
+      "memoryEntries": [
+        {
+          "id": "memory-robust-handoff-procedure",
+          "content": "After a deadline breach, transfer ownership to the escalation owner, record acknowledgement of the handoff, and preserve the audit trail.",
+          "kind": "decision",
+          "scope": "mission",
+          "scopeId": "mission-robust-overdue-handoff"
+        }
+      ],
+      "attachments": [
+        {
+          "id": "attachment-robust-handoff-calendar",
+          "missionId": "mission-robust-overdue-handoff",
+          "fileName": "overdue-calendar-style.md",
+          "mimeType": "text/markdown",
+          "source": "fixture",
+          "promptContent": "Overdue owner handoff calendar style: red deadline markers, weekly schedule, and acknowledgement icon placement. This visual guide does not define the ownership transfer process."
+        },
+        {
+          "id": "attachment-robust-handoff-travel",
+          "missionId": "mission-robust-overdue-handoff",
+          "fileName": "travel-plan.md",
+          "mimeType": "text/markdown",
+          "source": "fixture",
+          "promptContent": "Train times, hotel check-in instructions, and a city walking route."
+        }
+      ],
+      "expectedSources": [
+        { "key": "memory:memory-robust-handoff-procedure", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-robust-handoff-calendar", "type": "attachment" },
+        { "key": "attachment:attachment-robust-handoff-travel", "type": "attachment" }
+      ],
+      "queries": [
+        {
+          "id": "canonical",
+          "variationType": "canonical",
+          "text": "How should ownership be transferred after a missed deadline with acknowledgement evidence?"
+        },
+        {
+          "id": "paraphrase",
+          "variationType": "paraphrase",
+          "text": "Reassign overdue work to the escalation owner and document acceptance of the handoff."
+        },
+        {
+          "id": "noisy",
+          "variationType": "noisy-query",
+          "text": "overdo work ownr handof acknowldge audit"
+        },
+        {
+          "id": "korean",
+          "variationType": "cross-language",
+          "text": "기한을 넘긴 업무의 담당자를 인계하고 확인 기록을 남기는 방법은?"
+        },
+        {
+          "id": "hard-negative",
+          "variationType": "hard-negative",
+          "text": "From the overdue handoff calendar, explain owner transfer and acknowledgement procedure, not red deadline markers or weekly scheduling."
+        }
+      ]
+    }
+  ]
+}

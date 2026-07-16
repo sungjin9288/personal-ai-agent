@@ -46,6 +46,7 @@
 - evidence/screenshots/
 - evidence/output-artifacts/
 - evidence/output-artifacts/local-embedding-model-qualification.json
+- evidence/output-artifacts/local-retrieval-robustness.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함
@@ -74,6 +75,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 2,260,569 bytes
-- 압축 파일 SHA-256: `ccde059ca2ae197d5161034d3ffe3f688fb47e3c46aba01adda9e2b1c4d334e8`
+- 압축 파일 크기: 2,264,768 bytes
+- 압축 파일 SHA-256: `3046a25b8f5e8c80dd9611711d74e9d83f733c3c43af59bd67bc6d4d9091253b`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

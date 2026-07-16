@@ -101,6 +101,8 @@
     "smoke:semantic-retrieval-runtime": "node scripts/smoke-semantic-retrieval-runtime.mjs",
     "qualify:local-embedding-model": "node scripts/qualify-local-embedding-model.mjs",
     "smoke:local-embedding-model-qualification": "node scripts/smoke-local-embedding-model-qualification.mjs",
+    "evaluate:local-retrieval-robustness": "node scripts/evaluate-local-retrieval-robustness.mjs",
+    "smoke:local-retrieval-robustness": "node scripts/smoke-local-retrieval-robustness.mjs",
     "smoke:retrieval-reranking-experiment": "node scripts/smoke-retrieval-reranking-experiment.mjs",
     "smoke:approved-training-record": "node scripts/smoke-approved-training-record.mjs",
     "smoke:training-dataset-quality": "node scripts/smoke-training-dataset-quality.mjs",

@@ -1,0 +1,1082 @@
+{
+  "activation": {
+    "authorized": false,
+    "status": "blocked"
+  },
+  "actualLocalRetrievalRobustnessValidated": false,
+  "baseline": {
+    "algorithmId": "hybrid-lexical-bm25-phrase-v1",
+    "cases": [
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:canonical",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-auth-style"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-auth-style"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:hard-negative",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:korean",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:noisy",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:paraphrase",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:canonical",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:hard-negative",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:korean",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:noisy",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:paraphrase",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:canonical",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:hard-negative",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:korean",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:noisy",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:paraphrase",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      }
+    ],
+    "failures": [
+      {
+        "actual": 0.6667,
+        "check": "case-pass-rate",
+        "required": 1
+      },
+      {
+        "actual": 0.6667,
+        "check": "precision-at-k",
+        "required": 1
+      },
+      {
+        "actual": 0.6667,
+        "check": "recall-at-k",
+        "required": 1
+      },
+      {
+        "actual": 0.6667,
+        "check": "source-diversity-rate",
+        "required": 1
+      },
+      {
+        "actual": 0.3333,
+        "check": "noise-rate-at-k",
+        "maximum": 0
+      }
+    ],
+    "metrics": {
+      "casePassRate": 0.6667,
+      "noiseRateAtK": 0.3333,
+      "precisionAtK": 0.6667,
+      "recallAtK": 0.6667,
+      "sourceDiversityRate": 0.6667,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "productionReadyClaim": false,
+    "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+    "status": "failed",
+    "thresholds": {
+      "maximumNoiseRateAtK": 0,
+      "maximumUnlabeledRetrievedSourceCount": 0,
+      "minimumCasePassRate": 1,
+      "minimumPrecisionAtK": 1,
+      "minimumRecallAtK": 1,
+      "minimumSourceDiversityRate": 1
+    },
+    "evaluationHash": "ce043d3fa20488115c6af2c13ada81614d47a3bf2c6a439aa80691e539c25cb3"
+  },
+  "candidate": {
+    "algorithmId": "semantic-lexical-weighted:ollama-local:qwen2.5:3b",
+    "cases": [
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:canonical",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-auth-style"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-auth-style"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:hard-negative",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:korean",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:noisy",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-auth-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "authentication-recovery:paraphrase",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:canonical",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-handoff-calendar"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:hard-negative",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:korean",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:noisy",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-handoff-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "overdue-owner-handoff:paraphrase",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [],
+          "retrievedIrrelevantSourceKeys": [],
+          "selectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:canonical",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "passed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:hard-negative",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:korean",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:noisy",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      },
+      {
+        "evidence": {
+          "missingExpectedSourceKeys": [
+            "memory:memory-robust-refund-procedure"
+          ],
+          "retrievedIrrelevantSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "selectedSourceKeys": [
+            "attachment:attachment-robust-refund-dashboard"
+          ],
+          "unlabeledRetrievedSourceKeys": []
+        },
+        "id": "payment-refund:paraphrase",
+        "k": 1,
+        "metrics": {
+          "noiseRateAtK": 1,
+          "precisionAtK": 0,
+          "recallAtK": 0,
+          "sourceDiversityRate": 0,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "status": "failed"
+      }
+    ],
+    "failures": [
+      {
+        "actual": 0.5333,
+        "check": "case-pass-rate",
+        "required": 1
+      },
+      {
+        "actual": 0.5333,
+        "check": "precision-at-k",
+        "required": 1
+      },
+      {
+        "actual": 0.5333,
+        "check": "recall-at-k",
+        "required": 1
+      },
+      {
+        "actual": 0.5333,
+        "check": "source-diversity-rate",
+        "required": 1
+      },
+      {
+        "actual": 0.4667,
+        "check": "noise-rate-at-k",
+        "maximum": 0
+      }
+    ],
+    "metrics": {
+      "casePassRate": 0.5333,
+      "noiseRateAtK": 0.4667,
+      "precisionAtK": 0.5333,
+      "recallAtK": 0.5333,
+      "sourceDiversityRate": 0.5333,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "productionReadyClaim": false,
+    "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+    "status": "failed",
+    "thresholds": {
+      "maximumNoiseRateAtK": 0,
+      "maximumUnlabeledRetrievedSourceCount": 0,
+      "minimumCasePassRate": 1,
+      "minimumPrecisionAtK": 1,
+      "minimumRecallAtK": 1,
+      "minimumSourceDiversityRate": 1
+    },
+    "evaluationHash": "f8748894de3184cc3d234cca86e9d3bb946af1d51564f9c57f8c19aaad908bcd"
+  },
+  "cases": [
+    {
+      "durationMs": 2237.239,
+      "id": "authentication-recovery:canonical",
+      "scenarioId": "authentication-recovery",
+      "variationType": "canonical"
+    },
+    {
+      "durationMs": 722.624,
+      "id": "authentication-recovery:hard-negative",
+      "scenarioId": "authentication-recovery",
+      "variationType": "hard-negative"
+    },
+    {
+      "durationMs": 732.836,
+      "id": "authentication-recovery:korean",
+      "scenarioId": "authentication-recovery",
+      "variationType": "cross-language"
+    },
+    {
+      "durationMs": 768.203,
+      "id": "authentication-recovery:noisy",
+      "scenarioId": "authentication-recovery",
+      "variationType": "noisy-query"
+    },
+    {
+      "durationMs": 742.687,
+      "id": "authentication-recovery:paraphrase",
+      "scenarioId": "authentication-recovery",
+      "variationType": "paraphrase"
+    },
+    {
+      "durationMs": 659.566,
+      "id": "overdue-owner-handoff:canonical",
+      "scenarioId": "overdue-owner-handoff",
+      "variationType": "canonical"
+    },
+    {
+      "durationMs": 648.662,
+      "id": "overdue-owner-handoff:hard-negative",
+      "scenarioId": "overdue-owner-handoff",
+      "variationType": "hard-negative"
+    },
+    {
+      "durationMs": 691.776,
+      "id": "overdue-owner-handoff:korean",
+      "scenarioId": "overdue-owner-handoff",
+      "variationType": "cross-language"
+    },
+    {
+      "durationMs": 693.584,
+      "id": "overdue-owner-handoff:noisy",
+      "scenarioId": "overdue-owner-handoff",
+      "variationType": "noisy-query"
+    },
+    {
+      "durationMs": 664.241,
+      "id": "overdue-owner-handoff:paraphrase",
+      "scenarioId": "overdue-owner-handoff",
+      "variationType": "paraphrase"
+    },
+    {
+      "durationMs": 734.169,
+      "id": "payment-refund:canonical",
+      "scenarioId": "payment-refund",
+      "variationType": "canonical"
+    },
+    {
+      "durationMs": 644.907,
+      "id": "payment-refund:hard-negative",
+      "scenarioId": "payment-refund",
+      "variationType": "hard-negative"
+    },
+    {
+      "durationMs": 703.063,
+      "id": "payment-refund:korean",
+      "scenarioId": "payment-refund",
+      "variationType": "cross-language"
+    },
+    {
+      "durationMs": 684.857,
+      "id": "payment-refund:noisy",
+      "scenarioId": "payment-refund",
+      "variationType": "noisy-query"
+    },
+    {
+      "durationMs": 715.89,
+      "id": "payment-refund:paraphrase",
+      "scenarioId": "payment-refund",
+      "variationType": "paraphrase"
+    }
+  ],
+  "comparison": {
+    "baselineAlgorithmId": "hybrid-lexical-bm25-phrase-v1",
+    "candidateAlgorithmId": "semantic-lexical-weighted:ollama-local:qwen2.5:3b",
+    "failures": [
+      {
+        "baseline": 0.6667,
+        "candidate": 0.5333,
+        "caseId": null,
+        "check": "regression:precisionAtK",
+        "direction": "higher"
+      },
+      {
+        "baseline": 0.6667,
+        "candidate": 0.5333,
+        "caseId": null,
+        "check": "regression:recallAtK",
+        "direction": "higher"
+      },
+      {
+        "baseline": 0.6667,
+        "candidate": 0.5333,
+        "caseId": null,
+        "check": "regression:sourceDiversityRate",
+        "direction": "higher"
+      },
+      {
+        "baseline": 0.3333,
+        "candidate": 0.4667,
+        "caseId": null,
+        "check": "regression:noiseRateAtK",
+        "direction": "lower"
+      },
+      {
+        "baseline": 1,
+        "candidate": 0,
+        "caseId": "payment-refund:korean",
+        "check": "regression:precisionAtK",
+        "direction": "higher"
+      },
+      {
+        "baseline": 1,
+        "candidate": 0,
+        "caseId": "payment-refund:korean",
+        "check": "regression:recallAtK",
+        "direction": "higher"
+      },
+      {
+        "baseline": 1,
+        "candidate": 0,
+        "caseId": "payment-refund:korean",
+        "check": "regression:sourceDiversityRate",
+        "direction": "higher"
+      },
+      {
+        "baseline": 0,
+        "candidate": 1,
+        "caseId": "payment-refund:korean",
+        "check": "regression:noiseRateAtK",
+        "direction": "lower"
+      },
+      {
+        "baseline": 1,
+        "candidate": 0,
+        "caseId": "payment-refund:noisy",
+        "check": "regression:precisionAtK",
+        "direction": "higher"
+      },
+      {
+        "baseline": 1,
+        "candidate": 0,
+        "caseId": "payment-refund:noisy",
+        "check": "regression:recallAtK",
+        "direction": "higher"
+      },
+      {
+        "baseline": 1,
+        "candidate": 0,
+        "caseId": "payment-refund:noisy",
+        "check": "regression:sourceDiversityRate",
+        "direction": "higher"
+      },
+      {
+        "baseline": 0,
+        "candidate": 1,
+        "caseId": "payment-refund:noisy",
+        "check": "regression:noiseRateAtK",
+        "direction": "lower"
+      },
+      {
+        "actual": "failed",
+        "check": "candidate-gate",
+        "required": "passed"
+      }
+    ],
+    "status": "failed"
+  },
+  "costFree": true,
+  "coverage": {
+    "minimumCasesPerVariation": 3,
+    "minimumScenarioCount": 3,
+    "requiredVariationTypes": [
+      "canonical",
+      "paraphrase",
+      "noisy-query",
+      "cross-language",
+      "hard-negative"
+    ],
+    "matrixComplete": true,
+    "passed": true,
+    "scenarioCount": 3,
+    "variationCounts": {
+      "canonical": 3,
+      "paraphrase": 3,
+      "noisy-query": 3,
+      "cross-language": 3,
+      "hard-negative": 3
+    }
+  },
+  "decision": "keep-lexical",
+  "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+  "latency": {
+    "caseCount": 15,
+    "maximumMs": 2237.239,
+    "p50Ms": 703.063,
+    "p95Ms": 2237.239,
+    "totalMs": 12044.304
+  },
+  "model": {
+    "actualModelEvaluated": true,
+    "candidateEvidenceHash": "4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6",
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "qualificationHash": "c8261d343d20dcd4e69b7b77af7e257beef1518421bbb61b107a534fb514538c",
+    "qualificationStatus": "governance-blocked",
+    "qualified": false,
+    "source": "local-embedding-model-qualification"
+  },
+  "observedAt": "2026-07-16T13:03:00.231Z",
+  "productionReadyClaim": false,
+  "rollback": {
+    "mode": "lexical",
+    "stateMigrationRequired": false
+  },
+  "runtime": {
+    "cloudFeaturesDisabled": true,
+    "externalProviderCalls": "none",
+    "kind": "ollama",
+    "networkIsolation": "not-proven",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "scenarioMetrics": {
+    "authentication-recovery": {
+      "caseCount": 5,
+      "casePassRate": 0.8,
+      "noiseRateAtK": 0.2,
+      "precisionAtK": 0.8,
+      "recallAtK": 0.8,
+      "sourceDiversityRate": 0.8,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "overdue-owner-handoff": {
+      "caseCount": 5,
+      "casePassRate": 0.6,
+      "noiseRateAtK": 0.4,
+      "precisionAtK": 0.6,
+      "recallAtK": 0.6,
+      "sourceDiversityRate": 0.6,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "payment-refund": {
+      "caseCount": 5,
+      "casePassRate": 0.2,
+      "noiseRateAtK": 0.8,
+      "precisionAtK": 0.2,
+      "recallAtK": 0.2,
+      "sourceDiversityRate": 0.2,
+      "unlabeledRetrievedSourceCount": 0
+    }
+  },
+  "schemaVersion": "personal-ai-agent-retrieval-robustness-evaluation/v1",
+  "status": "failed-keep-lexical",
+  "variationMetrics": {
+    "canonical": {
+      "caseCount": 3,
+      "casePassRate": 0.6667,
+      "noiseRateAtK": 0.3333,
+      "precisionAtK": 0.6667,
+      "recallAtK": 0.6667,
+      "sourceDiversityRate": 0.6667,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "paraphrase": {
+      "caseCount": 3,
+      "casePassRate": 0.6667,
+      "noiseRateAtK": 0.3333,
+      "precisionAtK": 0.6667,
+      "recallAtK": 0.6667,
+      "sourceDiversityRate": 0.6667,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "noisy-query": {
+      "caseCount": 3,
+      "casePassRate": 0.6667,
+      "noiseRateAtK": 0.3333,
+      "precisionAtK": 0.6667,
+      "recallAtK": 0.6667,
+      "sourceDiversityRate": 0.6667,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "cross-language": {
+      "caseCount": 3,
+      "casePassRate": 0.6667,
+      "noiseRateAtK": 0.3333,
+      "precisionAtK": 0.6667,
+      "recallAtK": 0.6667,
+      "sourceDiversityRate": 0.6667,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "hard-negative": {
+      "caseCount": 3,
+      "casePassRate": 0,
+      "noiseRateAtK": 1,
+      "precisionAtK": 0,
+      "recallAtK": 0,
+      "sourceDiversityRate": 0,
+      "unlabeledRetrievedSourceCount": 0
+    }
+  },
+  "evaluationHash": "4e17af990fea096551c2f272f8193744e9806e74b21a08da7effb0b543cb2c3e",
+  "id": "local-retrieval-robustness-4e17af990fea096551c2f272f8193744e9806e74b21a08da7effb0b543cb2c3e"
+}

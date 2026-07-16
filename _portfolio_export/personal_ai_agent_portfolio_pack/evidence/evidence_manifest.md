@@ -52,6 +52,7 @@
 - `evidence/output-artifacts/representative-release-demo-browser-e2e.json`
 - `evidence/output-artifacts/operator-surface-demo-browser-report.json`
 - `evidence/output-artifacts/local-embedding-model-qualification.json`
+- `evidence/output-artifacts/local-retrieval-robustness.json`
 
 ### Architecture
 
@@ -99,6 +100,7 @@
 - Retrieval reranking experiment: verified with `npm run smoke:retrieval-reranking-experiment`
 - Local semantic retrieval runtime: verified with `npm run smoke:semantic-retrieval-runtime`
 - Local embedding model qualification: verified with `npm run smoke:local-embedding-model-qualification`
+- Local retrieval robustness: verified with `npm run smoke:local-retrieval-robustness`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

@@ -19,6 +19,7 @@ const semanticRetrievalSmoke = readRequiredFile('scripts/smoke-semantic-retrieva
 const rerankingSmoke = readRequiredFile('scripts/smoke-retrieval-reranking-experiment.mjs');
 const semanticRuntimeSmoke = readRequiredFile('scripts/smoke-semantic-retrieval-runtime.mjs');
 const localModelQualificationSmoke = readRequiredFile('scripts/smoke-local-embedding-model-qualification.mjs');
+const localRetrievalRobustnessSmoke = readRequiredFile('scripts/smoke-local-retrieval-robustness.mjs');
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
@@ -49,6 +50,10 @@ assert.equal(
   packageJson.scripts['smoke:local-embedding-model-qualification'],
   'node scripts/smoke-local-embedding-model-qualification.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:local-retrieval-robustness'],
+  'node scripts/smoke-local-retrieval-robustness.mjs',
+);
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
   packageJson.scripts['smoke:instruction-boundary'],
@@ -75,6 +80,7 @@ for (const term of [
   'npm run smoke:retrieval-reranking-experiment',
   'npm run smoke:semantic-retrieval-runtime',
   'npm run smoke:local-embedding-model-qualification',
+  'npm run smoke:local-retrieval-robustness',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -125,6 +131,10 @@ for (const smokeTerm of ['semanticFirstSource', 'failureBeforeProviderRun', 'rol
 
 for (const smokeTerm of ['actualLocalEmbeddingModelQualityValidated', 'selectedModelId', 'governance-blocked']) {
   assertContains(localModelQualificationSmoke, smokeTerm, `local model qualification smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['actualLocalRetrievalRobustnessValidated', 'failed-keep-lexical', 'hard-negative']) {
+  assertContains(localRetrievalRobustnessSmoke, smokeTerm, `local robustness smoke missing ${smokeTerm}`);
 }
 
 for (const smokeTerm of [
