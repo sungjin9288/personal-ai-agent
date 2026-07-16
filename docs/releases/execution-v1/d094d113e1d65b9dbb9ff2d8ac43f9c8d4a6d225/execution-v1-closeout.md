@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T15:47:58.802Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T15:47:51.452Z
 - branch: codex/rag-reranker-shadow-integration
 - commit: d094d113e1d65b9dbb9ff2d8ac43f9c8d4a6d225
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d094d113e1d65b9dbb9ff2d8ac43f9c8d4a6d225/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
