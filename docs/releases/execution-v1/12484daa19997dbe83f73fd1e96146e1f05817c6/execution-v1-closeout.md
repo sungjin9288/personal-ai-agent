@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T15:10:20.775Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T15:10:12.576Z
 - branch: codex/rag-reranker-runtime-stability
 - commit: 12484daa19997dbe83f73fd1e96146e1f05817c6
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/12484daa19997dbe83f73fd1e96146e1f05817c6/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

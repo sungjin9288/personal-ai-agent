@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T15:10:20.775Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T15:10:12.412Z
 - branch: codex/rag-reranker-runtime-stability
 - commit: 12484daa19997dbe83f73fd1e96146e1f05817c6
