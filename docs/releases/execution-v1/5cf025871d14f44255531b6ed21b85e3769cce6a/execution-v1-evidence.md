@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T07:05:08.563Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T07:05:00.413Z
 - branch: codex/rag-corpus-contract
 - commit: 5cf025871d14f44255531b6ed21b85e3769cce6a

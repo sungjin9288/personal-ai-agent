@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T07:05:08.563Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T07:05:00.489Z
 - branch: codex/rag-corpus-contract
 - commit: 5cf025871d14f44255531b6ed21b85e3769cce6a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5cf025871d14f44255531b6ed21b85e3769cce6a/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

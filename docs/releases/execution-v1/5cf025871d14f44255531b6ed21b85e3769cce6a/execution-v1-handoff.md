@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T07:05:08.563Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T07:05:07.672Z
 - localDate: 2026-07-16
 - branch: codex/rag-corpus-contract
 - commit: 5cf025871d14f44255531b6ed21b85e3769cce6a
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5cf025871d14f44255531b6ed21b85e3769cce6a](releases/execution-v1/5cf025871d14f44255531b6ed21b85e3769cce6a)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5cf025871d14f44255531b6ed21b85e3769cce6a/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5cf025871d14f44255531b6ed21b85e3769cce6a/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5cf025871d14f44255531b6ed21b85e3769cce6a](docs/releases/execution-v1/5cf025871d14f44255531b6ed21b85e3769cce6a)
 - visualArtifactSetSha256: 04f1461272a9dddadece38763074119ef7768adea981dccbc70b6003e91904b3
 - commitPushStatus: not pushed, origin/codex/rag-corpus-contract not found
 
