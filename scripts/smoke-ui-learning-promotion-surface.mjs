@@ -31,6 +31,17 @@ const promotedRun = runCli({
 assert.equal(promotedRun.status, 'completed');
 assert.ok(promotedRun.learningCandidateId);
 
+const authorizedMission = createMission({
+  objective: 'Create a reviewed candidate for explicit workspace scope authorization.',
+  title: 'UI learning promotion scope authorization',
+});
+const authorizedRun = runCli({
+  rootDir: tempRoot,
+  args: ['mission', 'run', authorizedMission.id, '--provider', 'stub'],
+});
+assert.equal(authorizedRun.status, 'completed');
+assert.ok(authorizedRun.learningCandidateId);
+
 const expiredMission = createMission({
   objective: 'Create a learning candidate that will be expired through the web operator API.',
   title: 'UI learning promotion expire',
@@ -1019,6 +1030,34 @@ try {
   assert.equal(initialItem.resolveCommand.includes('resolve-learning-promotion'), true);
   assert.equal(initialItem.expireCommand.includes('expire-learning-promotions'), true);
   assert.equal(initialItem.rollbackEligible, false);
+
+  const authorizationResult = await postJson(
+    `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(authorizedRun.learningCandidateId)}/authorize-scope`,
+    {
+      note: 'Authorize the reviewed decision for sibling missions in this workspace.',
+      scope: 'workspace',
+    },
+  );
+  assert.equal(authorizationResult.learningCandidate.promotionStatus, 'pending-review');
+  assert.equal(authorizationResult.scopeAuthorization.fromScope, 'mission');
+  assert.equal(authorizationResult.scopeAuthorization.fromScopeId, authorizedMission.id);
+  assert.equal(authorizationResult.scopeAuthorization.toScope, 'workspace');
+  assert.equal(authorizationResult.scopeAuthorization.toScopeId, workspace.id);
+  assert.equal(authorizationResult.scopeAuthorization.status, 'authorized');
+
+  const authorizationTimeline = await fetchJson(
+    `${baseUrl}/api/missions/${encodeURIComponent(authorizedMission.id)}/timeline`,
+  );
+  assert.equal(
+    authorizationTimeline.timeline.some(
+      (event) =>
+        event.kind === 'learning-candidate-promotion-scope-authorized' &&
+        event.learningCandidateId === authorizedRun.learningCandidateId &&
+        event.scopeAuthorizationId === authorizationResult.scopeAuthorization.id &&
+        event.status === 'authorized',
+    ),
+    true,
+  );
 
   const fallbackInbox = await fetchJson(
     `${baseUrl}/api/actions?missionId=${encodeURIComponent(fallbackMission.id)}&promotionStatus=all`,

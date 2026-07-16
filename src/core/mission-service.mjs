@@ -263,6 +263,7 @@ export function createMissionService({
   emitLearningCandidateImpl = learningCandidateEmitter.emitLearningCandidate;
 
   const {
+    authorizeLearningPromotionScope,
     expireLearningPromotions,
     getLearningPromotionQueue,
     listLearningPromotionItems,
@@ -361,6 +362,7 @@ export function createMissionService({
     addMemory,
     addMissionAttachment,
     addWorkspace,
+    authorizeLearningPromotionScope,
     acknowledgeProviderAttention,
     browseMissionHarnessDocuments,
     browseMissionHarnessMemory,

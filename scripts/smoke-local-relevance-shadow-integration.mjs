@@ -92,7 +92,7 @@ const developmentPlan = fs.readFileSync(
   'utf8',
 );
 for (const term of [
-  'status: approved-learning-feedback-quality-current',
+  'status: workspace-learning-personalization-current',
   '| R11 Local relevance shadow integration | 완료 |',
   'npm run smoke:local-relevance-shadow-integration',
   'providerInputPreserved: true',

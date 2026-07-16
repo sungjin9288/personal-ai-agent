@@ -59,6 +59,7 @@
 - evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json
 - evidence/output-artifacts/approved-learning-rag-feedback.json
 - evidence/output-artifacts/approved-learning-feedback-quality.json
+- evidence/output-artifacts/workspace-learning-personalization.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함

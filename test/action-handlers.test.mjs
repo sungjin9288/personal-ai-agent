@@ -15,6 +15,10 @@ function createFixture({ body = {}, query = {}, tenant } = {}) {
   const request = { id: 'request-action-1' };
   const response = {};
   const service = {
+    authorizeLearningPromotionScope(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'authorizeLearningPromotionScope' });
+      return { authorized: true, candidateId };
+    },
     expireLearningPromotions(input) {
       state.serviceCalls.push({ input, method: 'expireLearningPromotions' });
       return { expired: true };
@@ -184,6 +188,14 @@ test('expire handler trims the existing learning promotion filter payload', asyn
 });
 
 test('learning promotion handlers preserve path decoding and mutation payloads', async () => {
+  const authorize = createFixture({
+    body: {
+      note: ' reuse reviewed decision ',
+      scope: ' workspace ',
+    },
+  });
+  await authorize.handlers.authorizeLearningPromotionScope({ candidateId: 'candidate%2F2' });
+
   const remind = createFixture({
     body: {
       dueOnly: false,
@@ -208,6 +220,14 @@ test('learning promotion handlers preserve path decoding and mutation payloads',
   const rollback = createFixture({ body: { note: ' rollback reason ' } });
   await rollback.handlers.rollbackLearningPromotion({ candidateId: 'candidate%2F5' });
 
+  assert.deepEqual(authorize.state.serviceCalls, [{
+    candidateId: 'candidate/2',
+    input: {
+      note: 'reuse reviewed decision',
+      scope: 'workspace',
+    },
+    method: 'authorizeLearningPromotionScope',
+  }]);
   assert.deepEqual(remind.state.serviceCalls, [{
     input: {
       dueOnly: false,
@@ -235,8 +255,8 @@ test('learning promotion handlers preserve path decoding and mutation payloads',
     method: 'rollbackLearningPromotion',
   }]);
   assert.deepEqual(
-    [remind, resolve, rollback].map(({ state }) => state.jsonResponses[0].statusCode),
-    [200, 200, 200],
+    [authorize, remind, resolve, rollback].map(({ state }) => state.jsonResponses[0].statusCode),
+    [200, 200, 200, 200],
   );
 });
 

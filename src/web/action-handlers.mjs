@@ -8,6 +8,16 @@ export function createActionHandlerFactory({
   service,
 } = {}) {
   return function createActionHandlers({ auth, request, response, url } = {}) {
+    async function authorizeLearningPromotionScope(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      const body = await readJsonBody(request);
+      const result = service.authorizeLearningPromotionScope(candidateId, {
+        note: String(body.note || '').trim(),
+        scope: String(body.scope || '').trim(),
+      });
+      sendJson(response, 200, result);
+    }
+
     async function getInbox() {
       const workspaceId = String(url.searchParams.get('workspaceId') || '').trim();
       if (workspaceId) {
@@ -119,6 +129,7 @@ export function createActionHandlerFactory({
     }
 
     return {
+      authorizeLearningPromotionScope,
       expireLearningPromotions,
       getInbox,
       remediateProviderAttention,

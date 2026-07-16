@@ -120,6 +120,19 @@ function resolveLearningPromotionScopeId(candidate, scope) {
   return GLOBAL_USER_SCOPE_ID;
 }
 
+function matchesScopeAuthorization(candidate, scope, scopeId) {
+  const authorization = candidate?.promotionScopeAuthorization;
+  return (
+    candidate?.safety?.scopeLocked === true &&
+    candidate?.safety?.crossScopePromotionAllowed === true &&
+    authorization?.status === 'authorized' &&
+    authorization?.fromScope === normalizeText(candidate?.scope, 'mission') &&
+    authorization?.fromScopeId === candidate?.scopeId &&
+    authorization?.toScope === scope &&
+    authorization?.toScopeId === scopeId
+  );
+}
+
 function formatLearningPromotionMemory({ candidate, note, target }) {
   const noteSuffix = note ? ` note=${note}` : '';
   return `Learning candidate promoted [${target}] for mission ${candidate.missionId}: ${candidate.summary}${noteSuffix}`;
@@ -531,6 +544,9 @@ export function createLearningPromotion({
     const hasEvidence = Boolean(candidate.evidence?.gatewayEventId || artifactCount || runCount);
     const isPreMutation = mutationPhase === 'pre-mutation';
     const rollbackAction = memoryEntry ? 'delete-memory-entry' : 'ignore-learning-candidate-decision';
+    const scopeAuthorizationId = matchesScopeAuthorization(candidate, normalizedScope, scopeId)
+      ? candidate.promotionScopeAuthorization?.id || null
+      : null;
     const checks = [
       {
         id: 'manual-approval-recorded',
@@ -545,10 +561,10 @@ export function createLearningPromotion({
       {
         id: 'scope-locked',
         passed:
-          normalizedScope === expectedScope &&
-          scopeId === expectedScopeId &&
-          candidate.safety?.scopeLocked === true &&
-          candidate.safety?.crossScopePromotionAllowed !== true,
+          (normalizedScope === expectedScope &&
+            scopeId === expectedScopeId &&
+            candidate.safety?.scopeLocked === true) ||
+          matchesScopeAuthorization(candidate, normalizedScope, scopeId),
         reason: 'Promotion must stay inside the candidate scope unless cross-scope promotion is explicitly enabled.',
       },
       {
@@ -618,6 +634,7 @@ export function createLearningPromotion({
           candidate.evidence?.providerFallbackPolicy || candidate.evidence?.providerFallbackSummary?.policyId || null,
         providerFallbackStopReasonCounts: candidate.evidence?.providerFallbackStopReasonCounts || {},
         runCount,
+        ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
       },
       id: `${candidate.id}:promotion-verification:${normalizedDecision}`,
       note,
@@ -637,6 +654,88 @@ export function createLearningPromotion({
       verifiedAt: decidedAt,
       verificationPhase: mutationPhase,
       verificationType: 'local-deterministic-promotion-gate',
+    };
+  }
+
+  function authorizeLearningPromotionScope(candidateId, { note = '', scope = '' } = {}) {
+    const candidate = store.getLearningCandidate(candidateId);
+    if (!candidate) {
+      throw new Error(`Learning candidate not found: ${candidateId}`);
+    }
+    if (candidate.promotionStatus !== 'pending-review') {
+      throw new Error(`Learning candidate ${candidateId} is not pending review.`);
+    }
+
+    const authorizationNote = normalizeText(note);
+    if (!authorizationNote) {
+      throw new Error('Learning promotion scope authorization requires an explicit note.');
+    }
+    const targetScope = normalizeLearningPromotionScope(scope);
+    if (candidate.scope !== 'mission' || targetScope !== 'workspace') {
+      throw new Error('Only mission-to-workspace learning scope authorization is supported.');
+    }
+
+    const mission = getMission(candidate.missionId);
+    const workspace = getWorkspace(candidate.workspaceId);
+    if (
+      !mission ||
+      !workspace ||
+      mission.workspaceId !== workspace.id ||
+      candidate.scopeId !== mission.id ||
+      candidate.evidence?.reviewerVerdict !== 'pass' ||
+      candidate.safety?.scopeLocked !== true ||
+      candidate.safety?.noRawSecrets !== true ||
+      candidate.safety?.noRawCustomerPayloads !== true ||
+      candidate.proposal?.approvalRequired !== true ||
+      candidate.proposal?.reviewerRequired !== true
+    ) {
+      throw new Error('Learning promotion scope authorization evidence is incomplete.');
+    }
+    if (getLearningPromotionExpirationPolicy(candidate).expired) {
+      throw new Error(`Learning candidate ${candidateId} is expired.`);
+    }
+
+    const existing = candidate.promotionScopeAuthorization;
+    if (
+      existing?.status === 'authorized' &&
+      existing.toScope === targetScope &&
+      existing.toScopeId === workspace.id
+    ) {
+      return {
+        learningCandidate: candidate,
+        queueItem: buildLearningPromotionQueueItem(candidate),
+        scopeAuthorization: existing,
+      };
+    }
+
+    const authorizedAt = now();
+    const scopeAuthorization = {
+      authorizedAt,
+      authorizedBy: 'local-operator',
+      fromScope: candidate.scope,
+      fromScopeId: candidate.scopeId,
+      id: `${candidate.id}:scope-authorization:${targetScope}`,
+      note: authorizationNote,
+      schemaVersion: 'personal-ai-agent-learning-promotion-scope-authorization/v1',
+      status: 'authorized',
+      toScope: targetScope,
+      toScopeId: workspace.id,
+    };
+    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+      ...current,
+      promotionScopeAuthorization: scopeAuthorization,
+      safety: {
+        ...current.safety,
+        crossScopePromotionAllowed: true,
+      },
+      updatedAt: authorizedAt,
+    }));
+
+    writeUpdatedLearningCandidateArtifact(updatedCandidate);
+    return {
+      learningCandidate: updatedCandidate,
+      queueItem: buildLearningPromotionQueueItem(updatedCandidate),
+      scopeAuthorization,
     };
   }
 
@@ -733,7 +832,15 @@ export function createLearningPromotion({
 
     const normalizedTarget = normalizeLearningPromotionTarget(target, defaultLearningPromotionTarget(candidate));
     const normalizedScope = normalizeLearningPromotionScope(scope, candidate.scope || 'mission');
-    if (normalizedScope !== normalizeText(candidate.scope, 'mission')) {
+    const scopeId = resolveLearningPromotionScopeId(candidate, normalizedScope);
+    const usesScopeAuthorization = matchesScopeAuthorization(candidate, normalizedScope, scopeId);
+    const scopeAuthorizationId = usesScopeAuthorization
+      ? candidate.promotionScopeAuthorization?.id || null
+      : null;
+    if (
+      normalizedScope !== normalizeText(candidate.scope, 'mission') &&
+      !usesScopeAuthorization
+    ) {
       throw new Error(
         `Learning candidate ${candidateId} is scope-locked to ${candidate.scope || 'mission'}; cross-scope promotion is not enabled.`,
       );
@@ -741,7 +848,6 @@ export function createLearningPromotion({
 
     const decidedAt = now();
     const resolutionNote = normalizeText(note, 'Resolved without additional note.');
-    const scopeId = resolveLearningPromotionScopeId(candidate, normalizedScope);
     const preMutationVerification = buildLearningPromotionVerification({
       candidate,
       decidedAt,
@@ -768,6 +874,7 @@ export function createLearningPromotion({
             memoryId: null,
           },
           scope: normalizedScope,
+          ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
           scopeId,
           target: normalizedTarget,
           verificationId: preMutationVerification.id,
@@ -781,6 +888,7 @@ export function createLearningPromotion({
           reason: preMutationVerification.stopReason || 'learning-promotion-verification-failed',
           requestedDecision: normalizedDecision,
           scope: normalizedScope,
+          ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
           scopeId,
           status: 'blocked',
           target: normalizedTarget,
@@ -833,6 +941,10 @@ export function createLearningPromotion({
     let finalMemoryEntry = memoryEntry;
     let finalPromotionStatus = nextPromotionStatus;
     let promotionStopCondition = null;
+    const shouldConsumeScopeAuthorization =
+      usesScopeAuthorization &&
+      normalizedDecision === 'approve' &&
+      promotionVerification.status === 'passed';
 
     if (promotionVerification.status !== 'passed') {
       if (memoryEntry?.id) {
@@ -848,6 +960,7 @@ export function createLearningPromotion({
         reason: promotionVerification.stopReason || 'learning-promotion-verification-failed',
         requestedDecision: normalizedDecision,
         scope: normalizedScope,
+        ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
         scopeId,
         status: 'blocked',
         target: normalizedTarget,
@@ -869,11 +982,22 @@ export function createLearningPromotion({
           memoryId: finalMemoryEntry?.id || null,
         },
         scope: normalizedScope,
+        ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
         scopeId,
         target: normalizedTarget,
         verificationId: promotionVerification.id,
       },
       promotionStatus: finalPromotionStatus,
+      ...(candidate.promotionScopeAuthorization
+        ? {
+            promotionScopeAuthorization: {
+              ...candidate.promotionScopeAuthorization,
+              ...(shouldConsumeScopeAuthorization
+                ? { consumedAt: decidedAt, status: 'consumed' }
+                : {}),
+            },
+          }
+        : {}),
       ...(promotionStopCondition ? { promotionStopCondition } : {}),
       promotionVerification,
       updatedAt: decidedAt,
@@ -1037,6 +1161,7 @@ export function createLearningPromotion({
   }
 
   return {
+    authorizeLearningPromotionScope,
     expireLearningPromotions,
     getLearningPromotionQueue,
     listLearningPromotionItems,

@@ -136,6 +136,131 @@ test('resolveLearningPromotion: approve+memory writes a memory entry and marks p
   assert.deepEqual(store.effects, ['memory-add:memory-1', 'store:lc-1', 'artifact:lc-1']);
 });
 
+test('workspace promotion remains default-deny without a separate scope authorization', () => {
+  const store = createFakeStore([validCandidate()]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  assert.throws(
+    () => promotion.resolveLearningPromotion('lc-1', {
+      decision: 'approve',
+      note: 'promote across the workspace',
+      scope: 'workspace',
+      target: 'memory',
+    }),
+    /cross-scope promotion is not enabled/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
+test('scope authorization records operator intent before workspace promotion', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion, memoryEntries } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const authorization = promotion.authorizeLearningPromotionScope('lc-1', {
+    note: 'Reuse this reviewed decision for sibling missions.',
+    scope: 'workspace',
+  });
+  const result = promotion.resolveLearningPromotion('lc-1', {
+    decision: 'approve',
+    note: 'Apply the reviewed workspace decision.',
+    scope: 'workspace',
+    target: 'memory',
+  });
+
+  assert.equal(authorization.scopeAuthorization.status, 'authorized');
+  assert.equal(authorization.scopeAuthorization.fromScope, 'mission');
+  assert.equal(authorization.scopeAuthorization.toScope, 'workspace');
+  assert.equal(authorization.scopeAuthorization.toScopeId, 'ws-1');
+  assert.equal(authorization.learningCandidate.safety.crossScopePromotionAllowed, true);
+  assert.equal(memoryEntries.length, 1);
+  assert.equal(memoryEntries[0].scope, 'workspace');
+  assert.equal(memoryEntries[0].scopeId, 'ws-1');
+  assert.equal(result.learningCandidate.promotionStatus, 'promoted');
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.status, 'consumed');
+  assert.equal(
+    result.learningCandidate.promotionDecision.scopeAuthorizationId,
+    authorization.scopeAuthorization.id,
+  );
+  assert.equal(
+    result.learningCandidate.promotionVerification.evidence.scopeAuthorizationId,
+    authorization.scopeAuthorization.id,
+  );
+  assert.deepEqual(store.effects, [
+    'store:lc-1',
+    'artifact:lc-1',
+    'memory-add:memory-1',
+    'store:lc-1',
+    'artifact:lc-1',
+  ]);
+});
+
+test('mission-scoped resolution does not consume an unused workspace authorization', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const authorization = promotion.authorizeLearningPromotionScope('lc-1', {
+    note: 'Authorize workspace reuse if the operator selects that scope.',
+    scope: 'workspace',
+  });
+  const result = promotion.resolveLearningPromotion('lc-1', {
+    decision: 'approve',
+    note: 'Keep this promotion inside the source mission.',
+    scope: 'mission',
+    target: 'memory',
+  });
+
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.status, 'authorized');
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.consumedAt, undefined);
+  assert.equal(result.learningCandidate.promotionDecision.scopeAuthorizationId, undefined);
+  assert.equal(result.learningCandidate.promotionVerification.evidence.scopeAuthorizationId, undefined);
+  assert.equal(
+    authorization.scopeAuthorization.id,
+    result.learningCandidate.promotionScopeAuthorization.id,
+  );
+});
+
+test('scope authorization rejects missing note or incomplete reviewer evidence before writing', () => {
+  const store = createFakeStore([validCandidate()]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', { scope: 'workspace' }),
+    /requires an explicit note/,
+  );
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', {
+      note: 'missing reviewer proof',
+      scope: 'workspace',
+    }),
+    /authorization evidence is incomplete/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
 test('resolveLearningPromotion: reject writes decision without touching memory', () => {
   const candidate = validCandidate();
   const store = createFakeStore([candidate]);

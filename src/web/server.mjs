@@ -2312,6 +2312,11 @@ async function handleApi(request, response, url) {
   );
   registerParamRoute(
     'POST',
+    '/api/actions/learning-promotions/:candidateId/authorize-scope',
+    actionHandlers.authorizeLearningPromotionScope,
+  );
+  registerParamRoute(
+    'POST',
     '/api/actions/learning-promotions/:candidateId/resolve',
     actionHandlers.resolveLearningPromotion,
   );

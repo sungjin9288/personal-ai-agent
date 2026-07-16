@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Workspace Learning Personalization
+
+- kept mission-to-workspace promotion default-deny and added a separate local-operator authorization record before workspace scope can pass the existing promotion verification
+- replayed one source, one same-workspace sibling, and one foreign-workspace mission across seven credential-free stub sessions; the sibling moved from three to four planner steps and failed to pass on the controlled gate while foreign memory exposure remained zero
+- linked authorization, promotion, and rollback in the mission timeline, restored the sibling exact baseline after rollback, and left general cross-mission, workspace/user personalization, actual model training, and production claims unproven
+
 ## 2026-07-17 Multi-scenario Approved Learning Feedback Quality
 
 - replayed three independent same-workspace missions through baseline, simultaneous approved-memory application, and rollback for nine distinct credential-free stub sessions

@@ -2674,6 +2674,28 @@ export function createMissionReadService({
         workspaceId: candidate.workspaceId || mission.workspaceId,
       });
 
+      if (candidate.promotionScopeAuthorization?.authorizedAt) {
+        const authorization = candidate.promotionScopeAuthorization;
+        timeline.push({
+          at: authorization.authorizedAt,
+          authorizedBy: authorization.authorizedBy,
+          detail: `authorized learning candidate scope ${authorization.fromScope}→${authorization.toScope}: ${authorization.note}`,
+          fromScope: authorization.fromScope,
+          fromScopeId: authorization.fromScopeId,
+          kind: 'learning-candidate-promotion-scope-authorized',
+          learningCandidateId: candidate.id,
+          missionId: mission.id,
+          promotionStatus: candidate.promotionStatus || null,
+          scopeAuthorizationId: authorization.id,
+          sessionId: candidate.sessionId,
+          status: 'authorized',
+          authorizationStatus: authorization.status,
+          toScope: authorization.toScope,
+          toScopeId: authorization.toScopeId,
+          workspaceId: candidate.workspaceId || mission.workspaceId,
+        });
+      }
+
       if (candidate.promotionDecision?.decidedAt) {
         const promotionDecision = candidate.promotionDecision;
         const promotionDecisionKind =
@@ -2701,6 +2723,9 @@ export function createMissionReadService({
           promotionVerificationType: candidate.promotionVerification?.verificationType || null,
           requestedDecision: promotionDecision.requestedDecision || promotionDecision.decision || null,
           recordType: candidate.recordType,
+          ...(promotionDecision.scopeAuthorizationId
+            ? { scopeAuthorizationId: promotionDecision.scopeAuthorizationId }
+            : {}),
           sessionId: candidate.sessionId,
           status: candidate.status,
           target: promotionDecision.target,
@@ -2778,6 +2803,9 @@ export function createMissionReadService({
           missionId: mission.id,
           promotionStatus: candidate.promotionStatus || null,
           recordType: candidate.recordType,
+          ...(candidate.promotionDecision?.scopeAuthorizationId
+            ? { scopeAuthorizationId: candidate.promotionDecision.scopeAuthorizationId }
+            : {}),
           sessionId: candidate.sessionId,
           status: candidate.status,
           target: candidate.promotionRollback.target,

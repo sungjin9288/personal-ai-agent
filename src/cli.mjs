@@ -161,6 +161,7 @@ Commands:
   action sync-escalations [--workspace <workspaceId>] [--mission <missionId>] [--owner <human-approver|mission-owner|workspace-owner>] [--status <open|resolved>]
   action remediate-provider-attention <actionId> [--fallback-provider <stub|openai|anthropic|local|hermes>[,...] [--fallback-policy <provider-failure-only|recoverable-provider-failure-only>]]
   action remediate-specialist-follow-up <actionId>
+  action authorize-learning-promotion-scope <learningCandidateId> --scope <workspace> --note <text>
   action resolve-learning-promotion <learningCandidateId> --decision <approve|reject> [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--note <text>]
   action rollback-learning-promotion <learningCandidateId> [--note <text>]
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
@@ -1154,6 +1155,16 @@ async function main() {
         note: readOption(rest, '--note', ''),
         scope: readOption(rest, '--scope', ''),
         target: readOption(rest, '--target', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'authorize-learning-promotion-scope') {
+    printJson(
+      service.authorizeLearningPromotionScope(rest[0], {
+        note: readOption(rest, '--note', ''),
+        scope: readOption(rest, '--scope', ''),
       }),
     );
     return;

@@ -13,6 +13,7 @@ const PUBLIC_METHODS = [
   'addMemory',
   'addMissionAttachment',
   'addWorkspace',
+  'authorizeLearningPromotionScope',
   'browseMissionHarnessDocuments',
   'browseMissionHarnessMemory',
   'checkProvider',

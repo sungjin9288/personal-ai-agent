@@ -45,6 +45,7 @@ const expectedCommands = [
   'npm run smoke:local-relevance-shadow-cache-termination-soak',
   'npm run smoke:approved-learning-rag-feedback',
   'npm run smoke:approved-learning-feedback-quality',
+  'npm run smoke:workspace-learning-personalization',
   'npm run smoke:approved-training-record',
   'npm run smoke:training-dataset-quality',
   'npm run smoke:fine-tuning-readiness',

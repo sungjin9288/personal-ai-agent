@@ -60,8 +60,14 @@ function formatRetrievedContext(retrievalContext, fallback = 'No retrieval snipp
     .join('\n');
 }
 
-function deriveMemoryAdaptation(memoryEntries) {
-  const relevantEntries = memoryEntries.filter((entry) => entry.scope === 'mission');
+function deriveMemoryAdaptation(memoryEntries, { missionId, workspaceId } = {}) {
+  const relevantEntries = memoryEntries.filter(
+    (entry) =>
+      (entry.scope === 'mission' && entry.scopeId === missionId) ||
+      (entry.scope === 'workspace' &&
+        entry.scopeId === workspaceId &&
+        entry.kind === 'decision'),
+  );
   const adaptationNotes = uniqueTexts(relevantEntries.map((entry) => entry.content));
   const adaptivePlanSteps = [];
 
@@ -295,7 +301,10 @@ ${formatContextBoundary()}
 }
 
 function buildPlannerOutput({ mission, workspace, pack, memoryEntries }) {
-  const adaptation = deriveMemoryAdaptation(memoryEntries);
+  const adaptation = deriveMemoryAdaptation(memoryEntries, {
+    missionId: mission.id,
+    workspaceId: workspace.id,
+  });
   const uniquePlanSteps = uniqueTexts([...pack.plannerGuidance, ...adaptation.adaptivePlanSteps]);
   const planSteps = uniquePlanSteps.map((item, index) => `${index + 1}. ${item}`);
 
@@ -335,7 +344,10 @@ function buildExecutorOutput({ mission, workspace, pack, previousOutputs, memory
   const planSteps = previousOutputs.planner ? previousOutputs.planner.planSteps : pack.plannerGuidance;
   const adaptationNotes = previousOutputs.planner
     ? previousOutputs.planner.adaptationNotes
-    : deriveMemoryAdaptation(memoryEntries).adaptationNotes;
+    : deriveMemoryAdaptation(memoryEntries, {
+        missionId: mission.id,
+        workspaceId: workspace.id,
+      }).adaptationNotes;
   let artifactContent = pack.renderDraft({
     planSteps,
     forceReviewerFail,

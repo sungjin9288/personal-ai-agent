@@ -98,6 +98,7 @@
 - 완료: provider readiness matrix와 catalog smoke guard
 - 완료: provider failure recovery demo와 smoke guard
 - 완료: memory/retrieval/fact graph quality fixture와 smoke guard
+- 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: R12 multi-scenario shadow replay에서 3 scenario·15 mission·60 role observation을 실제 재생하고 full-query hard-negative 실패를 보존한 뒤 mission-objective query contract로 교정
 - 완료: R13 bounded shadow score cache에서 exact query-document repetition을 process-local LRU로 재사용해 15/15 품질을 유지하며 120 request를 30 inference로 축소하고 maximum latency 회귀까지 증적에 보존
 - 완료: R14 shadow cache lifecycle stress에서 8-entry eviction 22, concurrent join, in-flight invalidation, stale-result drop, fresh refill와 rollback close를 actual local evidence로 검증

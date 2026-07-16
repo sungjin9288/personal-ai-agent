@@ -8,8 +8,8 @@ export function hashText(value) {
   return createHash('sha256').update(String(value)).digest('hex');
 }
 
-export function createFeedbackWorkspace({ name, rootDir }) {
-  const workspacePath = path.join(rootDir, 'workspace');
+export function createFeedbackWorkspace({ directoryName = 'workspace', name, rootDir }) {
+  const workspacePath = path.join(rootDir, directoryName);
   fs.mkdirSync(workspacePath, { recursive: true });
   return runCli({
     rootDir,
@@ -53,7 +53,7 @@ export function runFeedbackMission({ label, missionId, rootDir }) {
   return result;
 }
 
-export function approveFeedbackMemory({ candidateId, note, rootDir }) {
+export function approveFeedbackMemory({ candidateId, note, rootDir, scope = 'mission' }) {
   const result = runCli({
     rootDir,
     args: [
@@ -65,7 +65,7 @@ export function approveFeedbackMemory({ candidateId, note, rootDir }) {
       '--target',
       'memory',
       '--scope',
-      'mission',
+      scope,
       '--note',
       note,
     ],
@@ -82,6 +82,21 @@ export function approveFeedbackMemory({ candidateId, note, rootDir }) {
   return { memory, promotion: result.learningCandidate };
 }
 
+export function authorizeFeedbackScope({ candidateId, note, rootDir, scope = 'workspace' }) {
+  return runCli({
+    rootDir,
+    args: [
+      'action',
+      'authorize-learning-promotion-scope',
+      candidateId,
+      '--scope',
+      scope,
+      '--note',
+      note,
+    ],
+  });
+}
+
 export function rollbackFeedbackMemory({ candidateId, note, rootDir }) {
   const result = runCli({
     rootDir,
@@ -96,8 +111,16 @@ export function rollbackFeedbackMemory({ candidateId, note, rootDir }) {
   return result.learningCandidate;
 }
 
+export function getFeedbackMissionTimeline({ missionId, rootDir }) {
+  return runCli({
+    rootDir,
+    args: ['mission', 'timeline', missionId],
+  });
+}
+
 export function observeFeedbackRun({
   expectedPlanStep,
+  expectMemoryApplied,
   label,
   memoryContent,
   memoryId,
@@ -115,6 +138,7 @@ export function observeFeedbackRun({
   );
   const artifacts = state.artifacts.filter((item) => item.sessionId === sessionId);
   const plannerArtifact = artifacts.find((item) => item.fileName === 'planner-plan.md');
+  const plannerPromptArtifact = artifacts.find((item) => item.fileName === 'planner-prompt.md');
   const deliverableArtifact = artifacts.find(
     (item) => item.kind === 'deliverable' && item.role === 'executor',
   );
@@ -125,6 +149,9 @@ export function observeFeedbackRun({
   }
 
   const plannerContent = fs.readFileSync(plannerArtifact.path, 'utf8');
+  const plannerPromptContent = plannerPromptArtifact
+    ? fs.readFileSync(plannerPromptArtifact.path, 'utf8')
+    : '';
   const deliverableContent = fs.readFileSync(deliverableArtifact.path, 'utf8');
   const retrievalContent = retrievalArtifact ? fs.readFileSync(retrievalArtifact.path, 'utf8') : '';
   const retrievalEntries = parseRetrievalEntries(retrievalContent);
@@ -133,7 +160,19 @@ export function observeFeedbackRun({
     ? plannerRun.adaptationNotes
     : [];
   const planSteps = Array.isArray(plannerRun.planSteps) ? plannerRun.planSteps : [];
-  const expectedMemoryApplied = Boolean(memoryId && memoryContent);
+  const expectedMemoryApplied =
+    expectMemoryApplied === undefined
+      ? Boolean(memoryId && memoryContent)
+      : expectMemoryApplied === true;
+  const memoryExposure = {
+    deliverableContainsMemory: Boolean(memoryContent && deliverableContent.includes(memoryContent)),
+    plannerPromptContainsMemory: Boolean(
+      memoryContent && plannerPromptContent.includes(memoryContent),
+    ),
+    retrievalContainsMemory: Boolean(
+      memoryId && retrievalEntries.some((entry) => entry.sourceId === memoryId),
+    ),
+  };
 
   return {
     answerQuality: {
@@ -172,6 +211,7 @@ export function observeFeedbackRun({
             (item) => item.id === memoryId && item.content === memoryContent,
           )
         : false,
+      memoryExposure,
       providerId: session.provider,
       retrieval: primaryRetrieval,
       reviewerVerdict: candidate.evidence?.reviewerVerdict,
