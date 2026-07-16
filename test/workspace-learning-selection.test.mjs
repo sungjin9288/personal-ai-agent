@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 
 import {
   applyWorkspaceLearningSelection,
+  buildWorkspaceLearningSelectionOverrides,
   formatWorkspaceLearningSelectionArtifact,
   selectWorkspaceLearningMemory,
 } from '../src/core/workspace-learning-selection.mjs';
+
+const hash = (value) => createHash('sha256').update(String(value)).digest('hex');
 
 function memory({ createdAt, id, kind = 'decision', scopeId = 'workspace-a', updatedAt }) {
   return {
@@ -36,6 +40,38 @@ function record(entry, contentHash, overrides = {}) {
     sourceId: entry.id,
     sourceType: 'memory',
     ...overrides,
+  };
+}
+
+function candidateWithOverride({
+  expiresAt,
+  id = 'candidate-older',
+  memoryId = 'memory-older',
+  setAt,
+  status = 'active',
+  workspaceId = 'workspace-a',
+}) {
+  return {
+    id,
+    promotionDecision: {
+      decision: 'approve',
+      memoryId,
+      scope: 'workspace',
+      scopeId: workspaceId,
+      target: 'memory',
+    },
+    promotionScopeAuthorization: { status: 'consumed' },
+    promotionStatus: 'promoted',
+    promotionVerification: { status: 'passed' },
+    workspaceLearningSelectionOverride: {
+      expiresAt,
+      id: `${id}:override`,
+      memoryId,
+      noteHash: hash(`${id} note`),
+      setAt,
+      status,
+      workspaceId,
+    },
   };
 }
 
@@ -174,4 +210,134 @@ test('provider context keeps selected workspace decision and preserves aligned r
   ]);
   assert.deepEqual(memoryEntries, [older, newer, missionMemory]);
   assert.equal(JSON.parse(formatWorkspaceLearningSelectionArtifact(selection)).selectedMemoryId, newer.id);
+});
+
+test('active operator override selects an older retrieved decision without injecting new context', () => {
+  const older = memory({ createdAt: '2026-07-17T00:00:00.000Z', id: 'memory-older' });
+  const newer = memory({ createdAt: '2026-07-17T00:01:00.000Z', id: 'memory-newer' });
+  const selectionOverrides = buildWorkspaceLearningSelectionOverrides({
+    learningCandidates: [candidateWithOverride({
+      expiresAt: '2026-07-17T02:00:00.000Z',
+      setAt: '2026-07-17T01:00:00.000Z',
+    })],
+    observedAt: '2026-07-17T01:30:00.000Z',
+    workspaceId: 'workspace-a',
+  });
+
+  const selection = selectWorkspaceLearningMemory({
+    memoryEntries: [older, newer],
+    retrievalCorpusRecords: [record(newer, 'newer-hash'), record(older, 'older-hash')],
+    selectionOverrides,
+    workspaceId: 'workspace-a',
+  });
+
+  assert.equal(selection.policyId, 'workspace-decision-operator-override-v1');
+  assert.equal(selection.selectionSource, 'operator-override');
+  assert.equal(selection.selectedMemoryId, older.id);
+  assert.equal(selection.overrideEvaluation.selectedOverrideId, 'candidate-older:override');
+  assert.deepEqual(selection.candidates.map((candidate) => candidate.memoryId), [older.id, newer.id]);
+  assert.equal(JSON.stringify(selection).includes(older.content), false);
+});
+
+test('expired and cleared overrides fall back to the latest retrieved decision', () => {
+  const older = memory({ createdAt: '2026-07-17T00:00:00.000Z', id: 'memory-older' });
+  const newer = memory({ createdAt: '2026-07-17T00:01:00.000Z', id: 'memory-newer' });
+  const learningCandidates = [
+    candidateWithOverride({
+      expiresAt: '2026-07-17T01:00:00.000Z',
+      setAt: '2026-07-17T00:30:00.000Z',
+    }),
+    candidateWithOverride({
+      expiresAt: '2026-07-17T03:00:00.000Z',
+      id: 'candidate-cleared',
+      memoryId: 'memory-cleared',
+      setAt: '2026-07-17T00:45:00.000Z',
+      status: 'cleared',
+    }),
+  ];
+  const selectionOverrides = buildWorkspaceLearningSelectionOverrides({
+    learningCandidates,
+    observedAt: '2026-07-17T02:00:00.000Z',
+    workspaceId: 'workspace-a',
+  });
+
+  const selection = selectWorkspaceLearningMemory({
+    memoryEntries: [older, newer],
+    retrievalCorpusRecords: [record(older, 'older-hash'), record(newer, 'newer-hash')],
+    selectionOverrides,
+    workspaceId: 'workspace-a',
+  });
+
+  assert.equal(selection.policyId, 'workspace-decision-latest-revision-v1');
+  assert.equal(selection.selectionSource, 'latest-revision-fallback');
+  assert.equal(selection.selectedMemoryId, newer.id);
+  assert.equal(selection.overrideEvaluation.expiredCount, 1);
+  assert.equal(selection.overrideEvaluation.clearedCount, 1);
+});
+
+test('operator override cannot inject a foreign or unretrieved workspace decision', () => {
+  const retrieved = memory({ createdAt: '2026-07-17T00:00:00.000Z', id: 'memory-retrieved' });
+  const unretrieved = memory({ createdAt: '2026-07-17T00:01:00.000Z', id: 'memory-unretrieved' });
+  const foreignCandidate = candidateWithOverride({
+    expiresAt: '2026-07-17T03:00:00.000Z',
+    id: 'candidate-foreign',
+    memoryId: 'memory-foreign',
+    setAt: '2026-07-17T01:00:00.000Z',
+    workspaceId: 'workspace-b',
+  });
+  const localCandidate = candidateWithOverride({
+    expiresAt: '2026-07-17T03:00:00.000Z',
+    id: 'candidate-unretrieved',
+    memoryId: unretrieved.id,
+    setAt: '2026-07-17T01:00:00.000Z',
+  });
+  const selectionOverrides = buildWorkspaceLearningSelectionOverrides({
+    learningCandidates: [foreignCandidate, localCandidate],
+    observedAt: '2026-07-17T02:00:00.000Z',
+    workspaceId: 'workspace-a',
+  });
+
+  const selection = selectWorkspaceLearningMemory({
+    memoryEntries: [retrieved, unretrieved],
+    retrievalCorpusRecords: [record(retrieved, 'retrieved-hash')],
+    selectionOverrides,
+    workspaceId: 'workspace-a',
+  });
+
+  assert.equal(selection.selectedMemoryId, retrieved.id);
+  assert.equal(selection.overrideEvaluation.invalidCount, 1);
+  assert.equal(selection.overrideEvaluation.unretrievedActiveCount, 1);
+  assert.equal(selection.selectionSource, 'latest-revision-fallback');
+});
+
+test('only the latest operator action is eligible so an older override cannot revive', () => {
+  const older = memory({ createdAt: '2026-07-17T00:00:00.000Z', id: 'memory-older' });
+  const newer = memory({ createdAt: '2026-07-17T00:01:00.000Z', id: 'memory-newer' });
+  const olderActive = candidateWithOverride({
+    expiresAt: '2026-07-17T04:00:00.000Z',
+    setAt: '2026-07-17T01:00:00.000Z',
+  });
+  const latestExpired = candidateWithOverride({
+    expiresAt: '2026-07-17T02:00:00.000Z',
+    id: 'candidate-newer',
+    memoryId: newer.id,
+    setAt: '2026-07-17T01:30:00.000Z',
+  });
+  const selectionOverrides = buildWorkspaceLearningSelectionOverrides({
+    learningCandidates: [olderActive, latestExpired],
+    observedAt: '2026-07-17T03:00:00.000Z',
+    workspaceId: 'workspace-a',
+  });
+
+  const selection = selectWorkspaceLearningMemory({
+    memoryEntries: [older, newer],
+    retrievalCorpusRecords: [record(older, 'older-hash'), record(newer, 'newer-hash')],
+    selectionOverrides,
+    workspaceId: 'workspace-a',
+  });
+
+  assert.equal(selection.overrideEvaluation.currentOverrideId, 'candidate-newer:override');
+  assert.equal(selection.overrideEvaluation.selectedOverrideId, null);
+  assert.equal(selection.selectedMemoryId, newer.id);
+  assert.equal(selection.selectionSource, 'latest-revision-fallback');
 });

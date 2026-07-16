@@ -47,6 +47,7 @@ const expectedCommands = [
   'npm run smoke:approved-learning-feedback-quality',
   'npm run smoke:workspace-learning-personalization',
   'npm run smoke:workspace-learning-conflict-revocation',
+  'npm run smoke:workspace-learning-operator-override',
   'npm run smoke:approved-training-record',
   'npm run smoke:training-dataset-quality',
   'npm run smoke:fine-tuning-readiness',

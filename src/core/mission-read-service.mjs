@@ -2733,6 +2733,35 @@ export function createMissionReadService({
         });
       }
 
+      const workspaceSelectionOverrideHistory = Array.isArray(
+        candidate.workspaceLearningSelectionOverrideHistory,
+      )
+        ? candidate.workspaceLearningSelectionOverrideHistory
+        : [];
+      for (const overrideEvent of workspaceSelectionOverrideHistory) {
+        timeline.push({
+          at: overrideEvent.at,
+          detail:
+            overrideEvent.action === 'clear'
+              ? `cleared workspace learning selection override: ${overrideEvent.note}`
+              : `set workspace learning selection override until ${overrideEvent.expiresAt}: ${overrideEvent.note}`,
+          expiresAt: overrideEvent.expiresAt || null,
+          kind:
+            overrideEvent.action === 'clear'
+              ? 'workspace-learning-selection-override-cleared'
+              : 'workspace-learning-selection-override-set',
+          learningCandidateId: candidate.id,
+          memoryId: overrideEvent.memoryId,
+          missionId: mission.id,
+          noteHash: overrideEvent.noteHash,
+          overrideId: overrideEvent.overrideId,
+          performedBy: overrideEvent.performedBy,
+          sessionId: candidate.sessionId,
+          status: overrideEvent.action === 'clear' ? 'cleared' : 'active',
+          workspaceId: overrideEvent.workspaceId,
+        });
+      }
+
       if (candidate.promotionStopCondition?.resolvedAt) {
         const stopCondition = candidate.promotionStopCondition;
         timeline.push({

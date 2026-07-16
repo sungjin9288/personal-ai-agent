@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Workspace Learning Operator Override
+
+- added a permission-bound local operator override for verified workspace decision promotions, requiring an explicit note and future expiration without adding a top-level store collection or production dependency
+- limited override authority to decisions already selected by retrieval so foreign or unretrieved memory cannot be injected, and retained latest-revision as the fallback for invalid, expired, or cleared state
+- replayed two workspaces, four missions, and eight credential-free stub sessions to verify active older selection, exact newer fallback after expiration and clear, exact older repin parity, foreign isolation, timeline ordering, and zero external provider calls
+- retained `actualModelTrainingExecuted: false`, `learnedConflictResolutionValidated: false`, `generalWorkspacePersonalizationValidated: false`, and `productionReadyClaim: false`
+
 ## 2026-07-17 Workspace Learning Conflict and Revocation
 
 - filtered retrieval-selected workspace decisions through a deterministic latest-revision policy before provider execution while preserving mission, user, and non-decision workspace memory behavior

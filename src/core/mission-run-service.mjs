@@ -12,6 +12,7 @@ import { buildRetrievalContextWithCorpus } from './retrieval-service.mjs';
 import { formatRetrievalArtifactContent } from './retrieval-artifacts.mjs';
 import {
   applyWorkspaceLearningSelection,
+  buildWorkspaceLearningSelectionOverrides,
   formatWorkspaceLearningSelectionArtifact,
   selectWorkspaceLearningMemory,
 } from './workspace-learning-selection.mjs';
@@ -247,6 +248,7 @@ export function createMissionRunService({
   recordGatewayEvent,
   retrievalRuntime,
   store,
+  workspaceLearningClock = now,
 }) {
   function collectRelevantMemoryEntries({ mission, workspace }) {
     return dedupeEntries([
@@ -663,6 +665,7 @@ export function createMissionRunService({
     outputFileName = null,
     outputTitle = null,
     promptFileName = null,
+    workspaceLearningSelectionOverrides = [],
   }) {
     const artifactFilePrefix = getRunArtifactFilePrefix({
       role,
@@ -684,6 +687,7 @@ export function createMissionRunService({
     const workspaceLearningSelection = selectWorkspaceLearningMemory({
       memoryEntries,
       retrievalCorpusRecords: rawRetrieval.corpusRecords,
+      selectionOverrides: workspaceLearningSelectionOverrides,
       workspaceId: workspace.id,
     });
     const providerContext = applyWorkspaceLearningSelection({
@@ -1179,6 +1183,11 @@ export function createMissionRunService({
     const pack = getMissionPack({ mission, workspace });
     const attachments = collectMissionAttachmentContext(mission.id);
     const memoryEntries = collectRelevantMemoryEntries({ mission, workspace });
+    const workspaceLearningSelectionOverrides = buildWorkspaceLearningSelectionOverrides({
+      learningCandidates: store.listLearningCandidates({ workspaceId: workspace.id }),
+      observedAt: workspaceLearningClock(),
+      workspaceId: workspace.id,
+    });
     const parallelPlan = resolveMissionParallelPlan(mission);
     const parallelSpecialistKinds = parallelPlan.effectiveKinds;
     const previousParallelGroup = parallelSpecialistKinds.length >= 2 ? getLatestParallelGroupState(mission.id) : null;
@@ -1210,6 +1219,7 @@ export function createMissionRunService({
       providerId,
       session,
       workspace,
+      workspaceLearningSelectionOverrides,
     };
 
     const managerResult = await runRequiredMissionStage({

@@ -21,6 +21,7 @@ import { createMissionReadService } from './mission-read-service.mjs';
 import { createMissionRunService } from './mission-run-service.mjs';
 import { createProviderRuntimeService } from './provider-runtime-service.mjs';
 import { createRetrievalRuntimeServiceFromEnvironment } from './retrieval-runtime-service.mjs';
+import { createWorkspaceLearningSelectionService } from './workspace-learning-selection-service.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
 
@@ -32,6 +33,7 @@ export function createMissionService({
   store,
   rootDir = store.rootDir,
   retrievalRuntime = createRetrievalRuntimeServiceFromEnvironment(),
+  workspaceLearningClock = now,
 }) {
   const docService = createDocService({ rootDir });
   const factGraph = createFactGraphService({ store });
@@ -94,6 +96,17 @@ export function createMissionService({
     attachProviderFallbackSummary,
     writeUpdatedLearningCandidateArtifact,
   } = learningCandidateRuntimeService;
+  const workspaceLearningSelectionService = createWorkspaceLearningSelectionService({
+    getMission,
+    getWorkspace,
+    now: workspaceLearningClock,
+    store,
+    writeUpdatedLearningCandidateArtifact,
+  });
+  const {
+    clearWorkspaceLearningSelectionOverride,
+    setWorkspaceLearningSelectionOverride,
+  } = workspaceLearningSelectionService;
   const { getLearningCandidateAudit } = createLearningCandidateAudit({
     store,
     getMission,
@@ -174,6 +187,7 @@ export function createMissionService({
     recordGatewayEvent,
     retrievalRuntime,
     store,
+    workspaceLearningClock,
   });
   const {
     getSessionProviderFailureSummary,
@@ -367,6 +381,7 @@ export function createMissionService({
     browseMissionHarnessDocuments,
     browseMissionHarnessMemory,
     checkProvider,
+    clearWorkspaceLearningSelectionOverride,
     createMission,
     expireLearningPromotions,
     getActionInbox,
@@ -433,6 +448,7 @@ export function createMissionService({
     rollbackExecution,
     showMission,
     showSession,
+    setWorkspaceLearningSelectionOverride,
     startExecution,
     stopExecution,
     updateDocumentLog,

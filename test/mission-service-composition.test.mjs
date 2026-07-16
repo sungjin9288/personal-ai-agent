@@ -17,6 +17,7 @@ const PUBLIC_METHODS = [
   'browseMissionHarnessDocuments',
   'browseMissionHarnessMemory',
   'checkProvider',
+  'clearWorkspaceLearningSelectionOverride',
   'createMission',
   'deleteDocumentLog',
   'deleteMemory',
@@ -79,6 +80,7 @@ const PUBLIC_METHODS = [
   'rollbackLearningPromotion',
   'runActionMaintenance',
   'runMission',
+  'setWorkspaceLearningSelectionOverride',
   'showMission',
   'showSession',
   'startExecution',
@@ -88,7 +90,7 @@ const PUBLIC_METHODS = [
   'updateMemory',
 ].sort();
 
-test('createMissionService preserves the established public facade', () => {
+test('createMissionService preserves the facade and exposes workspace learning override actions', () => {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-composition-'));
 
   try {

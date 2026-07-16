@@ -87,7 +87,7 @@ for (const forbidden of ['/Users/', '/private/var/folders/', 'OPENAI_API_KEY', '
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: workspace-learning-conflict-revocation-current',
+  'status: workspace-learning-operator-override-current',
   '| R13 Bounded shadow score cache | 완료 |',
   'npm run smoke:local-relevance-shadow-cache',
   'actualLocalRelevanceShadowCacheValidated: true',

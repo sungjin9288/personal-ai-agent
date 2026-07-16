@@ -97,6 +97,21 @@ export function authorizeFeedbackScope({ candidateId, note, rootDir, scope = 'wo
   });
 }
 
+export function setFeedbackWorkspaceLearningOverride({ candidateId, expiresAt, note, rootDir }) {
+  return runCli({
+    rootDir,
+    args: [
+      'action',
+      'set-workspace-learning-selection-override',
+      candidateId,
+      '--expires-at',
+      expiresAt,
+      '--note',
+      note,
+    ],
+  });
+}
+
 export function rollbackFeedbackMemory({ candidateId, note, rootDir }) {
   const result = runCli({
     rootDir,

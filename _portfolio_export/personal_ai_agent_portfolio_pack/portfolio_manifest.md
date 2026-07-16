@@ -61,6 +61,7 @@
 - evidence/output-artifacts/approved-learning-feedback-quality.json
 - evidence/output-artifacts/workspace-learning-personalization.json
 - evidence/output-artifacts/workspace-learning-conflict-revocation.json
+- evidence/output-artifacts/workspace-learning-operator-override.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함

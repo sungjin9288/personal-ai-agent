@@ -94,7 +94,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: workspace-learning-conflict-revocation-current',
+  'status: workspace-learning-operator-override-current',
   '| P1 Approved learning RAG feedback | 완료 |',
   'npm run smoke:approved-learning-rag-feedback',
   'actualApprovedLearningRagFeedbackValidated: true',

@@ -118,7 +118,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: workspace-learning-conflict-revocation-current',
+  'status: workspace-learning-operator-override-current',
   '| R16 Shadow cache termination recovery and bounded soak | 완료 |',
   'npm run smoke:local-relevance-shadow-cache-termination-soak',
   'actualLocalRelevanceShadowCacheTerminationSoakValidated: true',
