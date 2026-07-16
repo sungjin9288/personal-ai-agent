@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T11:38:59.779Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T11:38:58.858Z
 - localDate: 2026-07-16
 - branch: codex/candidate-model-evaluation-gate
 - commit: 510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b](releases/execution-v1/510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b](docs/releases/execution-v1/510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b)
 - visualArtifactSetSha256: 44af720b3c1f0824ec6c539cd19ff7981742a8b78b63473046fcd623dca034ae
 - commitPushStatus: not pushed, origin/codex/candidate-model-evaluation-gate not found
 

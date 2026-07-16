@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T11:38:59.779Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T11:38:52.602Z
 - branch: codex/candidate-model-evaluation-gate
 - commit: 510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/510f5ed9d9f33a8dc6daa8e87572259b0ba58f7b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
