@@ -76,6 +76,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/workspace-learning-operator-override.json',
   'evidence/output-artifacts/workspace-learning-operator-surface.json',
   'evidence/output-artifacts/local-user-learning-personalization.json',
+  'evidence/output-artifacts/user-learning-conflict-revocation.json',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/fork-onboarding-v1.md',

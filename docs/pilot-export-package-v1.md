@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-16T22:53:02.584Z
+- generatedAt: 2026-07-16T23:05:47.584Z
 - verifiedCommit: 1ee2044c075acb5add113eb0dd3c16381b090a32
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: caf7bb4b290e15ab91e4e53cc808f01032fddacc9c97c7fc8deca1823108f092
-- fileCount: 96
+- bundleSha256: 6078ede8d4abbdc4f9f64ab7f37bc05e07ae83d79de1f7b9961c3d88b4871db6
+- fileCount: 97
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 38955 | `d3b76ce4b487796b83de5b8b03b9a36d653594708c8ca92836f72e0b623d5af0` |
-| `CHANGELOG.md` | 11578 | `14c45786a8c305e61d8c70fb092a649b838615099ebd21b132badf7c652800d4` |
+| `README.md` | 39698 | `ec26fcc06fc687e5473ee88a0d33daeeabebe2f0b907041f7cb8c99c442355ae` |
+| `CHANGELOG.md` | 11930 | `26bddd36ae7d28a6343675ef2a3b424c89c11633aca58af9a425aa37e8336d68` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -83,9 +83,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/architecture-code-walkthrough-v1.md` | 7477 | `4df605052f493c20b129527dcc188db562ecd298558a44386c904272f2d91e9c` |
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
-| `docs/memory-retrieval-quality-fixture-v1.md` | 15441 | `3f379342753d55f5faccca8adb225e262bdafedf348cd4588af3c621b917624d` |
-| `docs/ml-rag-development-plan-v1.md` | 92798 | `1dea4f1d92b42e7e51ee2830fed5890d5bf6ddfba69680e5b511e7a2e0260386` |
-| `docs/smoke-validation-summary-v1.md` | 15176 | `a53b269fdb74c80d2056548c51988ec06eef9ec2a3f9f469539e5d750fe036d7` |
+| `docs/memory-retrieval-quality-fixture-v1.md` | 15930 | `f98aac9ff3d586f07a7b6e9c793510d70a69482d1ad9585cb295392f455c2135` |
+| `docs/ml-rag-development-plan-v1.md` | 96486 | `072bb52c107974debd43a57c8787048c67c703bb379891579a30cb3a93382c40` |
+| `docs/smoke-validation-summary-v1.md` | 15570 | `403b41f1932fc8de1f1036093024e8b645795843f548d6071e0378a67baf2ba5` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
@@ -107,6 +107,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `evidence/output-artifacts/workspace-learning-operator-override.json` | 25237 | `c1ebc16645ec9a1905f177ff8d9c276c741d21cf17063631c906b7b9c2d868fe` |
 | `evidence/output-artifacts/workspace-learning-operator-surface.json` | 1334 | `17eadaeb0920b8a99b5061b7c74a8aacf53eddcc983c2763d0183751f8cddb77` |
 | `evidence/output-artifacts/local-user-learning-personalization.json` | 15656 | `93cef0bf36a5a9bd192b9b09480635bbcd618e198da54a1600eba2cd6ad7830b` |
+| `evidence/output-artifacts/user-learning-conflict-revocation.json` | 22516 | `465c1dcaa6b81072e7ca70f789ad678e4a2087f94023e7fe672add0118c1f011` |
 | `evidence/screenshots/workspace-learning-operator-surface.png` | 617352 | `a2632b7a8cfd46943df39b978cd3c82bdbb0aa05c350dc5f42b7b105869228fe` |
 | `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |

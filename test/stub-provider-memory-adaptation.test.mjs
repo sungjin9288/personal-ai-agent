@@ -21,12 +21,13 @@ const mission = {
 const pack = getMissionPack({ mission, workspace });
 const provider = createStubProvider({ rootDir: process.cwd() });
 
-function runPlanner(memoryEntries, workspaceLearningSelection) {
+function runPlanner(memoryEntries, workspaceLearningSelection, userLearningSelection) {
   return provider.run({
     memoryEntries,
     mission,
     pack,
     role: 'planner',
+    userLearningSelection,
     workspace,
     workspaceLearningSelection,
   });
@@ -130,6 +131,40 @@ test('stub planner applies only the workspace decision selected by retrieval pol
   });
 
   assert.deepEqual(output.adaptationNotes, [newerDecision.content]);
+  assert.equal(output.planSteps.includes(olderDecision.content), false);
+  assert.equal(output.planSteps.includes(newerDecision.content), true);
+});
+
+test('stub planner applies only the user decision selected by retrieval policy', () => {
+  const olderDecision = {
+    content: 'Use the broad local user execution path.',
+    id: 'user-memory-older',
+    kind: 'decision',
+    scope: 'user',
+    scopeId: 'user',
+  };
+  const newerDecision = {
+    content: 'Narrow the verification path before requesting workspace execution again.',
+    id: 'user-memory-newer',
+    kind: 'decision',
+    scope: 'user',
+    scopeId: 'user',
+  };
+  const preference = {
+    content: 'Keep the final recommendation concise.',
+    id: 'user-memory-preference',
+    kind: 'preference',
+    scope: 'user',
+    scopeId: 'user',
+  };
+
+  const output = runPlanner(
+    [olderDecision, newerDecision, preference],
+    undefined,
+    { selectedMemoryId: newerDecision.id },
+  );
+
+  assert.deepEqual(output.adaptationNotes, [newerDecision.content, preference.content]);
   assert.equal(output.planSteps.includes(olderDecision.content), false);
   assert.equal(output.planSteps.includes(newerDecision.content), true);
 });

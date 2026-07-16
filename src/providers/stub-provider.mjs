@@ -63,8 +63,11 @@ function formatRetrievedContext(retrievalContext, fallback = 'No retrieval snipp
 
 function deriveMemoryAdaptation(
   memoryEntries,
-  { missionId, workspaceId, workspaceLearningSelection } = {},
+  { missionId, userLearningSelection, workspaceId, workspaceLearningSelection } = {},
 ) {
+  const selectedUserMemoryId = String(
+    userLearningSelection?.selectedMemoryId || '',
+  ).trim();
   const selectedWorkspaceMemoryId = String(
     workspaceLearningSelection?.selectedMemoryId || '',
   ).trim();
@@ -73,7 +76,9 @@ function deriveMemoryAdaptation(
       (entry.scope === 'mission' && entry.scopeId === missionId) ||
       (entry.scope === 'user' &&
         entry.scopeId === GLOBAL_USER_SCOPE_ID &&
-        ['decision', 'preference'].includes(entry.kind)) ||
+        (entry.kind === 'preference' ||
+          (entry.kind === 'decision' &&
+            (!selectedUserMemoryId || entry.id === selectedUserMemoryId)))) ||
       (entry.scope === 'workspace' &&
         entry.scopeId === workspaceId &&
         entry.kind === 'decision' &&
@@ -316,10 +321,12 @@ function buildPlannerOutput({
   workspace,
   pack,
   memoryEntries,
+  userLearningSelection,
   workspaceLearningSelection,
 }) {
   const adaptation = deriveMemoryAdaptation(memoryEntries, {
     missionId: mission.id,
+    userLearningSelection,
     workspaceId: workspace.id,
     workspaceLearningSelection,
   });
@@ -363,6 +370,7 @@ function buildExecutorOutput({
   previousOutputs,
   memoryEntries,
   attachments = [],
+  userLearningSelection,
   workspaceLearningSelection,
 }) {
   const forceReviewerFail = mission.constraints.includes('force-reviewer-fail');
@@ -372,6 +380,7 @@ function buildExecutorOutput({
     ? previousOutputs.planner.adaptationNotes
       : deriveMemoryAdaptation(memoryEntries, {
           missionId: mission.id,
+          userLearningSelection,
           workspaceId: workspace.id,
           workspaceLearningSelection,
         }).adaptationNotes;

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "personal-ai-agent-user-learning-conflict-revocation-cases/v1",
+  "productionReadyClaim": false,
+  "cases": [
+    {
+      "id": "user-decision-conflict-revocation",
+      "deliverableType": "decision-memo",
+      "mode": "knowledge",
+      "olderSourceTitle": "User conflict older source",
+      "olderSourceObjective": "Review a broad approval path for workspace execution and record the reusable decision.",
+      "olderPromotionNote": "Use the broad approval path before workspace execution. Preserve local user conflict lane legacy in the review.",
+      "olderScopeAuthorizationNote": "Authorize the reviewed broad approval decision for this local user's missions.",
+      "olderRequiredAnswerTerms": [
+        "broad approval path",
+        "local user conflict lane legacy"
+      ],
+      "newerSourceTitle": "User conflict newer source",
+      "newerSourceObjective": "Review a narrow verification path for workspace execution and record the replacement decision.",
+      "newerPromotionNote": "Narrow the verification path before workspace execution approval. Preserve local user conflict lane current in the review.",
+      "newerScopeAuthorizationNote": "Authorize the reviewed narrow verification decision for this local user's missions.",
+      "newerRequiredAnswerTerms": [
+        "narrow the verification path",
+        "local user conflict lane current"
+      ],
+      "targetTitle": "User conflict target",
+      "targetObjective": "Prepare the approval and verification path for workspace execution.",
+      "newerExpectedPlanStep": "Narrow the verification path before requesting workspace execution again."
+    }
+  ]
+}

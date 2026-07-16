@@ -117,7 +117,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-user-learning-personalization-current',
+  'status: user-learning-conflict-revocation-current',
   '| R10 Local reranker runtime stability | 완료 |',
   'actualLocalRerankerRuntimeStabilityValidated: true',
   'actualLocalRerankerRuntimeStabilityQualified: false',

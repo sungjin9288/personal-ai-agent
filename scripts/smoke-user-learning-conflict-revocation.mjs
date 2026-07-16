@@ -3,27 +3,27 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  assertWorkspaceLearningConflictRevocationEvidence,
-  buildWorkspaceLearningConflictRevocationEvidence,
-} from '../src/core/workspace-learning-conflict-revocation.mjs';
+  assertUserLearningConflictRevocationEvidence,
+  buildUserLearningConflictRevocationEvidence,
+} from '../src/core/user-learning-conflict-revocation.mjs';
 
 const repoDir = process.cwd();
 const fixture = JSON.parse(
-  readRequiredFile('fixtures/workspace-learning-conflict-revocation-cases-v1.json'),
+  readRequiredFile('fixtures/user-learning-conflict-revocation-cases-v1.json'),
 );
 const evidence = JSON.parse(
-  readRequiredFile('evidence/output-artifacts/workspace-learning-conflict-revocation.json'),
+  readRequiredFile('evidence/output-artifacts/user-learning-conflict-revocation.json'),
 );
 
 assert.equal(
   fixture.schemaVersion,
-  'personal-ai-agent-workspace-learning-conflict-revocation-cases/v1',
+  'personal-ai-agent-user-learning-conflict-revocation-cases/v1',
 );
 assert.equal(fixture.productionReadyClaim, false);
 assert.equal(fixture.cases.length, 1);
 
-assertWorkspaceLearningConflictRevocationEvidence(evidence);
-assert.deepEqual(evidence, buildWorkspaceLearningConflictRevocationEvidence({
+assertUserLearningConflictRevocationEvidence(evidence);
+assert.deepEqual(evidence, buildUserLearningConflictRevocationEvidence({
   fixtureBinding: evidence.fixtureBinding,
   lifecycle: evidence.lifecycle,
   observedAt: evidence.observedAt,
@@ -33,7 +33,7 @@ assert.deepEqual(evidence, buildWorkspaceLearningConflictRevocationEvidence({
   sourceRuns: evidence.sourceRuns,
   topology: evidence.topology,
 }));
-assert.equal(evidence.actualWorkspaceLearningConflictRevocationValidated, true);
+assert.equal(evidence.actualUserLearningConflictRevocationValidated, true);
 assert.equal(Object.values(evidence.results).every(Boolean), true);
 
 const older = evidence.promotions.older;
@@ -63,6 +63,10 @@ assert.equal(
 );
 assert.equal(older.scopeAuthorizationStatus, 'consumed');
 assert.equal(newer.scopeAuthorizationStatus, 'consumed');
+assert.equal(older.scope, 'user');
+assert.equal(newer.scope, 'user');
+assert.equal(older.scopeId, 'user');
+assert.equal(newer.scopeId, 'user');
 
 const olderSelection = evidence.phases.olderOnly.selection;
 const conflictSelection = evidence.phases.conflict.selection;
@@ -80,7 +84,10 @@ assert.equal(conflictSelection.candidates[1].selected, false);
 assert.equal(fallbackSelection.candidateCount, 1);
 assert.equal(fallbackSelection.selectedMemoryId, older.memoryId);
 assert.equal(evidence.phases.baseline.selection, null);
-assert.equal(evidence.phases.foreignConflict.selection, null);
+assert.equal(
+  evidence.phases.crossWorkspaceConflict.selection.selectedMemoryId,
+  newer.memoryId,
+);
 assert.equal(evidence.phases.afterFullRollback.selection, null);
 
 assert.equal(Object.values(evidence.phases.conflict.exposures.newer).every(Boolean), true);
@@ -94,10 +101,12 @@ assert.equal(
   false,
 );
 assert.equal(
-  Object.values(evidence.phases.foreignConflict.exposures).every((exposure) =>
-    Object.values(exposure).every((value) => value === false),
-  ),
+  Object.values(evidence.phases.crossWorkspaceConflict.exposures.newer).every(Boolean),
   true,
+);
+assert.equal(
+  Object.values(evidence.phases.crossWorkspaceConflict.exposures.older).some(Boolean),
+  false,
 );
 assert.equal(
   evidence.phases.olderOnly.artifacts.plannerHash,
@@ -120,10 +129,11 @@ assert.deepEqual(
     evidence.quality.baseline.status,
     evidence.quality.olderOnly.status,
     evidence.quality.conflict.status,
+    evidence.quality.crossWorkspaceConflict.status,
     evidence.quality.afterNewerRevocation.status,
     evidence.quality.afterFullRollback.status,
   ],
-  ['failed', 'passed', 'passed', 'passed', 'failed'],
+  ['failed', 'passed', 'passed', 'passed', 'passed', 'failed'],
 );
 assert.equal(
   evidence.quality.olderOnly.resultHash,
@@ -146,12 +156,14 @@ assert.equal(runs.every((run) => run.providerId === 'stub'), true);
 assert.equal(runs.every((run) => run.externalProviderCallCount === 0), true);
 assert.equal(evidence.externalProviderCalls, 'none');
 assert.equal(evidence.qualityBoundary.actualModelTrainingExecuted, false);
-assert.equal(evidence.qualityBoundary.controlledConflictResolutionValidated, true);
-assert.equal(evidence.qualityBoundary.controlledRevocationFallbackValidated, true);
+assert.equal(evidence.qualityBoundary.controlledCrossWorkspaceUserSelectionValidated, true);
+assert.equal(evidence.qualityBoundary.controlledUserConflictResolutionValidated, true);
+assert.equal(evidence.qualityBoundary.controlledUserRevocationFallbackValidated, true);
 assert.equal(evidence.qualityBoundary.generalAnswerQualityImprovementValidated, false);
-assert.equal(evidence.qualityBoundary.generalWorkspacePersonalizationValidated, false);
+assert.equal(evidence.qualityBoundary.generalUserPersonalizationValidated, false);
+assert.equal(evidence.qualityBoundary.hostedTenantUserPersonalizationValidated, false);
 assert.equal(evidence.qualityBoundary.learnedConflictResolutionValidated, false);
-assert.equal(evidence.qualityBoundary.userScopedPersonalizationValidated, false);
+assert.equal(evidence.qualityBoundary.multiUserIsolationValidated, false);
 assert.equal(evidence.productionReadyClaim, false);
 
 const evidenceText = JSON.stringify(evidence);
@@ -171,7 +183,7 @@ for (const testCase of fixture.cases) {
     ...testCase.olderRequiredAnswerTerms,
     ...testCase.newerRequiredAnswerTerms,
   ]) {
-    assert.equal(evidenceText.includes(rawText), false, `P4 evidence leaked fixture text: ${rawText}`);
+    assert.equal(evidenceText.includes(rawText), false, `P8 evidence leaked fixture text: ${rawText}`);
   }
 }
 for (const forbidden of [
@@ -180,11 +192,11 @@ for (const forbidden of [
   'OPENAI_API_KEY',
   'ANTHROPIC_API_KEY',
 ]) {
-  assert.equal(evidenceText.includes(forbidden), false, `P4 evidence leaked ${forbidden}`);
+  assert.equal(evidenceText.includes(forbidden), false, `P8 evidence leaked ${forbidden}`);
 }
 
 const evaluatorSource = readRequiredFile(
-  'scripts/evaluate-workspace-learning-conflict-revocation.mjs',
+  'scripts/evaluate-user-learning-conflict-revocation.mjs',
 );
 const missionRunSource = readRequiredFile('src/core/mission-run-service.mjs');
 for (const term of [
@@ -193,15 +205,15 @@ for (const term of [
   'resolve-learning-promotion',
   'rollback-learning-promotion',
   'evaluateAnswerQualityCase',
-  'readFeedbackWorkspaceLearningSelection',
+  'readFeedbackUserLearningSelection',
   'fs.rmSync(tempRoot',
 ]) {
   assert.ok(evaluatorSource.includes(term) || readRequiredFile('scripts/approved-learning-feedback-runtime.mjs').includes(term));
 }
 for (const term of [
-  'selectWorkspaceLearningMemory',
-  'applyWorkspaceLearningSelection',
-  'workspace-learning-selection.json',
+  'selectUserLearningMemory',
+  'applyUserLearningSelection',
+  'user-learning-selection.json',
 ]) {
   assert.ok(missionRunSource.includes(term), `Mission runtime missing ${term}`);
 }
@@ -209,9 +221,9 @@ for (const term of [
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
   'status: user-learning-conflict-revocation-current',
-  '| P4 Workspace learning conflict and revocation | 완료 |',
-  'npm run smoke:workspace-learning-conflict-revocation',
-  'actualWorkspaceLearningConflictRevocationValidated: true',
+  '| P8 User learning conflict and revocation | 완료 |',
+  'npm run smoke:user-learning-conflict-revocation',
+  'actualUserLearningConflictRevocationValidated: true',
   'learnedConflictResolutionValidated: false',
   'productionReadyClaim: false',
 ]) {
@@ -220,28 +232,29 @@ for (const term of [
 
 const readme = readRequiredFile('README.md');
 assert.ok(
-  readme.includes('npm run smoke:workspace-learning-conflict-revocation'),
-  'README must expose the P4 conflict and revocation smoke command.',
+  readme.includes('npm run smoke:user-learning-conflict-revocation'),
+  'README must expose the P8 conflict and revocation smoke command.',
 );
 
 const tampered = structuredClone(evidence);
 tampered.phases.conflict.selection.selectedMemoryId = older.memoryId;
 assert.throws(
-  () => assertWorkspaceLearningConflictRevocationEvidence(tampered),
+  () => assertUserLearningConflictRevocationEvidence(tampered),
   /integrity|contract/,
 );
 
 console.log(JSON.stringify({
   actualModelTrainingExecuted: false,
-  actualWorkspaceLearningConflictRevocationValidated: true,
+  actualUserLearningConflictRevocationValidated: true,
   conflictCandidateCount: 2,
   conflictSelected: 'newer',
   costFree: true,
   externalProviderCalls: 'none',
   fallbackSelected: 'older',
-  generalWorkspacePersonalizationValidated: false,
+  generalUserPersonalizationValidated: false,
+  hostedTenantUserPersonalizationValidated: false,
   learnedConflictResolutionValidated: false,
-  mode: 'workspace-learning-conflict-revocation-smoke',
+  mode: 'user-learning-conflict-revocation-smoke',
   ok: true,
   productionReadyClaim: false,
   sessionCount: 8,

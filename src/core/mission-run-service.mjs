@@ -16,6 +16,11 @@ import {
   formatWorkspaceLearningSelectionArtifact,
   selectWorkspaceLearningMemory,
 } from './workspace-learning-selection.mjs';
+import {
+  applyUserLearningSelection,
+  formatUserLearningSelectionArtifact,
+  selectUserLearningMemory,
+} from './user-learning-selection.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import {
   extractProviderFailure,
@@ -690,12 +695,22 @@ export function createMissionRunService({
       selectionOverrides: workspaceLearningSelectionOverrides,
       workspaceId: workspace.id,
     });
-    const providerContext = applyWorkspaceLearningSelection({
+    const workspaceFilteredContext = applyWorkspaceLearningSelection({
       memoryEntries,
       retrievalContext: rawRetrieval.items,
       retrievalCorpusRecords: rawRetrieval.corpusRecords,
       selection: workspaceLearningSelection,
       workspaceId: workspace.id,
+    });
+    const userLearningSelection = selectUserLearningMemory({
+      memoryEntries: workspaceFilteredContext.memoryEntries,
+      retrievalCorpusRecords: workspaceFilteredContext.retrievalCorpusRecords,
+    });
+    const providerContext = applyUserLearningSelection({
+      memoryEntries: workspaceFilteredContext.memoryEntries,
+      retrievalContext: workspaceFilteredContext.retrievalContext,
+      retrievalCorpusRecords: workspaceFilteredContext.retrievalCorpusRecords,
+      selection: userLearningSelection,
     });
     const {
       memoryEntries: providerMemoryEntries,
@@ -718,6 +733,7 @@ export function createMissionRunService({
       resumeFromRunId: normalizeText(runMetadata.resumeFromRunId) || null,
       specialistKind: normalizeText(runMetadata.specialistKind) || null,
       specialistMergeMode: normalizeText(runMetadata.stageKind) === 'parallel-merge',
+      userLearningSelection,
       workspaceLearningSelection,
     };
     const promptContent = await provider.preparePrompt(providerInput);
@@ -753,6 +769,18 @@ export function createMissionRunService({
             fileName: `${artifactFilePrefix}-workspace-learning-selection.json`,
             title: `${role} workspace learning selection`,
             content: formatWorkspaceLearningSelectionArtifact(workspaceLearningSelection),
+          })
+        : null;
+    const userLearningSelectionArtifact =
+      role === 'planner' && userLearningSelection.status === 'selected'
+        ? harness.writeArtifact({
+            missionId: mission.id,
+            sessionId: session.id,
+            role,
+            kind: 'learning-selection',
+            fileName: `${artifactFilePrefix}-user-learning-selection.json`,
+            title: `${role} user learning selection`,
+            content: formatUserLearningSelectionArtifact(userLearningSelection),
           })
         : null;
     const retrievalArtifact = retrievalContext.length
@@ -807,6 +835,7 @@ export function createMissionRunService({
         artifactIds: [
           promptArtifact.id,
           workspaceLearningSelectionArtifact?.id,
+          userLearningSelectionArtifact?.id,
           retrievalArtifact?.id,
           outputArtifact.id,
         ].filter(Boolean),
@@ -851,6 +880,7 @@ export function createMissionRunService({
         artifactIds: [
           promptArtifact.id,
           workspaceLearningSelectionArtifact?.id,
+          userLearningSelectionArtifact?.id,
           retrievalArtifact?.id,
         ].filter(Boolean),
         metadata: {

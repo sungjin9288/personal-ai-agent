@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 User Learning Conflict and Revocation
+
+- added a content-free latest-revision selector for retrieval-selected local-user decisions and applied it after workspace decision filtering without changing persistence, public APIs, or user preference behavior
+- recorded one selected decision in planner evidence while removing non-selected user decisions from aligned memory and retrieval provider context
+- replayed two tenant-free workspaces, four missions, and eight stub sessions to verify newer-only conflict selection in both workspaces, exact older fallback after newer rollback, exact baseline restoration after full rollback, and zero external provider calls
+- retained `learnedConflictResolutionValidated: false`, `generalUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
 ## 2026-07-17 Local User Learning Personalization
 
 - extended the existing scope authorization to local mission-to-user promotion while rejecting tenant-bound workspaces before writes and keeping the store shape, public service method, audit order, and production dependencies unchanged

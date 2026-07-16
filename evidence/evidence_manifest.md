@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, multi-scenario feedback quality, workspace-scoped personalization, conflict revocation, operator controls, and local single-user personalization
-- Source code modified: yes, explicit local mission-to-user promotion, tenant-bound refusal, stub user decision and preference application, candidate mutation tenant checks, and content-free replay evidence
-- New feature development: yes, cost-free local single-user personalization across tenant-free workspaces with exact rollback
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, feedback quality, workspace personalization, operator controls, local single-user personalization, and user decision conflict revocation
+- Source code modified: yes, content-free local-user latest-revision selection, aligned memory and retrieval filtering, planner selection evidence, and deterministic conflict/revocation replay
+- New feature development: yes, cost-free selected-only local-user decision handling with cross-workspace application and exact rollback fallback
 
 ## Generated Evidence Files
 
@@ -71,6 +71,7 @@
 - `evidence/output-artifacts/workspace-learning-operator-override.json`
 - `evidence/output-artifacts/workspace-learning-operator-surface.json`
 - `evidence/output-artifacts/local-user-learning-personalization.json`
+- `evidence/output-artifacts/user-learning-conflict-revocation.json`
 
 ### Architecture
 
@@ -135,6 +136,7 @@
 - Workspace learning operator override: verified with `npm run smoke:workspace-learning-operator-override`
 - Workspace learning operator surface: verified with `npm run smoke:workspace-learning-operator-surface` and local browser replay `npm run smoke:workspace-learning-operator-surface-browser`
 - Local user learning personalization: verified with `npm run smoke:local-user-learning-personalization`
+- User learning conflict and revocation: verified with `npm run smoke:user-learning-conflict-revocation`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

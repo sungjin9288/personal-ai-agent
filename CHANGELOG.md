@@ -35,6 +35,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added permission-bound workspace learning operator override with mandatory future expiration and audit note; an eight-session local replay verified active older selection, exact latest-revision fallback after expiry and clear, exact repin parity, foreign and unretrieved memory isolation, and content-free timeline evidence without external provider calls.
 - Added a workspace learning operator surface to the existing action inbox; local HTTP and real Chromium replays verified content-free not-set, active, expired, and cleared state, tenant-checked set and clear mutations, sanitized responses, timeline history, and zero external provider calls.
 - Added explicit mission-to-user learning authorization for tenant-free local workspaces and applied approved user decisions and preferences in the stub runtime; a seven-session replay verified sibling and cross-workspace failed-to-passed personalization, exact rollback parity, tenant-bound refusal, and zero external provider calls.
+- Added deterministic latest-revision selection for conflicting retrieved local-user decisions; an eight-session replay across two tenant-free workspaces verified selected-only provider exposure, cross-workspace application, exact older fallback after newer revocation, exact baseline restoration after full rollback, and zero external provider calls.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -57,8 +58,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `3,010,307 bytes`
-- SHA-256: `9f4f59a2f3b88567c2b2f7126553000deb592cd8e02b2dc539463da8e4dd5d4c`
+- Size: `3,015,031 bytes`
+- SHA-256: `9bbd50becb683b2276e898d2208d5dcc6722b1d036960926a17b97791e0cbab0`
 
 Included public surfaces:
 
