@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T23:57:38.279Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T23:57:37.321Z
 - localDate: 2026-07-17
 - branch: codex/local-user-learning-operator-override
 - commit: 79476dd7f51530e9e2c678800dbe50fb79a56dd9
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/79476dd7f51530e9e2c678800dbe50fb79a56dd9](releases/execution-v1/79476dd7f51530e9e2c678800dbe50fb79a56dd9)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/79476dd7f51530e9e2c678800dbe50fb79a56dd9/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/79476dd7f51530e9e2c678800dbe50fb79a56dd9/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/79476dd7f51530e9e2c678800dbe50fb79a56dd9](docs/releases/execution-v1/79476dd7f51530e9e2c678800dbe50fb79a56dd9)
 - visualArtifactSetSha256: 52b233a00339438693fd77e89fc41c869a035b48432977193df8370f092e6b65
 - commitPushStatus: not pushed, origin/codex/local-user-learning-operator-override not found
 

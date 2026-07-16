@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T23:57:38.279Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T23:57:30.932Z
 - branch: codex/local-user-learning-operator-override
 - commit: 79476dd7f51530e9e2c678800dbe50fb79a56dd9
