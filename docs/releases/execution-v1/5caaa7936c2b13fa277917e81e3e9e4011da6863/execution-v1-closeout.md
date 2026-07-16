@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T17:56:08.372Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T17:56:01.057Z
 - branch: codex/rag-cache-process-isolation
 - commit: 5caaa7936c2b13fa277917e81e3e9e4011da6863
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5caaa7936c2b13fa277917e81e3e9e4011da6863/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

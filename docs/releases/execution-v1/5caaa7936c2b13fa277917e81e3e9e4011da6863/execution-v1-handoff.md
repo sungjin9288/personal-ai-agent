@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T17:56:08.372Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T17:56:07.375Z
 - localDate: 2026-07-17
 - branch: codex/rag-cache-process-isolation
 - commit: 5caaa7936c2b13fa277917e81e3e9e4011da6863
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5caaa7936c2b13fa277917e81e3e9e4011da6863](releases/execution-v1/5caaa7936c2b13fa277917e81e3e9e4011da6863)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5caaa7936c2b13fa277917e81e3e9e4011da6863/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5caaa7936c2b13fa277917e81e3e9e4011da6863/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5caaa7936c2b13fa277917e81e3e9e4011da6863](docs/releases/execution-v1/5caaa7936c2b13fa277917e81e3e9e4011da6863)
 - visualArtifactSetSha256: 12ff30fc33f58821c19446724ba1c452e5850fc890774511d96cbf2c86c26634
 - commitPushStatus: not pushed, origin/codex/rag-cache-process-isolation not found
 
