@@ -114,7 +114,7 @@ assert.match(report, /source diversity/);
 assert.match(report, /productionReadyClaim: false/);
 
 for (const term of [
-  'status: local-relevance-shadow-cache-termination-soak-current',
+  'status: approved-learning-rag-feedback-current',
   '| R2 Retrieval evaluation | 완료 |',
   '| R3 Optional semantic retrieval | 완료 |',
   '| R4 Reranking | 완료 |',

@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded score reuse, process isolation, forced-termination recovery, and bounded cache soak
-- Source code modified: yes, R16 forced-termination runner, recovery worker, bounded-soak mode, and self-validating evidence
-- New feature development: yes, cost-free shadow score cache termination and memory regression verification
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, and operator-approved learning feedback into mission retrieval
+- Source code modified: yes, P1 content-free learning feedback evaluator, actual mission replay, and self-validating evidence
+- New feature development: yes, cost-free approved learning-to-RAG application and rollback verification
 
 ## Generated Evidence Files
 
@@ -63,6 +63,7 @@
 - `evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json`
+- `evidence/output-artifacts/approved-learning-rag-feedback.json`
 
 ### Architecture
 
@@ -120,6 +121,7 @@
 - Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`
 - Shadow cache process isolation: verified with `npm run smoke:local-relevance-shadow-cache-process-isolation`
 - Shadow cache termination and soak: verified with `npm run smoke:local-relevance-shadow-cache-termination-soak`
+- Approved learning RAG feedback: verified with `npm run smoke:approved-learning-rag-feedback`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

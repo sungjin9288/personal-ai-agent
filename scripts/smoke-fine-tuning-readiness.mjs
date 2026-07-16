@@ -118,7 +118,7 @@ assert.throws(
 );
 
 for (const term of [
-  'status: local-relevance-shadow-cache-termination-soak-current',
+  'status: approved-learning-rag-feedback-current',
   '| F1 Fine-tuning readiness | 완료 |',
   '| F2 외부 fine-tuning 실행 | 외부 작업 |',
   'fixtures/fine-tuning-readiness-cases-v1.json',

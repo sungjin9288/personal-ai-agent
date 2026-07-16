@@ -1,6 +1,6 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: local-relevance-shadow-cache-termination-soak-current
+- status: approved-learning-rag-feedback-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -363,6 +363,28 @@ R16은 R15와 같은 model·prompt·fixture input binding을 유지하면서 정
 
 결과는 `cache-termination-soak-passed-governance-blocked`, `actualLocalRelevanceShadowCacheTerminationSoakValidated: true`다. 이 증적은 evaluation child process의 재시작 가능성과 48-pair bounded soak만 보여 주며 killed process 내부 cleanup, production supervisor restart, OS restart, worker-shared cache, 장시간·반복 memory soak, thermal behavior, 실제 model binary 교체, 운영자 승인 기반 rollback을 증명하지 않는다. 따라서 `actualLocalRelevanceShadowCacheTerminationSoakQualified: false`, `runtimeActivation: false`, `productionReadyClaim: false`를 유지한다.
 
+## 현재 approved learning RAG feedback
+
+P1은 기존 learning promotion과 mission retrieval이 실제 다음 실행에서 연결되는지를 같은 mission의 세 번의 credential-free stub run으로 검증한다. 첫 실행은 mission memory와 retrieval artifact가 없는 상태에서 planner step 3개와 reviewer pass를 기록한다. 첫 실행의 learning candidate는 local operator가 mission scope의 memory target으로 승인하며, promotion verification과 concrete rollback target이 모두 통과해야 한다.
+
+승인 후 두 번째 실행은 생성된 memory ID를 planner retrieval provenance의 source ID로 다시 찾는다. Memory content hash와 retrieval content hash가 일치했고 query match term은 4개였다. Planner는 기존 3개 step에 승인된 verification-path step 하나를 추가했고, planner adaptation과 executor deliverable의 `Prior Memory Signals`가 같은 memory에 연결된 상태에서 reviewer pass를 유지했다.
+
+승인된 candidate를 rollback한 뒤 세 번째 실행에서는 memory, retrieval artifact, planner adaptation, deliverable adaptation이 모두 사라졌다. Planner step은 다시 3개가 되었고 planner와 deliverable artifact hash는 승인 전 baseline과 각각 정확히 일치했다.
+
+| 실제 P1 feedback loop | 승인 전 | 승인 후 | rollback 후 |
+|---|---:|---:|---:|
+| mission memory present | false | true | false |
+| retrieval match term | 0 | 4 | 0 |
+| planner step | 3 | 4 | 3 |
+| planner / deliverable adaptation | false / false | true / true | false / false |
+| reviewer verdict | pass | pass | pass |
+| external provider call | 0 | 0 | 0 |
+| baseline planner / deliverable hash parity | 기준 | changed / changed | exact / exact |
+
+재현 명령은 `npm run evaluate:approved-learning-rag-feedback -- --output evidence/output-artifacts/approved-learning-rag-feedback.json`이다. `npm run smoke:approved-learning-rag-feedback`은 fixture binding, explicit approval, promotion verification, memory ID와 retrieval provenance, content hash, planner·deliverable adaptation, reviewer pass, rollback deletion, exact baseline artifact parity와 content-free evidence를 확인한다.
+
+결과는 `approved-learning-rag-feedback-passed-local-only`, `actualApprovedLearningRagFeedbackValidated: true`다. 이는 승인된 한 mission-scoped lesson이 deterministic stub provider의 다음 plan과 deliverable에 적용되고 rollback으로 제거된다는 증적이다. 일반적인 답변 정확도 향상, cross-mission·workspace·user personalization, 실제 사용자 feedback 분포, external provider behavior, actual model training은 검증하지 않았으므로 `generalAnswerQualityImprovementValidated: false`, `actualModelTrainingExecuted: false`, `productionReadyClaim: false`를 유지한다.
+
 ## 현재 승인 학습 데이터 record
 
 `src/core/approved-training-record.mjs`는 기존 learning candidate를 자동으로 학습 자료로 바꾸지 않는다. Candidate가 `approved` 또는 `promoted`이고, local operator의 approve decision과 passed promotion verification, reviewer pass가 모두 연결된 경우에만 `personal-ai-agent-approved-training-record/v1` record를 만든다.
@@ -432,6 +454,7 @@ Candidate evidence는 `fixture-simulated`와 `recorded-model-evaluation`을 구�
 | R14 Shadow cache lifecycle stress | 완료 | 8-entry actual eviction replay, concurrent in-flight dedup, generation invalidation, stale-result drop, rollback close | 15/15과 120→30 inference를 유지하며 eviction 22, stale drop 1, closed entry 0을 검증하고 activation 차단 |
 | R15 Shadow cache process isolation | 완료 | concurrent child process 2개와 restarted child process 1개의 empty-env score cache boundary, process identity, shutdown close | 각 process의 cold miss 1·local hit 1, identity 3개 분리, restart 후 재추론, forwarded secret 0과 closed entry 0을 검증하고 activation 차단 |
 | R16 Shadow cache termination recovery and bounded soak | 완료 | warm child SIGKILL, cold recovery child, 16-entry cache의 48-pair actual soak와 heap·RSS regression gate | recovery 재추론·score parity, 64 request·48 inference·16 hit·32 eviction, closed entry 0과 memory gate 통과를 검증하고 activation 차단 |
+| P1 Approved learning RAG feedback | 완료 | explicit learning promotion을 같은 mission의 다음 retrieval·planner·deliverable에 연결하고 rollback run까지 재생 | memory ID·content hash provenance, planner step 3→4→3, reviewer pass와 rollback exact artifact parity 검증 |
 | L1 승인된 학습 데이터 | 완료 | approved promotion, reviewer pass, verification, artifact lineage, sanitized example을 묶은 deterministic record | raw secret·customer payload 차단, mission scope와 content·lineage hash 보존 |
 | L2 Dataset quality gate | 완료 | content·lineage·near-response 중복 제거, mission scope 분리, seeded train·validation split, leakage 검사 | 동일 seed와 입력에서 동일 content-free manifest 생성 |
 | F1 Fine-tuning readiness | 완료 | provider-neutral JSONL export, Q1 baseline summary, content-free evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
@@ -481,6 +504,7 @@ node --test test/local-relevance-shadow.test.mjs test/local-relevance-shadow-evi
 node --test test/local-relevance-shadow-replay.test.mjs
 node --test test/local-relevance-score-cache.test.mjs test/local-relevance-shadow-cache-evidence.test.mjs
 node --test test/local-relevance-shadow-cache-lifecycle.test.mjs
+node --test test/approved-learning-rag-feedback.test.mjs
 node --test test/approved-training-record.test.mjs
 node --test test/training-dataset-quality.test.mjs
 node --test test/fine-tuning-readiness.test.mjs
@@ -502,6 +526,7 @@ npm run smoke:local-relevance-shadow-cache
 npm run smoke:local-relevance-shadow-cache-lifecycle
 npm run smoke:local-relevance-shadow-cache-process-isolation
 npm run smoke:local-relevance-shadow-cache-termination-soak
+npm run smoke:approved-learning-rag-feedback
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
@@ -525,6 +550,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 ## Claim Boundary
 
-현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 명시적 fixture command를 mission runtime에 연결해 scope 거부·lexical rollback·failure-before-provider를 재현하며, 실제 설치된 qwen2.5 3종을 같은 3-case suite로 측정한 뒤 selected 3B의 R7 15-case 실패, R8 독립 relevance scoring의 반복 안정적 15-case 통과, R9 top-2 evaluation의 동일 품질과 inference·p50·p95·total 감소 및 loaded-model snapshot, R10의 cold 1·warm 3·concurrent client worker 2 bounded 관측과 6-run 품질·resource parity, R11 controlled stub mission 4-role shadow path의 lexical provider input·store 불변과 fail-open, R12의 3 scenario·15 mission·60 role observation에서 full-query hard-negative 실패와 mission-objective query correction, R13의 exact hash-bound process-local cache에서 15/15 품질을 유지한 120 request·30 inference·90 hit와 maximum latency 회귀, R14의 8-entry eviction·in-flight invalidation·stale-result drop·rollback close, R15의 동시 child process 2개와 restart process 1개에서 각 cache의 cold miss·local hit·shutdown close, R16의 warm worker SIGKILL 뒤 cold recovery와 16-entry·48-pair bounded soak를 content-free evidence로 비교하고, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 dataset을 provider-neutral JSONL과 reviewer evaluation manifest로 재생성하고 fixture candidate result의 non-regression과 rollback decision을 판정한다는 것이다.
+현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 명시적 fixture command를 mission runtime에 연결해 scope 거부·lexical rollback·failure-before-provider를 재현하며, 실제 설치된 qwen2.5 3종을 같은 3-case suite로 측정한 뒤 selected 3B의 R7 15-case 실패, R8 독립 relevance scoring의 반복 안정적 15-case 통과, R9 top-2 evaluation의 동일 품질과 inference·p50·p95·total 감소 및 loaded-model snapshot, R10의 cold 1·warm 3·concurrent client worker 2 bounded 관측과 6-run 품질·resource parity, R11 controlled stub mission 4-role shadow path의 lexical provider input·store 불변과 fail-open, R12의 3 scenario·15 mission·60 role observation에서 full-query hard-negative 실패와 mission-objective query correction, R13의 exact hash-bound process-local cache에서 15/15 품질을 유지한 120 request·30 inference·90 hit와 maximum latency 회귀, R14의 8-entry eviction·in-flight invalidation·stale-result drop·rollback close, R15의 동시 child process 2개와 restart process 1개에서 각 cache의 cold miss·local hit·shutdown close, R16의 warm worker SIGKILL 뒤 cold recovery와 16-entry·48-pair bounded soak를 content-free evidence로 비교하고, P1의 approved mission memory가 다음 retrieval·planner·deliverable에 적용된 뒤 rollback으로 exact baseline artifact를 복원하며, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 dataset을 provider-neutral JSONL과 reviewer evaluation manifest로 재생성하고 fixture candidate result의 non-regression과 rollback decision을 판정한다는 것이다.
 
-이 결과는 qwen2.5 3B relevance scorer의 controlled fixture 품질, 한 로컬 환경의 evaluation-only resource·bounded stability snapshot, controlled stub mission shadow replay, 단일-process lifecycle, 세 child-process isolation, evaluation SIGKILL recovery와 48-pair soak 관측만 보여 주며 provider-input 활성화, production server parallelism, production supervisor·worker pool·shared cache, killed process 내부 cleanup, OS restart, long-duration·반복 soak, thermal behavior, 실제 model binary 교체, 실제 사용자 query 분포, retrieval 전용 learned reranker 성능, 실제 trained candidate model 평가, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Local model license 승인, OS-level egress isolation, 승인된 resource·cold-start·concurrency·latency limit, long-duration soak와 thermal telemetry, cache lifecycle과 rollback owner 승인, provider-input activation, provider-specific adapter, local training runtime, 외부 fine-tuning 실행, model registry, 실제 model rollout은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.
+이 결과는 qwen2.5 3B relevance scorer의 controlled fixture 품질, 한 로컬 환경의 evaluation-only resource·bounded stability snapshot, controlled stub mission shadow replay, 단일-process lifecycle, 세 child-process isolation, evaluation SIGKILL recovery와 48-pair soak, 한 mission의 operator-approved feedback 적용과 rollback 관측만 보여 주며 provider-input 활성화, production server parallelism, production supervisor·worker pool·shared cache, killed process 내부 cleanup, OS restart, long-duration·반복 soak, thermal behavior, 실제 model binary 교체, 실제 사용자 query 분포, cross-mission·workspace·user personalization, retrieval 전용 learned reranker 성능, 실제 trained candidate model 평가, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Local model license 승인, OS-level egress isolation, 승인된 resource·cold-start·concurrency·latency limit, long-duration soak와 thermal telemetry, cache lifecycle과 rollback owner 승인, provider-input activation, provider-specific adapter, local training runtime, 외부 fine-tuning 실행, model registry, 실제 model rollout은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.

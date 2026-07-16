@@ -84,7 +84,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-relevance-shadow-cache-termination-soak-current',
+  'status: approved-learning-rag-feedback-current',
   '| R8 Local relevance reranker evaluation | 완료 |',
   'actualLocalRelevanceRerankerQualityValidated: true',
   'actualLocalRelevanceRerankerQualified: false',

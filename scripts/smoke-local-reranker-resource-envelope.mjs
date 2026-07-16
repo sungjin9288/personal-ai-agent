@@ -113,7 +113,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-relevance-shadow-cache-termination-soak-current',
+  'status: approved-learning-rag-feedback-current',
   '| R9 Local reranker resource envelope | 완료 |',
   'actualLocalRerankerResourceEnvelopeValidated: true',
   'actualLocalRerankerResourceEnvelopeQualified: false',

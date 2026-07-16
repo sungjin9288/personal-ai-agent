@@ -46,6 +46,7 @@ const BASE_PACKAGE_FILES = [
   'evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json',
   'evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json',
   'evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json',
+  'evidence/output-artifacts/approved-learning-rag-feedback.json',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',

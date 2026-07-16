@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Approved Learning RAG Feedback Loop
+
+- replayed one credential-free stub mission before promotion, after explicit mission-memory approval, and after rollback to prove the existing learning and retrieval paths form one reversible feedback loop
+- bound the promoted memory id and content hash to the next planner retrieval provenance, recorded four matched terms and a planner step increase from three to four, and preserved reviewer pass
+- removed the promoted memory through the recorded rollback target and reproduced the original three-step planner and exact planner/deliverable artifact hashes while keeping general answer-quality and actual-training claims false
+
 ## 2026-07-17 Local Relevance Shadow Cache Termination Recovery and Bounded Soak
 
 - extended the fixed empty-environment child worker with a warm-before-termination state and observed parent-issued SIGKILL before starting a distinct cold recovery worker

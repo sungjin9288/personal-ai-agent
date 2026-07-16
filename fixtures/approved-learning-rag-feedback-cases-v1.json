@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "personal-ai-agent-approved-learning-rag-feedback-cases/v1",
+  "cases": [
+    {
+      "id": "mission-scoped-verification-path",
+      "deliverableType": "decision-memo",
+      "expectedPlanStep": "Narrow the verification path before requesting workspace execution again.",
+      "minimumRetrievalMatchTermCount": 3,
+      "mode": "knowledge",
+      "objective": "Prepare a narrow verification path for workspace execution approval.",
+      "promotionNote": "Narrow the verification path before requesting workspace execution again.",
+      "title": "Approved learning RAG feedback"
+    }
+  ]
+}

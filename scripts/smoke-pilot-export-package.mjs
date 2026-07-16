@@ -75,7 +75,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 88$/m);
+assert.match(manifest, /^- fileCount: 89$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -122,6 +122,7 @@ const requiredPaths = [
   'evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json',
   'evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json',
   'evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json',
+  'evidence/output-artifacts/approved-learning-rag-feedback.json',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
@@ -298,7 +299,7 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: local-relevance-shadow-cache-termination-soak-current/);
+assert.match(mlRagDevelopmentPlan, /status: approved-learning-rag-feedback-current/);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
@@ -314,6 +315,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache/)
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-lifecycle/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-process-isolation/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-termination-soak/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:approved-learning-rag-feedback/);
 assert.match(mlRagDevelopmentPlan, /\| R1 Corpus contract \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| R2 Retrieval evaluation \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| R3 Optional semantic retrieval \| 완료 \|/);
@@ -322,6 +324,7 @@ assert.match(mlRagDevelopmentPlan, /\| R13 Bounded shadow score cache \| 완료 
 assert.match(mlRagDevelopmentPlan, /\| R14 Shadow cache lifecycle stress \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| R15 Shadow cache process isolation \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| R16 Shadow cache termination recovery and bounded soak \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| P1 Approved learning RAG feedback \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| L1 승인된 학습 데이터 \| 완료 \|/);
 assert.match(smokeValidationSummary, /# Smoke Validation Summary v1/);
 assert.match(smokeValidationSummary, /status: smoke-validation-summary-current/);

@@ -94,6 +94,8 @@
     "smoke:provider-readiness-matrix": "node scripts/smoke-provider-readiness-matrix.mjs",
     "smoke:provider-failure-recovery-demo": "node scripts/smoke-provider-failure-recovery-demo.mjs",
     "smoke:memory-retrieval-quality-fixture": "node scripts/smoke-memory-retrieval-quality-fixture.mjs",
+    "evaluate:approved-learning-rag-feedback": "node scripts/evaluate-approved-learning-rag-feedback.mjs",
+    "smoke:approved-learning-rag-feedback": "node scripts/smoke-approved-learning-rag-feedback.mjs",
     "smoke:answer-quality-evaluation": "node scripts/smoke-answer-quality-evaluation.mjs",
     "smoke:retrieval-corpus-contract": "node scripts/smoke-retrieval-corpus-contract.mjs",
     "smoke:retrieval-quality-evaluation": "node scripts/smoke-retrieval-quality-evaluation.mjs",

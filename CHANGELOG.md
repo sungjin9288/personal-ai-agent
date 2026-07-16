@@ -28,6 +28,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added generation-based invalidation and rollback close to the shadow score cache; an 8-entry actual replay retained 15/15 with 22 LRU evictions, while a concurrent local probe dropped a pre-invalidation stale result and closed with zero entries without enabling provider input.
 - Added bounded child-process cache isolation evidence; two concurrent workers and one restarted worker each began with an empty cache, performed one local inference and one process-local hit, inherited no parent environment, and closed with zero entries without enabling provider input.
 - Added forced-termination recovery and bounded cache soak evidence; a warm child exited by SIGKILL, a recovery child inferred again from an empty cache, and a 16-entry cache processed 48 unique pairs plus 16 hits within recorded heap/RSS regression limits without enabling provider input.
+- Added an approved learning RAG feedback evaluation; one mission-scoped promotion changed the next retrieval, planner, and deliverable with reviewer pass preserved, then rollback removed the memory and restored exact baseline planner and deliverable hashes without external provider calls.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -50,8 +51,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,387,328 bytes`
-- SHA-256: `12b10b9b44affc7c60a6183cd20c32c03f0e2b3ff7f0b15db1d416dde46c52ff`
+- Size: `2,390,889 bytes`
+- SHA-256: `17ec9b65d85570d214f2f27251bebfc652926f33085a26a22bd3085d7aa6ce3c`
 
 Included public surfaces:
 
