@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T21:48:29.510Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T21:48:21.998Z
 - branch: codex/workspace-learning-operator-override
 - commit: e455364cf07b6521e05b4650f01bc5bb1309eea1

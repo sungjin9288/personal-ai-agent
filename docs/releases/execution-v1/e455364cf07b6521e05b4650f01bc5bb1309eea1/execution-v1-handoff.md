@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T21:48:29.510Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T21:48:28.490Z
 - localDate: 2026-07-17
 - branch: codex/workspace-learning-operator-override
 - commit: e455364cf07b6521e05b4650f01bc5bb1309eea1
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e455364cf07b6521e05b4650f01bc5bb1309eea1](releases/execution-v1/e455364cf07b6521e05b4650f01bc5bb1309eea1)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e455364cf07b6521e05b4650f01bc5bb1309eea1/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e455364cf07b6521e05b4650f01bc5bb1309eea1/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e455364cf07b6521e05b4650f01bc5bb1309eea1](docs/releases/execution-v1/e455364cf07b6521e05b4650f01bc5bb1309eea1)
 - visualArtifactSetSha256: a5062f06ed5ef1b358d5fd56f7f9a61f32ede6663bb54603853fc1a821eee842
 - commitPushStatus: not pushed, origin/codex/workspace-learning-operator-override not found
 
