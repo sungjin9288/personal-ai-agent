@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T07:32:48.812Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T07:32:40.449Z
 - branch: codex/rag-retrieval-evaluation
 - commit: 0bc124a18d31571998ce9bcf4e2946c87d3fd03e
