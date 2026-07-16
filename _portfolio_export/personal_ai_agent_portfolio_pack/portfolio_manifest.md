@@ -47,6 +47,7 @@
 - evidence/output-artifacts/
 - evidence/output-artifacts/local-embedding-model-qualification.json
 - evidence/output-artifacts/local-retrieval-robustness.json
+- evidence/output-artifacts/local-relevance-reranker-evaluation.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함

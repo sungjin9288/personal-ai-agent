@@ -103,6 +103,8 @@
     "smoke:local-embedding-model-qualification": "node scripts/smoke-local-embedding-model-qualification.mjs",
     "evaluate:local-retrieval-robustness": "node scripts/evaluate-local-retrieval-robustness.mjs",
     "smoke:local-retrieval-robustness": "node scripts/smoke-local-retrieval-robustness.mjs",
+    "evaluate:local-relevance-reranker": "node scripts/evaluate-local-relevance-reranker.mjs",
+    "smoke:local-relevance-reranker": "node scripts/smoke-local-relevance-reranker.mjs",
     "smoke:retrieval-reranking-experiment": "node scripts/smoke-retrieval-reranking-experiment.mjs",
     "smoke:approved-training-record": "node scripts/smoke-approved-training-record.mjs",
     "smoke:training-dataset-quality": "node scripts/smoke-training-dataset-quality.mjs",

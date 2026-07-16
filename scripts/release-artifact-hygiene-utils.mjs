@@ -59,6 +59,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/memory-retrieval-quality-fixture-v1.md',
   'evidence/output-artifacts/local-embedding-model-qualification.json',
   'evidence/output-artifacts/local-retrieval-robustness.json',
+  'evidence/output-artifacts/local-relevance-reranker-evaluation.json',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/fork-onboarding-v1.md',

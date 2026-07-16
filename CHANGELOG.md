@@ -19,6 +19,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added an explicit local semantic-and-lexical mission retrieval runtime with exact lexical default parity, scope refusal, failure-before-provider behavior, and state-free configuration rollback without claiming real embedding model validation.
 - Added loopback-only Ollama embedding qualification for installed qwen2.5 0.5B, 1.5B, and 3B models, recording the 3B controlled-suite quality pass while keeping activation blocked on license, egress, resource, and rollback-owner governance.
 - Added a 15-case local retrieval robustness evaluation for the selected qwen2.5 3B candidate, recording hard-negative and query-variation regression and enforcing failed-keep-lexical without weakening thresholds or authorizing activation.
+- Added an independent local relevance reranker evaluation using repeated structured qwen2.5 3B scoring, recording a controlled 15-case quality pass while keeping runtime activation and governance approval blocked.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -41,8 +42,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,264,768 bytes`
-- SHA-256: `3046a25b8f5e8c80dd9611711d74e9d83f733c3c43af59bd67bc6d4d9091253b`
+- Size: `2,271,416 bytes`
+- SHA-256: `d79cc37ab5e92558e779c17a3ed55a8be66bfc135c7cccbbc8996340bf81d820`
 
 Included public surfaces:
 

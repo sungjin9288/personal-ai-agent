@@ -36,6 +36,7 @@ const BASE_PACKAGE_FILES = [
   'docs/operator-surface-demo-evidence-v1.md',
   'evidence/output-artifacts/local-embedding-model-qualification.json',
   'evidence/output-artifacts/local-retrieval-robustness.json',
+  'evidence/output-artifacts/local-relevance-reranker-evaluation.json',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',

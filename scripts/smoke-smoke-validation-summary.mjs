@@ -34,6 +34,7 @@ const expectedCommands = [
   'npm run smoke:semantic-retrieval-runtime',
   'npm run smoke:local-embedding-model-qualification',
   'npm run smoke:local-retrieval-robustness',
+  'npm run smoke:local-relevance-reranker',
   'npm run smoke:approved-training-record',
   'npm run smoke:training-dataset-quality',
   'npm run smoke:fine-tuning-readiness',

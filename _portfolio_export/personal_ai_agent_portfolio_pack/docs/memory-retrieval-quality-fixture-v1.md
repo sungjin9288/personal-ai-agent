@@ -28,6 +28,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 | Local semantic runtime | Can the experiment contract enter a mission without changing the default runtime? | Explicit local opt-in selects semantic evidence, rejects cross-scope input and command failure before provider work, and returns exactly to lexical mode without state migration | `npm run smoke:semantic-retrieval-runtime` |
 | Local model qualification | Does an installed model pass the same controlled suite without receiving activation authority? | Recorded qwen2.5 comparison selects 3B on quality and keeps activation governance-blocked | `npm run smoke:local-embedding-model-qualification` |
 | Local retrieval robustness | Does the selected model retain quality under paraphrase, typo, Korean, and hard-negative variation? | Recorded 15-case evaluation fails the semantic+lexical candidate and keeps lexical rollback | `npm run smoke:local-retrieval-robustness` |
+| Local relevance reranker | Can independent local scoring recover R7 failures without source-order bias or runtime activation? | Repeated 15-case scoring passes with content-free evidence and remains governance-blocked | `npm run smoke:local-relevance-reranker` |
 | Source diversity | Can a non-dominant source remain visible? | A mission decision source remains in the selected context even when many workspace facts match the same query | `npm run smoke:retrieval-memory` |
 | Fact graph memory | Are facts mirrored with provenance? | Fact memories become active graph nodes with memory provenance and shared-keyword edges | `npm run smoke:fact-graph-memory` |
 | Fact lifecycle | Are revisions and deletions auditable? | Fact updates preserve revisions, kind changes retire nodes, deleted memory retires graph entries and edges | `npm run smoke:fact-graph-memory` |
@@ -44,6 +45,7 @@ npm run smoke:retrieval-reranking-experiment
 npm run smoke:semantic-retrieval-runtime
 npm run smoke:local-embedding-model-qualification
 npm run smoke:local-retrieval-robustness
+npm run smoke:local-relevance-reranker
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:instruction-boundary
@@ -88,4 +90,4 @@ Do not claim:
 
 ## Acceptance Rule
 
-This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-quality-evaluation`, `npm run smoke:semantic-retrieval-experiment`, `npm run smoke:retrieval-reranking-experiment`, `npm run smoke:semantic-retrieval-runtime`, `npm run smoke:local-embedding-model-qualification`, `npm run smoke:local-retrieval-robustness`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.
+This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-quality-evaluation`, `npm run smoke:semantic-retrieval-experiment`, `npm run smoke:retrieval-reranking-experiment`, `npm run smoke:semantic-retrieval-runtime`, `npm run smoke:local-embedding-model-qualification`, `npm run smoke:local-retrieval-robustness`, `npm run smoke:local-relevance-reranker`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.

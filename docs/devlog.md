@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Local Relevance Reranker Evaluation
+
+- evaluated each query-document pair independently with the already installed qwen2.5 3B model and structured integer scores instead of order-sensitive batch selection
+- repeated all 45 pairs in reversed source order and recorded matching scores, 15-case quality pass, and hard-negative recovery without storing query or document text in evidence
+- kept runtime activation and qualification blocked behind license, OS egress isolation, resource/latency, rollback ownership, and integration review
+
 ## 2026-07-16 Local Retrieval Robustness Evaluation
 
 - expanded the selected qwen2.5 3B evaluation from three synonym cases to 15 canonical, paraphrase, noisy, Korean cross-language, and hard-negative cases without downloading a model or calling an external provider

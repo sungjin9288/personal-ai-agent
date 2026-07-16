@@ -1,5 +1,6 @@
 const ALLOWED_PATHS = new Set([
   '/api/embed',
+  '/api/generate',
   '/api/show',
   '/api/tags',
   '/api/version',

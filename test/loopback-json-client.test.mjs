@@ -20,7 +20,7 @@ test('loopback endpoint rejects remote, authenticated, and path-bearing origins'
 
 test('loopback JSON client allows only the bounded Ollama paths and response size', async () => {
   await assert.rejects(
-    () => requestLoopbackJson({ endpoint: 'http://127.0.0.1:1', pathname: '/api/generate' }),
+    () => requestLoopbackJson({ endpoint: 'http://127.0.0.1:1', pathname: '/api/chat' }),
     /Unsupported local model API path/,
   );
 
@@ -35,6 +35,26 @@ test('loopback JSON client allows only the bounded Ollama paths and response siz
     /response exceeds 5 bytes/,
   );
   await close(server);
+});
+
+test('loopback JSON client permits only the recorded structured generation path', async () => {
+  const server = http.createServer(async (request, response) => {
+    assert.equal(request.url, '/api/generate');
+    assert.equal(request.method, 'POST');
+    response.setHeader('content-type', 'application/json');
+    response.end(JSON.stringify({ response: '{"score":90}' }));
+  });
+  await listen(server);
+  try {
+    const result = await requestLoopbackJson({
+      body: { model: 'fixture', stream: false },
+      endpoint: endpointFor(server),
+      pathname: '/api/generate',
+    });
+    assert.equal(result.response, '{"score":90}');
+  } finally {
+    await close(server);
+  }
 });
 
 test('Ollama command exchanges the embedding protocol with a loopback server', async () => {

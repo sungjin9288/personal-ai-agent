@@ -31,6 +31,7 @@
 | Local semantic retrieval runtime | 완료 | `src/core/retrieval-runtime-service.mjs`, `scripts/smoke-semantic-retrieval-runtime.mjs` | lexical parity, explicit local opt-in, scope refusal, semantic+lexical runtime selection, failure-before-provider, and state-free rollback verified by `npm run smoke:semantic-retrieval-runtime` |
 | Local embedding model qualification | 완료 | `evidence/output-artifacts/local-embedding-model-qualification.json`, `src/core/local-embedding-model-qualification.mjs` | actual qwen2.5 model digest·dimension·quality comparison, 3B controlled-suite pass, governance-blocked activation, and lexical rollback verified by `npm run smoke:local-embedding-model-qualification` |
 | Local retrieval robustness | 완료 | `evidence/output-artifacts/local-retrieval-robustness.json`, `fixtures/retrieval-robustness-cases-v1.json` | actual qwen2.5 3B 15-case result, hard-negative failure, content-free integrity, and failed-keep-lexical decision verified by `npm run smoke:local-retrieval-robustness` |
+| Local relevance reranker | 완료 | `evidence/output-artifacts/local-relevance-reranker-evaluation.json`, `src/core/local-relevance-reranker.mjs` | independent query-document scoring, 90 local inference repeat stability, 15-case and hard-negative pass, content-free integrity, and activation block verified by `npm run smoke:local-relevance-reranker` |
 | Approved training record | 완료 | `src/core/approved-training-record.mjs`, `fixtures/approved-training-record-cases-v1.json` | local approval lifecycle, reviewer·artifact lineage, sanitized example safety, accepted-risk governance, deterministic hashes, and externalSubmissionAuthorized=false verified by `npm run smoke:approved-training-record` |
 | Training dataset quality gate | 완료 | `src/core/training-dataset-quality.mjs`, `fixtures/training-dataset-quality-cases-v1.json` | deterministic deduplication, mission-scope split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false verified by `npm run smoke:training-dataset-quality` |
 | Fine-tuning readiness export | 완료 | `src/core/fine-tuning-readiness.mjs`, `fixtures/fine-tuning-readiness-cases-v1.json` | provider-neutral JSONL, Q1 baseline binding, reviewer checklist, export digest, pending submission requirements, and fineTuningExecutionAuthorized=false verified by `npm run smoke:fine-tuning-readiness` |
@@ -43,7 +44,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,264,768 bytes, SHA-256 `3046a25b8f5e8c80dd9611711d74e9d83f733c3c43af59bd67bc6d4d9091253b` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,271,416 bytes, SHA-256 `d79cc37ab5e92558e779c17a3ed55a8be66bfc135c7cccbbc8996340bf81d820` |
 
 ## 검증 실패 / 보류
 
