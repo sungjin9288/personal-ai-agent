@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T23:19:17.353Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T23:19:16.400Z
 - localDate: 2026-07-17
 - branch: codex/local-user-learning-conflict-revocation
 - commit: 3d6dcc91c818bced495b303211835baaa65aae47
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3d6dcc91c818bced495b303211835baaa65aae47](releases/execution-v1/3d6dcc91c818bced495b303211835baaa65aae47)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3d6dcc91c818bced495b303211835baaa65aae47/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/3d6dcc91c818bced495b303211835baaa65aae47/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/3d6dcc91c818bced495b303211835baaa65aae47](docs/releases/execution-v1/3d6dcc91c818bced495b303211835baaa65aae47)
 - visualArtifactSetSha256: 1b7e71f69d497f347895f81bdaf3061ff2a50e54158affa9ac2ab018f314976a
 - commitPushStatus: not pushed, origin/codex/local-user-learning-conflict-revocation not found
 

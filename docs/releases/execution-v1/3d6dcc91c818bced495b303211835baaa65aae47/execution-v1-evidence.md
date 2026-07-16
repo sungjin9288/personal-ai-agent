@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T23:19:17.353Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T23:19:10.016Z
 - branch: codex/local-user-learning-conflict-revocation
 - commit: 3d6dcc91c818bced495b303211835baaa65aae47

@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T23:19:17.353Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T23:19:10.064Z
 - branch: codex/local-user-learning-conflict-revocation
 - commit: 3d6dcc91c818bced495b303211835baaa65aae47
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/3d6dcc91c818bced495b303211835baaa65aae47/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
