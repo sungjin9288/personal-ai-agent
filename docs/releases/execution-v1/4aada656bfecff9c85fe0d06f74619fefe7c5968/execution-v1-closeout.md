@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T19:42:53.389Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T19:42:46.127Z
 - branch: codex/multi-scenario-learning-feedback
 - commit: 4aada656bfecff9c85fe0d06f74619fefe7c5968
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4aada656bfecff9c85fe0d06f74619fefe7c5968/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

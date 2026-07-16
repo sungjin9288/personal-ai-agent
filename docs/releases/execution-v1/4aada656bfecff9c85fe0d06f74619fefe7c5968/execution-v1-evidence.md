@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T19:42:53.389Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T19:42:46.077Z
 - branch: codex/multi-scenario-learning-feedback
 - commit: 4aada656bfecff9c85fe0d06f74619fefe7c5968

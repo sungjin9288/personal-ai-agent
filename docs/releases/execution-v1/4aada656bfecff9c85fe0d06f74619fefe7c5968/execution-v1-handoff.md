@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T19:42:53.389Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T19:42:52.445Z
 - localDate: 2026-07-17
 - branch: codex/multi-scenario-learning-feedback
 - commit: 4aada656bfecff9c85fe0d06f74619fefe7c5968
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4aada656bfecff9c85fe0d06f74619fefe7c5968](releases/execution-v1/4aada656bfecff9c85fe0d06f74619fefe7c5968)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4aada656bfecff9c85fe0d06f74619fefe7c5968/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4aada656bfecff9c85fe0d06f74619fefe7c5968/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4aada656bfecff9c85fe0d06f74619fefe7c5968](docs/releases/execution-v1/4aada656bfecff9c85fe0d06f74619fefe7c5968)
 - visualArtifactSetSha256: c411fb2fe7a724135ff193abd693dcb8093aa39f39a9a7cc448bc67494c0e725
 - commitPushStatus: not pushed, origin/codex/multi-scenario-learning-feedback not found
 
