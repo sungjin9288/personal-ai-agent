@@ -10,6 +10,7 @@
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
 - relatedMemoryRetrievalQualityFixture: [memory-retrieval-quality-fixture-v1.md](memory-retrieval-quality-fixture-v1.md)
+- relatedMlRagDevelopmentPlan: [ml-rag-development-plan-v1.md](ml-rag-development-plan-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
 
 ## Purpose
@@ -36,6 +37,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Provider readiness | `npm run smoke:provider-readiness-matrix` | Verifies provider catalog, env keys, blockers, and safe claim boundary |
 | Provider recovery | `npm run smoke:provider-failure-recovery-demo` | Verifies fallback/remediation demo linkage and claim boundary |
 | Memory quality fixture | `npm run smoke:memory-retrieval-quality-fixture` | Verifies retrieval ranking, fact graph provenance, and instruction-boundary fixture linkage |
+| Answer quality evaluation | `npm run smoke:answer-quality-evaluation` | Verifies credential-free retrieval, citation, required-content, and reviewer regression gates |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
 | External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
 | Portfolio claim boundary | `npm run smoke:portfolio-docs-claim-boundary` | Verifies portfolio docs do not overclaim unsupported capabilities |
@@ -62,6 +64,7 @@ npm run smoke:architecture-code-walkthrough
 npm run smoke:provider-readiness-matrix
 npm run smoke:provider-failure-recovery-demo
 npm run smoke:memory-retrieval-quality-fixture
+npm run smoke:answer-quality-evaluation
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview

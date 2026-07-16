@@ -23,6 +23,7 @@
 | Provider readiness matrix | 완료 | `docs/provider-readiness-matrix-v1.md` | provider catalog/env/blocker boundary verified by `npm run smoke:provider-readiness-matrix` |
 | Provider failure recovery demo | 완료 | `docs/provider-failure-recovery-demo-v1.md` | attention remediation, fallback policy, timeline/event audit verified by `npm run smoke:provider-failure-recovery-demo` |
 | Memory retrieval quality fixture | 완료 | `docs/memory-retrieval-quality-fixture-v1.md` | retrieval ranking, source diversity, fact graph provenance, and instruction boundary verified by `npm run smoke:memory-retrieval-quality-fixture` |
+| Answer quality evaluation foundation | 완료 | `docs/ml-rag-development-plan-v1.md`, `fixtures/answer-quality-cases-v1.json` | retrieval, citation, required-content, irrelevant-source, and reviewer regression gate verified by `npm run smoke:answer-quality-evaluation` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
@@ -31,7 +32,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,241,205 bytes, SHA-256 `58e7a1406cbbb07132e288a778ba0dfd81c1a5e1c73d9a60555d2936c25f0da6` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,249,686 bytes, SHA-256 `e88be5ee832693b3634d8d45bfe99d7d71639741b583d1afe3d67bb9c46d8a4f` |
 
 ## 검증 실패 / 보류
 

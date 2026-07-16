@@ -11,6 +11,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a provider readiness matrix and catalog smoke guard to separate adapter implementation, pilot evidence, target provider blockers, and safe multi-provider claims.
 - Added a provider failure recovery demo and smoke guard to document attention remediation, fallback policy, timeline/event audit, and claim boundaries.
 - Added a memory retrieval quality fixture and smoke guard to document retrieval ranking signals, source diversity, fact graph provenance, revision lifecycle, and instruction-boundary handling.
+- Added a credential-free answer quality evaluator and regression fixture for retrieval hit, citation grounding, required content, irrelevant source, and reviewer verdict checks.
 - Added a smoke validation summary and command guard to document the deterministic public-readiness verification baseline without expanding provider, hosted, or production claims.
 - Added an external evidence blocker register and smoke guard to keep account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers explicit.
 
@@ -29,8 +30,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,241,205 bytes`
-- SHA-256: `58e7a1406cbbb07132e288a778ba0dfd81c1a5e1c73d9a60555d2936c25f0da6`
+- Size: `2,249,686 bytes`
+- SHA-256: `e88be5ee832693b3634d8d45bfe99d7d71639741b583d1afe3d67bb9c46d8a4f`
 
 Included public surfaces:
 

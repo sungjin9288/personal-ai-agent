@@ -85,6 +85,7 @@ Representative demo evidence:
 - operator surface support map: [docs/operator-surface-demo-evidence-v1.md](docs/operator-surface-demo-evidence-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
+- ML/RAG and fine-tuning development plan: [docs/ml-rag-development-plan-v1.md](docs/ml-rag-development-plan-v1.md)
 - Smoke validation summary: [docs/smoke-validation-summary-v1.md](docs/smoke-validation-summary-v1.md)
 - External evidence blockers: [docs/external-evidence-blockers-v1.md](docs/external-evidence-blockers-v1.md)
 - operator surface screenshots: `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, `evidence/screenshots/operator-surface-action-inbox.png`
@@ -303,6 +304,7 @@ npm run smoke:architecture-code-walkthrough
 npm run smoke:provider-readiness-matrix
 npm run smoke:provider-failure-recovery-demo
 npm run smoke:memory-retrieval-quality-fixture
+npm run smoke:answer-quality-evaluation
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview
@@ -439,6 +441,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
+- ML/RAG and fine-tuning development plan: [docs/ml-rag-development-plan-v1.md](docs/ml-rag-development-plan-v1.md)
 - Smoke validation summary: [docs/smoke-validation-summary-v1.md](docs/smoke-validation-summary-v1.md)
 - External evidence blockers: [docs/external-evidence-blockers-v1.md](docs/external-evidence-blockers-v1.md)
 - Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)
@@ -475,6 +478,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - There is no public hosted demo URL. The current demo is the credential-free representative replay and evidence package.
 - The recorded walkthrough is currently a recording script and acceptance checklist, not a published video URL.
 - Customer usage metrics, cost reduction claims, and production SLA claims are intentionally not included because this repository does not contain supporting evidence for them.
+- Answer quality evaluation is a credential-free deterministic fixture, not proof of general model accuracy, fine-tuning gain, or production RAG quality.
 
 ## Links
 
@@ -486,6 +490,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
+- ML/RAG and fine-tuning development plan: [docs/ml-rag-development-plan-v1.md](docs/ml-rag-development-plan-v1.md)
 - Smoke validation summary: [docs/smoke-validation-summary-v1.md](docs/smoke-validation-summary-v1.md)
 - External evidence blockers: [docs/external-evidence-blockers-v1.md](docs/external-evidence-blockers-v1.md)
 - Project card: [docs/project-card.md](docs/project-card.md)

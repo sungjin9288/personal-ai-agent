@@ -23,6 +23,7 @@ const architectureCodeWalkthroughPath = path.join(repoDir, 'docs', 'architecture
 const providerReadinessMatrixPath = path.join(repoDir, 'docs', 'provider-readiness-matrix-v1.md');
 const providerFailureRecoveryDemoPath = path.join(repoDir, 'docs', 'provider-failure-recovery-demo-v1.md');
 const memoryRetrievalQualityFixturePath = path.join(repoDir, 'docs', 'memory-retrieval-quality-fixture-v1.md');
+const mlRagDevelopmentPlanPath = path.join(repoDir, 'docs', 'ml-rag-development-plan-v1.md');
 const smokeValidationSummaryPath = path.join(repoDir, 'docs', 'smoke-validation-summary-v1.md');
 const externalEvidenceBlockersPath = path.join(repoDir, 'docs', 'external-evidence-blockers-v1.md');
 const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
@@ -53,6 +54,7 @@ const architectureCodeWalkthrough = readRequiredFile(architectureCodeWalkthrough
 const providerReadinessMatrix = readRequiredFile(providerReadinessMatrixPath);
 const providerFailureRecoveryDemo = readRequiredFile(providerFailureRecoveryDemoPath);
 const memoryRetrievalQualityFixture = readRequiredFile(memoryRetrievalQualityFixturePath);
+const mlRagDevelopmentPlan = readRequiredFile(mlRagDevelopmentPlanPath);
 const smokeValidationSummary = readRequiredFile(smokeValidationSummaryPath);
 const externalEvidenceBlockers = readRequiredFile(externalEvidenceBlockersPath);
 const forkOnboarding = readRequiredFile(forkOnboardingPath);
@@ -73,7 +75,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 75$/m);
+assert.match(manifest, /^- fileCount: 76$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -104,6 +106,7 @@ const requiredPaths = [
   'docs/provider-readiness-matrix-v1.md',
   'docs/provider-failure-recovery-demo-v1.md',
   'docs/memory-retrieval-quality-fixture-v1.md',
+  'docs/ml-rag-development-plan-v1.md',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
@@ -282,6 +285,11 @@ assert.match(memoryRetrievalQualityFixture, /source diversity/);
 assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
+assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
+assert.match(mlRagDevelopmentPlan, /status: answer-quality-foundation-current/);
+assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
+assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
 assert.match(smokeValidationSummary, /# Smoke Validation Summary v1/);
 assert.match(smokeValidationSummary, /status: smoke-validation-summary-current/);
 assert.match(smokeValidationSummary, /productionReadyClaim: false/);

@@ -98,6 +98,8 @@
 - 완료: provider readiness matrix와 catalog smoke guard
 - 완료: provider failure recovery demo와 smoke guard
 - 완료: memory/retrieval/fact graph quality fixture와 smoke guard
+- 완료: credential-free answer quality evaluator와 retrieval·citation·reviewer regression gate
+- 다음: source hash·revision·scope를 보존하는 RAG corpus contract와 retrieval evaluation fixture 확장
 - 완료: core smoke validation summary와 command guard
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
