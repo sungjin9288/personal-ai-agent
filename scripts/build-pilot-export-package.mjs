@@ -42,6 +42,7 @@ const BASE_PACKAGE_FILES = [
   'evidence/output-artifacts/local-relevance-shadow-integration.json',
   'evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json',
   'evidence/output-artifacts/local-relevance-shadow-replay.json',
+  'evidence/output-artifacts/local-relevance-shadow-cache.json',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',

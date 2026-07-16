@@ -11,11 +11,20 @@ import {
 } from '../src/core/local-relevance-shadow-replay.mjs';
 import { assertLocalRelevanceShadowEvidence } from '../src/core/local-relevance-shadow-evidence.mjs';
 import {
+  createCachedLocalRelevanceScorer,
+  LOCAL_RELEVANCE_SCORE_CACHE_SCHEMA_VERSION,
+} from '../src/core/local-relevance-score-cache.mjs';
+import {
   buildLocalRelevanceShadowQueryText,
   createLocalRelevanceShadowEvaluator,
   LOCAL_RELEVANCE_SHADOW_QUERY_CONTRACTS,
   LOCAL_RELEVANCE_SHADOW_SCHEMA_VERSION,
 } from '../src/core/local-relevance-shadow.mjs';
+import {
+  assertLocalRelevanceShadowCacheEvidence,
+  buildLocalRelevanceShadowCacheEvidence,
+  LOCAL_RELEVANCE_SHADOW_CACHE_EVIDENCE_SCHEMA_VERSION,
+} from '../src/core/local-relevance-shadow-cache-evidence.mjs';
 import { requestLoopbackJson } from '../src/core/loopback-json-client.mjs';
 import { createMissionService } from '../src/core/mission-service.mjs';
 import { createOllamaRelevanceScorer } from '../src/core/ollama-relevance-scorer.mjs';
@@ -33,6 +42,12 @@ const priorEvidencePath = path.join(
   'evidence',
   'output-artifacts',
   'local-relevance-shadow-integration.json',
+);
+const priorReplayPath = path.join(
+  repoDir,
+  'evidence',
+  'output-artifacts',
+  'local-relevance-shadow-replay.json',
 );
 const options = parseOptions(process.argv.slice(2));
 const fixtureText = fs.readFileSync(fixturePath, 'utf8');
@@ -61,11 +76,19 @@ if (
   throw new Error('Shadow replay model does not match the R11 evidence binding.');
 }
 
-const scorer = createOllamaRelevanceScorer({
+const baseScorer = createOllamaRelevanceScorer({
   endpoint: options.endpoint,
   model: options.model,
   timeoutMs: options.timeoutMs,
 });
+let scorer = baseScorer;
+if (options.cacheMaxEntries) {
+  scorer = createCachedLocalRelevanceScorer({
+    maxEntries: options.cacheMaxEntries,
+    modelDigest: inventoryModel.digest,
+    scorer: baseScorer,
+  });
+}
 const observations = [];
 const shadow = createLocalRelevanceShadowEvaluator({
   queryTextBuilder: options.queryContract === LOCAL_RELEVANCE_SHADOW_QUERY_CONTRACTS.FULL_RETRIEVAL
@@ -103,6 +126,13 @@ try {
     scorer.id,
     LOCAL_RELEVANCE_SHADOW_SCHEMA_VERSION,
     LOCAL_RELEVANCE_SHADOW_REPLAY_SCHEMA_VERSION,
+    ...(options.cacheMaxEntries
+      ? [
+          LOCAL_RELEVANCE_SCORE_CACHE_SCHEMA_VERSION,
+          LOCAL_RELEVANCE_SHADOW_CACHE_EVIDENCE_SCHEMA_VERSION,
+          'bounded-process-local-lru',
+        ]
+      : []),
   ];
   const state = store.loadState();
   const storeShadowMetadataFound = shadowMarkers.some((marker) =>
@@ -134,12 +164,19 @@ try {
       version: runtimeVersion.version,
     },
   });
+  const output = options.cacheMaxEntries
+    ? buildLocalRelevanceShadowCacheEvidence({
+        cacheReplay: replay,
+        cacheSnapshot: scorer.getCacheSnapshot(),
+        priorReplay: JSON.parse(fs.readFileSync(priorReplayPath, 'utf8')),
+      })
+    : replay;
   if (options.outputPath) {
     fs.mkdirSync(path.dirname(options.outputPath), { recursive: true });
-    fs.writeFileSync(options.outputPath, `${JSON.stringify(replay, null, 2)}\n`, 'utf8');
+    fs.writeFileSync(options.outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
   }
 
-  const summary = {
+  const replaySummary = {
     actualLocalRelevanceShadowReplayQualified:
       replay.actualLocalRelevanceShadowReplayQualified,
     actualLocalRelevanceShadowReplayValidated:
@@ -160,8 +197,35 @@ try {
     status: replay.status,
     variationMetrics: replay.variationMetrics,
   };
+  const summary = options.cacheMaxEntries
+    ? {
+        actualLocalRelevanceShadowCacheQualified:
+          output.actualLocalRelevanceShadowCacheQualified,
+        actualLocalRelevanceShadowCacheValidated:
+          output.actualLocalRelevanceShadowCacheValidated,
+        cache: output.comparison,
+        caseCount: replay.quality.caseCount,
+        casePassRate: replay.quality.casePassRate,
+        costFree: true,
+        decision: output.decision,
+        mode: 'local-relevance-shadow-cache',
+        observationCount: replay.quality.observationCount,
+        ok: true,
+        outputPath: options.outputPath ? path.relative(repoDir, options.outputPath) : null,
+        productionReadyClaim: false,
+        runtimeActivation: false,
+        scenarioCount: replay.quality.scenarioCount,
+        status: output.status,
+      }
+    : replaySummary;
   console.log(JSON.stringify(summary, null, 2));
   assertLocalRelevanceShadowReplay(replay);
+  if (options.cacheMaxEntries) {
+    assertLocalRelevanceShadowCacheEvidence(output);
+    if (!output.actualLocalRelevanceShadowCacheValidated) {
+      throw new Error('Shadow cache quality or resource gate failed; lexical runtime remains active.');
+    }
+  }
   if (!replay.actualLocalRelevanceShadowReplayValidated) {
     throw new Error('Shadow replay quality gate failed; lexical runtime remains active.');
   }
@@ -241,7 +305,14 @@ function hashValue(value) {
 }
 
 function parseOptions(args) {
-  const allowed = new Set(['--endpoint', '--model', '--output', '--query-contract', '--timeout-ms']);
+  const allowed = new Set([
+    '--cache-max-entries',
+    '--endpoint',
+    '--model',
+    '--output',
+    '--query-contract',
+    '--timeout-ms',
+  ]);
   const values = new Map();
   let cloudFeaturesDisabled = false;
   for (let index = 0; index < args.length;) {
@@ -264,11 +335,20 @@ function parseOptions(args) {
   const endpoint = normalizeOption(values.get('--endpoint'));
   const model = normalizeOption(values.get('--model'));
   const timeoutMs = Number(values.get('--timeout-ms') || 120_000);
+  const cacheMaxEntries = values.has('--cache-max-entries')
+    ? Number(values.get('--cache-max-entries'))
+    : null;
   if (!endpoint || !model || model.length > 200 || /[\r\n]/.test(model)) {
     throw new Error('Shadow replay requires a loopback endpoint and model.');
   }
   if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) {
     throw new Error('Shadow replay timeout must be a positive integer.');
+  }
+  if (
+    cacheMaxEntries !== null &&
+    (!Number.isInteger(cacheMaxEntries) || cacheMaxEntries <= 0 || cacheMaxEntries > 4_096)
+  ) {
+    throw new Error('Shadow replay cache max entries must be between 1 and 4096.');
   }
   const outputValue = normalizeOption(values.get('--output'));
   const queryContract = normalizeOption(
@@ -277,11 +357,25 @@ function parseOptions(args) {
   if (!Object.values(LOCAL_RELEVANCE_SHADOW_QUERY_CONTRACTS).includes(queryContract)) {
     throw new Error('Shadow replay query contract is unsupported.');
   }
+  if (
+    cacheMaxEntries !== null &&
+    queryContract !== LOCAL_RELEVANCE_SHADOW_QUERY_CONTRACTS.MISSION_OBJECTIVE
+  ) {
+    throw new Error('Shadow replay cache requires the mission-objective query contract.');
+  }
   const outputPath = outputValue ? path.resolve(repoDir, outputValue) : null;
   if (outputPath && outputPath !== repoDir && !outputPath.startsWith(`${repoDir}${path.sep}`)) {
     throw new Error('Shadow replay output must stay inside the repository.');
   }
-  return { cloudFeaturesDisabled, endpoint, model, outputPath, queryContract, timeoutMs };
+  return {
+    cacheMaxEntries,
+    cloudFeaturesDisabled,
+    endpoint,
+    model,
+    outputPath,
+    queryContract,
+    timeoutMs,
+  };
 }
 
 function normalizeOption(value) {

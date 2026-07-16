@@ -63,6 +63,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-relevance-shadow-integration.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-relevance-shadow-replay.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-relevance-shadow-cache.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/operator-surface-demo-browser-report.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/operator-surface-mission-run.png',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/operator-surface-provider-readiness.png',

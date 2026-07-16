@@ -50,6 +50,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Local reranker runtime stability | `npm run smoke:local-reranker-runtime-stability` | Verifies cold 1, warm 3, concurrent client worker 2, 360 inference quality/resource parity, bounded latency gates, and explicit production parallelism, long-soak, and thermal limitations |
 | Local relevance shadow integration | `npm run smoke:local-relevance-shadow-integration` | Verifies four-role stub mission observation, exact lexical provider input preservation, content-free evidence, store isolation, and scorer-failure fail-open |
 | Multi-scenario shadow replay | `npm run smoke:local-relevance-shadow-replay` | Verifies 3 scenarios, 15 stub missions, 60 role observations, retained full-query hard-negative failure, mission-objective query correction, content-free evidence, and inactive provider path |
+| Bounded shadow score cache | `npm run smoke:local-relevance-shadow-cache` | Verifies exact model·prompt·query·document binding, 64-entry process-local LRU, 120 requests to 30 model inferences, 90 hits, 15/15 quality parity, content-free entries, maximum-latency regression disclosure, and inactive provider path |
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
@@ -93,6 +94,7 @@ npm run smoke:local-reranker-resource-envelope
 npm run smoke:local-reranker-runtime-stability
 npm run smoke:local-relevance-shadow-integration
 npm run smoke:local-relevance-shadow-replay
+npm run smoke:local-relevance-shadow-cache
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness

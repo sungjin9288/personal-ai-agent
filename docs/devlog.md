@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Bounded Local Relevance Shadow Score Cache
+
+- added a 64-entry process-local LRU keyed by model digest, scorer and prompt identity, query hash, and document hash; completed entries retain only integer scores, failures are not cached, and identical concurrent requests share one in-flight score
+- replayed the same 3 scenarios, 15 missions, and 60 role observations with the installed `qwen2.5:3b`, preserving 15/15 and lexical provider input while reducing 120 score requests to 30 model inferences with 90 cache hits
+- recorded total observation latency changing from 51406.590ms to 13939.543ms and retained the maximum-latency increase from 938.621ms to 1992.079ms, while leaving cache lifecycle, provider-input activation, qualification, and production claims blocked
+
 ## 2026-07-17 Multi-scenario Local Relevance Shadow Replay
 
 - replayed 3 retrieval scenarios, 15 actual stub missions, and 60 manager·planner·executor·reviewer shadow observations with the R11-bound local scorer while preserving the original lexical provider input
