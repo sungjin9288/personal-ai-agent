@@ -29,6 +29,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added bounded child-process cache isolation evidence; two concurrent workers and one restarted worker each began with an empty cache, performed one local inference and one process-local hit, inherited no parent environment, and closed with zero entries without enabling provider input.
 - Added forced-termination recovery and bounded cache soak evidence; a warm child exited by SIGKILL, a recovery child inferred again from an empty cache, and a 16-entry cache processed 48 unique pairs plus 16 hits within recorded heap/RSS regression limits without enabling provider input.
 - Added an approved learning RAG feedback evaluation; one mission-scoped promotion changed the next retrieval, planner, and deliverable with reviewer pass preserved, then rollback removed the memory and restored exact baseline planner and deliverable hashes without external provider calls.
+- Expanded approved learning feedback evaluation to three same-workspace missions and nine stub sessions; the controlled Q1 gate changed from 0/3 before promotion to 3/3 after promotion and returned to 0/3 after rollback, while every case excluded two foreign mission memories and preserved reviewer pass without external provider calls.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -51,8 +52,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,390,889 bytes`
-- SHA-256: `17ec9b65d85570d214f2f27251bebfc652926f33085a26a22bd3085d7aa6ce3c`
+- Size: `2,396,792 bytes`
+- SHA-256: `a26a2da7389e254692b4ff7ddd4c453b5b6e84f12b03a3aa254006cb88d26a2e`
 
 Included public surfaces:
 

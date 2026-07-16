@@ -11,24 +11,24 @@
     "bindingHash": "cfe5e71af84069044888c02313220e968a024bf1ff953836d533177792fc3348"
   },
   "mission": {
-    "id": "mission_20260716185145_cc20de",
+    "id": "mission_20260716191556_c950b7",
     "objectiveHash": "f4c2e410c2df8adfa7bccc8457d4494a8493269d8f9c2ca99b007a6bc725a56a",
-    "workspaceId": "workspace_20260716185145_a8bc6c"
+    "workspaceId": "workspace_20260716191556_e9f7fe"
   },
-  "observedAt": "2026-07-16T18:51:45.917Z",
+  "observedAt": "2026-07-16T19:15:57.197Z",
   "productionReadyClaim": false,
   "promotion": {
-    "candidateId": "learningcandidate_20260716185145_15d9e0",
+    "candidateId": "learningcandidate_20260716191556_5fef25",
     "finalStatus": "rolled-back",
-    "memoryContentHash": "f97fa9fb57b7358f3a867843598352f6020b90ae307c0113793a4df515296894",
-    "memoryId": "memory_20260716185145_27541e",
+    "memoryContentHash": "ae3057ec74f44f7589a804f7d67bb20f40e7ebdd4e7e82acb158e96962f9bf81",
+    "memoryId": "memory_20260716191557_498987",
     "memoryRollbackStatus": "memory-deleted",
     "rollbackAction": "delete-memory-entry",
     "rollbackStatus": "completed",
     "scope": "mission",
-    "scopeId": "mission_20260716185145_cc20de",
+    "scopeId": "mission_20260716191556_c950b7",
     "target": "memory",
-    "verificationId": "learningcandidate_20260716185145_15d9e0:promotion-verification:approve",
+    "verificationId": "learningcandidate_20260716191556_5fef25:promotion-verification:approve",
     "verificationStatus": "passed"
   },
   "qualityBoundary": {
@@ -57,8 +57,8 @@
         "plannerApplied": false
       },
       "artifacts": {
-        "deliverableHash": "fcfa2b740880519e0ae4733adde43bb99898f5a9efa5e1c5c5ed377936a8c1e7",
-        "plannerHash": "104b67ef48bd5b621d1e72c8b055c4f0ff95ae9a237e49e523698c93d708fe6c",
+        "deliverableHash": "36ade05990b3202ab7d1151b392f5f6256d1563c36e999d141ac95e431141595",
+        "plannerHash": "c5c5df576f41016215b2fe0d3a70877e0a16860640a9d9732a4a951011fbf2f7",
         "retrievalHash": null
       },
       "externalProviderCallCount": 0,
@@ -72,7 +72,7 @@
         "sourceId": ""
       },
       "reviewerVerdict": "pass",
-      "sessionId": "session_20260716185145_431e91",
+      "sessionId": "session_20260716191556_41c21b",
       "status": "completed"
     },
     "afterPromotion": {
@@ -82,22 +82,22 @@
         "plannerApplied": true
       },
       "artifacts": {
-        "deliverableHash": "6df04f4818eb7ede96d5dbf6070c96b9f4df6082021f2f5db104f4433a371994",
-        "plannerHash": "30cb4d87906638af53881047690f90c5b7c16778d3902f1d04c38ad195e7c601",
-        "retrievalHash": "fbed39cc94b4ddcff0b6af700f81b7918317e5bf0e68c3a2aad63200cc8c609c"
+        "deliverableHash": "cad233c149b86b6d737f1bb3fee1c1b62b9a61f3417748542fb3dfd9eff0616c",
+        "plannerHash": "e75a59483a311dba7ff738df7412d424bccdd48e704102959bcd698fabcadf01",
+        "retrievalHash": "f617010352e9035e6dd8ad79996dcdbb0b8f5ee7b2e9e4b68fc1bf72698ff718"
       },
       "externalProviderCallCount": 0,
       "learningMemoryPresent": true,
       "providerId": "stub",
       "retrieval": {
-        "contentHash": "f97fa9fb57b7358f3a867843598352f6020b90ae307c0113793a4df515296894",
+        "contentHash": "ae3057ec74f44f7589a804f7d67bb20f40e7ebdd4e7e82acb158e96962f9bf81",
         "matchTermCount": 4,
         "scope": "mission",
-        "scopeId": "mission_20260716185145_cc20de",
-        "sourceId": "memory_20260716185145_27541e"
+        "scopeId": "mission_20260716191556_c950b7",
+        "sourceId": "memory_20260716191557_498987"
       },
       "reviewerVerdict": "pass",
-      "sessionId": "session_20260716185145_aa8626",
+      "sessionId": "session_20260716191557_48d869",
       "status": "completed"
     },
     "afterRollback": {
@@ -107,8 +107,8 @@
         "plannerApplied": false
       },
       "artifacts": {
-        "deliverableHash": "fcfa2b740880519e0ae4733adde43bb99898f5a9efa5e1c5c5ed377936a8c1e7",
-        "plannerHash": "104b67ef48bd5b621d1e72c8b055c4f0ff95ae9a237e49e523698c93d708fe6c",
+        "deliverableHash": "36ade05990b3202ab7d1151b392f5f6256d1563c36e999d141ac95e431141595",
+        "plannerHash": "c5c5df576f41016215b2fe0d3a70877e0a16860640a9d9732a4a951011fbf2f7",
         "retrievalHash": null
       },
       "externalProviderCallCount": 0,
@@ -122,12 +122,12 @@
         "sourceId": ""
       },
       "reviewerVerdict": "pass",
-      "sessionId": "session_20260716185145_213488",
+      "sessionId": "session_20260716191557_64c08f",
       "status": "completed"
     }
   },
   "schemaVersion": "personal-ai-agent-approved-learning-rag-feedback/v1",
   "status": "approved-learning-rag-feedback-passed-local-only",
-  "evidenceHash": "dc2319c358745a1033cc6db9186b95b0408e0a09fe56ebe8cd06d67b266fab10",
-  "id": "approved-learning-rag-feedback-dc2319c358745a1033cc6db9186b95b0408e0a09fe56ebe8cd06d67b266fab10"
+  "evidenceHash": "c9297c28df194515a052d69fbd3e73a20a42d25abe32e7adcfbee0e7c43552df",
+  "id": "approved-learning-rag-feedback-c9297c28df194515a052d69fbd3e73a20a42d25abe32e7adcfbee0e7c43552df"
 }

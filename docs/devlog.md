@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Multi-scenario Approved Learning Feedback Quality
+
+- replayed three independent same-workspace missions through baseline, simultaneous approved-memory application, and rollback for nine distinct credential-free stub sessions
+- applied the existing Q1 answer-quality gate to actual retrieval and deliverable observations, changing case pass from 0/3 to 3/3 and back to 0/3 while excluding two foreign mission-memory candidates in every promoted case
+- restored each planner and deliverable to its exact baseline hash after rollback, kept reviewer failures and external provider calls at zero, and left cross-mission generalization, workspace/user personalization, general answer quality, and actual model training unproven
+
 ## 2026-07-17 Approved Learning RAG Feedback Loop
 
 - replayed one credential-free stub mission before promotion, after explicit mission-memory approval, and after rollback to prove the existing learning and retrieval paths form one reversible feedback loop

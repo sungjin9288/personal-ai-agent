@@ -104,6 +104,7 @@
 - 완료: R15 shadow cache process isolation에서 concurrent child process 2개와 restarted process 1개의 cold miss·local hit·identity 분리·empty environment forwarding·shutdown close를 actual local evidence로 검증
 - 완료: R16 shadow cache termination recovery and bounded soak에서 warm worker SIGKILL 뒤 cold recovery, 16-entry·48-pair soak, 32 eviction, heap/RSS local regression gate와 shutdown close를 actual local evidence로 검증
 - 완료: P1 approved learning RAG feedback에서 explicit promotion 전·후·rollback 동일 mission을 재생해 memory provenance, retrieval match 4개, planner step 3→4→3, reviewer pass와 exact baseline artifact 복원을 검증
+- 완료: P2 multi-scenario learning feedback quality에서 같은 workspace의 세 mission과 9 session을 재생해 Q1 case pass 0/3→3/3→0/3, 사례별 foreign memory 2개 중 retrieved 0, reviewer pass와 exact rollback artifact 복원을 검증
 - 외부 승인 필요: local reranker provider-input activation, production latency·concurrency 한도, long soak·thermal telemetry, license·OS egress isolation, rollback owner
 - 완료: credential-free answer quality evaluator와 retrieval·citation·reviewer regression gate
 - 완료: store와 공개 retrieval payload를 바꾸지 않고 source hash·revision·scope·provenance를 보존하는 RAG corpus contract

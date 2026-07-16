@@ -70,7 +70,7 @@ assert.doesNotMatch(evidenceText, /Qwen RESEARCH LICENSE AGREEMENT Release Date/
 assert.doesNotMatch(evidenceText, /sk-|OPENAI_API_KEY|ANTHROPIC_API_KEY/);
 
 for (const term of [
-  'status: approved-learning-rag-feedback-current',
+  'status: approved-learning-feedback-quality-current',
   '| R6 Local embedding model qualification | 완료 |',
   'actualLocalEmbeddingModelQualityValidated: true',
   'actualLocalEmbeddingModelQualified: false',

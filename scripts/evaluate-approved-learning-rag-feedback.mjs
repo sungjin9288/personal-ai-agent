@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -7,7 +6,15 @@ import {
   assertApprovedLearningRagFeedbackEvidence,
   buildApprovedLearningRagFeedbackEvidence,
 } from '../src/core/approved-learning-rag-feedback.mjs';
-import { runCli } from './cli-test-helpers.mjs';
+import {
+  approveFeedbackMemory,
+  createFeedbackMission,
+  createFeedbackWorkspace,
+  hashText,
+  observeFeedbackRun,
+  rollbackFeedbackMemory,
+  runFeedbackMission,
+} from './approved-learning-feedback-runtime.mjs';
 
 const repoDir = process.cwd();
 const fixturePath = path.join(repoDir, 'fixtures', 'approved-learning-rag-feedback-cases-v1.json');
@@ -30,96 +37,71 @@ if (
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-learning-rag-feedback-'));
 let evidence;
 try {
-  const workspacePath = path.join(tempRoot, 'workspace');
-  fs.mkdirSync(workspacePath, { recursive: true });
-  const workspace = runCli({
+  const workspace = createFeedbackWorkspace({
+    name: 'approved-learning-rag-feedback',
     rootDir: tempRoot,
-    args: ['workspace', 'add', workspacePath, '--name', 'approved-learning-rag-feedback'],
   });
-  const mission = runCli({
+  const mission = createFeedbackMission({
     rootDir: tempRoot,
-    args: [
-      'mission',
-      'create',
-      '--workspace',
-      workspace.id,
-      '--mode',
-      testCase.mode,
-      '--deliverable',
-      testCase.deliverableType,
-      '--title',
-      testCase.title,
-      '--objective',
-      testCase.objective,
-    ],
+    testCase,
+    workspaceId: workspace.id,
   });
 
-  const beforeRun = runStubMission({ missionId: mission.id, rootDir: tempRoot });
-  const beforePromotion = observeRun({
+  const beforeRun = runFeedbackMission({
+    label: 'P1',
+    missionId: mission.id,
+    rootDir: tempRoot,
+  });
+  const beforePromotion = observeFeedbackRun({
     expectedPlanStep: testCase.expectedPlanStep,
+    label: 'P1',
     memoryContent: '',
     memoryId: '',
     rootDir: tempRoot,
     sessionId: beforeRun.sessionId,
-  });
+  }).summary;
 
-  const promotionResult = runCli({
+  const { memory } = approveFeedbackMemory({
+    candidateId: beforeRun.learningCandidateId,
+    note: testCase.promotionNote,
     rootDir: tempRoot,
-    args: [
-      'action',
-      'resolve-learning-promotion',
-      beforeRun.learningCandidateId,
-      '--decision',
-      'approve',
-      '--target',
-      'memory',
-      '--scope',
-      'mission',
-      '--note',
-      testCase.promotionNote,
-    ],
   });
-  const memory = promotionResult.memoryEntry;
-  if (
-    promotionResult.learningCandidate?.promotionStatus !== 'promoted' ||
-    promotionResult.learningCandidate?.promotionVerification?.status !== 'passed' ||
-    !memory?.id ||
-    !memory.content
-  ) {
-    throw new Error('P1 learning promotion did not create verified mission memory.');
-  }
 
-  const afterRun = runStubMission({ missionId: mission.id, rootDir: tempRoot });
-  const afterPromotion = observeRun({
+  const afterRun = runFeedbackMission({
+    label: 'P1',
+    missionId: mission.id,
+    rootDir: tempRoot,
+  });
+  const afterPromotion = observeFeedbackRun({
     expectedPlanStep: testCase.expectedPlanStep,
+    label: 'P1',
     memoryContent: memory.content,
     memoryId: memory.id,
     rootDir: tempRoot,
     sessionId: afterRun.sessionId,
-  });
+  }).summary;
   if (afterPromotion.retrieval.matchTermCount < testCase.minimumRetrievalMatchTermCount) {
     throw new Error('P1 promoted memory retrieval did not meet the fixture term-match gate.');
   }
 
-  const rollbackResult = runCli({
+  const rolledBackCandidate = rollbackFeedbackMemory({
+    candidateId: beforeRun.learningCandidateId,
+    note: 'Rollback the promoted memory after the local feedback-loop evaluation.',
     rootDir: tempRoot,
-    args: [
-      'action',
-      'rollback-learning-promotion',
-      beforeRun.learningCandidateId,
-      '--note',
-      'Rollback the promoted memory after the local feedback-loop evaluation.',
-    ],
   });
-  const rollbackRun = runStubMission({ missionId: mission.id, rootDir: tempRoot });
-  const afterRollback = observeRun({
+  const rollbackRun = runFeedbackMission({
+    label: 'P1',
+    missionId: mission.id,
+    rootDir: tempRoot,
+  });
+  const afterRollback = observeFeedbackRun({
     expectedPlanStep: testCase.expectedPlanStep,
+    label: 'P1',
     memoryContent: memory.content,
     memoryId: memory.id,
     rootDir: tempRoot,
     sessionId: rollbackRun.sessionId,
-  });
-  const rolledBackCandidate = rollbackResult.learningCandidate;
+  }).summary;
 
   evidence = buildApprovedLearningRagFeedbackEvidence({
     fixtureBinding: {
@@ -184,100 +166,6 @@ console.log(JSON.stringify({
   productionReadyClaim: false,
   rollbackPlanStepCount: evidence.runs.afterRollback.adaptation.planStepCount,
 }, null, 2));
-
-function runStubMission({ missionId, rootDir }) {
-  const result = runCli({
-    rootDir,
-    args: ['mission', 'run', missionId, '--provider', 'stub'],
-  });
-  if (
-    result.status !== 'completed' ||
-    result.provider !== 'stub' ||
-    result.reviewerVerdict !== 'pass' ||
-    !result.learningCandidateId
-  ) {
-    throw new Error('P1 stub mission did not complete with reviewer pass and learning candidate.');
-  }
-  return result;
-}
-
-function observeRun({ expectedPlanStep, memoryContent, memoryId, rootDir, sessionId }) {
-  const state = JSON.parse(fs.readFileSync(path.join(rootDir, 'var', 'state.json'), 'utf8'));
-  const session = state.sessions.find((item) => item.id === sessionId);
-  const candidate = state.learningCandidates.find((item) => item.sessionId === sessionId);
-  const plannerRun = state.agentRuns.find((item) => item.sessionId === sessionId && item.role === 'planner');
-  const executorRun = state.agentRuns.find((item) => item.sessionId === sessionId && item.role === 'executor');
-  const artifacts = state.artifacts.filter((item) => item.sessionId === sessionId);
-  const plannerArtifact = artifacts.find((item) => item.fileName === 'planner-plan.md');
-  const deliverableArtifact = artifacts.find(
-    (item) => item.kind === 'deliverable' && item.role === 'executor',
-  );
-  const retrievalArtifact = artifacts.find((item) => item.fileName === 'planner-retrieval.md') || null;
-  if (!session || !candidate || !plannerRun || !executorRun || !plannerArtifact || !deliverableArtifact) {
-    throw new Error('P1 mission run evidence is incomplete.');
-  }
-  const plannerContent = fs.readFileSync(plannerArtifact.path, 'utf8');
-  const deliverableContent = fs.readFileSync(deliverableArtifact.path, 'utf8');
-  const retrievalContent = retrievalArtifact ? fs.readFileSync(retrievalArtifact.path, 'utf8') : '';
-  const externalProviderCallCount = state.agentRuns.filter(
-    (item) => item.sessionId === sessionId && item.providerId !== 'stub',
-  ).length;
-  const adaptationNotes = Array.isArray(plannerRun.adaptationNotes)
-    ? plannerRun.adaptationNotes
-    : [];
-  const planSteps = Array.isArray(plannerRun.planSteps) ? plannerRun.planSteps : [];
-  const expectedMemoryApplied = Boolean(memoryId && memoryContent);
-
-  return {
-    adaptation: {
-      deliverableApplied: expectedMemoryApplied
-        ? deliverableContent.includes('## Prior Memory Signals') && deliverableContent.includes(memoryContent)
-        : false,
-      planStepCount: planSteps.length,
-      plannerApplied: expectedMemoryApplied
-        ? adaptationNotes.includes(memoryContent) && planSteps.includes(expectedPlanStep)
-        : false,
-    },
-    artifacts: {
-      deliverableHash: hashText(deliverableContent),
-      plannerHash: hashText(plannerContent),
-      retrievalHash: retrievalContent ? hashText(retrievalContent) : null,
-    },
-    externalProviderCallCount,
-    learningMemoryPresent: memoryId
-      ? state.memoryEntries.some((item) => item.id === memoryId && item.content === memoryContent)
-      : false,
-    providerId: session.provider,
-    retrieval: parseRetrieval(retrievalContent),
-    reviewerVerdict: candidate.evidence?.reviewerVerdict,
-    sessionId,
-    status: session.status,
-  };
-}
-
-function parseRetrieval(content) {
-  if (!content) {
-    return {
-      contentHash: null,
-      matchTermCount: 0,
-      scope: '',
-      scopeId: '',
-      sourceId: '',
-    };
-  }
-  const scope = content.match(/\n  - scope: ([^/\n]+)\/([^\n]+)/);
-  return {
-    contentHash: content.match(/\n  - contentHash: ([a-f0-9]{64})/)?.[1] || null,
-    matchTermCount: Number(content.match(/\n  - matchTermCount: (\d+)/)?.[1] || 0),
-    scope: scope?.[1] || '',
-    scopeId: scope?.[2] || '',
-    sourceId: content.match(/"sourceId":"([^"]+)"/)?.[1] || '',
-  };
-}
-
-function hashText(value) {
-  return createHash('sha256').update(String(value)).digest('hex');
-}
 
 function parseOptions(args) {
   const values = new Map();

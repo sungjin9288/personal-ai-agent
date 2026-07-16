@@ -96,6 +96,8 @@
     "smoke:memory-retrieval-quality-fixture": "node scripts/smoke-memory-retrieval-quality-fixture.mjs",
     "evaluate:approved-learning-rag-feedback": "node scripts/evaluate-approved-learning-rag-feedback.mjs",
     "smoke:approved-learning-rag-feedback": "node scripts/smoke-approved-learning-rag-feedback.mjs",
+    "evaluate:approved-learning-feedback-quality": "node scripts/evaluate-approved-learning-feedback-quality.mjs",
+    "smoke:approved-learning-feedback-quality": "node scripts/smoke-approved-learning-feedback-quality.mjs",
     "smoke:answer-quality-evaluation": "node scripts/smoke-answer-quality-evaluation.mjs",
     "smoke:retrieval-corpus-contract": "node scripts/smoke-retrieval-corpus-contract.mjs",
     "smoke:retrieval-quality-evaluation": "node scripts/smoke-retrieval-quality-evaluation.mjs",

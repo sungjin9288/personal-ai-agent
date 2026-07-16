@@ -1,0 +1,704 @@
+{
+  "actualApprovedLearningFeedbackQualityValidated": true,
+  "costFree": true,
+  "evaluations": {
+    "afterPromotion": {
+      "caseResults": [
+        {
+          "failureChecks": [],
+          "id": "execution-verification-path",
+          "metrics": {
+            "citationGroundingRate": 1,
+            "expectedSourceCitationRate": 1,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 1,
+            "unsupportedCitationRate": 0
+          },
+          "status": "passed"
+        },
+        {
+          "failureChecks": [],
+          "id": "reviewer-evidence-recovery",
+          "metrics": {
+            "citationGroundingRate": 1,
+            "expectedSourceCitationRate": 1,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 1,
+            "unsupportedCitationRate": 0
+          },
+          "status": "passed"
+        },
+        {
+          "failureChecks": [],
+          "id": "incident-handoff-discipline",
+          "metrics": {
+            "citationGroundingRate": 1,
+            "expectedSourceCitationRate": 1,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 1,
+            "unsupportedCitationRate": 0
+          },
+          "status": "passed"
+        }
+      ],
+      "schemaVersion": "personal-ai-agent-answer-quality-evaluation/v1",
+      "status": "passed",
+      "summary": {
+        "caseCount": 3,
+        "failedCaseCount": 0,
+        "metrics": {
+          "casePassRate": 1,
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "passedCaseCount": 3,
+        "reviewerFailureCount": 0
+      },
+      "evaluationHash": "39b5e088193f18513d2072cfa6fe34fc6b1650664a3d25bef223e2dec4c2acb4"
+    },
+    "afterRollback": {
+      "caseResults": [
+        {
+          "failureChecks": [
+            "retrieval-hit-rate",
+            "expected-source-citation-rate",
+            "required-term-coverage"
+          ],
+          "id": "execution-verification-path",
+          "metrics": {
+            "citationGroundingRate": null,
+            "expectedSourceCitationRate": 0,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 0.6667,
+            "retrievalHitRate": 0,
+            "unsupportedCitationRate": 0
+          },
+          "status": "failed"
+        },
+        {
+          "failureChecks": [
+            "retrieval-hit-rate",
+            "expected-source-citation-rate"
+          ],
+          "id": "reviewer-evidence-recovery",
+          "metrics": {
+            "citationGroundingRate": null,
+            "expectedSourceCitationRate": 0,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 0,
+            "unsupportedCitationRate": 0
+          },
+          "status": "failed"
+        },
+        {
+          "failureChecks": [
+            "retrieval-hit-rate",
+            "expected-source-citation-rate"
+          ],
+          "id": "incident-handoff-discipline",
+          "metrics": {
+            "citationGroundingRate": null,
+            "expectedSourceCitationRate": 0,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 0,
+            "unsupportedCitationRate": 0
+          },
+          "status": "failed"
+        }
+      ],
+      "schemaVersion": "personal-ai-agent-answer-quality-evaluation/v1",
+      "status": "failed",
+      "summary": {
+        "caseCount": 3,
+        "failedCaseCount": 3,
+        "metrics": {
+          "casePassRate": 0,
+          "citationGroundingRate": null,
+          "expectedSourceCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 0.8889,
+          "retrievalHitRate": 0,
+          "unsupportedCitationRate": 0
+        },
+        "passedCaseCount": 0,
+        "reviewerFailureCount": 0
+      },
+      "evaluationHash": "0caaf5ea7da1583f9dc99acfa889f4a0eaec4b9e6b3aa7f41656b63c1cdadb83"
+    },
+    "beforePromotion": {
+      "caseResults": [
+        {
+          "failureChecks": [
+            "retrieval-hit-rate",
+            "expected-source-citation-rate",
+            "required-term-coverage"
+          ],
+          "id": "execution-verification-path",
+          "metrics": {
+            "citationGroundingRate": null,
+            "expectedSourceCitationRate": 0,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 0.6667,
+            "retrievalHitRate": 0,
+            "unsupportedCitationRate": 0
+          },
+          "status": "failed"
+        },
+        {
+          "failureChecks": [
+            "retrieval-hit-rate",
+            "expected-source-citation-rate"
+          ],
+          "id": "reviewer-evidence-recovery",
+          "metrics": {
+            "citationGroundingRate": null,
+            "expectedSourceCitationRate": 0,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 0,
+            "unsupportedCitationRate": 0
+          },
+          "status": "failed"
+        },
+        {
+          "failureChecks": [
+            "retrieval-hit-rate",
+            "expected-source-citation-rate"
+          ],
+          "id": "incident-handoff-discipline",
+          "metrics": {
+            "citationGroundingRate": null,
+            "expectedSourceCitationRate": 0,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 0,
+            "unsupportedCitationRate": 0
+          },
+          "status": "failed"
+        }
+      ],
+      "schemaVersion": "personal-ai-agent-answer-quality-evaluation/v1",
+      "status": "failed",
+      "summary": {
+        "caseCount": 3,
+        "failedCaseCount": 3,
+        "metrics": {
+          "casePassRate": 0,
+          "citationGroundingRate": null,
+          "expectedSourceCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 0.8889,
+          "retrievalHitRate": 0,
+          "unsupportedCitationRate": 0
+        },
+        "passedCaseCount": 0,
+        "reviewerFailureCount": 0
+      },
+      "evaluationHash": "0caaf5ea7da1583f9dc99acfa889f4a0eaec4b9e6b3aa7f41656b63c1cdadb83"
+    }
+  },
+  "externalProviderCalls": "none",
+  "feedbackCases": [
+    {
+      "actualApprovedLearningRagFeedbackValidated": true,
+      "costFree": true,
+      "externalProviderCalls": "none",
+      "fixtureBinding": {
+        "caseId": "execution-verification-path",
+        "expectedPlanStepHash": "33cbb1e2dc4083e7cea53965a8376e4db07d0d030333a5e6e48af3f74f9e7a05",
+        "fixtureHash": "c9e9f920b57f3f98dc673461ec95dc98b9ed3dc1bef6a8b6b1f1c0d54b1ee507",
+        "objectiveHash": "0115ac3755ca755e3686fab459aca21e247678ae4488730f3582e11132ff9490",
+        "promotionNoteHash": "7723d51abb544a23860f6db3fe8836f53bbdd2dd2efd2184ab19842a75f64050",
+        "bindingHash": "61946b45e0b2762f72e9c6931e661741aa148418d75237835dd7ab579c79e72e"
+      },
+      "mission": {
+        "id": "mission_20260716192703_664d3c",
+        "objectiveHash": "0115ac3755ca755e3686fab459aca21e247678ae4488730f3582e11132ff9490",
+        "workspaceId": "workspace_20260716192703_431c14"
+      },
+      "observedAt": "2026-07-16T19:27:04.322Z",
+      "productionReadyClaim": false,
+      "promotion": {
+        "candidateId": "learningcandidate_20260716192703_39d239",
+        "finalStatus": "rolled-back",
+        "memoryContentHash": "f42fa9cbed74c66992ccd61524ce0d6804480d582007a3aad912ca66559e0a9a",
+        "memoryId": "memory_20260716192703_e92b85",
+        "memoryRollbackStatus": "memory-deleted",
+        "rollbackAction": "delete-memory-entry",
+        "rollbackStatus": "completed",
+        "scope": "mission",
+        "scopeId": "mission_20260716192703_664d3c",
+        "target": "memory",
+        "verificationId": "learningcandidate_20260716192703_39d239:promotion-verification:approve",
+        "verificationStatus": "passed"
+      },
+      "qualityBoundary": {
+        "actualModelTrainingExecuted": false,
+        "crossMissionGeneralizationValidated": false,
+        "generalAnswerQualityImprovementValidated": false,
+        "missionScopedFeedbackApplicationValidated": true
+      },
+      "results": {
+        "baselineClean": true,
+        "distinctSessionsPassed": true,
+        "externalProviderIsolationPassed": true,
+        "fixtureBindingPassed": true,
+        "plannerAndDeliverableAdapted": true,
+        "promotionVerified": true,
+        "retrievalLineageBound": true,
+        "reviewerPassPreserved": true,
+        "rollbackArtifactParity": true,
+        "rollbackRestoredBaseline": true
+      },
+      "runs": {
+        "beforePromotion": {
+          "adaptation": {
+            "deliverableApplied": false,
+            "planStepCount": 3,
+            "plannerApplied": false
+          },
+          "artifacts": {
+            "deliverableHash": "db678d626de73f1540669c6902e23baa7e7d086d3a638892be0793536467e32b",
+            "plannerHash": "2871a4dc93b44758f9841a6cf90c73bdd57248341c911a37c7fc97ea18bad99f",
+            "retrievalHash": null
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": false,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": null,
+            "matchTermCount": 0,
+            "scope": "",
+            "scopeId": "",
+            "sourceId": ""
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192703_bd1edd",
+          "status": "completed"
+        },
+        "afterPromotion": {
+          "adaptation": {
+            "deliverableApplied": true,
+            "planStepCount": 4,
+            "plannerApplied": true
+          },
+          "artifacts": {
+            "deliverableHash": "e57022abb9dbf977baa63750cfb2332a8f726136c28e050a1bd8524d87de7dc4",
+            "plannerHash": "d2b4a0805df26d60ac2bbea902877e60a574eb495bb5428a9a18dabc13d65dbc",
+            "retrievalHash": "5f340757151c0036854545fe7615eb36e139ddfe74c139fb265678efc3748138"
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": true,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": "f42fa9cbed74c66992ccd61524ce0d6804480d582007a3aad912ca66559e0a9a",
+            "matchTermCount": 7,
+            "scope": "mission",
+            "scopeId": "mission_20260716192703_664d3c",
+            "sourceId": "memory_20260716192703_e92b85"
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192703_f9dff7",
+          "status": "completed"
+        },
+        "afterRollback": {
+          "adaptation": {
+            "deliverableApplied": false,
+            "planStepCount": 3,
+            "plannerApplied": false
+          },
+          "artifacts": {
+            "deliverableHash": "db678d626de73f1540669c6902e23baa7e7d086d3a638892be0793536467e32b",
+            "plannerHash": "2871a4dc93b44758f9841a6cf90c73bdd57248341c911a37c7fc97ea18bad99f",
+            "retrievalHash": null
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": false,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": null,
+            "matchTermCount": 0,
+            "scope": "",
+            "scopeId": "",
+            "sourceId": ""
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192704_08a7c2",
+          "status": "completed"
+        }
+      },
+      "schemaVersion": "personal-ai-agent-approved-learning-rag-feedback/v1",
+      "status": "approved-learning-rag-feedback-passed-local-only",
+      "evidenceHash": "9c8f16ffef038bc40b0d1c6fe9b729d0d69b4d7db0da66385af8924f562ab008",
+      "id": "approved-learning-rag-feedback-9c8f16ffef038bc40b0d1c6fe9b729d0d69b4d7db0da66385af8924f562ab008"
+    },
+    {
+      "actualApprovedLearningRagFeedbackValidated": true,
+      "costFree": true,
+      "externalProviderCalls": "none",
+      "fixtureBinding": {
+        "caseId": "reviewer-evidence-recovery",
+        "expectedPlanStepHash": "bfd18da9990d6bbb90ef46b0dc98bafe076850dc38fb288f05b770ff0b480d08",
+        "fixtureHash": "c9e9f920b57f3f98dc673461ec95dc98b9ed3dc1bef6a8b6b1f1c0d54b1ee507",
+        "objectiveHash": "228a495ad1db202fca3a5f19c4980c86fb406de3e484a62141818c603c58699c",
+        "promotionNoteHash": "5954f46b9843610c794245039e15197922d486e4ab340edc2646dc4c69c936b5",
+        "bindingHash": "2e9b8b90fcad6a688f5698258d824f426695e033a405ef7599052be9ff0e491c"
+      },
+      "mission": {
+        "id": "mission_20260716192703_e708a0",
+        "objectiveHash": "228a495ad1db202fca3a5f19c4980c86fb406de3e484a62141818c603c58699c",
+        "workspaceId": "workspace_20260716192703_431c14"
+      },
+      "observedAt": "2026-07-16T19:27:04.323Z",
+      "productionReadyClaim": false,
+      "promotion": {
+        "candidateId": "learningcandidate_20260716192703_736c76",
+        "finalStatus": "rolled-back",
+        "memoryContentHash": "d3c0d9b7ab917b5fe0eb8475cdcdbed16ab21afa1c280da4ccb788c0800e111d",
+        "memoryId": "memory_20260716192703_786f3b",
+        "memoryRollbackStatus": "memory-deleted",
+        "rollbackAction": "delete-memory-entry",
+        "rollbackStatus": "completed",
+        "scope": "mission",
+        "scopeId": "mission_20260716192703_e708a0",
+        "target": "memory",
+        "verificationId": "learningcandidate_20260716192703_736c76:promotion-verification:approve",
+        "verificationStatus": "passed"
+      },
+      "qualityBoundary": {
+        "actualModelTrainingExecuted": false,
+        "crossMissionGeneralizationValidated": false,
+        "generalAnswerQualityImprovementValidated": false,
+        "missionScopedFeedbackApplicationValidated": true
+      },
+      "results": {
+        "baselineClean": true,
+        "distinctSessionsPassed": true,
+        "externalProviderIsolationPassed": true,
+        "fixtureBindingPassed": true,
+        "plannerAndDeliverableAdapted": true,
+        "promotionVerified": true,
+        "retrievalLineageBound": true,
+        "reviewerPassPreserved": true,
+        "rollbackArtifactParity": true,
+        "rollbackRestoredBaseline": true
+      },
+      "runs": {
+        "beforePromotion": {
+          "adaptation": {
+            "deliverableApplied": false,
+            "planStepCount": 3,
+            "plannerApplied": false
+          },
+          "artifacts": {
+            "deliverableHash": "210eff2709ca59f7b9f84d38261b1164929b401b356ba8e720464381effb7d37",
+            "plannerHash": "32398decc5a7907d7c09462624838850c8302fba5264d4f95fe7483dcf3e5dc5",
+            "retrievalHash": null
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": false,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": null,
+            "matchTermCount": 0,
+            "scope": "",
+            "scopeId": "",
+            "sourceId": ""
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192703_fe6493",
+          "status": "completed"
+        },
+        "afterPromotion": {
+          "adaptation": {
+            "deliverableApplied": true,
+            "planStepCount": 4,
+            "plannerApplied": true
+          },
+          "artifacts": {
+            "deliverableHash": "57e2da759d5b00ac017883cd712a69a82fcb5b46f8717bbf1f6f7c1bb5133782",
+            "plannerHash": "c2c350ad0e6658e6ee21d7b3b4c0243a3596433af4933c4c780179c3eb38297d",
+            "retrievalHash": "981f31b0e03f05b594a26f2ae9ef433e6b3af9a392c3cd591e0f3263967224bc"
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": true,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": "d3c0d9b7ab917b5fe0eb8475cdcdbed16ab21afa1c280da4ccb788c0800e111d",
+            "matchTermCount": 7,
+            "scope": "mission",
+            "scopeId": "mission_20260716192703_e708a0",
+            "sourceId": "memory_20260716192703_786f3b"
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192703_f193bd",
+          "status": "completed"
+        },
+        "afterRollback": {
+          "adaptation": {
+            "deliverableApplied": false,
+            "planStepCount": 3,
+            "plannerApplied": false
+          },
+          "artifacts": {
+            "deliverableHash": "210eff2709ca59f7b9f84d38261b1164929b401b356ba8e720464381effb7d37",
+            "plannerHash": "32398decc5a7907d7c09462624838850c8302fba5264d4f95fe7483dcf3e5dc5",
+            "retrievalHash": null
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": false,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": null,
+            "matchTermCount": 0,
+            "scope": "",
+            "scopeId": "",
+            "sourceId": ""
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192704_96291c",
+          "status": "completed"
+        }
+      },
+      "schemaVersion": "personal-ai-agent-approved-learning-rag-feedback/v1",
+      "status": "approved-learning-rag-feedback-passed-local-only",
+      "evidenceHash": "16e94275ef883ffb8bbf7409db0ab7040fea110d9ebff165b20cf9a84484404e",
+      "id": "approved-learning-rag-feedback-16e94275ef883ffb8bbf7409db0ab7040fea110d9ebff165b20cf9a84484404e"
+    },
+    {
+      "actualApprovedLearningRagFeedbackValidated": true,
+      "costFree": true,
+      "externalProviderCalls": "none",
+      "fixtureBinding": {
+        "caseId": "incident-handoff-discipline",
+        "expectedPlanStepHash": "bfd18da9990d6bbb90ef46b0dc98bafe076850dc38fb288f05b770ff0b480d08",
+        "fixtureHash": "c9e9f920b57f3f98dc673461ec95dc98b9ed3dc1bef6a8b6b1f1c0d54b1ee507",
+        "objectiveHash": "ff917e28d71152d958528f24ae0452f1c37483eca676abbb622c1df13de78965",
+        "promotionNoteHash": "292ca672adc48373b7d7539c1057644fcf4ff3f37ef5e1555000d1c9c16fc592",
+        "bindingHash": "503112be395a5b908eb8bad167f7c5fbd58c288110903e4446820b5302c5ba01"
+      },
+      "mission": {
+        "id": "mission_20260716192703_312493",
+        "objectiveHash": "ff917e28d71152d958528f24ae0452f1c37483eca676abbb622c1df13de78965",
+        "workspaceId": "workspace_20260716192703_431c14"
+      },
+      "observedAt": "2026-07-16T19:27:04.323Z",
+      "productionReadyClaim": false,
+      "promotion": {
+        "candidateId": "learningcandidate_20260716192703_35c951",
+        "finalStatus": "rolled-back",
+        "memoryContentHash": "a1741c718268f41da9a28b8173f697c29bf6c194ae8ad2bb3ac0cfda96ebfe99",
+        "memoryId": "memory_20260716192703_ee1ead",
+        "memoryRollbackStatus": "memory-deleted",
+        "rollbackAction": "delete-memory-entry",
+        "rollbackStatus": "completed",
+        "scope": "mission",
+        "scopeId": "mission_20260716192703_312493",
+        "target": "memory",
+        "verificationId": "learningcandidate_20260716192703_35c951:promotion-verification:approve",
+        "verificationStatus": "passed"
+      },
+      "qualityBoundary": {
+        "actualModelTrainingExecuted": false,
+        "crossMissionGeneralizationValidated": false,
+        "generalAnswerQualityImprovementValidated": false,
+        "missionScopedFeedbackApplicationValidated": true
+      },
+      "results": {
+        "baselineClean": true,
+        "distinctSessionsPassed": true,
+        "externalProviderIsolationPassed": true,
+        "fixtureBindingPassed": true,
+        "plannerAndDeliverableAdapted": true,
+        "promotionVerified": true,
+        "retrievalLineageBound": true,
+        "reviewerPassPreserved": true,
+        "rollbackArtifactParity": true,
+        "rollbackRestoredBaseline": true
+      },
+      "runs": {
+        "beforePromotion": {
+          "adaptation": {
+            "deliverableApplied": false,
+            "planStepCount": 3,
+            "plannerApplied": false
+          },
+          "artifacts": {
+            "deliverableHash": "7c2bdeb783934db5d8cd6b8eee2e088ca90aaab7feddd6ef4b1706f7588158d6",
+            "plannerHash": "00d5cad943f2356387d7ff42d81da5cdc5b2aee541b1825d1f49bee8738ab2fa",
+            "retrievalHash": null
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": false,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": null,
+            "matchTermCount": 0,
+            "scope": "",
+            "scopeId": "",
+            "sourceId": ""
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192703_acc4b2",
+          "status": "completed"
+        },
+        "afterPromotion": {
+          "adaptation": {
+            "deliverableApplied": true,
+            "planStepCount": 4,
+            "plannerApplied": true
+          },
+          "artifacts": {
+            "deliverableHash": "e2b980c776e115a4df9b044eea11dfb877e73f69f33d388db1e3bb1cf2dc6891",
+            "plannerHash": "2ae2ae30c7064b0d696fae2f2f6be032563b546abdbf0bca2bf7e40f9c180710",
+            "retrievalHash": "7dad2da216b916fdc01dd7fe1851ee417f1b3dc22ec3af5ef3ea962c7107a0bf"
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": true,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": "a1741c718268f41da9a28b8173f697c29bf6c194ae8ad2bb3ac0cfda96ebfe99",
+            "matchTermCount": 9,
+            "scope": "mission",
+            "scopeId": "mission_20260716192703_312493",
+            "sourceId": "memory_20260716192703_ee1ead"
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192703_93c1c0",
+          "status": "completed"
+        },
+        "afterRollback": {
+          "adaptation": {
+            "deliverableApplied": false,
+            "planStepCount": 3,
+            "plannerApplied": false
+          },
+          "artifacts": {
+            "deliverableHash": "7c2bdeb783934db5d8cd6b8eee2e088ca90aaab7feddd6ef4b1706f7588158d6",
+            "plannerHash": "00d5cad943f2356387d7ff42d81da5cdc5b2aee541b1825d1f49bee8738ab2fa",
+            "retrievalHash": null
+          },
+          "externalProviderCallCount": 0,
+          "learningMemoryPresent": false,
+          "providerId": "stub",
+          "retrieval": {
+            "contentHash": null,
+            "matchTermCount": 0,
+            "scope": "",
+            "scopeId": "",
+            "sourceId": ""
+          },
+          "reviewerVerdict": "pass",
+          "sessionId": "session_20260716192704_efaa23",
+          "status": "completed"
+        }
+      },
+      "schemaVersion": "personal-ai-agent-approved-learning-rag-feedback/v1",
+      "status": "approved-learning-rag-feedback-passed-local-only",
+      "evidenceHash": "c16a18c751a3e4df33334371f9fc541663196cdd5f662b26fea134299cb381d2",
+      "id": "approved-learning-rag-feedback-c16a18c751a3e4df33334371f9fc541663196cdd5f662b26fea134299cb381d2"
+    }
+  ],
+  "fixtureBinding": {
+    "caseIds": [
+      "execution-verification-path",
+      "reviewer-evidence-recovery",
+      "incident-handoff-discipline"
+    ],
+    "fixtureHash": "c9e9f920b57f3f98dc673461ec95dc98b9ed3dc1bef6a8b6b1f1c0d54b1ee507",
+    "bindingHash": "a590ebaded19f8e736df3eaf76e925d811e9e297d798de35d293fb8757c82593"
+  },
+  "isolation": [
+    {
+      "caseId": "execution-verification-path",
+      "expectedMemoryId": "memory_20260716192703_e92b85",
+      "expectedMemorySourceCount": 1,
+      "foreignMemoryCandidateCount": 2,
+      "foreignMemoryIds": [
+        "memory_20260716192703_786f3b",
+        "memory_20260716192703_ee1ead"
+      ],
+      "foreignMemoryRetrievedCount": 0,
+      "retrievedExpectedMemorySourceCount": 1,
+      "retrievedMemoryIds": [
+        "memory_20260716192703_e92b85"
+      ]
+    },
+    {
+      "caseId": "reviewer-evidence-recovery",
+      "expectedMemoryId": "memory_20260716192703_786f3b",
+      "expectedMemorySourceCount": 1,
+      "foreignMemoryCandidateCount": 2,
+      "foreignMemoryIds": [
+        "memory_20260716192703_e92b85",
+        "memory_20260716192703_ee1ead"
+      ],
+      "foreignMemoryRetrievedCount": 0,
+      "retrievedExpectedMemorySourceCount": 1,
+      "retrievedMemoryIds": [
+        "memory_20260716192703_786f3b"
+      ]
+    },
+    {
+      "caseId": "incident-handoff-discipline",
+      "expectedMemoryId": "memory_20260716192703_ee1ead",
+      "expectedMemorySourceCount": 1,
+      "foreignMemoryCandidateCount": 2,
+      "foreignMemoryIds": [
+        "memory_20260716192703_e92b85",
+        "memory_20260716192703_786f3b"
+      ],
+      "foreignMemoryRetrievedCount": 0,
+      "retrievedExpectedMemorySourceCount": 1,
+      "retrievedMemoryIds": [
+        "memory_20260716192703_ee1ead"
+      ]
+    }
+  ],
+  "observedAt": "2026-07-16T19:27:04.323Z",
+  "productionReadyClaim": false,
+  "qualityBoundary": {
+    "actualModelTrainingExecuted": false,
+    "controlledMultiScenarioAnswerQualityValidated": true,
+    "crossMissionGeneralizationValidated": false,
+    "crossMissionIsolationValidated": true,
+    "generalAnswerQualityImprovementValidated": false,
+    "missionScopedFeedbackQualityValidated": true,
+    "workspacePersonalizationValidated": false
+  },
+  "results": {
+    "allFeedbackLoopsPassed": true,
+    "caseIdentityPassed": true,
+    "controlledQualityImprovementPassed": true,
+    "distinctIdentityPassed": true,
+    "externalProviderIsolationPassed": true,
+    "foreignMemoryIsolationPassed": true,
+    "reviewerPassPreserved": true,
+    "rollbackQualityParity": true
+  },
+  "schemaVersion": "personal-ai-agent-approved-learning-feedback-quality/v1",
+  "status": "approved-learning-feedback-quality-passed-local-only",
+  "evidenceHash": "66ecfd31290ed29ef24ddc4975c8528723548fe3ebe64c8063f0098f243c38e0",
+  "id": "approved-learning-feedback-quality-66ecfd31290ed29ef24ddc4975c8528723548fe3ebe64c8063f0098f243c38e0"
+}

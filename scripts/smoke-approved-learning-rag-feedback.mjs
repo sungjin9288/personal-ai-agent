@@ -80,6 +80,8 @@ for (const forbidden of [
 }
 
 const evaluatorSource = readRequiredFile('scripts/evaluate-approved-learning-rag-feedback.mjs');
+const runtimeHelperSource = readRequiredFile('scripts/approved-learning-feedback-runtime.mjs');
+const evaluatorRuntimeSource = `${evaluatorSource}\n${runtimeHelperSource}`;
 for (const term of [
   "'--provider', 'stub'",
   'resolve-learning-promotion',
@@ -87,12 +89,12 @@ for (const term of [
   'externalProviderCallCount',
   'fs.rmSync(tempRoot',
 ]) {
-  assert.ok(evaluatorSource.includes(term), `P1 evaluator missing ${term}`);
+  assert.ok(evaluatorRuntimeSource.includes(term), `P1 evaluator runtime missing ${term}`);
 }
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: approved-learning-rag-feedback-current',
+  'status: approved-learning-feedback-quality-current',
   '| P1 Approved learning RAG feedback | 완료 |',
   'npm run smoke:approved-learning-rag-feedback',
   'actualApprovedLearningRagFeedbackValidated: true',

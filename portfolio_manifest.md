@@ -58,6 +58,7 @@
 - evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json
 - evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json
 - evidence/output-artifacts/approved-learning-rag-feedback.json
+- evidence/output-artifacts/approved-learning-feedback-quality.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함
@@ -86,6 +87,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 2,390,889 bytes
-- 압축 파일 SHA-256: `17ec9b65d85570d214f2f27251bebfc652926f33085a26a22bd3085d7aa6ce3c`
+- 압축 파일 크기: 2,396,792 bytes
+- 압축 파일 SHA-256: `a26a2da7389e254692b4ff7ddd4c453b5b6e84f12b03a3aa254006cb88d26a2e`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

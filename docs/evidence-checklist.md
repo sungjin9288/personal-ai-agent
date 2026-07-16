@@ -41,6 +41,7 @@
 | Shadow cache process isolation | 완료 | `evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json`, `src/core/local-relevance-shadow-cache-process-isolation.mjs` | concurrent child process 2개와 restarted process 1개가 각자 cold inference 1·local hit 1, distinct identity, forwarded environment 0, shutdown entry 0을 verified by `npm run smoke:local-relevance-shadow-cache-process-isolation` |
 | Shadow cache termination and bounded soak | 완료 | `evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json`, `src/core/local-relevance-shadow-cache-termination-soak.mjs` | warm worker SIGKILL 뒤 recovery cold inference와 score parity, 16-entry cache의 48 miss·16 hit·32 eviction, heap/RSS local gate와 shutdown entry 0을 verified by `npm run smoke:local-relevance-shadow-cache-termination-soak` |
 | Approved learning RAG feedback | 완료 | `evidence/output-artifacts/approved-learning-rag-feedback.json`, `src/core/approved-learning-rag-feedback.mjs` | explicit mission-memory promotion 전·후·rollback에서 retrieval source/content hash, planner step 3→4→3, reviewer pass와 exact baseline artifact parity를 verified by `npm run smoke:approved-learning-rag-feedback` |
+| Multi-scenario learning feedback quality | 완료 | `evidence/output-artifacts/approved-learning-feedback-quality.json`, `src/core/approved-learning-feedback-quality.mjs` | 같은 workspace의 3 mission·9 session에서 Q1 case pass 0/3→3/3→0/3, 사례별 foreign memory 후보 2개 중 retrieved 0, reviewer pass와 exact rollback parity를 verified by `npm run smoke:approved-learning-feedback-quality` |
 | Approved training record | 완료 | `src/core/approved-training-record.mjs`, `fixtures/approved-training-record-cases-v1.json` | local approval lifecycle, reviewer·artifact lineage, sanitized example safety, accepted-risk governance, deterministic hashes, and externalSubmissionAuthorized=false verified by `npm run smoke:approved-training-record` |
 | Training dataset quality gate | 완료 | `src/core/training-dataset-quality.mjs`, `fixtures/training-dataset-quality-cases-v1.json` | deterministic deduplication, mission-scope split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false verified by `npm run smoke:training-dataset-quality` |
 | Fine-tuning readiness export | 완료 | `src/core/fine-tuning-readiness.mjs`, `fixtures/fine-tuning-readiness-cases-v1.json` | provider-neutral JSONL, Q1 baseline binding, reviewer checklist, export digest, pending submission requirements, and fineTuningExecutionAuthorized=false verified by `npm run smoke:fine-tuning-readiness` |
@@ -53,7 +54,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,390,889 bytes, SHA-256 `17ec9b65d85570d214f2f27251bebfc652926f33085a26a22bd3085d7aa6ce3c` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,396,792 bytes, SHA-256 `a26a2da7389e254692b4ff7ddd4c453b5b6e84f12b03a3aa254006cb88d26a2e` |
 
 ## 검증 실패 / 보류
 

@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, and operator-approved learning feedback into mission retrieval
-- Source code modified: yes, P1 content-free learning feedback evaluator, actual mission replay, and self-validating evidence
-- New feature development: yes, cost-free approved learning-to-RAG application and rollback verification
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, and multi-scenario operator-approved learning feedback quality
+- Source code modified: yes, P1/P2 shared feedback runtime helper, multi-scenario quality evaluator, regression tests, and self-validating content-free evidence
+- New feature development: yes, cost-free three-mission learning-to-RAG quality, isolation, and rollback verification
 
 ## Generated Evidence Files
 
@@ -64,6 +64,7 @@
 - `evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json`
 - `evidence/output-artifacts/approved-learning-rag-feedback.json`
+- `evidence/output-artifacts/approved-learning-feedback-quality.json`
 
 ### Architecture
 
@@ -122,6 +123,7 @@
 - Shadow cache process isolation: verified with `npm run smoke:local-relevance-shadow-cache-process-isolation`
 - Shadow cache termination and soak: verified with `npm run smoke:local-relevance-shadow-cache-termination-soak`
 - Approved learning RAG feedback: verified with `npm run smoke:approved-learning-rag-feedback`
+- Multi-scenario learning feedback quality: verified with `npm run smoke:approved-learning-feedback-quality`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`
