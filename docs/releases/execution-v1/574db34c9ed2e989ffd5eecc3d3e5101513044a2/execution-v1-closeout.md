@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T14:00:21.530Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T14:00:14.185Z
 - branch: codex/rag-local-relevance-reranker
 - commit: 574db34c9ed2e989ffd5eecc3d3e5101513044a2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/574db34c9ed2e989ffd5eecc3d3e5101513044a2/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

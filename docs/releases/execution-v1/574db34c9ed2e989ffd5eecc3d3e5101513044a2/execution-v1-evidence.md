@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T14:00:21.530Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T14:00:14.049Z
 - branch: codex/rag-local-relevance-reranker
 - commit: 574db34c9ed2e989ffd5eecc3d3e5101513044a2

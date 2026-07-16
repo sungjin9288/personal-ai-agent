@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T14:00:21.530Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T14:00:20.595Z
 - localDate: 2026-07-16
 - branch: codex/rag-local-relevance-reranker
 - commit: 574db34c9ed2e989ffd5eecc3d3e5101513044a2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/574db34c9ed2e989ffd5eecc3d3e5101513044a2](releases/execution-v1/574db34c9ed2e989ffd5eecc3d3e5101513044a2)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/574db34c9ed2e989ffd5eecc3d3e5101513044a2/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/574db34c9ed2e989ffd5eecc3d3e5101513044a2/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/574db34c9ed2e989ffd5eecc3d3e5101513044a2](docs/releases/execution-v1/574db34c9ed2e989ffd5eecc3d3e5101513044a2)
 - visualArtifactSetSha256: 72e59a6a1e2fd650f11090bd739550866f5ac02ab8045bc8154a8d16c66ffbc6
 - commitPushStatus: not pushed, origin/codex/rag-local-relevance-reranker not found
 
