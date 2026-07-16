@@ -195,6 +195,8 @@ function renderActionInboxSummary({
     ${renderActionInboxSummaryChip('즉시 실행', guidanceSummary.operatorRemediation)}
     ${renderActionInboxSummaryChip('외부 승인·인계', guidanceSummary.externalHandoff)}
     ${renderActionInboxSummaryChip('검토 필요', guidanceSummary.operatorReview)}
+    ${renderActionInboxSummaryChip('선택 고정', fullSummary.workspaceLearningSelectionOverrideCounts?.active)}
+    ${renderActionInboxSummaryChip('고정 만료', fullSummary.workspaceLearningSelectionOverrideCounts?.expired)}
     ${renderActionInboxSummaryChip('fallback stop', fallbackStopReasonFilter || 'all')}
     <div class="action-row action-filter-row">
       ${renderMissionActionsFilterButton(state, 'all', '전체', fullSummary.pendingActionCount)}
@@ -291,6 +293,8 @@ export function wireActionInboxActions({
   onRerun,
   onReviewerFollowUpResolve,
   onSpecialistFollowUpRemediate,
+  onWorkspaceLearningSelectionOverrideClear,
+  onWorkspaceLearningSelectionOverrideSet,
 }) {
   container.querySelectorAll('[data-action-open]').forEach((button) => {
     button.addEventListener('click', () => onOpenMission(button.dataset.actionOpen));
@@ -366,6 +370,30 @@ export function wireActionInboxActions({
     });
   });
 
+  container.querySelectorAll('[data-workspace-learning-selection-override-set]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const item = findLearningPromotionItem(
+        items,
+        button.dataset.workspaceLearningSelectionOverrideSet,
+      );
+      if (item) {
+        return onWorkspaceLearningSelectionOverrideSet(item);
+      }
+    });
+  });
+
+  container.querySelectorAll('[data-workspace-learning-selection-override-clear]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const item = findLearningPromotionItem(
+        items,
+        button.dataset.workspaceLearningSelectionOverrideClear,
+      );
+      if (item) {
+        return onWorkspaceLearningSelectionOverrideClear(item);
+      }
+    });
+  });
+
   container.querySelectorAll('[data-action-resolve]').forEach((button) => {
     button.addEventListener('click', () => onReviewerFollowUpResolve(button.dataset.actionResolve));
   });
@@ -386,6 +414,8 @@ export function renderMissionActions({
   onRerun,
   onReviewerFollowUpResolve,
   onSpecialistFollowUpRemediate,
+  onWorkspaceLearningSelectionOverrideClear,
+  onWorkspaceLearningSelectionOverrideSet,
   rerender,
   state,
   syncUrl,
@@ -457,5 +487,7 @@ export function renderMissionActions({
     onRerun,
     onReviewerFollowUpResolve,
     onSpecialistFollowUpRemediate,
+    onWorkspaceLearningSelectionOverrideClear,
+    onWorkspaceLearningSelectionOverrideSet,
   });
 }

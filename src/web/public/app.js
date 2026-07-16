@@ -7115,6 +7115,61 @@ async function handleActionInboxLearningPromotionRollback(item) {
   }
 }
 
+async function handleWorkspaceLearningSelectionOverrideSet(item) {
+  const defaultExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  const expiresAt = window.prompt('선택 고정 만료 시각을 ISO 형식으로 입력하세요.', defaultExpiresAt);
+  if (!expiresAt) {
+    return;
+  }
+  if (!Number.isFinite(Date.parse(expiresAt)) || Date.parse(expiresAt) <= Date.now()) {
+    window.alert('현재보다 뒤인 유효한 ISO 만료 시각이 필요합니다.');
+    return;
+  }
+  const note = window.prompt(
+    '선택 고정 사유를 입력하세요.',
+    'UI에서 검증된 workspace decision을 제한된 기간 동안 고정',
+  );
+  if (!note) {
+    return;
+  }
+
+  const candidateId = getLearningPromotionCandidateId(item);
+  await api(
+    `/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/workspace-selection-override`,
+    {
+      body: JSON.stringify({ expiresAt, note }),
+      method: 'POST',
+    },
+  );
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
+}
+
+async function handleWorkspaceLearningSelectionOverrideClear(item) {
+  const note = window.prompt(
+    '선택 고정 해제 사유를 입력하세요.',
+    'UI에서 latest revision 자동 선택으로 복귀',
+  );
+  if (!note) {
+    return;
+  }
+
+  const candidateId = getLearningPromotionCandidateId(item);
+  await api(
+    `/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/workspace-selection-override/clear`,
+    {
+      body: JSON.stringify({ note }),
+      method: 'POST',
+    },
+  );
+  await Promise.all([loadMissions(), loadApprovals()]);
+  if (state.selectedMissionId) {
+    await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
+  }
+}
+
 async function handleActionInboxLearningPromotionRemind(item) {
   const note = window.prompt(
     'stop-condition 재알림 메모를 입력하세요.',
@@ -7238,6 +7293,8 @@ function renderMissionActions() {
     onRerun: handleActionInboxRerun,
     onReviewerFollowUpResolve: handleActionInboxReviewerFollowUpResolve,
     onSpecialistFollowUpRemediate: handleActionInboxSpecialistFollowUpRemediate,
+    onWorkspaceLearningSelectionOverrideClear: handleWorkspaceLearningSelectionOverrideClear,
+    onWorkspaceLearningSelectionOverrideSet: handleWorkspaceLearningSelectionOverrideSet,
     rerender: renderMissionActions,
     state,
     syncUrl: writeUiStateToUrl,

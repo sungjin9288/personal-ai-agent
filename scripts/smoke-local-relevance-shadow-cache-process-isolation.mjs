@@ -116,7 +116,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: workspace-learning-operator-override-current',
+  'status: workspace-learning-operator-surface-current',
   '| R15 Shadow cache process isolation | 완료 |',
   'npm run smoke:local-relevance-shadow-cache-process-isolation',
   'actualLocalRelevanceShadowCacheProcessIsolationValidated: true',

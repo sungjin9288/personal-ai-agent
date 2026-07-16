@@ -75,7 +75,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 93$/m);
+assert.match(manifest, /^- fileCount: 95$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -127,6 +127,8 @@ const requiredPaths = [
   'evidence/output-artifacts/workspace-learning-personalization.json',
   'evidence/output-artifacts/workspace-learning-conflict-revocation.json',
   'evidence/output-artifacts/workspace-learning-operator-override.json',
+  'evidence/output-artifacts/workspace-learning-operator-surface.json',
+  'evidence/screenshots/workspace-learning-operator-surface.png',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
@@ -303,7 +305,7 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: workspace-learning-operator-override-current/);
+assert.match(mlRagDevelopmentPlan, /status: workspace-learning-operator-surface-current/);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
@@ -317,6 +319,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-readiness/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:candidate-model-evaluation/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-conflict-revocation/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-operator-override/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-operator-surface/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-lifecycle/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-process-isolation/);

@@ -126,6 +126,14 @@ export function createActionInbox({ summarizeSpecialistFollowUpItems }) {
       onTime: 0,
       total: items.length,
     };
+    const workspaceLearningSelectionOverrideCounts = {
+      active: 0,
+      cleared: 0,
+      eligible: 0,
+      expired: 0,
+      invalid: 0,
+      notSet: 0,
+    };
     let latestReminderAt = null;
     let nextReminderAt = null;
 
@@ -257,6 +265,23 @@ export function createActionInbox({ summarizeSpecialistFollowUpItems }) {
       } else {
         overdueCounts.onTime += 1;
       }
+
+      const workspaceLearningSelectionOverride = item.workspaceLearningSelectionOverride;
+      if (workspaceLearningSelectionOverride) {
+        workspaceLearningSelectionOverrideCounts.eligible += 1;
+        const status = workspaceLearningSelectionOverride.status;
+        if (status === 'active') {
+          workspaceLearningSelectionOverrideCounts.active += 1;
+        } else if (status === 'cleared') {
+          workspaceLearningSelectionOverrideCounts.cleared += 1;
+        } else if (status === 'expired') {
+          workspaceLearningSelectionOverrideCounts.expired += 1;
+        } else if (status === 'invalid') {
+          workspaceLearningSelectionOverrideCounts.invalid += 1;
+        } else {
+          workspaceLearningSelectionOverrideCounts.notSet += 1;
+        }
+      }
     }
 
     return {
@@ -284,6 +309,7 @@ export function createActionInbox({ summarizeSpecialistFollowUpItems }) {
       specialistFollowUpReminderCountTotal: specialistFollowUpSummary.reminderCountTotal,
       specialistFollowUpRetryPolicyCounts: specialistFollowUpSummary.retryPolicyCounts,
       specialistFollowUpStatusCounts: specialistFollowUpSummary.statusCounts,
+      workspaceLearningSelectionOverrideCounts,
       workspaceCounts,
     };
   }

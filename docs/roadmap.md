@@ -101,6 +101,7 @@
 - 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증
 - 완료: verified workspace decision을 local operator가 bounded expiration으로 고정하고 expiry·clear 시 exact latest-revision fallback, repin parity, foreign·unretrieved memory 차단과 timeline audit를 확인한 controlled operator override 검증
+- 완료: 기존 action inbox에서 content-free override 상태와 summary를 읽고 RBAC·candidate tenant·service validation을 거쳐 set·clear하며 local HTTP와 실제 Chromium으로 not-set→active→expired→cleared를 확인한 operator surface 검증
 - 완료: R12 multi-scenario shadow replay에서 3 scenario·15 mission·60 role observation을 실제 재생하고 full-query hard-negative 실패를 보존한 뒤 mission-objective query contract로 교정
 - 완료: R13 bounded shadow score cache에서 exact query-document repetition을 process-local LRU로 재사용해 15/15 품질을 유지하며 120 request를 30 inference로 축소하고 maximum latency 회귀까지 증적에 보존
 - 완료: R14 shadow cache lifecycle stress에서 8-entry eviction 22, concurrent join, in-flight invalidation, stale-result drop, fresh refill와 rollback close를 actual local evidence로 검증

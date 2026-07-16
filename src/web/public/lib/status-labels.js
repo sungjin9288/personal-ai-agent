@@ -289,6 +289,8 @@ export function buildLearningPromotionAuditPackageText(item) {
   const evidencePolicy = item.evidencePolicy || {};
   const autoPromotionAllowed =
     typeof item.autoPromotionAllowed === 'boolean' ? item.autoPromotionAllowed : item.autoPromotion === true;
+  const workspaceLearningSelectionOverride = item.workspaceLearningSelectionOverride || null;
+  const currentWorkspaceLearningSelectionOverride = workspaceLearningSelectionOverride?.current || null;
 
   return [
     'Learning promotion audit package',
@@ -347,6 +349,16 @@ export function buildLearningPromotionAuditPackageText(item) {
     `expirationStatus: ${formatLearningPromotionAuditValue(item.expirationPolicy?.status)}`,
     `expiresAt: ${formatLearningPromotionAuditValue(item.expirationPolicy?.expiresAt)}`,
     '',
+    '[Workspace learning selection override]',
+    `status: ${formatLearningPromotionAuditValue(workspaceLearningSelectionOverride?.status)}`,
+    `observedAt: ${formatLearningPromotionAuditValue(workspaceLearningSelectionOverride?.observedAt)}`,
+    `historyCount: ${formatLearningPromotionAuditValue(workspaceLearningSelectionOverride?.historyCount)}`,
+    `overrideId: ${formatLearningPromotionAuditValue(currentWorkspaceLearningSelectionOverride?.id)}`,
+    `memoryId: ${formatLearningPromotionAuditValue(currentWorkspaceLearningSelectionOverride?.memoryId)}`,
+    `setAt: ${formatLearningPromotionAuditValue(currentWorkspaceLearningSelectionOverride?.setAt)}`,
+    `expiresAt: ${formatLearningPromotionAuditValue(currentWorkspaceLearningSelectionOverride?.expiresAt)}`,
+    `noteHash: ${formatLearningPromotionAuditValue(currentWorkspaceLearningSelectionOverride?.noteHash)}`,
+    '',
     '[Commands]',
     `recommendedCommand: ${formatLearningPromotionAuditValue(item.recommendedCommand)}`,
     `resolveCommand: ${formatLearningPromotionAuditValue(item.resolveCommand)}`,
@@ -354,6 +366,8 @@ export function buildLearningPromotionAuditPackageText(item) {
     `rollbackCommand: ${formatLearningPromotionAuditValue(item.rollbackCommand)}`,
     `stopConditionRejectCommand: ${formatLearningPromotionAuditValue(item.stopConditionRejectCommand)}`,
     `remindCommand: ${formatLearningPromotionAuditValue(item.remindCommand)}`,
+    `workspaceLearningSelectionOverrideSetCommand: ${formatLearningPromotionAuditValue(item.workspaceLearningSelectionOverrideSetCommand)}`,
+    `workspaceLearningSelectionOverrideClearCommand: ${formatLearningPromotionAuditValue(item.workspaceLearningSelectionOverrideClearCommand)}`,
     '',
     '[Operator guardrails]',
     '- Do not promote autonomously; keep learning promotion behind explicit human approval.',
@@ -367,6 +381,9 @@ export function formatLearningPromotionDetails(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
   }
+
+  const workspaceLearningSelectionOverride = item.workspaceLearningSelectionOverride || null;
+  const currentWorkspaceLearningSelectionOverride = workspaceLearningSelectionOverride?.current || null;
 
   return [
     item.promotionStatus ? `status ${item.promotionStatus}` : '',
@@ -387,6 +404,15 @@ export function formatLearningPromotionDetails(item) {
     Number(item.reminderCount || 0) ? `reminders ${item.reminderCount}` : '',
     item.expirationPolicy?.status ? `expiration ${item.expirationPolicy.status}` : '',
     item.expirationPolicy?.expiresAt ? `expires ${formatDate(item.expirationPolicy.expiresAt)}` : '',
+    workspaceLearningSelectionOverride?.status
+      ? `selection override ${workspaceLearningSelectionOverride.status}`
+      : '',
+    currentWorkspaceLearningSelectionOverride?.expiresAt
+      ? `override expires ${formatDate(currentWorkspaceLearningSelectionOverride.expiresAt)}`
+      : '',
+    workspaceLearningSelectionOverride
+      ? `override history ${workspaceLearningSelectionOverride.historyCount || 0}`
+      : '',
   ]
     .filter(Boolean)
     .join(' · ');

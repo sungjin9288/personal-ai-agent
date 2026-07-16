@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, multi-scenario feedback quality, workspace-scoped personalization, conflict revocation, and operator override fallback
-- Source code modified: yes, permission-bound workspace override mutation, retrieved-only selection, expiration and clear fallback, content-free planner audit, timeline history, regression tests, and self-validating local evidence
-- New feature development: yes, cost-free older override, exact latest-revision fallback after expiration and clear, exact repin parity, and foreign or unretrieved memory isolation
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, multi-scenario feedback quality, workspace-scoped personalization, conflict revocation, operator override fallback, and operator control surface
+- Source code modified: yes, content-free override read model, action inbox summary and controls, tenant-checked HTTP mutation, sanitized responses, local browser verification, and tracked screenshot evidence
+- New feature development: yes, cost-free operator visibility and set·clear controls over the verified P5 override lifecycle
 
 ## Generated Evidence Files
 
@@ -41,6 +41,7 @@
 - `evidence/screenshots/operator-surface-mission-run.png`
 - `evidence/screenshots/operator-surface-provider-readiness.png`
 - `evidence/screenshots/operator-surface-action-inbox.png`
+- `evidence/screenshots/workspace-learning-operator-surface.png`
 
 ### Output Artifacts
 
@@ -68,6 +69,7 @@
 - `evidence/output-artifacts/workspace-learning-personalization.json`
 - `evidence/output-artifacts/workspace-learning-conflict-revocation.json`
 - `evidence/output-artifacts/workspace-learning-operator-override.json`
+- `evidence/output-artifacts/workspace-learning-operator-surface.json`
 
 ### Architecture
 
@@ -130,6 +132,7 @@
 - Workspace learning personalization: verified with `npm run smoke:workspace-learning-personalization`
 - Workspace learning conflict and revocation: verified with `npm run smoke:workspace-learning-conflict-revocation`
 - Workspace learning operator override: verified with `npm run smoke:workspace-learning-operator-override`
+- Workspace learning operator surface: verified with `npm run smoke:workspace-learning-operator-surface` and local browser replay `npm run smoke:workspace-learning-operator-surface-browser`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

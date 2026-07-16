@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Workspace Learning Operator Surface
+
+- connected the P5 override lifecycle to existing learning-promotion action items without adding a new action type, top-level store collection, or production dependency
+- added content-free state and summary counts, operator set and clear controls, web RBAC and candidate-tenant checks, sanitized mutation responses, and preserved service validation, artifact, and timeline ordering
+- replayed not-set, active, expired, and cleared state through the local HTTP server and clicked the controls in actual local Chromium with zero console errors or external provider calls
+- retained `automaticPreferenceLearningValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
 ## 2026-07-17 Workspace Learning Operator Override
 
 - added a permission-bound local operator override for verified workspace decision promotions, requiring an explicit note and future expiration without adding a top-level store collection or production dependency

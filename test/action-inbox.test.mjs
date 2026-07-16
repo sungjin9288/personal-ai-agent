@@ -127,6 +127,43 @@ test('summarizeActionInbox', async (t) => {
     // specialist / drift sub-summaries still present with zero totals
     assert.equal(summary.providerHealthDriftOverdueCount, 0);
     assert.equal(summary.specialistFollowUpOverdueCount, 0);
+    assert.deepEqual(summary.workspaceLearningSelectionOverrideCounts, {
+      active: 0,
+      cleared: 0,
+      eligible: 0,
+      expired: 0,
+      invalid: 0,
+      notSet: 0,
+    });
+  });
+
+  await t.test('summarizes workspace learning selection override states without reading notes', () => {
+    const summary = summarizeActionInbox([
+      {
+        actionClass: 'monitoring-required',
+        actionType: 'learning-promotion',
+        workspaceLearningSelectionOverride: { status: 'active' },
+      },
+      {
+        actionClass: 'monitoring-required',
+        actionType: 'learning-promotion',
+        workspaceLearningSelectionOverride: { status: 'expired' },
+      },
+      {
+        actionClass: 'monitoring-required',
+        actionType: 'learning-promotion',
+        workspaceLearningSelectionOverride: { status: 'not-set' },
+      },
+    ]);
+
+    assert.deepEqual(summary.workspaceLearningSelectionOverrideCounts, {
+      active: 1,
+      cleared: 0,
+      eligible: 3,
+      expired: 1,
+      invalid: 0,
+      notSet: 1,
+    });
   });
 
   await t.test('tallies action types, classes, owners, priorities, and overdue', () => {

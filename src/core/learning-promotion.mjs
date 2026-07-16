@@ -150,6 +150,7 @@ export function createLearningPromotion({
   now,
   addMemoryEntry,
   deleteMemory,
+  getWorkspaceLearningSelectionOverrideReadModel = () => null,
   getMission,
   getWorkspace,
   writeUpdatedLearningCandidateArtifact,
@@ -189,6 +190,16 @@ export function createLearningPromotion({
     const recommendedOwner = isPending || isVerificationBlocked ? 'human-approver' : 'mission-owner';
     const promotionStopReason =
       candidate.promotionStopCondition?.reason || candidate.promotionVerification?.stopReason || null;
+    const workspaceLearningSelectionOverride =
+      getWorkspaceLearningSelectionOverrideReadModel(candidate.id);
+    const workspaceLearningSelectionOverrideSetCommand = workspaceLearningSelectionOverride
+      ? `node src/cli.mjs action set-workspace-learning-selection-override ${candidate.id} --expires-at <iso-timestamp> --note "<note>"`
+      : null;
+    const workspaceLearningSelectionOverrideClearCommand =
+      workspaceLearningSelectionOverride?.current &&
+      workspaceLearningSelectionOverride.current.status !== 'cleared'
+        ? `node src/cli.mjs action clear-workspace-learning-selection-override ${candidate.id} --note "<note>"`
+        : null;
     const stopConditionReminders = ensureArray(candidate.promotionStopCondition?.reminders);
     const latestStopConditionReminder = getLatestItem(stopConditionReminders, 'remindedAt');
     const reminderCadenceHours = isVerificationBlocked ? deriveLearningPromotionStopConditionReminderCadenceHours() : null;
@@ -285,6 +296,9 @@ export function createLearningPromotion({
           stopConditionRejectCommand,
           title: candidate.title,
           workspaceId: workspace.id,
+          workspaceLearningSelectionOverride,
+          workspaceLearningSelectionOverrideClearCommand,
+          workspaceLearningSelectionOverrideSetCommand,
           workspaceName: workspace.name,
         },
         {

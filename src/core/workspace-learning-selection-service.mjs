@@ -4,6 +4,7 @@ import {
   containsRawCustomerPayload,
   containsTrainingSecret,
 } from './training-content-safety.mjs';
+import { buildWorkspaceLearningSelectionOverrides } from './workspace-learning-selection.mjs';
 
 function normalizeText(value) {
   return String(value || '').trim();
@@ -46,7 +47,7 @@ export function createWorkspaceLearningSelectionService({
   store,
   writeUpdatedLearningCandidateArtifact,
 }) {
-  function getEligiblePromotion(candidateId) {
+  function getPromotionEvidence(candidateId) {
     const candidate = store
       .listLearningCandidates()
       .find((item) => item.id === normalizeText(candidateId));
@@ -60,22 +61,57 @@ export function createWorkspaceLearningSelectionService({
     const memory = store
       .listMemoryEntries({ scope: 'workspace', scopeId: workspace.id })
       .find((entry) => entry.id === promotion?.memoryId);
-    const eligible =
-      candidate.workspaceId === workspace.id &&
-      candidate.promotionStatus === 'promoted' &&
-      candidate.promotionVerification?.status === 'passed' &&
-      candidate.promotionScopeAuthorization?.status === 'consumed' &&
-      promotion?.decision === 'approve' &&
-      promotion?.target === 'memory' &&
-      promotion?.scope === 'workspace' &&
-      promotion?.scopeId === workspace.id &&
-      memory?.kind === 'decision' &&
-      memory?.scope === 'workspace' &&
-      memory?.scopeId === workspace.id;
-    if (!eligible) {
+    return {
+      candidate,
+      memory,
+      workspace,
+      eligible:
+        candidate.workspaceId === workspace.id &&
+        candidate.promotionStatus === 'promoted' &&
+        candidate.promotionVerification?.status === 'passed' &&
+        candidate.promotionScopeAuthorization?.status === 'consumed' &&
+        promotion?.decision === 'approve' &&
+        promotion?.target === 'memory' &&
+        promotion?.scope === 'workspace' &&
+        promotion?.scopeId === workspace.id &&
+        memory?.kind === 'decision' &&
+        memory?.scope === 'workspace' &&
+        memory?.scopeId === workspace.id,
+    };
+  }
+
+  function getEligiblePromotion(candidateId) {
+    const evidence = getPromotionEvidence(candidateId);
+    if (!evidence.eligible) {
       throw new Error('Workspace learning selection override evidence is incomplete.');
     }
-    return { candidate, memory, workspace };
+    return evidence;
+  }
+
+  function getWorkspaceLearningSelectionOverrideReadModel(candidateId) {
+    const { candidate, eligible, memory, workspace } = getPromotionEvidence(candidateId);
+    if (!eligible) {
+      return null;
+    }
+
+    const observedAt = readTimestamp(now);
+    const current = buildWorkspaceLearningSelectionOverrides({
+      learningCandidates: [candidate],
+      observedAt,
+      workspaceId: workspace.id,
+    })[0] || null;
+
+    return {
+      candidateId: candidate.id,
+      current,
+      historyCount: Array.isArray(candidate.workspaceLearningSelectionOverrideHistory)
+        ? candidate.workspaceLearningSelectionOverrideHistory.length
+        : 0,
+      memoryId: memory.id,
+      observedAt,
+      status: current?.status || 'not-set',
+      workspaceId: workspace.id,
+    };
   }
 
   function setWorkspaceLearningSelectionOverride(candidateId, { expiresAt = '', note = '' } = {}) {
@@ -180,6 +216,7 @@ export function createWorkspaceLearningSelectionService({
 
   return {
     clearWorkspaceLearningSelectionOverride,
+    getWorkspaceLearningSelectionOverrideReadModel,
     setWorkspaceLearningSelectionOverride,
   };
 }

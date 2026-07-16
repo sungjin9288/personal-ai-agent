@@ -59,6 +59,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Workspace learning personalization | `npm run smoke:workspace-learning-personalization` | Verifies explicit mission-to-workspace authorization, sibling application, foreign-workspace isolation, seven distinct sessions, timeline audit ordering, content-free evidence, and exact rollback parity |
 | Workspace learning conflict and revocation | `npm run smoke:workspace-learning-conflict-revocation` | Verifies latest-revision selection from two retrieved workspace decisions, selected-only provider exposure, exact older fallback after newer revocation, exact baseline restoration after full rollback, foreign-workspace isolation, eight distinct sessions, and content-free evidence |
 | Workspace learning operator override | `npm run smoke:workspace-learning-operator-override` | Verifies verified-promotion permission evidence, future expiration, CLI set, service repin and clear, retrieved-only authority, exact latest fallback, foreign isolation, timeline order, eight distinct sessions, and content-free evidence |
+| Workspace learning operator surface | `npm run smoke:workspace-learning-operator-surface` | Verifies hash-bound Chromium evidence, content-free state, tenant-checked HTTP set and clear routes, sanitized response guards, active·expired·cleared UI lifecycle, and productionReadyClaim=false |
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
@@ -111,6 +112,7 @@ npm run smoke:approved-learning-feedback-quality
 npm run smoke:workspace-learning-personalization
 npm run smoke:workspace-learning-conflict-revocation
 npm run smoke:workspace-learning-operator-override
+npm run smoke:workspace-learning-operator-surface
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness

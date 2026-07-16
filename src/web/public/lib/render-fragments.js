@@ -635,6 +635,8 @@ export function renderLearningPromotionCommandMeta(item) {
     ['rollback', item.rollbackCommand],
     ['stop-condition', item.stopConditionRejectCommand],
     ['reminder', item.remindCommand],
+    ['override-set', item.workspaceLearningSelectionOverrideSetCommand],
+    ['override-clear', item.workspaceLearningSelectionOverrideClearCommand],
   ]
     .filter(([, command]) => command)
     .map(([label, command]) => `<div class="item-meta mono">${escapeHtml(label)}: ${escapeHtml(command)}</div>`)
@@ -695,6 +697,24 @@ export function renderLearningPromotionRollbackButton({ candidateId = '' } = {})
   });
 }
 
+export function renderWorkspaceLearningSelectionOverrideSetButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-workspace-learning-selection-override-set="${escapeHtml(candidateId)}"`,
+    buttonClass: 'secondary-button',
+    candidateId,
+    label: '선택 고정',
+  });
+}
+
+export function renderWorkspaceLearningSelectionOverrideClearButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-workspace-learning-selection-override-clear="${escapeHtml(candidateId)}"`,
+    buttonClass: 'danger-button',
+    candidateId,
+    label: '고정 해제',
+  });
+}
+
 export function renderLearningPromotionActionButtons(item) {
   if (item?.actionType !== 'learning-promotion') {
     return '';
@@ -749,6 +769,13 @@ export function renderLearningPromotionActionButtons(item) {
     buttons.push(
       renderLearningPromotionRollbackButton({ candidateId }),
     );
+  }
+
+  if (item.workspaceLearningSelectionOverride) {
+    buttons.push(renderWorkspaceLearningSelectionOverrideSetButton({ candidateId }));
+    if (item.workspaceLearningSelectionOverrideClearCommand) {
+      buttons.push(renderWorkspaceLearningSelectionOverrideClearButton({ candidateId }));
+    }
   }
 
   return buttons.join('');

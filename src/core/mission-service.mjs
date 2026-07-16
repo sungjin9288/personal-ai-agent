@@ -105,6 +105,7 @@ export function createMissionService({
   });
   const {
     clearWorkspaceLearningSelectionOverride,
+    getWorkspaceLearningSelectionOverrideReadModel,
     setWorkspaceLearningSelectionOverride,
   } = workspaceLearningSelectionService;
   const { getLearningCandidateAudit } = createLearningCandidateAudit({
@@ -289,6 +290,7 @@ export function createMissionService({
     now,
     addMemoryEntry: harness.addMemoryEntry,
     deleteMemory,
+    getWorkspaceLearningSelectionOverrideReadModel,
     getMission,
     getWorkspace,
     writeUpdatedLearningCandidateArtifact,

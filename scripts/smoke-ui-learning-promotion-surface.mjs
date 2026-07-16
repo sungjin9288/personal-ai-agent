@@ -826,6 +826,15 @@ try {
   assert.equal(appJs.includes('findLearningPromotionItem(items, button.dataset.learningPromotionRemind)'), true);
   assert.equal(appJs.includes('onLearningPromotionRemind(item)'), true);
   assert.equal(appJs.includes('/api/actions/learning-promotions/${encodeURIComponent(candidateId)}/remind'), true);
+  assert.equal(appJs.includes('data-workspace-learning-selection-override-set'), true);
+  assert.equal(appJs.includes('data-workspace-learning-selection-override-clear'), true);
+  assert.equal(appJs.includes('handleWorkspaceLearningSelectionOverrideSet'), true);
+  assert.equal(appJs.includes('handleWorkspaceLearningSelectionOverrideClear'), true);
+  assert.equal(appJs.includes('/workspace-selection-override`'), true);
+  assert.equal(appJs.includes('/workspace-selection-override/clear`'), true);
+  assert.equal(appJs.includes('selection override ${workspaceLearningSelectionOverride.status}'), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('선택 고정'"), true);
+  assert.equal(appJs.includes("renderActionInboxSummaryChip('고정 만료'"), true);
   assert.equal(appJs.includes('dueOnly: true'), true);
   assert.equal(appJs.includes("label: 'stop-condition 재알림'"), true);
   assert.equal(appJs.includes('renderLearningPromotionRollbackButton'), true);
@@ -1057,6 +1066,109 @@ try {
         event.status === 'authorized',
     ),
     true,
+  );
+
+  const authorizedPromotionResult = await postJson(
+    `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(authorizedRun.learningCandidateId)}/resolve`,
+    {
+      decision: 'approve',
+      note: 'Promote the reviewed decision for the workspace operator surface.',
+      scope: 'workspace',
+      target: 'memory',
+    },
+  );
+  assert.equal(authorizedPromotionResult.learningCandidate.promotionStatus, 'promoted');
+  assert.equal(authorizedPromotionResult.learningCandidate.promotionScopeAuthorization.status, 'consumed');
+  assert.equal(authorizedPromotionResult.memoryEntry.scope, 'workspace');
+  assert.equal(authorizedPromotionResult.memoryEntry.scopeId, workspace.id);
+
+  const unsetOverrideInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(authorizedMission.id)}&promotionStatus=operator-active`,
+  );
+  const unsetOverrideItem = findLearningItem(
+    unsetOverrideInbox,
+    authorizedRun.learningCandidateId,
+  );
+  assert.equal(unsetOverrideItem.workspaceLearningSelectionOverride.status, 'not-set');
+  assert.equal(unsetOverrideItem.workspaceLearningSelectionOverride.current, null);
+  assert.equal(unsetOverrideItem.workspaceLearningSelectionOverrideSetCommand.includes('set-workspace-learning-selection-override'), true);
+  assert.equal(unsetOverrideItem.workspaceLearningSelectionOverrideClearCommand, null);
+  assert.equal(unsetOverrideInbox.summary.workspaceLearningSelectionOverrideCounts.eligible, 1);
+  assert.equal(unsetOverrideInbox.summary.workspaceLearningSelectionOverrideCounts.notSet, 1);
+
+  const overrideExpiresAt = new Date(Date.now() + 2_000).toISOString();
+  const overrideSetResult = await postJson(
+    `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(authorizedRun.learningCandidateId)}/workspace-selection-override`,
+    {
+      expiresAt: overrideExpiresAt,
+      note: 'Pin the reviewed workspace decision from the web operator surface.',
+    },
+  );
+  assert.equal(overrideSetResult.learningCandidateId, authorizedRun.learningCandidateId);
+  assert.equal(overrideSetResult.selectionOverride.status, 'active');
+  assert.equal(overrideSetResult.selectionOverride.expiresAt, overrideExpiresAt);
+  assert.match(overrideSetResult.selectionOverride.noteHash, /^[a-f0-9]{64}$/);
+  assert.equal('note' in overrideSetResult.selectionOverride, false);
+
+  const activeOverrideInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(authorizedMission.id)}&promotionStatus=operator-active`,
+  );
+  const activeOverrideItem = findLearningItem(
+    activeOverrideInbox,
+    authorizedRun.learningCandidateId,
+  );
+  assert.equal(activeOverrideItem.workspaceLearningSelectionOverride.status, 'active');
+  assert.equal(activeOverrideItem.workspaceLearningSelectionOverride.current.memoryId, authorizedPromotionResult.memoryEntry.id);
+  assert.equal(activeOverrideItem.workspaceLearningSelectionOverride.current.expiresAt, overrideExpiresAt);
+  assert.equal(activeOverrideItem.workspaceLearningSelectionOverrideClearCommand.includes('clear-workspace-learning-selection-override'), true);
+  assert.equal(activeOverrideInbox.summary.workspaceLearningSelectionOverrideCounts.active, 1);
+  assert.equal(JSON.stringify(activeOverrideInbox).includes('Pin the reviewed workspace decision'), false);
+
+  await delay(Math.max(0, Date.parse(overrideExpiresAt) - Date.now() + 50));
+  const expiredOverrideInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(authorizedMission.id)}&promotionStatus=operator-active`,
+  );
+  const expiredOverrideItem = findLearningItem(
+    expiredOverrideInbox,
+    authorizedRun.learningCandidateId,
+  );
+  assert.equal(expiredOverrideItem.workspaceLearningSelectionOverride.status, 'expired');
+  assert.equal(expiredOverrideInbox.summary.workspaceLearningSelectionOverrideCounts.expired, 1);
+
+  const overrideClearResult = await postJson(
+    `${baseUrl}/api/actions/learning-promotions/${encodeURIComponent(authorizedRun.learningCandidateId)}/workspace-selection-override/clear`,
+    {
+      note: 'Return to latest revision selection from the web operator surface.',
+    },
+  );
+  assert.equal(overrideClearResult.learningCandidateId, authorizedRun.learningCandidateId);
+  assert.equal(overrideClearResult.selectionOverride.status, 'cleared');
+  assert.match(overrideClearResult.selectionOverride.clearNoteHash, /^[a-f0-9]{64}$/);
+  assert.equal('clearNote' in overrideClearResult.selectionOverride, false);
+  assert.equal('note' in overrideClearResult.selectionOverride, false);
+
+  const clearedOverrideInbox = await fetchJson(
+    `${baseUrl}/api/actions?missionId=${encodeURIComponent(authorizedMission.id)}&promotionStatus=operator-active`,
+  );
+  const clearedOverrideItem = findLearningItem(
+    clearedOverrideInbox,
+    authorizedRun.learningCandidateId,
+  );
+  assert.equal(clearedOverrideItem.workspaceLearningSelectionOverride.status, 'cleared');
+  assert.equal(clearedOverrideItem.workspaceLearningSelectionOverrideClearCommand, null);
+  assert.equal(clearedOverrideInbox.summary.workspaceLearningSelectionOverrideCounts.cleared, 1);
+
+  const overrideTimeline = await fetchJson(
+    `${baseUrl}/api/missions/${encodeURIComponent(authorizedMission.id)}/timeline`,
+  );
+  assert.deepEqual(
+    overrideTimeline.timeline
+      .filter((event) => event.overrideId === overrideSetResult.selectionOverride.id)
+      .map((event) => event.kind),
+    [
+      'workspace-learning-selection-override-set',
+      'workspace-learning-selection-override-cleared',
+    ],
   );
 
   const fallbackInbox = await fetchJson(
@@ -1302,6 +1414,8 @@ try {
       {
         mode: 'ui-learning-promotion-surface',
         ok: true,
+        workspaceLearningSelectionOverrideCandidateId: authorizedRun.learningCandidateId,
+        workspaceLearningSelectionOverrideLifecycle: ['not-set', 'active', 'expired', 'cleared'],
         blockedCandidateId: blockedRun.learningCandidateId,
         expiredCandidateId: expiredRun.learningCandidateId,
         fallbackCandidateId: fallbackRun.learningCandidateId,

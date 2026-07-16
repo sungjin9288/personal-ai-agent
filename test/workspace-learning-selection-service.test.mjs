@@ -80,6 +80,46 @@ test('workspace learning override records permission-bound set and clear history
   assert.deepEqual(fixture.calls, ['store:candidate-older', 'artifact:candidate-older']);
 });
 
+test('workspace learning override read model is content-free and reflects effective clock state', () => {
+  const fixture = createFixture();
+
+  assert.deepEqual(
+    fixture.service.getWorkspaceLearningSelectionOverrideReadModel('candidate-older'),
+    {
+      candidateId: 'candidate-older',
+      current: null,
+      historyCount: 0,
+      memoryId: 'memory-older',
+      observedAt: '2026-07-17T01:00:00.000Z',
+      status: 'not-set',
+      workspaceId: 'workspace-a',
+    },
+  );
+
+  fixture.service.setWorkspaceLearningSelectionOverride('candidate-older', {
+    expiresAt: '2026-07-17T02:00:00.000Z',
+    note: 'Keep the reviewed decision for one hour.',
+  });
+  const readModel = fixture.service.getWorkspaceLearningSelectionOverrideReadModel('candidate-older');
+
+  assert.equal(readModel.status, 'active');
+  assert.equal(readModel.historyCount, 1);
+  assert.equal(readModel.current.memoryId, 'memory-older');
+  assert.match(readModel.current.noteHash, /^[a-f0-9]{64}$/);
+  assert.equal('note' in readModel.current, false);
+});
+
+test('workspace learning override read model hides ineligible promotions', () => {
+  const candidate = buildEligibleCandidate();
+  candidate.promotionVerification.status = 'failed';
+  const fixture = createFixture({ candidate });
+
+  assert.equal(
+    fixture.service.getWorkspaceLearningSelectionOverrideReadModel('candidate-older'),
+    null,
+  );
+});
+
 test('workspace learning override validates permission evidence before mutation', () => {
   const candidate = buildEligibleCandidate();
   candidate.promotionVerification.status = 'failed';

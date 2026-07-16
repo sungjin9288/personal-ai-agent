@@ -851,6 +851,7 @@ const buildExecutionV1ReleaseHandlers = createExecutionV1ReleaseHandlerFactory({
 
 const buildActionHandlers = createActionHandlerFactory({
   decodePathSegment,
+  evaluateLearningCandidateTenantAccess,
   evaluateWorkspaceTenantAccess,
   parseOptionalBooleanQueryParam,
   readJsonBody,
@@ -2021,6 +2022,24 @@ function evaluateMissionTenantAccess(missionId, auth) {
   };
 }
 
+function evaluateLearningCandidateTenantAccess(candidateId, auth) {
+  const candidate = store
+    .listLearningCandidates()
+    .find((item) => item.id === String(candidateId || '').trim());
+  if (!candidate) {
+    return {
+      allowed: false,
+      error: 'learning-candidate-not-found',
+      reason: `Learning candidate not found: ${candidateId}`,
+      status: 404,
+    };
+  }
+  return {
+    ...evaluateWorkspaceTenantAccess(candidate.workspaceId, auth),
+    candidate,
+  };
+}
+
 function sendTenantDenied(response, tenant) {
   sendJson(response, tenant.status || 403, {
     error: tenant.error || 'tenant-forbidden',
@@ -2324,6 +2343,16 @@ async function handleApi(request, response, url) {
     'POST',
     '/api/actions/learning-promotions/:candidateId/rollback',
     actionHandlers.rollbackLearningPromotion,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/workspace-selection-override',
+    actionHandlers.setWorkspaceLearningSelectionOverride,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/workspace-selection-override/clear',
+    actionHandlers.clearWorkspaceLearningSelectionOverride,
   );
   registerParamRoute(
     'POST',
