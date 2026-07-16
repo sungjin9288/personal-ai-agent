@@ -34,6 +34,7 @@ const BASE_PACKAGE_FILES = [
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
+  'evidence/output-artifacts/local-embedding-model-qualification.json',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',

@@ -93,12 +93,13 @@ try {
     'utf8',
   );
   for (const term of [
-    'status: local-semantic-runtime-current',
+    'status: local-model-qualification-current',
     '| R5 Local semantic runtime opt-in | 완료 |',
     'PERSONAL_AI_AGENT_RETRIEVAL_MODE=semantic-rerank',
     'npm run smoke:semantic-retrieval-runtime',
     'productionReadyClaim: false',
-    'actualLocalEmbeddingModelValidated: false',
+    'actualLocalEmbeddingModelQualityValidated: true',
+    'actualLocalEmbeddingModelQualified: false',
   ]) {
     assert.ok(developmentPlan.includes(term), `ML/RAG development plan missing ${term}`);
   }
@@ -106,7 +107,8 @@ try {
   console.log(
     JSON.stringify(
       {
-        actualLocalEmbeddingModelValidated: false,
+        actualLocalEmbeddingModelQualityValidated: true,
+        actualLocalEmbeddingModelQualified: false,
         costFree: true,
         failureBeforeProviderRun: true,
         mode: 'semantic-retrieval-runtime',

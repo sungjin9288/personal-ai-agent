@@ -75,7 +75,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 76$/m);
+assert.match(manifest, /^- fileCount: 77$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -110,6 +110,7 @@ const requiredPaths = [
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
+  'evidence/output-artifacts/local-embedding-model-qualification.json',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
@@ -286,7 +287,7 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: local-semantic-runtime-current/);
+assert.match(mlRagDevelopmentPlan, /status: local-model-qualification-current/);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);

@@ -57,6 +57,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/provider-readiness-matrix-v1.md',
   'docs/provider-failure-recovery-demo-v1.md',
   'docs/memory-retrieval-quality-fixture-v1.md',
+  'evidence/output-artifacts/local-embedding-model-qualification.json',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/fork-onboarding-v1.md',

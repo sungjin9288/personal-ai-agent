@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Local Embedding Model Qualification
+
+- added a loopback-only Ollama embedding command and tamper-evident qualification gate without downloading models or calling an external provider
+- measured installed qwen2.5 0.5B, 1.5B, and 3B models with the same three semantic retrieval cases; only 3B passed every case
+- kept activation blocked because license review, Ollama cloud and OS-level egress isolation, resource approval, and rollback ownership remain incomplete
+
 ## 2026-07-16 Local Semantic Retrieval Runtime
 
 - connected the bounded local embedding contract and deterministic semantic·lexical reranker to mission stages only when the operator explicitly selects `semantic-rerank`
