@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T12:50:35.505Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T12:50:27.135Z
 - branch: codex/rag-local-model-qualification
 - commit: 731b7740e0f1b5fc2afe00226ba174d8ccf23e36
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/731b7740e0f1b5fc2afe00226ba174d8ccf23e36/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

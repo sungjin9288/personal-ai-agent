@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T12:50:35.505Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T12:50:34.511Z
 - localDate: 2026-07-16
 - branch: codex/rag-local-model-qualification
 - commit: 731b7740e0f1b5fc2afe00226ba174d8ccf23e36
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/731b7740e0f1b5fc2afe00226ba174d8ccf23e36](releases/execution-v1/731b7740e0f1b5fc2afe00226ba174d8ccf23e36)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/731b7740e0f1b5fc2afe00226ba174d8ccf23e36/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/731b7740e0f1b5fc2afe00226ba174d8ccf23e36/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/731b7740e0f1b5fc2afe00226ba174d8ccf23e36](docs/releases/execution-v1/731b7740e0f1b5fc2afe00226ba174d8ccf23e36)
 - visualArtifactSetSha256: d541a7c5a6e3a9900886a0f38961f601b1c710e12dc1a213aecfd905e4fbfba9
 - commitPushStatus: not pushed, origin/codex/rag-local-model-qualification not found
 
