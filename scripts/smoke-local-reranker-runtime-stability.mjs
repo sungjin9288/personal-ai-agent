@@ -117,7 +117,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: workspace-learning-operator-surface-current',
+  'status: local-user-learning-personalization-current',
   '| R10 Local reranker runtime stability | 완료 |',
   'actualLocalRerankerRuntimeStabilityValidated: true',
   'actualLocalRerankerRuntimeStabilityQualified: false',

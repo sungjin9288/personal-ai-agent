@@ -107,6 +107,8 @@
     "build:workspace-learning-operator-surface-evidence": "node scripts/build-workspace-learning-operator-surface-evidence.mjs",
     "smoke:workspace-learning-operator-surface": "node scripts/smoke-workspace-learning-operator-surface.mjs",
     "smoke:workspace-learning-operator-surface-browser": "node scripts/smoke-workspace-learning-operator-surface-browser.mjs",
+    "evaluate:local-user-learning-personalization": "node scripts/evaluate-local-user-learning-personalization.mjs",
+    "smoke:local-user-learning-personalization": "node scripts/smoke-local-user-learning-personalization.mjs",
     "smoke:answer-quality-evaluation": "node scripts/smoke-answer-quality-evaluation.mjs",
     "smoke:retrieval-corpus-contract": "node scripts/smoke-retrieval-corpus-contract.mjs",
     "smoke:retrieval-quality-evaluation": "node scripts/smoke-retrieval-quality-evaluation.mjs",

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "personal-ai-agent-local-user-learning-personalization-cases/v1",
+  "productionReadyClaim": false,
+  "cases": [
+    {
+      "id": "local-user-verification-preference",
+      "deliverableType": "decision-memo",
+      "expectedPlanStep": "Narrow the verification path before requesting workspace execution again.",
+      "minimumRetrievalMatchTermCount": 3,
+      "mode": "knowledge",
+      "promotionNote": "Narrow the verification path before requesting workspace execution again. Preserve local user learning lane epsilon in the review.",
+      "requiredAnswerTerms": [
+        "narrow the verification path",
+        "workspace execution",
+        "local user learning lane epsilon"
+      ],
+      "scopeAuthorizationNote": "Authorize this reviewed mission decision for the single local user across local workspaces.",
+      "sourceObjective": "Review a narrow verification path for workspace execution approval and record the reusable local user decision.",
+      "sourceTitle": "Local user learning source",
+      "targetObjective": "Prepare a narrow verification path for workspace execution approval in local user learning lane epsilon.",
+      "targetTitle": "Local user learning target"
+    }
+  ]
+}

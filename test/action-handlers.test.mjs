@@ -250,6 +250,15 @@ test('learning promotion handlers preserve path decoding and mutation payloads',
   const rollback = createFixture({ body: { note: ' rollback reason ' } });
   await rollback.handlers.rollbackLearningPromotion({ candidateId: 'candidate%2F5' });
 
+  assert.deepEqual(
+    [authorize, remind, resolve, rollback].map(({ auth, state }) => state.candidateTenantChecks[0]),
+    [
+      { auth: authorize.auth, candidateId: 'candidate/2' },
+      { auth: remind.auth, candidateId: 'candidate/3' },
+      { auth: resolve.auth, candidateId: 'candidate/4' },
+      { auth: rollback.auth, candidateId: 'candidate/5' },
+    ],
+  );
   assert.deepEqual(authorize.state.serviceCalls, [{
     candidateId: 'candidate/2',
     input: {

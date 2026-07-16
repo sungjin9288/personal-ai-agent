@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Local User Learning Personalization
+
+- extended the existing scope authorization to local mission-to-user promotion while rejecting tenant-bound workspaces before writes and keeping the store shape, public service method, audit order, and production dependencies unchanged
+- applied approved global user decisions and preferences in the stub provider while continuing to exclude user facts, raw secrets, and customer payloads
+- replayed two local workspaces, three missions, and seven credential-free stub sessions; sibling and cross-workspace targets both moved from failed to passed and returned to exact baseline hashes after rollback
+- retained `hostedTenantUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
 ## 2026-07-17 Workspace Learning Operator Surface
 
 - connected the P5 override lifecycle to existing learning-promotion action items without adding a new action type, top-level store collection, or production dependency

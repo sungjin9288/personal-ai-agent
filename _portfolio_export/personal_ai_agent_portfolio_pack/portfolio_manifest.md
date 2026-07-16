@@ -63,6 +63,7 @@
 - evidence/output-artifacts/workspace-learning-conflict-revocation.json
 - evidence/output-artifacts/workspace-learning-operator-override.json
 - evidence/output-artifacts/workspace-learning-operator-surface.json
+- evidence/output-artifacts/local-user-learning-personalization.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/architecture/
 - evidence/evidence_manifest.md

@@ -34,6 +34,7 @@
   - Hermes provider target evidence와 live validation proof 확보
   - provider fallback/attention remediation demo scenario 정리
   - memory/retrieval/fact graph 품질 확인용 fixture 추가
+  - 완료: tenant-free local workspace 사이에서 explicit mission-to-user authorization, user decision·preference 적용, exact rollback을 검증하고 hosted·multi-user 범위는 차단
 - 완료 기준:
   - provider별 status matrix가 코드, docs, smoke evidence와 일치
   - 실패/재시도/fallback을 면접에서 코드 수준으로 설명 가능

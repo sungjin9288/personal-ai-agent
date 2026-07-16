@@ -61,6 +61,34 @@ test('stub planner applies mission memory and same-workspace approved decisions'
   );
 });
 
+test('stub planner applies approved local user decisions and preferences', () => {
+  const userDecision = {
+    content: 'Narrow the verification path before requesting workspace execution again.',
+    kind: 'decision',
+    scope: 'user',
+    scopeId: 'user',
+  };
+  const userPreference = {
+    content: 'Keep the final recommendation concise.',
+    kind: 'preference',
+    scope: 'user',
+    scopeId: 'user',
+  };
+  const unrelatedUserFact = {
+    content: 'The user has an unrelated fact record.',
+    kind: 'fact',
+    scope: 'user',
+    scopeId: 'user',
+  };
+
+  const output = runPlanner([userDecision, userPreference, unrelatedUserFact]);
+
+  assert.deepEqual(output.adaptationNotes, [userDecision.content, userPreference.content]);
+  assert.ok(output.planSteps.includes(
+    'Narrow the verification path before requesting workspace execution again.',
+  ));
+});
+
 test('stub planner ignores workspace facts and decisions from another workspace', () => {
   const workspaceFact = {
     content: 'Narrow the verification path before requesting workspace execution again.',

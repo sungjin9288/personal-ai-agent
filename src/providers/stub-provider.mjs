@@ -1,4 +1,5 @@
 import { loadAgentTemplate } from '../agents/loader.mjs';
+import { GLOBAL_USER_SCOPE_ID } from '../core/constants.mjs';
 import { buildWorkspaceInspectStep, buildWorkspaceVerificationStep } from '../core/execution-utils.mjs';
 import { buildMissionQualityGate, renderMissionQualityGate } from '../core/mission-quality-gate.mjs';
 
@@ -70,6 +71,9 @@ function deriveMemoryAdaptation(
   const relevantEntries = memoryEntries.filter(
     (entry) =>
       (entry.scope === 'mission' && entry.scopeId === missionId) ||
+      (entry.scope === 'user' &&
+        entry.scopeId === GLOBAL_USER_SCOPE_ID &&
+        ['decision', 'preference'].includes(entry.kind)) ||
       (entry.scope === 'workspace' &&
         entry.scopeId === workspaceId &&
         entry.kind === 'decision' &&

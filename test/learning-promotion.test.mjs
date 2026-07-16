@@ -206,6 +206,69 @@ test('scope authorization records operator intent before workspace promotion', (
   ]);
 });
 
+test('scope authorization supports local single-user promotion across workspaces', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion, memoryEntries } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const authorization = promotion.authorizeLearningPromotionScope('lc-1', {
+    note: 'Reuse this reviewed decision for the local user.',
+    scope: 'user',
+  });
+  const result = promotion.resolveLearningPromotion('lc-1', {
+    decision: 'approve',
+    note: 'Apply the reviewed local user decision.',
+    scope: 'user',
+    target: 'memory',
+  });
+
+  assert.equal(authorization.scopeAuthorization.toScope, 'user');
+  assert.equal(authorization.scopeAuthorization.toScopeId, 'user');
+  assert.equal(memoryEntries[0].scope, 'user');
+  assert.equal(memoryEntries[0].scopeId, 'user');
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.status, 'consumed');
+});
+
+test('scope authorization blocks global user promotion from a tenant-bound workspace', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion } = makePromotion(store, {
+    getWorkspace: (id) => ({ id, name: 'Tenant workspace', tenantId: 'tenant-1' }),
+    now: () => FIXED_NOW,
+  });
+
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', {
+      note: 'This must not become a global user decision.',
+      scope: 'user',
+    }),
+    /limited to local workspaces without a tenant binding/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
 test('mission-scoped resolution does not consume an unused workspace authorization', () => {
   const candidate = validCandidate({
     evidence: {

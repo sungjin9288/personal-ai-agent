@@ -685,8 +685,8 @@ export function createLearningPromotion({
       throw new Error('Learning promotion scope authorization requires an explicit note.');
     }
     const targetScope = normalizeLearningPromotionScope(scope);
-    if (candidate.scope !== 'mission' || targetScope !== 'workspace') {
-      throw new Error('Only mission-to-workspace learning scope authorization is supported.');
+    if (candidate.scope !== 'mission' || !['user', 'workspace'].includes(targetScope)) {
+      throw new Error('Only mission-to-workspace or mission-to-user learning scope authorization is supported.');
     }
 
     const mission = getMission(candidate.missionId);
@@ -705,15 +705,21 @@ export function createLearningPromotion({
     ) {
       throw new Error('Learning promotion scope authorization evidence is incomplete.');
     }
+    if (targetScope === 'user' && normalizeText(workspace.tenantId)) {
+      throw new Error(
+        'User-scoped learning promotion is limited to local workspaces without a tenant binding.',
+      );
+    }
     if (getLearningPromotionExpirationPolicy(candidate).expired) {
       throw new Error(`Learning candidate ${candidateId} is expired.`);
     }
 
+    const targetScopeId = targetScope === 'workspace' ? workspace.id : GLOBAL_USER_SCOPE_ID;
     const existing = candidate.promotionScopeAuthorization;
     if (
       existing?.status === 'authorized' &&
       existing.toScope === targetScope &&
-      existing.toScopeId === workspace.id
+      existing.toScopeId === targetScopeId
     ) {
       return {
         learningCandidate: candidate,
@@ -733,7 +739,7 @@ export function createLearningPromotion({
       schemaVersion: 'personal-ai-agent-learning-promotion-scope-authorization/v1',
       status: 'authorized',
       toScope: targetScope,
-      toScopeId: workspace.id,
+      toScopeId: targetScopeId,
     };
     const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
       ...current,

@@ -32,6 +32,9 @@ export function createActionHandlerFactory({
 
     async function authorizeLearningPromotionScope(params) {
       const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
       const body = await readJsonBody(request);
       const result = service.authorizeLearningPromotionScope(candidateId, {
         note: String(body.note || '').trim(),
@@ -89,6 +92,9 @@ export function createActionHandlerFactory({
 
     async function remindLearningPromotion(params) {
       const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
       const body = await readJsonBody(request);
       const result = service.remindLearningPromotionStopConditions(
         {
@@ -105,6 +111,9 @@ export function createActionHandlerFactory({
 
     async function resolveLearningPromotion(params) {
       const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
       const body = await readJsonBody(request);
       const result = service.resolveLearningPromotion(candidateId, {
         decision: String(body.decision || '').trim(),
@@ -117,6 +126,9 @@ export function createActionHandlerFactory({
 
     async function rollbackLearningPromotion(params) {
       const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
       const body = await readJsonBody(request);
       const result = service.rollbackLearningPromotion(candidateId, {
         note: String(body.note || '').trim(),

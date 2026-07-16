@@ -43,6 +43,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 | Workspace decision conflict and revocation | When two approved workspace decisions are retrieved together, does one deterministic decision reach the provider and does revocation restore the previous safe state? | Eight stub runs select the newer revision from two candidates, expose only that decision, restore exact older-only artifacts after newer rollback, restore exact baseline after full rollback, and keep the foreign workspace at zero exposure | `npm run smoke:workspace-learning-conflict-revocation` |
 | Workspace learning operator override | Can a verified local operator temporarily select an older retrieved decision without injecting unrelated memory, and do expiration and clear restore the deterministic default? | Eight stub runs move newer→older override→newer expiry→older repin→newer clear with exact planner, deliverable, and quality parity while the foreign workspace remains isolated; a separate selection contract blocks an unretrieved override | `npm run smoke:workspace-learning-operator-override` |
 | Workspace learning operator surface | Can an operator inspect and control the bounded override without exposing notes or bypassing permission and tenant boundaries? | Local HTTP covers not-set→active→expired→cleared with sanitized payloads and timeline order; actual Chromium clicks set and clear controls with zero console errors | `npm run smoke:workspace-learning-operator-surface`, `npm run smoke:workspace-learning-operator-surface-browser` |
+| Local user learning personalization | Can an explicitly approved local user decision reach two tenant-free workspaces and disappear exactly after rollback? | Seven stub sessions apply one hash-bound user decision to sibling and cross-workspace missions, preserve audit order, reject tenant-bound authorization, and restore both exact baselines | `npm run smoke:local-user-learning-personalization` |
 | Source diversity | Can a non-dominant source remain visible? | A mission decision source remains in the selected context even when many workspace facts match the same query | `npm run smoke:retrieval-memory` |
 | Fact graph memory | Are facts mirrored with provenance? | Fact memories become active graph nodes with memory provenance and shared-keyword edges | `npm run smoke:fact-graph-memory` |
 | Fact lifecycle | Are revisions and deletions auditable? | Fact updates preserve revisions, kind changes retire nodes, deleted memory retires graph entries and edges | `npm run smoke:fact-graph-memory` |
@@ -69,6 +70,7 @@ npm run smoke:local-relevance-shadow-cache-lifecycle
 npm run smoke:local-relevance-shadow-cache-process-isolation
 npm run smoke:local-relevance-shadow-cache-termination-soak
 npm run smoke:approved-learning-rag-feedback
+npm run smoke:local-user-learning-personalization
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:instruction-boundary

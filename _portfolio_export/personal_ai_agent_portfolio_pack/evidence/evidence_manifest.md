@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, multi-scenario feedback quality, workspace-scoped personalization, conflict revocation, operator override fallback, and operator control surface
-- Source code modified: yes, content-free override read model, action inbox summary and controls, tenant-checked HTTP mutation, sanitized responses, local browser verification, and tracked screenshot evidence
-- New feature development: yes, cost-free operator visibility and set·clear controls over the verified P5 override lifecycle
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, multi-scenario feedback quality, workspace-scoped personalization, conflict revocation, operator controls, and local single-user personalization
+- Source code modified: yes, explicit local mission-to-user promotion, tenant-bound refusal, stub user decision and preference application, candidate mutation tenant checks, and content-free replay evidence
+- New feature development: yes, cost-free local single-user personalization across tenant-free workspaces with exact rollback
 
 ## Generated Evidence Files
 
@@ -70,6 +70,7 @@
 - `evidence/output-artifacts/workspace-learning-conflict-revocation.json`
 - `evidence/output-artifacts/workspace-learning-operator-override.json`
 - `evidence/output-artifacts/workspace-learning-operator-surface.json`
+- `evidence/output-artifacts/local-user-learning-personalization.json`
 
 ### Architecture
 
@@ -133,6 +134,7 @@
 - Workspace learning conflict and revocation: verified with `npm run smoke:workspace-learning-conflict-revocation`
 - Workspace learning operator override: verified with `npm run smoke:workspace-learning-operator-override`
 - Workspace learning operator surface: verified with `npm run smoke:workspace-learning-operator-surface` and local browser replay `npm run smoke:workspace-learning-operator-surface-browser`
+- Local user learning personalization: verified with `npm run smoke:local-user-learning-personalization`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

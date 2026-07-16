@@ -1,0 +1,429 @@
+{
+  "actualLocalUserScopedPersonalizationValidated": true,
+  "audit": {
+    "authorization": {
+      "at": "2026-07-16T22:37:20.131Z",
+      "candidateId": "learningcandidate_20260716223719_42b446",
+      "index": 14,
+      "kind": "learning-candidate-promotion-scope-authorized",
+      "missionId": "mission_20260716223719_86a46f",
+      "scopeAuthorizationId": "learningcandidate_20260716223719_42b446:scope-authorization:user",
+      "status": "authorized"
+    },
+    "promotion": {
+      "at": "2026-07-16T22:37:20.174Z",
+      "candidateId": "learningcandidate_20260716223719_42b446",
+      "index": 15,
+      "kind": "learning-candidate-promotion-approved",
+      "missionId": "mission_20260716223719_86a46f",
+      "scopeAuthorizationId": "learningcandidate_20260716223719_42b446:scope-authorization:user",
+      "status": "passed"
+    },
+    "rollback": {
+      "at": "2026-07-16T22:37:20.392Z",
+      "candidateId": "learningcandidate_20260716223719_42b446",
+      "index": 16,
+      "kind": "learning-candidate-promotion-rolled-back",
+      "missionId": "mission_20260716223719_86a46f",
+      "scopeAuthorizationId": "learningcandidate_20260716223719_42b446:scope-authorization:user",
+      "status": "memory-deleted"
+    }
+  },
+  "costFree": true,
+  "externalProviderCalls": "none",
+  "fixtureBinding": {
+    "caseId": "local-user-verification-preference",
+    "expectedPlanStepHash": "33cbb1e2dc4083e7cea53965a8376e4db07d0d030333a5e6e48af3f74f9e7a05",
+    "fixtureHash": "038a2ff2bd1e81f9f286e22916ce8ad746d1169df142230de22daaa6479c01fe",
+    "promotionNoteHash": "48cf6ceea23f98e85116cf9a62c0001e3189de3a4298fe282142dd6d6ac203f7",
+    "scopeAuthorizationNoteHash": "87a73039f80bd6fa04814ae8cfb74218ab1471501361e605d1d0af23e5a86656",
+    "sourceObjectiveHash": "1b67f09a1f85a56463f936a9164ffffd83bd0eef8f7ac467c1898a99e966236a",
+    "targetObjectiveHash": "c071ca6b6f3a9c36f5f7e56952e5c5a4a60e0a50bf15111829357fbedf0599a1"
+  },
+  "observedAt": "2026-07-16T22:37:20.880Z",
+  "phases": {
+    "crossWorkspace": {
+      "afterPromotion": {
+        "adaptation": {
+          "deliverableApplied": true,
+          "planStepCount": 4,
+          "plannerApplied": true
+        },
+        "artifacts": {
+          "deliverableHash": "64f60d9a90ebef621f550b7b97a585fce4a3be70db112bc3a67cc83bca89dfc0",
+          "plannerHash": "e0f70da06089d6add160a4d809ea6559802d0d8d06426cb8f119f662aed13477",
+          "retrievalHash": "a58dcb23ee716411064cdbb51211c8153f9da18f4a77568ce147188b0e59617f"
+        },
+        "externalProviderCallCount": 0,
+        "memoryExposure": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "providerId": "stub",
+        "retrieval": {
+          "contentHash": "f4bb8a0c2cc93a4433821046c247611a2c6af220d76895cf428c18fda5158a81",
+          "matchTermCount": 10,
+          "scope": "user",
+          "scopeId": "user",
+          "sourceId": "memory_20260716223720_0f8da5"
+        },
+        "reviewerVerdict": "pass",
+        "sessionId": "session_20260716223720_675e5d",
+        "status": "completed"
+      },
+      "afterRollback": {
+        "adaptation": {
+          "deliverableApplied": false,
+          "planStepCount": 3,
+          "plannerApplied": false
+        },
+        "artifacts": {
+          "deliverableHash": "e5060c5813f6c3184471604c23bdd44911748d78f15229c71d9aaae538ba7ef1",
+          "plannerHash": "136fd6efba1d2734a8061394eef62f852dbfea7218cb5f75e6f913295983f85d",
+          "retrievalHash": null
+        },
+        "externalProviderCallCount": 0,
+        "memoryExposure": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "providerId": "stub",
+        "retrieval": {
+          "contentHash": null,
+          "matchTermCount": 0,
+          "scope": "",
+          "scopeId": "",
+          "sourceId": ""
+        },
+        "reviewerVerdict": "pass",
+        "sessionId": "session_20260716223720_394a1a",
+        "status": "completed"
+      },
+      "beforePromotion": {
+        "adaptation": {
+          "deliverableApplied": false,
+          "planStepCount": 3,
+          "plannerApplied": false
+        },
+        "artifacts": {
+          "deliverableHash": "e5060c5813f6c3184471604c23bdd44911748d78f15229c71d9aaae538ba7ef1",
+          "plannerHash": "136fd6efba1d2734a8061394eef62f852dbfea7218cb5f75e6f913295983f85d",
+          "retrievalHash": null
+        },
+        "externalProviderCallCount": 0,
+        "memoryExposure": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "providerId": "stub",
+        "retrieval": {
+          "contentHash": null,
+          "matchTermCount": 0,
+          "scope": "",
+          "scopeId": "",
+          "sourceId": ""
+        },
+        "reviewerVerdict": "pass",
+        "sessionId": "session_20260716223719_94aab4",
+        "status": "completed"
+      }
+    },
+    "sibling": {
+      "afterPromotion": {
+        "adaptation": {
+          "deliverableApplied": true,
+          "planStepCount": 4,
+          "plannerApplied": true
+        },
+        "artifacts": {
+          "deliverableHash": "a3fbe79bd07c4d6490eae0c173b44a209a9b6509555bcd94131910468da44863",
+          "plannerHash": "d838c28013fb2623c705747f61b28f2763c51f70a2f0debed1d0fb62a1cf59d1",
+          "retrievalHash": "a58dcb23ee716411064cdbb51211c8153f9da18f4a77568ce147188b0e59617f"
+        },
+        "externalProviderCallCount": 0,
+        "memoryExposure": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "providerId": "stub",
+        "retrieval": {
+          "contentHash": "f4bb8a0c2cc93a4433821046c247611a2c6af220d76895cf428c18fda5158a81",
+          "matchTermCount": 10,
+          "scope": "user",
+          "scopeId": "user",
+          "sourceId": "memory_20260716223720_0f8da5"
+        },
+        "reviewerVerdict": "pass",
+        "sessionId": "session_20260716223720_c22314",
+        "status": "completed"
+      },
+      "afterRollback": {
+        "adaptation": {
+          "deliverableApplied": false,
+          "planStepCount": 3,
+          "plannerApplied": false
+        },
+        "artifacts": {
+          "deliverableHash": "3385ea97752ca1a15c8a2f6ba69f9c4238e71d7dcfa64d136bd9eedf5c55b83d",
+          "plannerHash": "60ba358ae277b79bd648c48a5fa853755295a746f112a645cdb9b22ee598ab5c",
+          "retrievalHash": null
+        },
+        "externalProviderCallCount": 0,
+        "memoryExposure": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "providerId": "stub",
+        "retrieval": {
+          "contentHash": null,
+          "matchTermCount": 0,
+          "scope": "",
+          "scopeId": "",
+          "sourceId": ""
+        },
+        "reviewerVerdict": "pass",
+        "sessionId": "session_20260716223720_fe3991",
+        "status": "completed"
+      },
+      "beforePromotion": {
+        "adaptation": {
+          "deliverableApplied": false,
+          "planStepCount": 3,
+          "plannerApplied": false
+        },
+        "artifacts": {
+          "deliverableHash": "3385ea97752ca1a15c8a2f6ba69f9c4238e71d7dcfa64d136bd9eedf5c55b83d",
+          "plannerHash": "60ba358ae277b79bd648c48a5fa853755295a746f112a645cdb9b22ee598ab5c",
+          "retrievalHash": null
+        },
+        "externalProviderCallCount": 0,
+        "memoryExposure": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "providerId": "stub",
+        "retrieval": {
+          "contentHash": null,
+          "matchTermCount": 0,
+          "scope": "",
+          "scopeId": "",
+          "sourceId": ""
+        },
+        "reviewerVerdict": "pass",
+        "sessionId": "session_20260716223720_13f712",
+        "status": "completed"
+      }
+    }
+  },
+  "productionReadyClaim": false,
+  "promotion": {
+    "candidateId": "learningcandidate_20260716223719_42b446",
+    "finalStatus": "rolled-back",
+    "memoryContentHash": "f4bb8a0c2cc93a4433821046c247611a2c6af220d76895cf428c18fda5158a81",
+    "memoryId": "memory_20260716223720_0f8da5",
+    "memoryRollbackStatus": "memory-deleted",
+    "rollbackAction": "delete-memory-entry",
+    "rollbackStatus": "completed",
+    "scope": "user",
+    "scopeAuthorizationFromScope": "mission",
+    "scopeAuthorizationFromScopeId": "mission_20260716223719_86a46f",
+    "scopeAuthorizationId": "learningcandidate_20260716223719_42b446:scope-authorization:user",
+    "scopeAuthorizationStatus": "consumed",
+    "scopeAuthorizationToScope": "user",
+    "scopeAuthorizationToScopeId": "user",
+    "scopeId": "user",
+    "target": "memory",
+    "verificationId": "learningcandidate_20260716223719_42b446:promotion-verification:approve",
+    "verificationStatus": "passed"
+  },
+  "quality": {
+    "crossWorkspace": {
+      "afterPromotion": {
+        "failureChecks": [],
+        "id": "local-user-verification-preference-cross-workspace",
+        "metrics": {
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "status": "passed",
+        "resultHash": "27369933afddb0d45eed15d2a035fb8a401182cba1dd4b3c5aa6db18b929ef9c"
+      },
+      "afterRollback": {
+        "failureChecks": [
+          "retrieval-hit-rate",
+          "expected-source-citation-rate",
+          "required-term-coverage"
+        ],
+        "id": "local-user-verification-preference-cross-workspace",
+        "metrics": {
+          "citationGroundingRate": 0,
+          "expectedSourceCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 0.6667,
+          "retrievalHitRate": 0,
+          "unsupportedCitationRate": 0
+        },
+        "status": "failed",
+        "resultHash": "7f8f9b449e59e8c24f2274af4a99cf65e10c5f0faeac317c2d0d59b0fce09a6d"
+      },
+      "beforePromotion": {
+        "failureChecks": [
+          "retrieval-hit-rate",
+          "expected-source-citation-rate",
+          "required-term-coverage"
+        ],
+        "id": "local-user-verification-preference-cross-workspace",
+        "metrics": {
+          "citationGroundingRate": 0,
+          "expectedSourceCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 0.6667,
+          "retrievalHitRate": 0,
+          "unsupportedCitationRate": 0
+        },
+        "status": "failed",
+        "resultHash": "7f8f9b449e59e8c24f2274af4a99cf65e10c5f0faeac317c2d0d59b0fce09a6d"
+      }
+    },
+    "sibling": {
+      "afterPromotion": {
+        "failureChecks": [],
+        "id": "local-user-verification-preference-sibling",
+        "metrics": {
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "status": "passed",
+        "resultHash": "6aee014324ac6d7bf21151f0bf99b9530d085196582ceffc725ff56f7c402ab7"
+      },
+      "afterRollback": {
+        "failureChecks": [
+          "retrieval-hit-rate",
+          "expected-source-citation-rate",
+          "required-term-coverage"
+        ],
+        "id": "local-user-verification-preference-sibling",
+        "metrics": {
+          "citationGroundingRate": 0,
+          "expectedSourceCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 0.6667,
+          "retrievalHitRate": 0,
+          "unsupportedCitationRate": 0
+        },
+        "status": "failed",
+        "resultHash": "0d3c05884c3a9afddf205ab7896b872d3e4265e7e58eb35a8f5d1771c43c02cc"
+      },
+      "beforePromotion": {
+        "failureChecks": [
+          "retrieval-hit-rate",
+          "expected-source-citation-rate",
+          "required-term-coverage"
+        ],
+        "id": "local-user-verification-preference-sibling",
+        "metrics": {
+          "citationGroundingRate": 0,
+          "expectedSourceCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 0.6667,
+          "retrievalHitRate": 0,
+          "unsupportedCitationRate": 0
+        },
+        "status": "failed",
+        "resultHash": "0d3c05884c3a9afddf205ab7896b872d3e4265e7e58eb35a8f5d1771c43c02cc"
+      }
+    }
+  },
+  "qualityBoundary": {
+    "actualModelTrainingExecuted": false,
+    "generalAnswerQualityImprovementValidated": false,
+    "generalUserPersonalizationValidated": false,
+    "hostedTenantUserPersonalizationValidated": false,
+    "multiUserIsolationValidated": false,
+    "singleUserGlobalScopeValidated": true
+  },
+  "results": {
+    "auditOrderingPreserved": true,
+    "baselineClean": true,
+    "controlledQualityDelta": true,
+    "distinctSessionsPassed": true,
+    "externalProviderIsolationPassed": true,
+    "promotionVerified": true,
+    "reviewerPassPreserved": true,
+    "rollbackParity": true,
+    "topologyBound": true,
+    "userFeedbackApplied": true
+  },
+  "schemaVersion": "personal-ai-agent-local-user-learning-personalization/v1",
+  "sourceRun": {
+    "adaptation": {
+      "deliverableApplied": false,
+      "planStepCount": 3,
+      "plannerApplied": false
+    },
+    "artifacts": {
+      "deliverableHash": "e9cfb8f639161a0204d967d01362dc5a7c945ceb18ae8982613f98482f287f41",
+      "plannerHash": "6b6d1f2a05239db7be30dc53ecf4e0e8a9799df30cd01855ec048a6fa401266f",
+      "retrievalHash": null
+    },
+    "externalProviderCallCount": 0,
+    "memoryExposure": {
+      "deliverableContainsMemory": false,
+      "plannerPromptContainsMemory": false,
+      "retrievalContainsMemory": false
+    },
+    "providerId": "stub",
+    "retrieval": {
+      "contentHash": null,
+      "matchTermCount": 0,
+      "scope": "",
+      "scopeId": "",
+      "sourceId": ""
+    },
+    "reviewerVerdict": "pass",
+    "sessionId": "session_20260716223719_fc94fe",
+    "status": "completed"
+  },
+  "status": "local-user-learning-personalization-passed-local-only",
+  "topology": {
+    "crossWorkspaceId": "workspace_20260716223719_022253",
+    "crossWorkspaceMission": {
+      "id": "mission_20260716223719_3f12b5",
+      "objectiveHash": "c071ca6b6f3a9c36f5f7e56952e5c5a4a60e0a50bf15111829357fbedf0599a1",
+      "workspaceId": "workspace_20260716223719_022253"
+    },
+    "siblingMission": {
+      "id": "mission_20260716223719_ca38d5",
+      "objectiveHash": "c071ca6b6f3a9c36f5f7e56952e5c5a4a60e0a50bf15111829357fbedf0599a1",
+      "workspaceId": "workspace_20260716223719_3cc4b8"
+    },
+    "sourceMission": {
+      "id": "mission_20260716223719_86a46f",
+      "objectiveHash": "1b67f09a1f85a56463f936a9164ffffd83bd0eef8f7ac467c1898a99e966236a",
+      "workspaceId": "workspace_20260716223719_3cc4b8"
+    },
+    "sourceWorkspaceId": "workspace_20260716223719_3cc4b8"
+  },
+  "evidenceHash": "c3f155002a5ab67033a74a00d711999daaa1c6da1ad804d45e6bcb0df1e8110b",
+  "id": "local-user-learning-personalization-c3f155002a5ab67033a74a00d711999daaa1c6da1ad804d45e6bcb0df1e8110b"
+}
