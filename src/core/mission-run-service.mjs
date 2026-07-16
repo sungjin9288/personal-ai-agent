@@ -240,6 +240,7 @@ export function createMissionRunService({
   now,
   providerRegistry,
   recordGatewayEvent,
+  retrievalRuntime,
   store,
 }) {
   function collectRelevantMemoryEntries({ mission, workspace }) {
@@ -662,7 +663,7 @@ export function createMissionRunService({
       role,
       specialistKind: runMetadata.specialistKind,
     });
-    const { corpusRecords: retrievalCorpusRecords, items: retrievalContext } = buildRetrievalContextWithCorpus({
+    const retrievalInput = {
       attachments,
       memoryEntries,
       mission,
@@ -670,7 +671,11 @@ export function createMissionRunService({
       previousOutputs,
       providerRole,
       role,
-    });
+      workspace,
+    };
+    const { corpusRecords: retrievalCorpusRecords, items: retrievalContext } = retrievalRuntime
+      ? await retrievalRuntime.retrieve(retrievalInput)
+      : buildRetrievalContextWithCorpus(retrievalInput);
     const providerInput = {
       attachments,
       role,

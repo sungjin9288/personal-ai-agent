@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Local Semantic Retrieval Runtime
+
+- connected the bounded local embedding contract and deterministic semantic·lexical reranker to mission stages only when the operator explicitly selects `semantic-rerank`
+- preserved the exact lexical result by default, kept retrieval item and store shapes unchanged, and made rollback a state-free mode switch
+- rejected cross-scope corpus and local command failures before provider prompt, artifact, or agent-run side effects while keeping actual local model validation and production claims false
+
 ## 2026-07-16 Candidate Model Evaluation Gate
 
 - added a provider-neutral candidate evidence envelope that distinguishes fixture simulation from recorded actual-model evaluation

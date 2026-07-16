@@ -98,6 +98,7 @@
     "smoke:retrieval-corpus-contract": "node scripts/smoke-retrieval-corpus-contract.mjs",
     "smoke:retrieval-quality-evaluation": "node scripts/smoke-retrieval-quality-evaluation.mjs",
     "smoke:semantic-retrieval-experiment": "node scripts/smoke-semantic-retrieval-experiment.mjs",
+    "smoke:semantic-retrieval-runtime": "node scripts/smoke-semantic-retrieval-runtime.mjs",
     "smoke:retrieval-reranking-experiment": "node scripts/smoke-retrieval-reranking-experiment.mjs",
     "smoke:approved-training-record": "node scripts/smoke-approved-training-record.mjs",
     "smoke:training-dataset-quality": "node scripts/smoke-training-dataset-quality.mjs",

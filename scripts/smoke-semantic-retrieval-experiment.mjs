@@ -122,7 +122,7 @@ assert.equal(
 );
 
 for (const term of [
-  'status: candidate-model-evaluation-current',
+  'status: local-semantic-runtime-current',
   '| R3 Optional semantic retrieval | 완료 |',
   '| R4 Reranking | 완료 |',
   '| L1 승인된 학습 데이터 | 완료 |',

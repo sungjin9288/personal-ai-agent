@@ -56,6 +56,9 @@ for (const key of [
   'PERSONAL_AI_AGENT_TENANT_MODE',
   'PERSONAL_AI_AGENT_TENANT_CLAIM',
   'PERSONAL_AI_AGENT_MARKITDOWN_BIN',
+  'PERSONAL_AI_AGENT_RETRIEVAL_MODE',
+  'PERSONAL_AI_AGENT_EMBEDDING_COMMAND',
+  'PERSONAL_AI_AGENT_EMBEDDING_ARGS_JSON',
 ]) {
   assert.equal(envKeys.has(key), true, `.env.example missing runtime env ${key}`);
 }

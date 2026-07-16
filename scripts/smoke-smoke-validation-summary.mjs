@@ -31,6 +31,7 @@ const expectedCommands = [
   'npm run smoke:retrieval-quality-evaluation',
   'npm run smoke:semantic-retrieval-experiment',
   'npm run smoke:retrieval-reranking-experiment',
+  'npm run smoke:semantic-retrieval-runtime',
   'npm run smoke:approved-training-record',
   'npm run smoke:training-dataset-quality',
   'npm run smoke:fine-tuning-readiness',

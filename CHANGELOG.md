@@ -16,6 +16,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a credential-free retrieval evaluation gate for controlled precision, recall, noise, source diversity, and frozen lexical/BM25/phrase baseline comparison.
 - Added a bounded local-command embedding protocol and scope-locked semantic retrieval experiment without enabling the mission runtime path.
 - Added a deterministic semantic-plus-lexical reranking experiment with controlled tie quality comparison, measured local latency, and state-free baseline rollback without enabling the mission runtime path.
+- Added an explicit local semantic-and-lexical mission retrieval runtime with exact lexical default parity, scope refusal, failure-before-provider behavior, and state-free configuration rollback without claiming real embedding model validation.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -38,8 +39,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,258,404 bytes`
-- SHA-256: `6422d8de2a7bb447484ced102746d18c39abcf4a316ffce14c8bef1995b654e3`
+- Size: `2,259,995 bytes`
+- SHA-256: `e820f80e8c63f2f0fd8aa91b1aefda16549f631afe7de0218c243b17bf306b26`
 
 Included public surfaces:
 

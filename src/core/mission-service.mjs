@@ -20,6 +20,7 @@ import { createMissionMemoryService } from './mission-memory-service.mjs';
 import { createMissionReadService } from './mission-read-service.mjs';
 import { createMissionRunService } from './mission-run-service.mjs';
 import { createProviderRuntimeService } from './provider-runtime-service.mjs';
+import { createRetrievalRuntimeServiceFromEnvironment } from './retrieval-runtime-service.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
 
@@ -31,6 +32,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
   const docService = createDocService({ rootDir });
   const factGraph = createFactGraphService({ store });
   const providerRegistry = createProviderRegistry({ rootDir });
+  const retrievalRuntime = createRetrievalRuntimeServiceFromEnvironment();
   const harness = createRuntimeHarness({ store });
   const { recordGatewayEvent } = createGatewayEventCoordinator({ harness, now, store });
   const catalogService = createMissionCatalogService({
@@ -167,6 +169,7 @@ export function createMissionService({ store, rootDir = store.rootDir }) {
     now,
     providerRegistry,
     recordGatewayEvent,
+    retrievalRuntime,
     store,
   });
   const {

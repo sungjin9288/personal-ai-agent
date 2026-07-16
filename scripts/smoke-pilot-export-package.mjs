@@ -286,7 +286,7 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: candidate-model-evaluation-current/);
+assert.match(mlRagDevelopmentPlan, /status: local-semantic-runtime-current/);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);

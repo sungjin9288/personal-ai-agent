@@ -48,7 +48,7 @@ for (const record of records) {
 assert.deepEqual(fs.readFileSync(statePath), stateBefore, 'dataset builder must not mutate the store');
 
 for (const term of [
-  'status: candidate-model-evaluation-current',
+  'status: local-semantic-runtime-current',
   '| L2 Dataset quality gate | 완료 |',
   '| F1 Fine-tuning readiness | 완료 |',
   'fixtures/training-dataset-quality-cases-v1.json',

@@ -343,8 +343,8 @@ export function scoreRetrievalSnippet(snippet, queryTokenSet) {
   return score;
 }
 
-function collectRetrievalContext({ attachments, memoryEntries, mission, pack, previousOutputs, providerRole, role }) {
-  const queryText = [
+export function buildRetrievalQueryText({ mission, pack, previousOutputs, providerRole, role } = {}) {
+  return [
     mission.title,
     mission.objective,
     mission.deliverableType,
@@ -360,6 +360,10 @@ function collectRetrievalContext({ attachments, memoryEntries, mission, pack, pr
   ]
     .filter(Boolean)
     .join(' ');
+}
+
+function collectRetrievalContext({ attachments, memoryEntries, mission, pack, previousOutputs, providerRole, role }) {
+  const queryText = buildRetrievalQueryText({ mission, pack, previousOutputs, providerRole, role });
   const queryTokens = tokenizeRetrievalText(queryText);
   const queryTokenSet = new Set(queryTokens);
   const candidates = [];

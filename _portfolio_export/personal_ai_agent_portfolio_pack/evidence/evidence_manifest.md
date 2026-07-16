@@ -96,6 +96,7 @@
 - Retrieval quality evaluation: verified with `npm run smoke:retrieval-quality-evaluation`
 - Semantic retrieval experiment: verified with `npm run smoke:semantic-retrieval-experiment`
 - Retrieval reranking experiment: verified with `npm run smoke:retrieval-reranking-experiment`
+- Local semantic retrieval runtime: verified with `npm run smoke:semantic-retrieval-runtime`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

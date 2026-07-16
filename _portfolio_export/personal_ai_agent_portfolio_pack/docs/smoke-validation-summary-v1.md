@@ -42,6 +42,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Retrieval quality evaluation | `npm run smoke:retrieval-quality-evaluation` | Verifies controlled precision, recall, noise, source diversity, frozen baseline replay, and candidate regression rejection |
 | Semantic retrieval experiment | `npm run smoke:semantic-retrieval-experiment` | Verifies bounded local embedding protocol, scope lock, controlled synonym comparison, and runtimeActivation=false boundary |
 | Retrieval reranking experiment | `npm run smoke:retrieval-reranking-experiment` | Verifies deterministic semantic+lexical scoring, controlled tie quality comparison, measured local latency, exact rollback order, and runtimeActivation=false boundary |
+| Local semantic retrieval runtime | `npm run smoke:semantic-retrieval-runtime` | Verifies default lexical parity, explicit local opt-in, mission scope lock, semantic+lexical selection, failure-before-provider, and state-free rollback |
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
@@ -77,6 +78,7 @@ npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-quality-evaluation
 npm run smoke:semantic-retrieval-experiment
 npm run smoke:retrieval-reranking-experiment
+npm run smoke:semantic-retrieval-runtime
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
