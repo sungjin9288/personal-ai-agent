@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T09:14:45.301Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T09:14:36.936Z
 - branch: codex/rag-semantic-retrieval-experiment
 - commit: 4b4849e45be00bd4c2ec352dd81311a20e845385

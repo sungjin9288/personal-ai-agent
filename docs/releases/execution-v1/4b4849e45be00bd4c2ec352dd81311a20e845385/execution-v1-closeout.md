@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T09:14:45.301Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T09:14:37.003Z
 - branch: codex/rag-semantic-retrieval-experiment
 - commit: 4b4849e45be00bd4c2ec352dd81311a20e845385
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4b4849e45be00bd4c2ec352dd81311a20e845385/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
