@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T20:24:55.284Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T20:24:54.326Z
 - localDate: 2026-07-17
 - branch: codex/workspace-learning-personalization
 - commit: 42e3758ed45da56233f3a2c4954f40aa3fe5191d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/42e3758ed45da56233f3a2c4954f40aa3fe5191d](releases/execution-v1/42e3758ed45da56233f3a2c4954f40aa3fe5191d)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/42e3758ed45da56233f3a2c4954f40aa3fe5191d/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/42e3758ed45da56233f3a2c4954f40aa3fe5191d/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/42e3758ed45da56233f3a2c4954f40aa3fe5191d](docs/releases/execution-v1/42e3758ed45da56233f3a2c4954f40aa3fe5191d)
 - visualArtifactSetSha256: c33b2e4f008992bfae5c78a5c45d097a85a3734da0ff8e68e9691621adf5ddaa
 - commitPushStatus: not pushed, origin/codex/workspace-learning-personalization not found
 

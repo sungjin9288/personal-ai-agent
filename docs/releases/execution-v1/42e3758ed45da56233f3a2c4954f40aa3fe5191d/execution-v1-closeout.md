@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T20:24:55.284Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T20:24:47.752Z
 - branch: codex/workspace-learning-personalization
 - commit: 42e3758ed45da56233f3a2c4954f40aa3fe5191d
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/42e3758ed45da56233f3a2c4954f40aa3fe5191d/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

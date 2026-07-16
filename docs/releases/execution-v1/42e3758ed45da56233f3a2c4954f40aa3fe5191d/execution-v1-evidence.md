@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T20:24:55.284Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T20:24:47.700Z
 - branch: codex/workspace-learning-personalization
 - commit: 42e3758ed45da56233f3a2c4954f40aa3fe5191d
