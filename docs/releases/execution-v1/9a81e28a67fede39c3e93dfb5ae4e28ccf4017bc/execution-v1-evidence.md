@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T12:07:14.264Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T12:07:06.775Z
 - branch: codex/rag-local-semantic-runtime
 - commit: 9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T12:07:14.264Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T12:07:13.287Z
 - localDate: 2026-07-16
 - branch: codex/rag-local-semantic-runtime
 - commit: 9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc](releases/execution-v1/9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc](docs/releases/execution-v1/9a81e28a67fede39c3e93dfb5ae4e28ccf4017bc)
 - visualArtifactSetSha256: 81dff7f57e305a6a72be31abfe6213750e9bcd6061045d7eafd99e0fbde5766a
 - commitPushStatus: not pushed, origin/codex/rag-local-semantic-runtime not found
 
