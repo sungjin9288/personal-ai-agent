@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Local Reranker Resource Envelope
+
+- added a lexical-baseline top-2 candidate selector and shared local relevance benchmark runner that verify expected-source coverage before any model scoring
+- evaluated the installed `qwen2.5:3b` without downloads or external provider calls, preserving 15/15 and hard-negative 3/3 quality while reducing recorded inference from 90 to 60 and p95 from 1425.321ms to 924.449ms
+- recorded the Ollama loaded-model and VRAM footprint, retained the higher observed maximum latency, and kept qualification, runtime activation, and production claims blocked on sustained resource and governance evidence
+
 ## 2026-07-16 Local Relevance Reranker Evaluation
 
 - evaluated each query-document pair independently with the already installed qwen2.5 3B model and structured integer scores instead of order-sensitive batch selection

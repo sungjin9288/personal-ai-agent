@@ -21,6 +21,7 @@ const semanticRuntimeSmoke = readRequiredFile('scripts/smoke-semantic-retrieval-
 const localModelQualificationSmoke = readRequiredFile('scripts/smoke-local-embedding-model-qualification.mjs');
 const localRetrievalRobustnessSmoke = readRequiredFile('scripts/smoke-local-retrieval-robustness.mjs');
 const localRelevanceRerankerSmoke = readRequiredFile('scripts/smoke-local-relevance-reranker.mjs');
+const localRerankerResourceEnvelopeSmoke = readRequiredFile('scripts/smoke-local-reranker-resource-envelope.mjs');
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
@@ -59,6 +60,10 @@ assert.equal(
   packageJson.scripts['smoke:local-relevance-reranker'],
   'node scripts/smoke-local-relevance-reranker.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:local-reranker-resource-envelope'],
+  'node scripts/smoke-local-reranker-resource-envelope.mjs',
+);
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
   packageJson.scripts['smoke:instruction-boundary'],
@@ -87,6 +92,7 @@ for (const term of [
   'npm run smoke:local-embedding-model-qualification',
   'npm run smoke:local-retrieval-robustness',
   'npm run smoke:local-relevance-reranker',
+  'npm run smoke:local-reranker-resource-envelope',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -121,6 +127,19 @@ for (const smokeTerm of ['buildFactCorpusRecord', 'contentHash', 'chunkId', 'rev
 
 for (const smokeTerm of ['precisionAtK', 'recallAtK', 'noiseRateAtK', 'sourceDiversityRate']) {
   assertContains(retrievalQualitySmoke, smokeTerm, `retrieval quality smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of [
+  'inferenceReductionRate',
+  'qualityParity',
+  'shortlistCoveragePassed',
+  'loadedModelBytes',
+]) {
+  assertContains(
+    localRerankerResourceEnvelopeSmoke,
+    smokeTerm,
+    `local reranker resource envelope smoke missing ${smokeTerm}`,
+  );
 }
 
 for (const smokeTerm of ['createLocalCommandEmbeddingAdapter', 'allowedScopes', 'runtimeActivation']) {

@@ -57,6 +57,26 @@ test('loopback JSON client permits only the recorded structured generation path'
   }
 });
 
+test('loopback JSON client permits the read-only loaded-model resource path', async () => {
+  const server = http.createServer((request, response) => {
+    assert.equal(request.url, '/api/ps');
+    assert.equal(request.method, 'GET');
+    response.setHeader('content-type', 'application/json');
+    response.end(JSON.stringify({ models: [{ name: 'fixture', size: 1024, size_vram: 512 }] }));
+  });
+  await listen(server);
+  try {
+    const result = await requestLoopbackJson({
+      endpoint: endpointFor(server),
+      pathname: '/api/ps',
+    });
+    assert.equal(result.models[0].size, 1024);
+    assert.equal(result.models[0].size_vram, 512);
+  } finally {
+    await close(server);
+  }
+});
+
 test('Ollama command exchanges the embedding protocol with a loopback server', async () => {
   let receivedBody;
   const server = http.createServer(async (request, response) => {

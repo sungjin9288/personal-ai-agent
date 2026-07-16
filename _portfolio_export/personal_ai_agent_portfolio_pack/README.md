@@ -313,6 +313,7 @@ npm run smoke:semantic-retrieval-runtime
 npm run smoke:local-embedding-model-qualification
 npm run smoke:local-retrieval-robustness
 npm run smoke:local-relevance-reranker
+npm run smoke:local-reranker-resource-envelope
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
@@ -490,7 +491,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - There is no public hosted demo URL. The current demo is the credential-free representative replay and evidence package.
 - The recorded walkthrough is currently a recording script and acceptance checklist, not a published video URL.
 - Customer usage metrics, cost reduction claims, and production SLA claims are intentionally not included because this repository does not contain supporting evidence for them.
-- The answer-quality and retrieval fixtures are not general benchmarks. `qwen2.5:3b` semantic+lexical scoring regressed to 0.5333 against the lexical baseline's 0.6667 on the recorded 15-case suite, while independent local relevance scoring reached 1.0 with repeat-stable scores (`npm run smoke:local-relevance-reranker`). Runtime activation remains blocked on license, OS-level egress isolation, resource/latency, rollback-owner, and integration approval.
+- The answer-quality and retrieval fixtures are not general benchmarks. `qwen2.5:3b` semantic+lexical scoring regressed to 0.5333 against the lexical baseline's 0.6667 on the recorded 15-case suite, while independent local relevance scoring reached 1.0 with repeat-stable scores (`npm run smoke:local-relevance-reranker`). The evaluation-only lexical top-2 shortlist preserved that 15-case result while reducing recorded inference count from 90 to 60 and p95 from 1425.321ms to 924.449ms, but its maximum observation increased from 1462.735ms to 1643.582ms (`npm run smoke:local-reranker-resource-envelope`). Runtime activation remains blocked on license, OS-level egress isolation, approved resource limits, sustained concurrency and thermal validation, rollback-owner, and integration approval.
 
 ## Links
 

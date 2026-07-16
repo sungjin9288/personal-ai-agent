@@ -35,6 +35,7 @@ const expectedCommands = [
   'npm run smoke:local-embedding-model-qualification',
   'npm run smoke:local-retrieval-robustness',
   'npm run smoke:local-relevance-reranker',
+  'npm run smoke:local-reranker-resource-envelope',
   'npm run smoke:approved-training-record',
   'npm run smoke:training-dataset-quality',
   'npm run smoke:fine-tuning-readiness',

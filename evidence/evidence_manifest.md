@@ -54,6 +54,7 @@
 - `evidence/output-artifacts/local-embedding-model-qualification.json`
 - `evidence/output-artifacts/local-retrieval-robustness.json`
 - `evidence/output-artifacts/local-relevance-reranker-evaluation.json`
+- `evidence/output-artifacts/local-reranker-resource-envelope.json`
 
 ### Architecture
 
@@ -103,6 +104,7 @@
 - Local embedding model qualification: verified with `npm run smoke:local-embedding-model-qualification`
 - Local retrieval robustness: verified with `npm run smoke:local-retrieval-robustness`
 - Local relevance reranker: verified with `npm run smoke:local-relevance-reranker`
+- Local reranker resource envelope: verified with `npm run smoke:local-reranker-resource-envelope`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

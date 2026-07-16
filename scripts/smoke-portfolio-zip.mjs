@@ -58,6 +58,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-embedding-model-qualification.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-retrieval-robustness.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-relevance-reranker-evaluation.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-reranker-resource-envelope.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/operator-surface-demo-browser-report.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/operator-surface-mission-run.png',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/operator-surface-provider-readiness.png',

@@ -107,13 +107,14 @@
 - 완료: 설치된 qwen2.5 3종을 동일 retrieval suite로 비교한 local embedding qualification, 3B quality pass와 license·network·resource·rollback governance blocker 분리
 - 완료: qwen2.5 3B를 canonical·paraphrase·noisy·cross-language·hard-negative 15-case로 확장 평가하고 lexical보다 낮은 결과를 failed-keep-lexical 기준선으로 고정
 - 완료: qwen2.5 3B를 source별 독립 structured relevance scorer로 재평가해 반복 안정적 15-case·hard-negative 통과를 기록하고 governance·runtime activation 차단 유지
+- 완료: lexical top-2 shortlist로 동일 15-case·hard-negative 품질을 유지하면서 inference·p50·p95·total 감소와 loaded-model footprint를 기록하고 maximum regression·governance·runtime activation 차단 유지
 - 완료: reviewer pass·operator approval·promotion verification·artifact lineage를 요구하는 sanitized training record와 content·lineage hash contract
 - 완료: deterministic content·lineage·near-response deduplication, mission-scope train·validation split, leakage 검사와 content-free dataset manifest
 - 완료: provider-neutral train·validation JSONL, Q1 answer-quality baseline, content-free evaluation manifest와 reviewer-pending fine-tuning readiness packet
 - 완료: same-suite fixture candidate의 품질·증적·권한 비교, regression keep-baseline과 rollout-blocked rollback gate
 - 외부 작업: provider·model·budget·data transfer·reviewer·rollback owner 승인 후 별도 fine-tuning submission adapter 검토
 - 외부 작업: 실제 trained candidate evidence와 target runtime 결과 확보 후 reviewer 승인 기반 model rollout 검토
-- 외부 작업: 선택된 qwen2.5 3B의 license owner 검토, Ollama cloud 차단·OS-level egress isolation, resource envelope와 rollback owner 승인
+- 외부 작업: 선택된 qwen2.5 3B의 license owner 검토, OS-level egress isolation, 승인된 resource limit·sustained concurrency·thermal envelope와 rollback owner 승인
 - 완료: core smoke validation summary와 command guard
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
