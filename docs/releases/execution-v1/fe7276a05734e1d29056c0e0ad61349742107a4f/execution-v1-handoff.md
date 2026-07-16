@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T22:22:34.924Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T22:22:33.951Z
 - localDate: 2026-07-17
 - branch: codex/workspace-learning-operator-surface
 - commit: fe7276a05734e1d29056c0e0ad61349742107a4f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/fe7276a05734e1d29056c0e0ad61349742107a4f](releases/execution-v1/fe7276a05734e1d29056c0e0ad61349742107a4f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fe7276a05734e1d29056c0e0ad61349742107a4f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/fe7276a05734e1d29056c0e0ad61349742107a4f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/fe7276a05734e1d29056c0e0ad61349742107a4f](docs/releases/execution-v1/fe7276a05734e1d29056c0e0ad61349742107a4f)
 - visualArtifactSetSha256: 3c80a39c564f114a07950efd5fb72e7b185b6eaff9c80ccd9390c22f413afd8c
 - commitPushStatus: not pushed, origin/codex/workspace-learning-operator-surface not found
 

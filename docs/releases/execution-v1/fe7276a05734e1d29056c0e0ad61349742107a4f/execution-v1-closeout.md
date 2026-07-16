@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T22:22:34.924Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T22:22:27.496Z
 - branch: codex/workspace-learning-operator-surface
 - commit: fe7276a05734e1d29056c0e0ad61349742107a4f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fe7276a05734e1d29056c0e0ad61349742107a4f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

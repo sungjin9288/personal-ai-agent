@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T22:22:34.924Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T22:22:27.445Z
 - branch: codex/workspace-learning-operator-surface
 - commit: fe7276a05734e1d29056c0e0ad61349742107a4f
