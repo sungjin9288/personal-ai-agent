@@ -97,6 +97,7 @@
     "smoke:answer-quality-evaluation": "node scripts/smoke-answer-quality-evaluation.mjs",
     "smoke:retrieval-corpus-contract": "node scripts/smoke-retrieval-corpus-contract.mjs",
     "smoke:retrieval-quality-evaluation": "node scripts/smoke-retrieval-quality-evaluation.mjs",
+    "smoke:semantic-retrieval-experiment": "node scripts/smoke-semantic-retrieval-experiment.mjs",
     "smoke:smoke-validation-summary": "node scripts/smoke-smoke-validation-summary.mjs",
     "smoke:external-evidence-blockers": "node scripts/smoke-external-evidence-blockers.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",

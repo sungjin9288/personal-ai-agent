@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Semantic Retrieval Experiment
+
+- added a provider-neutral embedding protocol and bounded local-process adapter with shell disabled, environment allowlisting, input/output limits, and hard timeout
+- added a scope-locked semantic retrieval experiment that scores R1 corpus records by cosine similarity, excludes retired records, deduplicates sources, and omits raw content from result metadata
+- measured a controlled synonym fixture against the R2 evaluator while keeping runtimeActivation false and making no external provider calls
+
 ## 2026-07-16 Retrieval Quality Evaluation
 
 - added a provider-neutral evaluator for top-k precision, recall, known-noise rate, relevant source-type diversity, and unlabeled source detection

@@ -114,9 +114,9 @@ assert.match(report, /source diversity/);
 assert.match(report, /productionReadyClaim: false/);
 
 for (const term of [
-  'status: retrieval-evaluation-current',
+  'status: semantic-retrieval-experiment-current',
   '| R2 Retrieval evaluation | 완료 |',
-  '| R3 Optional semantic retrieval | 다음 |',
+  '| R3 Optional semantic retrieval | 완료 |',
   'fixtures/retrieval-quality-cases-v1.json',
   'npm run smoke:retrieval-quality-evaluation',
   'productionReadyClaim: false',

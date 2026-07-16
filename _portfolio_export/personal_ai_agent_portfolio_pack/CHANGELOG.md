@@ -14,6 +14,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a credential-free answer quality evaluator and regression fixture for retrieval hit, citation grounding, required content, irrelevant source, and reviewer verdict checks.
 - Added a deterministic RAG corpus contract for memory, attachment, and fact source revision, chunk identity, content hash, scope, and provenance without changing serialized retrieval payloads.
 - Added a credential-free retrieval evaluation gate for controlled precision, recall, noise, source diversity, and frozen lexical/BM25/phrase baseline comparison.
+- Added a bounded local-command embedding protocol and scope-locked semantic retrieval experiment without enabling the mission runtime path.
 - Added a smoke validation summary and command guard to document the deterministic public-readiness verification baseline without expanding provider, hosted, or production claims.
 - Added an external evidence blocker register and smoke guard to keep account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers explicit.
 

@@ -14,6 +14,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a credential-free answer quality evaluator and regression fixture for retrieval hit, citation grounding, required content, irrelevant source, and reviewer verdict checks.
 - Added a deterministic RAG corpus contract for memory, attachment, and fact source revision, chunk identity, content hash, scope, and provenance without changing serialized retrieval payloads.
 - Added a credential-free retrieval evaluation gate for controlled precision, recall, noise, source diversity, and frozen lexical/BM25/phrase baseline comparison.
+- Added a bounded local-command embedding protocol and scope-locked semantic retrieval experiment without enabling the mission runtime path.
 - Added a smoke validation summary and command guard to document the deterministic public-readiness verification baseline without expanding provider, hosted, or production claims.
 - Added an external evidence blocker register and smoke guard to keep account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers explicit.
 
@@ -32,8 +33,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,251,668 bytes`
-- SHA-256: `2a6407a06121ea14fcb97311427aecc83d8322af675346882c3fc42761bbf509`
+- Size: `2,253,136 bytes`
+- SHA-256: `248854de905aa5323846b91300b23e3f57642aeda1fcd72093cb12c9836da2a8`
 
 Included public surfaces:
 

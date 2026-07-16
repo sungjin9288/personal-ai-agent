@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "personal-ai-agent-semantic-retrieval-fixture/v1",
+  "productionReadyClaim": false,
+  "embeddingModelId": "fixture-semantic-map-v1",
+  "runtimeActivation": false,
+  "expectedMetrics": {
+    "lexicalBaseline": {
+      "casePassRate": 0,
+      "noiseRateAtK": 1,
+      "precisionAtK": 0,
+      "recallAtK": 0,
+      "sourceDiversityRate": 0,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "semanticFixture": {
+      "casePassRate": 1,
+      "noiseRateAtK": 0,
+      "precisionAtK": 1,
+      "recallAtK": 1,
+      "sourceDiversityRate": 1,
+      "unlabeledRetrievedSourceCount": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "authentication-recovery-synonyms",
+      "k": 1,
+      "queryText": "Recover a sign-in token after timeout.",
+      "allowedScopes": ["mission:mission-auth-recovery"],
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-auth-ui",
+            "missionId": "mission-auth-recovery",
+            "fileName": "sign-in-page.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "The sign-in page uses a blue color, compact typography, and a centered layout."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-auth-recovery",
+            "content": "Renew expired authentication credentials and preserve the verification trail.",
+            "kind": "fact",
+            "scope": "mission",
+            "scopeId": "mission-auth-recovery"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Recover a sign-in token after timeout.",
+          "title": "Sign-in recovery"
+        },
+        "pack": { "requiredSections": [], "reviewRules": [] },
+        "previousOutputs": {},
+        "providerRole": "manager",
+        "role": "manager"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-auth-recovery", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-auth-ui", "type": "attachment" }
+      ]
+    },
+    {
+      "id": "payment-reimbursement-synonyms",
+      "k": 1,
+      "queryText": "Reverse a purchase charge.",
+      "allowedScopes": ["mission:mission-payment-refund"],
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-purchase-chart",
+            "missionId": "mission-payment-refund",
+            "fileName": "purchase-chart.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "The purchase analytics dashboard displays a category chart and monthly report."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-payment-refund",
+            "content": "Issue a payment reimbursement and retain the approval record.",
+            "kind": "decision",
+            "scope": "mission",
+            "scopeId": "mission-payment-refund"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Reverse a purchase charge.",
+          "title": "Purchase reversal"
+        },
+        "pack": { "requiredSections": [], "reviewRules": [] },
+        "previousOutputs": {},
+        "providerRole": "manager",
+        "role": "manager"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-payment-refund", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-purchase-chart", "type": "attachment" }
+      ]
+    },
+    {
+      "id": "overdue-handoff-synonyms",
+      "k": 1,
+      "queryText": "Who handles a missed deadline handoff?",
+      "allowedScopes": ["mission:mission-overdue-handoff"],
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-deadline-calendar",
+            "missionId": "mission-overdue-handoff",
+            "fileName": "deadline-calendar.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "The deadline calendar uses office holiday colors and a weekly schedule."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-overdue-handoff",
+            "content": "Transfer ownership after work becomes overdue and record the acknowledgement.",
+            "kind": "decision",
+            "scope": "mission",
+            "scopeId": "mission-overdue-handoff"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Who handles a missed deadline handoff?",
+          "title": "Deadline handoff"
+        },
+        "pack": { "requiredSections": [], "reviewRules": [] },
+        "previousOutputs": {},
+        "providerRole": "reviewer",
+        "role": "reviewer"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-overdue-handoff", "type": "memory" }
+      ],
+      "irrelevantSources": [
+        { "key": "attachment:attachment-deadline-calendar", "type": "attachment" }
+      ]
+    }
+  ]
+}
