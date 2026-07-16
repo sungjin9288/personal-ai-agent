@@ -10,6 +10,11 @@ import {
 } from './specialist-handoff.mjs';
 import { buildRetrievalContextWithCorpus } from './retrieval-service.mjs';
 import { formatRetrievalArtifactContent } from './retrieval-artifacts.mjs';
+import {
+  applyWorkspaceLearningSelection,
+  formatWorkspaceLearningSelectionArtifact,
+  selectWorkspaceLearningMemory,
+} from './workspace-learning-selection.mjs';
 import { getMissionPack } from '../packs/index.mjs';
 import {
   extractProviderFailure,
@@ -673,9 +678,26 @@ export function createMissionRunService({
       role,
       workspace,
     };
-    const { corpusRecords: retrievalCorpusRecords, items: retrievalContext } = retrievalRuntime
+    const rawRetrieval = retrievalRuntime
       ? await retrievalRuntime.retrieve(retrievalInput)
       : buildRetrievalContextWithCorpus(retrievalInput);
+    const workspaceLearningSelection = selectWorkspaceLearningMemory({
+      memoryEntries,
+      retrievalCorpusRecords: rawRetrieval.corpusRecords,
+      workspaceId: workspace.id,
+    });
+    const providerContext = applyWorkspaceLearningSelection({
+      memoryEntries,
+      retrievalContext: rawRetrieval.items,
+      retrievalCorpusRecords: rawRetrieval.corpusRecords,
+      selection: workspaceLearningSelection,
+      workspaceId: workspace.id,
+    });
+    const {
+      memoryEntries: providerMemoryEntries,
+      retrievalContext,
+      retrievalCorpusRecords,
+    } = providerContext;
     const providerInput = {
       attachments,
       role,
@@ -683,7 +705,7 @@ export function createMissionRunService({
       mission,
       workspace,
       pack,
-      memoryEntries,
+      memoryEntries: providerMemoryEntries,
       retrievalContext,
       sessionSourceContext: session.sourceContext || normalizeSessionSourceContext(),
       previousOutputs,
@@ -692,6 +714,7 @@ export function createMissionRunService({
       resumeFromRunId: normalizeText(runMetadata.resumeFromRunId) || null,
       specialistKind: normalizeText(runMetadata.specialistKind) || null,
       specialistMergeMode: normalizeText(runMetadata.stageKind) === 'parallel-merge',
+      workspaceLearningSelection,
     };
     const promptContent = await provider.preparePrompt(providerInput);
 
@@ -716,6 +739,18 @@ export function createMissionRunService({
       title: `${role} prompt`,
       content: promptContent,
     });
+    const workspaceLearningSelectionArtifact =
+      role === 'planner' && workspaceLearningSelection.status === 'selected'
+        ? harness.writeArtifact({
+            missionId: mission.id,
+            sessionId: session.id,
+            role,
+            kind: 'learning-selection',
+            fileName: `${artifactFilePrefix}-workspace-learning-selection.json`,
+            title: `${role} workspace learning selection`,
+            content: formatWorkspaceLearningSelectionArtifact(workspaceLearningSelection),
+          })
+        : null;
     const retrievalArtifact = retrievalContext.length
       ? harness.writeArtifact({
           missionId: mission.id,
@@ -765,7 +800,12 @@ export function createMissionRunService({
       const completedRun = harness.completeAgentRun(agentRun.id, {
         status: normalizedOutput.verdict === 'fail' ? 'failed' : 'completed',
         outputSummary: normalizedOutput.summaryText,
-        artifactIds: [promptArtifact.id, retrievalArtifact?.id, outputArtifact.id].filter(Boolean),
+        artifactIds: [
+          promptArtifact.id,
+          workspaceLearningSelectionArtifact?.id,
+          retrievalArtifact?.id,
+          outputArtifact.id,
+        ].filter(Boolean),
         metadata: {
           attemptCount: Number(providerOutput?.attemptCount || 1),
           attemptHistory: normalizeProviderAttemptHistory(providerOutput?.attemptHistory),
@@ -804,7 +844,11 @@ export function createMissionRunService({
       const failedRun = harness.completeAgentRun(agentRun.id, {
         status: 'failed',
         outputSummary: failure.message,
-        artifactIds: [promptArtifact.id, retrievalArtifact?.id].filter(Boolean),
+        artifactIds: [
+          promptArtifact.id,
+          workspaceLearningSelectionArtifact?.id,
+          retrievalArtifact?.id,
+        ].filter(Boolean),
         metadata: {
           attemptCount: Number(failure.attemptCount || 1),
           attemptHistory: normalizeProviderAttemptHistory(failure.attemptHistory),

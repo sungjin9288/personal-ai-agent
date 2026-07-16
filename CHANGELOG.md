@@ -31,6 +31,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added an approved learning RAG feedback evaluation; one mission-scoped promotion changed the next retrieval, planner, and deliverable with reviewer pass preserved, then rollback removed the memory and restored exact baseline planner and deliverable hashes without external provider calls.
 - Expanded approved learning feedback evaluation to three same-workspace missions and nine stub sessions; the controlled Q1 gate changed from 0/3 before promotion to 3/3 after promotion and returned to 0/3 after rollback, while every case excluded two foreign mission memories and preserved reviewer pass without external provider calls.
 - Added explicit mission-to-workspace learning authorization and a controlled workspace-personalization replay; one sibling mission applied the approved decision, a foreign workspace retained zero exposure, timeline audit order was preserved, and rollback restored exact baseline artifacts without external provider calls.
+- Added deterministic latest-revision selection for conflicting retrieval-selected workspace decisions; an eight-session local replay verified newer-only provider exposure, exact older fallback after revocation, exact baseline restoration after full rollback, foreign-workspace isolation, and content-free selection evidence without external provider calls.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -53,8 +54,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,401,607 bytes`
-- SHA-256: `35a5a635c43a7aeeaddc94de2c8804acbb2a883fd628b7d5e94257bebba1e3c2`
+- Size: `2,407,330 bytes`
+- SHA-256: `94b1c93ff735f739ca9f819896e962f4cb4dcad6a96ac99201e211353006852f`
 
 Included public surfaces:
 

@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, multi-scenario feedback quality, and workspace-scoped learning personalization
-- Source code modified: yes, explicit learning scope authorization, workspace decision adaptation, timeline audit linkage, regression tests, and self-validating content-free evidence
-- New feature development: yes, cost-free sibling-mission personalization, foreign-workspace isolation, and rollback verification
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, multi-scenario feedback quality, workspace-scoped personalization, and workspace decision conflict revocation
+- Source code modified: yes, retrieval-selected workspace decision filtering, deterministic latest-revision selection, content-free planner audit, regression tests, and self-validating local evidence
+- New feature development: yes, cost-free newer-only conflict selection, exact older fallback after revocation, exact baseline restoration, and foreign-workspace isolation
 
 ## Generated Evidence Files
 
@@ -66,6 +66,7 @@
 - `evidence/output-artifacts/approved-learning-rag-feedback.json`
 - `evidence/output-artifacts/approved-learning-feedback-quality.json`
 - `evidence/output-artifacts/workspace-learning-personalization.json`
+- `evidence/output-artifacts/workspace-learning-conflict-revocation.json`
 
 ### Architecture
 
@@ -126,6 +127,7 @@
 - Approved learning RAG feedback: verified with `npm run smoke:approved-learning-rag-feedback`
 - Multi-scenario learning feedback quality: verified with `npm run smoke:approved-learning-feedback-quality`
 - Workspace learning personalization: verified with `npm run smoke:workspace-learning-personalization`
+- Workspace learning conflict and revocation: verified with `npm run smoke:workspace-learning-conflict-revocation`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

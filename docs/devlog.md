@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Workspace Learning Conflict and Revocation
+
+- filtered retrieval-selected workspace decisions through a deterministic latest-revision policy before provider execution while preserving mission, user, and non-decision workspace memory behavior
+- recorded content-free planner selection evidence with candidate priority, content hash, effective timestamp, and selected identity without changing the store schema or public API payloads
+- replayed two workspaces, four missions, and eight credential-free stub sessions to verify newer conflict selection, exact older fallback after revocation, exact baseline restoration after full rollback, foreign-workspace isolation, and zero external provider calls
+- retained `actualModelTrainingExecuted: false`, `learnedConflictResolutionValidated: false`, `generalWorkspacePersonalizationValidated: false`, and `productionReadyClaim: false`
+
 ## 2026-07-17 Workspace Learning Personalization
 
 - kept mission-to-workspace promotion default-deny and added a separate local-operator authorization record before workspace scope can pass the existing promotion verification

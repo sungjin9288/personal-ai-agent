@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-16T20:25:09.070Z
+- generatedAt: 2026-07-16T20:56:32.223Z
 - verifiedCommit: 42e3758ed45da56233f3a2c4954f40aa3fe5191d
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 88987ea35746aeaf5af304c9056c6a19f237065cb3e496a4e7540ab5de160ed2
-- fileCount: 91
+- bundleSha256: ebbfde5a308bd3c788ef489673df55c3ed75e9689bee9ff33e1f282e68231971
+- fileCount: 92
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 35898 | `ffec3949da8cfb0c7fbd2b9c86c4f674109d8d4c91c73233692e5f3a305c61d7` |
-| `CHANGELOG.md` | 10233 | `5fd7d1af33fcdd9719a2832a51016d0850f54d9e747769933f1112eeff67cf60` |
+| `README.md` | 36657 | `5314d88257ebe702cf110f3198f3a5ffa338bedb72309ddc2ce123463b49a8f8` |
+| `CHANGELOG.md` | 10591 | `2a08131dca5431aad5e260ee111058a7ef8a473caebc328722b1055238cbf7ce` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -83,9 +83,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/architecture-code-walkthrough-v1.md` | 7477 | `4df605052f493c20b129527dcc188db562ecd298558a44386c904272f2d91e9c` |
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
-| `docs/memory-retrieval-quality-fixture-v1.md` | 13498 | `7ef60ef256b10cbe5c679eff1947d023239a5083ebbf7e81cfb6c015d1f9b70a` |
-| `docs/ml-rag-development-plan-v1.md` | 77624 | `a9699e2e44de112699dc97c844325aeb1941858e4583e46a383fcbd6f8977a7e` |
-| `docs/smoke-validation-summary-v1.md` | 13644 | `bcd5187973236e88d3e5fe95c6469b334bdccf85669811f47e05e2104b557ae6` |
+| `docs/memory-retrieval-quality-fixture-v1.md` | 14011 | `b88b4d7f3341d2005355665c10415499fa1b42631869ac06efad0ea8e7b3afd3` |
+| `docs/ml-rag-development-plan-v1.md` | 81613 | `da457ab9ac0becff42f09a42fea6528d7fcf573a300e8c71e06722b82f3cb7ae` |
+| `docs/smoke-validation-summary-v1.md` | 14084 | `743cab4b547a493a0b9bbdce3c1e208bdae238444cb36569935f909fe9b8e6b7` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
@@ -102,7 +102,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json` | 14691 | `46e19f84743b09ba1f230a52c99ead3f39558e7eb34704a2dc6f1e4e57749a27` |
 | `evidence/output-artifacts/approved-learning-rag-feedback.json` | 5004 | `dd80ccff7473dce89df6fab37ae02f18f4eee9e3cd1400fcbaae997211fdb3c0` |
 | `evidence/output-artifacts/approved-learning-feedback-quality.json` | 26606 | `147c1d4ffc10d4de7626db7814a122b520c75f748a7c816811f058eba50542be` |
-| `evidence/output-artifacts/workspace-learning-personalization.json` | 15652 | `7e7fdf7a1ad0d2242d82fa1a055a966b54c135e89ee2909cd6821f55d279d451` |
+| `evidence/output-artifacts/workspace-learning-personalization.json` | 15652 | `f5fd4bde18e9f6771c9190ab30cd5311dad46f4ac0db137402059ac46e07d389` |
+| `evidence/output-artifacts/workspace-learning-conflict-revocation.json` | 21391 | `0f9c95ce6af0afc49b281697e5e1a59f267d608d73504ca513bc90ab7263a158` |
 | `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |
 | `docs/customer-support-operations-v1.md` | 6200 | `8ed125281443fce70deb133eecfd9108744320ad1d977c5061e349f6fb1ab873` |

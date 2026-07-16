@@ -118,6 +118,19 @@ export function getFeedbackMissionTimeline({ missionId, rootDir }) {
   });
 }
 
+export function readFeedbackWorkspaceLearningSelection({ rootDir, sessionId }) {
+  const state = JSON.parse(fs.readFileSync(path.join(rootDir, 'var', 'state.json'), 'utf8'));
+  const artifact = state.artifacts.find(
+    (item) =>
+      item.sessionId === sessionId &&
+      item.fileName === 'planner-workspace-learning-selection.json',
+  );
+  if (!artifact) {
+    return null;
+  }
+  return JSON.parse(fs.readFileSync(artifact.path, 'utf8'));
+}
+
 export function observeFeedbackRun({
   expectedPlanStep,
   expectMemoryApplied,

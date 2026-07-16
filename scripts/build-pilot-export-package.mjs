@@ -49,6 +49,7 @@ const BASE_PACKAGE_FILES = [
   'evidence/output-artifacts/approved-learning-rag-feedback.json',
   'evidence/output-artifacts/approved-learning-feedback-quality.json',
   'evidence/output-artifacts/workspace-learning-personalization.json',
+  'evidence/output-artifacts/workspace-learning-conflict-revocation.json',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',

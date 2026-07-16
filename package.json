@@ -100,6 +100,8 @@
     "smoke:approved-learning-feedback-quality": "node scripts/smoke-approved-learning-feedback-quality.mjs",
     "evaluate:workspace-learning-personalization": "node scripts/evaluate-workspace-learning-personalization.mjs",
     "smoke:workspace-learning-personalization": "node scripts/smoke-workspace-learning-personalization.mjs",
+    "evaluate:workspace-learning-conflict-revocation": "node scripts/evaluate-workspace-learning-conflict-revocation.mjs",
+    "smoke:workspace-learning-conflict-revocation": "node scripts/smoke-workspace-learning-conflict-revocation.mjs",
     "smoke:answer-quality-evaluation": "node scripts/smoke-answer-quality-evaluation.mjs",
     "smoke:retrieval-corpus-contract": "node scripts/smoke-retrieval-corpus-contract.mjs",
     "smoke:retrieval-quality-evaluation": "node scripts/smoke-retrieval-quality-evaluation.mjs",

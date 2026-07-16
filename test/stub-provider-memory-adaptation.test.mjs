@@ -21,13 +21,14 @@ const mission = {
 const pack = getMissionPack({ mission, workspace });
 const provider = createStubProvider({ rootDir: process.cwd() });
 
-function runPlanner(memoryEntries) {
+function runPlanner(memoryEntries, workspaceLearningSelection) {
   return provider.run({
     memoryEntries,
     mission,
     pack,
     role: 'planner',
     workspace,
+    workspaceLearningSelection,
   });
 }
 
@@ -78,4 +79,29 @@ test('stub planner ignores workspace facts and decisions from another workspace'
 
   assert.deepEqual(output.adaptationNotes, []);
   assert.equal(output.planSteps.length, pack.plannerGuidance.length);
+});
+
+test('stub planner applies only the workspace decision selected by retrieval policy', () => {
+  const olderDecision = {
+    content: 'Use the broad workspace execution path.',
+    id: 'memory-older',
+    kind: 'decision',
+    scope: 'workspace',
+    scopeId: workspace.id,
+  };
+  const newerDecision = {
+    content: 'Narrow the verification path before requesting workspace execution again.',
+    id: 'memory-newer',
+    kind: 'decision',
+    scope: 'workspace',
+    scopeId: workspace.id,
+  };
+
+  const output = runPlanner([olderDecision, newerDecision], {
+    selectedMemoryId: newerDecision.id,
+  });
+
+  assert.deepEqual(output.adaptationNotes, [newerDecision.content]);
+  assert.equal(output.planSteps.includes(olderDecision.content), false);
+  assert.equal(output.planSteps.includes(newerDecision.content), true);
 });

@@ -72,6 +72,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/approved-learning-rag-feedback.json',
   'evidence/output-artifacts/approved-learning-feedback-quality.json',
   'evidence/output-artifacts/workspace-learning-personalization.json',
+  'evidence/output-artifacts/workspace-learning-conflict-revocation.json',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/fork-onboarding-v1.md',

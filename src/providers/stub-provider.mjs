@@ -60,13 +60,20 @@ function formatRetrievedContext(retrievalContext, fallback = 'No retrieval snipp
     .join('\n');
 }
 
-function deriveMemoryAdaptation(memoryEntries, { missionId, workspaceId } = {}) {
+function deriveMemoryAdaptation(
+  memoryEntries,
+  { missionId, workspaceId, workspaceLearningSelection } = {},
+) {
+  const selectedWorkspaceMemoryId = String(
+    workspaceLearningSelection?.selectedMemoryId || '',
+  ).trim();
   const relevantEntries = memoryEntries.filter(
     (entry) =>
       (entry.scope === 'mission' && entry.scopeId === missionId) ||
       (entry.scope === 'workspace' &&
         entry.scopeId === workspaceId &&
-        entry.kind === 'decision'),
+        entry.kind === 'decision' &&
+        (!selectedWorkspaceMemoryId || entry.id === selectedWorkspaceMemoryId)),
   );
   const adaptationNotes = uniqueTexts(relevantEntries.map((entry) => entry.content));
   const adaptivePlanSteps = [];
@@ -300,10 +307,17 @@ ${formatContextBoundary()}
   };
 }
 
-function buildPlannerOutput({ mission, workspace, pack, memoryEntries }) {
+function buildPlannerOutput({
+  mission,
+  workspace,
+  pack,
+  memoryEntries,
+  workspaceLearningSelection,
+}) {
   const adaptation = deriveMemoryAdaptation(memoryEntries, {
     missionId: mission.id,
     workspaceId: workspace.id,
+    workspaceLearningSelection,
   });
   const uniquePlanSteps = uniqueTexts([...pack.plannerGuidance, ...adaptation.adaptivePlanSteps]);
   const planSteps = uniquePlanSteps.map((item, index) => `${index + 1}. ${item}`);
@@ -338,16 +352,25 @@ ${renderMissionQualityGateSection({ mission, workspace, pack, planSteps: uniqueP
   };
 }
 
-function buildExecutorOutput({ mission, workspace, pack, previousOutputs, memoryEntries, attachments = [] }) {
+function buildExecutorOutput({
+  mission,
+  workspace,
+  pack,
+  previousOutputs,
+  memoryEntries,
+  attachments = [],
+  workspaceLearningSelection,
+}) {
   const forceReviewerFail = mission.constraints.includes('force-reviewer-fail');
   const forceRubricFail = mission.constraints.includes('force-rubric-fail');
   const planSteps = previousOutputs.planner ? previousOutputs.planner.planSteps : pack.plannerGuidance;
   const adaptationNotes = previousOutputs.planner
     ? previousOutputs.planner.adaptationNotes
-    : deriveMemoryAdaptation(memoryEntries, {
-        missionId: mission.id,
-        workspaceId: workspace.id,
-      }).adaptationNotes;
+      : deriveMemoryAdaptation(memoryEntries, {
+          missionId: mission.id,
+          workspaceId: workspace.id,
+          workspaceLearningSelection,
+        }).adaptationNotes;
   let artifactContent = pack.renderDraft({
     planSteps,
     forceReviewerFail,

@@ -2,30 +2,30 @@
   "actualWorkspaceLearningPersonalizationValidated": true,
   "audit": {
     "authorization": {
-      "at": "2026-07-16T20:16:58.530Z",
-      "candidateId": "learningcandidate_20260716201658_aa2fe2",
+      "at": "2026-07-16T20:36:12.321Z",
+      "candidateId": "learningcandidate_20260716203612_e89bf7",
       "index": 14,
       "kind": "learning-candidate-promotion-scope-authorized",
-      "missionId": "mission_20260716201658_b54698",
-      "scopeAuthorizationId": "learningcandidate_20260716201658_aa2fe2:scope-authorization:workspace",
+      "missionId": "mission_20260716203612_36696b",
+      "scopeAuthorizationId": "learningcandidate_20260716203612_e89bf7:scope-authorization:workspace",
       "status": "authorized"
     },
     "promotion": {
-      "at": "2026-07-16T20:16:58.570Z",
-      "candidateId": "learningcandidate_20260716201658_aa2fe2",
+      "at": "2026-07-16T20:36:12.360Z",
+      "candidateId": "learningcandidate_20260716203612_e89bf7",
       "index": 15,
       "kind": "learning-candidate-promotion-approved",
-      "missionId": "mission_20260716201658_b54698",
-      "scopeAuthorizationId": "learningcandidate_20260716201658_aa2fe2:scope-authorization:workspace",
+      "missionId": "mission_20260716203612_36696b",
+      "scopeAuthorizationId": "learningcandidate_20260716203612_e89bf7:scope-authorization:workspace",
       "status": "passed"
     },
     "rollback": {
-      "at": "2026-07-16T20:16:58.804Z",
-      "candidateId": "learningcandidate_20260716201658_aa2fe2",
+      "at": "2026-07-16T20:36:12.575Z",
+      "candidateId": "learningcandidate_20260716203612_e89bf7",
       "index": 16,
       "kind": "learning-candidate-promotion-rolled-back",
-      "missionId": "mission_20260716201658_b54698",
-      "scopeAuthorizationId": "learningcandidate_20260716201658_aa2fe2:scope-authorization:workspace",
+      "missionId": "mission_20260716203612_36696b",
+      "scopeAuthorizationId": "learningcandidate_20260716203612_e89bf7:scope-authorization:workspace",
       "status": "memory-deleted"
     }
   },
@@ -41,7 +41,7 @@
     "targetObjectiveHash": "f4c2e410c2df8adfa7bccc8457d4494a8493269d8f9c2ca99b007a6bc725a56a",
     "bindingHash": "a7ff3ea7b8db0473dc6ec59b4ce0084db8d4e83ca293261054cb08322a878fda"
   },
-  "observedAt": "2026-07-16T20:16:59.319Z",
+  "observedAt": "2026-07-16T20:36:13.066Z",
   "phases": {
     "afterPromotion": {
       "foreign": {
@@ -51,8 +51,8 @@
           "plannerApplied": false
         },
         "artifacts": {
-          "deliverableHash": "0e2287629e1e06e701fa953771470903adb1ce1ed3e9b944f08994f8ae18c354",
-          "plannerHash": "9786421c6bea708bea3252f0f9d20fdcfff7c43c2c3efe4496d3b968bd7c486d",
+          "deliverableHash": "aed1de87e671484fc7459f8a19dfc41017a9c1b737a515d81ff87b95f9975755",
+          "plannerHash": "5ebc519caaa543e62377f8248f10cf393bb1773e5de749a93394af032720ca06",
           "retrievalHash": null
         },
         "externalProviderCallCount": 0,
@@ -70,7 +70,7 @@
           "sourceId": ""
         },
         "reviewerVerdict": "pass",
-        "sessionId": "session_20260716201658_1689db",
+        "sessionId": "session_20260716203612_b23285",
         "status": "completed"
       },
       "sibling": {
@@ -80,9 +80,9 @@
           "plannerApplied": true
         },
         "artifacts": {
-          "deliverableHash": "ffb99f764d8a7776041e82147fdc471373b6fea77c5827752d0996cd680a048c",
-          "plannerHash": "40385d3a4dcdcfcc75484cd587664c740a4df5810f8bd55c56601f3d9d9574bc",
-          "retrievalHash": "53cbde77729cd6e3f5aba00407bb9292f91de848a2d696132f2db3e7a97737ad"
+          "deliverableHash": "7d2b2137bf15268d55f45a1086c9f722a63bcfa6cd8d6333556c75ff7315e3c1",
+          "plannerHash": "71c5465a512f8db91481a7c5fac3943d677635bd1212af3d2213009a7ea86423",
+          "retrievalHash": "ae6fda86fc87f861b1102504fa6f2881980879dbeea9c98a57f2ee7649062d28"
         },
         "externalProviderCallCount": 0,
         "memoryExposure": {
@@ -92,14 +92,14 @@
         },
         "providerId": "stub",
         "retrieval": {
-          "contentHash": "d969cc0d3a12ec48aa949b8e58cff30637a9682ea8df5833e8c6ff9530557666",
+          "contentHash": "ad87475423d17b1a365a367779c6242aa6abeabde71e9e4f307a1098ff4669e9",
           "matchTermCount": 5,
           "scope": "workspace",
-          "scopeId": "workspace_20260716201658_1ff6e6",
-          "sourceId": "memory_20260716201658_7562f3"
+          "scopeId": "workspace_20260716203611_9b0e49",
+          "sourceId": "memory_20260716203612_735f7a"
         },
         "reviewerVerdict": "pass",
-        "sessionId": "session_20260716201658_313208",
+        "sessionId": "session_20260716203612_e06773",
         "status": "completed"
       }
     },
@@ -111,8 +111,8 @@
           "plannerApplied": false
         },
         "artifacts": {
-          "deliverableHash": "0e2287629e1e06e701fa953771470903adb1ce1ed3e9b944f08994f8ae18c354",
-          "plannerHash": "9786421c6bea708bea3252f0f9d20fdcfff7c43c2c3efe4496d3b968bd7c486d",
+          "deliverableHash": "aed1de87e671484fc7459f8a19dfc41017a9c1b737a515d81ff87b95f9975755",
+          "plannerHash": "5ebc519caaa543e62377f8248f10cf393bb1773e5de749a93394af032720ca06",
           "retrievalHash": null
         },
         "externalProviderCallCount": 0,
@@ -130,7 +130,7 @@
           "sourceId": ""
         },
         "reviewerVerdict": "pass",
-        "sessionId": "session_20260716201658_134538",
+        "sessionId": "session_20260716203612_948b4c",
         "status": "completed"
       },
       "sibling": {
@@ -140,8 +140,8 @@
           "plannerApplied": false
         },
         "artifacts": {
-          "deliverableHash": "5d81ed68290924da74e7cf5d4485724752e5769c4843b6075204a0663461da18",
-          "plannerHash": "b37f944a5c6ec9abcdd32a89048185f9eb20c8ab66f80fad2105f2ac972bed68",
+          "deliverableHash": "f77ebe68854b7b249d00453ea29dd600561b683610b7a3165beb803160711167",
+          "plannerHash": "62f32b2ee6c8a8700ed6acc23870862e2892d67ebf94392b4e763a710673e255",
           "retrievalHash": null
         },
         "externalProviderCallCount": 0,
@@ -159,7 +159,7 @@
           "sourceId": ""
         },
         "reviewerVerdict": "pass",
-        "sessionId": "session_20260716201658_84f617",
+        "sessionId": "session_20260716203612_02d657",
         "status": "completed"
       }
     },
@@ -171,8 +171,8 @@
           "plannerApplied": false
         },
         "artifacts": {
-          "deliverableHash": "0e2287629e1e06e701fa953771470903adb1ce1ed3e9b944f08994f8ae18c354",
-          "plannerHash": "9786421c6bea708bea3252f0f9d20fdcfff7c43c2c3efe4496d3b968bd7c486d",
+          "deliverableHash": "aed1de87e671484fc7459f8a19dfc41017a9c1b737a515d81ff87b95f9975755",
+          "plannerHash": "5ebc519caaa543e62377f8248f10cf393bb1773e5de749a93394af032720ca06",
           "retrievalHash": null
         },
         "externalProviderCallCount": 0,
@@ -190,7 +190,7 @@
           "sourceId": ""
         },
         "reviewerVerdict": "pass",
-        "sessionId": "session_20260716201658_548239",
+        "sessionId": "session_20260716203612_2d93a9",
         "status": "completed"
       },
       "sibling": {
@@ -200,8 +200,8 @@
           "plannerApplied": false
         },
         "artifacts": {
-          "deliverableHash": "5d81ed68290924da74e7cf5d4485724752e5769c4843b6075204a0663461da18",
-          "plannerHash": "b37f944a5c6ec9abcdd32a89048185f9eb20c8ab66f80fad2105f2ac972bed68",
+          "deliverableHash": "f77ebe68854b7b249d00453ea29dd600561b683610b7a3165beb803160711167",
+          "plannerHash": "62f32b2ee6c8a8700ed6acc23870862e2892d67ebf94392b4e763a710673e255",
           "retrievalHash": null
         },
         "externalProviderCallCount": 0,
@@ -219,30 +219,30 @@
           "sourceId": ""
         },
         "reviewerVerdict": "pass",
-        "sessionId": "session_20260716201658_c8c3a2",
+        "sessionId": "session_20260716203612_42ad36",
         "status": "completed"
       }
     }
   },
   "productionReadyClaim": false,
   "promotion": {
-    "candidateId": "learningcandidate_20260716201658_aa2fe2",
+    "candidateId": "learningcandidate_20260716203612_e89bf7",
     "finalStatus": "rolled-back",
-    "memoryContentHash": "d969cc0d3a12ec48aa949b8e58cff30637a9682ea8df5833e8c6ff9530557666",
-    "memoryId": "memory_20260716201658_7562f3",
+    "memoryContentHash": "ad87475423d17b1a365a367779c6242aa6abeabde71e9e4f307a1098ff4669e9",
+    "memoryId": "memory_20260716203612_735f7a",
     "memoryRollbackStatus": "memory-deleted",
     "rollbackAction": "delete-memory-entry",
     "rollbackStatus": "completed",
     "scope": "workspace",
     "scopeAuthorizationFromScope": "mission",
-    "scopeAuthorizationFromScopeId": "mission_20260716201658_b54698",
-    "scopeAuthorizationId": "learningcandidate_20260716201658_aa2fe2:scope-authorization:workspace",
+    "scopeAuthorizationFromScopeId": "mission_20260716203612_36696b",
+    "scopeAuthorizationId": "learningcandidate_20260716203612_e89bf7:scope-authorization:workspace",
     "scopeAuthorizationStatus": "consumed",
     "scopeAuthorizationToScope": "workspace",
-    "scopeAuthorizationToScopeId": "workspace_20260716201658_1ff6e6",
-    "scopeId": "workspace_20260716201658_1ff6e6",
+    "scopeAuthorizationToScopeId": "workspace_20260716203611_9b0e49",
+    "scopeId": "workspace_20260716203611_9b0e49",
     "target": "memory",
-    "verificationId": "learningcandidate_20260716201658_aa2fe2:promotion-verification:approve",
+    "verificationId": "learningcandidate_20260716203612_e89bf7:promotion-verification:approve",
     "verificationStatus": "passed"
   },
   "quality": {
@@ -382,8 +382,8 @@
       "plannerApplied": false
     },
     "artifacts": {
-      "deliverableHash": "b0f2a903e333bfb7008f5bff106a66255e286bfcc89409a5f1ced24125050e27",
-      "plannerHash": "a61d91c6fcf2b7d9f6ce3024ef9130fb2ef576fdcfabe78818c4464384a75c5a",
+      "deliverableHash": "7a560c62158c6d6a397c5182a75c2a3639338149d1e8dbb8cad6e9848bd42fad",
+      "plannerHash": "ea2083bc45bbb52b1dcdb25a10f425477c58ed8a02871c0eca0903ae2014350e",
       "retrievalHash": null
     },
     "externalProviderCallCount": 0,
@@ -401,29 +401,29 @@
       "sourceId": ""
     },
     "reviewerVerdict": "pass",
-    "sessionId": "session_20260716201658_16a509",
+    "sessionId": "session_20260716203612_67dc11",
     "status": "completed"
   },
   "status": "workspace-learning-personalization-passed-local-only",
   "topology": {
     "foreignMission": {
-      "id": "mission_20260716201658_f8d4e3",
+      "id": "mission_20260716203612_3f45b4",
       "objectiveHash": "f4c2e410c2df8adfa7bccc8457d4494a8493269d8f9c2ca99b007a6bc725a56a",
-      "workspaceId": "workspace_20260716201658_dac8b2"
+      "workspaceId": "workspace_20260716203611_d2c0f6"
     },
-    "foreignWorkspaceId": "workspace_20260716201658_dac8b2",
+    "foreignWorkspaceId": "workspace_20260716203611_d2c0f6",
     "siblingMission": {
-      "id": "mission_20260716201658_96bca0",
+      "id": "mission_20260716203612_a6212a",
       "objectiveHash": "f4c2e410c2df8adfa7bccc8457d4494a8493269d8f9c2ca99b007a6bc725a56a",
-      "workspaceId": "workspace_20260716201658_1ff6e6"
+      "workspaceId": "workspace_20260716203611_9b0e49"
     },
     "sourceMission": {
-      "id": "mission_20260716201658_b54698",
+      "id": "mission_20260716203612_36696b",
       "objectiveHash": "b959981f00fcd13d5c5f39d2b20678a5fc9d839c2b4ba649ef8729b31ba1109b",
-      "workspaceId": "workspace_20260716201658_1ff6e6"
+      "workspaceId": "workspace_20260716203611_9b0e49"
     },
-    "sourceWorkspaceId": "workspace_20260716201658_1ff6e6"
+    "sourceWorkspaceId": "workspace_20260716203611_9b0e49"
   },
-  "evidenceHash": "b8320d578c158d7061143cadf2d6fdeebfcf00f63ce29a8916d7dbc3b71e5344",
-  "id": "workspace-learning-personalization-b8320d578c158d7061143cadf2d6fdeebfcf00f63ce29a8916d7dbc3b71e5344"
+  "evidenceHash": "48a58c09958d5f24e34cff46affa32b52e4963ea8262ae806710990d1010f67f",
+  "id": "workspace-learning-personalization-48a58c09958d5f24e34cff46affa32b52e4963ea8262ae806710990d1010f67f"
 }
