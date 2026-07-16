@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Candidate Model Evaluation Gate
+
+- added a provider-neutral candidate evidence envelope that distinguishes fixture simulation from recorded actual-model evaluation
+- compared suite and per-case quality metrics against the exact F1 baseline case set and thresholds without copying answer text into the gate result
+- returned keep-baseline on quality, reviewer, evidence, case-set, or threshold regression while keeping rollout approval, reviewer decision, and rollback owner blocked
+
 ## 2026-07-16 Fine-tuning Readiness Export
 
 - added provider-neutral conversation JSONL for the L2 train and validation splits with record, content, lineage, and mission-scope metadata

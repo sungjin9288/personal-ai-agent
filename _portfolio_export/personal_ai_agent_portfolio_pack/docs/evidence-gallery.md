@@ -57,6 +57,7 @@
 | Approved training record | `docs/ml-rag-development-plan-v1.md` | actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and no external submission authority |
 | Training dataset quality gate | `docs/ml-rag-development-plan-v1.md` | deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and no fine-tuning execution authority |
 | Fine-tuning readiness export | `docs/ml-rag-development-plan-v1.md` | provider-neutral train/validation JSONL, Q1 baseline binding, content-free evaluation manifest, reviewer and rollback requirements, and no provider submission authority |
+| Candidate model evaluation gate | `docs/ml-rag-development-plan-v1.md` | same-case and threshold quality comparison, candidate evidence binding, fixture and recorded result distinction, regression rollback, and blocked rollout authority |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
 | External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
 

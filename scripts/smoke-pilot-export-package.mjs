@@ -286,7 +286,7 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: fine-tuning-readiness-current/);
+assert.match(mlRagDevelopmentPlan, /status: candidate-model-evaluation-current/);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
@@ -297,6 +297,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:retrieval-reranking-experiment
 assert.match(mlRagDevelopmentPlan, /npm run smoke:approved-training-record/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:training-dataset-quality/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-readiness/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:candidate-model-evaluation/);
 assert.match(mlRagDevelopmentPlan, /\| R1 Corpus contract \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| R2 Retrieval evaluation \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| R3 Optional semantic retrieval \| 완료 \|/);

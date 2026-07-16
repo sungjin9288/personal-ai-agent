@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-16T11:12:01.818Z
+- generatedAt: 2026-07-16T11:26:32.799Z
 - verifiedCommit: 44577ccab7a1d426988a5365198d7f924d780f9a
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: b8844a78bc34deb9433e1109844fbd9af705b78ffa3c57157bf1dd539facb538
+- bundleSha256: 2e38288559a1d3caee61a3c1531cc1b1d95449e8cfaac1e14db5aecc20aeb4b2
 - fileCount: 76
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 30687 | `eaa474c3ff9f644dc8fdda84968de7945c545a2eb92edaf9ae5407267d18b471` |
-| `CHANGELOG.md` | 5827 | `892645cf11c3342f61d1fd88b897f30f9080e73eb632223822e8ee8a2e60f153` |
+| `README.md` | 30728 | `44ab55ebfbb5d821d85a6e40daaeea3492143c195bb40d2bb1eb673fb48ff074` |
+| `CHANGELOG.md` | 6046 | `77075a6be04cfe386bd0172a44bcaa79cdacca8077f305d94ba015870d01bcfe` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -84,8 +84,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
 | `docs/memory-retrieval-quality-fixture-v1.md` | 6843 | `b4bcf174134f2a8bcc60089ac583ceadca0a63e524fd43938a08856f42218e0c` |
-| `docs/ml-rag-development-plan-v1.md` | 23454 | `862bad2866bcf868f825e80b3d27b05c42af685132ddedb6c1829cac06dfa3dd` |
-| `docs/smoke-validation-summary-v1.md` | 8364 | `fd0873ac8b8da99f3276aee4d25c53b0976e5dd2c1e850d25f46f14f3abb7f77` |
+| `docs/ml-rag-development-plan-v1.md` | 25936 | `45281e2e8864ffdb7628ae46f4b3352a203aba0ac2985ab683f43e84919b53d4` |
+| `docs/smoke-validation-summary-v1.md` | 8651 | `b473a7837a3b65dcd776fb872847d1c73ee4ed9ce0fff81ec12a90ae5b20c6b8` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |

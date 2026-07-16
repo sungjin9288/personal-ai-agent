@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 
 import { evaluateAnswerQualitySuite } from '../src/core/answer-quality-evaluation.mjs';
 import { buildApprovedTrainingRecord } from '../src/core/approved-training-record.mjs';
 import {
+  assertFineTuningReadinessPackage,
   buildFineTuningReadinessPackage,
   FINE_TUNING_EVALUATION_MANIFEST_SCHEMA_VERSION,
   FINE_TUNING_EXAMPLE_SCHEMA_VERSION,
@@ -293,4 +295,50 @@ test('readiness package never authorizes submission or training execution', () =
     'data-transfer-approval',
     'rollback-owner',
   ]);
+});
+
+test('readiness integrity validator rejects JSONL, baseline, and review boundary tampering', () => {
+  const readiness = buildFineTuningReadinessPackage(buildFixture());
+  assert.doesNotThrow(() => assertFineTuningReadinessPackage(readiness));
+
+  const jsonlTampered = structuredClone(readiness);
+  jsonlTampered.exports.train.content = jsonlTampered.exports.train.content.replace(
+    'State the decision',
+    'Change the decision',
+  );
+  assert.throws(
+    () => assertFineTuningReadinessPackage(jsonlTampered),
+    /train-export-integrity/,
+  );
+
+  const unsafeJsonl = structuredClone(readiness);
+  const unsafeExamples = parseJsonl(unsafeJsonl.exports.train.content);
+  unsafeExamples[0].messages[1].content = 'password=customer-secret-value';
+  unsafeJsonl.exports.train.content = `${unsafeExamples.map((example) => JSON.stringify(example)).join('\n')}\n`;
+  unsafeJsonl.exports.train.byteLength = Buffer.byteLength(
+    unsafeJsonl.exports.train.content,
+    'utf8',
+  );
+  unsafeJsonl.exports.train.sha256 = createHash('sha256')
+    .update(unsafeJsonl.exports.train.content)
+    .digest('hex');
+  assert.throws(
+    () => assertFineTuningReadinessPackage(unsafeJsonl),
+    /train-example-shape/,
+  );
+
+  const baselineTampered = structuredClone(readiness);
+  baselineTampered.evaluationManifest.answerQualityBaseline.status = 'failed';
+  assert.throws(
+    () => assertFineTuningReadinessPackage(baselineTampered),
+    /evaluation-manifest-integrity, baseline-integrity/,
+  );
+
+  const reviewed = structuredClone(readiness);
+  reviewed.evaluationManifest.review.decision = 'approve';
+  reviewed.evaluationManifest.review.reviewedBy = 'reviewer';
+  assert.throws(
+    () => assertFineTuningReadinessPackage(reviewed),
+    /evaluation-manifest-integrity, review-boundary/,
+  );
 });

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "personal-ai-agent-candidate-model-evaluation-fixture/v1",
+  "productionReadyClaim": false,
+  "candidate": {
+    "candidateId": "candidate-fixture-v1",
+    "evaluatedAt": "2026-07-16T12:00:00.000Z",
+    "evaluationRunId": "candidate-evaluation-fixture-v1",
+    "evaluationSource": "fixture-simulated",
+    "evidenceRefs": ["fixture:candidate-model-evaluation-cases-v1"],
+    "modelId": "fixture-candidate-model-v1",
+    "provider": "fixture"
+  },
+  "passingAnswers": {
+    "provider-drift-recovery": {
+      "text": "Prompt normalization resolved provider drift, and the cited incident evidence keeps the result reviewable by the reviewer.",
+      "citedSourceKeys": [
+        "memory:workspace/fact",
+        "attachment:incident-notes.md"
+      ]
+    },
+    "fact-revision-provenance": {
+      "text": "Revision provenance records retirement while preserving audit history in the cited fact evidence.",
+      "citedSourceKeys": [
+        "memory:mission/decision",
+        "attachment:fact-history.md"
+      ]
+    }
+  },
+  "regression": {
+    "caseId": "provider-drift-recovery",
+    "answer": {
+      "text": "The provider result is complete.",
+      "citedSourceKeys": []
+    },
+    "reviewerVerdict": "fail"
+  },
+  "expected": {
+    "comparisonCheckCount": 8,
+    "passingDecision": "hold-for-review",
+    "passingStatus": "ready-for-review",
+    "regressionDecision": "keep-baseline",
+    "regressionStatus": "rollback-required",
+    "rolloutCheckCount": 4,
+    "rolloutStatus": "blocked"
+  }
+}

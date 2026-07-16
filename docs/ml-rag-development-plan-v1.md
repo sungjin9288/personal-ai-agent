@@ -1,6 +1,6 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: fine-tuning-readiness-current
+- status: candidate-model-evaluation-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -13,6 +13,7 @@
 - currentTrainingFixture: `fixtures/approved-training-record-cases-v1.json`
 - currentDatasetFixture: `fixtures/training-dataset-quality-cases-v1.json`
 - currentReadinessFixture: `fixtures/fine-tuning-readiness-cases-v1.json`
+- currentCandidateFixture: `fixtures/candidate-model-evaluation-cases-v1.json`
 - runtimeActivation: false
 
 ## 목적
@@ -145,6 +146,18 @@ Evaluation manifest는 JSONL 원문을 복사하지 않는다. L2 dataset id·ha
 
 이 단계는 dataset과 baseline을 사람이 검토할 수 있게 만든 readiness packet이다. `externalSubmissionAuthorized: false`, `fineTuningExecutionAuthorized: false`, `productionReadyClaim: false`이며 모델 학습, provider upload, 비용 발생, model id 생성은 수행하지 않는다.
 
+## 현재 candidate model evaluation gate
+
+`src/core/candidate-model-evaluation.mjs`는 candidate 결과를 직접 생성하거나 모델을 호출하지 않는다. F1 readiness packet의 JSONL digest, evaluation manifest hash, Q1 baseline hash, review·rollback 경계를 다시 계산하고, 같은 answer-quality case set과 같은 threshold로 만들어진 candidate evaluation result만 비교한다.
+
+Candidate evidence는 `fixture-simulated`와 `recorded-model-evaluation`을 구분한다. Fixture는 `actualModelEvaluated: false`, recorded result는 `actualModelEvaluated: true`여야 하며 candidate id, provider, model id, evaluation run id, timestamp, dataset hash, readiness hash, evaluation hash, evidence reference를 모두 요구한다. 어떤 evidence도 스스로 rollout 권한을 만들 수 없다.
+
+비교는 suite와 case 각각에서 retrieval hit, expected citation, citation grounding, required term coverage가 낮아지지 않았는지 검사한다. Unsupported citation, forbidden source, forbidden term은 늘어나면 안 된다. Case set, threshold, reviewer verdict, result hash가 달라도 실패한다. 실패 결과는 `rollback-required`, `keep-baseline`으로 고정한다.
+
+비교를 통과해도 결과는 `ready-for-review`, `hold-for-review`이다. Rollout은 `activationAuthorized: false`, reviewer decision `pending`, rollback owner `null`로 계속 차단한다. Fixture candidate는 실제 모델 평가가 아니므로 actual-model check도 실패 상태로 남는다.
+
+`npm run smoke:candidate-model-evaluation`은 실제 local CLI approval lifecycle로 F1 packet을 재생성한 뒤 Q1 두 case의 fixture candidate를 비교한다. Pass path와 의도적 citation·required-term·reviewer regression을 각각 JSON file로 기록하고 다시 읽으며, 원문 미포함과 store 불변을 확인한다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -158,7 +171,8 @@ Evaluation manifest는 JSONL 원문을 복사하지 않는다. L2 dataset id·ha
 | L2 Dataset quality gate | 완료 | content·lineage·near-response 중복 제거, mission scope 분리, seeded train·validation split, leakage 검사 | 동일 seed와 입력에서 동일 content-free manifest 생성 |
 | F1 Fine-tuning readiness | 완료 | provider-neutral JSONL export, Q1 baseline summary, content-free evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
 | F2 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
-| O1 Model rollout | 외부 작업 | candidate model과 baseline을 같은 fixture로 비교 | 품질 악화·권한 누락·증적 누락 시 즉시 중단 |
+| O1a Candidate evaluation gate | 완료 | F1 packet과 같은 Q1 suite에서 fixture·recorded candidate result의 품질·증적·권한·rollback 판정 | 회귀 시 keep-baseline, 통과 시 rollout 없이 reviewer 대기 |
+| O1b Model rollout | 외부 작업 | 실제 trained candidate model과 baseline을 같은 target fixture·runtime에서 비교하고 승인된 rollout 실행 | 실제 모델 증적·reviewer·rollback owner·activation 승인 없으면 중단 |
 
 RAG 단계에서는 현재 공개 API, CLI, HTTP payload, 저장 형식, permission 판단, audit ordering을 유지한다. 새 index가 필요하면 기존 source를 읽어 만든 파생 데이터로 두고, 원본 store를 migration하지 않는다.
 
@@ -195,6 +209,7 @@ node --test test/retrieval-reranker.test.mjs
 node --test test/approved-training-record.test.mjs
 node --test test/training-dataset-quality.test.mjs
 node --test test/fine-tuning-readiness.test.mjs
+node --test test/candidate-model-evaluation.test.mjs
 npm run smoke:answer-quality-evaluation
 npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-quality-evaluation
@@ -203,6 +218,7 @@ npm run smoke:retrieval-reranking-experiment
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
+npm run smoke:candidate-model-evaluation
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```
@@ -222,6 +238,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 ## Claim Boundary
 
-현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 dataset을 provider-neutral JSONL과 reviewer evaluation manifest로 재생성한다는 것이다.
+현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 dataset을 provider-neutral JSONL과 reviewer evaluation manifest로 재생성하며, fixture candidate result의 non-regression과 rollback decision을 판정한다는 것이다.
 
-이 결과는 실제 embedding model이나 learned reranker 성능, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Provider-specific adapter, local training runtime, 외부 fine-tuning 실행, model registry, rollout은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.
+이 결과는 실제 embedding model이나 learned reranker 성능, 실제 trained candidate model 평가, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Provider-specific adapter, local training runtime, 외부 fine-tuning 실행, model registry, 실제 model rollout은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.

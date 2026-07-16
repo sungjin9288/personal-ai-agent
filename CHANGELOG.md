@@ -19,6 +19,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
+- Added a candidate model evaluation gate that compares fixture or recorded results against the same Q1 case set and thresholds, requires bound evidence, keeps rollout disabled, and returns keep-baseline on regression.
 - Added a smoke validation summary and command guard to document the deterministic public-readiness verification baseline without expanding provider, hosted, or production claims.
 - Added an external evidence blocker register and smoke guard to keep account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers explicit.
 
@@ -37,8 +38,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,257,308 bytes`
-- SHA-256: `ed6d7fb52097bd4826ffbfe7b9f1a33059ed03b515006520df802e5a5fd89c1d`
+- Size: `2,258,404 bytes`
+- SHA-256: `6422d8de2a7bb447484ced102746d18c39abcf4a316ffce14c8bef1995b654e3`
 
 Included public surfaces:
 

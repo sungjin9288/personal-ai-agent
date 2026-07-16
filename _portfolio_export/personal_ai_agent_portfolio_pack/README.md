@@ -312,6 +312,7 @@ npm run smoke:retrieval-reranking-experiment
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
+npm run smoke:candidate-model-evaluation
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview
