@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Fine-tuning Readiness Export
+
+- added provider-neutral conversation JSONL for the L2 train and validation splits with record, content, lineage, and mission-scope metadata
+- bound the Q1 answer-quality baseline, dataset hash, export digests, review checklist, submission requirements, and rollback requirement into a content-free evaluation manifest
+- kept reviewer decision and rollback owner pending while blocking provider submission, training execution, and production claims
+
 ## 2026-07-16 Training Dataset Quality Gate
 
 - added a deterministic local dataset manifest that revalidates approved record safety, content and lineage hashes, reviewer approval, and local-only authorization boundaries

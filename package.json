@@ -101,6 +101,7 @@
     "smoke:retrieval-reranking-experiment": "node scripts/smoke-retrieval-reranking-experiment.mjs",
     "smoke:approved-training-record": "node scripts/smoke-approved-training-record.mjs",
     "smoke:training-dataset-quality": "node scripts/smoke-training-dataset-quality.mjs",
+    "smoke:fine-tuning-readiness": "node scripts/smoke-fine-tuning-readiness.mjs",
     "smoke:smoke-validation-summary": "node scripts/smoke-smoke-validation-summary.mjs",
     "smoke:external-evidence-blockers": "node scripts/smoke-external-evidence-blockers.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",

@@ -103,7 +103,7 @@ function validateAcceptedRisk(record, errors) {
   }
 }
 
-function assertApprovedRecord(record) {
+export function assertApprovedTrainingRecordForDataset(record) {
   const errors = [];
   const inspectedExample = inspectSanitizedTrainingExample(record?.example);
   const lineage = expectedLineage(record);
@@ -191,7 +191,7 @@ function assertApprovedRecord(record) {
   }
 }
 
-function summarizeRecord(record) {
+export function summarizeTrainingDatasetRecord(record) {
   return {
     contentHash: record.contentHash,
     id: record.id,
@@ -383,7 +383,7 @@ export function buildTrainingDatasetManifest({ records, seed } = {}) {
     throw new Error('Training dataset quality gate requires a non-empty deterministic seed.');
   }
   for (const record of records) {
-    assertApprovedRecord(record);
+    assertApprovedTrainingRecordForDataset(record);
   }
 
   const { acceptedRecords, excludedRecords } = deduplicateRecords(records);
@@ -396,8 +396,8 @@ export function buildTrainingDatasetManifest({ records, seed } = {}) {
     );
   }
 
-  const trainRecords = train.map(summarizeRecord);
-  const validationRecords = validation.map(summarizeRecord);
+  const trainRecords = train.map(summarizeTrainingDatasetRecord);
+  const validationRecords = validation.map(summarizeTrainingDatasetRecord);
   const datasetHash = hashRecord({ train: trainRecords, validation: validationRecords });
   const manifest = {
     counts: {
@@ -441,4 +441,111 @@ export function buildTrainingDatasetManifest({ records, seed } = {}) {
     id: `datasetmanifest-${manifestHash}`,
     manifestHash,
   };
+}
+
+export function assertTrainingDatasetManifest(manifest) {
+  const errors = [];
+  const train = Array.isArray(manifest?.splits?.train) ? manifest.splits.train : [];
+  const validation = Array.isArray(manifest?.splits?.validation)
+    ? manifest.splits.validation
+    : [];
+  const checks = Array.isArray(manifest?.leakageGate?.checks)
+    ? manifest.leakageGate.checks
+    : [];
+  const { id, manifestHash, ...manifestContent } = manifest || {};
+  const expectedManifestHash = hashRecord(manifestContent);
+  const expectedDatasetHash = hashRecord({ train, validation });
+  const excludedRecords = Array.isArray(manifest?.deduplication?.excludedRecords)
+    ? manifest.deduplication.excludedRecords
+    : [];
+  const acceptedRecords = [...train, ...validation];
+  const invalidAcceptedRecord = acceptedRecords.find(
+    (record) =>
+      !normalizeText(record?.id) ||
+      !isSha256(record?.contentHash) ||
+      !isSha256(record?.lineageHash) ||
+      record?.scope?.type !== 'mission' ||
+      !normalizeText(record?.scope?.id) ||
+      !normalizeText(record?.scope?.workspaceId),
+  );
+  const duplicateAcceptedRecord = acceptedRecords.find(
+    (record, index) =>
+      acceptedRecords.findIndex(
+        (candidate) =>
+          candidate.id === record.id ||
+          candidate.contentHash === record.contentHash ||
+          candidate.lineageHash === record.lineageHash,
+      ) !== index,
+  );
+  const crossSplitMissionScopes = overlap(
+    train,
+    validation,
+    (record) => `${record?.scope?.workspaceId}/${record?.scope?.id}`,
+  );
+
+  if (manifest?.schemaVersion !== TRAINING_DATASET_MANIFEST_SCHEMA_VERSION) {
+    errors.push('schema-version');
+  }
+  if (manifest?.status !== 'approved-for-local-export-review') {
+    errors.push('status');
+  }
+  if (!normalizeText(manifest?.seed)) {
+    errors.push('seed');
+  }
+  if (
+    manifest?.splitPolicy?.scopeUnit !== 'mission' ||
+    manifest.splitPolicy.strategy !== 'seeded-mission-scope-v1'
+  ) {
+    errors.push('split-policy');
+  }
+  if (!train.length || !validation.length) {
+    errors.push('split-presence');
+  }
+  if (
+    manifest?.counts?.train !== train.length ||
+    manifest?.counts?.validation !== validation.length ||
+    manifest?.counts?.accepted !== train.length + validation.length ||
+    manifest?.counts?.excludedDuplicates !== excludedRecords.length ||
+    manifest?.counts?.source !== acceptedRecords.length + excludedRecords.length
+  ) {
+    errors.push('split-counts');
+  }
+  if (invalidAcceptedRecord) {
+    errors.push('split-record-shape');
+  }
+  if (duplicateAcceptedRecord) {
+    errors.push('accepted-record-duplicate');
+  }
+  if (crossSplitMissionScopes.length > 0) {
+    errors.push('mission-scope-overlap');
+  }
+  if (
+    manifest?.leakageGate?.status !== 'passed' ||
+    !checks.length ||
+    checks.some((check) => check?.passed !== true || check?.status !== 'passed') ||
+    manifest?.leakageGate?.checkCounts?.failed !== 0 ||
+    manifest?.leakageGate?.checkCounts?.passed !== checks.length
+  ) {
+    errors.push('leakage-gate');
+  }
+  if (!isSha256(manifest?.datasetHash) || manifest.datasetHash !== expectedDatasetHash) {
+    errors.push('dataset-hash');
+  }
+  if (!isSha256(manifestHash) || manifestHash !== expectedManifestHash) {
+    errors.push('manifest-hash');
+  }
+  if (id !== `datasetmanifest-${expectedManifestHash}`) {
+    errors.push('manifest-id');
+  }
+  if (
+    manifest?.externalSubmissionAuthorized !== false ||
+    manifest?.fineTuningExecutionAuthorized !== false ||
+    manifest?.productionReadyClaim !== false
+  ) {
+    errors.push('local-only-boundary');
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Training dataset manifest failed: ${[...new Set(errors)].join(', ')}.`);
+  }
 }

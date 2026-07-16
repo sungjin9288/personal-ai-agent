@@ -4,6 +4,7 @@ import { test } from 'node:test';
 
 import { buildApprovedTrainingRecord } from '../src/core/approved-training-record.mjs';
 import {
+  assertTrainingDatasetManifest,
   buildTrainingDatasetManifest,
   TRAINING_DATASET_MANIFEST_SCHEMA_VERSION,
 } from '../src/core/training-dataset-quality.mjs';
@@ -202,5 +203,25 @@ test('dataset manifest seed is explicit and contributes to manifest identity', (
   assert.throws(
     () => buildTrainingDatasetManifest({ records, seed: '   ' }),
     /requires a non-empty deterministic seed/,
+  );
+});
+
+test('dataset manifest integrity check rejects tampered split and authorization state', () => {
+  const records = buildRecords();
+  const manifest = buildTrainingDatasetManifest({ records, seed: SEED });
+  assert.doesNotThrow(() => assertTrainingDatasetManifest(manifest));
+
+  const tampered = structuredClone(manifest);
+  tampered.splits.validation[0].lineageHash = '0'.repeat(64);
+  assert.throws(
+    () => assertTrainingDatasetManifest(tampered),
+    /dataset-hash, manifest-hash/,
+  );
+
+  const authorized = structuredClone(manifest);
+  authorized.externalSubmissionAuthorized = true;
+  assert.throws(
+    () => assertTrainingDatasetManifest(authorized),
+    /manifest-hash, manifest-id, local-only-boundary/,
   );
 });

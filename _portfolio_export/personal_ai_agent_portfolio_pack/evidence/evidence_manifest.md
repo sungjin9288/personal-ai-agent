@@ -98,6 +98,7 @@
 - Retrieval reranking experiment: verified with `npm run smoke:retrieval-reranking-experiment`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
+- Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

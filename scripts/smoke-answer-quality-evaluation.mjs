@@ -72,7 +72,7 @@ assert.ok(regression.failures.some((failure) => failure.check === 'reviewer-fail
 
 for (const term of [
   '# ML, RAG, and Fine-tuning Development Plan v1',
-  'status: training-dataset-quality-current',
+  'status: fine-tuning-readiness-current',
   '| Q1 Answer quality foundation | 완료 |',
   'productionReadyClaim: false',
   'costFreeDefault: true',

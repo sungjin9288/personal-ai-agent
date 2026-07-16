@@ -1,6 +1,6 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: training-dataset-quality-current
+- status: fine-tuning-readiness-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -12,6 +12,7 @@
 - currentRerankingFixture: `fixtures/reranking-cases-v1.json`
 - currentTrainingFixture: `fixtures/approved-training-record-cases-v1.json`
 - currentDatasetFixture: `fixtures/training-dataset-quality-cases-v1.json`
+- currentReadinessFixture: `fixtures/fine-tuning-readiness-cases-v1.json`
 - runtimeActivation: false
 
 ## 목적
@@ -20,7 +21,7 @@
 
 현재 구현은 memory와 attachment를 lexical score, BM25 score, phrase boost score로 정렬한다. 검색 후보는 같은 저장 데이터를 바꾸지 않고 corpus record로 정규화되며, retrieval artifact는 source revision, chunk id, content hash, scope, provenance를 함께 남긴다. fact graph는 revision과 retirement 이력을 보존하며, learning candidate는 reviewer·approval·verification을 통과해야 promotion될 수 있다.
 
-아직 구현되었다고 주장하지 않는 범위는 embedding index, vector database, semantic retrieval의 mission runtime 활성화, learned reranker, 학습용 dataset export, local training runtime, 외부 fine-tuning 실행, model registry, production A/B rollout이다.
+아직 구현되었다고 주장하지 않는 범위는 embedding index, vector database, semantic retrieval의 mission runtime 활성화, learned reranker, provider-specific submission adapter, local training runtime, 외부 fine-tuning 실행, model registry, production A/B rollout이다.
 
 ## 구조
 
@@ -132,6 +133,18 @@ Manifest에는 학습 문장을 복사하지 않고 record id, content·lineage 
 
 이 manifest는 F1 local export review의 입력일 뿐이다. `externalSubmissionAuthorized: false`, `fineTuningExecutionAuthorized: false`, `productionReadyClaim: false`를 유지하며 JSONL export나 외부 fine-tuning 제출을 실행하지 않는다.
 
+## 현재 fine-tuning readiness export
+
+`src/core/fine-tuning-readiness.mjs`는 L2 manifest의 schema, hash, split count, leakage check, local-only flag를 다시 확인한다. Export 입력은 L2에 사용한 전체 approved record set이어야 하며, manifest의 train·validation entry와 record의 content hash, lineage hash, mission scope가 정확히 일치해야 한다. 누락되거나 manifest 밖의 record가 들어오면 export하지 않는다.
+
+Train과 validation은 `personal-ai-agent-fine-tuning-example/v1` JSONL로 만든다. 각 line은 `user` instruction, `assistant` response, record id, content·lineage hash, record type, mission scope를 가진다. Format id는 `provider-neutral-conversation-jsonl-v1`이며 특정 provider upload schema나 submission request가 아니다. 실제 provider에 제출하려면 별도 adapter와 승인이 필요하다.
+
+Evaluation manifest는 JSONL 원문을 복사하지 않는다. L2 dataset id·hash·seed, accepted-risk record id, Q1 answer-quality baseline의 case별 status·metric·threshold·hash, export file digest, review checklist, rollback 기준을 묶는다. Reviewer decision과 rollback owner는 아직 `pending`·`null`이다. Provider account, model pin, budget limit, data transfer approval, rollback owner가 모두 기록되기 전에는 제출할 수 없다.
+
+`npm run smoke:fine-tuning-readiness`는 실제 local CLI에서 stub mission 6건을 reviewer·operator approval까지 실행하고 L2 manifest를 만든다. Q1 fixture를 같은 실행에서 평가한 뒤 train 3줄, validation 1줄 JSONL과 evaluation manifest를 임시 디렉터리에 기록하고 다시 읽는다. 입력 순서를 뒤집어도 digest가 같고 store가 바뀌지 않는지 확인한다.
+
+이 단계는 dataset과 baseline을 사람이 검토할 수 있게 만든 readiness packet이다. `externalSubmissionAuthorized: false`, `fineTuningExecutionAuthorized: false`, `productionReadyClaim: false`이며 모델 학습, provider upload, 비용 발생, model id 생성은 수행하지 않는다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -143,7 +156,7 @@ Manifest에는 학습 문장을 복사하지 않고 record id, content·lineage 
 | R4 Reranking | 완료 | semantic 0.7·lexical 0.3 deterministic feature baseline, controlled tie comparison, latency measurement, state-free rollback order | runtime 변경 없이 품질·latency·rollback 비교 자료 확보 |
 | L1 승인된 학습 데이터 | 완료 | approved promotion, reviewer pass, verification, artifact lineage, sanitized example을 묶은 deterministic record | raw secret·customer payload 차단, mission scope와 content·lineage hash 보존 |
 | L2 Dataset quality gate | 완료 | content·lineage·near-response 중복 제거, mission scope 분리, seeded train·validation split, leakage 검사 | 동일 seed와 입력에서 동일 content-free manifest 생성 |
-| F1 Fine-tuning readiness | 다음 | provider-neutral JSONL export와 evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
+| F1 Fine-tuning readiness | 완료 | provider-neutral JSONL export, Q1 baseline summary, content-free evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
 | F2 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1 Model rollout | 외부 작업 | candidate model과 baseline을 같은 fixture로 비교 | 품질 악화·권한 누락·증적 누락 시 즉시 중단 |
 
@@ -181,6 +194,7 @@ node --test test/embedding-adapter.test.mjs test/semantic-retrieval.test.mjs
 node --test test/retrieval-reranker.test.mjs
 node --test test/approved-training-record.test.mjs
 node --test test/training-dataset-quality.test.mjs
+node --test test/fine-tuning-readiness.test.mjs
 npm run smoke:answer-quality-evaluation
 npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-quality-evaluation
@@ -188,6 +202,7 @@ npm run smoke:semantic-retrieval-experiment
 npm run smoke:retrieval-reranking-experiment
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
+npm run smoke:fine-tuning-readiness
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```
@@ -207,6 +222,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 ## Claim Boundary
 
-현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 content-free dataset manifest를 재생성한다는 것이다.
+현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 dataset을 provider-neutral JSONL과 reviewer evaluation manifest로 재생성한다는 것이다.
 
-이 결과는 실제 embedding model이나 learned reranker 성능, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Provider-neutral JSONL export, local training runtime, 외부 fine-tuning 실행은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.
+이 결과는 실제 embedding model이나 learned reranker 성능, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Provider-specific adapter, local training runtime, 외부 fine-tuning 실행, model registry, rollout은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.

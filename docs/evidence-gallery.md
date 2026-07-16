@@ -56,6 +56,7 @@
 | Retrieval reranking experiment | `docs/ml-rag-development-plan-v1.md` | deterministic semantic+lexical scoring, controlled tie quality comparison, measured local latency, exact baseline rollback order, and inactive runtime boundary |
 | Approved training record | `docs/ml-rag-development-plan-v1.md` | actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and no external submission authority |
 | Training dataset quality gate | `docs/ml-rag-development-plan-v1.md` | deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and no fine-tuning execution authority |
+| Fine-tuning readiness export | `docs/ml-rag-development-plan-v1.md` | provider-neutral train/validation JSONL, Q1 baseline binding, content-free evaluation manifest, reviewer and rollback requirements, and no provider submission authority |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
 | External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
 
