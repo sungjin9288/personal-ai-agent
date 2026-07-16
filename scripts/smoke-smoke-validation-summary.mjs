@@ -41,6 +41,7 @@ const expectedCommands = [
   'npm run smoke:local-relevance-shadow-replay',
   'npm run smoke:local-relevance-shadow-cache',
   'npm run smoke:local-relevance-shadow-cache-lifecycle',
+  'npm run smoke:local-relevance-shadow-cache-process-isolation',
   'npm run smoke:approved-training-record',
   'npm run smoke:training-dataset-quality',
   'npm run smoke:fine-tuning-readiness',

@@ -55,6 +55,7 @@
 - evidence/output-artifacts/local-relevance-shadow-replay.json
 - evidence/output-artifacts/local-relevance-shadow-cache.json
 - evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json
+- evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함

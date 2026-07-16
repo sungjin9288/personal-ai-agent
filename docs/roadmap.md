@@ -101,6 +101,7 @@
 - 완료: R12 multi-scenario shadow replay에서 3 scenario·15 mission·60 role observation을 실제 재생하고 full-query hard-negative 실패를 보존한 뒤 mission-objective query contract로 교정
 - 완료: R13 bounded shadow score cache에서 exact query-document repetition을 process-local LRU로 재사용해 15/15 품질을 유지하며 120 request를 30 inference로 축소하고 maximum latency 회귀까지 증적에 보존
 - 완료: R14 shadow cache lifecycle stress에서 8-entry eviction 22, concurrent join, in-flight invalidation, stale-result drop, fresh refill와 rollback close를 actual local evidence로 검증
+- 완료: R15 shadow cache process isolation에서 concurrent child process 2개와 restarted process 1개의 cold miss·local hit·identity 분리·empty environment forwarding·shutdown close를 actual local evidence로 검증
 - 외부 승인 필요: local reranker provider-input activation, production latency·concurrency 한도, long soak·thermal telemetry, license·OS egress isolation, rollback owner
 - 완료: credential-free answer quality evaluator와 retrieval·citation·reviewer regression gate
 - 완료: store와 공개 retrieval payload를 바꾸지 않고 source hash·revision·scope·provenance를 보존하는 RAG corpus contract

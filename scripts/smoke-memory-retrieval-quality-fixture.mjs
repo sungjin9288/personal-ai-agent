@@ -29,6 +29,9 @@ const localRelevanceShadowCacheSmoke = readRequiredFile('scripts/smoke-local-rel
 const localRelevanceShadowCacheLifecycleSmoke = readRequiredFile(
   'scripts/smoke-local-relevance-shadow-cache-lifecycle.mjs',
 );
+const localRelevanceShadowCacheProcessIsolationSmoke = readRequiredFile(
+  'scripts/smoke-local-relevance-shadow-cache-process-isolation.mjs',
+);
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
@@ -91,6 +94,10 @@ assert.equal(
   packageJson.scripts['smoke:local-relevance-shadow-cache-lifecycle'],
   'node scripts/smoke-local-relevance-shadow-cache-lifecycle.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-cache-process-isolation'],
+  'node scripts/smoke-local-relevance-shadow-cache-process-isolation.mjs',
+);
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
   packageJson.scripts['smoke:instruction-boundary'],
@@ -125,6 +132,7 @@ for (const term of [
   'npm run smoke:local-relevance-shadow-replay',
   'npm run smoke:local-relevance-shadow-cache',
   'npm run smoke:local-relevance-shadow-cache-lifecycle',
+  'npm run smoke:local-relevance-shadow-cache-process-isolation',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -214,6 +222,19 @@ for (const smokeTerm of [
     localRelevanceShadowCacheLifecycleSmoke,
     smokeTerm,
     `local relevance shadow cache lifecycle smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'forwardedEnvironmentKeyCount',
+  'restartColdStartPassed',
+  'processIdentityHash',
+  'postCloseScoreRejected',
+]) {
+  assertContains(
+    localRelevanceShadowCacheProcessIsolationSmoke,
+    smokeTerm,
+    `local relevance shadow cache process isolation smoke missing ${smokeTerm}`,
   );
 }
 

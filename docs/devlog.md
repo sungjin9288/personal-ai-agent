@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Local Relevance Shadow Cache Process Isolation
+
+- added a bounded child-process worker protocol that receives query and document input only through stdin, forwards no parent environment, limits input and output size, and returns content-free cache snapshots
+- ran two concurrent workers and one restarted worker against the installed `qwen2.5:3b`; each distinct process began empty, performed one inference, served one local cache hit, returned the same score, and closed with zero entries
+- bound the actual process evidence to the R14 model, prompt, fixture input, and lifecycle evidence while keeping provider input, runtime activation, external calls, and production claims unchanged
+
 ## 2026-07-17 Local Relevance Shadow Cache Lifecycle Stress
 
 - extended the process-local score cache with generation-based invalidation and idempotent close so pre-invalidation in-flight results cannot repopulate the cache and rollback rejects later cache use

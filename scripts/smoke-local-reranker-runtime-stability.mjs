@@ -117,7 +117,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-relevance-shadow-cache-lifecycle-current',
+  'status: local-relevance-shadow-cache-process-isolation-current',
   '| R10 Local reranker runtime stability | 완료 |',
   'actualLocalRerankerRuntimeStabilityValidated: true',
   'actualLocalRerankerRuntimeStabilityQualified: false',
