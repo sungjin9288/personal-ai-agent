@@ -1,0 +1,375 @@
+{
+  "activation": {
+    "authorized": false,
+    "status": "blocked"
+  },
+  "actualLocalRelevanceShadowCacheTerminationSoakQualified": false,
+  "actualLocalRelevanceShadowCacheTerminationSoakValidated": true,
+  "costFree": true,
+  "decision": "hold-lexical-for-governance",
+  "externalProviderCalls": "none",
+  "observedAt": "2026-07-16T18:13:16.470Z",
+  "priorProcessIsolationEvidenceBinding": {
+    "cacheBinding": {
+      "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+      "modelId": "qwen2.5:3b",
+      "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+      "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+      "scorerId": "ollama-independent-score:qwen2.5:3b",
+      "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2"
+    },
+    "evidenceHash": "802e4cbd33fd4c107f78f2258c5b567ebcad03bee72f79dd3e592e6b85b1b85b",
+    "fixtureBinding": {
+      "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+      "inputHash": "5f7a82842a4f5d3b1c12d43c188587d6b4076438e3bb095da9672f56b8f83687",
+      "queryId": "canonical",
+      "scenarioId": "authentication-recovery"
+    },
+    "id": "local-relevance-shadow-cache-process-isolation-802e4cbd33fd4c107f78f2258c5b567ebcad03bee72f79dd3e592e6b85b1b85b",
+    "runtime": {
+      "adapter": "ollama-independent-score",
+      "cloudFeaturesDisabled": true,
+      "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+      "modelId": "qwen2.5:3b",
+      "runtimeVersion": "0.23.0",
+      "transport": "loopback-http"
+    },
+    "status": "cache-process-isolation-passed-governance-blocked",
+    "validated": true,
+    "bindingHash": "f3d45815db88527fa226235d092338a3f94095f5e104f0bc7c75fdb6df0a926b"
+  },
+  "productionReadyClaim": false,
+  "results": {
+    "boundedSoakPassed": true,
+    "forcedTerminationRecoveryPassed": true,
+    "inputBindingPassed": true,
+    "processIsolationPassed": true
+  },
+  "rollback": {
+    "stateMigrationRequired": false,
+    "strategy": "terminate-evaluation-workers-and-keep-lexical"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-relevance-shadow-cache-termination-soak/v1",
+  "soakWorker": {
+    "capacity": 16,
+    "closedCacheSnapshot": {
+      "binding": {
+        "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "closed": true,
+      "completedEntryContentRetained": false,
+      "completedEntryCount": 0,
+      "externalProviderCalls": "none",
+      "generation": 1,
+      "lastInvalidationReason": "shutdown",
+      "maxEntries": 16,
+      "metrics": {
+        "evictionCount": 32,
+        "failureCount": 0,
+        "hitCount": 16,
+        "inFlightHitCount": 0,
+        "invalidatedCompletedEntryCount": 16,
+        "invalidatedInFlightEntryCount": 0,
+        "invalidationCount": 1,
+        "missCount": 48,
+        "modelInferenceCount": 48,
+        "requestCount": 64,
+        "staleResultDropCount": 0
+      },
+      "pendingEntryCount": 0,
+      "persistent": false,
+      "productionReadyClaim": false,
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-score-cache/v1",
+      "strategy": "bounded-process-local-lru"
+    },
+    "environmentKeyCount": 1,
+    "finalMemory": {
+      "heapUsedBytes": 9462176,
+      "rssBytes": 74596352
+    },
+    "forwardedEnvironmentKeyCount": 0,
+    "heapGrowthBytes": 4023088,
+    "initialCacheSnapshot": {
+      "binding": {
+        "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "closed": false,
+      "completedEntryContentRetained": false,
+      "completedEntryCount": 0,
+      "externalProviderCalls": "none",
+      "generation": 0,
+      "lastInvalidationReason": null,
+      "maxEntries": 16,
+      "metrics": {
+        "evictionCount": 0,
+        "failureCount": 0,
+        "hitCount": 0,
+        "inFlightHitCount": 0,
+        "invalidatedCompletedEntryCount": 0,
+        "invalidatedInFlightEntryCount": 0,
+        "invalidationCount": 0,
+        "missCount": 0,
+        "modelInferenceCount": 0,
+        "requestCount": 0,
+        "staleResultDropCount": 0
+      },
+      "pendingEntryCount": 0,
+      "persistent": false,
+      "productionReadyClaim": false,
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-score-cache/v1",
+      "strategy": "bounded-process-local-lru"
+    },
+    "inputHash": "5f7a82842a4f5d3b1c12d43c188587d6b4076438e3bb095da9672f56b8f83687",
+    "pairCount": 48,
+    "parentProcessIdentityHash": "e60f6f703d622ba502867669cb5dc5ae11c8e69e122e1828c0477e752d89aa8a",
+    "peakMemory": {
+      "heapUsedBytes": 10346552,
+      "rssBytes": 100319232
+    },
+    "platformEnvironmentKeyCount": 1,
+    "postCloseScoreRejected": true,
+    "processIdentityHash": "65457bca4b7337b4d61c105e6f5f8f9708cbe7202f147f9014f991cf6a19b1c7",
+    "replayCount": 16,
+    "rssGrowthBytes": 21938176,
+    "scoreMaximum": 90,
+    "scoreMinimum": 70,
+    "secretEnvironmentKeyFound": false,
+    "saturatedCacheSnapshot": {
+      "binding": {
+        "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "closed": false,
+      "completedEntryContentRetained": false,
+      "completedEntryCount": 16,
+      "externalProviderCalls": "none",
+      "generation": 0,
+      "lastInvalidationReason": null,
+      "maxEntries": 16,
+      "metrics": {
+        "evictionCount": 32,
+        "failureCount": 0,
+        "hitCount": 16,
+        "inFlightHitCount": 0,
+        "invalidatedCompletedEntryCount": 0,
+        "invalidatedInFlightEntryCount": 0,
+        "invalidationCount": 0,
+        "missCount": 48,
+        "modelInferenceCount": 48,
+        "requestCount": 64,
+        "staleResultDropCount": 0
+      },
+      "pendingEntryCount": 0,
+      "persistent": false,
+      "productionReadyClaim": false,
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-score-cache/v1",
+      "strategy": "bounded-process-local-lru"
+    },
+    "startMemory": {
+      "heapUsedBytes": 5439088,
+      "rssBytes": 52658176
+    },
+    "workerId": "soak-worker"
+  },
+  "status": "cache-termination-soak-passed-governance-blocked",
+  "terminationProbe": {
+    "forcedWorker": {
+      "cachedScore": 90,
+      "environmentKeyCount": 1,
+      "firstScore": 90,
+      "forwardedEnvironmentKeyCount": 0,
+      "inputHash": "5f7a82842a4f5d3b1c12d43c188587d6b4076438e3bb095da9672f56b8f83687",
+      "parentProcessIdentityHash": "e60f6f703d622ba502867669cb5dc5ae11c8e69e122e1828c0477e752d89aa8a",
+      "platformEnvironmentKeyCount": 1,
+      "processIdentityHash": "69f9a21e6c616556f43cab38549839e79d274347a650d7bfae8330ca6854e268",
+      "secretEnvironmentKeyFound": false,
+      "state": "ready-for-termination",
+      "warmCacheSnapshot": {
+        "binding": {
+          "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2",
+          "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "modelId": "qwen2.5:3b",
+          "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+          "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+          "scorerId": "ollama-independent-score:qwen2.5:3b"
+        },
+        "closed": false,
+        "completedEntryContentRetained": false,
+        "completedEntryCount": 1,
+        "externalProviderCalls": "none",
+        "generation": 0,
+        "lastInvalidationReason": null,
+        "maxEntries": 4,
+        "metrics": {
+          "evictionCount": 0,
+          "failureCount": 0,
+          "hitCount": 1,
+          "inFlightHitCount": 0,
+          "invalidatedCompletedEntryCount": 0,
+          "invalidatedInFlightEntryCount": 0,
+          "invalidationCount": 0,
+          "missCount": 1,
+          "modelInferenceCount": 1,
+          "requestCount": 2,
+          "staleResultDropCount": 0
+        },
+        "pendingEntryCount": 0,
+        "persistent": false,
+        "productionReadyClaim": false,
+        "runtimeActivation": false,
+        "schemaVersion": "personal-ai-agent-local-relevance-score-cache/v1",
+        "strategy": "bounded-process-local-lru"
+      },
+      "workerId": "forced-worker"
+    },
+    "recoveryWorker": {
+      "cachedScore": 90,
+      "closedCacheSnapshot": {
+        "binding": {
+          "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2",
+          "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "modelId": "qwen2.5:3b",
+          "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+          "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+          "scorerId": "ollama-independent-score:qwen2.5:3b"
+        },
+        "closed": true,
+        "completedEntryContentRetained": false,
+        "completedEntryCount": 0,
+        "externalProviderCalls": "none",
+        "generation": 1,
+        "lastInvalidationReason": "shutdown",
+        "maxEntries": 4,
+        "metrics": {
+          "evictionCount": 0,
+          "failureCount": 0,
+          "hitCount": 1,
+          "inFlightHitCount": 0,
+          "invalidatedCompletedEntryCount": 1,
+          "invalidatedInFlightEntryCount": 0,
+          "invalidationCount": 1,
+          "missCount": 1,
+          "modelInferenceCount": 1,
+          "requestCount": 2,
+          "staleResultDropCount": 0
+        },
+        "pendingEntryCount": 0,
+        "persistent": false,
+        "productionReadyClaim": false,
+        "runtimeActivation": false,
+        "schemaVersion": "personal-ai-agent-local-relevance-score-cache/v1",
+        "strategy": "bounded-process-local-lru"
+      },
+      "environmentKeyCount": 1,
+      "firstScore": 90,
+      "forwardedEnvironmentKeyCount": 0,
+      "initialCacheSnapshot": {
+        "binding": {
+          "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2",
+          "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "modelId": "qwen2.5:3b",
+          "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+          "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+          "scorerId": "ollama-independent-score:qwen2.5:3b"
+        },
+        "closed": false,
+        "completedEntryContentRetained": false,
+        "completedEntryCount": 0,
+        "externalProviderCalls": "none",
+        "generation": 0,
+        "lastInvalidationReason": null,
+        "maxEntries": 4,
+        "metrics": {
+          "evictionCount": 0,
+          "failureCount": 0,
+          "hitCount": 0,
+          "inFlightHitCount": 0,
+          "invalidatedCompletedEntryCount": 0,
+          "invalidatedInFlightEntryCount": 0,
+          "invalidationCount": 0,
+          "missCount": 0,
+          "modelInferenceCount": 0,
+          "requestCount": 0,
+          "staleResultDropCount": 0
+        },
+        "pendingEntryCount": 0,
+        "persistent": false,
+        "productionReadyClaim": false,
+        "runtimeActivation": false,
+        "schemaVersion": "personal-ai-agent-local-relevance-score-cache/v1",
+        "strategy": "bounded-process-local-lru"
+      },
+      "inputHash": "5f7a82842a4f5d3b1c12d43c188587d6b4076438e3bb095da9672f56b8f83687",
+      "parentProcessIdentityHash": "e60f6f703d622ba502867669cb5dc5ae11c8e69e122e1828c0477e752d89aa8a",
+      "platformEnvironmentKeyCount": 1,
+      "postCloseScoreRejected": true,
+      "processIdentityHash": "76ef3a7cde21e99e1f453ba01f7b7e7930fc313be055bd52431818aa3ff05d76",
+      "secretEnvironmentKeyFound": false,
+      "warmCacheSnapshot": {
+        "binding": {
+          "bindingHash": "90aaf72d5346e318e430ba888918b96cf0cd27070c6334f857809b385246b2c2",
+          "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "modelId": "qwen2.5:3b",
+          "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+          "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+          "scorerId": "ollama-independent-score:qwen2.5:3b"
+        },
+        "closed": false,
+        "completedEntryContentRetained": false,
+        "completedEntryCount": 1,
+        "externalProviderCalls": "none",
+        "generation": 0,
+        "lastInvalidationReason": null,
+        "maxEntries": 4,
+        "metrics": {
+          "evictionCount": 0,
+          "failureCount": 0,
+          "hitCount": 1,
+          "inFlightHitCount": 0,
+          "invalidatedCompletedEntryCount": 0,
+          "invalidatedInFlightEntryCount": 0,
+          "invalidationCount": 0,
+          "missCount": 1,
+          "modelInferenceCount": 1,
+          "requestCount": 2,
+          "staleResultDropCount": 0
+        },
+        "pendingEntryCount": 0,
+        "persistent": false,
+        "productionReadyClaim": false,
+        "runtimeActivation": false,
+        "schemaVersion": "personal-ai-agent-local-relevance-score-cache/v1",
+        "strategy": "bounded-process-local-lru"
+      },
+      "workerId": "recovery-worker"
+    },
+    "termination": {
+      "exitCode": null,
+      "finalResultReceived": false,
+      "observedSignal": "SIGKILL",
+      "readyBeforeTermination": true,
+      "requestedSignal": "SIGKILL",
+      "terminatedByParent": true
+    }
+  },
+  "evidenceHash": "a2c8c4d35212b8d420090cadbee48952d1355bb0c7bafdde5503a4e7ecd62355",
+  "id": "local-relevance-shadow-cache-termination-soak-a2c8c4d35212b8d420090cadbee48952d1355bb0c7bafdde5503a4e7ecd62355"
+}

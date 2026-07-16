@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Local Relevance Shadow Cache Termination Recovery and Bounded Soak
+
+- extended the fixed empty-environment child worker with a warm-before-termination state and observed parent-issued SIGKILL before starting a distinct cold recovery worker
+- ran 48 unique local relevance pairs through a 16-entry cache, replayed the newest 16 as hits, and recorded 64 requests, 48 inferences, 16 hits, 32 evictions, and zero entries after close
+- measured 4,023,088 bytes of final heap growth and 21,938,176 bytes of final RSS growth, and gated both peak and final samples against local 64 MiB and 128 MiB regression limits while keeping evidence content-free and provider activation blocked
+
 ## 2026-07-17 Local Relevance Shadow Cache Process Isolation
 
 - added a bounded child-process worker protocol that receives query and document input only through stdin, forwards no parent environment, limits input and output size, and returns content-free cache snapshots

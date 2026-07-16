@@ -93,7 +93,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-relevance-shadow-cache-process-isolation-current',
+  'status: local-relevance-shadow-cache-termination-soak-current',
   '| R7 Retrieval robustness evaluation | 완료 |',
   'actualLocalRetrievalRobustnessValidated: false',
   'fixtures/retrieval-robustness-cases-v1.json',

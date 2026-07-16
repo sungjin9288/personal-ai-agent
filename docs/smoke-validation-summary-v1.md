@@ -53,6 +53,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Bounded shadow score cache | `npm run smoke:local-relevance-shadow-cache` | Verifies exact model·prompt·query·document binding, 64-entry process-local LRU, 120 requests to 30 model inferences, 90 hits, 15/15 quality parity, content-free entries, maximum-latency regression disclosure, and inactive provider path |
 | Shadow cache lifecycle stress | `npm run smoke:local-relevance-shadow-cache-lifecycle` | Verifies 8-entry actual eviction, 22 LRU removals, 15/15 quality parity, concurrent in-flight join, generation invalidation, stale-result drop, fresh refill, rollback close, content-free evidence, and inactive provider path |
 | Shadow cache process isolation | `npm run smoke:local-relevance-shadow-cache-process-isolation` | Verifies two concurrent child processes and one restarted process each begin with an empty cache, perform one inference and one local hit, retain distinct process identity, inherit no parent environment, close with zero entries, and keep provider activation blocked |
+| Shadow cache termination and soak | `npm run smoke:local-relevance-shadow-cache-termination-soak` | Verifies warm-before-kill state, observed SIGKILL, cold recovery inference and score parity, exact 48-pair/16-entry soak metrics, heap/RSS regression limits, content-free evidence, and blocked provider activation |
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
@@ -99,6 +100,7 @@ npm run smoke:local-relevance-shadow-replay
 npm run smoke:local-relevance-shadow-cache
 npm run smoke:local-relevance-shadow-cache-lifecycle
 npm run smoke:local-relevance-shadow-cache-process-isolation
+npm run smoke:local-relevance-shadow-cache-termination-soak
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness

@@ -89,3 +89,108 @@ export function runLocalRelevanceCacheWorkerProcess({ input, timeoutMs = 180_000
     child.stdin.end(payload);
   });
 }
+
+export function runForcedTerminationCacheWorkerProcess({ input, timeoutMs = 180_000 } = {}) {
+  const forcedInput = {
+    ...input,
+    mode: 'wait-for-termination',
+    workerId: 'forced-worker',
+  };
+  const payload = `${JSON.stringify(forcedInput)}\n`;
+  if (Buffer.byteLength(payload) > MAX_INPUT_BYTES) {
+    throw new Error(`Local relevance cache worker input exceeds ${MAX_INPUT_BYTES} bytes.`);
+  }
+  if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) {
+    throw new Error('Local relevance cache worker timeout must be a positive integer.');
+  }
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [workerPath], {
+      cwd: path.dirname(scriptDir),
+      env: {},
+      shell: false,
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+    const stdout = [];
+    const stderr = [];
+    let stdoutBytes = 0;
+    let stderrBytes = 0;
+    let readyResult = null;
+    let processError = null;
+    const timer = setTimeout(() => {
+      processError = new Error(`Local relevance cache worker timed out after ${timeoutMs}ms.`);
+      child.kill('SIGKILL');
+    }, timeoutMs);
+
+    child.stdout.on('data', (chunk) => {
+      stdoutBytes += chunk.length;
+      if (stdoutBytes > MAX_STDOUT_BYTES) {
+        processError = new Error('Local relevance cache worker stdout exceeded its limit.');
+        child.kill('SIGKILL');
+        return;
+      }
+      stdout.push(chunk);
+      const output = Buffer.concat(stdout, stdoutBytes).toString('utf8');
+      const newlineIndex = output.indexOf('\n');
+      if (readyResult || newlineIndex === -1) {
+        return;
+      }
+      try {
+        readyResult = JSON.parse(output.slice(0, newlineIndex));
+        if (
+          readyResult.workerId !== 'forced-worker' ||
+          readyResult.state !== 'ready-for-termination'
+        ) {
+          throw new Error('Local relevance cache forced worker returned an invalid ready state.');
+        }
+        if (!child.kill('SIGKILL')) {
+          throw new Error('Local relevance cache forced worker could not be terminated.');
+        }
+      } catch (error) {
+        processError = error;
+        child.kill('SIGKILL');
+      }
+    });
+    child.stderr.on('data', (chunk) => {
+      stderrBytes += chunk.length;
+      if (stderrBytes > MAX_STDERR_BYTES) {
+        processError = new Error('Local relevance cache worker stderr exceeded its limit.');
+        child.kill('SIGKILL');
+        return;
+      }
+      stderr.push(chunk);
+    });
+    child.on('error', (error) => {
+      processError = error;
+    });
+    child.stdin.on('error', (error) => {
+      processError ||= error;
+    });
+    child.on('close', (code, signal) => {
+      clearTimeout(timer);
+      if (processError) {
+        reject(processError);
+        return;
+      }
+      if (!readyResult || code !== null || signal !== 'SIGKILL') {
+        const errorText = Buffer.concat(stderr, stderrBytes).toString('utf8').trim();
+        reject(new Error(
+          `Local relevance cache forced worker termination failed (${code ?? signal}): ${errorText || 'no detail'}`,
+        ));
+        return;
+      }
+      resolve({
+        forcedWorker: readyResult,
+        termination: {
+          exitCode: code,
+          finalResultReceived: false,
+          observedSignal: signal,
+          readyBeforeTermination: true,
+          requestedSignal: 'SIGKILL',
+          terminatedByParent: true,
+        },
+      });
+    });
+    child.stdin.end(payload);
+  });
+}
