@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T19:07:02.893Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T19:07:01.684Z
 - localDate: 2026-07-17
 - branch: codex/approved-learning-rag-feedback
 - commit: 0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3](releases/execution-v1/0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3](docs/releases/execution-v1/0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3)
 - visualArtifactSetSha256: 2e1c72ff57ae9b66b8c2a8062b5bcd08549698fd0cbc6686f961b4fed75bdc5d
 - commitPushStatus: not pushed, origin/codex/approved-learning-rag-feedback not found
 

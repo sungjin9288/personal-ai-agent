@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T19:07:02.893Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T19:06:55.248Z
 - branch: codex/approved-learning-rag-feedback
 - commit: 0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3

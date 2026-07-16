@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T19:07:02.893Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T19:06:55.299Z
 - branch: codex/approved-learning-rag-feedback
 - commit: 0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

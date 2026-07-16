@@ -1,9 +1,9 @@
 # Production Provider Readiness v1
 
 - status: local-provider-readiness-current
-- generatedAt: 2026-07-16T18:33:16.562Z
-- sourceBranch: codex/rag-cache-termination-soak
-- sourceCommit: 16380f6dbfc361e33cd9e1f67746795f9dcd2f4b
+- generatedAt: 2026-07-16T19:06:56.285Z
+- sourceBranch: codex/approved-learning-rag-feedback
+- sourceCommit: 0a0d2a7e5edf2aeaf61e6c48dd3d5666a1f7d4c3
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - scope: local provider preflight and live-validation handoff readiness rehearsal
 - productionReadyClaim: false
