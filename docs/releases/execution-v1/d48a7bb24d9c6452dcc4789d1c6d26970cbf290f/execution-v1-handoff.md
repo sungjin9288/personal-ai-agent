@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T17:28:35.124Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T17:28:34.159Z
 - localDate: 2026-07-17
 - branch: codex/rag-cache-lifecycle-stress
 - commit: d48a7bb24d9c6452dcc4789d1c6d26970cbf290f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d48a7bb24d9c6452dcc4789d1c6d26970cbf290f](releases/execution-v1/d48a7bb24d9c6452dcc4789d1c6d26970cbf290f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d48a7bb24d9c6452dcc4789d1c6d26970cbf290f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/d48a7bb24d9c6452dcc4789d1c6d26970cbf290f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/d48a7bb24d9c6452dcc4789d1c6d26970cbf290f](docs/releases/execution-v1/d48a7bb24d9c6452dcc4789d1c6d26970cbf290f)
 - visualArtifactSetSha256: 3ef0469f0c052c92313b1fee84ba3a14092aa5265e61c671e4369472e6c53b71
 - commitPushStatus: not pushed, origin/codex/rag-cache-lifecycle-stress not found
 

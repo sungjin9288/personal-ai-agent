@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T17:28:35.124Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T17:28:27.779Z
 - branch: codex/rag-cache-lifecycle-stress
 - commit: d48a7bb24d9c6452dcc4789d1c6d26970cbf290f

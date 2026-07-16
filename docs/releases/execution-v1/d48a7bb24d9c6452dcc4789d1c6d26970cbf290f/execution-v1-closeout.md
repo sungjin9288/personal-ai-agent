@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T17:28:35.124Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T17:28:27.832Z
 - branch: codex/rag-cache-lifecycle-stress
 - commit: d48a7bb24d9c6452dcc4789d1c6d26970cbf290f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/d48a7bb24d9c6452dcc4789d1c6d26970cbf290f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
