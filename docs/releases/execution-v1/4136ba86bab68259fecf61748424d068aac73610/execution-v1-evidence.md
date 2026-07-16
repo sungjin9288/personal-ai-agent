@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T21:07:26.757Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T21:07:19.415Z
 - branch: codex/workspace-learning-conflict-revocation
 - commit: 4136ba86bab68259fecf61748424d068aac73610

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T21:07:26.757Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T21:07:25.822Z
 - localDate: 2026-07-17
 - branch: codex/workspace-learning-conflict-revocation
 - commit: 4136ba86bab68259fecf61748424d068aac73610
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4136ba86bab68259fecf61748424d068aac73610](releases/execution-v1/4136ba86bab68259fecf61748424d068aac73610)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4136ba86bab68259fecf61748424d068aac73610/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4136ba86bab68259fecf61748424d068aac73610/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4136ba86bab68259fecf61748424d068aac73610](docs/releases/execution-v1/4136ba86bab68259fecf61748424d068aac73610)
 - visualArtifactSetSha256: eec7f017e3eeaf0b8d21bd6e262e7196e413c6c9960f52c7e7c5ac4af01789bc
 - commitPushStatus: not pushed, origin/codex/workspace-learning-conflict-revocation not found
 
