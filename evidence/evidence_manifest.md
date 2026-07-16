@@ -3,11 +3,11 @@
 ## Summary
 
 - Project: Personal AI Agent
-- Generated at: 2026-06-09
+- Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: document-only implementation evidence for portfolio review
-- Source code modified: no
-- New feature development: no
+- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay
+- Source code modified: yes, R12 shadow replay query contract and evidence aggregation
+- New feature development: yes, cost-free multi-scenario shadow replay
 
 ## Generated Evidence Files
 
@@ -57,6 +57,8 @@
 - `evidence/output-artifacts/local-reranker-resource-envelope.json`
 - `evidence/output-artifacts/local-reranker-runtime-stability.json`
 - `evidence/output-artifacts/local-relevance-shadow-integration.json`
+- `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
+- `evidence/output-artifacts/local-relevance-shadow-replay.json`
 
 ### Architecture
 
@@ -109,6 +111,7 @@
 - Local reranker resource envelope: verified with `npm run smoke:local-reranker-resource-envelope`
 - Local reranker runtime stability: verified with `npm run smoke:local-reranker-runtime-stability`
 - Local relevance shadow integration: verified with `npm run smoke:local-relevance-shadow-integration`
+- Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

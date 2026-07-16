@@ -106,3 +106,32 @@ test('scorer and observation writer failures stay content-free and preserve the 
   assert.equal(JSON.stringify(observation).includes('raw scorer failure'), false);
   assert.equal(observation.providerInput.lexicalResultHash, observation.providerInput.returnedResultHash);
 });
+
+test('shadow scoring keeps the qualified query contract on the mission objective', async () => {
+  const input = buildInput('reviewer');
+  input.mission.title = 'A title with unrelated dashboard wording';
+  input.previousOutputs = {
+    executor: { summaryText: 'Generated output about blue visual layout.' },
+  };
+  const queries = [];
+  const scorer = buildScorer();
+  const evaluator = createLocalRelevanceShadowEvaluator({
+    clock: () => '2026-07-17T00:00:00.000Z',
+    scorer: {
+      ...scorer,
+      async scoreDocument({ documentText, queryText }) {
+        queries.push(queryText);
+        return scorer.scoreDocument({ documentText, queryText });
+      },
+    },
+  });
+
+  const observation = await evaluator.observe({
+    input,
+    lexical: buildRetrievalContextWithCorpus(input),
+  });
+
+  assert.deepEqual([...new Set(queries)], [input.mission.objective]);
+  assert.equal(observation.queryHash, hashValue(input.mission.objective));
+  assert.equal(JSON.stringify(observation).includes('blue visual layout'), false);
+});

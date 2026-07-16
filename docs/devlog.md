@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Multi-scenario Local Relevance Shadow Replay
+
+- replayed 3 retrieval scenarios, 15 actual stub missions, and 60 manager·planner·executor·reviewer shadow observations with the R11-bound local scorer while preserving the original lexical provider input
+- retained the first full-query 12/15 result and hard-negative 0/3 stop condition, traced it to role and previous-output text exceeding the qualified query-document contract, and narrowed only the shadow scorer query to the mission objective
+- passed 15/15 and hard-negative 3/3 with 60/60 expected top-1 observations, kept both records content-free, and left provider-input activation, qualification, and production claims blocked
+
 ## 2026-07-17 Local Relevance Shadow Integration
 
 - connected the R10-bound local relevance scorer to a controlled manager, planner, executor, and reviewer mission through explicit dependency injection while returning the original lexical retrieval object to every provider stage

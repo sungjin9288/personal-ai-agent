@@ -38,6 +38,7 @@ const expectedCommands = [
   'npm run smoke:local-reranker-resource-envelope',
   'npm run smoke:local-reranker-runtime-stability',
   'npm run smoke:local-relevance-shadow-integration',
+  'npm run smoke:local-relevance-shadow-replay',
   'npm run smoke:approved-training-record',
   'npm run smoke:training-dataset-quality',
   'npm run smoke:fine-tuning-readiness',

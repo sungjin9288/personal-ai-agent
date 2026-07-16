@@ -24,6 +24,7 @@ const localRelevanceRerankerSmoke = readRequiredFile('scripts/smoke-local-releva
 const localRerankerResourceEnvelopeSmoke = readRequiredFile('scripts/smoke-local-reranker-resource-envelope.mjs');
 const localRerankerRuntimeStabilitySmoke = readRequiredFile('scripts/smoke-local-reranker-runtime-stability.mjs');
 const localRelevanceShadowIntegrationSmoke = readRequiredFile('scripts/smoke-local-relevance-shadow-integration.mjs');
+const localRelevanceShadowReplaySmoke = readRequiredFile('scripts/smoke-local-relevance-shadow-replay.mjs');
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
@@ -74,6 +75,10 @@ assert.equal(
   packageJson.scripts['smoke:local-relevance-shadow-integration'],
   'node scripts/smoke-local-relevance-shadow-integration.mjs',
 );
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-replay'],
+  'node scripts/smoke-local-relevance-shadow-replay.mjs',
+);
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
   packageJson.scripts['smoke:instruction-boundary'],
@@ -105,6 +110,7 @@ for (const term of [
   'npm run smoke:local-reranker-resource-envelope',
   'npm run smoke:local-reranker-runtime-stability',
   'npm run smoke:local-relevance-shadow-integration',
+  'npm run smoke:local-relevance-shadow-replay',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -155,6 +161,19 @@ for (const smokeTerm of [
     localRelevanceShadowIntegrationSmoke,
     smokeTerm,
     `local relevance shadow integration smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'fullQueryBaseline',
+  'mission-objective-v1',
+  'hard-negative',
+  'actualLocalRelevanceShadowReplayValidated',
+]) {
+  assertContains(
+    localRelevanceShadowReplaySmoke,
+    smokeTerm,
+    `local relevance shadow replay smoke missing ${smokeTerm}`,
   );
 }
 

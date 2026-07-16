@@ -22,6 +22,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added an independent local relevance reranker evaluation using repeated structured qwen2.5 3B scoring, recording a controlled 15-case quality pass while keeping runtime activation and governance approval blocked.
 - Added a local reranker resource envelope using a preflight-checked lexical top-2 shortlist, recording R8 quality parity, lower inference count and p50/p95/total latency, the loaded-model footprint, and the observed maximum-latency regression while keeping runtime activation blocked.
 - Added a bounded local reranker runtime stability evaluation covering confirmed Ollama-model-absent cold state, three warm runs, and two concurrent client workers with 360 inference quality/resource parity while leaving OS cold boot, production parallelism, long-duration soak, thermal behavior, and runtime activation unproven.
+- Connected the R10-bound scorer to one controlled four-role stub mission as an observation-only shadow path while preserving lexical provider input, store shape, artifacts, public contracts, and fail-open behavior.
+- Replayed 3 controlled scenarios, 15 stub missions, and 60 role observations; retained the full-query 12/15 hard-negative failure as evidence, corrected the scorer query to the qualified mission-objective contract, and passed 15/15 without enabling provider input or production claims.
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
@@ -44,8 +46,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `2,300,062 bytes`
-- SHA-256: `ab14884bace5382de750942ef9bcd70e02b61301fd4fd05f6086eba4fae981c2`
+- Size: `2,336,888 bytes`
+- SHA-256: `cc086436f695d58f9da9540027056b1dade49c5f22e3f2db2e629bda54ddf2ad`
 
 Included public surfaces:
 

@@ -98,6 +98,8 @@
 - 완료: provider readiness matrix와 catalog smoke guard
 - 완료: provider failure recovery demo와 smoke guard
 - 완료: memory/retrieval/fact graph quality fixture와 smoke guard
+- 완료: R12 multi-scenario shadow replay에서 3 scenario·15 mission·60 role observation을 실제 재생하고 full-query hard-negative 실패를 보존한 뒤 mission-objective query contract로 교정
+- 외부 승인 필요: local reranker provider-input activation, production latency·concurrency 한도, long soak·thermal telemetry, license·OS egress isolation, rollback owner
 - 완료: credential-free answer quality evaluator와 retrieval·citation·reviewer regression gate
 - 완료: store와 공개 retrieval payload를 바꾸지 않고 source hash·revision·scope·provenance를 보존하는 RAG corpus contract
 - 완료: 3개 controlled fixture에서 precision·recall·noise·source diversity와 lexical·BM25·phrase frozen baseline을 비교하는 retrieval evaluation gate

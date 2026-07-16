@@ -35,6 +35,7 @@
 | Local reranker resource envelope | 완료 | `evidence/output-artifacts/local-reranker-resource-envelope.json`, `src/core/local-relevance-candidate-selector.mjs` | top-2 expected-source preflight, 60 local inference repeat stability, R8 quality parity, latency/resource snapshot, maximum regression disclosure, and activation block verified by `npm run smoke:local-reranker-resource-envelope` |
 | Local reranker runtime stability | 완료 | `evidence/output-artifacts/local-reranker-runtime-stability.json`, `src/core/local-reranker-runtime-stability.mjs` | cold 1·warm 3·concurrent client worker 2, 360 inference quality/resource parity, bounded latency gate, and production parallelism·long soak·thermal limitations verified by `npm run smoke:local-reranker-runtime-stability` |
 | Local relevance shadow integration | 완료 | `evidence/output-artifacts/local-relevance-shadow-integration.json`, `src/core/local-relevance-shadow.mjs` | controlled manager·planner·executor·reviewer mission에서 R10 scorer binding, exact lexical provider input, content-free observation, store isolation, scorer-failure fail-open verified by `npm run smoke:local-relevance-shadow-integration` |
+| Multi-scenario shadow replay | 완료 | `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`, `evidence/output-artifacts/local-relevance-shadow-replay.json` | 3 scenario·15 mission·60 role observation에서 full-query 12/15·hard-negative 0/3 실패를 보존하고 mission-objective query로 15/15·hard-negative 3/3, lexical provider input 불변과 activation=false를 verified by `npm run smoke:local-relevance-shadow-replay` |
 | Approved training record | 완료 | `src/core/approved-training-record.mjs`, `fixtures/approved-training-record-cases-v1.json` | local approval lifecycle, reviewer·artifact lineage, sanitized example safety, accepted-risk governance, deterministic hashes, and externalSubmissionAuthorized=false verified by `npm run smoke:approved-training-record` |
 | Training dataset quality gate | 완료 | `src/core/training-dataset-quality.mjs`, `fixtures/training-dataset-quality-cases-v1.json` | deterministic deduplication, mission-scope split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false verified by `npm run smoke:training-dataset-quality` |
 | Fine-tuning readiness export | 완료 | `src/core/fine-tuning-readiness.mjs`, `fixtures/fine-tuning-readiness-cases-v1.json` | provider-neutral JSONL, Q1 baseline binding, reviewer checklist, export digest, pending submission requirements, and fineTuningExecutionAuthorized=false verified by `npm run smoke:fine-tuning-readiness` |
@@ -47,7 +48,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,300,062 bytes, SHA-256 `ab14884bace5382de750942ef9bcd70e02b61301fd4fd05f6086eba4fae981c2` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,336,888 bytes, SHA-256 `cc086436f695d58f9da9540027056b1dade49c5f22e3f2db2e629bda54ddf2ad` |
 
 ## 검증 실패 / 보류
 

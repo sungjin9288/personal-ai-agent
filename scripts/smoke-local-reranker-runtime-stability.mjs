@@ -117,7 +117,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-relevance-shadow-integration-current',
+  'status: local-relevance-shadow-replay-current',
   '| R10 Local reranker runtime stability | 완료 |',
   'actualLocalRerankerRuntimeStabilityValidated: true',
   'actualLocalRerankerRuntimeStabilityQualified: false',
@@ -134,10 +134,17 @@ assert.ok(
   readme.includes('npm run smoke:local-reranker-runtime-stability'),
   'README must expose the runtime stability smoke',
 );
-assert.ok(
-  readme.includes('OS page-cache cold boot, production server parallelism, long-duration soak, and thermal behavior remain unproven'),
-  'README must keep bounded concurrency limitations explicit',
-);
+for (const limitation of [
+  'OS page-cache cold boot',
+  'production server parallelism',
+  'long-duration soak',
+  'thermal behavior',
+]) {
+  assert.ok(
+    readme.includes(limitation),
+    `README must keep the runtime stability limitation explicit: ${limitation}`,
+  );
+}
 assert.ok(
   evidenceGallery.includes('| Local reranker runtime stability |'),
   'evidence gallery must link runtime stability evidence',

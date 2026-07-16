@@ -3,10 +3,13 @@ import { performance } from 'node:perf_hooks';
 
 import { selectLocalRelevanceCandidates } from './local-relevance-candidate-selector.mjs';
 import { rerankByLocalRelevance } from './local-relevance-reranker.mjs';
-import { buildRetrievalQueryText } from './retrieval-service.mjs';
 
 export const LOCAL_RELEVANCE_SHADOW_SCHEMA_VERSION =
   'personal-ai-agent-local-relevance-shadow-observation/v1';
+export const LOCAL_RELEVANCE_SHADOW_QUERY_CONTRACTS = Object.freeze({
+  FULL_RETRIEVAL: 'full-retrieval-query-v1',
+  MISSION_OBJECTIVE: 'mission-objective-v1',
+});
 
 const MAX_SHADOW_CANDIDATES = 2;
 
@@ -24,6 +27,14 @@ function hashValue(value) {
 
 function hashRecord(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+export function buildLocalRelevanceShadowQueryText(input = {}) {
+  const queryText = normalizeText(input.mission?.objective);
+  if (!queryText) {
+    throw new Error('Local relevance shadow requires a mission objective.');
+  }
+  return queryText;
 }
 
 function sourceKey(record) {
@@ -90,6 +101,7 @@ function buildObservation({
   input,
   lexical,
   observedAt,
+  queryText,
   reranked = null,
   scorer,
   status,
@@ -113,7 +125,7 @@ function buildObservation({
       lexicalResultHash,
       returnedResultHash: lexicalResultHash,
     },
-    queryHash: hashValue(buildRetrievalQueryText(input)),
+    queryHash: hashValue(queryText),
     rollback: {
       mode: 'lexical',
       stateMigrationRequired: false,
@@ -199,11 +211,15 @@ export function assertLocalRelevanceShadowObservation(observation) {
 
 export function createLocalRelevanceShadowEvaluator({
   clock = () => new Date().toISOString(),
+  queryTextBuilder = buildLocalRelevanceShadowQueryText,
   recordObservation = () => {},
   scorer,
 } = {}) {
   if (typeof scorer?.scoreDocument !== 'function') {
     throw new Error('Local relevance shadow requires a document scorer.');
+  }
+  if (typeof queryTextBuilder !== 'function') {
+    throw new Error('Local relevance shadow requires a query text builder.');
   }
   const scorerIdentity = normalizeScorer(scorer);
 
@@ -211,6 +227,7 @@ export function createLocalRelevanceShadowEvaluator({
     async observe({ input = {}, lexical = {} } = {}) {
       const startedAt = performance.now();
       const candidates = buildCandidates(lexical);
+      const queryText = queryTextBuilder(input);
       let observation;
 
       if (!candidates.length) {
@@ -220,6 +237,7 @@ export function createLocalRelevanceShadowEvaluator({
           input,
           lexical,
           observedAt: clock(),
+          queryText,
           scorer: scorerIdentity,
           status: 'skipped-no-candidates',
         });
@@ -232,7 +250,7 @@ export function createLocalRelevanceShadowEvaluator({
           const reranked = await rerankByLocalRelevance({
             candidates: selection.candidates,
             k: selection.candidates.length,
-            queryText: buildRetrievalQueryText(input),
+            queryText,
             scorer,
           });
           observation = buildObservation({
@@ -241,6 +259,7 @@ export function createLocalRelevanceShadowEvaluator({
             input,
             lexical,
             observedAt: clock(),
+            queryText,
             reranked,
             scorer: scorerIdentity,
             status: 'observed',
@@ -253,6 +272,7 @@ export function createLocalRelevanceShadowEvaluator({
             input,
             lexical,
             observedAt: clock(),
+            queryText,
             scorer: scorerIdentity,
             status: 'failed-lexical-preserved',
           });
