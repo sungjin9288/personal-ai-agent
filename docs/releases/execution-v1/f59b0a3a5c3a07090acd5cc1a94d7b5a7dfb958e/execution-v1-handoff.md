@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T13:25:34.337Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T13:25:33.392Z
 - localDate: 2026-07-16
 - branch: codex/rag-retrieval-robustness
 - commit: f59b0a3a5c3a07090acd5cc1a94d7b5a7dfb958e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f59b0a3a5c3a07090acd5cc1a94d7b5a7dfb958e](releases/execution-v1/f59b0a3a5c3a07090acd5cc1a94d7b5a7dfb958e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f59b0a3a5c3a07090acd5cc1a94d7b5a7dfb958e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f59b0a3a5c3a07090acd5cc1a94d7b5a7dfb958e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f59b0a3a5c3a07090acd5cc1a94d7b5a7dfb958e](docs/releases/execution-v1/f59b0a3a5c3a07090acd5cc1a94d7b5a7dfb958e)
 - visualArtifactSetSha256: 98b8629cd46d785f1fac88eb9290ce4b46e691156bddf03342cd2431082e5c1c
 - commitPushStatus: not pushed, origin/codex/rag-retrieval-robustness not found
 
