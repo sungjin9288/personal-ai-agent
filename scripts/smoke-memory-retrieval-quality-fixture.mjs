@@ -14,6 +14,7 @@ const retrievalSmoke = readRequiredFile('scripts/smoke-retrieval-memory.mjs');
 const factGraphSmoke = readRequiredFile('scripts/smoke-fact-graph-memory.mjs');
 const instructionBoundarySmoke = readRequiredFile('scripts/smoke-instruction-boundary-fixture.mjs');
 const corpusContractSmoke = readRequiredFile('scripts/smoke-retrieval-corpus-contract.mjs');
+const retrievalQualitySmoke = readRequiredFile('scripts/smoke-retrieval-quality-evaluation.mjs');
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
@@ -23,6 +24,10 @@ assert.equal(packageJson.scripts['smoke:retrieval-memory'], 'node scripts/smoke-
 assert.equal(
   packageJson.scripts['smoke:retrieval-corpus-contract'],
   'node scripts/smoke-retrieval-corpus-contract.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:retrieval-quality-evaluation'],
+  'node scripts/smoke-retrieval-quality-evaluation.mjs',
 );
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
@@ -45,6 +50,7 @@ for (const term of [
   'not an accuracy score',
   'npm run smoke:memory-retrieval-quality-fixture',
   'npm run smoke:retrieval-corpus-contract',
+  'npm run smoke:retrieval-quality-evaluation',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -75,6 +81,10 @@ for (const smokeTerm of [
 
 for (const smokeTerm of ['buildFactCorpusRecord', 'contentHash', 'chunkId', 'revision', 'provenance']) {
   assertContains(corpusContractSmoke, smokeTerm, `corpus contract smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['precisionAtK', 'recallAtK', 'noiseRateAtK', 'sourceDiversityRate']) {
+  assertContains(retrievalQualitySmoke, smokeTerm, `retrieval quality smoke missing ${smokeTerm}`);
 }
 
 for (const smokeTerm of [

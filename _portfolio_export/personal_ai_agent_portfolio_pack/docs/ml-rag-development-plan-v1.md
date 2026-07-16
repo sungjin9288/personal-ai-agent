@@ -1,12 +1,13 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: rag-corpus-contract-current
+- status: retrieval-evaluation-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
 - paidCloudExecution: none
 - currentFixture: `fixtures/answer-quality-cases-v1.json`
 - currentCorpusFixture: `fixtures/retrieval-corpus-cases-v1.json`
+- currentRetrievalFixture: `fixtures/retrieval-quality-cases-v1.json`
 
 ## 목적
 
@@ -53,14 +54,31 @@
 
 현재 fixture는 provider drift recovery와 fact revision provenance 두 사례를 검사한다. passing baseline뿐 아니라 source 누락, 허위 citation, 필수 내용 누락, reviewer fail을 주입한 regression도 반드시 실패하는지 확인한다.
 
+## 현재 retrieval 기준선
+
+`src/core/retrieval-quality-evaluation.mjs`는 provider와 store를 모르는 순수 평가기다. fixture가 각 source를 expected와 irrelevant로 미리 분류하고, 실제 `buildRetrievalContextWithCorpus` 결과를 source id에 연결해 다음 지표를 계산한다.
+
+| 지표 | 의미 | 현재 gate |
+|---|---|---:|
+| precision@k | 선택된 고유 source 중 expected source 비율 | 1.0 |
+| recall@k | expected source 중 top-k에 포함된 비율 | 1.0 |
+| noise@k | 선택된 고유 source 중 irrelevant source 비율 | 0.0 |
+| source diversity | 기대한 relevant source type 중 실제로 선택된 type 비율 | 1.0 |
+| unlabeled source count | expected·irrelevant 어느 쪽에도 분류되지 않은 선택 source 수 | 0 |
+| case pass rate | 모든 개별 gate를 통과한 fixture case 비율 | 1.0 |
+
+위 값은 `npm run smoke:retrieval-quality-evaluation`로 측정한 3개 controlled fixture의 현재 결과다. provider recovery, fact lifecycle, permission evidence 사례에서 memory와 attachment를 함께 검사한다. 일반 검색 정확도나 실제 사용자 corpus 성능을 뜻하지 않는다.
+
+fixture는 현재 `hybrid-lexical-bm25-phrase-v1`의 metric과 selected source 순서를 frozen baseline으로 보존한다. 후속 semantic retrieval이나 reranker candidate는 같은 case set으로 자체 threshold를 통과한 뒤, suite와 각 case의 precision·recall·noise·source diversity가 이 baseline보다 나빠지지 않아야 한다. candidate threshold를 완화해도 baseline regression 비교는 우회할 수 없다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
 |---|---|---|---|
 | Q1 Answer quality foundation | 완료 | 순수 evaluator, fixture, unit test, deterministic smoke | passing baseline과 의도적 regression을 모두 판정 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
-| R2 Retrieval evaluation | 다음 | fixture 확장, recall·noise·source diversity 기준, 현재 BM25/lexical baseline 비교 | ranking 변경이 품질 gate를 통과할 때만 반영 |
-| R3 Optional semantic retrieval | 예정 | provider-neutral embedding adapter와 local/offline 구현 가능성 검증 | 새 dependency 전 승인, measured gain 없으면 도입하지 않음 |
+| R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
+| R3 Optional semantic retrieval | 다음 | provider-neutral embedding adapter와 local/offline 구현 가능성 검증 | 새 dependency 전 승인, measured gain 없으면 도입하지 않음 |
 | R4 Reranking | 예정 | deterministic feature baseline 후 선택적 local reranker 실험 | latency·품질·rollback 비교 자료 확보 |
 | L1 승인된 학습 데이터 | 예정 | approved learning candidate와 reviewer evidence만 dataset record로 변환 | raw secret·customer payload 차단, lineage와 hash 보존 |
 | L2 Dataset quality gate | 예정 | 중복 제거, scope 분리, train·validation split, leakage 검사 | 동일 seed에서 동일 manifest 생성 |
@@ -97,8 +115,10 @@ dataset export와 실제 학습 제출은 다른 권한으로 분리한다. expo
 ```bash
 node --test test/answer-quality-evaluation.test.mjs
 node --test test/retrieval-corpus.test.mjs test/retrieval-artifacts.test.mjs
+node --test test/retrieval-quality-evaluation.test.mjs
 npm run smoke:answer-quality-evaluation
 npm run smoke:retrieval-corpus-contract
+npm run smoke:retrieval-quality-evaluation
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```
@@ -118,6 +138,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 ## Claim Boundary
 
-현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성한다는 것이다.
+현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, 3개 controlled retrieval case에서 precision·recall·noise·source diversity baseline을 비교한다는 것이다.
 
 이 결과는 일반적인 답변 정확도, 모델 성능 향상, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. `productionReadyClaim: false`는 모든 단계에서 유지한다.

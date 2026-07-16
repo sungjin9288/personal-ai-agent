@@ -93,6 +93,7 @@
 - Memory retrieval quality fixture: verified with `npm run smoke:memory-retrieval-quality-fixture`
 - Answer quality evaluation foundation: verified with `npm run smoke:answer-quality-evaluation`
 - RAG corpus contract: verified with `npm run smoke:retrieval-corpus-contract`
+- Retrieval quality evaluation: verified with `npm run smoke:retrieval-quality-evaluation`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

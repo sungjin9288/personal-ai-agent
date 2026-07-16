@@ -22,6 +22,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 | Retrieval memory | Does retrieval prefer relevant memory and attachment chunks over unrelated text? | Workspace facts and incident-note chunks with provider drift/prompt normalization terms are selected; unrelated mission preference and appendix text are excluded | `npm run smoke:retrieval-memory` |
 | Retrieval ranking | Are scoring signals inspectable? | Retrieval artifact includes lexical score, BM25 score, phrase boost score, matched terms, match count, and retrieval reason | `npm run smoke:retrieval-memory` |
 | Corpus contract | Can the same source revision and chunk be identified without changing persisted data? | Memory, attachment, and fact records receive deterministic corpus/chunk ids, content hashes, scope, revision, and path-free provenance | `npm run smoke:retrieval-corpus-contract` |
+| Retrieval evaluation | Does a ranking candidate preserve measured relevance and diversity? | Three controlled cases measure precision, recall, noise, source-type diversity, and compare candidates against the frozen lexical/BM25/phrase baseline | `npm run smoke:retrieval-quality-evaluation` |
 | Source diversity | Can a non-dominant source remain visible? | A mission decision source remains in the selected context even when many workspace facts match the same query | `npm run smoke:retrieval-memory` |
 | Fact graph memory | Are facts mirrored with provenance? | Fact memories become active graph nodes with memory provenance and shared-keyword edges | `npm run smoke:fact-graph-memory` |
 | Fact lifecycle | Are revisions and deletions auditable? | Fact updates preserve revisions, kind changes retire nodes, deleted memory retires graph entries and edges | `npm run smoke:fact-graph-memory` |
@@ -32,6 +33,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 ```bash
 npm run smoke:memory-retrieval-quality-fixture
 npm run smoke:retrieval-corpus-contract
+npm run smoke:retrieval-quality-evaluation
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:instruction-boundary
@@ -60,6 +62,7 @@ Safe to claim:
 - Retrieval memory fixtures verify relevant memory/attachment selection and unrelated context exclusion.
 - Retrieval artifacts expose inspectable ranking signals and source labels.
 - Corpus fixtures verify deterministic source/chunk identity without changing the store or serialized retrieval payload.
+- Retrieval evaluation fixtures compare candidate rankings against the same labeled case set and frozen baseline.
 - Fact graph fixtures verify provenance, revisions, retirement, and CLI compact output.
 - Instruction-boundary fixtures verify retrieved red-team-like content remains untrusted context in the local harness.
 
@@ -74,4 +77,4 @@ Do not claim:
 
 ## Acceptance Rule
 
-This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.
+This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-quality-evaluation`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.

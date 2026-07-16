@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Retrieval Quality Evaluation
+
+- added a provider-neutral evaluator for top-k precision, recall, known-noise rate, relevant source-type diversity, and unlabeled source detection
+- froze the current lexical, BM25, and phrase-boost result for three labeled retrieval cases, including selected source order and per-case metrics
+- added a candidate comparison gate that rejects per-case or suite regression even when candidate thresholds are relaxed, without changing runtime ranking behavior
+
 ## 2026-07-16 RAG Corpus Contract
 
 - added a provider-neutral corpus record for memory, attachment, and fact sources with deterministic revision, chunk identity, content hash, scope, and controlled provenance

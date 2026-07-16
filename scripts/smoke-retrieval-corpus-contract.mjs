@@ -77,9 +77,9 @@ assert.match(artifactContent, /scope: (workspace|mission)\//);
 assert.match(artifactContent, /revision: revision-[a-f0-9]{64}/);
 assert.doesNotMatch(artifactContent, /\/private\//);
 
-assert.match(developmentPlan, /status: rag-corpus-contract-current/);
+assert.match(developmentPlan, /status: retrieval-evaluation-current/);
 assert.match(developmentPlan, /\| R1 Corpus contract \| 완료 \|/);
-assert.match(developmentPlan, /\| R2 Retrieval evaluation \| 다음 \|/);
+assert.match(developmentPlan, /\| R2 Retrieval evaluation \| 완료 \|/);
 assert.match(developmentPlan, /npm run smoke:retrieval-corpus-contract/);
 assert.match(developmentPlan, /productionReadyClaim: false/);
 assert.match(developmentPlan, /externalProviderCalls: none/);
