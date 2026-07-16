@@ -111,6 +111,8 @@
     "smoke:local-user-learning-personalization": "node scripts/smoke-local-user-learning-personalization.mjs",
     "evaluate:user-learning-conflict-revocation": "node scripts/evaluate-user-learning-conflict-revocation.mjs",
     "smoke:user-learning-conflict-revocation": "node scripts/smoke-user-learning-conflict-revocation.mjs",
+    "evaluate:user-learning-operator-override": "node scripts/evaluate-user-learning-operator-override.mjs",
+    "smoke:user-learning-operator-override": "node scripts/smoke-user-learning-operator-override.mjs",
     "smoke:answer-quality-evaluation": "node scripts/smoke-answer-quality-evaluation.mjs",
     "smoke:retrieval-corpus-contract": "node scripts/smoke-retrieval-corpus-contract.mjs",
     "smoke:retrieval-quality-evaluation": "node scripts/smoke-retrieval-quality-evaluation.mjs",

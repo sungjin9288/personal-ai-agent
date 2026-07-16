@@ -3,78 +3,70 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
-  assertWorkspaceLearningOperatorOverrideEvidence,
-  buildWorkspaceLearningOperatorOverrideEvidence,
-} from '../src/core/workspace-learning-operator-override.mjs';
-import { selectWorkspaceLearningMemory } from '../src/core/workspace-learning-selection.mjs';
+  assertUserLearningOperatorOverrideEvidence,
+  buildUserLearningOperatorOverrideEvidence,
+} from '../src/core/user-learning-operator-override.mjs';
+import { selectUserLearningMemory } from '../src/core/user-learning-selection.mjs';
 
 const repoDir = process.cwd();
 const fixture = JSON.parse(
-  readRequiredFile('fixtures/workspace-learning-operator-override-cases-v1.json'),
+  readRequiredFile('fixtures/user-learning-operator-override-cases-v1.json'),
 );
 const evidence = JSON.parse(
-  readRequiredFile('evidence/output-artifacts/workspace-learning-operator-override.json'),
+  readRequiredFile('evidence/output-artifacts/user-learning-operator-override.json'),
 );
 
 assert.equal(
   fixture.schemaVersion,
-  'personal-ai-agent-workspace-learning-operator-override-cases/v1',
+  'personal-ai-agent-user-learning-operator-override-cases/v1',
 );
 assert.equal(fixture.productionReadyClaim, false);
 assert.equal(fixture.cases.length, 1);
 
-assertWorkspaceLearningOperatorOverrideEvidence(evidence);
-assert.deepEqual(evidence, buildWorkspaceLearningOperatorOverrideEvidence(evidence));
-assert.equal(evidence.actualWorkspaceLearningOperatorOverrideValidated, true);
+assertUserLearningOperatorOverrideEvidence(evidence);
+assert.deepEqual(evidence, buildUserLearningOperatorOverrideEvidence(evidence));
+assert.equal(evidence.actualUserLearningOperatorOverrideValidated, true);
 assert.equal(Object.values(evidence.results).every(Boolean), true);
 
 const older = evidence.promotions.older;
 const newer = evidence.promotions.newer;
 const phases = evidence.phases;
 assert.equal(phases.baseline.selection.selectedMemoryId, newer.memoryId);
-assert.equal(phases.baseline.selection.policyId, 'workspace-decision-latest-revision-v1');
-assert.equal(phases.activeOverride.selection.selectedMemoryId, older.memoryId);
-assert.equal(
-  phases.activeOverride.selection.policyId,
-  'workspace-decision-operator-override-v1',
-);
+assert.equal(phases.baseline.selection.policyId, 'user-decision-latest-revision-v1');
+for (const phase of [phases.activeOverride, phases.crossWorkspaceActive, phases.repinned]) {
+  assert.equal(phase.selection.selectedMemoryId, older.memoryId);
+  assert.equal(phase.selection.policyId, 'user-decision-operator-override-v1');
+  assert.equal(phase.selection.selectionSource, 'operator-override');
+  assert.equal(phase.selection.overrideEvaluation.selectedOverrideId !== null, true);
+}
 assert.equal(phases.activeOverride.selection.overrideEvaluation.activeCount, 1);
-assert.equal(phases.foreignActive.selection, null);
-assert.equal(
-  Object.values(phases.foreignActive.exposures).every((memoryExposure) =>
-    Object.values(memoryExposure).every((value) => value === false),
-  ),
-  true,
-);
 assert.equal(phases.expired.selection.selectedMemoryId, newer.memoryId);
+assert.equal(phases.expired.selection.selectionSource, 'latest-revision-fallback');
 assert.equal(phases.expired.selection.overrideEvaluation.expiredCount, 1);
 assert.equal(phases.expired.selection.overrideEvaluation.selectedOverrideId, null);
-assert.equal(phases.repinned.selection.selectedMemoryId, older.memoryId);
 assert.equal(phases.cleared.selection.selectedMemoryId, newer.memoryId);
+assert.equal(phases.cleared.selection.selectionSource, 'latest-revision-fallback');
 assert.equal(phases.cleared.selection.overrideEvaluation.clearedCount, 1);
 assert.equal(phases.cleared.selection.overrideEvaluation.selectedOverrideId, null);
 assert.equal(phases.baseline.artifacts.plannerHash, phases.expired.artifacts.plannerHash);
 assert.equal(phases.baseline.artifacts.plannerHash, phases.cleared.artifacts.plannerHash);
 assert.equal(phases.baseline.artifacts.deliverableHash, phases.expired.artifacts.deliverableHash);
 assert.equal(phases.baseline.artifacts.deliverableHash, phases.cleared.artifacts.deliverableHash);
-assert.equal(
-  phases.activeOverride.artifacts.plannerHash,
-  phases.repinned.artifacts.plannerHash,
-);
+assert.equal(phases.activeOverride.artifacts.plannerHash, phases.repinned.artifacts.plannerHash);
 assert.equal(
   phases.activeOverride.artifacts.deliverableHash,
   phases.repinned.artifacts.deliverableHash,
 );
-assert.equal(evidence.quality.baseline.resultHash, evidence.quality.expired.resultHash);
-assert.equal(evidence.quality.baseline.resultHash, evidence.quality.cleared.resultHash);
+assert.equal(evidence.quality.baseline.metricsHash, evidence.quality.expired.metricsHash);
+assert.equal(evidence.quality.baseline.metricsHash, evidence.quality.cleared.metricsHash);
 assert.equal(
-  evidence.quality.activeOverride.resultHash,
-  evidence.quality.repinned.resultHash,
+  evidence.quality.activeOverride.metricsHash,
+  evidence.quality.repinned.metricsHash,
 );
 assert.deepEqual(evidence.timeline.map((event) => event.kind), [
-  'workspace-learning-selection-override-set',
-  'workspace-learning-selection-override-set',
-  'workspace-learning-selection-override-cleared',
+  'user-learning-selection-override-set',
+  'user-learning-selection-override-set',
+  'user-learning-selection-override-cleared',
 ]);
 assert.ok(evidence.timeline[0].index < evidence.timeline[1].index);
 assert.ok(evidence.timeline[1].index < evidence.timeline[2].index);
@@ -85,35 +77,38 @@ assert.equal(runs.every((run) => run.providerId === 'stub'), true);
 assert.equal(runs.every((run) => run.externalProviderCallCount === 0), true);
 assert.equal(evidence.externalProviderCalls, 'none');
 assert.equal(evidence.qualityBoundary.actualModelTrainingExecuted, false);
-assert.equal(evidence.qualityBoundary.controlledOperatorOverrideValidated, true);
+assert.equal(evidence.qualityBoundary.automaticPreferenceLearningValidated, false);
+assert.equal(evidence.qualityBoundary.controlledUserOperatorOverrideValidated, true);
+assert.equal(evidence.qualityBoundary.controlledCrossWorkspaceUserOverrideValidated, true);
 assert.equal(evidence.qualityBoundary.generalAnswerQualityImprovementValidated, false);
-assert.equal(evidence.qualityBoundary.generalWorkspacePersonalizationValidated, false);
+assert.equal(evidence.qualityBoundary.generalUserPersonalizationValidated, false);
+assert.equal(evidence.qualityBoundary.hostedTenantUserPersonalizationValidated, false);
 assert.equal(evidence.qualityBoundary.learnedConflictResolutionValidated, false);
-assert.equal(evidence.qualityBoundary.userScopedPersonalizationValidated, false);
+assert.equal(evidence.qualityBoundary.multiUserIsolationValidated, false);
 assert.equal(evidence.productionReadyClaim, false);
 
-const unretrievedOverrideSelection = selectWorkspaceLearningMemory({
+const unretrievedOverrideSelection = selectUserLearningMemory({
   memoryEntries: [
     {
       createdAt: older.memoryCreatedAt,
       id: older.memoryId,
       kind: 'decision',
-      scope: 'workspace',
-      scopeId: evidence.topology.sourceWorkspaceId,
+      scope: 'user',
+      scopeId: 'user',
     },
     {
       createdAt: newer.memoryCreatedAt,
       id: newer.memoryId,
       kind: 'decision',
-      scope: 'workspace',
-      scopeId: evidence.topology.sourceWorkspaceId,
+      scope: 'user',
+      scopeId: 'user',
     },
   ],
   retrievalCorpusRecords: [{
     contentHash: newer.memoryContentHash,
     provenance: { kind: 'decision', sourceId: newer.memoryId },
     revision: { at: newer.memoryCreatedAt },
-    scope: { id: evidence.topology.sourceWorkspaceId, type: 'workspace' },
+    scope: { id: 'user', type: 'user' },
     sourceId: newer.memoryId,
     sourceType: 'memory',
   }],
@@ -123,11 +118,11 @@ const unretrievedOverrideSelection = selectWorkspaceLearningMemory({
     id: 'unretrieved-contract-override',
     memoryId: older.memoryId,
     noteHash: evidence.fixtureBinding.firstOverrideNoteHash,
+    scope: 'user',
+    scopeId: 'user',
     setAt: '2100-01-01T00:00:00.000Z',
     status: 'active',
-    workspaceId: evidence.topology.sourceWorkspaceId,
   }],
-  workspaceId: evidence.topology.sourceWorkspaceId,
 });
 assert.equal(unretrievedOverrideSelection.selectedMemoryId, newer.memoryId);
 assert.equal(unretrievedOverrideSelection.overrideEvaluation.unretrievedActiveCount, 1);
@@ -153,7 +148,7 @@ for (const testCase of fixture.cases) {
     ...testCase.olderRequiredAnswerTerms,
     ...testCase.newerRequiredAnswerTerms,
   ]) {
-    assert.equal(evidenceText.includes(rawText), false, `P5 evidence leaked fixture text: ${rawText}`);
+    assert.equal(evidenceText.includes(rawText), false, `P9 evidence leaked fixture text: ${rawText}`);
   }
 }
 for (const forbidden of [
@@ -162,60 +157,63 @@ for (const forbidden of [
   'OPENAI_API_KEY',
   'ANTHROPIC_API_KEY',
 ]) {
-  assert.equal(evidenceText.includes(forbidden), false, `P5 evidence leaked ${forbidden}`);
+  assert.equal(evidenceText.includes(forbidden), false, `P9 evidence leaked ${forbidden}`);
 }
 
-const evaluatorSource = readRequiredFile('scripts/evaluate-workspace-learning-operator-override.mjs');
+const evaluatorSource = readRequiredFile('scripts/evaluate-user-learning-operator-override.mjs');
 const helperSource = readRequiredFile('scripts/approved-learning-feedback-runtime.mjs');
 const cliSource = readRequiredFile('src/cli.mjs');
-const serviceSource = readRequiredFile('src/core/workspace-learning-selection-service.mjs');
+const serviceSource = readRequiredFile('src/core/user-learning-selection-service.mjs');
 const missionRunSource = readRequiredFile('src/core/mission-run-service.mjs');
 const timelineSource = readRequiredFile('src/core/mission-read-service.mjs');
 for (const term of [
-  'setFeedbackWorkspaceLearningOverride',
-  'setWorkspaceLearningSelectionOverride',
-  'clearWorkspaceLearningSelectionOverride',
-  'workspaceLearningClock',
+  'setFeedbackUserLearningOverride',
+  'setUserLearningSelectionOverride',
+  'clearUserLearningSelectionOverride',
+  'userLearningClock',
   'fs.rmSync(tempRoot',
 ]) {
-  assert.ok(evaluatorSource.includes(term), `P5 evaluator missing ${term}`);
+  assert.ok(evaluatorSource.includes(term), `P9 evaluator missing ${term}`);
 }
-assert.ok(helperSource.includes('set-workspace-learning-selection-override'));
-assert.ok(cliSource.includes('set-workspace-learning-selection-override'));
-assert.ok(cliSource.includes('clear-workspace-learning-selection-override'));
-assert.ok(serviceSource.includes('Workspace learning selection override evidence is incomplete.'));
-assert.ok(missionRunSource.includes('buildWorkspaceLearningSelectionOverrides'));
-assert.ok(timelineSource.includes('workspace-learning-selection-override-cleared'));
+assert.ok(helperSource.includes('set-user-learning-selection-override'));
+assert.ok(cliSource.includes('set-user-learning-selection-override'));
+assert.ok(cliSource.includes('clear-user-learning-selection-override'));
+assert.ok(serviceSource.includes('User learning selection override evidence is incomplete.'));
+assert.ok(missionRunSource.includes('buildUserLearningSelectionOverrides'));
+assert.ok(timelineSource.includes('user-learning-selection-override-cleared'));
 assert.ok(timelineSource.includes('noteHash: overrideEvent.noteHash'));
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
   'status: user-learning-operator-override-current',
-  '| P5 Workspace learning operator override | 완료 |',
-  'npm run smoke:workspace-learning-operator-override',
-  'actualWorkspaceLearningOperatorOverrideValidated: true',
+  '| P9 User learning operator override | 완료 |',
+  'npm run smoke:user-learning-operator-override',
+  'actualUserLearningOperatorOverrideValidated: true',
   'productionReadyClaim: false',
 ]) {
   assert.ok(developmentPlan.includes(term), `ML/RAG development plan missing ${term}`);
 }
 assert.ok(
-  readRequiredFile('README.md').includes('npm run smoke:workspace-learning-operator-override'),
-  'README must expose the P5 operator override smoke command.',
+  readRequiredFile('README.md').includes('npm run smoke:user-learning-operator-override'),
+  'README must expose the P9 user operator override smoke command.',
 );
 
 const tampered = structuredClone(evidence);
 tampered.phases.expired.selection.overrideEvaluation.expiredCount = 0;
 assert.throws(
-  () => assertWorkspaceLearningOperatorOverrideEvidence(tampered),
+  () => assertUserLearningOperatorOverrideEvidence(tampered),
   /integrity|contract/,
 );
 
 console.log(JSON.stringify({
   actualModelTrainingExecuted: false,
-  actualWorkspaceLearningOperatorOverrideValidated: true,
+  actualUserLearningOperatorOverrideValidated: true,
+  automaticPreferenceLearningValidated: false,
   costFree: true,
   externalProviderCalls: 'none',
-  mode: 'workspace-learning-operator-override-smoke',
+  hostedTenantUserPersonalizationValidated: false,
+  mode: 'user-learning-operator-override-smoke',
+  multiUserIsolationValidated: false,
   ok: true,
   productionReadyClaim: false,
   sessionCount: 8,

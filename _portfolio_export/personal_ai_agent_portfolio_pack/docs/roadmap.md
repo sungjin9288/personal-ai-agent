@@ -36,6 +36,7 @@
   - memory/retrieval/fact graph 품질 확인용 fixture 추가
   - 완료: tenant-free local workspace 사이에서 explicit mission-to-user authorization, user decision·preference 적용, exact rollback을 검증하고 hosted·multi-user 범위는 차단
   - 완료: retrieval-selected local-user decision 충돌을 latest-revision 하나로 제한하고 cross-workspace 적용, newer revocation fallback, full rollback을 실제 replay로 검증
+  - 완료: 검증된 local-user decision을 bounded operator override로 고정하고 cross-workspace 적용, expiry·clear latest fallback, repin parity와 unretrieved 차단을 검증
 - 완료 기준:
   - provider별 status matrix가 코드, docs, smoke evidence와 일치
   - 실패/재시도/fallback을 면접에서 코드 수준으로 설명 가능
@@ -104,6 +105,7 @@
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증
 - 완료: verified workspace decision을 local operator가 bounded expiration으로 고정하고 expiry·clear 시 exact latest-revision fallback, repin parity, foreign·unretrieved memory 차단과 timeline audit를 확인한 controlled operator override 검증
 - 완료: 기존 action inbox에서 content-free override 상태와 summary를 읽고 RBAC·candidate tenant·service validation을 거쳐 set·clear하며 local HTTP와 실제 Chromium으로 not-set→active→expired→cleared를 확인한 operator surface 검증
+- 완료: verified local-user decision을 tenant-free source와 bounded expiration으로 고정하고 두 local workspace에서 older 적용, expiry·clear latest fallback, repin exact parity, unretrieved 차단과 set·clear timeline을 확인한 controlled user override 검증
 - 완료: R12 multi-scenario shadow replay에서 3 scenario·15 mission·60 role observation을 실제 재생하고 full-query hard-negative 실패를 보존한 뒤 mission-objective query contract로 교정
 - 완료: R13 bounded shadow score cache에서 exact query-document repetition을 process-local LRU로 재사용해 15/15 품질을 유지하며 120 request를 30 inference로 축소하고 maximum latency 회귀까지 증적에 보존
 - 완료: R14 shadow cache lifecycle stress에서 8-entry eviction 22, concurrent join, in-flight invalidation, stale-result drop, fresh refill와 rollback close를 actual local evidence로 검증

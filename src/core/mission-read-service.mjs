@@ -2762,6 +2762,37 @@ export function createMissionReadService({
         });
       }
 
+      const userSelectionOverrideHistory = Array.isArray(
+        candidate.userLearningSelectionOverrideHistory,
+      )
+        ? candidate.userLearningSelectionOverrideHistory
+        : [];
+      for (const overrideEvent of userSelectionOverrideHistory) {
+        timeline.push({
+          at: overrideEvent.at,
+          detail:
+            overrideEvent.action === 'clear'
+              ? `cleared user learning selection override: ${overrideEvent.note}`
+              : `set user learning selection override until ${overrideEvent.expiresAt}: ${overrideEvent.note}`,
+          expiresAt: overrideEvent.expiresAt || null,
+          kind:
+            overrideEvent.action === 'clear'
+              ? 'user-learning-selection-override-cleared'
+              : 'user-learning-selection-override-set',
+          learningCandidateId: candidate.id,
+          memoryId: overrideEvent.memoryId,
+          missionId: mission.id,
+          noteHash: overrideEvent.noteHash,
+          overrideId: overrideEvent.overrideId,
+          performedBy: overrideEvent.performedBy,
+          scope: overrideEvent.scope,
+          scopeId: overrideEvent.scopeId,
+          sessionId: candidate.sessionId,
+          status: overrideEvent.action === 'clear' ? 'cleared' : 'active',
+          workspaceId: candidate.workspaceId || mission.workspaceId,
+        });
+      }
+
       if (candidate.promotionStopCondition?.resolvedAt) {
         const stopCondition = candidate.promotionStopCondition;
         timeline.push({

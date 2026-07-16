@@ -48,6 +48,7 @@
 | Workspace learning operator surface | 완료 | `evidence/output-artifacts/workspace-learning-operator-surface.json`, `evidence/screenshots/workspace-learning-operator-surface.png` | 기존 action inbox의 content-free not-set·active·expired·cleared state, sanitized mutation response, RBAC·candidate tenant·service guard, timeline order와 실제 Chromium button lifecycle을 verified by `npm run smoke:workspace-learning-operator-surface` and `npm run smoke:workspace-learning-operator-surface-browser` |
 | Local user learning personalization | 완료 | `evidence/output-artifacts/local-user-learning-personalization.json` | explicit mission→user authorization, tenant-bound refusal, 2 workspace·3 mission·7 stub session에서 sibling·cross-workspace failed→passed→failed와 exact rollback parity를 verified by `npm run smoke:local-user-learning-personalization` |
 | User learning conflict and revocation | 완료 | `evidence/output-artifacts/user-learning-conflict-revocation.json` | 2 workspace·4 mission·8 stub session에서 newer-only conflict selection, cross-workspace 적용, newer rollback 뒤 older exact fallback과 full baseline restoration을 verified by `npm run smoke:user-learning-conflict-revocation` |
+| User learning operator override | 완료 | `evidence/output-artifacts/user-learning-operator-override.json`, `src/core/user-learning-selection-service.mjs` | tenant-free verified promotion만 bounded note·expiration으로 고정하고 2 workspace·4 mission·8 session에서 newer→older→newer→older→newer exact parity, cross-workspace 적용, unretrieved 차단과 set·clear timeline을 verified by `npm run smoke:user-learning-operator-override` |
 | Approved training record | 완료 | `src/core/approved-training-record.mjs`, `fixtures/approved-training-record-cases-v1.json` | local approval lifecycle, reviewer·artifact lineage, sanitized example safety, accepted-risk governance, deterministic hashes, and externalSubmissionAuthorized=false verified by `npm run smoke:approved-training-record` |
 | Training dataset quality gate | 완료 | `src/core/training-dataset-quality.mjs`, `fixtures/training-dataset-quality-cases-v1.json` | deterministic deduplication, mission-scope split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false verified by `npm run smoke:training-dataset-quality` |
 | Fine-tuning readiness export | 완료 | `src/core/fine-tuning-readiness.mjs`, `fixtures/fine-tuning-readiness-cases-v1.json` | provider-neutral JSONL, Q1 baseline binding, reviewer checklist, export digest, pending submission requirements, and fineTuningExecutionAuthorized=false verified by `npm run smoke:fine-tuning-readiness` |
@@ -60,7 +61,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 3,015,031 bytes, SHA-256 `9bbd50becb683b2276e898d2208d5dcc6722b1d036960926a17b97791e0cbab0` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 3,019,712 bytes, SHA-256 `a4beaf8ac17cb36d8e8d9bb206fb4079de5764b193e4d0a9a4279a4a5b438eff` |
 
 ## 검증 실패 / 보류
 

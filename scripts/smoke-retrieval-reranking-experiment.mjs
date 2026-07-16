@@ -131,7 +131,7 @@ assert.equal(Number.isFinite(rerankingAverageMs), true);
 assert.equal(rerankingAverageMs < semanticAverageMs, true);
 
 for (const term of [
-  'status: user-learning-conflict-revocation-current',
+  'status: user-learning-operator-override-current',
   '| R4 Reranking | 완료 |',
   '| L1 승인된 학습 데이터 | 완료 |',
   '| L2 Dataset quality gate | 완료 |',

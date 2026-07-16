@@ -112,6 +112,21 @@ export function setFeedbackWorkspaceLearningOverride({ candidateId, expiresAt, n
   });
 }
 
+export function setFeedbackUserLearningOverride({ candidateId, expiresAt, note, rootDir }) {
+  return runCli({
+    rootDir,
+    args: [
+      'action',
+      'set-user-learning-selection-override',
+      candidateId,
+      '--expires-at',
+      expiresAt,
+      '--note',
+      note,
+    ],
+  });
+}
+
 export function rollbackFeedbackMemory({ candidateId, note, rootDir }) {
   const result = runCli({
     rootDir,

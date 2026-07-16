@@ -18,6 +18,7 @@ import {
 } from './workspace-learning-selection.mjs';
 import {
   applyUserLearningSelection,
+  buildUserLearningSelectionOverrides,
   formatUserLearningSelectionArtifact,
   selectUserLearningMemory,
 } from './user-learning-selection.mjs';
@@ -253,6 +254,7 @@ export function createMissionRunService({
   recordGatewayEvent,
   retrievalRuntime,
   store,
+  userLearningClock = now,
   workspaceLearningClock = now,
 }) {
   function collectRelevantMemoryEntries({ mission, workspace }) {
@@ -670,6 +672,7 @@ export function createMissionRunService({
     outputFileName = null,
     outputTitle = null,
     promptFileName = null,
+    userLearningSelectionOverrides = [],
     workspaceLearningSelectionOverrides = [],
   }) {
     const artifactFilePrefix = getRunArtifactFilePrefix({
@@ -705,6 +708,7 @@ export function createMissionRunService({
     const userLearningSelection = selectUserLearningMemory({
       memoryEntries: workspaceFilteredContext.memoryEntries,
       retrievalCorpusRecords: workspaceFilteredContext.retrievalCorpusRecords,
+      selectionOverrides: userLearningSelectionOverrides,
     });
     const providerContext = applyUserLearningSelection({
       memoryEntries: workspaceFilteredContext.memoryEntries,
@@ -1218,6 +1222,10 @@ export function createMissionRunService({
       observedAt: workspaceLearningClock(),
       workspaceId: workspace.id,
     });
+    const userLearningSelectionOverrides = buildUserLearningSelectionOverrides({
+      learningCandidates: store.listLearningCandidates(),
+      observedAt: userLearningClock(),
+    });
     const parallelPlan = resolveMissionParallelPlan(mission);
     const parallelSpecialistKinds = parallelPlan.effectiveKinds;
     const previousParallelGroup = parallelSpecialistKinds.length >= 2 ? getLatestParallelGroupState(mission.id) : null;
@@ -1248,6 +1256,7 @@ export function createMissionRunService({
       provider,
       providerId,
       session,
+      userLearningSelectionOverrides,
       workspace,
       workspaceLearningSelectionOverrides,
     };

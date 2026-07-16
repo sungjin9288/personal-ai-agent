@@ -54,6 +54,7 @@ const BASE_PACKAGE_FILES = [
   'evidence/output-artifacts/workspace-learning-operator-surface.json',
   'evidence/output-artifacts/local-user-learning-personalization.json',
   'evidence/output-artifacts/user-learning-conflict-revocation.json',
+  'evidence/output-artifacts/user-learning-operator-override.json',
   'evidence/screenshots/workspace-learning-operator-surface.png',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',

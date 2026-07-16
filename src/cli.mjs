@@ -164,6 +164,8 @@ Commands:
   action authorize-learning-promotion-scope <learningCandidateId> --scope <workspace|user> --note <text>
   action resolve-learning-promotion <learningCandidateId> --decision <approve|reject> [--target <memory|skill|template|provider-policy|automation>] [--scope <user|workspace|mission>] [--note <text>]
   action rollback-learning-promotion <learningCandidateId> [--note <text>]
+  action set-user-learning-selection-override <learningCandidateId> --expires-at <iso-timestamp> --note <text>
+  action clear-user-learning-selection-override <learningCandidateId> --note <text>
   action set-workspace-learning-selection-override <learningCandidateId> --expires-at <iso-timestamp> --note <text>
   action clear-workspace-learning-selection-override <learningCandidateId> --note <text>
   action resolve-reviewer-follow-up <actionId> [--kind <rerun-fixed|superseded|scope-reduced|accepted-risk>] [--note <text>]
@@ -1175,6 +1177,25 @@ async function main() {
   if (group === 'action' && command === 'rollback-learning-promotion') {
     printJson(
       service.rollbackLearningPromotion(rest[0], {
+        note: readOption(rest, '--note', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'set-user-learning-selection-override') {
+    printJson(
+      service.setUserLearningSelectionOverride(rest[0], {
+        expiresAt: readOption(rest, '--expires-at', ''),
+        note: readOption(rest, '--note', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'action' && command === 'clear-user-learning-selection-override') {
+    printJson(
+      service.clearUserLearningSelectionOverride(rest[0], {
         note: readOption(rest, '--note', ''),
       }),
     );

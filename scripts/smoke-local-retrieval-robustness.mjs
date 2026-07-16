@@ -93,7 +93,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: user-learning-conflict-revocation-current',
+  'status: user-learning-operator-override-current',
   '| R7 Retrieval robustness evaluation | 완료 |',
   'actualLocalRetrievalRobustnessValidated: false',
   'fixtures/retrieval-robustness-cases-v1.json',

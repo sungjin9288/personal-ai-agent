@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 User Learning Operator Override
+
+- added a bounded local-operator override for verified user-scoped decision promotions while preserving P8 latest-revision as the default and leaving user preferences outside override arbitration
+- required a tenant-free source workspace, consumed scope authorization, passed verification, future expiration, and secret/customer-payload-safe audit note before store mutation
+- added CLI set and clear actions plus mission timeline history, then replayed two local workspaces, four missions, and eight stub sessions through latest→older override→latest expiry→older repin→latest clear with exact artifact parity
+- retained `automaticPreferenceLearningValidated: false`, `generalUserPersonalizationValidated: false`, `hostedTenantUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
 ## 2026-07-17 User Learning Conflict and Revocation
 
 - added a content-free latest-revision selector for retrieval-selected local-user decisions and applied it after workspace decision filtering without changing persistence, public APIs, or user preference behavior

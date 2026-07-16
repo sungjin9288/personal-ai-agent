@@ -21,6 +21,7 @@ import { createMissionReadService } from './mission-read-service.mjs';
 import { createMissionRunService } from './mission-run-service.mjs';
 import { createProviderRuntimeService } from './provider-runtime-service.mjs';
 import { createRetrievalRuntimeServiceFromEnvironment } from './retrieval-runtime-service.mjs';
+import { createUserLearningSelectionService } from './user-learning-selection-service.mjs';
 import { createWorkspaceLearningSelectionService } from './workspace-learning-selection-service.mjs';
 import { createRuntimeHarness } from '../harness/runtime-harness.mjs';
 import { createProviderRegistry } from '../providers/index.mjs';
@@ -33,6 +34,7 @@ export function createMissionService({
   store,
   rootDir = store.rootDir,
   retrievalRuntime = createRetrievalRuntimeServiceFromEnvironment(),
+  userLearningClock = now,
   workspaceLearningClock = now,
 }) {
   const docService = createDocService({ rootDir });
@@ -108,6 +110,18 @@ export function createMissionService({
     getWorkspaceLearningSelectionOverrideReadModel,
     setWorkspaceLearningSelectionOverride,
   } = workspaceLearningSelectionService;
+  const userLearningSelectionService = createUserLearningSelectionService({
+    getMission,
+    getWorkspace,
+    now: userLearningClock,
+    store,
+    writeUpdatedLearningCandidateArtifact,
+  });
+  const {
+    clearUserLearningSelectionOverride,
+    getUserLearningSelectionOverrideReadModel,
+    setUserLearningSelectionOverride,
+  } = userLearningSelectionService;
   const { getLearningCandidateAudit } = createLearningCandidateAudit({
     store,
     getMission,
@@ -188,6 +202,7 @@ export function createMissionService({
     recordGatewayEvent,
     retrievalRuntime,
     store,
+    userLearningClock,
     workspaceLearningClock,
   });
   const {
@@ -383,6 +398,7 @@ export function createMissionService({
     browseMissionHarnessDocuments,
     browseMissionHarnessMemory,
     checkProvider,
+    clearUserLearningSelectionOverride,
     clearWorkspaceLearningSelectionOverride,
     createMission,
     expireLearningPromotions,
@@ -401,6 +417,7 @@ export function createMissionService({
     getProviderAttentionInbox,
     getProviderHealthDriftInbox,
     getSpecialistFollowUpInbox,
+    getUserLearningSelectionOverrideReadModel,
     getProviderExecutionHistory,
     getProviderExecutionTimeline,
     getProviderEventTimeline,
@@ -450,6 +467,7 @@ export function createMissionService({
     rollbackExecution,
     showMission,
     showSession,
+    setUserLearningSelectionOverride,
     setWorkspaceLearningSelectionOverride,
     startExecution,
     stopExecution,

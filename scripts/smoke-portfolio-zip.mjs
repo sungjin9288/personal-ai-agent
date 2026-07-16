@@ -75,6 +75,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/workspace-learning-operator-surface.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-user-learning-personalization.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/user-learning-conflict-revocation.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/user-learning-operator-override.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/workspace-learning-operator-surface.png',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/operator-surface-demo-browser-report.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/operator-surface-mission-run.png',
