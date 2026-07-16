@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T16:33:01.411Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T16:32:54.148Z
 - branch: codex/rag-shadow-multi-scenario-replay
 - commit: de974e0406368f3caef51d4c2587b5753472a8c8

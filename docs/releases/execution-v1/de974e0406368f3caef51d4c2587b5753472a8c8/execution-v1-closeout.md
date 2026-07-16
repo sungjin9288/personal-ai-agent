@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T16:33:01.411Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T16:32:54.200Z
 - branch: codex/rag-shadow-multi-scenario-replay
 - commit: de974e0406368f3caef51d4c2587b5753472a8c8
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/de974e0406368f3caef51d4c2587b5753472a8c8/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
