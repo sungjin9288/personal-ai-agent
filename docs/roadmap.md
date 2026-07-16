@@ -109,13 +109,14 @@
 - 완료: qwen2.5 3B를 source별 독립 structured relevance scorer로 재평가해 반복 안정적 15-case·hard-negative 통과를 기록하고 governance·runtime activation 차단 유지
 - 완료: lexical top-2 shortlist로 동일 15-case·hard-negative 품질을 유지하면서 inference·p50·p95·total 감소와 loaded-model footprint를 기록하고 maximum regression·governance·runtime activation 차단 유지
 - 완료: cold 1·warm 3·concurrent client worker 2의 6-run stability 관측에서 동일 품질·resource footprint와 bounded latency gate를 확인하고 production parallelism·long soak·thermal·runtime activation 차단 유지
+- 완료: R10-bound scorer를 controlled stub mission의 manager·planner·executor·reviewer retrieval에 shadow로 연결하고 lexical provider input·store·public contract 불변과 scorer-failure fail-open 확인
 - 완료: reviewer pass·operator approval·promotion verification·artifact lineage를 요구하는 sanitized training record와 content·lineage hash contract
 - 완료: deterministic content·lineage·near-response deduplication, mission-scope train·validation split, leakage 검사와 content-free dataset manifest
 - 완료: provider-neutral train·validation JSONL, Q1 answer-quality baseline, content-free evaluation manifest와 reviewer-pending fine-tuning readiness packet
 - 완료: same-suite fixture candidate의 품질·증적·권한 비교, regression keep-baseline과 rollout-blocked rollback gate
 - 외부 작업: provider·model·budget·data transfer·reviewer·rollback owner 승인 후 별도 fine-tuning submission adapter 검토
 - 외부 작업: 실제 trained candidate evidence와 target runtime 결과 확보 후 reviewer 승인 기반 model rollout 검토
-- 외부 작업: 선택된 qwen2.5 3B의 license owner 검토, OS-level egress isolation, 승인된 resource·cold-start·concurrency limit, long-duration soak·thermal telemetry와 rollback owner 승인
+- 외부 작업: 선택된 qwen2.5 3B의 license owner 검토, OS-level egress isolation, 승인된 resource·cold-start·concurrency limit, long-duration soak·thermal telemetry, rollback owner와 provider-input activation 승인
 - 완료: core smoke validation summary와 command guard
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence

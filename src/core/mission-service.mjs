@@ -28,11 +28,14 @@ function now() {
   return new Date().toISOString();
 }
 
-export function createMissionService({ store, rootDir = store.rootDir }) {
+export function createMissionService({
+  store,
+  rootDir = store.rootDir,
+  retrievalRuntime = createRetrievalRuntimeServiceFromEnvironment(),
+}) {
   const docService = createDocService({ rootDir });
   const factGraph = createFactGraphService({ store });
   const providerRegistry = createProviderRegistry({ rootDir });
-  const retrievalRuntime = createRetrievalRuntimeServiceFromEnvironment();
   const harness = createRuntimeHarness({ store });
   const { recordGatewayEvent } = createGatewayEventCoordinator({ harness, now, store });
   const catalogService = createMissionCatalogService({

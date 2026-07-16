@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-17 Local Relevance Shadow Integration
+
+- connected the R10-bound local relevance scorer to a controlled manager, planner, executor, and reviewer mission through explicit dependency injection while returning the original lexical retrieval object to every provider stage
+- recorded content-free query, candidate, source, scorer, and provider-input hashes without adding shadow fields to the store, public facade, CLI, HTTP payload, permission decisions, or audit history
+- verified the expected source at top-1 for all four controlled observations and kept scorer or evidence-writer failures fail-open, while leaving provider-input activation and production claims blocked
+
 ## 2026-07-16 Local Reranker Runtime Stability
 
 - added a loopback-only Ollama lifecycle check and six-run stability envelope covering one cold, three warm, and two concurrent-client evaluations without changing the mission runtime

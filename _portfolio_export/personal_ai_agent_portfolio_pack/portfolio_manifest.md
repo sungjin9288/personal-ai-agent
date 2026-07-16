@@ -50,6 +50,7 @@
 - evidence/output-artifacts/local-relevance-reranker-evaluation.json
 - evidence/output-artifacts/local-reranker-resource-envelope.json
 - evidence/output-artifacts/local-reranker-runtime-stability.json
+- evidence/output-artifacts/local-relevance-shadow-integration.json
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함

@@ -122,7 +122,7 @@ assert.equal(
 );
 
 for (const term of [
-  'status: local-reranker-runtime-stability-current',
+  'status: local-relevance-shadow-integration-current',
   '| R3 Optional semantic retrieval | 완료 |',
   '| R4 Reranking | 완료 |',
   '| L1 승인된 학습 데이터 | 완료 |',

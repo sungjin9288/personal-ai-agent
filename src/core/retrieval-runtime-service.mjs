@@ -12,6 +12,7 @@ import {
 
 export const RETRIEVAL_RUNTIME_MODES = Object.freeze({
   LEXICAL: 'lexical',
+  LOCAL_RELEVANCE_SHADOW: 'local-relevance-shadow',
   SEMANTIC_RERANK: 'semantic-rerank',
 });
 
@@ -159,6 +160,7 @@ async function retrieveWithSemanticReranking({ adapter, input, lexical }) {
 
 export function createRetrievalRuntimeService({
   embeddingAdapter = null,
+  localRelevanceShadow = null,
   mode = RETRIEVAL_RUNTIME_MODES.LEXICAL,
 } = {}) {
   const normalizedMode = normalizeText(mode, RETRIEVAL_RUNTIME_MODES.LEXICAL);
@@ -171,15 +173,30 @@ export function createRetrievalRuntimeService({
   ) {
     throw new Error('Semantic rerank runtime requires an embedding adapter.');
   }
+  if (
+    normalizedMode === RETRIEVAL_RUNTIME_MODES.LOCAL_RELEVANCE_SHADOW &&
+    typeof localRelevanceShadow?.observe !== 'function'
+  ) {
+    throw new Error('Local relevance shadow runtime requires an observer.');
+  }
 
   return {
     mode: normalizedMode,
     productionReadyClaim: false,
     rollbackMode: RETRIEVAL_RUNTIME_MODES.LEXICAL,
     runtimeActivation: normalizedMode === RETRIEVAL_RUNTIME_MODES.SEMANTIC_RERANK,
+    shadowFailurePolicy: 'preserve-lexical',
     async retrieve(input = {}) {
       const lexical = buildRetrievalContextWithCorpus(input);
       if (normalizedMode === RETRIEVAL_RUNTIME_MODES.LEXICAL) {
+        return lexical;
+      }
+      if (normalizedMode === RETRIEVAL_RUNTIME_MODES.LOCAL_RELEVANCE_SHADOW) {
+        try {
+          await localRelevanceShadow.observe({ input, lexical });
+        } catch {
+          // Shadow comparison is never allowed to change the provider path.
+        }
         return lexical;
       }
       return retrieveWithSemanticReranking({
@@ -215,6 +232,9 @@ export function createRetrievalRuntimeServiceFromEnvironment({
   );
   if (mode === RETRIEVAL_RUNTIME_MODES.LEXICAL) {
     return createRetrievalRuntimeService();
+  }
+  if (mode === RETRIEVAL_RUNTIME_MODES.LOCAL_RELEVANCE_SHADOW) {
+    throw new Error('Local relevance shadow runtime is available through explicit preflight injection only.');
   }
   if (mode !== RETRIEVAL_RUNTIME_MODES.SEMANTIC_RERANK) {
     throw new Error(`Unsupported retrieval runtime mode: ${mode}.`);

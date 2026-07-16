@@ -1,0 +1,335 @@
+{
+  "activation": {
+    "authorized": false,
+    "status": "blocked"
+  },
+  "actualLocalRelevanceShadowIntegrationQualified": false,
+  "actualLocalRelevanceShadowIntegrationValidated": true,
+  "costFree": true,
+  "decision": "hold-lexical-for-governance",
+  "governance": {
+    "licenseApproved": false,
+    "osLevelEgressIsolationProven": false,
+    "productionConcurrencyApproved": false,
+    "rollbackOwnerApproved": false,
+    "runtimeActivationApproved": false
+  },
+  "mission": {
+    "auditMutationRequired": false,
+    "artifactShadowMetadataFound": false,
+    "observationCount": 4,
+    "providerId": "stub",
+    "providerInputPreserved": true,
+    "requiredRoles": [
+      "executor",
+      "manager",
+      "planner",
+      "reviewer"
+    ],
+    "roleCoveragePassed": true,
+    "roles": [
+      "executor",
+      "manager",
+      "planner",
+      "reviewer"
+    ],
+    "status": "completed",
+    "storeSchemaMutationRequired": false,
+    "storeShadowMetadataFound": false
+  },
+  "observations": [
+    {
+      "activationAuthorized": false,
+      "candidateBindings": [
+        {
+          "baselineRank": 1,
+          "contentHash": "e7c16f457f0e94879a9439660b1ed5b57abb6256f31288de47f7fa5b151cadfc",
+          "sourceKeyHash": "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "sourceType": "memory"
+        },
+        {
+          "baselineRank": 2,
+          "contentHash": "1200e16faea0acba2b96e7960d5b9bbf686a886cbc417abfd74d8501c7bf1212",
+          "sourceKeyHash": "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1",
+          "sourceType": "attachment"
+        }
+      ],
+      "costFree": true,
+      "externalProviderCalls": "none",
+      "failureCode": null,
+      "latencyMs": 2731.148,
+      "networkIsolation": "not-proven",
+      "observedAt": "2026-07-16T15:29:38.644Z",
+      "productionReadyClaim": false,
+      "providerInput": {
+        "changed": false,
+        "lexicalResultHash": "72b9e8b0640ea67d73ce3d2a7758a1e66ebc66c0439fcc9f4b1d1552368f24a3",
+        "returnedResultHash": "72b9e8b0640ea67d73ce3d2a7758a1e66ebc66c0439fcc9f4b1d1552368f24a3"
+      },
+      "queryHash": "74b1e347f3ca2c4ad149b3174fa989ad8ede968354f8becf2375433222cf5f81",
+      "rollback": {
+        "mode": "lexical",
+        "stateMigrationRequired": false
+      },
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-shadow-observation/v1",
+      "scope": {
+        "missionIdHash": "074077258afa06082e66b703fe662d9f47bd2c8ed3e3eeea410965977338daad",
+        "providerRole": "manager",
+        "role": "manager",
+        "workspaceIdHash": "d6663c0e9ec8bad677c0f241e84a5a4c58938680361712edcb0683e1e31cb4ad"
+      },
+      "scorer": {
+        "id": "ollama-independent-score:qwen2.5:3b",
+        "modelId": "qwen2.5:3b",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1"
+      },
+      "selection": {
+        "inputCandidateCount": 2,
+        "lexicalSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "shadowSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "topSourceChanged": false
+      },
+      "status": "observed",
+      "storeMutationRequired": false,
+      "id": "local-relevance-shadow-observation-17f30a9cff776489ef95a8c46b98e36eca467d0a784817dea09a76001652c62d",
+      "observationHash": "17f30a9cff776489ef95a8c46b98e36eca467d0a784817dea09a76001652c62d"
+    },
+    {
+      "activationAuthorized": false,
+      "candidateBindings": [
+        {
+          "baselineRank": 1,
+          "contentHash": "e7c16f457f0e94879a9439660b1ed5b57abb6256f31288de47f7fa5b151cadfc",
+          "sourceKeyHash": "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "sourceType": "memory"
+        },
+        {
+          "baselineRank": 2,
+          "contentHash": "1200e16faea0acba2b96e7960d5b9bbf686a886cbc417abfd74d8501c7bf1212",
+          "sourceKeyHash": "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1",
+          "sourceType": "attachment"
+        }
+      ],
+      "costFree": true,
+      "externalProviderCalls": "none",
+      "failureCode": null,
+      "latencyMs": 1150.851,
+      "networkIsolation": "not-proven",
+      "observedAt": "2026-07-16T15:29:39.799Z",
+      "productionReadyClaim": false,
+      "providerInput": {
+        "changed": false,
+        "lexicalResultHash": "72b9e8b0640ea67d73ce3d2a7758a1e66ebc66c0439fcc9f4b1d1552368f24a3",
+        "returnedResultHash": "72b9e8b0640ea67d73ce3d2a7758a1e66ebc66c0439fcc9f4b1d1552368f24a3"
+      },
+      "queryHash": "6baa7e9f96f285165eafd5815c5efb6fb45069b7163749d023eea8cd9e6a9165",
+      "rollback": {
+        "mode": "lexical",
+        "stateMigrationRequired": false
+      },
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-shadow-observation/v1",
+      "scope": {
+        "missionIdHash": "074077258afa06082e66b703fe662d9f47bd2c8ed3e3eeea410965977338daad",
+        "providerRole": "planner",
+        "role": "planner",
+        "workspaceIdHash": "d6663c0e9ec8bad677c0f241e84a5a4c58938680361712edcb0683e1e31cb4ad"
+      },
+      "scorer": {
+        "id": "ollama-independent-score:qwen2.5:3b",
+        "modelId": "qwen2.5:3b",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1"
+      },
+      "selection": {
+        "inputCandidateCount": 2,
+        "lexicalSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "shadowSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "topSourceChanged": false
+      },
+      "status": "observed",
+      "storeMutationRequired": false,
+      "id": "local-relevance-shadow-observation-13273cc13980518dc995ade29c79b58cbfce9e3be6eb15dcdbaf867331c39149",
+      "observationHash": "13273cc13980518dc995ade29c79b58cbfce9e3be6eb15dcdbaf867331c39149"
+    },
+    {
+      "activationAuthorized": false,
+      "candidateBindings": [
+        {
+          "baselineRank": 1,
+          "contentHash": "e7c16f457f0e94879a9439660b1ed5b57abb6256f31288de47f7fa5b151cadfc",
+          "sourceKeyHash": "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "sourceType": "memory"
+        },
+        {
+          "baselineRank": 2,
+          "contentHash": "1200e16faea0acba2b96e7960d5b9bbf686a886cbc417abfd74d8501c7bf1212",
+          "sourceKeyHash": "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1",
+          "sourceType": "attachment"
+        }
+      ],
+      "costFree": true,
+      "externalProviderCalls": "none",
+      "failureCode": null,
+      "latencyMs": 1532.344,
+      "networkIsolation": "not-proven",
+      "observedAt": "2026-07-16T15:29:41.337Z",
+      "productionReadyClaim": false,
+      "providerInput": {
+        "changed": false,
+        "lexicalResultHash": "f258b1717c92a5c60c661128b6d1ee0f99dda7bf770a9b473eab148a8170405c",
+        "returnedResultHash": "f258b1717c92a5c60c661128b6d1ee0f99dda7bf770a9b473eab148a8170405c"
+      },
+      "queryHash": "a292d2a282e8e166953068bbb3c2aa78f988c96fd8bb5879fb7102178e3c70ad",
+      "rollback": {
+        "mode": "lexical",
+        "stateMigrationRequired": false
+      },
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-shadow-observation/v1",
+      "scope": {
+        "missionIdHash": "074077258afa06082e66b703fe662d9f47bd2c8ed3e3eeea410965977338daad",
+        "providerRole": "executor",
+        "role": "executor",
+        "workspaceIdHash": "d6663c0e9ec8bad677c0f241e84a5a4c58938680361712edcb0683e1e31cb4ad"
+      },
+      "scorer": {
+        "id": "ollama-independent-score:qwen2.5:3b",
+        "modelId": "qwen2.5:3b",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1"
+      },
+      "selection": {
+        "inputCandidateCount": 2,
+        "lexicalSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "shadowSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "topSourceChanged": false
+      },
+      "status": "observed",
+      "storeMutationRequired": false,
+      "id": "local-relevance-shadow-observation-4e1e8f76672c4b39ab49cd22006b22e7c46cd95bed000abf4a253514805ad99a",
+      "observationHash": "4e1e8f76672c4b39ab49cd22006b22e7c46cd95bed000abf4a253514805ad99a"
+    },
+    {
+      "activationAuthorized": false,
+      "candidateBindings": [
+        {
+          "baselineRank": 1,
+          "contentHash": "e7c16f457f0e94879a9439660b1ed5b57abb6256f31288de47f7fa5b151cadfc",
+          "sourceKeyHash": "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "sourceType": "memory"
+        },
+        {
+          "baselineRank": 2,
+          "contentHash": "1200e16faea0acba2b96e7960d5b9bbf686a886cbc417abfd74d8501c7bf1212",
+          "sourceKeyHash": "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1",
+          "sourceType": "attachment"
+        }
+      ],
+      "costFree": true,
+      "externalProviderCalls": "none",
+      "failureCode": null,
+      "latencyMs": 1719.351,
+      "networkIsolation": "not-proven",
+      "observedAt": "2026-07-16T15:29:43.064Z",
+      "productionReadyClaim": false,
+      "providerInput": {
+        "changed": false,
+        "lexicalResultHash": "f258b1717c92a5c60c661128b6d1ee0f99dda7bf770a9b473eab148a8170405c",
+        "returnedResultHash": "f258b1717c92a5c60c661128b6d1ee0f99dda7bf770a9b473eab148a8170405c"
+      },
+      "queryHash": "942465666f40bb0631e071cee3c0cf5a7a29e805b9595efb6bb7e0e3730323bc",
+      "rollback": {
+        "mode": "lexical",
+        "stateMigrationRequired": false
+      },
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-shadow-observation/v1",
+      "scope": {
+        "missionIdHash": "074077258afa06082e66b703fe662d9f47bd2c8ed3e3eeea410965977338daad",
+        "providerRole": "reviewer",
+        "role": "reviewer",
+        "workspaceIdHash": "d6663c0e9ec8bad677c0f241e84a5a4c58938680361712edcb0683e1e31cb4ad"
+      },
+      "scorer": {
+        "id": "ollama-independent-score:qwen2.5:3b",
+        "modelId": "qwen2.5:3b",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1"
+      },
+      "selection": {
+        "inputCandidateCount": 2,
+        "lexicalSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "shadowSourceKeyHashes": [
+          "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+          "8885fb94914291656b559400e6d3650ebf06a7c4b7308ca28e39701df14c67a1"
+        ],
+        "topSourceChanged": false
+      },
+      "status": "observed",
+      "storeMutationRequired": false,
+      "id": "local-relevance-shadow-observation-15f38dfd4c7b1af31ad6e24ccbf99a44c9b2cd0e4c21feb0814528fe2f03327d",
+      "observationHash": "15f38dfd4c7b1af31ad6e24ccbf99a44c9b2cd0e4c21feb0814528fe2f03327d"
+    }
+  ],
+  "observedAt": "2026-07-16T15:29:43.074Z",
+  "priorBinding": {
+    "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+    "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+    "resourceEnvelopeHash": "17491e6acf458d599697306945c5ee944a8a2ffca40eaf18ffb45fa072618e03",
+    "runtimeStabilityHash": "1b4990236b67b9dfe68c9497a0207d185d8c5fb1b93ad8bf0ee81f83fc5bd4ea",
+    "scorerId": "ollama-independent-score:qwen2.5:3b"
+  },
+  "productionReadyClaim": false,
+  "quality": {
+    "changedTopOneCount": 0,
+    "controlledFixtureOnly": true,
+    "expectedSourceKeyHash": "2ea27f856c7c3e9384cdaf2a800073bc2a9515d8d8412a801db95a99145c6b94",
+    "expectedTopOneCount": 4,
+    "lexicalTopOneCount": 4,
+    "observationCount": 4,
+    "scorerBindingPassed": true
+  },
+  "rollback": {
+    "mode": "lexical",
+    "stateMigrationRequired": false
+  },
+  "runtime": {
+    "cloudFeaturesDisabled": true,
+    "externalProviderCalls": "none",
+    "kind": "ollama",
+    "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "networkIsolation": "not-proven",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-relevance-shadow-evidence/v1",
+  "status": "shadow-mission-integration-passed-governance-blocked",
+  "evidenceHash": "4bed58d6ed805ee163bf059cf9f19904989b28b6ee38f499a4e7573f5efd20aa",
+  "id": "local-relevance-shadow-evidence-4bed58d6ed805ee163bf059cf9f19904989b28b6ee38f499a4e7573f5efd20aa"
+}

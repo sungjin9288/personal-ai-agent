@@ -56,6 +56,7 @@
 - `evidence/output-artifacts/local-relevance-reranker-evaluation.json`
 - `evidence/output-artifacts/local-reranker-resource-envelope.json`
 - `evidence/output-artifacts/local-reranker-runtime-stability.json`
+- `evidence/output-artifacts/local-relevance-shadow-integration.json`
 
 ### Architecture
 
@@ -107,6 +108,7 @@
 - Local relevance reranker: verified with `npm run smoke:local-relevance-reranker`
 - Local reranker resource envelope: verified with `npm run smoke:local-reranker-resource-envelope`
 - Local reranker runtime stability: verified with `npm run smoke:local-reranker-runtime-stability`
+- Local relevance shadow integration: verified with `npm run smoke:local-relevance-shadow-integration`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

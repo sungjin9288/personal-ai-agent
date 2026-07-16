@@ -108,7 +108,46 @@ test('switching back to lexical mode is a state-free exact rollback', async () =
   assert.deepEqual(await lexical.retrieve(input), buildRetrievalContextWithCorpus(input));
 });
 
+test('local relevance shadow observes the mission input but returns the exact lexical object', async () => {
+  let observedLexical;
+  const runtime = createRetrievalRuntimeService({
+    localRelevanceShadow: {
+      async observe({ lexical }) {
+        observedLexical = lexical;
+      },
+    },
+    mode: RETRIEVAL_RUNTIME_MODES.LOCAL_RELEVANCE_SHADOW,
+  });
+
+  const result = await runtime.retrieve(buildInput());
+
+  assert.strictEqual(result, observedLexical);
+  assert.equal(runtime.runtimeActivation, false);
+  assert.equal(runtime.productionReadyClaim, false);
+  assert.equal(runtime.shadowFailurePolicy, 'preserve-lexical');
+});
+
+test('local relevance shadow failures do not change or block lexical retrieval', async () => {
+  const input = buildInput();
+  const runtime = createRetrievalRuntimeService({
+    localRelevanceShadow: {
+      async observe() {
+        throw new Error('shadow failure');
+      },
+    },
+    mode: RETRIEVAL_RUNTIME_MODES.LOCAL_RELEVANCE_SHADOW,
+  });
+
+  assert.deepEqual(await runtime.retrieve(input), buildRetrievalContextWithCorpus(input));
+});
+
 test('environment factory requires explicit valid local semantic configuration', () => {
+  assert.throws(
+    () => createRetrievalRuntimeServiceFromEnvironment({
+      env: { PERSONAL_AI_AGENT_RETRIEVAL_MODE: 'local-relevance-shadow' },
+    }),
+    /explicit preflight injection only/,
+  );
   assert.throws(
     () => createRetrievalRuntimeServiceFromEnvironment({ env: { PERSONAL_AI_AGENT_RETRIEVAL_MODE: 'unknown' } }),
     /Unsupported retrieval runtime mode/,

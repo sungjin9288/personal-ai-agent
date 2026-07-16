@@ -31,6 +31,7 @@ The safe claim is that deterministic smoke fixtures verify retrieval ranking sig
 | Local relevance reranker | Can independent local scoring recover R7 failures without source-order bias or runtime activation? | Repeated 15-case scoring passes with content-free evidence and remains governance-blocked | `npm run smoke:local-relevance-reranker` |
 | Local reranker resource envelope | Can a lexical shortlist reduce local scoring work without losing R8 quality? | Top-2 preflight retains every expected source, preserves 15-case quality, records latency and loaded-model footprint, and remains governance-blocked | `npm run smoke:local-reranker-resource-envelope` |
 | Local reranker runtime stability | Does the R9 shortlist retain quality and resource identity across cold, warm, and bounded concurrent-client execution? | Six fixed runs preserve 15-case quality and resource snapshots while bounded latency gates pass and production parallelism, long soak, and thermal claims remain blocked | `npm run smoke:local-reranker-runtime-stability` |
+| Local relevance shadow integration | Can the R10-bound scorer observe an actual mission without changing provider input or persisted state? | A controlled stub mission covers manager, planner, executor, and reviewer; content-free observations retain expected top-1, exact lexical provider input, store isolation, and scorer-failure fail-open | `npm run smoke:local-relevance-shadow-integration` |
 | Source diversity | Can a non-dominant source remain visible? | A mission decision source remains in the selected context even when many workspace facts match the same query | `npm run smoke:retrieval-memory` |
 | Fact graph memory | Are facts mirrored with provenance? | Fact memories become active graph nodes with memory provenance and shared-keyword edges | `npm run smoke:fact-graph-memory` |
 | Fact lifecycle | Are revisions and deletions auditable? | Fact updates preserve revisions, kind changes retire nodes, deleted memory retires graph entries and edges | `npm run smoke:fact-graph-memory` |
@@ -50,6 +51,7 @@ npm run smoke:local-retrieval-robustness
 npm run smoke:local-relevance-reranker
 npm run smoke:local-reranker-resource-envelope
 npm run smoke:local-reranker-runtime-stability
+npm run smoke:local-relevance-shadow-integration
 npm run smoke:retrieval-memory
 npm run smoke:fact-graph-memory
 npm run smoke:instruction-boundary
@@ -94,4 +96,4 @@ Do not claim:
 
 ## Acceptance Rule
 
-This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-quality-evaluation`, `npm run smoke:semantic-retrieval-experiment`, `npm run smoke:retrieval-reranking-experiment`, `npm run smoke:semantic-retrieval-runtime`, `npm run smoke:local-embedding-model-qualification`, `npm run smoke:local-retrieval-robustness`, `npm run smoke:local-relevance-reranker`, `npm run smoke:local-reranker-resource-envelope`, `npm run smoke:local-reranker-runtime-stability`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.
+This fixture is current only when `npm run smoke:memory-retrieval-quality-fixture`, `npm run smoke:retrieval-corpus-contract`, `npm run smoke:retrieval-quality-evaluation`, `npm run smoke:semantic-retrieval-experiment`, `npm run smoke:retrieval-reranking-experiment`, `npm run smoke:semantic-retrieval-runtime`, `npm run smoke:local-embedding-model-qualification`, `npm run smoke:local-retrieval-robustness`, `npm run smoke:local-relevance-reranker`, `npm run smoke:local-reranker-resource-envelope`, `npm run smoke:local-reranker-runtime-stability`, `npm run smoke:local-relevance-shadow-integration`, `npm run smoke:retrieval-memory`, `npm run smoke:fact-graph-memory`, and `npm run smoke:instruction-boundary` pass, README links this document, and release evidence continues to keep `productionReadyClaim: false`.

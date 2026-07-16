@@ -126,7 +126,7 @@ for (const answer of Object.values(fixture.passingAnswers)) {
 assert.deepEqual(fs.readFileSync(statePath), stateBefore, 'candidate evaluation must not mutate the store');
 
 for (const term of [
-  'status: local-reranker-runtime-stability-current',
+  'status: local-relevance-shadow-integration-current',
   '| O1a Candidate evaluation gate | 완료 |',
   '| O1b Model rollout | 외부 작업 |',
   'fixtures/candidate-model-evaluation-cases-v1.json',

@@ -62,6 +62,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/local-relevance-reranker-evaluation.json',
   'evidence/output-artifacts/local-reranker-resource-envelope.json',
   'evidence/output-artifacts/local-reranker-runtime-stability.json',
+  'evidence/output-artifacts/local-relevance-shadow-integration.json',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/fork-onboarding-v1.md',
