@@ -104,7 +104,8 @@
 - 완료: dependency 없는 provider-neutral embedding contract, bounded local command adapter, scope-locked semantic experiment와 controlled synonym comparison
 - 완료: semantic·lexical signal을 고정 가중치로 결합한 deterministic reranking baseline과 controlled quality·latency·rollback 비교
 - 완료: reviewer pass·operator approval·promotion verification·artifact lineage를 요구하는 sanitized training record와 content·lineage hash contract
-- 다음: deterministic deduplication, scope-aware train·validation split, leakage 검사와 dataset manifest
+- 완료: deterministic content·lineage·near-response deduplication, mission-scope train·validation split, leakage 검사와 content-free dataset manifest
+- 다음: provider-neutral JSONL export, evaluation manifest와 reviewer-ready fine-tuning readiness packet
 - 완료: core smoke validation summary와 command guard
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence

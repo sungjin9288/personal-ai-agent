@@ -122,11 +122,11 @@ assert.equal(
 );
 
 for (const term of [
-  'status: approved-training-record-current',
+  'status: training-dataset-quality-current',
   '| R3 Optional semantic retrieval | 완료 |',
   '| R4 Reranking | 완료 |',
   '| L1 승인된 학습 데이터 | 완료 |',
-  '| L2 Dataset quality gate | 다음 |',
+  '| L2 Dataset quality gate | 완료 |',
   'fixtures/semantic-retrieval-cases-v1.json',
   'npm run smoke:semantic-retrieval-experiment',
   'runtimeActivation: false',

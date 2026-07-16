@@ -1,6 +1,6 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: approved-training-record-current
+- status: training-dataset-quality-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -11,6 +11,7 @@
 - currentSemanticFixture: `fixtures/semantic-retrieval-cases-v1.json`
 - currentRerankingFixture: `fixtures/reranking-cases-v1.json`
 - currentTrainingFixture: `fixtures/approved-training-record-cases-v1.json`
+- currentDatasetFixture: `fixtures/training-dataset-quality-cases-v1.json`
 - runtimeActivation: false
 
 ## 목적
@@ -119,6 +120,18 @@ Accepted risk가 없으면 `null`로 기록한다. Accepted risk가 있으면 ri
 
 이 record는 L2 local dataset build의 입력 후보일 뿐이다. `externalSubmissionAuthorized: false`, `fineTuningExecutionAuthorized: false`, `productionReadyClaim: false`를 유지하며 외부 fine-tuning 제출 권한을 만들지 않는다.
 
+## 현재 dataset quality gate
+
+`src/core/training-dataset-quality.mjs`는 승인 학습 record의 schema, approval, reviewer, safety, scope, content hash, lineage hash를 다시 확인한다. Record가 변조되었거나 외부 제출 권한을 켠 경우에는 manifest를 만들지 않는다. L1과 L2는 `src/core/training-content-safety.mjs`의 같은 secret·raw customer payload 판정을 사용한다.
+
+검증을 통과한 record는 id 순으로 정렬한 뒤 content hash, lineage hash, normalized response 유사도 순으로 중복을 제거한다. Response 유사도는 별도 model 없이 lowercase·Unicode normalization·token Jaccard로 계산하며 기준은 `0.85`로 고정한다. 짧은 답변은 normalized text가 같을 때만 중복으로 본다.
+
+Train·validation 분리는 명시한 seed와 mission scope를 사용한다. 같은 mission의 record는 항상 한 split에 함께 들어간다. 최종 leakage gate는 record id, content hash, lineage hash, mission scope, near-response가 양쪽에 겹치지 않는지 검사한다. 중복 제거 뒤 mission scope가 둘 미만이면 quality gate를 통과시키지 않는다.
+
+Manifest에는 학습 문장을 복사하지 않고 record id, content·lineage hash, artifact lineage, scope, split만 남긴다. `npm run smoke:training-dataset-quality`는 실제 local CLI에서 stub mission 6건을 실행하고 reviewer·operator approval을 거쳐 record를 만든다. Exact content와 near-response 중복 2건을 제외한 뒤 입력 순서를 뒤집어도 같은 manifest가 생성되고 store가 바뀌지 않는지 확인한다.
+
+이 manifest는 F1 local export review의 입력일 뿐이다. `externalSubmissionAuthorized: false`, `fineTuningExecutionAuthorized: false`, `productionReadyClaim: false`를 유지하며 JSONL export나 외부 fine-tuning 제출을 실행하지 않는다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -129,8 +142,8 @@ Accepted risk가 없으면 `null`로 기록한다. Accepted risk가 있으면 ri
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
 | R4 Reranking | 완료 | semantic 0.7·lexical 0.3 deterministic feature baseline, controlled tie comparison, latency measurement, state-free rollback order | runtime 변경 없이 품질·latency·rollback 비교 자료 확보 |
 | L1 승인된 학습 데이터 | 완료 | approved promotion, reviewer pass, verification, artifact lineage, sanitized example을 묶은 deterministic record | raw secret·customer payload 차단, mission scope와 content·lineage hash 보존 |
-| L2 Dataset quality gate | 다음 | 중복 제거, scope 분리, train·validation split, leakage 검사 | 동일 seed에서 동일 manifest 생성 |
-| F1 Fine-tuning readiness | 예정 | provider-neutral JSONL export와 evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
+| L2 Dataset quality gate | 완료 | content·lineage·near-response 중복 제거, mission scope 분리, seeded train·validation split, leakage 검사 | 동일 seed와 입력에서 동일 content-free manifest 생성 |
+| F1 Fine-tuning readiness | 다음 | provider-neutral JSONL export와 evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
 | F2 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1 Model rollout | 외부 작업 | candidate model과 baseline을 같은 fixture로 비교 | 품질 악화·권한 누락·증적 누락 시 즉시 중단 |
 
@@ -167,12 +180,14 @@ node --test test/retrieval-quality-evaluation.test.mjs
 node --test test/embedding-adapter.test.mjs test/semantic-retrieval.test.mjs
 node --test test/retrieval-reranker.test.mjs
 node --test test/approved-training-record.test.mjs
+node --test test/training-dataset-quality.test.mjs
 npm run smoke:answer-quality-evaluation
 npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-quality-evaluation
 npm run smoke:semantic-retrieval-experiment
 npm run smoke:retrieval-reranking-experiment
 npm run smoke:approved-training-record
+npm run smoke:training-dataset-quality
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```
@@ -192,6 +207,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 ## Claim Boundary
 
-현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 실제 local approval lifecycle에서 sanitized training record의 lineage와 safety gate를 재생성한다는 것이다.
+현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 content-free dataset manifest를 재생성한다는 것이다.
 
-이 결과는 실제 embedding model이나 learned reranker 성능, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Dataset split·leakage gate와 fine-tuning export·실행은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.
+이 결과는 실제 embedding model이나 learned reranker 성능, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Provider-neutral JSONL export, local training runtime, 외부 fine-tuning 실행은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.

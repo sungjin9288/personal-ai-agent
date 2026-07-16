@@ -43,6 +43,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Semantic retrieval experiment | `npm run smoke:semantic-retrieval-experiment` | Verifies bounded local embedding protocol, scope lock, controlled synonym comparison, and runtimeActivation=false boundary |
 | Retrieval reranking experiment | `npm run smoke:retrieval-reranking-experiment` | Verifies deterministic semantic+lexical scoring, controlled tie quality comparison, measured local latency, exact rollback order, and runtimeActivation=false boundary |
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
+| Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
 | External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
 | Portfolio claim boundary | `npm run smoke:portfolio-docs-claim-boundary` | Verifies portfolio docs do not overclaim unsupported capabilities |
@@ -75,6 +76,7 @@ npm run smoke:retrieval-quality-evaluation
 npm run smoke:semantic-retrieval-experiment
 npm run smoke:retrieval-reranking-experiment
 npm run smoke:approved-training-record
+npm run smoke:training-dataset-quality
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview

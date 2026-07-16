@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Training Dataset Quality Gate
+
+- added a deterministic local dataset manifest that revalidates approved record safety, content and lineage hashes, reviewer approval, and local-only authorization boundaries
+- removed exact content, lineage, and normalized near-response duplicates before keeping each mission scope entirely in train or validation
+- added record, content, lineage, mission scope, and near-response leakage checks without copying training text into the manifest or authorizing export and fine-tuning execution
+
 ## 2026-07-16 Approved Training Record
 
 - added a local-only training record contract that requires approved learning promotion, passed verification, reviewer pass, completed mission/session state, and exact candidate/reviewer/deliverable artifact lineage

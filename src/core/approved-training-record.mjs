@@ -1,6 +1,11 @@
 import { createHash } from 'node:crypto';
 
 import { LEARNING_CANDIDATE_SCHEMA_VERSION } from './learning-candidate-service.mjs';
+import {
+  containsRawCustomerPayload,
+  containsTrainingSecret,
+  inspectSanitizedTrainingExample,
+} from './training-content-safety.mjs';
 
 export const APPROVED_TRAINING_RECORD_SCHEMA_VERSION =
   'personal-ai-agent-approved-training-record/v1';
@@ -28,10 +33,6 @@ function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
 
-function normalizeTrainingText(value) {
-  return normalizeText(value).replace(/\s+/g, ' ');
-}
-
 function hashValue(value) {
   return createHash('sha256').update(String(value)).digest('hex');
 }
@@ -42,40 +43,6 @@ function hashRecord(value) {
 
 function isValidTimestamp(value) {
   return Number.isFinite(Date.parse(normalizeText(value)));
-}
-
-function containsSecret(value) {
-  const text = normalizeText(value);
-  return [
-    /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/i,
-    /\b(?:sk|sk-ant|ghp|github_pat|xox[baprs])[-_][A-Za-z0-9_-]{16,}\b/i,
-    /\bBearer\s+[A-Za-z0-9._~+/=-]{16,}\b/i,
-    /\b(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret)\s*[:=]\s*\S+/i,
-  ].some((pattern) => pattern.test(text));
-}
-
-function containsRawCustomerPayload(value) {
-  const text = normalizeText(value);
-  if (!text) {
-    return false;
-  }
-
-  if (/^[\[{]/.test(text)) {
-    try {
-      const parsed = JSON.parse(text);
-      if (parsed && typeof parsed === 'object') {
-        return true;
-      }
-    } catch {
-      // Non-JSON prose may begin with punctuation; continue with explicit markers.
-    }
-  }
-
-  return [
-    /\b(?:customer|tenant|user)(?:Id|Name|Email|Phone|Payload)\s*[:=]/i,
-    /\b(?:rawCustomerPayload|requestBody|request\.body|tenantData)\s*[:=]/i,
-    /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
-  ].some((pattern) => pattern.test(text));
 }
 
 function artifactMatches(artifact, { id, kind, missionId, role, sessionId }) {
@@ -115,7 +82,7 @@ function normalizeAcceptedRisk(acceptedRisk, { generatedAt, missionId }) {
     isValidTimestamp(normalized.expiresAt) &&
     Date.parse(normalized.expiresAt) > Date.parse(generatedAt) &&
     normalized.note &&
-    !containsSecret(safetyText) &&
+    !containsTrainingSecret(safetyText) &&
     !containsRawCustomerPayload(safetyText);
 
   if (!valid) {
@@ -142,8 +109,8 @@ function buildEligibilityChecks({
   const candidateArtifact = artifactList.find((artifact) => artifact.id === candidate?.artifactId);
   const reviewerArtifact = artifactList.find((artifact) => artifact.id === reviewerArtifactId);
   const sourceArtifact = artifactList.find((artifact) => artifact.id === sourceArtifactId);
-  const instruction = normalizeTrainingText(sanitizedExample?.instruction);
-  const response = normalizeTrainingText(sanitizedExample?.response);
+  const inspectedExample = inspectSanitizedTrainingExample(sanitizedExample);
+  const { instruction, response } = inspectedExample;
   const verificationCheckMap = new Map(
     ensureArray(candidate?.promotionVerification?.checks).map((check) => [check?.id, check]),
   );
@@ -247,15 +214,13 @@ function buildEligibilityChecks({
       id: 'no-raw-secrets',
       passed:
         candidate?.safety?.noRawSecrets === true &&
-        !containsSecret(instruction) &&
-        !containsSecret(response),
+        inspectedExample.noRawSecrets,
     },
     {
       id: 'no-raw-customer-payloads',
       passed:
         candidate?.safety?.noRawCustomerPayloads === true &&
-        !containsRawCustomerPayload(instruction) &&
-        !containsRawCustomerPayload(response),
+        inspectedExample.noRawCustomerPayloads,
     },
   ].map((check) => ({
     ...check,

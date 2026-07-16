@@ -29,6 +29,7 @@
 | Semantic retrieval experiment | 완료 | `src/core/embedding-adapter.mjs`, `src/core/semantic-retrieval.mjs`, `fixtures/semantic-retrieval-cases-v1.json` | bounded local command protocol, scope isolation, controlled synonym comparison, and runtimeActivation=false verified by `npm run smoke:semantic-retrieval-experiment` |
 | Retrieval reranking experiment | 완료 | `src/core/retrieval-reranker.mjs`, `fixtures/reranking-cases-v1.json` | deterministic semantic+lexical feature scoring, controlled tie quality comparison, measured latency, state-free rollback order, and runtimeActivation=false verified by `npm run smoke:retrieval-reranking-experiment` |
 | Approved training record | 완료 | `src/core/approved-training-record.mjs`, `fixtures/approved-training-record-cases-v1.json` | local approval lifecycle, reviewer·artifact lineage, sanitized example safety, accepted-risk governance, deterministic hashes, and externalSubmissionAuthorized=false verified by `npm run smoke:approved-training-record` |
+| Training dataset quality gate | 완료 | `src/core/training-dataset-quality.mjs`, `fixtures/training-dataset-quality-cases-v1.json` | deterministic deduplication, mission-scope split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false verified by `npm run smoke:training-dataset-quality` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
@@ -37,7 +38,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,255,303 bytes, SHA-256 `98f5e8880f11003d4b4bb94bdfadf7c9064a9f6c5dd9ef5a4ea05172695ab5fa` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 2,256,263 bytes, SHA-256 `43ab4a73df732969274e95ac2f9ad2d3a8feca864de749a7257799b2aef72ef4` |
 
 ## 검증 실패 / 보류
 

@@ -131,10 +131,10 @@ assert.equal(Number.isFinite(rerankingAverageMs), true);
 assert.equal(rerankingAverageMs < semanticAverageMs, true);
 
 for (const term of [
-  'status: approved-training-record-current',
+  'status: training-dataset-quality-current',
   '| R4 Reranking | 완료 |',
   '| L1 승인된 학습 데이터 | 완료 |',
-  '| L2 Dataset quality gate | 다음 |',
+  '| L2 Dataset quality gate | 완료 |',
   'fixtures/reranking-cases-v1.json',
   'npm run smoke:retrieval-reranking-experiment',
   'runtimeActivation: false',
