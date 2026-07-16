@@ -54,6 +54,7 @@
 | Retrieval quality evaluation | `docs/ml-rag-development-plan-v1.md` | controlled precision, recall, noise, source diversity, frozen baseline replay, and ranking regression gate |
 | Semantic retrieval experiment | `docs/ml-rag-development-plan-v1.md` | bounded local embedding command protocol, scope-locked cosine experiment, controlled synonym comparison, and inactive runtime boundary |
 | Retrieval reranking experiment | `docs/ml-rag-development-plan-v1.md` | deterministic semantic+lexical scoring, controlled tie quality comparison, measured local latency, exact baseline rollback order, and inactive runtime boundary |
+| Approved training record | `docs/ml-rag-development-plan-v1.md` | actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and no external submission authority |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
 | External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
 

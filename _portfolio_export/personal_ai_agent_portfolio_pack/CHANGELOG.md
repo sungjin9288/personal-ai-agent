@@ -16,6 +16,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a credential-free retrieval evaluation gate for controlled precision, recall, noise, source diversity, and frozen lexical/BM25/phrase baseline comparison.
 - Added a bounded local-command embedding protocol and scope-locked semantic retrieval experiment without enabling the mission runtime path.
 - Added a deterministic semantic-plus-lexical reranking experiment with controlled tie quality comparison, measured local latency, and state-free baseline rollback without enabling the mission runtime path.
+- Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a smoke validation summary and command guard to document the deterministic public-readiness verification baseline without expanding provider, hosted, or production claims.
 - Added an external evidence blocker register and smoke guard to keep account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers explicit.
 

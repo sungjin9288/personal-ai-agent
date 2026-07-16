@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "personal-ai-agent-approved-training-record-fixture/v1",
+  "productionReadyClaim": false,
+  "generatedAt": "2026-07-16T10:00:00.000Z",
+  "sanitizedExample": {
+    "instruction": "Write a concise decision memo that states the decision and cites reviewed evidence.",
+    "response": "State the decision, connect it to reviewed evidence, and preserve the next action."
+  },
+  "acceptedRisk": {
+    "approvedAt": "2026-07-16T09:30:00.000Z",
+    "approvedBy": "workspace-owner",
+    "expiresAt": "2026-07-20T00:00:00.000Z",
+    "id": "accepted-risk-fixture-1",
+    "note": "Monitor the bounded formatting variance until the next review.",
+    "resolutionKind": "accepted-risk",
+    "scope": "mission"
+  },
+  "unsafeExamples": [
+    {
+      "id": "secret-assignment",
+      "field": "response",
+      "value": "OPENAI_API_KEY=sk-exampleabcdefghijklmnop",
+      "expectedFailedCheck": "no-raw-secrets"
+    },
+    {
+      "id": "raw-customer-json",
+      "field": "instruction",
+      "value": "{\"customerId\":\"customer-1\",\"request\":\"create a decision memo\"}",
+      "expectedFailedCheck": "no-raw-customer-payloads"
+    },
+    {
+      "id": "customer-email",
+      "field": "response",
+      "value": "Send the reviewed decision to customer@example.com.",
+      "expectedFailedCheck": "no-raw-customer-payloads"
+    }
+  ],
+  "expected": {
+    "status": "approved-for-local-dataset-build",
+    "externalSubmissionAuthorized": false,
+    "fineTuningExecutionAuthorized": false,
+    "scopeType": "mission"
+  }
+}

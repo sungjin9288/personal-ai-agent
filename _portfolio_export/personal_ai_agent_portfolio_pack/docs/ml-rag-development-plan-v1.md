@@ -1,6 +1,6 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: reranking-experiment-current
+- status: approved-training-record-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -10,6 +10,7 @@
 - currentRetrievalFixture: `fixtures/retrieval-quality-cases-v1.json`
 - currentSemanticFixture: `fixtures/semantic-retrieval-cases-v1.json`
 - currentRerankingFixture: `fixtures/reranking-cases-v1.json`
+- currentTrainingFixture: `fixtures/approved-training-record-cases-v1.json`
 - runtimeActivation: false
 
 ## 목적
@@ -106,6 +107,18 @@ Rollback은 별도 상태나 migration을 만들지 않는다. 각 candidate가 
 
 같은 smoke는 실제 local embedding command의 case당 평균 시간과 순수 reranking 평균 시간을 함께 출력하고, reranking 시간이 semantic retrieval 시간보다 작은지 검사한다. 숫자는 실행 환경마다 달라 문서에 고정하지 않는다. learned reranker나 별도 local model은 도입하지 않았고, measured gain과 dependency 승인이 생기기 전까지 현재 deterministic baseline만 유지한다.
 
+## 현재 승인 학습 데이터 record
+
+`src/core/approved-training-record.mjs`는 기존 learning candidate를 자동으로 학습 자료로 바꾸지 않는다. Candidate가 `approved` 또는 `promoted`이고, local operator의 approve decision과 passed promotion verification, reviewer pass가 모두 연결된 경우에만 `personal-ai-agent-approved-training-record/v1` record를 만든다.
+
+Candidate, mission, session, workspace, learning-candidate artifact, reviewer artifact, executor deliverable artifact의 id와 scope를 서로 대조한다. Record에는 artifact path나 원문을 복사하지 않고 id lineage와 lineage hash만 남긴다. 학습 문장은 별도로 검토한 `instruction`과 `response`만 받으며, API key·token·password 형태, JSON형 raw payload, customer·tenant 식별 field와 email을 다시 검사한다.
+
+Accepted risk가 없으면 `null`로 기록한다. Accepted risk가 있으면 risk id, 승인자, 승인 시각, mission scope, 설명, record 생성 시각보다 뒤인 만료 시각이 모두 있어야 한다. 조건이 하나라도 빠지면 record를 만들지 않는다.
+
+`npm run smoke:approved-training-record`는 실제 local CLI에서 stub mission을 실행하고 reviewer pass candidate를 만든 뒤 operator가 template target으로 승인한다. 이 state에서 deterministic record를 두 번 생성해 hash가 같은지 확인하고, store file이 바뀌지 않았는지 검사한다. Secret assignment, raw customer JSON, customer email fixture는 모두 차단한다.
+
+이 record는 L2 local dataset build의 입력 후보일 뿐이다. `externalSubmissionAuthorized: false`, `fineTuningExecutionAuthorized: false`, `productionReadyClaim: false`를 유지하며 외부 fine-tuning 제출 권한을 만들지 않는다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -115,8 +128,8 @@ Rollback은 별도 상태나 migration을 만들지 않는다. 각 candidate가 
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
 | R4 Reranking | 완료 | semantic 0.7·lexical 0.3 deterministic feature baseline, controlled tie comparison, latency measurement, state-free rollback order | runtime 변경 없이 품질·latency·rollback 비교 자료 확보 |
-| L1 승인된 학습 데이터 | 다음 | approved learning candidate와 reviewer evidence만 dataset record로 변환 | raw secret·customer payload 차단, lineage와 hash 보존 |
-| L2 Dataset quality gate | 예정 | 중복 제거, scope 분리, train·validation split, leakage 검사 | 동일 seed에서 동일 manifest 생성 |
+| L1 승인된 학습 데이터 | 완료 | approved promotion, reviewer pass, verification, artifact lineage, sanitized example을 묶은 deterministic record | raw secret·customer payload 차단, mission scope와 content·lineage hash 보존 |
+| L2 Dataset quality gate | 다음 | 중복 제거, scope 분리, train·validation split, leakage 검사 | 동일 seed에서 동일 manifest 생성 |
 | F1 Fine-tuning readiness | 예정 | provider-neutral JSONL export와 evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
 | F2 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1 Model rollout | 외부 작업 | candidate model과 baseline을 같은 fixture로 비교 | 품질 악화·권한 누락·증적 누락 시 즉시 중단 |
@@ -153,11 +166,13 @@ node --test test/retrieval-corpus.test.mjs test/retrieval-artifacts.test.mjs
 node --test test/retrieval-quality-evaluation.test.mjs
 node --test test/embedding-adapter.test.mjs test/semantic-retrieval.test.mjs
 node --test test/retrieval-reranker.test.mjs
+node --test test/approved-training-record.test.mjs
 npm run smoke:answer-quality-evaluation
 npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-quality-evaluation
 npm run smoke:semantic-retrieval-experiment
 npm run smoke:retrieval-reranking-experiment
+npm run smoke:approved-training-record
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```
@@ -177,6 +192,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 ## Claim Boundary
 
-현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교한다는 것이다.
+현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 실제 local approval lifecycle에서 sanitized training record의 lineage와 safety gate를 재생성한다는 것이다.
 
-이 결과는 실제 embedding model이나 learned reranker 성능, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Semantic retrieval과 reranking mission runtime은 활성화하지 않았고 `productionReadyClaim: false`는 모든 단계에서 유지한다.
+이 결과는 실제 embedding model이나 learned reranker 성능, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Dataset split·leakage gate와 fine-tuning export·실행은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.

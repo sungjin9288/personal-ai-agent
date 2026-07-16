@@ -96,6 +96,7 @@
 - Retrieval quality evaluation: verified with `npm run smoke:retrieval-quality-evaluation`
 - Semantic retrieval experiment: verified with `npm run smoke:semantic-retrieval-experiment`
 - Retrieval reranking experiment: verified with `npm run smoke:retrieval-reranking-experiment`
+- Approved training record: verified with `npm run smoke:approved-training-record`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

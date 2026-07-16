@@ -309,6 +309,7 @@ npm run smoke:retrieval-corpus-contract
 npm run smoke:retrieval-quality-evaluation
 npm run smoke:semantic-retrieval-experiment
 npm run smoke:retrieval-reranking-experiment
+npm run smoke:approved-training-record
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview

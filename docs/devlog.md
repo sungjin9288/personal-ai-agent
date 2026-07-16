@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-16 Approved Training Record
+
+- added a local-only training record contract that requires approved learning promotion, passed verification, reviewer pass, completed mission/session state, and exact candidate/reviewer/deliverable artifact lineage
+- generated deterministic content and lineage hashes from separately sanitized instruction/response text without copying artifact paths or raw artifact content
+- blocked secret-like values, raw customer JSON, customer identifiers and email, and required approver, mission scope, note, and future expiration for accepted-risk records
+
 ## 2026-07-16 Retrieval Reranking Experiment
 
 - added a content-free reranking contract that combines semantic and lexical scores with fixed, inspectable weights and deterministic tie handling
