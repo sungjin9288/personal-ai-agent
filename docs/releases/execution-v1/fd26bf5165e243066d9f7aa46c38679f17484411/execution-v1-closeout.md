@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T10:15:51.979Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T10:15:44.769Z
 - branch: codex/approved-training-records
 - commit: fd26bf5165e243066d9f7aa46c38679f17484411
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fd26bf5165e243066d9f7aa46c38679f17484411/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

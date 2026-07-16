@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T10:15:51.979Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T10:15:44.715Z
 - branch: codex/approved-training-records
 - commit: fd26bf5165e243066d9f7aa46c38679f17484411

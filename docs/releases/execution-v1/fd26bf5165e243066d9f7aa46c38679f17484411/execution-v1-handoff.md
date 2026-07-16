@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T10:15:51.979Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T10:15:50.997Z
 - localDate: 2026-07-16
 - branch: codex/approved-training-records
 - commit: fd26bf5165e243066d9f7aa46c38679f17484411
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/fd26bf5165e243066d9f7aa46c38679f17484411](releases/execution-v1/fd26bf5165e243066d9f7aa46c38679f17484411)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fd26bf5165e243066d9f7aa46c38679f17484411/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/fd26bf5165e243066d9f7aa46c38679f17484411/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/fd26bf5165e243066d9f7aa46c38679f17484411](docs/releases/execution-v1/fd26bf5165e243066d9f7aa46c38679f17484411)
 - visualArtifactSetSha256: 78581670d113bf30257470686b4d263b896722d0b245afd65465ef40aff8c29d
 - commitPushStatus: not pushed, origin/codex/approved-training-records not found
 
