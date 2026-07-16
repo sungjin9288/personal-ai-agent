@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T06:17:53.669Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T06:17:45.832Z
 - branch: codex/ml-rag-quality-foundation
 - commit: 51c26e45129ef336a2cd3361355b70d41603b3d5
