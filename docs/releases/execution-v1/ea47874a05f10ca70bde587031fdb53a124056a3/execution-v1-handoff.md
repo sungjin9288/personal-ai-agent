@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T14:33:04.429Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T14:33:03.490Z
 - localDate: 2026-07-16
 - branch: codex/rag-reranker-resource-envelope
 - commit: ea47874a05f10ca70bde587031fdb53a124056a3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ea47874a05f10ca70bde587031fdb53a124056a3](releases/execution-v1/ea47874a05f10ca70bde587031fdb53a124056a3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ea47874a05f10ca70bde587031fdb53a124056a3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ea47874a05f10ca70bde587031fdb53a124056a3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ea47874a05f10ca70bde587031fdb53a124056a3](docs/releases/execution-v1/ea47874a05f10ca70bde587031fdb53a124056a3)
 - visualArtifactSetSha256: d748886f4c427fed2c49df20998cd2eec9eea35207613baa8fbb2b27954a8795
 - commitPushStatus: not pushed, origin/codex/rag-reranker-resource-envelope not found
 

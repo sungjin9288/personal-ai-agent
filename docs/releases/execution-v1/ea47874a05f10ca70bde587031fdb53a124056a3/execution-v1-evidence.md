@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T14:33:04.429Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T14:32:57.029Z
 - branch: codex/rag-reranker-resource-envelope
 - commit: ea47874a05f10ca70bde587031fdb53a124056a3
