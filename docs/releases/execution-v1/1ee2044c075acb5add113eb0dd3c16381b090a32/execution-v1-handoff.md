@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T22:52:36.918Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T22:52:35.937Z
 - localDate: 2026-07-17
 - branch: codex/local-user-learning-personalization
 - commit: 1ee2044c075acb5add113eb0dd3c16381b090a32
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1ee2044c075acb5add113eb0dd3c16381b090a32](releases/execution-v1/1ee2044c075acb5add113eb0dd3c16381b090a32)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/1ee2044c075acb5add113eb0dd3c16381b090a32/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/1ee2044c075acb5add113eb0dd3c16381b090a32/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/1ee2044c075acb5add113eb0dd3c16381b090a32](docs/releases/execution-v1/1ee2044c075acb5add113eb0dd3c16381b090a32)
 - visualArtifactSetSha256: 87a71aeacbd323ee8358281b69ac2abbeb5b5ff81824799da8ac17e42ae63bac
 - commitPushStatus: not pushed, origin/codex/local-user-learning-personalization not found
 
