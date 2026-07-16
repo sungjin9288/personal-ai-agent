@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-16T10:45:20.352Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-16T10:45:12.808Z
 - branch: codex/training-dataset-quality-gate
 - commit: 425d72101229ac5f2919327e8090deb4f43821e3

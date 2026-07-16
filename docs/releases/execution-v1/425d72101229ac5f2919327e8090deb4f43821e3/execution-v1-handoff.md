@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-16T10:45:20.352Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-16T10:45:19.305Z
 - localDate: 2026-07-16
 - branch: codex/training-dataset-quality-gate
 - commit: 425d72101229ac5f2919327e8090deb4f43821e3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/425d72101229ac5f2919327e8090deb4f43821e3](releases/execution-v1/425d72101229ac5f2919327e8090deb4f43821e3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/425d72101229ac5f2919327e8090deb4f43821e3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/425d72101229ac5f2919327e8090deb4f43821e3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/425d72101229ac5f2919327e8090deb4f43821e3](docs/releases/execution-v1/425d72101229ac5f2919327e8090deb4f43821e3)
 - visualArtifactSetSha256: a455e9c8bca24dfa8971df31a915b33001ea59132e58e0cf30a752c11cdd9ba7
 - commitPushStatus: not pushed, origin/codex/training-dataset-quality-gate not found
 

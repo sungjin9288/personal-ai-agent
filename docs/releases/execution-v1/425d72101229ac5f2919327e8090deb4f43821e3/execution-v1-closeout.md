@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-16T10:45:20.352Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-16T10:45:12.868Z
 - branch: codex/training-dataset-quality-gate
 - commit: 425d72101229ac5f2919327e8090deb4f43821e3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/425d72101229ac5f2919327e8090deb4f43821e3/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
