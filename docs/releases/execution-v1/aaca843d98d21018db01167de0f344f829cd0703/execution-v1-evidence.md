@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T08:29:51.517Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T08:29:40.175Z
 - branch: codex/f2c6-acquisition-runtime
 - commit: aaca843d98d21018db01167de0f344f829cd0703

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T08:29:51.517Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T08:29:50.602Z
 - localDate: 2026-07-17
 - branch: codex/f2c6-acquisition-runtime
 - commit: aaca843d98d21018db01167de0f344f829cd0703
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/aaca843d98d21018db01167de0f344f829cd0703](releases/execution-v1/aaca843d98d21018db01167de0f344f829cd0703)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aaca843d98d21018db01167de0f344f829cd0703/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/aaca843d98d21018db01167de0f344f829cd0703/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/aaca843d98d21018db01167de0f344f829cd0703](docs/releases/execution-v1/aaca843d98d21018db01167de0f344f829cd0703)
 - visualArtifactSetSha256: 0df1f28687a143af1f8487bd21ae974d130d234bab04ddd3a05fa797dc2c535c
 - commitPushStatus: not pushed, origin/codex/f2c6-acquisition-runtime not found
 
