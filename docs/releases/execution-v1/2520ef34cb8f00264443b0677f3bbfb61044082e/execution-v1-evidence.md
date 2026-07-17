@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T02:44:53.663Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T02:44:46.097Z
 - branch: codex/local-answer-quality-baseline
 - commit: 2520ef34cb8f00264443b0677f3bbfb61044082e

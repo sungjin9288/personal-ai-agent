@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T02:44:53.663Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T02:44:52.729Z
 - localDate: 2026-07-17
 - branch: codex/local-answer-quality-baseline
 - commit: 2520ef34cb8f00264443b0677f3bbfb61044082e
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2520ef34cb8f00264443b0677f3bbfb61044082e](releases/execution-v1/2520ef34cb8f00264443b0677f3bbfb61044082e)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2520ef34cb8f00264443b0677f3bbfb61044082e/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2520ef34cb8f00264443b0677f3bbfb61044082e/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2520ef34cb8f00264443b0677f3bbfb61044082e](docs/releases/execution-v1/2520ef34cb8f00264443b0677f3bbfb61044082e)
 - visualArtifactSetSha256: 6905f25c71736fb3dd44e41c21f2e1a3a11e3a9f67e80c3b5297d83f58eb222b
 - commitPushStatus: not pushed, origin/codex/local-answer-quality-baseline not found
 
