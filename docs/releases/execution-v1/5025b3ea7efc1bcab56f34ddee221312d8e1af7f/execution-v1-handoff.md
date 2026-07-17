@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T01:16:16.432Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T01:16:15.547Z
 - localDate: 2026-07-17
 - branch: codex/local-fine-tuning-runtime-contract
 - commit: 5025b3ea7efc1bcab56f34ddee221312d8e1af7f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/5025b3ea7efc1bcab56f34ddee221312d8e1af7f](releases/execution-v1/5025b3ea7efc1bcab56f34ddee221312d8e1af7f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5025b3ea7efc1bcab56f34ddee221312d8e1af7f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/5025b3ea7efc1bcab56f34ddee221312d8e1af7f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/5025b3ea7efc1bcab56f34ddee221312d8e1af7f](docs/releases/execution-v1/5025b3ea7efc1bcab56f34ddee221312d8e1af7f)
 - visualArtifactSetSha256: 22d31e20f69c7bc655c3aecc817a811debf8f3dd2c193ebd27a9b1af0726d9bf
 - commitPushStatus: not pushed, origin/codex/local-fine-tuning-runtime-contract not found
 

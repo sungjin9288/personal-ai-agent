@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T01:16:16.432Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T01:16:07.699Z
 - branch: codex/local-fine-tuning-runtime-contract
 - commit: 5025b3ea7efc1bcab56f34ddee221312d8e1af7f

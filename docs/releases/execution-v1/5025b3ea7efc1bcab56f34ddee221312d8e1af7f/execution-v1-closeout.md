@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T01:16:16.432Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T01:16:07.788Z
 - branch: codex/local-fine-tuning-runtime-contract
 - commit: 5025b3ea7efc1bcab56f34ddee221312d8e1af7f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/5025b3ea7efc1bcab56f34ddee221312d8e1af7f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
