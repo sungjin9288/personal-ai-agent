@@ -75,7 +75,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 104$/m);
+assert.match(manifest, /^- fileCount: 105$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -135,6 +135,7 @@ const requiredPaths = [
   'evidence/output-artifacts/local-training-runtime-contract.json',
   'evidence/output-artifacts/local-training-permission-surface.json',
   'evidence/output-artifacts/local-answer-quality-baseline.json',
+  'evidence/output-artifacts/local-answer-composition-candidate.json',
   'evidence/screenshots/workspace-learning-operator-surface.png',
   'evidence/screenshots/user-learning-operator-surface.png',
   'evidence/screenshots/local-training-permission-surface.png',
@@ -314,7 +315,7 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: local-answer-quality-baseline-current/);
+assert.match(mlRagDevelopmentPlan, /status: local-answer-composition-candidate-current/);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
@@ -328,6 +329,8 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-readiness/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-runtime/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:candidate-model-evaluation/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-quality-baseline/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-candidate/);
+assert.match(mlRagDevelopmentPlan, /\| Q3 Evidence-first answer composition \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| Q2 Actual local answer-quality baseline \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-conflict-revocation/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-operator-override/);

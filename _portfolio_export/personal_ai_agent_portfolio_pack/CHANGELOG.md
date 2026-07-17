@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added an evidence-first local answer composition candidate that separates summary, source-bound claims, and reviewer action without passing required terms, golden answers, or thresholds to the model.
+- Replayed the same installed `qwen2.5:3b`, retrieval results, and Q1 gate; controlled case pass improved from `0.0` to `1.0` and required-term coverage from `0.6667` to `1.0` with citation metrics unchanged.
+- Bound the content-free candidate evidence to the Q2 baseline hash, model digest, fixture, prompt, cases, and thresholds while leaving the current answer path, activation, training, rollout, and production claims unchanged.
 - Added a loopback-only structured Ollama answer generator and content-free evidence contract that keep Q1 required terms and golden answers out of model input.
 - Evaluated the already-installed `qwen2.5:3b` against both Q1 cases without model download, trainer installation, external provider calls, or training; retrieval and citation gates passed, but required-term coverage was `0.6667` in both cases.
 - Recorded the actual regression as `keep-current-answer-path` without lowering thresholds, authorizing activation, or changing the existing answer path.

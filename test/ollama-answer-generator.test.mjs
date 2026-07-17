@@ -3,7 +3,9 @@ import http from 'node:http';
 import { test } from 'node:test';
 
 import {
+  createEvidenceFirstOllamaAnswerGenerator,
   createOllamaAnswerGenerator,
+  EVIDENCE_FIRST_ANSWER_PROMPT_VERSION,
   LOCAL_ANSWER_PROMPT_VERSION,
 } from '../src/core/ollama-answer-generator.mjs';
 
@@ -94,6 +96,98 @@ test('Ollama answer generator rejects remote endpoints, duplicate sources, and i
     );
   } finally {
     await close(duplicateServer);
+  }
+});
+
+test('evidence-first generator covers every source without receiving evaluator answers', async () => {
+  let requestBody;
+  const server = http.createServer(async (request, response) => {
+    requestBody = JSON.parse(await readBody(request));
+    response.setHeader('content-type', 'application/json');
+    response.end(JSON.stringify({
+      model: 'qwen2.5:3b',
+      response: JSON.stringify({
+        claims: [
+          {
+            sourceKey: 'memory:workspace/fact',
+            text: 'Prompt normalization narrowed the verification path.',
+          },
+          {
+            sourceKey: 'attachment:incident-notes.md',
+            text: 'The incident evidence preserves the remediation decision for review.',
+          },
+        ],
+        reviewAction: 'Confirm the cited remediation evidence before acting.',
+        summary: 'Prompt normalization resolved provider drift.',
+      }),
+    }));
+  });
+  await listen(server);
+  try {
+    const generator = createEvidenceFirstOllamaAnswerGenerator({
+      endpoint: endpointFor(server),
+      model: 'qwen2.5:3b',
+    });
+    const result = await generator.generate({
+      goldenAnswer: 'SENTINEL_GOLDEN_ANSWER',
+      objective: 'Explain the verified recovery.',
+      requiredAnswerTerms: ['SENTINEL_REQUIRED_TERM'],
+      retrievedItems: [
+        {
+          snippet: 'The incident evidence preserves the remediation decision for review.',
+          sourceKey: 'attachment:incident-notes.md',
+        },
+        {
+          snippet: 'Prompt normalization narrowed the verification path.',
+          sourceKey: 'memory:workspace/fact',
+        },
+      ],
+    });
+
+    assert.equal(result.observation.promptVersion, EVIDENCE_FIRST_ANSWER_PROMPT_VERSION);
+    assert.deepEqual(result.answer.citedSourceKeys, [
+      'attachment:incident-notes.md',
+      'memory:workspace/fact',
+    ]);
+    assert.match(result.answer.text, /Reviewer action:/);
+    assert.equal(result.composition.claimCount, 2);
+    assert.equal(result.composition.sourceCoverageComplete, true);
+    assert.doesNotMatch(requestBody.prompt, /SENTINEL_GOLDEN_ANSWER|SENTINEL_REQUIRED_TERM/);
+    assert.equal(JSON.stringify(result.observation).includes('Prompt normalization'), false);
+  } finally {
+    await close(server);
+  }
+});
+
+test('evidence-first generator rejects incomplete source coverage', async () => {
+  const server = http.createServer((request, response) => {
+    response.setHeader('content-type', 'application/json');
+    response.end(JSON.stringify({
+      response: JSON.stringify({
+        claims: [{ sourceKey: 'memory:fact', text: 'One claim.' }],
+        reviewAction: 'Review the evidence.',
+        summary: 'Summary.',
+      }),
+    }));
+  });
+  await listen(server);
+  try {
+    const generator = createEvidenceFirstOllamaAnswerGenerator({
+      endpoint: endpointFor(server),
+      model: 'qwen2.5:3b',
+    });
+    await assert.rejects(
+      () => generator.generate({
+        objective: 'Explain the evidence.',
+        retrievedItems: [
+          { sourceKey: 'memory:fact', snippet: 'First.' },
+          { sourceKey: 'attachment:fact.md', snippet: 'Second.' },
+        ],
+      }),
+      /invalid answer contract|incomplete source coverage/,
+    );
+  } finally {
+    await close(server);
   }
 });
 

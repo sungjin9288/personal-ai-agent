@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Evidence-first Answer Composition Candidate
+
+- separated local answer generation into a concise summary, one claim per retrieved source, and an explicit reviewer action while keeping evaluator terms and golden answers outside the model prompt
+- bound the candidate to the Q2 evidence hash, exact qwen2.5:3b digest, Q1 fixture hash, prompt hash, case set, and unchanged thresholds
+- replayed both Q1 cases on the cloud-disabled loopback runtime; case pass changed from 0.0 to 1.0 and required-term coverage from 0.6667 to 1.0 without citation or forbidden-term regression
+- kept the current answer path, activation, rollout, actual model training, and production claims disabled because the two controlled fixtures do not establish general answer quality
+
 ## 2026-07-17 Actual Local Answer Quality Baseline
 
 - added a loopback-only structured Ollama answer generator that sees the mission objective and retrieved evidence but never Q1 required terms or golden answers

@@ -38,6 +38,7 @@
   - 완료: retrieval-selected local-user decision 충돌을 latest-revision 하나로 제한하고 cross-workspace 적용, newer revocation fallback, full rollback을 실제 replay로 검증
   - 완료: 검증된 local-user decision을 bounded operator override로 고정하고 cross-workspace 적용, expiry·clear latest fallback, repin parity와 unretrieved 차단을 검증
   - 완료: 이미 설치된 qwen2.5:3b로 Q1 두 case의 실제 답변을 생성해 citation gate 통과와 required-term coverage 0.6667 실패를 함께 고정하고 기존 답변 경로를 유지
+  - 완료: 같은 qwen2.5:3b와 retrieval로 evidence-first composition candidate를 실행해 Q1 case pass 0.0→1.0과 required-term coverage 0.6667→1.0을 기록하고 runtime 활성화는 차단
 - 완료 기준:
   - provider별 status matrix가 코드, docs, smoke evidence와 일치
   - 실패/재시도/fallback을 면접에서 코드 수준으로 설명 가능
@@ -103,6 +104,7 @@
 - 완료: provider failure recovery demo와 smoke guard
 - 완료: memory/retrieval/fact graph quality fixture와 smoke guard
 - 완료: actual qwen2.5:3b Q1 answer-quality baseline에서 두 case의 required-term coverage 회귀를 기록하고 threshold 완화 없이 `keep-current-answer-path` 결정
+- 완료: evaluator 정답을 model에 주지 않고 summary·source claim·review action을 분리한 Q3 candidate가 같은 Q1 두 case를 통과했으며 일반 품질·runtime activation은 계속 미검증
 - 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증
 - 완료: verified workspace decision을 local operator가 bounded expiration으로 고정하고 expiry·clear 시 exact latest-revision fallback, repin parity, foreign·unretrieved memory 차단과 timeline audit를 확인한 controlled operator override 검증

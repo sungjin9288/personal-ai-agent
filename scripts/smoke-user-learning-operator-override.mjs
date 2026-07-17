@@ -185,7 +185,7 @@ assert.ok(timelineSource.includes('noteHash: overrideEvent.noteHash'));
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: local-answer-quality-baseline-current',
+  'status: local-answer-composition-candidate-current',
   '| P9 User learning operator override | 완료 |',
   'npm run smoke:user-learning-operator-override',
   'actualUserLearningOperatorOverrideValidated: true',

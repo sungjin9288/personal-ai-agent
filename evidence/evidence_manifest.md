@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, and actual local answer-quality comparison
-- Source code modified: yes, loopback-only structured answer generation and a content-free actual-model evaluation contract were added without changing provider input, persistence, public API, or activation behavior
-- New feature development: yes, the already-installed qwen2.5:3b was evaluated on Q1 without model download, external calls, trainer installation, training, or rollout; the failed required-term gate keeps the current answer path
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, and evidence-first answer composition
+- Source code modified: yes, same-model answer generation now has an evaluation-only summary, source-claim, and review-action candidate with exact baseline, model, prompt, and suite binding
+- New feature development: yes, the already-installed qwen2.5:3b Q1 candidate improved controlled case pass from 0.0 to 1.0 and required-term coverage from 0.6667 to 1.0 without external calls, evaluator-answer prompt input, training, activation, or rollout
 
 ## Generated Evidence Files
 
@@ -79,6 +79,7 @@
 - `evidence/output-artifacts/local-training-runtime-contract.json`
 - `evidence/output-artifacts/local-training-permission-surface.json`
 - `evidence/output-artifacts/local-answer-quality-baseline.json`
+- `evidence/output-artifacts/local-answer-composition-candidate.json`
 
 ### Architecture
 
@@ -154,6 +155,7 @@
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`
+- Evidence-first answer composition candidate: verified with `npm run smoke:local-answer-composition-candidate`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

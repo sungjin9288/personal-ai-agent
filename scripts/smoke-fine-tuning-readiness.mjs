@@ -118,7 +118,7 @@ assert.throws(
 );
 
 for (const term of [
-  'status: local-answer-quality-baseline-current',
+  'status: local-answer-composition-candidate-current',
   '| F1 Fine-tuning readiness | 완료 |',
   '| F2d 외부 fine-tuning 실행 | 외부 작업 |',
   'fixtures/fine-tuning-readiness-cases-v1.json',

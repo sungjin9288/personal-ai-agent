@@ -156,6 +156,8 @@
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
     "evaluate:local-answer-quality-baseline": "node scripts/evaluate-local-answer-quality-baseline.mjs",
     "smoke:local-answer-quality-baseline": "node scripts/smoke-local-answer-quality-baseline.mjs",
+    "evaluate:local-answer-composition-candidate": "node scripts/evaluate-local-answer-composition-candidate.mjs",
+    "smoke:local-answer-composition-candidate": "node scripts/smoke-local-answer-composition-candidate.mjs",
     "smoke:smoke-validation-summary": "node scripts/smoke-smoke-validation-summary.mjs",
     "smoke:external-evidence-blockers": "node scripts/smoke-external-evidence-blockers.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",
