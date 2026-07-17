@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T04:40:58.087Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T04:40:50.703Z
 - branch: codex/q5-answer-input-boundary
 - commit: 2fec5abfdf96229279aad83b9684edbb67c51b47
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2fec5abfdf96229279aad83b9684edbb67c51b47/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

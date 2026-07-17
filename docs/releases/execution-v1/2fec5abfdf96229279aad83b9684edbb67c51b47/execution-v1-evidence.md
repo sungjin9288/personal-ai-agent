@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T04:40:58.087Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T04:40:50.650Z
 - branch: codex/q5-answer-input-boundary
 - commit: 2fec5abfdf96229279aad83b9684edbb67c51b47

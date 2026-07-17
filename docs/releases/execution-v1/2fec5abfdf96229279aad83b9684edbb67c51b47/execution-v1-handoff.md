@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T04:40:58.087Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T04:40:57.170Z
 - localDate: 2026-07-17
 - branch: codex/q5-answer-input-boundary
 - commit: 2fec5abfdf96229279aad83b9684edbb67c51b47
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/2fec5abfdf96229279aad83b9684edbb67c51b47](releases/execution-v1/2fec5abfdf96229279aad83b9684edbb67c51b47)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/2fec5abfdf96229279aad83b9684edbb67c51b47/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/2fec5abfdf96229279aad83b9684edbb67c51b47/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/2fec5abfdf96229279aad83b9684edbb67c51b47](docs/releases/execution-v1/2fec5abfdf96229279aad83b9684edbb67c51b47)
 - visualArtifactSetSha256: 2d787aa00a1e632a04289c297b079272a11f8612174a2df06a6db33fcdc3b9ad
 - commitPushStatus: not pushed, origin/codex/q5-answer-input-boundary not found
 
