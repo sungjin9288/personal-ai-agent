@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T05:52:46.942Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T05:52:46.025Z
 - localDate: 2026-07-17
 - branch: codex/q7-reviewer-action-generalization
 - commit: 95e00374731f393b207bfc0a8ae902aa5e396718
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/95e00374731f393b207bfc0a8ae902aa5e396718](releases/execution-v1/95e00374731f393b207bfc0a8ae902aa5e396718)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/95e00374731f393b207bfc0a8ae902aa5e396718/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/95e00374731f393b207bfc0a8ae902aa5e396718/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/95e00374731f393b207bfc0a8ae902aa5e396718](docs/releases/execution-v1/95e00374731f393b207bfc0a8ae902aa5e396718)
 - visualArtifactSetSha256: 0df1f28687a143af1f8487bd21ae974d130d234bab04ddd3a05fa797dc2c535c
 - commitPushStatus: not pushed, origin/codex/q7-reviewer-action-generalization not found
 

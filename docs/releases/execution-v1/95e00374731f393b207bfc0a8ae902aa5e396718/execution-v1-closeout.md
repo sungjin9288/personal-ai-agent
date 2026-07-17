@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T05:52:46.942Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T05:52:39.490Z
 - branch: codex/q7-reviewer-action-generalization
 - commit: 95e00374731f393b207bfc0a8ae902aa5e396718
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/95e00374731f393b207bfc0a8ae902aa5e396718/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

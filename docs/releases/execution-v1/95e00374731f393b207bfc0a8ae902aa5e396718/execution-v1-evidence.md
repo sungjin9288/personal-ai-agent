@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T05:52:46.942Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T05:52:35.148Z
 - branch: codex/q7-reviewer-action-generalization
 - commit: 95e00374731f393b207bfc0a8ae902aa5e396718
