@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T07:57:39.997Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T07:57:32.337Z
 - branch: codex/f2c4-acquisition-resolution
 - commit: c40da06cd7b2a5b9ed9e0114b271d460bcc9227f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c40da06cd7b2a5b9ed9e0114b271d460bcc9227f/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

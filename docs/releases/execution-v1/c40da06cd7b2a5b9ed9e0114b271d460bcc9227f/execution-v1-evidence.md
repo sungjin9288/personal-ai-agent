@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T07:57:39.997Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T07:57:29.437Z
 - branch: codex/f2c4-acquisition-resolution
 - commit: c40da06cd7b2a5b9ed9e0114b271d460bcc9227f

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T07:57:39.997Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T07:57:39.122Z
 - localDate: 2026-07-17
 - branch: codex/f2c4-acquisition-resolution
 - commit: c40da06cd7b2a5b9ed9e0114b271d460bcc9227f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c40da06cd7b2a5b9ed9e0114b271d460bcc9227f](releases/execution-v1/c40da06cd7b2a5b9ed9e0114b271d460bcc9227f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c40da06cd7b2a5b9ed9e0114b271d460bcc9227f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c40da06cd7b2a5b9ed9e0114b271d460bcc9227f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c40da06cd7b2a5b9ed9e0114b271d460bcc9227f](docs/releases/execution-v1/c40da06cd7b2a5b9ed9e0114b271d460bcc9227f)
 - visualArtifactSetSha256: 0df1f28687a143af1f8487bd21ae974d130d234bab04ddd3a05fa797dc2c535c
 - commitPushStatus: not pushed, origin/codex/f2c4-acquisition-resolution not found
 
