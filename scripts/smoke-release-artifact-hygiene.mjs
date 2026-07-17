@@ -45,6 +45,12 @@ assert.equal(
   true,
 );
 assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-acquisition-request.json',
+  ),
+  true,
+);
+assert.equal(
   result.scannedFiles.includes('evidence/output-artifacts/local-answer-quality-baseline.json'),
   true,
 );

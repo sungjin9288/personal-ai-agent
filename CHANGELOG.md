@@ -25,6 +25,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a content-free local-training product permission contract that binds exact fine-tuning readiness, base model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner without starting model training.
 - Added a cost-free local-training environment preflight that verifies the installed model artifact, manifest, license metadata, F1 readiness binding, system capacity, trainer availability, and F2b governance prerequisites before any process can request training. The current evidence stops before training because the trainable source model, supported trainer, independent environment reviews, approved product permission, and rollback owner are absent.
 - Added a hash-bound local-training toolchain decision packet that selects pinned MLX-LM LoRA and an immutable Apache-2.0 Qwen2.5-1.5B safetensors source for the observed Apple Silicon environment. The packet confirms the local Python, `venv`, and `uv` prerequisites while preserving explicit approval gates for installation, download, license review, acquisition egress, resource canary ownership, rollback ownership, and post-install product permission.
+- Added a tamper-evident local-training acquisition request that binds the selected toolchain, a repository-relative mutable root, five required owner roles, seven ordered actions, and proposed resource caps. The tracked request remains pending review and grants no installation, download, training, rollout, external submission, or production authority.
 - Connected permission request, approval, read, and revocation to the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and actual local Chromium surface while keeping raw readiness in a private session file.
 - Preserved `actualModelTrainingExecuted: false`, external submission and rollout denial, and the requirement that a future training caller re-read current permission before process spawn.
 - Connected verified local-user override state to the existing learning-promotion action inbox without adding a new action type, store collection, or dependency.
@@ -86,8 +87,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,208,420 bytes`
-- SHA-256: `7ffa2a774035e5d1c425f6afb22a5eb07dc6c6ea7eac94e40f9ad254efb63ca4`
+- Size: `4,211,129 bytes`
+- SHA-256: `222cd36aaf0427f4f928b5bab2fa9126e58161a065b826047843992065392cbe`
 
 Included public surfaces:
 
