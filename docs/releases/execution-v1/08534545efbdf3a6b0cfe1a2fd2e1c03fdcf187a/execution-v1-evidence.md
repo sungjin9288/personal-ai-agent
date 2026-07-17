@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T05:20:22.870Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T05:20:15.037Z
 - branch: codex/q6-user-query-evaluation
 - commit: 08534545efbdf3a6b0cfe1a2fd2e1c03fdcf187a

@@ -90,6 +90,7 @@
 | Answer input boundary evaluation | `evidence/output-artifacts/answer-input-boundary-evaluation.json` | 7 Unicode·multilingual·split-letter attacks and 7 exact-preservation controls with all four deterministic rates at 1.0 and no actual user data |
 | Answer composition boundary regression | `evidence/output-artifacts/local-answer-composition-boundary-regression.json` | same installed model and Q4 suite, retained 2.2 safe-text failure diagnosis, final 10/10 parity, content-free model binding, and blocked activation |
 | User-query evaluation intake dry run | `evidence/output-artifacts/user-query-evaluation-intake.json` | consent·de-identification·retention contract exercised with 12 synthetic records across six domains and four languages without raw query storage or training authority |
+| Local user-query quality stop condition | `evidence/output-artifacts/local-user-query-quality.json` | exact Q5 intake, qwen2.5:3b digest, runtime, and v4 prompt binding; 11/12 synthetic result with one content-free `invalid-review-action` failure and unchanged answer path |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
 | External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
 

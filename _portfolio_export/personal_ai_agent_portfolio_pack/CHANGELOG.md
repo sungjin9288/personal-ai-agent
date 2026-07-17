@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a cloud-disabled local user-query evaluation runner that binds the Q5 consent and de-identification intake to the exact Q4 model, runtime, v4 prompt, and unchanged quality thresholds. The synthetic 12-case replay passed 11 cases and retained one `invalid-review-action` failure, so activation and the current answer path remain unchanged.
+- Kept query, evidence, expected terms, model responses, and raw error messages out of tracked Q6 evidence. Only content hashes, metrics, bounded failure taxonomy, and domain/language summaries are retained.
 - Added a pure 14-case input boundary covering Unicode normalization, format controls, split-letter directives, English, Korean, Japanese, and Spanish while preserving all safe controls exactly.
 - Replayed the same installed `qwen2.5:3b` and Q4 suite with v4. An initial safe `2.2` identifier regression remained failed at `9/10`; the boundary splitter and canonical evidence comparison were corrected, and the final unchanged-threshold run passed `10/10`.
 - Added a content-free user-query evaluation intake contract and a 12-record synthetic dry run spanning six domains and four languages. Actual user data, training, fine-tuning submission, external transfer, provider input, activation, and production claims remain disabled.
