@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T00:29:13.608Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T00:29:12.633Z
 - localDate: 2026-07-17
 - branch: codex/local-user-learning-operator-surface
 - commit: be60478735cde68a189b5b0df650008bdd25ff55
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/be60478735cde68a189b5b0df650008bdd25ff55](releases/execution-v1/be60478735cde68a189b5b0df650008bdd25ff55)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/be60478735cde68a189b5b0df650008bdd25ff55/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/be60478735cde68a189b5b0df650008bdd25ff55/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/be60478735cde68a189b5b0df650008bdd25ff55](docs/releases/execution-v1/be60478735cde68a189b5b0df650008bdd25ff55)
 - visualArtifactSetSha256: bded4b431b8e5452dd6e5cb771747928ceeb1f27584faff79c6c947e791181ee
 - commitPushStatus: not pushed, origin/codex/local-user-learning-operator-surface not found
 

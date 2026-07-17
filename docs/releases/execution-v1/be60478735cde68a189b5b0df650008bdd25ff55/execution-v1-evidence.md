@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T00:29:13.608Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T00:29:05.183Z
 - branch: codex/local-user-learning-operator-surface
 - commit: be60478735cde68a189b5b0df650008bdd25ff55
