@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T08:12:19.837Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T08:12:18.901Z
 - localDate: 2026-07-17
 - branch: codex/f2c5-acquisition-plan
 - commit: 49f8e6fcf50bb2e7b0548b84e8829439368bbcfc
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/49f8e6fcf50bb2e7b0548b84e8829439368bbcfc](releases/execution-v1/49f8e6fcf50bb2e7b0548b84e8829439368bbcfc)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/49f8e6fcf50bb2e7b0548b84e8829439368bbcfc/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/49f8e6fcf50bb2e7b0548b84e8829439368bbcfc/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/49f8e6fcf50bb2e7b0548b84e8829439368bbcfc](docs/releases/execution-v1/49f8e6fcf50bb2e7b0548b84e8829439368bbcfc)
 - visualArtifactSetSha256: 0df1f28687a143af1f8487bd21ae974d130d234bab04ddd3a05fa797dc2c535c
 - commitPushStatus: not pushed, origin/codex/f2c5-acquisition-plan not found
 

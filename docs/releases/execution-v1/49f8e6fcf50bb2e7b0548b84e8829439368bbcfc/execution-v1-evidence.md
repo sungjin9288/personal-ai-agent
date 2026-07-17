@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T08:12:19.837Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T08:12:06.570Z
 - branch: codex/f2c5-acquisition-plan
 - commit: 49f8e6fcf50bb2e7b0548b84e8829439368bbcfc
