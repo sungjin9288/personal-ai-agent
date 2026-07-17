@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Local Training Permission Surface
+
+- bound exact F1 readiness, model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner into a content-free product permission without starting model training
+- reused the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and Chromium approval controls while keeping raw readiness in a private mission-session file
+- replayed request, approval, read, revocation, cross-tenant denial, audit order, and browser interaction with no external provider calls and `actualModelTrainingExecuted: false`
+- kept environment evidence owner-attested rather than independently verified; future actual training must re-read the current permission immediately before process spawn
+
 ## 2026-07-17 User Learning Operator Surface
 
 - connected P9 user override state to existing learning-promotion action items, summary counts, audit package, HTTP routes, and web controls without adding a new action type, store collection, or dependency

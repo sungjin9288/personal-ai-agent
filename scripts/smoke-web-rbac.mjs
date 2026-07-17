@@ -49,6 +49,15 @@ assert.equal(
   'approver',
 );
 assert.equal(
+  evaluateApiRbac({
+    method: 'POST',
+    mode: 'enforce',
+    pathname: '/api/approvals/approval_x/local-training/revoke',
+    role: 'operator',
+  }).requiredRole,
+  'approver',
+);
+assert.equal(
   evaluateApiRbac({ method: 'POST', mode: 'enforce', pathname: '/api/execution-v1/snapshot', role: 'operator' })
     .requiredRole,
   'admin',

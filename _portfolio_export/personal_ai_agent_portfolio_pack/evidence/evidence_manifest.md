@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, and a bounded local training runtime contract
-- Source code modified: yes, exact F1 and expiring approval binding, shell-free local process transport, environment and resource bounds, strict candidate metadata, and content-free run evidence
-- New feature development: yes, cost-free local trainer contract replay with ten failure guards, zero store mutation, no actual model training, and no rollout authority
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, and product permission surfaces
+- Source code modified: yes, existing approval, CLI, HTTP, RBAC, tenant, action inbox, and gateway audit surfaces now bind content-free local-training license, OS egress, resource, approval, and rollback evidence
+- New feature development: yes, cost-free local-training permission request, approval, read, revocation, and Chromium replay with no actual model training and no rollout authority
 
 ## Generated Evidence Files
 
@@ -43,6 +43,7 @@
 - `evidence/screenshots/operator-surface-action-inbox.png`
 - `evidence/screenshots/workspace-learning-operator-surface.png`
 - `evidence/screenshots/user-learning-operator-surface.png`
+- `evidence/screenshots/local-training-permission-surface.png`
 
 ### Output Artifacts
 
@@ -76,6 +77,7 @@
 - `evidence/output-artifacts/user-learning-operator-override.json`
 - `evidence/output-artifacts/user-learning-operator-surface.json`
 - `evidence/output-artifacts/local-training-runtime-contract.json`
+- `evidence/output-artifacts/local-training-permission-surface.json`
 
 ### Architecture
 
@@ -100,6 +102,7 @@
 
 ## Verified Features
 
+- Full deterministic smoke sweep: 199/199 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -147,6 +150,7 @@
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
+- Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`

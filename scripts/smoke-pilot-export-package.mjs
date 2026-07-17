@@ -75,7 +75,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 101$/m);
+assert.match(manifest, /^- fileCount: 103$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -133,8 +133,10 @@ const requiredPaths = [
   'evidence/output-artifacts/user-learning-operator-override.json',
   'evidence/output-artifacts/user-learning-operator-surface.json',
   'evidence/output-artifacts/local-training-runtime-contract.json',
+  'evidence/output-artifacts/local-training-permission-surface.json',
   'evidence/screenshots/workspace-learning-operator-surface.png',
   'evidence/screenshots/user-learning-operator-surface.png',
+  'evidence/screenshots/local-training-permission-surface.png',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
@@ -311,7 +313,7 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: local-training-runtime-contract-current/);
+assert.match(mlRagDevelopmentPlan, /status: local-training-permission-surface-current/);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
@@ -345,6 +347,7 @@ assert.match(mlRagDevelopmentPlan, /\| R14 Shadow cache lifecycle stress \| 완�
 assert.match(mlRagDevelopmentPlan, /\| R15 Shadow cache process isolation \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| R16 Shadow cache termination recovery and bounded soak \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| F2a Local training runtime contract \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| F2b Local training product permission surface \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| P1 Approved learning RAG feedback \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| L1 승인된 학습 데이터 \| 완료 \|/);
 assert.match(smokeValidationSummary, /# Smoke Validation Summary v1/);

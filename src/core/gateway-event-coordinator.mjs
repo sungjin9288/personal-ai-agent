@@ -8,6 +8,7 @@ export function createGatewayEventCoordinator({ harness, now, store }) {
   function recordGatewayEvent({
     eventType,
     mission,
+    permissionPolicy = {},
     providerId = '',
     route = '',
     session = null,
@@ -20,6 +21,7 @@ export function createGatewayEventCoordinator({ harness, now, store }) {
         eventType,
         id: createId('gatewayevent'),
         mission,
+        permissionPolicy,
         providerId,
         route,
         session,

@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a content-free local-training product permission contract that binds exact fine-tuning readiness, base model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner without starting model training.
+- Connected permission request, approval, read, and revocation to the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and actual local Chromium surface while keeping raw readiness in a private session file.
+- Preserved `actualModelTrainingExecuted: false`, external submission and rollout denial, and the requirement that a future training caller re-read current permission before process spawn.
 - Connected verified local-user override state to the existing learning-promotion action inbox without adding a new action type, store collection, or dependency.
 - Added candidate-tenant-checked HTTP set and clear routes, sanitized mutation responses, user summary counts, audit hash display, and bounded browser controls.
 - Verified local HTTP and actual Chromium not-set→active→expired→cleared lifecycle while keeping external provider calls, model training, hosted tenant validation, multi-user validation, and production claims disabled.

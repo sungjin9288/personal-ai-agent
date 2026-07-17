@@ -1,10 +1,15 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { test } from 'node:test';
 
 import { evaluateAnswerQualitySuite } from '../src/core/answer-quality-evaluation.mjs';
 import { buildApprovedTrainingRecord } from '../src/core/approved-training-record.mjs';
 import { buildFineTuningReadinessPackage } from '../src/core/fine-tuning-readiness.mjs';
+import {
+  buildLocalTrainingPermissionRequest,
+  resolveLocalTrainingPermissionRequest,
+} from '../src/core/local-training-permission.mjs';
 import {
   buildLocalTrainingExecutionApproval,
   createLocalTrainingRuntime,
@@ -17,6 +22,10 @@ import { buildApprovedTrainingRecordFixture } from './helpers/approved-training-
 
 const commandPath = path.resolve('fixtures/local-training-command.mjs');
 const trainerId = 'fixture-local-trainer-v1';
+
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
 
 function buildRecord(missionId, suffix) {
   return buildApprovedTrainingRecord(
@@ -69,6 +78,46 @@ function buildApproval(readinessPackage, overrides = {}) {
     rollbackOwner: 'local-operator',
     trainerId,
     ...overrides,
+  });
+}
+
+function buildExecutionPermission(readinessPackage, overrides = {}) {
+  const request = buildLocalTrainingPermissionRequest({
+    approvalOwner: 'local-operator',
+    baseModelId: 'approved-local-base-model',
+    evidence: {
+      egress: {
+        evidenceSha256: sha256('os-egress-isolation-evidence'),
+        owner: 'security-owner',
+      },
+      license: {
+        evidenceSha256: sha256('base-model-license-review'),
+        owner: 'license-owner',
+      },
+      resource: {
+        evidenceSha256: sha256('resource-envelope-evidence'),
+        limits: {
+          maxCpuThreads: 4,
+          maxDiskBytes: 20_000_000_000,
+          maxMemoryBytes: 8_000_000_000,
+          maxRuntimeMs: 60_000,
+        },
+        owner: 'resource-owner',
+      },
+    },
+    expiresAt: '2026-07-17T02:00:00.000Z',
+    readinessPackage,
+    requestedAt: '2026-07-17T00:50:00.000Z',
+    rollbackOwner: 'local-operator',
+    trainerId,
+    ...overrides,
+  });
+  return resolveLocalTrainingPermissionRequest({
+    decision: 'approve',
+    reason: 'Reviewed bounded local execution evidence.',
+    request,
+    resolvedAt: '2026-07-17T00:55:00.000Z',
+    resolvedBy: 'local-operator',
   });
 }
 
@@ -188,6 +237,41 @@ test('local training runtime rejects result drift and unsupported output fields'
     createRuntime('unsafe-metadata').run({ approval, readinessPackage }),
     /requires content-free candidate artifact metadata/,
   );
+});
+
+test('actual local model training requires product permission and enforces its runtime budget before spawn', async () => {
+  const readinessPackage = buildReadinessPackage();
+  assert.throws(
+    () =>
+      buildApproval(readinessPackage, {
+        executionKind: 'local-model-training',
+      }),
+    /approved product permission/,
+  );
+
+  const permission = buildExecutionPermission(readinessPackage);
+  const approval = buildApproval(readinessPackage, {
+    executionKind: 'local-model-training',
+    permission,
+  });
+  assert.equal(approval.permission.id, permission.id);
+  assert.equal(approval.permission.permissionHash, permission.permissionHash);
+
+  let spawnCalled = false;
+  const runtime = createLocalTrainingRuntime({
+    command: process.execPath,
+    spawnProcess: () => {
+      spawnCalled = true;
+      throw new Error('spawn must not be reached');
+    },
+    timeoutMs: 60_001,
+    trainerId,
+  });
+  await assert.rejects(
+    runtime.run({ approval, readinessPackage }),
+    /resource-limit/,
+  );
+  assert.equal(spawnCalled, false);
 });
 
 test('local training runtime bounds timeout and output without leaking child stderr', async () => {

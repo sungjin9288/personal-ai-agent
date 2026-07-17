@@ -84,7 +84,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-training-runtime-contract-current',
+  'status: local-training-permission-surface-current',
   '| R8 Local relevance reranker evaluation | 완료 |',
   'actualLocalRelevanceRerankerQualityValidated: true',
   'actualLocalRelevanceRerankerQualified: false',

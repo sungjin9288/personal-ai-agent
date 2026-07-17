@@ -7,6 +7,8 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 
+import { createStore } from '../src/core/store.mjs';
+
 const repoDir = process.cwd();
 const serverEntry = path.join(repoDir, 'src', 'web', 'server.mjs');
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-web-tenant-isolation-'));
@@ -171,6 +173,46 @@ try {
   assert.equal(tenantBShowMission.status, 403);
   assert.equal(tenantBShowMission.body.error, 'tenant-forbidden');
 
+  const tenantALocalTrainingApproval = createStore({ rootDir: tempRoot }).saveApproval({
+    createdAt: new Date().toISOString(),
+    decision: null,
+    decisionReason: '',
+    id: 'approval_tenant_a_local_training',
+    kind: 'local_training_execution',
+    metadata: { localTrainingPermission: {} },
+    missionId: tenantAMission.mission.id,
+    reason: 'Tenant-isolation route fixture.',
+    requestedByRole: 'manager',
+    resolvedAt: null,
+    sessionId: 'session_tenant_a_local_training',
+    status: 'pending',
+    title: 'Tenant A local training permission',
+  });
+  const tenantBReadLocalTraining = await fetchJson(
+    `${baseUrl}/api/approvals/${encodeURIComponent(tenantALocalTrainingApproval.id)}/local-training`,
+    {
+      headers: { authorization: `Bearer ${tenantBAdminToken}` },
+    },
+    { expectOk: false },
+  );
+  assert.equal(tenantBReadLocalTraining.status, 403);
+  assert.equal(tenantBReadLocalTraining.body.error, 'tenant-forbidden');
+
+  const tenantBRevokeLocalTraining = await fetchJson(
+    `${baseUrl}/api/approvals/${encodeURIComponent(tenantALocalTrainingApproval.id)}/local-training/revoke`,
+    {
+      body: JSON.stringify({ reason: 'Tenant B must not revoke Tenant A permission.' }),
+      headers: {
+        authorization: `Bearer ${tenantBAdminToken}`,
+        'content-type': 'application/json',
+      },
+      method: 'POST',
+    },
+    { expectOk: false },
+  );
+  assert.equal(tenantBRevokeLocalTraining.status, 403);
+  assert.equal(tenantBRevokeLocalTraining.body.error, 'tenant-forbidden');
+
   console.log(
     JSON.stringify(
       {
@@ -182,6 +224,7 @@ try {
           tenantBListFiltered: true,
           tenantBMissionCreateBlocked: true,
           tenantBShowMissionBlocked: true,
+          tenantBLocalTrainingPermissionBlocked: true,
           tenantHeaderSpoofIgnored: true,
         },
       },

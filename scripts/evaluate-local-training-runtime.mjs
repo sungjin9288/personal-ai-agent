@@ -6,6 +6,10 @@ import path from 'node:path';
 import { evaluateAnswerQualitySuite } from '../src/core/answer-quality-evaluation.mjs';
 import { buildFineTuningReadinessPackage } from '../src/core/fine-tuning-readiness.mjs';
 import {
+  buildLocalTrainingPermissionRequest,
+  resolveLocalTrainingPermissionRequest,
+} from '../src/core/local-training-permission.mjs';
+import {
   buildLocalTrainingExecutionApproval,
   createLocalTrainingRuntime,
   LOCAL_TRAINING_PROTOCOL_VERSION,
@@ -25,6 +29,10 @@ const TRAINER_ID = 'fixture-local-trainer-v1';
 
 function hashRecord(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+function hashValue(value) {
+  return createHash('sha256').update(String(value)).digest('hex');
 }
 
 function readJson(repoDir, relativePath) {
@@ -60,6 +68,45 @@ function buildApproval(readinessPackage, overrides = {}) {
     rollbackOwner: 'local-operator',
     trainerId: TRAINER_ID,
     ...overrides,
+  });
+}
+
+function buildActualTrainingPermission(readinessPackage) {
+  const request = buildLocalTrainingPermissionRequest({
+    approvalOwner: 'local-operator',
+    baseModelId: 'approved-local-base-model',
+    evidence: {
+      egress: {
+        evidenceSha256: hashValue('fixture-egress-evidence'),
+        owner: 'fixture-security-owner',
+      },
+      license: {
+        evidenceSha256: hashValue('fixture-license-evidence'),
+        owner: 'fixture-license-owner',
+      },
+      resource: {
+        evidenceSha256: hashValue('fixture-resource-evidence'),
+        limits: {
+          maxCpuThreads: 4,
+          maxDiskBytes: 20_000_000_000,
+          maxMemoryBytes: 8_000_000_000,
+          maxRuntimeMs: 15 * 60 * 1000,
+        },
+        owner: 'fixture-resource-owner',
+      },
+    },
+    expiresAt: EXPIRES_AT,
+    readinessPackage,
+    requestedAt: '2026-07-17T00:45:00.000Z',
+    rollbackOwner: 'local-operator',
+    trainerId: TRAINER_ID,
+  });
+  return resolveLocalTrainingPermissionRequest({
+    decision: 'approve',
+    reason: 'Fixture-only local training permission review.',
+    request,
+    resolvedAt: '2026-07-17T00:50:00.000Z',
+    resolvedBy: 'local-operator',
   });
 }
 
@@ -99,6 +146,7 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
       records,
     });
     const approval = buildApproval(readinessPackage);
+    const actualTrainingPermission = buildActualTrainingPermission(readinessPackage);
     const runtime = createRuntime(repoDir);
     const run = await runtime.run({ approval, readinessPackage });
 
@@ -113,7 +161,10 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
       ),
       trainerReportMismatchBlocked: await rejectionMatches(
         () => createRuntime(repoDir).run({
-          approval: buildApproval(readinessPackage, { executionKind: 'local-model-training' }),
+          approval: buildApproval(readinessPackage, {
+            executionKind: 'local-model-training',
+            permission: actualTrainingPermission,
+          }),
           readinessPackage,
         }),
         /does not match the approved execution request/,

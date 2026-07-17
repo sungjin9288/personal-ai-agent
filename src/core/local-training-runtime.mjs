@@ -2,6 +2,7 @@ import { spawn as nodeSpawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
 import { assertFineTuningReadinessPackage } from './fine-tuning-readiness.mjs';
+import { assertApprovedLocalTrainingPermission } from './local-training-permission.mjs';
 import {
   containsRawCustomerPayload,
   containsTrainingSecret,
@@ -127,6 +128,7 @@ export function buildLocalTrainingExecutionApproval({
   baseModelId,
   executionKind = 'local-model-training',
   expiresAt,
+  permission,
   readinessPackage,
   rollbackOwner,
   trainerId,
@@ -142,12 +144,27 @@ export function buildLocalTrainingExecutionApproval({
     throw new Error('Local training approval requires a valid future expiration after approval.');
   }
 
+  const normalizedExecutionKind = assertExecutionKind(executionKind);
+  if (normalizedExecutionKind === 'local-model-training') {
+    if (!permission) {
+      throw new Error('Local model training requires approved product permission.');
+    }
+    assertApprovedLocalTrainingPermission({
+      baseModelId,
+      now: normalizedApprovedAt,
+      permission,
+      readinessPackage,
+      rollbackOwner,
+      trainerId,
+    });
+  }
+
   const approval = {
     approvedAt: normalizedApprovedAt,
     approvedBy: requireMetadataText(approvedBy, 'approvedBy'),
     baseModelId: requireMetadataText(baseModelId, 'baseModelId'),
     datasetHash: readinessPackage.dataset.datasetHash,
-    executionKind: assertExecutionKind(executionKind),
+    executionKind: normalizedExecutionKind,
     expiresAt: normalizedExpiresAt,
     exportDigests: {
       train: readinessPackage.exportDigests.train,
@@ -155,6 +172,7 @@ export function buildLocalTrainingExecutionApproval({
     },
     externalSubmissionAuthorized: false,
     localExecutionAuthorized: true,
+    ...(normalizedExecutionKind === 'local-model-training' ? { permission } : {}),
     productionReadyClaim: false,
     readinessHash: readinessPackage.readinessHash,
     rollbackOwner: requireMetadataText(rollbackOwner, 'rollbackOwner'),
@@ -170,7 +188,13 @@ export function buildLocalTrainingExecutionApproval({
   };
 }
 
-function assertLocalTrainingExecutionApproval({ approval, now, readinessPackage, trainerId }) {
+function assertLocalTrainingExecutionApproval({
+  approval,
+  now,
+  readinessPackage,
+  timeoutMs,
+  trainerId,
+}) {
   const { approvalHash, id, ...approvalContent } = approval || {};
   const expectedHash = hashRecord(approvalContent);
   const nowMs = Date.parse(now);
@@ -224,6 +248,25 @@ function assertLocalTrainingExecutionApproval({ approval, now, readinessPackage,
     approval?.rolloutAuthorized !== false ||
     approval?.productionReadyClaim !== false
   ) {
+    errors.push('authority-boundary');
+  }
+  if (approval?.executionKind === 'local-model-training') {
+    try {
+      assertApprovedLocalTrainingPermission({
+        baseModelId: approval.baseModelId,
+        now,
+        permission: approval.permission,
+        readinessPackage,
+        rollbackOwner: approval.rollbackOwner,
+        trainerId,
+      });
+    } catch {
+      errors.push('permission-binding');
+    }
+    if (timeoutMs > Number(approval?.permission?.evidence?.resource?.limits?.maxRuntimeMs || 0)) {
+      errors.push('resource-limit');
+    }
+  } else if (approval?.permission !== undefined) {
     errors.push('authority-boundary');
   }
   if (errors.length > 0) {
@@ -490,6 +533,7 @@ export function createLocalTrainingRuntime({
         approval,
         now: startedAt,
         readinessPackage,
+        timeoutMs: normalizedTimeoutMs,
         trainerId: normalizedTrainerId,
       });
       const payload = buildTrainingPayload({ approval, readinessPackage });

@@ -15,6 +15,10 @@ import { createLearningCandidateAudit } from './learning-candidate-audit.mjs';
 import { createLearningCandidateEmitter } from './learning-candidate-emitter.mjs';
 import { createLearningCandidateRuntimeService } from './learning-candidate-runtime-service.mjs';
 import { createLearningPromotion } from './learning-promotion.mjs';
+import {
+  createLocalTrainingPermissionService,
+  LOCAL_TRAINING_APPROVAL_KIND,
+} from './local-training-permission-service.mjs';
 import { createMissionCatalogService } from './mission-catalog-service.mjs';
 import { createMissionMemoryService } from './mission-memory-service.mjs';
 import { createMissionReadService } from './mission-read-service.mjs';
@@ -33,6 +37,7 @@ function now() {
 export function createMissionService({
   store,
   rootDir = store.rootDir,
+  localTrainingClock = now,
   retrievalRuntime = createRetrievalRuntimeServiceFromEnvironment(),
   userLearningClock = now,
   workspaceLearningClock = now,
@@ -208,9 +213,32 @@ export function createMissionService({
   const {
     getSessionProviderFailureSummary,
     listApprovals,
-    resolveApproval,
+    resolveApproval: resolveMissionApproval,
     runMission,
   } = missionRunService;
+
+  const localTrainingPermissionService = createLocalTrainingPermissionService({
+    getMission,
+    getWorkspace,
+    harness,
+    now: localTrainingClock,
+    recordGatewayEvent,
+    store,
+  });
+  const {
+    getLocalTrainingPermission,
+    requestLocalTrainingPermission,
+    resolveLocalTrainingPermission,
+    revokeLocalTrainingPermission,
+  } = localTrainingPermissionService;
+
+  function resolveApproval(approvalId, input) {
+    const approval = store.getApproval(approvalId);
+    if (approval?.kind === LOCAL_TRAINING_APPROVAL_KIND) {
+      return resolveLocalTrainingPermission(approvalId, input);
+    }
+    return resolveMissionApproval(approvalId, input);
+  }
 
   providerRuntimeService = createProviderRuntimeService({
     getMission,
@@ -412,6 +440,7 @@ export function createMissionService({
     getIdentitySessionAudit,
     getLearningCandidateAudit,
     getLearningPromotionQueue,
+    getLocalTrainingPermission,
     getMaintenanceOverview,
     getOrchestrationProfilesOverview,
     getOwnerHandoffInbox,
@@ -454,11 +483,13 @@ export function createMissionService({
     remindProviderAttention,
     remindLearningPromotionStopConditions,
     remindSpecialistFollowUps,
+    requestLocalTrainingPermission,
     syncEscalations,
     resolveEscalation,
     resolveApproval,
     resolveLearningPromotion,
     rollbackLearningPromotion,
+    revokeLocalTrainingPermission,
     resolveReviewerFollowUp,
     probeProvider,
     remediateProviderAttention,

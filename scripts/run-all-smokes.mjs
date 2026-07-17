@@ -14,6 +14,7 @@ const EXCLUDE_ALWAYS = new Set([
   'smoke:ui-execution-browser-e2e-artifact-restore',
   'smoke:workspace-learning-operator-surface-browser',
   'smoke:user-learning-operator-surface-browser',
+  'smoke:local-training-permission-surface-browser',
   // The sweep runners themselves are smoke:* scripts; never recurse into them.
   'smoke:all',
   'smoke:docs-gates',

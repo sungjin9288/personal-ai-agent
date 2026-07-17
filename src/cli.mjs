@@ -76,6 +76,19 @@ function parsePositiveIntegerOption(args, name) {
   return parsed;
 }
 
+function readJsonFileOption(args, name, { maxBytes = 32 * 1024 * 1024 } = {}) {
+  const filePath = readOption(args, name, '');
+  if (!filePath) {
+    throw new Error(`${name} is required.`);
+  }
+  const resolvedPath = path.resolve(filePath);
+  const stat = fs.statSync(resolvedPath);
+  if (!stat.isFile() || stat.size <= 0 || stat.size > maxBytes) {
+    throw new Error(`${name} must reference a non-empty JSON file within ${maxBytes} bytes.`);
+  }
+  return JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
+}
+
 function parseConstraints(rawValue) {
   return String(rawValue || '')
     .split('|')
@@ -175,6 +188,9 @@ Commands:
   action resolve-escalation <escalationId> [--note <text>]
   approval inbox [--workspace <workspaceId>] [--mission <missionId>]
   approval list [--status <pending|approved|rejected>]
+  approval request-local-training <missionId> --readiness <json-path> --approval-owner <owner> --base-model <modelId> --trainer <trainerId> --expires-at <iso-timestamp> --license-evidence-sha256 <sha256> --license-owner <owner> --egress-evidence-sha256 <sha256> --egress-owner <owner> --resource-evidence-sha256 <sha256> --resource-owner <owner> --max-cpu-threads <n> --max-memory-bytes <n> --max-disk-bytes <n> --max-runtime-ms <n> --rollback-owner <owner>
+  approval show-local-training <approvalId>
+  approval revoke-local-training <approvalId> --reason <text>
   approval resolve <approvalId> --decision <approve|reject> [--reason <text>]
 
   memory list [--scope <user|workspace|mission>] [--workspace <workspaceId>] [--mission <missionId>]
@@ -1286,6 +1302,59 @@ async function main() {
       service.getApprovalInbox({
         missionId: readOption(rest, '--mission', ''),
         workspaceId: readOption(rest, '--workspace', ''),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'approval' && command === 'request-local-training') {
+    const readinessPackage = readJsonFileOption(rest, '--readiness');
+    printJson(
+      service.requestLocalTrainingPermission(rest[0], {
+        approvalOwner: readOption(rest, '--approval-owner'),
+        baseModelId: readOption(rest, '--base-model'),
+        evidence: {
+          egress: {
+            evidenceSha256: readOption(rest, '--egress-evidence-sha256'),
+            owner: readOption(rest, '--egress-owner'),
+          },
+          license: {
+            evidenceSha256: readOption(rest, '--license-evidence-sha256'),
+            owner: readOption(rest, '--license-owner'),
+          },
+          resource: {
+            evidenceSha256: readOption(rest, '--resource-evidence-sha256'),
+            limits: {
+              maxCpuThreads: parsePositiveIntegerOption(rest, '--max-cpu-threads'),
+              maxDiskBytes: parsePositiveIntegerOption(rest, '--max-disk-bytes'),
+              maxMemoryBytes: parsePositiveIntegerOption(rest, '--max-memory-bytes'),
+              maxRuntimeMs: parsePositiveIntegerOption(rest, '--max-runtime-ms'),
+            },
+            owner: readOption(rest, '--resource-owner'),
+          },
+        },
+        expiresAt: readOption(rest, '--expires-at'),
+        readinessPackage,
+        rollbackOwner: readOption(rest, '--rollback-owner'),
+        sourceContext: buildChannelAdapterSourceContext('cli', {
+          command: 'approval request-local-training',
+          route: 'approval.request-local-training',
+        }),
+        trainerId: readOption(rest, '--trainer'),
+      }),
+    );
+    return;
+  }
+
+  if (group === 'approval' && command === 'show-local-training') {
+    printJson(service.getLocalTrainingPermission(rest[0]));
+    return;
+  }
+
+  if (group === 'approval' && command === 'revoke-local-training') {
+    printJson(
+      service.revokeLocalTrainingPermission(rest[0], {
+        reason: readOption(rest, '--reason'),
       }),
     );
     return;

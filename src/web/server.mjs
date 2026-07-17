@@ -2040,6 +2040,22 @@ function evaluateLearningCandidateTenantAccess(candidateId, auth) {
   };
 }
 
+function evaluateApprovalTenantAccess(approvalId, auth) {
+  const approval = store.getApproval(String(approvalId || '').trim());
+  if (!approval) {
+    return {
+      allowed: false,
+      error: 'approval-not-found',
+      reason: `Approval not found: ${approvalId}`,
+      status: 404,
+    };
+  }
+  return {
+    ...evaluateMissionTenantAccess(approval.missionId, auth),
+    approval,
+  };
+}
+
 function sendTenantDenied(response, tenant) {
   sendJson(response, tenant.status || 403, {
     error: tenant.error || 'tenant-forbidden',
@@ -2520,6 +2536,11 @@ async function handleApi(request, response, url) {
 
   registerParamRoute('POST', '/api/approvals/:approvalId/resolve', async (params) => {
     const approvalId = decodePathSegment(params.approvalId);
+    const tenant = evaluateApprovalTenantAccess(approvalId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
     const body = await readJsonBody(request);
     const result = service.resolveApproval(approvalId, {
       decision: String(body.decision || '').trim(),
@@ -2527,6 +2548,33 @@ async function handleApi(request, response, url) {
     });
 
     sendJson(response, 200, result);
+  });
+
+  registerParamRoute('GET', '/api/approvals/:approvalId/local-training', async (params) => {
+    const approvalId = decodePathSegment(params.approvalId);
+    const tenant = evaluateApprovalTenantAccess(approvalId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
+    sendJson(response, 200, service.getLocalTrainingPermission(approvalId));
+  });
+
+  registerParamRoute('POST', '/api/approvals/:approvalId/local-training/revoke', async (params) => {
+    const approvalId = decodePathSegment(params.approvalId);
+    const tenant = evaluateApprovalTenantAccess(approvalId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
+    const body = await readJsonBody(request);
+    sendJson(
+      response,
+      200,
+      service.revokeLocalTrainingPermission(approvalId, {
+        reason: String(body.reason || '').trim(),
+      }),
+    );
   });
 
   registerParamRoute('GET', '/api/artifacts/:artifactId', async (params) => {

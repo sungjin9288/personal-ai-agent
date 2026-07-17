@@ -27,6 +27,14 @@ assert.equal(
   result.scannedFiles.includes('evidence/output-artifacts/local-training-runtime-contract.json'),
   true,
 );
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-training-permission-surface.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/screenshots/local-training-permission-surface.png'),
+  true,
+);
 assert.equal(result.scannedFiles.includes('docs/smoke-validation-summary-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/external-evidence-blockers-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/fork-onboarding-v1.md'), true);

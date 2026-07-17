@@ -1,11 +1,12 @@
 # Smoke Validation Summary v1
 
 - status: smoke-validation-summary-current
-- localDate: 2026-06-23
+- localDate: 2026-07-17
 - productionReadyClaim: false
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
+- lastFullSweep: 199/199 passed with `npm run smoke:all` on 2026-07-17
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -68,6 +69,8 @@ The safe claim is that the local deterministic verification suite passes for the
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
 | Local training runtime contract | `npm run smoke:local-training-runtime` | Verifies exact F1 and expiring approval binding, shell-free local stdio, secret environment filtering, input/output/timeout bounds, strict content-free candidate output, ten failure guards, store invariance, and actualModelTrainingExecuted=false boundary |
+| Local training product permission surface | `npm run smoke:local-training-permission-surface` | Verifies CLI request, action inbox aggregation, approver-only HTTP approval and revocation, tenant isolation, ordered gateway audit, private readiness storage, and actualModelTrainingExecuted=false boundary |
+| Local training permission evidence | `npm run smoke:local-training-permission-evidence` | Verifies the tracked content-free replay hash, actual Chromium screenshot hash, zero browser console errors, and productionReadyClaim=false boundary |
 | Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
 | External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
@@ -126,6 +129,8 @@ npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
 npm run smoke:local-training-runtime
+npm run smoke:local-training-permission-surface
+npm run smoke:local-training-permission-evidence
 npm run smoke:candidate-model-evaluation
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
