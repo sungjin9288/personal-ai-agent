@@ -43,6 +43,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added an approved training record contract that requires reviewer pass, operator approval, promotion verification, mission-scoped artifact lineage, sanitized content checks, and deterministic hashes without authorizing external fine-tuning submission.
 - Added a deterministic training dataset quality gate with content, lineage, and near-response deduplication, mission-scoped train/validation splitting, leakage checks, and content-free manifests without authorizing dataset export or fine-tuning execution.
 - Added a provider-neutral fine-tuning readiness export with train/validation JSONL, Q1 answer-quality baseline binding, reviewer checklist, file digests, and rollback requirements without authorizing provider submission or training execution.
+- Added a hash-bound local training runtime contract with a separate expiring approval, shell-free stdio transport, environment allowlisting, bounded input/output/timeout, content-free candidate artifact records, and deterministic failure guards without executing a model or authorizing rollout.
 - Added a candidate model evaluation gate that compares fixture or recorded results against the same Q1 case set and thresholds, requires bound evidence, keeps rollout disabled, and returns keep-baseline on regression.
 - Added a smoke validation summary and command guard to document the deterministic public-readiness verification baseline without expanding provider, hosted, or production claims.
 - Added an external evidence blocker register and smoke guard to keep account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers explicit.
@@ -62,8 +63,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `3,607,271 bytes`
-- SHA-256: `ed4c0a0293a121ecda27eed757a74c4aab2e0a3e218fe5f972c989746f0e5382`
+- Size: `3,610,353 bytes`
+- SHA-256: `790c418bbdc11ceb0eb9e7acaef0a15567bfe40b54e03cdd7acb354e877d275d`
 
 Included public surfaces:
 

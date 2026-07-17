@@ -190,7 +190,7 @@ assert.ok(timelineSource.includes('noteHash: overrideEvent.noteHash'));
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: user-learning-operator-surface-current',
+  'status: local-training-runtime-contract-current',
   '| P5 Workspace learning operator override | 완료 |',
   'npm run smoke:workspace-learning-operator-override',
   'actualWorkspaceLearningOperatorOverrideValidated: true',

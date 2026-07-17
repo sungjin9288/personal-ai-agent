@@ -23,6 +23,10 @@ assert.equal(result.scannedFiles.includes('docs/architecture-code-walkthrough-v1
 assert.equal(result.scannedFiles.includes('docs/provider-readiness-matrix-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/provider-failure-recovery-demo-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/memory-retrieval-quality-fixture-v1.md'), true);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-training-runtime-contract.json'),
+  true,
+);
 assert.equal(result.scannedFiles.includes('docs/smoke-validation-summary-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/external-evidence-blockers-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/fork-onboarding-v1.md'), true);

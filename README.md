@@ -334,6 +334,7 @@ npm run smoke:user-learning-operator-surface
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
+npm run smoke:local-training-runtime
 npm run smoke:candidate-model-evaluation
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers

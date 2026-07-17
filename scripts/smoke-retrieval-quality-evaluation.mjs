@@ -114,7 +114,7 @@ assert.match(report, /source diversity/);
 assert.match(report, /productionReadyClaim: false/);
 
 for (const term of [
-  'status: user-learning-operator-surface-current',
+  'status: local-training-runtime-contract-current',
   '| R2 Retrieval evaluation | 완료 |',
   '| R3 Optional semantic retrieval | 완료 |',
   '| R4 Reranking | 완료 |',

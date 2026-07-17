@@ -127,6 +127,12 @@
 - bound model digest, R6 qualification evidence, coverage, quality, and latency into a content-free integrity record
 - recorded the semantic-plus-lexical candidate below the lexical baseline and kept lexical rollback, activation denial, and productionReadyClaim false instead of weakening the quality gate
 
+## 2026-07-17 Local Training Runtime Contract
+
+- added a separate expiring local execution approval that binds the exact F1 readiness, dataset and export hashes, trainer id, base model id, operator, and rollback owner
+- added a shell-free child-process protocol with environment allowlisting, bounded input/output/timeout, stderr redaction, strict result fields, and content-free candidate artifact records
+- replayed the contract with the existing local approval dataset fixture and verified ten failure guards, zero store mutation, no external provider calls, no actual model training, and no rollout authority
+
 ## 2026-07-16 Local Embedding Model Qualification
 
 - added a loopback-only Ollama embedding command and tamper-evident qualification gate without downloading models or calling an external provider

@@ -147,6 +147,8 @@
     "smoke:approved-training-record": "node scripts/smoke-approved-training-record.mjs",
     "smoke:training-dataset-quality": "node scripts/smoke-training-dataset-quality.mjs",
     "smoke:fine-tuning-readiness": "node scripts/smoke-fine-tuning-readiness.mjs",
+    "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
+    "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
     "smoke:smoke-validation-summary": "node scripts/smoke-smoke-validation-summary.mjs",
     "smoke:external-evidence-blockers": "node scripts/smoke-external-evidence-blockers.mjs",

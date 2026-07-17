@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG shadow replay, bounded cache operation, feedback quality, workspace personalization, operator controls, local single-user personalization, and user decision conflict revocation
-- Source code modified: yes, content-free local-user latest-revision selection, aligned memory and retrieval filtering, planner selection evidence, and deterministic conflict/revocation replay
-- New feature development: yes, cost-free selected-only local-user decision handling with cross-workspace application and exact rollback fallback
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, and a bounded local training runtime contract
+- Source code modified: yes, exact F1 and expiring approval binding, shell-free local process transport, environment and resource bounds, strict candidate metadata, and content-free run evidence
+- New feature development: yes, cost-free local trainer contract replay with ten failure guards, zero store mutation, no actual model training, and no rollout authority
 
 ## Generated Evidence Files
 
@@ -75,6 +75,7 @@
 - `evidence/output-artifacts/user-learning-conflict-revocation.json`
 - `evidence/output-artifacts/user-learning-operator-override.json`
 - `evidence/output-artifacts/user-learning-operator-surface.json`
+- `evidence/output-artifacts/local-training-runtime-contract.json`
 
 ### Architecture
 
@@ -145,6 +146,7 @@
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`
+- Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`

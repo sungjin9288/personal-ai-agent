@@ -53,6 +53,7 @@
 | Approved training record | 완료 | `src/core/approved-training-record.mjs`, `fixtures/approved-training-record-cases-v1.json` | local approval lifecycle, reviewer·artifact lineage, sanitized example safety, accepted-risk governance, deterministic hashes, and externalSubmissionAuthorized=false verified by `npm run smoke:approved-training-record` |
 | Training dataset quality gate | 완료 | `src/core/training-dataset-quality.mjs`, `fixtures/training-dataset-quality-cases-v1.json` | deterministic deduplication, mission-scope split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false verified by `npm run smoke:training-dataset-quality` |
 | Fine-tuning readiness export | 완료 | `src/core/fine-tuning-readiness.mjs`, `fixtures/fine-tuning-readiness-cases-v1.json` | provider-neutral JSONL, Q1 baseline binding, reviewer checklist, export digest, pending submission requirements, and fineTuningExecutionAuthorized=false verified by `npm run smoke:fine-tuning-readiness` |
+| Local training runtime contract | 완료 | `src/core/local-training-runtime.mjs`, `evidence/output-artifacts/local-training-runtime-contract.json` | exact F1 and expiring approval binding, shell-free local stdio, environment and resource bounds, content-free candidate metadata, ten failure guards, store invariance, actualModelTrainingExecuted=false verified by `npm run smoke:local-training-runtime` |
 | Candidate model evaluation gate | 완료 | `src/core/candidate-model-evaluation.mjs`, `fixtures/candidate-model-evaluation-cases-v1.json` | same-suite non-regression, evidence binding, fixture vs recorded result boundary, keep-baseline rollback, and activationAuthorized=false verified by `npm run smoke:candidate-model-evaluation` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
@@ -62,7 +63,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 3,607,271 bytes, SHA-256 `ed4c0a0293a121ecda27eed757a74c4aab2e0a3e218fe5f972c989746f0e5382` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 3,610,353 bytes, SHA-256 `790c418bbdc11ceb0eb9e7acaef0a15567bfe40b54e03cdd7acb354e877d275d` |
 
 ## 검증 실패 / 보류
 

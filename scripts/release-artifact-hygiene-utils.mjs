@@ -79,6 +79,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/user-learning-conflict-revocation.json',
   'evidence/output-artifacts/user-learning-operator-override.json',
   'evidence/output-artifacts/user-learning-operator-surface.json',
+  'evidence/output-artifacts/local-training-runtime-contract.json',
   'evidence/screenshots/user-learning-operator-surface.png',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',

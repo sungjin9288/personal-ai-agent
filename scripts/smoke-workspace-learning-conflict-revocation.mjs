@@ -208,7 +208,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: user-learning-operator-surface-current',
+  'status: local-training-runtime-contract-current',
   '| P4 Workspace learning conflict and revocation | 완료 |',
   'npm run smoke:workspace-learning-conflict-revocation',
   'actualWorkspaceLearningConflictRevocationValidated: true',

@@ -138,7 +138,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: user-learning-operator-surface-current',
+  'status: local-training-runtime-contract-current',
   '| P2 Multi-scenario learning feedback quality | 완료 |',
   'npm run smoke:approved-learning-feedback-quality',
   'actualApprovedLearningFeedbackQualityValidated: true',

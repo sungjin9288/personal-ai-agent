@@ -130,7 +130,9 @@
 - 완료: reviewer pass·operator approval·promotion verification·artifact lineage를 요구하는 sanitized training record와 content·lineage hash contract
 - 완료: deterministic content·lineage·near-response deduplication, mission-scope train·validation split, leakage 검사와 content-free dataset manifest
 - 완료: provider-neutral train·validation JSONL, Q1 answer-quality baseline, content-free evaluation manifest와 reviewer-pending fine-tuning readiness packet
+- 완료: exact F1 dataset hash와 별도 local approval을 묶고 shell·secret environment를 차단하는 bounded local training runtime contract, content-free candidate artifact record와 10개 failure guard
 - 완료: same-suite fixture candidate의 품질·증적·권한 비교, regression keep-baseline과 rollout-blocked rollback gate
+- 승인 작업: 제품 permission surface, base model license, OS-level egress와 resource limit 승인 후 실제 local model training 검토
 - 외부 작업: provider·model·budget·data transfer·reviewer·rollback owner 승인 후 별도 fine-tuning submission adapter 검토
 - 외부 작업: 실제 trained candidate evidence와 target runtime 결과 확보 후 reviewer 승인 기반 model rollout 검토
 - 외부 작업: 선택된 qwen2.5 3B의 license owner 검토, OS-level egress isolation, 승인된 resource·cold-start·concurrency limit, long-duration soak·thermal telemetry, rollback owner와 provider-input activation 승인
