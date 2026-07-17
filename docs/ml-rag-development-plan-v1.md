@@ -32,6 +32,7 @@
 - actualLocalTrainingToolchainDecisionValidated: true
 - currentLocalTrainingAcquisitionRequestEvidence: `evidence/output-artifacts/local-training-acquisition-request.json`
 - currentLocalTrainingAcquisitionResolutionSurface: `scripts/resolve-local-training-acquisition.mjs`
+- currentLocalTrainingAcquisitionExecutionPlanSurface: `scripts/plan-local-training-acquisition-execution.mjs`
 - actualLocalTrainingAcquisitionApproved: false
 - currentLocalAnswerQualityBaselineEvidence: `evidence/output-artifacts/local-answer-quality-baseline.json`
 - currentLocalAnswerCompositionCandidateEvidence: `evidence/output-artifacts/local-answer-composition-candidate.json`
@@ -725,6 +726,27 @@ npm run smoke:local-training-acquisition-resolution
 
 Approve 결과도 acquisition permission만 뜻한다. Dependency installation, model download, offline resource canary, post-install F2b product permission, actual training, rollout은 별도 단계다. 현재 repository에는 실제 operator decision과 resolution이 없으므로 `actualLocalTrainingAcquisitionApproved: false`, `actualModelTrainingExecuted: false`, `productionReadyClaim: false`를 유지한다.
 
+## 현재 local training acquisition execution plan
+
+F2c.5는 승인된 F2c.4 resolution을 실제 acquisition 전에 검토할 수 있는 일곱 단계 plan으로 고정한다. CLI는 Git이 무시하는 `var/` 아래 또는 repository 밖의 private resolution만 받는다. Resolution의 exact field, approval hash, 만료 시각, 현재 F2c.2 toolchain pin, 현재 F2c.3 request id와 hash가 모두 일치해야 plan을 쓴다.
+
+```bash
+npm run plan:local-training-acquisition-execution -- --resolution var/local-training/acquisition-resolutions/<resolution-id>.json
+npm run smoke:local-training-acquisition-execution-plan
+```
+
+결과는 `var/local-training/acquisition-plans/` 아래 0600 file 하나다. Plan에는 approval id·hash, mutable root, network policy, proposed-not-measured resource envelope와 다음 일곱 action이 원래 순서대로 `pending` 상태로 기록된다.
+
+1. isolated Python environment 생성
+2. pinned trainer package 설치
+3. pinned trainable source 다운로드
+4. package와 model hash 기록
+5. acquisition egress 종료
+6. offline resource canary 실행
+7. post-install product permission 요청
+
+Plan은 실행 권한 토큰이 아니다. Future acquisition runner는 resolution, 현재 request와 toolchain, resource·license·egress owner 승인 상태를 다시 읽어야 한다. Reject, expiry, tampering, stale request, tracked path, symbolic link, duplicate plan은 새 file을 쓰기 전에 실패한다. 현재 실제 resolution이 없으므로 plan도 생성하지 않았고 dependency installation, model download, training, external provider call, rollout을 실행하지 않았다.
+
 ## 현재 candidate model evaluation gate
 
 `src/core/candidate-model-evaluation.mjs`는 candidate 결과를 직접 생성하거나 모델을 호출하지 않는다. F1 readiness packet의 JSONL digest, evaluation manifest hash, Q1 baseline hash, review·rollback 경계를 다시 계산하고, 같은 answer-quality case set과 같은 threshold로 만들어진 candidate evaluation result만 비교한다.
@@ -880,6 +902,7 @@ Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 
 | F2c.2 Local training toolchain decision | 완료 · 승인 대기 | Apple Silicon·Python·uv 환경에 맞춰 pinned MLX-LM LoRA와 Apache-2.0 Qwen2.5-1.5B safetensors source를 acquisition 후보로 선택 | 기술 blocker 0, 설치·다운로드·license·egress·resource canary·rollback·product permission 7개 승인 대기 |
 | F2c.3 Local training acquisition approval contract | 완료 · owner 승인 대기 | F2c.2 decision과 relative mutable root, 5개 owner 역할, 7개 ordered action, proposed-not-measured resource cap을 hash-bound request로 고정 | acquisition·설치·다운로드·학습·외부 제출·rollout 권한 없음; 승인되어도 acquisition만 허용 |
 | F2c.4 Local training acquisition resolution surface | 완료 · 실제 decision 대기 | private decision file, exact owner field, tracked·symlink refusal, current decision 재검증, request당 1회 content-free history 기록 | 실제 operator decision은 tracked하지 않음; approve도 acquisition만 허용하고 설치·다운로드·학습은 실행하지 않음 |
+| F2c.5 Local training acquisition execution plan | 완료 · 실제 승인 대기 | approved private resolution의 exact field·integrity·expiry·current request binding을 재검증하고 7개 action을 pending plan으로 기록 | private 0600 plan은 실행 권한이 아니며 rejection·tampering·stale input은 file 생성 전 차단 |
 | F2c 실제 local model training | 승인 작업 | 실제 license·egress·resource evidence가 owner review를 통과한 환경에서 같은 protocol로 실행 | actual model artifact, independently checked resource evidence, rollback owner와 candidate evaluation evidence 기록 |
 | F2d 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1a Candidate evaluation gate | 완료 | F1 packet과 같은 Q1 suite에서 fixture·recorded candidate result의 품질·증적·권한·rollback 판정 | 회귀 시 keep-baseline, 통과 시 rollout 없이 reviewer 대기 |
@@ -986,6 +1009,8 @@ npm run smoke:local-training-toolchain-decision
 npm run plan:local-training-acquisition
 npm run smoke:local-training-acquisition-request
 npm run smoke:local-training-acquisition-resolution
+npm run plan:local-training-acquisition-execution -- --resolution var/local-training/acquisition-resolutions/<resolution-id>.json
+npm run smoke:local-training-acquisition-execution-plan
 npm run smoke:candidate-model-evaluation
 npm run evaluate:local-answer-quality-baseline -- --endpoint http://127.0.0.1:11510 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-quality-baseline.json
 npm run smoke:local-answer-quality-baseline

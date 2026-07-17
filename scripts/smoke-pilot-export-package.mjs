@@ -344,6 +344,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-environment-pre
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-toolchain-decision/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-acquisition-request/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-acquisition-resolution/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-acquisition-execution-plan/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:candidate-model-evaluation/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-quality-baseline/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-candidate/);
@@ -410,6 +411,10 @@ assert.match(
 assert.match(
   mlRagDevelopmentPlan,
   /\| F2c\.4 Local training acquisition resolution surface \| 완료 · 실제 decision 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F2c\.5 Local training acquisition execution plan \| 완료 · 실제 승인 대기 \|/,
 );
 assert.match(mlRagDevelopmentPlan, /\| P1 Approved learning RAG feedback \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| L1 승인된 학습 데이터 \| 완료 \|/);

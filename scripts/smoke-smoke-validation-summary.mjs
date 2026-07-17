@@ -63,6 +63,7 @@ const expectedCommands = [
   'npm run smoke:local-training-toolchain-decision',
   'npm run smoke:local-training-acquisition-request',
   'npm run smoke:local-training-acquisition-resolution',
+  'npm run smoke:local-training-acquisition-execution-plan',
   'npm run smoke:candidate-model-evaluation',
   'npm run smoke:local-answer-quality-baseline',
   'npm run smoke:local-answer-composition-candidate',

@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, cost-free local training environment preflight, toolchain decision, acquisition request, and private acquisition resolution protocol, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
-- Source code modified: yes, the acquisition resolution CLI accepts an exact private owner decision, revalidates the current F2c.2 and F2c.3 bindings, refuses tracked or symbolic-link input, and records one content-free private resolution per request without changing public answer, permission, or runtime contracts
-- New feature development: yes, the acquisition decision can now be recorded through a fail-closed local surface; no actual owner decision is tracked, and installation, model download, resource canary, product permission, actual model training, external submission, activation, and rollout remain unexecuted or unauthorized
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, cost-free local training environment preflight, toolchain decision, acquisition request, private acquisition resolution, and acquisition execution-plan protocols, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, the acquisition execution-plan CLI accepts only an approved private resolution, revalidates exact fields, integrity, expiration, current F2c.2 and F2c.3 bindings, and writes seven pending actions to a content-free 0600 private plan without changing public answer, permission, or runtime contracts
+- New feature development: yes, an approved acquisition decision can now be converted into a fail-closed review plan without executing it; no actual owner decision is tracked, and installation, model download, resource canary, product permission, actual model training, external submission, activation, and rollout remain unexecuted or unauthorized
 
 ## Generated Evidence Files
 
@@ -115,7 +115,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 213/213 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 214/214 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -168,6 +168,7 @@
 - Local training toolchain decision: verified with `npm run smoke:local-training-toolchain-decision`
 - Local training acquisition request: verified with `npm run smoke:local-training-acquisition-request`
 - Local training acquisition resolution protocol: verified with `npm run smoke:local-training-acquisition-resolution`
+- Local training acquisition execution plan: verified with `npm run smoke:local-training-acquisition-execution-plan`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`
 - Evidence-first answer composition candidate: verified with `npm run smoke:local-answer-composition-candidate`

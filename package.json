@@ -161,6 +161,8 @@
     "smoke:local-training-acquisition-request": "node scripts/smoke-local-training-acquisition-request.mjs",
     "resolve:local-training-acquisition": "node scripts/resolve-local-training-acquisition.mjs",
     "smoke:local-training-acquisition-resolution": "node scripts/smoke-local-training-acquisition-resolution.mjs",
+    "plan:local-training-acquisition-execution": "node scripts/plan-local-training-acquisition-execution.mjs",
+    "smoke:local-training-acquisition-execution-plan": "node scripts/smoke-local-training-acquisition-execution-plan.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
     "evaluate:local-answer-quality-baseline": "node scripts/evaluate-local-answer-quality-baseline.mjs",
     "smoke:local-answer-quality-baseline": "node scripts/smoke-local-answer-quality-baseline.mjs",
