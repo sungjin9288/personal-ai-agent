@@ -77,7 +77,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 114$/m);
+assert.match(manifest, /^- fileCount: 115$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -138,6 +138,7 @@ const requiredPaths = [
   'evidence/output-artifacts/local-training-runtime-contract.json',
   'evidence/output-artifacts/local-training-permission-surface.json',
   'evidence/output-artifacts/local-training-environment-preflight.json',
+  'evidence/output-artifacts/local-training-toolchain-decision.json',
   'evidence/output-artifacts/local-answer-quality-baseline.json',
   'evidence/output-artifacts/local-answer-composition-candidate.json',
   'evidence/output-artifacts/local-answer-composition-robustness.json',
@@ -339,6 +340,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:training-dataset-quality/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-readiness/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-runtime/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-environment-preflight/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-toolchain-decision/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:candidate-model-evaluation/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-quality-baseline/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-candidate/);
@@ -393,6 +395,10 @@ assert.match(mlRagDevelopmentPlan, /\| F2b Local training product permission sur
 assert.match(
   mlRagDevelopmentPlan,
   /\| F2c\.1 Local training environment preflight \| 완료 · 실행 차단 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F2c\.2 Local training toolchain decision \| 완료 · 승인 대기 \|/,
 );
 assert.match(mlRagDevelopmentPlan, /\| P1 Approved learning RAG feedback \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| L1 승인된 학습 데이터 \| 완료 \|/);

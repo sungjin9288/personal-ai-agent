@@ -28,6 +28,8 @@
 - currentLocalTrainingPermissionEvidence: `evidence/output-artifacts/local-training-permission-surface.json`
 - currentLocalTrainingEnvironmentPreflightEvidence: `evidence/output-artifacts/local-training-environment-preflight.json`
 - actualLocalTrainingEnvironmentPreflightValidated: true
+- currentLocalTrainingToolchainDecisionEvidence: `evidence/output-artifacts/local-training-toolchain-decision.json`
+- actualLocalTrainingToolchainDecisionValidated: true
 - currentLocalAnswerQualityBaselineEvidence: `evidence/output-artifacts/local-answer-quality-baseline.json`
 - currentLocalAnswerCompositionCandidateEvidence: `evidence/output-artifacts/local-answer-composition-candidate.json`
 - currentAnswerCompositionRobustnessFixture: `fixtures/answer-composition-robustness-cases-v1.json`
@@ -670,6 +672,18 @@ F2c.1은 실제 학습을 시작하기 전에 현재 로컬 환경이 F1 readine
 
 Tracked evidence는 `evidence/output-artifacts/local-training-environment-preflight.json`이다. 모델 경로, machine identity, 학습 데이터 원문은 저장하지 않는다. 이 단계에서 dependency 설치, 모델 다운로드, 실제 학습, 외부 provider 호출, rollout은 하지 않았으며 `actualModelTrainingExecuted: false`, `trainingAuthorized: false`, `productionReadyClaim: false`를 유지한다.
 
+## 현재 local training toolchain decision
+
+F2c.2는 F2c.1의 미결정 trainer와 trainable source를 설치 가능한 하나의 후보로 좁힌다. 현재 Apple Silicon 환경에는 Python 3.12, `venv`, `uv`가 있지만 `mlx_lm.lora`와 Hugging Face trainable source는 없다. 이 관측은 executable path나 machine identity를 저장하지 않는다.
+
+선택 후보는 `mlx-lm[train]` 0.31.3의 `mlx_lm.lora`와 `Qwen/Qwen2.5-1.5B-Instruct` revision `989aa7980e4cf806f80c7fef2b1adb7bc71aa306`이다. Trainer tag는 commit `ed1fca4cef15a824c5f1702c80f70b4cffc8e4dd`로 고정했다. [MLX-LM 공식 문서](https://github.com/ml-explore/mlx-lm/tree/v0.31.3)는 Apple Silicon fine-tuning을 제공하고, [LoRA 문서](https://github.com/ml-explore/mlx-lm/blob/v0.31.3/mlx_lm/LORA.md)는 Qwen2 family, LoRA·QLoRA와 local chat JSONL을 명시한다. 선택한 [Qwen2.5-1.5B-Instruct revision](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/tree/989aa7980e4cf806f80c7fef2b1adb7bc71aa306)은 safetensors와 Apache-2.0 metadata를 가진다.
+
+이 선택은 현재 설치된 `qwen2.5:3b` GGUF를 trainable source라고 재해석하지 않는다. 기존 3B artifact는 inference baseline으로 유지한다. 새 source와 adapter는 별도 local directory에서 관리하고, acquisition 중에만 승인된 egress를 사용한 뒤 training은 offline으로 실행하는 정책을 선택했다.
+
+기술 선택은 끝났지만 acquisition 권한은 없다. 다음 일곱 항목을 각각 기록해야 한다: `trainer-install-approved`, `source-model-download-approved`, `model-license-owner-review-approved`, `acquisition-egress-window-approved`, `resource-canary-owner-assigned`, `rollback-owner-assigned`, `product-permission-approved-after-install`. 현재 상태는 `candidate-selected-approval-required`이며 `acquisitionAuthorized: false`, `actualDependencyInstallationPerformed: false`, `actualModelDownloadPerformed: false`, `actualModelTrainingExecuted: false`다.
+
+Tracked evidence는 `evidence/output-artifacts/local-training-toolchain-decision.json`이다. 이 packet은 설치나 다운로드 명령을 자동 실행하지 않는다. 승인 후에도 isolated environment 생성, pinned package와 model revision 무결성 기록, offline resource canary, F2b permission 재발급을 순서대로 통과해야 실제 training request를 만들 수 있다.
+
 ## 현재 candidate model evaluation gate
 
 `src/core/candidate-model-evaluation.mjs`는 candidate 결과를 직접 생성하거나 모델을 호출하지 않는다. F1 readiness packet의 JSONL digest, evaluation manifest hash, Q1 baseline hash, review·rollback 경계를 다시 계산하고, 같은 answer-quality case set과 같은 threshold로 만들어진 candidate evaluation result만 비교한다.
@@ -822,6 +836,7 @@ Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 
 | F2a Local training runtime contract | 완료 | exact F1 packet과 별도 local approval을 bounded child process protocol로 연결하고 content-free run record 생성 | 변조·만료·trainer drift·timeout·output 폭주·stderr 노출·unsafe metadata·허위 actual-training 표시 차단, store 불변과 fixture replay 검증 |
 | F2b Local training product permission surface | 완료 | license·OS egress·resource evidence hash와 각 owner, approval·rollback owner를 기존 action inbox·RBAC·tenant·audit에 연결 | CLI·HTTP·Chromium 승인과 철회, private readiness file, content-free evidence, actual training 미실행 검증 |
 | F2c.1 Local training environment preflight | 완료 · 실행 차단 | 실제 local model artifact·manifest·license hash와 system capacity를 content-free snapshot으로 확인하고 trainable source·trainer·permission·독립 review·rollback owner gate 평가 | 7개 blocker를 고정해 `stop-before-local-training`; dependency 설치·실제 학습·외부 호출·rollout 없음 |
+| F2c.2 Local training toolchain decision | 완료 · 승인 대기 | Apple Silicon·Python·uv 환경에 맞춰 pinned MLX-LM LoRA와 Apache-2.0 Qwen2.5-1.5B safetensors source를 acquisition 후보로 선택 | 기술 blocker 0, 설치·다운로드·license·egress·resource canary·rollback·product permission 7개 승인 대기 |
 | F2c 실제 local model training | 승인 작업 | 실제 license·egress·resource evidence가 owner review를 통과한 환경에서 같은 protocol로 실행 | actual model artifact, independently checked resource evidence, rollback owner와 candidate evaluation evidence 기록 |
 | F2d 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1a Candidate evaluation gate | 완료 | F1 packet과 같은 Q1 suite에서 fixture·recorded candidate result의 품질·증적·권한·rollback 판정 | 회귀 시 keep-baseline, 통과 시 rollout 없이 reviewer 대기 |
@@ -923,6 +938,8 @@ npm run smoke:local-training-permission-evidence
 npm run smoke:local-training-permission-surface-browser
 npm run preflight:local-training-environment
 npm run smoke:local-training-environment-preflight
+npm run plan:local-training-toolchain
+npm run smoke:local-training-toolchain-decision
 npm run smoke:candidate-model-evaluation
 npm run evaluate:local-answer-quality-baseline -- --endpoint http://127.0.0.1:11510 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-quality-baseline.json
 npm run smoke:local-answer-quality-baseline

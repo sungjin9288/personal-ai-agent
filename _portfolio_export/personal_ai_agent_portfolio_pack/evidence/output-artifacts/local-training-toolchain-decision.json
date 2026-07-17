@@ -1,0 +1,136 @@
+{
+  "acquisitionAuthorized": false,
+  "actualDependencyInstallationPerformed": false,
+  "actualModelDownloadPerformed": false,
+  "actualModelTrainingExecuted": false,
+  "approvalCheckIds": [
+    "trainer-install-approved",
+    "source-model-download-approved",
+    "model-license-owner-review-approved",
+    "acquisition-egress-window-approved",
+    "resource-canary-owner-assigned",
+    "rollback-owner-assigned",
+    "product-permission-approved-after-install"
+  ],
+  "costBoundary": {
+    "externalProviderCalls": "none",
+    "paidProviderApiRequired": false,
+    "softwareLicenseFeeObserved": false
+  },
+  "decision": "request-explicit-toolchain-acquisition-approval",
+  "environment": {
+    "architecture": "arm64",
+    "platform": "darwin",
+    "python": {
+      "available": true,
+      "version": "3.12.12",
+      "venvAvailable": true
+    },
+    "sourceModelInstalled": false,
+    "trainerInstalled": false,
+    "uv": {
+      "available": true,
+      "version": "0.10.10"
+    }
+  },
+  "externalSubmissionAuthorized": false,
+  "observedAt": "2026-07-17T07:03:19.234Z",
+  "preflight": {
+    "blockerCheckIds": [
+      "trainable-source-model-verified",
+      "trainer-available",
+      "license-review-approved",
+      "network-isolation-approved",
+      "resource-enforcement-approved",
+      "product-permission-approved",
+      "rollback-owner-assigned"
+    ],
+    "id": "local-training-environment-preflight-3ff4f69d3a9e9f742a704bd9168e81973431ed90fea5a0f8be2dd70119cacc35",
+    "preflightHash": "3ff4f69d3a9e9f742a704bd9168e81973431ed90fea5a0f8be2dd70119cacc35",
+    "status": "blocked-before-local-training"
+  },
+  "productionReadyClaim": false,
+  "readyForAcquisitionApprovalRequest": true,
+  "recommendedTrack": {
+    "id": "mlx-lm-lora-qwen2.5-1.5b",
+    "sourceModel": {
+      "artifactFormat": "safetensors",
+      "id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "licenseId": "apache-2.0",
+      "modelFamily": "Qwen2",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+      "sourceUrl": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/tree/989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+    },
+    "trainer": {
+      "command": "mlx_lm.lora",
+      "id": "mlx-lm-lora",
+      "licenseId": "MIT",
+      "packageName": "mlx-lm[train]",
+      "releaseCommit": "ed1fca4cef15a824c5f1702c80f70b4cffc8e4dd",
+      "sourceUrl": "https://github.com/ml-explore/mlx-lm/tree/v0.31.3",
+      "supportedFineTuneTypes": [
+        "lora",
+        "qlora"
+      ],
+      "supportedModelFamilies": [
+        "Qwen2"
+      ],
+      "version": "0.31.3"
+    },
+    "training": {
+      "adapterFormat": "safetensors-adapter",
+      "dataFormat": "chat-jsonl",
+      "fineTuneType": "lora",
+      "networkPolicy": "acquisition-only-then-offline-training"
+    }
+  },
+  "rolloutAuthorized": false,
+  "schemaVersion": "personal-ai-agent-local-training-toolchain-decision/v1",
+  "status": "candidate-selected-approval-required",
+  "technicalBlockerCheckIds": [],
+  "technicalChecks": [
+    {
+      "id": "apple-silicon-environment",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "isolated-python-environment-available",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "pinned-trainer-selected",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "pinned-source-model-selected",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "trainer-supports-source-family",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "trainer-supports-fine-tune-type",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "trainable-source-format-selected",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "offline-training-policy-selected",
+      "passed": true,
+      "status": "passed"
+    }
+  ],
+  "trainingAuthorized": false,
+  "decisionHash": "1508a70c7b4615a1a96b6b359ebcb5c81b46aad22df138318d65f3ec43387b5d",
+  "id": "local-training-toolchain-decision-1508a70c7b4615a1a96b6b359ebcb5c81b46aad22df138318d65f3ec43387b5d"
+}

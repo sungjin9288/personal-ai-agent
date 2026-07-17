@@ -155,6 +155,8 @@
     "smoke:local-training-permission-evidence": "node scripts/smoke-local-training-permission-evidence.mjs",
     "preflight:local-training-environment": "node scripts/evaluate-local-training-environment-preflight.mjs",
     "smoke:local-training-environment-preflight": "node scripts/smoke-local-training-environment-preflight.mjs",
+    "plan:local-training-toolchain": "node scripts/evaluate-local-training-toolchain-decision.mjs",
+    "smoke:local-training-toolchain-decision": "node scripts/smoke-local-training-toolchain-decision.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
     "evaluate:local-answer-quality-baseline": "node scripts/evaluate-local-answer-quality-baseline.mjs",
     "smoke:local-answer-quality-baseline": "node scripts/smoke-local-answer-quality-baseline.mjs",

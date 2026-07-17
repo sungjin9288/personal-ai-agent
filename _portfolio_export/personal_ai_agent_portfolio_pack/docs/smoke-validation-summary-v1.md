@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 210/210 passed with `npm run smoke:all` on 2026-07-17
+- lastFullSweep: 211/211 passed with `npm run smoke:all` on 2026-07-17
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -72,6 +72,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Local training product permission surface | `npm run smoke:local-training-permission-surface` | Verifies CLI request, action inbox aggregation, approver-only HTTP approval and revocation, tenant isolation, ordered gateway audit, private readiness storage, and actualModelTrainingExecuted=false boundary |
 | Local training permission evidence | `npm run smoke:local-training-permission-evidence` | Verifies the tracked content-free replay hash, actual Chromium screenshot hash, zero browser console errors, and productionReadyClaim=false boundary |
 | Local training environment preflight | `npm run smoke:local-training-environment-preflight` | Verifies current local GGUF, manifest, license metadata, F1 readiness, system capacity, supported trainer, product permission, independent review, and rollback-owner checks; enforces the seven current blockers and actualModelTrainingExecuted=false boundary |
+| Local training toolchain decision | `npm run smoke:local-training-toolchain-decision` | Verifies immutable MLX-LM and Qwen source revisions, Apple Silicon·Python·uv prerequisites, LoRA/chat JSONL/offline selection, seven explicit acquisition approvals, and no install, download, training, or rollout boundary |
 | Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
 | Actual local answer-quality baseline | `npm run smoke:local-answer-quality-baseline` | Verifies actual installed qwen2.5:3b Q1 evidence integrity, content-free observations, required-term regression, keep-current decision, and no training or activation authority |
 | Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |
@@ -143,6 +144,7 @@ npm run smoke:local-training-runtime
 npm run smoke:local-training-permission-surface
 npm run smoke:local-training-permission-evidence
 npm run smoke:local-training-environment-preflight
+npm run smoke:local-training-toolchain-decision
 npm run smoke:candidate-model-evaluation
 npm run smoke:local-answer-quality-baseline
 npm run smoke:local-answer-composition-candidate
