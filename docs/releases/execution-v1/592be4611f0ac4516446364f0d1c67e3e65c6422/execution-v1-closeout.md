@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T06:30:08.613Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T06:30:00.814Z
 - branch: codex/q8-actual-user-evaluation-protocol
 - commit: 592be4611f0ac4516446364f0d1c67e3e65c6422
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/592be4611f0ac4516446364f0d1c67e3e65c6422/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

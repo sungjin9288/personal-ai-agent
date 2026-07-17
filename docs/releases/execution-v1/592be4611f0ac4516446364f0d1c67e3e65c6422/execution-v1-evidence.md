@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T06:30:08.613Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T06:30:00.656Z
 - branch: codex/q8-actual-user-evaluation-protocol
 - commit: 592be4611f0ac4516446364f0d1c67e3e65c6422
