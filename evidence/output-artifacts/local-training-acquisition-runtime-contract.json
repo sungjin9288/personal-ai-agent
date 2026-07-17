@@ -1,0 +1,45 @@
+{
+  "claimBoundary": {
+    "actualDependencyInstallationPerformed": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "localTrainingAcquisitionRuntimeContractValidated": true,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "execution": {
+    "adapterReportedDependencyInstallationPerformed": false,
+    "adapterReportedModelDownloadPerformed": false,
+    "approvalHash": "f03f7856e91802c52e6797e31ce8bf262c624a7c9d8674c0c99925ae7892d377",
+    "approvalId": "local-training-acquisition-approval-f03f7856e91802c52e6797e31ce8bf262c624a7c9d8674c0c99925ae7892d377",
+    "protocolVersion": "personal-ai-agent-local-training-acquisition-runtime/v1",
+    "requestHash": "972ca1a5a9d358d0bb23353797eac184f69215c65dfff6b213335e3159b0e59c",
+    "requestId": "local-training-acquisition-request-972ca1a5a9d358d0bb23353797eac184f69215c65dfff6b213335e3159b0e59c",
+    "runHash": "1e47786937b49c9f5a8f578932b299d73fd43ca335c10c26bb06017941bf3ebb",
+    "status": "fixture-validated",
+    "stepCount": 7
+  },
+  "failureGuards": {
+    "actualTrainingClaimBlocked": true,
+    "expiredApprovalBlocked": true,
+    "payloadOwnerExcluded": true,
+    "planTamperingBlocked": true,
+    "resultDriftBlocked": true,
+    "staleRequestBlocked": true,
+    "stepOrderDriftBlocked": true,
+    "unsupportedOutputBlocked": true
+  },
+  "mode": "local-training-acquisition-runtime-contract",
+  "schemaVersion": "personal-ai-agent-local-training-acquisition-runtime-evidence/v1",
+  "security": {
+    "adapterSideEffects": "caller-owned",
+    "inputPolicy": "content-free-metadata-only",
+    "networkIsolation": "caller-owned",
+    "timeoutEnforcement": "adapter-caller-owned"
+  },
+  "evidenceHash": "b3fca1868594f1805f201d4b191f010002d000ab4b6f7e0e6ba788ee01ddc6f7",
+  "id": "local-training-acquisition-runtime-evidence-b3fca1868594f1805f201d4b191f010002d000ab4b6f7e0e6ba788ee01ddc6f7"
+}

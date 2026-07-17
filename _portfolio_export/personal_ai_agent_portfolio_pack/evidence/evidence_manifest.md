@@ -81,6 +81,7 @@
 - `evidence/output-artifacts/local-training-environment-preflight.json`
 - `evidence/output-artifacts/local-training-toolchain-decision.json`
 - `evidence/output-artifacts/local-training-acquisition-request.json`
+- `evidence/output-artifacts/local-training-acquisition-runtime-contract.json`
 - `evidence/output-artifacts/local-answer-quality-baseline.json`
 - `evidence/output-artifacts/local-answer-composition-candidate.json`
 - `evidence/output-artifacts/local-answer-composition-robustness.json`
@@ -115,7 +116,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 214/214 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 215/215 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -169,6 +170,7 @@
 - Local training acquisition request: verified with `npm run smoke:local-training-acquisition-request`
 - Local training acquisition resolution protocol: verified with `npm run smoke:local-training-acquisition-resolution`
 - Local training acquisition execution plan: verified with `npm run smoke:local-training-acquisition-execution-plan`
+- Local training acquisition runtime contract: verified with `npm run smoke:local-training-acquisition-runtime`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`
 - Evidence-first answer composition candidate: verified with `npm run smoke:local-answer-composition-candidate`

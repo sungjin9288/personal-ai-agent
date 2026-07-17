@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a dependency-injected local-training acquisition runtime contract that revalidates the current approval, request, toolchain decision, and exact seven-step plan before delegating to an adapter.
+- Added deterministic fixture evidence for payload minimization, ordered result validation, tamper and expiry refusal, and unsupported-output blocking. Adapter-reported installation or download remains independently unverified; no dependency installation, model download, training, external provider call, rollout, or production claim was performed.
 - Added a private actual-user query evaluation protocol that rejects tracked paths, symlinks, oversized inputs, and stale consent before local model execution.
 - Actual-data runs now bind the Q7 v5 review-action baseline and re-read the dataset and content-free intake before every model call. Fake loopback tests prove protocol execution and mid-run withdrawal only; no actual user data was provided or evaluated, and quality, activation, training, rollout, and production claims remain unchanged.
 - Added a v5 review-action generalization candidate that requires summary-only objectives to retain an evidence-bound owner and trigger when both are present.
@@ -89,8 +91,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,213,686 bytes`
-- SHA-256: `d0611a6f169973934c793960062ad974c9173ac224ef9c65068b005cdc7e75a4`
+- Size: `4,215,976 bytes`
+- SHA-256: `1869bb4ccc26d2d37a3cadea7fa119164deafb4d63788a90aef58d38d378bb42`
 
 Included public surfaces:
 

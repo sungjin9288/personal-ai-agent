@@ -73,6 +73,7 @@
 - evidence/output-artifacts/local-training-environment-preflight.json
 - evidence/output-artifacts/local-training-toolchain-decision.json
 - evidence/output-artifacts/local-training-acquisition-request.json
+- evidence/output-artifacts/local-training-acquisition-runtime-contract.json
 - evidence/output-artifacts/local-answer-quality-baseline.json
 - evidence/output-artifacts/local-answer-composition-candidate.json
 - evidence/output-artifacts/local-answer-composition-robustness.json
