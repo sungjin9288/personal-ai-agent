@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T03:11:30.055Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T03:11:29.089Z
 - localDate: 2026-07-17
 - branch: codex/evidence-first-answer-composition
 - commit: fb0772e775cabced26cea2bd8aae25a5f4387939
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/fb0772e775cabced26cea2bd8aae25a5f4387939](releases/execution-v1/fb0772e775cabced26cea2bd8aae25a5f4387939)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fb0772e775cabced26cea2bd8aae25a5f4387939/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/fb0772e775cabced26cea2bd8aae25a5f4387939/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/fb0772e775cabced26cea2bd8aae25a5f4387939](docs/releases/execution-v1/fb0772e775cabced26cea2bd8aae25a5f4387939)
 - visualArtifactSetSha256: 446d40a1525f95fef538733305836882f69b4eacbe6f11b9751591824c910e3a
 - commitPushStatus: not pushed, origin/codex/evidence-first-answer-composition not found
 

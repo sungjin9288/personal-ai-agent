@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T03:11:30.055Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T03:11:22.376Z
 - branch: codex/evidence-first-answer-composition
 - commit: fb0772e775cabced26cea2bd8aae25a5f4387939
