@@ -635,6 +635,8 @@ export function renderLearningPromotionCommandMeta(item) {
     ['rollback', item.rollbackCommand],
     ['stop-condition', item.stopConditionRejectCommand],
     ['reminder', item.remindCommand],
+    ['user-override-set', item.userLearningSelectionOverrideSetCommand],
+    ['user-override-clear', item.userLearningSelectionOverrideClearCommand],
     ['override-set', item.workspaceLearningSelectionOverrideSetCommand],
     ['override-clear', item.workspaceLearningSelectionOverrideClearCommand],
   ]
@@ -706,6 +708,24 @@ export function renderWorkspaceLearningSelectionOverrideSetButton({ candidateId 
   });
 }
 
+export function renderUserLearningSelectionOverrideSetButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-user-learning-selection-override-set="${escapeHtml(candidateId)}"`,
+    buttonClass: 'secondary-button',
+    candidateId,
+    label: '사용자 선택 고정',
+  });
+}
+
+export function renderUserLearningSelectionOverrideClearButton({ candidateId = '' } = {}) {
+  return renderLearningPromotionActionButton({
+    attributes: `data-user-learning-selection-override-clear="${escapeHtml(candidateId)}"`,
+    buttonClass: 'danger-button',
+    candidateId,
+    label: '사용자 고정 해제',
+  });
+}
+
 export function renderWorkspaceLearningSelectionOverrideClearButton({ candidateId = '' } = {}) {
   return renderLearningPromotionActionButton({
     attributes: `data-workspace-learning-selection-override-clear="${escapeHtml(candidateId)}"`,
@@ -769,6 +789,13 @@ export function renderLearningPromotionActionButtons(item) {
     buttons.push(
       renderLearningPromotionRollbackButton({ candidateId }),
     );
+  }
+
+  if (item.userLearningSelectionOverride) {
+    buttons.push(renderUserLearningSelectionOverrideSetButton({ candidateId }));
+    if (item.userLearningSelectionOverrideClearCommand) {
+      buttons.push(renderUserLearningSelectionOverrideClearButton({ candidateId }));
+    }
   }
 
   if (item.workspaceLearningSelectionOverride) {

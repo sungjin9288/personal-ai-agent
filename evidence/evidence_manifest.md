@@ -42,6 +42,7 @@
 - `evidence/screenshots/operator-surface-provider-readiness.png`
 - `evidence/screenshots/operator-surface-action-inbox.png`
 - `evidence/screenshots/workspace-learning-operator-surface.png`
+- `evidence/screenshots/user-learning-operator-surface.png`
 
 ### Output Artifacts
 
@@ -73,6 +74,7 @@
 - `evidence/output-artifacts/local-user-learning-personalization.json`
 - `evidence/output-artifacts/user-learning-conflict-revocation.json`
 - `evidence/output-artifacts/user-learning-operator-override.json`
+- `evidence/output-artifacts/user-learning-operator-surface.json`
 
 ### Architecture
 
@@ -139,6 +141,7 @@
 - Local user learning personalization: verified with `npm run smoke:local-user-learning-personalization`
 - User learning conflict and revocation: verified with `npm run smoke:user-learning-conflict-revocation`
 - User learning operator override: verified with `npm run smoke:user-learning-operator-override`
+- User learning operator surface: verified with `npm run smoke:user-learning-operator-surface` and local browser replay `npm run smoke:user-learning-operator-surface-browser`
 - Approved training record: verified with `npm run smoke:approved-training-record`
 - Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`

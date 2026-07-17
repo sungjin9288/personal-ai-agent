@@ -84,7 +84,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: user-learning-operator-override-current',
+  'status: user-learning-operator-surface-current',
   '| R8 Local relevance reranker evaluation | 완료 |',
   'actualLocalRelevanceRerankerQualityValidated: true',
   'actualLocalRelevanceRerankerQualified: false',

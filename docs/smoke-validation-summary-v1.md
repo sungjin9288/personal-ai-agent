@@ -63,6 +63,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Local user learning personalization | `npm run smoke:local-user-learning-personalization` | Verifies explicit mission-to-user authorization, tenant-bound refusal, sibling and cross-workspace user decision application, seven distinct local stub sessions, content-free audit lineage, and exact rollback parity |
 | User learning conflict and revocation | `npm run smoke:user-learning-conflict-revocation` | Verifies latest-revision selection from two retrieved local-user decisions, selected-only provider exposure in two workspaces, exact older fallback after newer revocation, full baseline restoration, eight distinct sessions, and content-free evidence |
 | User learning operator override | `npm run smoke:user-learning-operator-override` | Verifies permission-complete tenant-free source promotion, CLI set, service repin and clear, retrieved-only authority, cross-workspace older selection, exact latest fallback after expiry and clear, timeline order, eight distinct sessions, and content-free evidence |
+| User learning operator surface | `npm run smoke:user-learning-operator-surface` | Verifies hash-bound Chromium evidence, content-free user state, candidate-tenant-checked HTTP set and clear routes, sanitized responses, active·expired·cleared UI lifecycle, and productionReadyClaim=false |
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
@@ -119,6 +120,7 @@ npm run smoke:workspace-learning-operator-surface
 npm run smoke:local-user-learning-personalization
 npm run smoke:user-learning-conflict-revocation
 npm run smoke:user-learning-operator-override
+npm run smoke:user-learning-operator-surface
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness

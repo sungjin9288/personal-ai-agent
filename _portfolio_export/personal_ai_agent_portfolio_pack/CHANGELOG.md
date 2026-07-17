@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Connected verified local-user override state to the existing learning-promotion action inbox without adding a new action type, store collection, or dependency.
+- Added candidate-tenant-checked HTTP set and clear routes, sanitized mutation responses, user summary counts, audit hash display, and bounded browser controls.
+- Verified local HTTP and actual Chromium not-set→active→expired→cleared lifecycle while keeping external provider calls, model training, hosted tenant validation, multi-user validation, and production claims disabled.
 - Aligned portfolio case study, project card, interview story, and resume bullets with completed mission/provider/action operator surface browser evidence.
 - Replaced stale future screenshot wording with scoped references to `evidence/screenshots/operator-surface-*.png`, `evidence/output-artifacts/operator-surface-demo-browser-report.json`, and the remaining non-public-demo gaps.
 - Added a recorded walkthrough script and smoke guard so future private/public demo video URLs can be added only after evidence, hygiene, and access checks pass.

@@ -113,7 +113,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: user-learning-operator-override-current',
+  'status: user-learning-operator-surface-current',
   '| R9 Local reranker resource envelope | 완료 |',
   'actualLocalRerankerResourceEnvelopeValidated: true',
   'actualLocalRerankerResourceEnvelopeQualified: false',

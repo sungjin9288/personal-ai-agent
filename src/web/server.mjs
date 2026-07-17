@@ -2346,6 +2346,16 @@ async function handleApi(request, response, url) {
   );
   registerParamRoute(
     'POST',
+    '/api/actions/learning-promotions/:candidateId/user-selection-override',
+    actionHandlers.setUserLearningSelectionOverride,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/user-selection-override/clear',
+    actionHandlers.clearUserLearningSelectionOverride,
+  );
+  registerParamRoute(
+    'POST',
     '/api/actions/learning-promotions/:candidateId/workspace-selection-override',
     actionHandlers.setWorkspaceLearningSelectionOverride,
   );

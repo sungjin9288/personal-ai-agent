@@ -33,6 +33,18 @@ function createFixture({ body = {}, query = {}, tenant } = {}) {
         },
       };
     },
+    clearUserLearningSelectionOverride(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'clearUserLearningSelectionOverride' });
+      return {
+        learningCandidate: { id: candidateId },
+        selectionOverride: {
+          candidateId,
+          clearNote: input.note,
+          clearNoteHash: 'user-clear-note-hash',
+          status: 'cleared',
+        },
+      };
+    },
     expireLearningPromotions(input) {
       state.serviceCalls.push({ input, method: 'expireLearningPromotions' });
       return { expired: true };
@@ -73,6 +85,18 @@ function createFixture({ body = {}, query = {}, tenant } = {}) {
           candidateId,
           note: input.note,
           noteHash: 'note-hash',
+          status: 'active',
+        },
+      };
+    },
+    setUserLearningSelectionOverride(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'setUserLearningSelectionOverride' });
+      return {
+        learningCandidate: { id: candidateId },
+        selectionOverride: {
+          candidateId,
+          note: input.note,
+          noteHash: 'user-note-hash',
           status: 'active',
         },
       };
@@ -376,6 +400,89 @@ test('workspace learning override handlers stop before mutation when candidate t
   assert.deepEqual(fixture.state.candidateTenantChecks, [{
     auth: fixture.auth,
     candidateId: 'candidate/8',
+  }]);
+  assert.deepEqual(fixture.state.serviceCalls, []);
+  assert.deepEqual(fixture.state.jsonResponses, []);
+  assert.deepEqual(fixture.state.deniedTenants, [tenant]);
+});
+
+test('user learning override handlers validate candidate tenant and sanitize notes', async () => {
+  const setOverride = createFixture({
+    body: {
+      expiresAt: ' 2026-07-19T00:00:00.000Z ',
+      note: ' pin reviewed user decision ',
+    },
+  });
+  await setOverride.handlers.setUserLearningSelectionOverride({ candidateId: 'candidate%2F9' });
+
+  const clearOverride = createFixture({ body: { note: ' return to latest user revision ' } });
+  await clearOverride.handlers.clearUserLearningSelectionOverride({ candidateId: 'candidate%2F10' });
+
+  assert.deepEqual(setOverride.state.candidateTenantChecks, [{
+    auth: setOverride.auth,
+    candidateId: 'candidate/9',
+  }]);
+  assert.deepEqual(clearOverride.state.candidateTenantChecks, [{
+    auth: clearOverride.auth,
+    candidateId: 'candidate/10',
+  }]);
+  assert.deepEqual(setOverride.state.serviceCalls, [{
+    candidateId: 'candidate/9',
+    input: {
+      expiresAt: '2026-07-19T00:00:00.000Z',
+      note: 'pin reviewed user decision',
+    },
+    method: 'setUserLearningSelectionOverride',
+  }]);
+  assert.deepEqual(clearOverride.state.serviceCalls, [{
+    candidateId: 'candidate/10',
+    input: { note: 'return to latest user revision' },
+    method: 'clearUserLearningSelectionOverride',
+  }]);
+  assert.deepEqual(setOverride.state.jsonResponses, [{
+    payload: {
+      learningCandidateId: 'candidate/9',
+      selectionOverride: {
+        candidateId: 'candidate/9',
+        noteHash: 'user-note-hash',
+        status: 'active',
+      },
+    },
+    statusCode: 200,
+  }]);
+  assert.deepEqual(clearOverride.state.jsonResponses, [{
+    payload: {
+      learningCandidateId: 'candidate/10',
+      selectionOverride: {
+        candidateId: 'candidate/10',
+        clearNoteHash: 'user-clear-note-hash',
+        status: 'cleared',
+      },
+    },
+    statusCode: 200,
+  }]);
+});
+
+test('user learning override handlers stop before body read and mutation when tenant is denied', async () => {
+  const tenant = {
+    allowed: false,
+    error: 'tenant-forbidden',
+    reason: 'tenant mismatch',
+    status: 403,
+  };
+  const fixture = createFixture({
+    body: {
+      expiresAt: '2026-07-19T00:00:00.000Z',
+      note: 'must not be read or stored',
+    },
+    tenant,
+  });
+
+  await fixture.handlers.setUserLearningSelectionOverride({ candidateId: 'candidate%2F11' });
+
+  assert.deepEqual(fixture.state.candidateTenantChecks, [{
+    auth: fixture.auth,
+    candidateId: 'candidate/11',
   }]);
   assert.deepEqual(fixture.state.serviceCalls, []);
   assert.deepEqual(fixture.state.jsonResponses, []);

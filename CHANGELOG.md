@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Connected verified local-user override state to the existing learning-promotion action inbox without adding a new action type, store collection, or dependency.
+- Added candidate-tenant-checked HTTP set and clear routes, sanitized mutation responses, user summary counts, audit hash display, and bounded browser controls.
+- Verified local HTTP and actual Chromium not-set→active→expired→cleared lifecycle while keeping external provider calls, model training, hosted tenant validation, multi-user validation, and production claims disabled.
 - Aligned portfolio case study, project card, interview story, and resume bullets with completed mission/provider/action operator surface browser evidence.
 - Replaced stale future screenshot wording with scoped references to `evidence/screenshots/operator-surface-*.png`, `evidence/output-artifacts/operator-surface-demo-browser-report.json`, and the remaining non-public-demo gaps.
 - Added a recorded walkthrough script and smoke guard so future private/public demo video URLs can be added only after evidence, hygiene, and access checks pass.
@@ -59,8 +62,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `3,019,712 bytes`
-- SHA-256: `a4beaf8ac17cb36d8e8d9bb206fb4079de5764b193e4d0a9a4279a4a5b438eff`
+- Size: `3,607,271 bytes`
+- SHA-256: `ed4c0a0293a121ecda27eed757a74c4aab2e0a3e218fe5f972c989746f0e5382`
 
 Included public surfaces:
 

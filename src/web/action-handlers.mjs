@@ -9,7 +9,7 @@ export function createActionHandlerFactory({
   service,
 } = {}) {
   return function createActionHandlers({ auth, request, response, url } = {}) {
-    function buildWorkspaceLearningSelectionOverrideResponse(result) {
+    function buildLearningSelectionOverrideResponse(result) {
       const {
         clearNote: _clearNote,
         note: _note,
@@ -146,7 +146,7 @@ export function createActionHandlerFactory({
         expiresAt: String(body.expiresAt || '').trim(),
         note: String(body.note || '').trim(),
       });
-      sendJson(response, 200, buildWorkspaceLearningSelectionOverrideResponse(result));
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
     }
 
     async function clearWorkspaceLearningSelectionOverride(params) {
@@ -158,7 +158,32 @@ export function createActionHandlerFactory({
       const result = service.clearWorkspaceLearningSelectionOverride(candidateId, {
         note: String(body.note || '').trim(),
       });
-      sendJson(response, 200, buildWorkspaceLearningSelectionOverrideResponse(result));
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
+    }
+
+    async function setUserLearningSelectionOverride(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
+      const body = await readJsonBody(request);
+      const result = service.setUserLearningSelectionOverride(candidateId, {
+        expiresAt: String(body.expiresAt || '').trim(),
+        note: String(body.note || '').trim(),
+      });
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
+    }
+
+    async function clearUserLearningSelectionOverride(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
+      const body = await readJsonBody(request);
+      const result = service.clearUserLearningSelectionOverride(candidateId, {
+        note: String(body.note || '').trim(),
+      });
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
     }
 
     async function remediateProviderAttention(params) {
@@ -189,6 +214,7 @@ export function createActionHandlerFactory({
 
     return {
       authorizeLearningPromotionScope,
+      clearUserLearningSelectionOverride,
       clearWorkspaceLearningSelectionOverride,
       expireLearningPromotions,
       getInbox,
@@ -198,6 +224,7 @@ export function createActionHandlerFactory({
       resolveLearningPromotion,
       resolveReviewerFollowUp,
       rollbackLearningPromotion,
+      setUserLearningSelectionOverride,
       setWorkspaceLearningSelectionOverride,
     };
   };

@@ -127,12 +127,49 @@ test('summarizeActionInbox', async (t) => {
     // specialist / drift sub-summaries still present with zero totals
     assert.equal(summary.providerHealthDriftOverdueCount, 0);
     assert.equal(summary.specialistFollowUpOverdueCount, 0);
+    assert.deepEqual(summary.userLearningSelectionOverrideCounts, {
+      active: 0,
+      cleared: 0,
+      eligible: 0,
+      expired: 0,
+      invalid: 0,
+      notSet: 0,
+    });
     assert.deepEqual(summary.workspaceLearningSelectionOverrideCounts, {
       active: 0,
       cleared: 0,
       eligible: 0,
       expired: 0,
       invalid: 0,
+      notSet: 0,
+    });
+  });
+
+  await t.test('summarizes user learning selection override states without reading notes', () => {
+    const summary = summarizeActionInbox([
+      {
+        actionClass: 'monitoring-required',
+        actionType: 'learning-promotion',
+        userLearningSelectionOverride: { status: 'active' },
+      },
+      {
+        actionClass: 'monitoring-required',
+        actionType: 'learning-promotion',
+        userLearningSelectionOverride: { status: 'cleared' },
+      },
+      {
+        actionClass: 'monitoring-required',
+        actionType: 'learning-promotion',
+        userLearningSelectionOverride: { status: 'invalid' },
+      },
+    ]);
+
+    assert.deepEqual(summary.userLearningSelectionOverrideCounts, {
+      active: 1,
+      cleared: 1,
+      eligible: 3,
+      expired: 0,
+      invalid: 1,
       notSet: 0,
     });
   });

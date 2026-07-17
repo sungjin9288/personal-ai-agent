@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 User Learning Operator Surface
+
+- connected P9 user override state to existing learning-promotion action items, summary counts, audit package, HTTP routes, and web controls without adding a new action type, store collection, or dependency
+- preserved RBAC, candidate tenant access before body read, tenant-free source validation, promotion permission evidence, note safety, sanitized response, store-to-artifact ordering, and mission timeline history
+- replayed not-set, active, expired, and cleared through the local HTTP server and actual local Chromium with zero console errors and no external provider calls
+- retained `automaticPreferenceLearningValidated: false`, `hostedTenantUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
 ## 2026-07-17 User Learning Operator Override
 
 - added a bounded local-operator override for verified user-scoped decision promotions while preserving P8 latest-revision as the default and leaving user preferences outside override arbitration

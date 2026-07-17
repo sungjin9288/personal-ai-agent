@@ -481,6 +481,47 @@ test('getLearningPromotionQueue: filters candidates and preserves the operator p
   assert.match(result.items[0].resolveCommand, /resolve-learning-promotion lc-pending/);
 });
 
+test('getLearningPromotionQueue: exposes content-free user override state and commands', () => {
+  const store = createFakeStore([
+    validCandidate({ id: 'lc-promoted', promotionStatus: 'promoted' }),
+  ]);
+  const readModel = {
+    candidateId: 'lc-promoted',
+    current: {
+      expiresAt: '2026-07-20T00:00:00.000Z',
+      id: 'override-1',
+      memoryId: 'memory-1',
+      noteHash: 'a'.repeat(64),
+      setAt: FIXED_NOW,
+      status: 'active',
+    },
+    historyCount: 1,
+    memoryId: 'memory-1',
+    observedAt: FIXED_NOW,
+    scope: 'user',
+    scopeId: 'user',
+    sourceWorkspaceId: 'ws-1',
+    status: 'active',
+  };
+  const { promotion } = makePromotion(store, {
+    getUserLearningSelectionOverrideReadModel: () => readModel,
+    now: () => FIXED_NOW,
+  });
+
+  const result = promotion.getLearningPromotionQueue({ status: 'operator-active' });
+
+  assert.equal(result.items[0].userLearningSelectionOverride, readModel);
+  assert.match(
+    result.items[0].userLearningSelectionOverrideSetCommand,
+    /set-user-learning-selection-override lc-promoted/,
+  );
+  assert.match(
+    result.items[0].userLearningSelectionOverrideClearCommand,
+    /clear-user-learning-selection-override lc-promoted/,
+  );
+  assert.equal(JSON.stringify(result.items[0]).includes('raw note'), false);
+});
+
 test('getLearningPromotionQueue: rejects an unsupported status after scope validation', () => {
   const store = createFakeStore([validCandidate()]);
   const calls = [];

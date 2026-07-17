@@ -150,6 +150,7 @@ export function createLearningPromotion({
   now,
   addMemoryEntry,
   deleteMemory,
+  getUserLearningSelectionOverrideReadModel = () => null,
   getWorkspaceLearningSelectionOverrideReadModel = () => null,
   getMission,
   getWorkspace,
@@ -190,6 +191,16 @@ export function createLearningPromotion({
     const recommendedOwner = isPending || isVerificationBlocked ? 'human-approver' : 'mission-owner';
     const promotionStopReason =
       candidate.promotionStopCondition?.reason || candidate.promotionVerification?.stopReason || null;
+    const userLearningSelectionOverride =
+      getUserLearningSelectionOverrideReadModel(candidate.id);
+    const userLearningSelectionOverrideSetCommand = userLearningSelectionOverride
+      ? `node src/cli.mjs action set-user-learning-selection-override ${candidate.id} --expires-at <iso-timestamp> --note "<note>"`
+      : null;
+    const userLearningSelectionOverrideClearCommand =
+      userLearningSelectionOverride?.current &&
+      userLearningSelectionOverride.current.status !== 'cleared'
+        ? `node src/cli.mjs action clear-user-learning-selection-override ${candidate.id} --note "<note>"`
+        : null;
     const workspaceLearningSelectionOverride =
       getWorkspaceLearningSelectionOverrideReadModel(candidate.id);
     const workspaceLearningSelectionOverrideSetCommand = workspaceLearningSelectionOverride
@@ -295,6 +306,9 @@ export function createLearningPromotion({
           status: candidate.status,
           stopConditionRejectCommand,
           title: candidate.title,
+          userLearningSelectionOverride,
+          userLearningSelectionOverrideClearCommand,
+          userLearningSelectionOverrideSetCommand,
           workspaceId: workspace.id,
           workspaceLearningSelectionOverride,
           workspaceLearningSelectionOverrideClearCommand,

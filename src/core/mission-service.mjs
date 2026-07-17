@@ -305,6 +305,7 @@ export function createMissionService({
     now,
     addMemoryEntry: harness.addMemoryEntry,
     deleteMemory,
+    getUserLearningSelectionOverrideReadModel,
     getWorkspaceLearningSelectionOverrideReadModel,
     getMission,
     getWorkspace,

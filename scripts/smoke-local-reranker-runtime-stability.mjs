@@ -117,7 +117,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: user-learning-operator-override-current',
+  'status: user-learning-operator-surface-current',
   '| R10 Local reranker runtime stability | 완료 |',
   'actualLocalRerankerRuntimeStabilityValidated: true',
   'actualLocalRerankerRuntimeStabilityQualified: false',

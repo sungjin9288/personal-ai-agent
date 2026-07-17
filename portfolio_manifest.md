@@ -66,7 +66,9 @@
 - evidence/output-artifacts/local-user-learning-personalization.json
 - evidence/output-artifacts/user-learning-conflict-revocation.json
 - evidence/output-artifacts/user-learning-operator-override.json
+- evidence/output-artifacts/user-learning-operator-surface.json
 - evidence/screenshots/workspace-learning-operator-surface.png
+- evidence/screenshots/user-learning-operator-surface.png
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함
@@ -95,6 +97,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 3,019,712 bytes
-- 압축 파일 SHA-256: `a4beaf8ac17cb36d8e8d9bb206fb4079de5764b193e4d0a9a4279a4a5b438eff`
+- 압축 파일 크기: 3,607,271 bytes
+- 압축 파일 SHA-256: `ed4c0a0293a121ecda27eed757a74c4aab2e0a3e218fe5f972c989746f0e5382`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료
