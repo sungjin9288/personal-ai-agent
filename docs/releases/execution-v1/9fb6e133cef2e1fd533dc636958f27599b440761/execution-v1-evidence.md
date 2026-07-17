@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T07:10:22.538Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T07:10:14.756Z
 - branch: codex/f2c2-toolchain-decision
 - commit: 9fb6e133cef2e1fd533dc636958f27599b440761
