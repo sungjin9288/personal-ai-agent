@@ -28,7 +28,7 @@
       "status": "passed"
     },
     {
-      "id": "evaluation-only-usage",
+      "id": "local-evaluation-only-usage",
       "passed": true,
       "status": "passed"
     }
@@ -96,7 +96,7 @@
     "secretsScanned": true
   },
   "externalProviderCalls": "none",
-  "observedAt": "2026-07-17T04:18:48.105Z",
+  "observedAt": "2026-07-17T04:46:01.061Z",
   "productionReadyClaim": false,
   "records": [
     {
@@ -238,10 +238,11 @@
     "evaluationAuthorized": true,
     "externalTransferAuthorized": false,
     "fineTuningSubmissionAuthorized": false,
+    "localModelInputAuthorized": true,
     "providerInputAuthorized": false,
     "retentionUntil": "2027-01-17T00:00:00.000Z",
     "trainingAuthorized": false
   },
-  "evidenceHash": "1f3733226bd08f0a668e3160d4f14870a7663aee1d629d225f809c2ed9aa4424",
-  "id": "user-query-evaluation-intake-1f3733226bd08f0a668e3160d4f14870a7663aee1d629d225f809c2ed9aa4424"
+  "evidenceHash": "cad5f2e0f5b73d625390bf46d797a6b40ff268bebf0039fa49e79e3be72c29a8",
+  "id": "user-query-evaluation-intake-cad5f2e0f5b73d625390bf46d797a6b40ff268bebf0039fa49e79e3be72c29a8"
 }

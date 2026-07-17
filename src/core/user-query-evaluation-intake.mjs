@@ -120,6 +120,7 @@ function normalizeUsage(usage = {}, observedAt) {
     usage.fineTuningSubmissionAuthorized !== false ||
     usage.externalTransferAuthorized !== false ||
     usage.providerInputAuthorized !== false ||
+    usage.localModelInputAuthorized !== true ||
     Date.parse(retentionUntil) <= Date.parse(observedAt)
   ) {
     throw new Error('User query evaluation usage boundary is invalid.');
@@ -128,6 +129,7 @@ function normalizeUsage(usage = {}, observedAt) {
     evaluationAuthorized: true,
     externalTransferAuthorized: false,
     fineTuningSubmissionAuthorized: false,
+    localModelInputAuthorized: true,
     providerInputAuthorized: false,
     retentionUntil,
     trainingAuthorized: false,
@@ -235,7 +237,13 @@ export function buildUserQueryEvaluationIntake({ dataset, observedAt } = {}) {
       'consent-boundary-valid',
       actualUserQueryData ? consent.status === 'granted' : consent.status === 'not-applicable-synthetic',
     ),
-    check('evaluation-only-usage', usage.evaluationAuthorized && !usage.trainingAuthorized),
+    check(
+      'local-evaluation-only-usage',
+      usage.evaluationAuthorized &&
+        usage.localModelInputAuthorized &&
+        !usage.trainingAuthorized &&
+        !usage.externalTransferAuthorized,
+    ),
   ];
   const content = {
     actualUserQueryData,

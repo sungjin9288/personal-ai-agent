@@ -23,6 +23,7 @@ assert.equal(evidence.usage.evaluationAuthorized, true);
 assert.equal(evidence.usage.trainingAuthorized, false);
 assert.equal(evidence.usage.fineTuningSubmissionAuthorized, false);
 assert.equal(evidence.usage.externalTransferAuthorized, false);
+assert.equal(evidence.usage.localModelInputAuthorized, true);
 assert.equal(evidence.usage.providerInputAuthorized, false);
 assert.equal(evidence.productionReadyClaim, false);
 assert.equal(evidence.externalProviderCalls, 'none');

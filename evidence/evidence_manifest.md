@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, and synthetic user-query evaluation intake
-- Source code modified: yes, answer generation now uses a model-independent Unicode and multilingual instruction boundary while preserving public answer paths, stored formats, evaluator separation, and activation defaults
-- New feature development: yes, a 14-case pure boundary passed, the same installed qwen2.5:3b retained 10/10 on the Q4 suite after a safe identifier regression was fixed without threshold changes, and a content-free 12-record synthetic intake contract was verified without actual user data, external calls, training, activation, or rollout
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, and content-free local user-query evaluation
+- Source code modified: yes, a fail-closed local evaluation runner now binds consented intake, exact model/runtime/prompt evidence, evaluator-only terms, and content-free failure reporting while preserving public answer paths, stored formats, and activation defaults
+- New feature development: yes, the same installed qwen2.5:3b ran all 12 synthetic Q6 cases with no external call; 11 passed and one `invalid-review-action` failure was retained as a stop condition without changing thresholds, training, activation, or rollout
 
 ## Generated Evidence Files
 
@@ -85,6 +85,7 @@
 - `evidence/output-artifacts/answer-input-boundary-evaluation.json`
 - `evidence/output-artifacts/local-answer-composition-boundary-regression.json`
 - `evidence/output-artifacts/user-query-evaluation-intake.json`
+- `evidence/output-artifacts/local-user-query-quality.json`
 
 ### Architecture
 
@@ -166,6 +167,7 @@
 - Answer input boundary evaluation: verified with `npm run smoke:answer-input-boundary`
 - Answer composition boundary regression: verified with `npm run smoke:local-answer-composition-boundary-regression`
 - User-query evaluation intake dry run: verified with `npm run smoke:user-query-evaluation-intake`
+- Local user-query quality stop condition: verified with `npm run smoke:local-user-query-quality`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

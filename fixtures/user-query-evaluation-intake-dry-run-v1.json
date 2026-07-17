@@ -21,6 +21,7 @@
     "trainingAuthorized": false,
     "fineTuningSubmissionAuthorized": false,
     "externalTransferAuthorized": false,
+    "localModelInputAuthorized": true,
     "providerInputAuthorized": false,
     "retentionUntil": "2027-01-17T00:00:00.000Z"
   },

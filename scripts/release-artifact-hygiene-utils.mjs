@@ -88,6 +88,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/answer-input-boundary-evaluation.json',
   'evidence/output-artifacts/local-answer-composition-boundary-regression.json',
   'evidence/output-artifacts/user-query-evaluation-intake.json',
+  'evidence/output-artifacts/local-user-query-quality.json',
   'evidence/screenshots/user-learning-operator-surface.png',
   'evidence/screenshots/local-training-permission-surface.png',
   'docs/smoke-validation-summary-v1.md',

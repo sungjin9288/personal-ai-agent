@@ -75,7 +75,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 110$/m);
+assert.match(manifest, /^- fileCount: 111$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -141,6 +141,7 @@ const requiredPaths = [
   'evidence/output-artifacts/answer-input-boundary-evaluation.json',
   'evidence/output-artifacts/local-answer-composition-boundary-regression.json',
   'evidence/output-artifacts/user-query-evaluation-intake.json',
+  'evidence/output-artifacts/local-user-query-quality.json',
   'evidence/screenshots/workspace-learning-operator-surface.png',
   'evidence/screenshots/user-learning-operator-surface.png',
   'evidence/screenshots/local-training-permission-surface.png',
@@ -342,6 +343,7 @@ assert.match(mlRagDevelopmentPlan, /\| Q4 Answer composition robustness and hard
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-input-boundary/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-boundary-regression/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:user-query-evaluation-intake/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-user-query-quality/);
 assert.match(mlRagDevelopmentPlan, /\| Q5 Adversarial input boundary and user-query intake \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| Q2 Actual local answer-quality baseline \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-conflict-revocation/);

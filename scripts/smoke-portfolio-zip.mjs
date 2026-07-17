@@ -86,6 +86,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/answer-input-boundary-evaluation.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-composition-boundary-regression.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/user-query-evaluation-intake.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-user-query-quality.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/workspace-learning-operator-surface.png',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/user-learning-operator-surface.png',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/local-training-permission-surface.png',

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Local User-query Quality Stop Condition
+
+- bound the Q5 intake to the exact Q4 model digest, Ollama runtime, v4 prompt, and unchanged answer-quality thresholds before allowing loopback local inference
+- ran 12 synthetic queries across six domains and four languages; 11 passed and one English incident-operations case failed because the model returned a placeholder reviewer action
+- changed the runner to finish all cases and retain only hashes, aggregate metrics, and the bounded `invalid-review-action` taxonomy instead of raw query, evidence, answer, or error text
+- kept `localUserQueryEvaluationValidated`, synthetic and actual user-query quality, current answer-path activation, training, rollout, and production claims false
+
 ## 2026-07-17 Adversarial Input Boundary and User-query Intake
 
 - separated Unicode normalization, format-control removal, split-letter detection, and English·Korean·Japanese·Spanish instruction filtering into a pure boundary with 7 attack cases and 7 exact-preservation controls

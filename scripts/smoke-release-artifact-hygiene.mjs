@@ -60,6 +60,10 @@ assert.equal(
   true,
 );
 assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-user-query-quality.json'),
+  true,
+);
+assert.equal(
   result.scannedFiles.includes('evidence/screenshots/local-training-permission-surface.png'),
   true,
 );

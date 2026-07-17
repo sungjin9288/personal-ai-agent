@@ -345,6 +345,7 @@ npm run smoke:local-answer-composition-hardening
 npm run smoke:answer-input-boundary
 npm run smoke:local-answer-composition-boundary-regression
 npm run smoke:user-query-evaluation-intake
+npm run smoke:local-user-query-quality
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview
@@ -532,6 +533,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Q3 evaluates an evidence-first composition candidate on the same model, retrieval results, case set, and thresholds. It separates summary, source-bound claims, and reviewer action without receiving required terms or golden answers; the controlled case pass rate moved from `0.0` to `1.0` and required-term coverage from `0.6667` to `1.0` with no citation regression (`npm run smoke:local-answer-composition-candidate`). This result is limited to two fixtures, and the current answer path, model training, activation, rollout, and production claims remain unchanged.
 - Q4 extends the same installed model to 10 controlled cases covering Q3 regression, Korean, multiple domains, bounded eight-source context, and objective/evidence prompt injection. The v2 robustness baseline passed `9/10` with one canary match; a v3 deterministic instruction boundary passed `10/10` and reduced forbidden-term matches from `1` to `0` without metric regression (`npm run smoke:local-answer-composition-robustness`, `npm run smoke:local-answer-composition-hardening`). This does not establish general answer quality or broad prompt-injection resistance, and the current answer path, model training, activation, rollout, and production claims remain unchanged.
 - Q5 isolates Unicode, format-control, split-letter, and multilingual instruction handling in a pure 14-case input boundary. The same installed model and Q4 suite passed `10/10` after a real `2.2` safe-text regression was fixed without lowering thresholds (`npm run smoke:answer-input-boundary`, `npm run smoke:local-answer-composition-boundary-regression`). A separate 12-record, six-domain, four-language intake is synthetic only (`npm run smoke:user-query-evaluation-intake`): no actual user queries, broad prompt-injection resistance, training, activation, rollout, or production claim is established.
+- Q6 used that intake with the same installed `qwen2.5:3b`, v4 prompt, loopback runtime, and unchanged all-pass thresholds. The synthetic replay passed `11/12`; one English incident-operations case failed because the model returned a placeholder reviewer action. The runner retained only hashes, aggregate metrics, and `invalid-review-action`, then kept the current answer path unchanged (`npm run smoke:local-user-query-quality`). This is a recorded stop condition, not proof of actual user-query quality.
 
 ## Links
 

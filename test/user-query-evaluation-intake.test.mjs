@@ -21,6 +21,7 @@ test('synthetic user-query intake stays content-free and evaluation-only', () =>
   assert.equal(evidence.actualUserQueryData, false);
   assert.equal(evidence.actualUserQueryQualityValidated, false);
   assert.equal(evidence.records.length, 12);
+  assert.equal(evidence.usage.localModelInputAuthorized, true);
   assert.equal(evidence.usage.trainingAuthorized, false);
   assert.equal(JSON.stringify(evidence).includes('retry guard'), false);
 });
@@ -50,6 +51,13 @@ test('actual user-query intake requires current consent and deidentification pro
   assert.throws(
     () => buildUserQueryEvaluationIntake({ dataset, observedAt }),
     /current evaluation consent/,
+  );
+
+  dataset.consent.status = 'granted';
+  dataset.usage.localModelInputAuthorized = false;
+  assert.throws(
+    () => buildUserQueryEvaluationIntake({ dataset, observedAt }),
+    /usage boundary/,
   );
 });
 

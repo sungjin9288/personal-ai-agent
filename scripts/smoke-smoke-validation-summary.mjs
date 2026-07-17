@@ -67,6 +67,7 @@ const expectedCommands = [
   'npm run smoke:answer-input-boundary',
   'npm run smoke:local-answer-composition-boundary-regression',
   'npm run smoke:user-query-evaluation-intake',
+  'npm run smoke:local-user-query-quality',
   'npm run smoke:smoke-validation-summary',
   'npm run smoke:external-evidence-blockers',
   'npm run smoke:readme-portfolio-overview',
