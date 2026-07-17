@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-17T06:30:22.436Z
+- generatedAt: 2026-07-17T06:52:39.923Z
 - verifiedCommit: 592be4611f0ac4516446364f0d1c67e3e65c6422
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 92faef54bc97a43fb8871b68a86cd3f20838de6f13db5d7b52e482a93ac573ca
-- fileCount: 113
+- bundleSha256: 114451d5aeaf37646123fce385fcead2f404caf78408dec3bd263d1fac1fca54
+- fileCount: 114
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 46882 | `194457601678a5b6ea9544ccfbc5a960f5b00e705594d83033b1215fb896356d` |
-| `CHANGELOG.md` | 17885 | `0fc478d92e3071f2f693f92ae1c8fe69f35e23e5f7468a8f91a9560a618a15d5` |
+| `README.md` | 47419 | `7e27be044592af375ee9a4ca9ef6ef73cbab8dbc369b9ef18104242b6e69e791` |
+| `CHANGELOG.md` | 18340 | `9ad1a4c43b95345efc36cee461fd565a8b38eeea18ed1c77d2a7f2b6a2106611` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -84,9 +84,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
 | `docs/memory-retrieval-quality-fixture-v1.md` | 16894 | `6efd3afdeb52bfc563dc5cb1ce66c310813fbde3187cd1f559e7bf6d561eaeaf` |
-| `docs/ml-rag-development-plan-v1.md` | 131503 | `dd00a8f4d79daa1cc3e7328b3e90586c2fe47f4b7b7905ffb31e19d5a60a3148` |
+| `docs/ml-rag-development-plan-v1.md` | 134058 | `1a29a3aa767d36ec3e4006d8119fd5c605497c791b2bfd80c753e7c8115903e6` |
 | `docs/actual-user-query-evaluation-v1.md` | 6786 | `60b3bb9e3a41c24a2f2fbc3d576f1763a84c54c526984bf02df2d0167568697c` |
-| `docs/smoke-validation-summary-v1.md` | 20416 | `94f76ca776d818644e16b315baf04a8ee949e7455deb0133e6c01bcc9c55e03d` |
+| `docs/smoke-validation-summary-v1.md` | 20822 | `4caf9b1bc0fe10718a9a08e9cff7727354e5aaf95c52869263bf6ee3048bfb62` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
@@ -113,6 +113,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `evidence/output-artifacts/user-learning-operator-surface.json` | 1411 | `eb39a23b569a984d1569d5fdc21ac85397a1b2d327eb31af107966b79ef429b7` |
 | `evidence/output-artifacts/local-training-runtime-contract.json` | 2526 | `575a0bc6f28b49488da740b5cdf6d15ec26b70183dd6fc536d8ce239c983609c` |
 | `evidence/output-artifacts/local-training-permission-surface.json` | 1401 | `e2c0acf8053c02054bec15615b3bff68ac9b291c9f36b5a58ea22f34d2962905` |
+| `evidence/output-artifacts/local-training-environment-preflight.json` | 4379 | `1d961f011145230f82b158f286b3b24424f21c94a324b4270560cac09cd47c3c` |
 | `evidence/output-artifacts/local-answer-quality-baseline.json` | 13952 | `34da61aa5715e235883aa6c10dff48c54acb905beb2d8704425e5dd091e23d2e` |
 | `evidence/output-artifacts/local-answer-composition-candidate.json` | 28268 | `1cb388d694e7a96bc2993a04a59903dd32cf15fe0e31cc2383fbb3b517927e1c` |
 | `evidence/output-artifacts/local-answer-composition-robustness.json` | 49779 | `1324d8267b75e40ccb950b458845929e1a55e40edc24ce9f5bf96c53faf662a8` |

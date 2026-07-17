@@ -59,6 +59,7 @@ const expectedCommands = [
   'npm run smoke:local-training-runtime',
   'npm run smoke:local-training-permission-surface',
   'npm run smoke:local-training-permission-evidence',
+  'npm run smoke:local-training-environment-preflight',
   'npm run smoke:candidate-model-evaluation',
   'npm run smoke:local-answer-quality-baseline',
   'npm run smoke:local-answer-composition-candidate',

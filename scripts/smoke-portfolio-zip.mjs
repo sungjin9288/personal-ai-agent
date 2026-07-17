@@ -80,6 +80,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/user-learning-operator-surface.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-runtime-contract.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-permission-surface.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-environment-preflight.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-quality-baseline.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-composition-candidate.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-composition-robustness.json',

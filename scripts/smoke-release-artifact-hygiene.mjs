@@ -33,6 +33,12 @@ assert.equal(
   true,
 );
 assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-environment-preflight.json',
+  ),
+  true,
+);
+assert.equal(
   result.scannedFiles.includes('evidence/output-artifacts/local-answer-quality-baseline.json'),
   true,
 );

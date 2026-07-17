@@ -1,0 +1,160 @@
+{
+  "actualModelTrainingExecuted": false,
+  "baseModel": {
+    "artifactDigest": "5ee4f07cdb9beadbbb293e85803c569b01bd37ed059d2715faa7bb405f31caa6",
+    "artifactFormat": "gguf",
+    "artifactHashVerified": true,
+    "artifactSizeBytes": 1929903008,
+    "id": "qwen2.5:3b",
+    "installed": true,
+    "license": {
+      "hashVerified": true,
+      "textHash": "b5c0e5cf74cf51af1ecbc4af597cfcd13fd9925611838884a681070838a14a50",
+      "title": "Qwen RESEARCH LICENSE AGREEMENT"
+    },
+    "manifestHash": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "source": "ollama-local-cache",
+    "trainableSourceVerified": false
+  },
+  "blockerCheckIds": [
+    "trainable-source-model-verified",
+    "trainer-available",
+    "license-review-approved",
+    "network-isolation-approved",
+    "resource-enforcement-approved",
+    "product-permission-approved",
+    "rollback-owner-assigned"
+  ],
+  "checks": [
+    {
+      "id": "f1-readiness-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "base-model-artifact-integrity",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "trainable-source-model-verified",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "trainer-available",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "license-evidence-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "resource-capacity-observed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "license-review-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "network-isolation-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "resource-enforcement-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "product-permission-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "rollback-owner-assigned",
+      "passed": false,
+      "status": "failed"
+    }
+  ],
+  "costFree": true,
+  "decision": "stop-before-local-training",
+  "externalProviderCalls": "none",
+  "externalSubmissionAuthorized": false,
+  "governance": {
+    "licenseReview": {
+      "approved": false,
+      "evidenceSha256": null,
+      "reviewedAt": null,
+      "reviewedBy": null
+    },
+    "networkIsolationReview": {
+      "approved": false,
+      "evidenceSha256": null,
+      "reviewedAt": null,
+      "reviewedBy": null
+    },
+    "permission": {
+      "approved": false,
+      "egressEvidenceSha256": null,
+      "expiresAt": null,
+      "id": null,
+      "licenseEvidenceSha256": null,
+      "permissionHash": null,
+      "resourceEvidenceSha256": null,
+      "rollbackOwner": null,
+      "trainerId": null
+    },
+    "resourceEnforcementReview": {
+      "approved": false,
+      "evidenceSha256": null,
+      "reviewedAt": null,
+      "reviewedBy": null
+    }
+  },
+  "machineIdentityStored": false,
+  "observedAt": "2026-07-17T06:40:44.916Z",
+  "productionReadyClaim": false,
+  "readiness": {
+    "datasetHash": "8d24cc178841bc0e7f195084f1c546ae4df6229744a9e8e48b9e7bd817eb420f",
+    "readinessHash": "3cb2f3f09cedf0f8508d7f5753a8339d6a53f007a6fd5598f38cc46e80b8e5b5",
+    "trainLineCount": 3,
+    "trainSha256": "49499de9562ebf426dc93a600935ae41c861449b7297c50d676bdd4680ea99c2",
+    "validationLineCount": 1,
+    "validationSha256": "40aa6e1434fbadf3e0724f24764b6304524162eda1ebe2146ea59a74426c5471"
+  },
+  "readyForExplicitTrainingRequest": false,
+  "rolloutAuthorized": false,
+  "schemaVersion": "personal-ai-agent-local-training-environment-preflight/v1",
+  "status": "blocked-before-local-training",
+  "system": {
+    "architecture": "arm64",
+    "availableDiskBytes": 468731523072,
+    "platform": "darwin",
+    "platformVersion": "25.5.0",
+    "totalMemoryBytes": 25769803776
+  },
+  "trainer": {
+    "candidates": [
+      {
+        "available": false,
+        "command": "llama-finetune",
+        "id": "llama-cpp-finetune"
+      },
+      {
+        "available": false,
+        "command": "mlx_lm.lora",
+        "id": "mlx-lm-lora"
+      }
+    ],
+    "selectedCandidateId": null
+  },
+  "trainingAuthorized": false,
+  "id": "local-training-environment-preflight-3ff4f69d3a9e9f742a704bd9168e81973431ed90fea5a0f8be2dd70119cacc35",
+  "preflightHash": "3ff4f69d3a9e9f742a704bd9168e81973431ed90fea5a0f8be2dd70119cacc35"
+}

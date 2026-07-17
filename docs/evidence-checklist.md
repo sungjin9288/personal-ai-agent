@@ -54,6 +54,7 @@
 | Training dataset quality gate | 완료 | `src/core/training-dataset-quality.mjs`, `fixtures/training-dataset-quality-cases-v1.json` | deterministic deduplication, mission-scope split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false verified by `npm run smoke:training-dataset-quality` |
 | Fine-tuning readiness export | 완료 | `src/core/fine-tuning-readiness.mjs`, `fixtures/fine-tuning-readiness-cases-v1.json` | provider-neutral JSONL, Q1 baseline binding, reviewer checklist, export digest, pending submission requirements, and fineTuningExecutionAuthorized=false verified by `npm run smoke:fine-tuning-readiness` |
 | Local training runtime contract | 완료 | `src/core/local-training-runtime.mjs`, `evidence/output-artifacts/local-training-runtime-contract.json` | exact F1 and expiring approval binding, shell-free local stdio, environment and resource bounds, content-free candidate metadata, ten failure guards, store invariance, actualModelTrainingExecuted=false verified by `npm run smoke:local-training-runtime` |
+| Local training environment preflight | 완료 · 실행 차단 | `src/core/local-training-environment-preflight.mjs`, `evidence/output-artifacts/local-training-environment-preflight.json` | actual local model artifact·manifest·license hash and system capacity observed; trainable source, supported trainer, independent reviews, product permission, and rollback owner remain blocked; no dependency install or actual training, verified by `npm run smoke:local-training-environment-preflight` |
 | Candidate model evaluation gate | 완료 | `src/core/candidate-model-evaluation.mjs`, `fixtures/candidate-model-evaluation-cases-v1.json` | same-suite non-regression, evidence binding, fixture vs recorded result boundary, keep-baseline rollback, and activationAuthorized=false verified by `npm run smoke:candidate-model-evaluation` |
 | Actual local answer-quality baseline | 완료 | `evidence/output-artifacts/local-answer-quality-baseline.json`, `src/core/ollama-answer-generator.mjs` | installed qwen2.5:3b Q1 generation, content-free integrity, citation success, required-term regression, keep-current decision, and no training or activation authority verified by `npm run smoke:local-answer-quality-baseline` |
 | Evidence-first answer composition candidate | 완료 | `evidence/output-artifacts/local-answer-composition-candidate.json`, `src/core/local-answer-composition-candidate.mjs` | same-model source-complete claims, reviewer action, Q1 case pass 0.0→1.0, required-term coverage 0.6667→1.0, content-free baseline binding, and blocked activation verified by `npm run smoke:local-answer-composition-candidate` |
@@ -73,7 +74,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,201,686 bytes, SHA-256 `d8c64e5f3b94cdbf8aa33a47ba490fc3bb4391e0c121b9fe04467f09ac3ad101` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,204,914 bytes, SHA-256 `0c3c8513e64d97b2052d93778e9a95024c81b2cd3c140e8c0e0cfa9a7dfb2f05` |
 
 ## 검증 실패 / 보류
 

@@ -26,6 +26,8 @@
 - currentUserOperatorSurfaceEvidence: `evidence/output-artifacts/user-learning-operator-surface.json`
 - currentLocalTrainingRuntimeEvidence: `evidence/output-artifacts/local-training-runtime-contract.json`
 - currentLocalTrainingPermissionEvidence: `evidence/output-artifacts/local-training-permission-surface.json`
+- currentLocalTrainingEnvironmentPreflightEvidence: `evidence/output-artifacts/local-training-environment-preflight.json`
+- actualLocalTrainingEnvironmentPreflightValidated: true
 - currentLocalAnswerQualityBaselineEvidence: `evidence/output-artifacts/local-answer-quality-baseline.json`
 - currentLocalAnswerCompositionCandidateEvidence: `evidence/output-artifacts/local-answer-composition-candidate.json`
 - currentAnswerCompositionRobustnessFixture: `fixtures/answer-composition-robustness-cases-v1.json`
@@ -658,6 +660,16 @@ Tracked evidence는 `evidence/output-artifacts/local-training-permission-surface
 
 승인 시 만들어지는 execution approval은 offline 실행 권한 토큰이 아니다. 후속 actual trainer caller는 process spawn 직전에 이 제품 permission을 다시 조회해 만료와 철회 여부를 확인해야 한다. 이미 반환된 execution approval만 보관한 채 실행하는 경로는 허용하지 않는다.
 
+## 현재 local training environment preflight
+
+F2c.1은 실제 학습을 시작하기 전에 현재 로컬 환경이 F1 readiness와 F2b permission을 안전하게 이어받을 수 있는지 확인한다. `npm run preflight:local-training-environment`는 네트워크를 사용하지 않고 설치된 `qwen2.5:3b` Ollama manifest, GGUF artifact, license text의 SHA-256을 다시 계산한다. 추론용 GGUF artifact와 학습 가능한 source model은 같은 것으로 취급하지 않는다.
+
+현재 증적에서는 GGUF artifact와 `Qwen RESEARCH LICENSE AGREEMENT` metadata의 무결성은 확인됐지만 trainable source model은 확인되지 않았다. 지원 대상으로 점검한 `llama-finetune`과 `mlx_lm.lora` trainer도 현재 실행 환경에 없다. 시스템 architecture, memory, available disk는 content-free metadata로 관측했지만 실제 resource enforcement가 적용됐다고 주장하지 않는다.
+
+학습 요청이 가능해지려면 현재 F1 hash와 정확히 결합된 F2b product permission, 독립적인 license·OS egress·resource review, 사용 가능한 trainer, trainable source model, rollback owner가 모두 필요하다. 현재 blocker는 `trainable-source-model-verified`, `trainer-available`, `license-review-approved`, `network-isolation-approved`, `resource-enforcement-approved`, `product-permission-approved`, `rollback-owner-assigned`다. 하나라도 없으면 `stop-before-local-training`으로 끝난다.
+
+Tracked evidence는 `evidence/output-artifacts/local-training-environment-preflight.json`이다. 모델 경로, machine identity, 학습 데이터 원문은 저장하지 않는다. 이 단계에서 dependency 설치, 모델 다운로드, 실제 학습, 외부 provider 호출, rollout은 하지 않았으며 `actualModelTrainingExecuted: false`, `trainingAuthorized: false`, `productionReadyClaim: false`를 유지한다.
+
 ## 현재 candidate model evaluation gate
 
 `src/core/candidate-model-evaluation.mjs`는 candidate 결과를 직접 생성하거나 모델을 호출하지 않는다. F1 readiness packet의 JSONL digest, evaluation manifest hash, Q1 baseline hash, review·rollback 경계를 다시 계산하고, 같은 answer-quality case set과 같은 threshold로 만들어진 candidate evaluation result만 비교한다.
@@ -809,6 +821,7 @@ Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 
 | F1 Fine-tuning readiness | 완료 | provider-neutral JSONL export, Q1 baseline summary, content-free evaluation manifest 생성 | 학습 실행 없이 dataset과 baseline을 reviewer가 검토 가능 |
 | F2a Local training runtime contract | 완료 | exact F1 packet과 별도 local approval을 bounded child process protocol로 연결하고 content-free run record 생성 | 변조·만료·trainer drift·timeout·output 폭주·stderr 노출·unsafe metadata·허위 actual-training 표시 차단, store 불변과 fixture replay 검증 |
 | F2b Local training product permission surface | 완료 | license·OS egress·resource evidence hash와 각 owner, approval·rollback owner를 기존 action inbox·RBAC·tenant·audit에 연결 | CLI·HTTP·Chromium 승인과 철회, private readiness file, content-free evidence, actual training 미실행 검증 |
+| F2c.1 Local training environment preflight | 완료 · 실행 차단 | 실제 local model artifact·manifest·license hash와 system capacity를 content-free snapshot으로 확인하고 trainable source·trainer·permission·독립 review·rollback owner gate 평가 | 7개 blocker를 고정해 `stop-before-local-training`; dependency 설치·실제 학습·외부 호출·rollout 없음 |
 | F2c 실제 local model training | 승인 작업 | 실제 license·egress·resource evidence가 owner review를 통과한 환경에서 같은 protocol로 실행 | actual model artifact, independently checked resource evidence, rollback owner와 candidate evaluation evidence 기록 |
 | F2d 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1a Candidate evaluation gate | 완료 | F1 packet과 같은 Q1 suite에서 fixture·recorded candidate result의 품질·증적·권한·rollback 판정 | 회귀 시 keep-baseline, 통과 시 rollout 없이 reviewer 대기 |
@@ -908,6 +921,8 @@ npm run smoke:local-training-runtime
 npm run smoke:local-training-permission-surface
 npm run smoke:local-training-permission-evidence
 npm run smoke:local-training-permission-surface-browser
+npm run preflight:local-training-environment
+npm run smoke:local-training-environment-preflight
 npm run smoke:candidate-model-evaluation
 npm run evaluate:local-answer-quality-baseline -- --endpoint http://127.0.0.1:11510 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-quality-baseline.json
 npm run smoke:local-answer-quality-baseline

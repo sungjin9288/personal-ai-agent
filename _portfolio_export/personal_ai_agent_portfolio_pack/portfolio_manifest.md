@@ -70,6 +70,7 @@
 - evidence/output-artifacts/user-learning-operator-surface.json
 - evidence/output-artifacts/local-training-runtime-contract.json
 - evidence/output-artifacts/local-training-permission-surface.json
+- evidence/output-artifacts/local-training-environment-preflight.json
 - evidence/output-artifacts/local-answer-quality-baseline.json
 - evidence/output-artifacts/local-answer-composition-candidate.json
 - evidence/output-artifacts/local-answer-composition-robustness.json

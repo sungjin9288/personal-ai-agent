@@ -23,6 +23,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Evaluated the already-installed `qwen2.5:3b` against both Q1 cases without model download, trainer installation, external provider calls, or training; retrieval and citation gates passed, but required-term coverage was `0.6667` in both cases.
 - Recorded the actual regression as `keep-current-answer-path` without lowering thresholds, authorizing activation, or changing the existing answer path.
 - Added a content-free local-training product permission contract that binds exact fine-tuning readiness, base model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner without starting model training.
+- Added a cost-free local-training environment preflight that verifies the installed model artifact, manifest, license metadata, F1 readiness binding, system capacity, trainer availability, and F2b governance prerequisites before any process can request training. The current evidence stops before training because the trainable source model, supported trainer, independent environment reviews, approved product permission, and rollback owner are absent.
 - Connected permission request, approval, read, and revocation to the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and actual local Chromium surface while keeping raw readiness in a private session file.
 - Preserved `actualModelTrainingExecuted: false`, external submission and rollout denial, and the requirement that a future training caller re-read current permission before process spawn.
 - Connected verified local-user override state to the existing learning-promotion action inbox without adding a new action type, store collection, or dependency.
@@ -84,8 +85,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,201,686 bytes`
-- SHA-256: `d8c64e5f3b94cdbf8aa33a47ba490fc3bb4391e0c121b9fe04467f09ac3ad101`
+- Size: `4,204,914 bytes`
+- SHA-256: `0c3c8513e64d97b2052d93778e9a95024c81b2cd3c140e8c0e0cfa9a7dfb2f05`
 
 Included public surfaces:
 

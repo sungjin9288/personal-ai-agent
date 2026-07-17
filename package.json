@@ -153,6 +153,8 @@
     "smoke:local-training-permission-surface-browser": "node scripts/smoke-local-training-permission-surface-browser.mjs",
     "build:local-training-permission-surface-evidence": "node scripts/build-local-training-permission-surface-evidence.mjs",
     "smoke:local-training-permission-evidence": "node scripts/smoke-local-training-permission-evidence.mjs",
+    "preflight:local-training-environment": "node scripts/evaluate-local-training-environment-preflight.mjs",
+    "smoke:local-training-environment-preflight": "node scripts/smoke-local-training-environment-preflight.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
     "evaluate:local-answer-quality-baseline": "node scripts/evaluate-local-answer-quality-baseline.mjs",
     "smoke:local-answer-quality-baseline": "node scripts/smoke-local-answer-quality-baseline.mjs",

@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
-- Source code modified: yes, actual-data intake now rejects tracked and unsafe paths, selects the exact Q7 v5 baseline, and rechecks consent before every model call while preserving synthetic evaluation, public answer paths, stored formats, and activation defaults
-- New feature development: yes, the actual-user evaluation protocol and mid-run withdrawal boundary are verified with a fake loopback runtime; no actual user dataset was provided or evaluated, and actual-user quality, training, activation, and rollout remain unproven or disabled
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, cost-free local training environment preflight, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, the local training preflight now binds the exact F1 readiness package to actual local model artifact, manifest, license, system, trainer, permission, independent review, and rollback-owner checks without changing public answer or permission contracts
+- New feature development: yes, the current environment is recorded as `stop-before-local-training`; model integrity is confirmed, while trainable source, supported trainer, approved permission, independent environment reviews, and rollback owner remain absent. No dependency installation, actual model training, activation, or rollout was performed
 
 ## Generated Evidence Files
 
@@ -78,6 +78,7 @@
 - `evidence/output-artifacts/user-learning-operator-surface.json`
 - `evidence/output-artifacts/local-training-runtime-contract.json`
 - `evidence/output-artifacts/local-training-permission-surface.json`
+- `evidence/output-artifacts/local-training-environment-preflight.json`
 - `evidence/output-artifacts/local-answer-quality-baseline.json`
 - `evidence/output-artifacts/local-answer-composition-candidate.json`
 - `evidence/output-artifacts/local-answer-composition-robustness.json`
@@ -112,7 +113,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 209/209 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 210/210 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -161,6 +162,7 @@
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
+- Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`
 - Evidence-first answer composition candidate: verified with `npm run smoke:local-answer-composition-candidate`
