@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T03:58:08.311Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T03:58:00.517Z
 - branch: codex/q4-answer-composition-robustness
 - commit: fb08c69a8be3473caa604efe8c514c5b0c40d03b

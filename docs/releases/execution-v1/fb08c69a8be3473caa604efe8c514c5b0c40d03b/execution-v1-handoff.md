@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T03:58:08.311Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T03:58:07.384Z
 - localDate: 2026-07-17
 - branch: codex/q4-answer-composition-robustness
 - commit: fb08c69a8be3473caa604efe8c514c5b0c40d03b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/fb08c69a8be3473caa604efe8c514c5b0c40d03b](releases/execution-v1/fb08c69a8be3473caa604efe8c514c5b0c40d03b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fb08c69a8be3473caa604efe8c514c5b0c40d03b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/fb08c69a8be3473caa604efe8c514c5b0c40d03b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/fb08c69a8be3473caa604efe8c514c5b0c40d03b](docs/releases/execution-v1/fb08c69a8be3473caa604efe8c514c5b0c40d03b)
 - visualArtifactSetSha256: ba3e0340bbfbe17a373d8d0b5aeaf7e893800f083d114892db5a717eff5d4d67
 - commitPushStatus: not pushed, origin/codex/q4-answer-composition-robustness not found
 

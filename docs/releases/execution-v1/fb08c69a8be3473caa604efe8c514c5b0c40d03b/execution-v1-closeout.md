@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T03:58:08.311Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T03:58:00.572Z
 - branch: codex/q4-answer-composition-robustness
 - commit: fb08c69a8be3473caa604efe8c514c5b0c40d03b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/fb08c69a8be3473caa604efe8c514c5b0c40d03b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
