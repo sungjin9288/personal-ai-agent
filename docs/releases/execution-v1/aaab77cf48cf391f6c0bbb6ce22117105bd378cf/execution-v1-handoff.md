@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T02:12:07.458Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T02:12:06.544Z
 - localDate: 2026-07-17
 - branch: codex/local-training-permission-surface
 - commit: aaab77cf48cf391f6c0bbb6ce22117105bd378cf
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/aaab77cf48cf391f6c0bbb6ce22117105bd378cf](releases/execution-v1/aaab77cf48cf391f6c0bbb6ce22117105bd378cf)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aaab77cf48cf391f6c0bbb6ce22117105bd378cf/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/aaab77cf48cf391f6c0bbb6ce22117105bd378cf/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/aaab77cf48cf391f6c0bbb6ce22117105bd378cf](docs/releases/execution-v1/aaab77cf48cf391f6c0bbb6ce22117105bd378cf)
 - visualArtifactSetSha256: f8f0b914bd42127b9b6016c44344dd75afb6de2fdcc1b04b0c7d3862653a1b3f
 - commitPushStatus: not pushed, origin/codex/local-training-permission-surface not found
 

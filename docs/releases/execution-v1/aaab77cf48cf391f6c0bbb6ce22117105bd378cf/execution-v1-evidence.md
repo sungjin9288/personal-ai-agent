@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T02:12:07.458Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T02:11:59.801Z
 - branch: codex/local-training-permission-surface
 - commit: aaab77cf48cf391f6c0bbb6ce22117105bd378cf

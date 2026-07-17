@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T02:12:07.458Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T02:11:59.857Z
 - branch: codex/local-training-permission-surface
 - commit: aaab77cf48cf391f6c0bbb6ce22117105bd378cf
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aaab77cf48cf391f6c0bbb6ce22117105bd378cf/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
