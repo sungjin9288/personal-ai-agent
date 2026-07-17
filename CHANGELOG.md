@@ -26,6 +26,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 - Added a cost-free local-training environment preflight that verifies the installed model artifact, manifest, license metadata, F1 readiness binding, system capacity, trainer availability, and F2b governance prerequisites before any process can request training. The current evidence stops before training because the trainable source model, supported trainer, independent environment reviews, approved product permission, and rollback owner are absent.
 - Added a hash-bound local-training toolchain decision packet that selects pinned MLX-LM LoRA and an immutable Apache-2.0 Qwen2.5-1.5B safetensors source for the observed Apple Silicon environment. The packet confirms the local Python, `venv`, and `uv` prerequisites while preserving explicit approval gates for installation, download, license review, acquisition egress, resource canary ownership, rollback ownership, and post-install product permission.
 - Added a tamper-evident local-training acquisition request that binds the selected toolchain, a repository-relative mutable root, five required owner roles, seven ordered actions, and proposed resource caps. The tracked request remains pending review and grants no installation, download, training, rollout, external submission, or production authority.
+- Added a private local-training acquisition resolution CLI that accepts one exact operator decision file, revalidates the current toolchain and request, records one content-free resolution per request under Git-ignored `var/` history, and refuses tracked or symbolic-link decision input. The CLI does not install dependencies, download models, start training, authorize rollout, or write actual owner decisions into tracked evidence.
 - Connected permission request, approval, read, and revocation to the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and actual local Chromium surface while keeping raw readiness in a private session file.
 - Preserved `actualModelTrainingExecuted: false`, external submission and rollout denial, and the requirement that a future training caller re-read current permission before process spawn.
 - Connected verified local-user override state to the existing learning-promotion action inbox without adding a new action type, store collection, or dependency.
@@ -87,8 +88,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,211,129 bytes`
-- SHA-256: `222cd36aaf0427f4f928b5bab2fa9126e58161a065b826047843992065392cbe`
+- Size: `4,212,533 bytes`
+- SHA-256: `c8b14d65ef0ad5cf7f4c73f7be960211933cdc43f9797221702b48747a8eaf02`
 
 Included public surfaces:
 
