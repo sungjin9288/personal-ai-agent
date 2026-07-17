@@ -64,6 +64,12 @@ assert.equal(
   true,
 );
 assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-answer-review-action-generalization.json',
+  ),
+  true,
+);
+assert.equal(
   result.scannedFiles.includes('evidence/screenshots/local-training-permission-surface.png'),
   true,
 );

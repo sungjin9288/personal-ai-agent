@@ -170,6 +170,8 @@
     "smoke:user-query-evaluation-intake": "node scripts/smoke-user-query-evaluation-intake.mjs",
     "evaluate:local-user-query-quality": "node scripts/evaluate-local-user-query-quality.mjs",
     "smoke:local-user-query-quality": "node scripts/smoke-local-user-query-quality.mjs",
+    "evaluate:local-answer-review-action-generalization": "node scripts/evaluate-local-answer-review-action-generalization.mjs",
+    "smoke:local-answer-review-action-generalization": "node scripts/smoke-local-answer-review-action-generalization.mjs",
     "smoke:smoke-validation-summary": "node scripts/smoke-smoke-validation-summary.mjs",
     "smoke:external-evidence-blockers": "node scripts/smoke-external-evidence-blockers.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",

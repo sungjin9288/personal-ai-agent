@@ -113,7 +113,8 @@
 - 완료: 같은 qwen2.5:3b와 Q4 suite의 v4 회귀에서 `2.2` safe-text 실패를 기준 완화 없이 교정하고 최종 10/10과 기존 지표 parity를 확인
 - 완료: consent·철회·de-identification·retention을 강제하는 synthetic user-query intake dry run 12건·6 domain·4 language 검증
 - 완료: Q5 intake를 같은 qwen2.5:3b·v4 prompt·loopback runtime과 결합한 Q6 content-free runner가 12건을 끝까지 실행하고 11/12와 `invalid-review-action` 1건을 stop condition으로 기록
-- 다음: reviewer action 일반화 실패를 별도 candidate에서 고치고 Q4 10-case와 Q6 12-case를 기준 완화 없이 모두 통과시킨 뒤, 명시적 동의와 비식별 검토를 통과한 실제 user-query evaluation을 별도 승인으로 진행
+- 완료: v5 reviewer action candidate가 summary-only objective의 owner·trigger를 evidence-bound action으로 유지하며 Q4 10/10 parity와 synthetic Q6 12/12를 기준 완화 없이 통과
+- 다음: 명시적 동의·철회 가능성·비식별 검토·current retention을 통과한 실제 user-query evaluation을 별도 승인으로 진행하고, 그 전에는 candidate activation을 보류
 - 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증
 - 완료: verified workspace decision을 local operator가 bounded expiration으로 고정하고 expiry·clear 시 exact latest-revision fallback, repin parity, foreign·unretrieved memory 차단과 timeline audit를 확인한 controlled operator override 검증

@@ -8,9 +8,11 @@ import {
   createEvidenceFirstOllamaAnswerGenerator,
   createHardenedEvidenceFirstOllamaAnswerGenerator,
   createOllamaAnswerGenerator,
+  createReviewActionGeneralizedOllamaAnswerGenerator,
   EVIDENCE_FIRST_ANSWER_PROMPT_VERSION,
   HARDENED_EVIDENCE_FIRST_ANSWER_PROMPT_VERSION,
   LOCAL_ANSWER_PROMPT_VERSION,
+  REVIEW_ACTION_GENERALIZED_ANSWER_PROMPT_VERSION,
 } from '../src/core/ollama-answer-generator.mjs';
 
 test('Ollama answer generator uses bounded loopback evidence and returns hash-only observation', async () => {
@@ -329,6 +331,51 @@ test('adversarial hardened generator removes Unicode payloads and preserves safe
     assert.match(result.answer.text, /policy version 2\.2/u);
     assert.equal(result.composition.sourceCoverageComplete, true);
     assert.equal(result.composition.reviewActionSpecific, true);
+  } finally {
+    await close(server);
+  }
+});
+
+test('review action generalization keeps owner and trigger explicit for summary requests', async () => {
+  let requestBody;
+  const server = http.createServer(async (request, response) => {
+    requestBody = JSON.parse(await readBody(request));
+    response.setHeader('content-type', 'application/json');
+    response.end(JSON.stringify({
+      model: 'qwen2.5:3b',
+      response: JSON.stringify({
+        claims: [{
+          sourceKey: 'incident:rollback',
+          text: 'The operations lead owns rollback when error rate exceeds the approved limit.',
+        }],
+        reviewAction: 'The operations lead starts rollback when error rate exceeds the approved limit.',
+        summary: 'Rollback ownership and its trigger are recorded.',
+      }),
+    }));
+  });
+  await listen(server);
+  try {
+    const generator = createReviewActionGeneralizedOllamaAnswerGenerator({
+      endpoint: endpointFor(server),
+      model: 'qwen2.5:3b',
+    });
+    const result = await generator.generate({
+      objective: 'Summarize the rollback owner and trigger.',
+      retrievedItems: [{
+        snippet: 'The operations lead owns rollback when error rate exceeds the approved limit.',
+        sourceKey: 'incident:rollback',
+      }],
+    });
+
+    assert.equal(
+      result.observation.promptVersion,
+      REVIEW_ACTION_GENERALIZED_ANSWER_PROMPT_VERSION,
+    );
+    assert.match(requestBody.system, /even when the objective only asks to summarize/u);
+    assert.match(requestBody.prompt, /summary-only objectives/u);
+    assert.match(result.answer.text, /Reviewer action: The operations lead/u);
+    assert.equal(result.composition.reviewActionSpecific, true);
+    assert.equal(result.composition.sourceCoverageComplete, true);
   } finally {
     await close(server);
   }

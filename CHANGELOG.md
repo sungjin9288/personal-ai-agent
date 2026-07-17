@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a v5 review-action generalization candidate that requires summary-only objectives to retain an evidence-bound owner and trigger when both are present.
+- Replayed the same installed `qwen2.5:3b` with unchanged thresholds: Q4 remained `10/10` and the synthetic Q6 suite moved from `11/12` to `12/12`. The current answer path, training, activation, rollout, actual-user quality, and production claims remain unchanged.
 - Added a cloud-disabled local user-query evaluation runner that binds the Q5 consent and de-identification intake to the exact Q4 model, runtime, v4 prompt, and unchanged quality thresholds. The synthetic 12-case replay passed 11 cases and retained one `invalid-review-action` failure, so activation and the current answer path remain unchanged.
 - Kept query, evidence, expected terms, model responses, and raw error messages out of tracked Q6 evidence. Only content hashes, metrics, bounded failure taxonomy, and domain/language summaries are retained.
 - Added a pure 14-case input boundary covering Unicode normalization, format controls, split-letter directives, English, Korean, Japanese, and Spanish while preserving all safe controls exactly.
@@ -80,8 +82,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,187,582 bytes`
-- SHA-256: `010b149e1d11a45c2ecf73d70dead451c5e86429e8643f2cd65f883fe5de30a5`
+- Size: `4,197,110 bytes`
+- SHA-256: `0d1fc7755388ba4660b7bb066da6df3acd2da32ae3a5297bd099b1238f6b38f1`
 
 Included public surfaces:
 

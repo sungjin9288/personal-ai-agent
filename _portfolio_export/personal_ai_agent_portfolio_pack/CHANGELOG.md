@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a v5 review-action generalization candidate that requires summary-only objectives to retain an evidence-bound owner and trigger when both are present.
+- Replayed the same installed `qwen2.5:3b` with unchanged thresholds: Q4 remained `10/10` and the synthetic Q6 suite moved from `11/12` to `12/12`. The current answer path, training, activation, rollout, actual-user quality, and production claims remain unchanged.
 - Added a cloud-disabled local user-query evaluation runner that binds the Q5 consent and de-identification intake to the exact Q4 model, runtime, v4 prompt, and unchanged quality thresholds. The synthetic 12-case replay passed 11 cases and retained one `invalid-review-action` failure, so activation and the current answer path remain unchanged.
 - Kept query, evidence, expected terms, model responses, and raw error messages out of tracked Q6 evidence. Only content hashes, metrics, bounded failure taxonomy, and domain/language summaries are retained.
 - Added a pure 14-case input boundary covering Unicode normalization, format controls, split-letter directives, English, Korean, Japanese, and Spanish while preserving all safe controls exactly.

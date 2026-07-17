@@ -36,6 +36,7 @@
 - currentUserQueryEvaluationIntakeFixture: `fixtures/user-query-evaluation-intake-dry-run-v1.json`
 - currentUserQueryEvaluationIntakeEvidence: `evidence/output-artifacts/user-query-evaluation-intake.json`
 - currentLocalUserQueryQualityEvidence: `evidence/output-artifacts/local-user-query-quality.json`
+- currentReviewActionGeneralizationEvidence: `evidence/output-artifacts/local-answer-review-action-generalization.json`
 - runtimeActivationDefault: false
 - runtimeActivationOptIn: local-semantic-rerank
 - actualLocalEmbeddingModelQualityValidated: true
@@ -746,6 +747,16 @@ Q6는 Q5 intake와 원본 synthetic dataset을 실행 직전에 다시 결합한
 
 이 결과는 runner가 실패를 안전하게 격리한다는 증거지만 synthetic user-query 품질 통과 증거는 아니다. `localUserQueryEvaluationValidated: false`, `syntheticUserQueryQualityValidated: false`, `actualUserQueryQualityValidated: false`, `currentAnswerPathChanged: false`를 유지한다. 다음 단계는 threshold를 낮추거나 fixture를 통과용으로 바꾸는 작업이 아니라, reviewer action 일반화 실패를 별도 candidate에서 고친 뒤 같은 12-case와 Q4 10-case를 모두 재실행하는 것이다. 그 뒤에만 명시적 동의와 비식별 검토를 통과한 실제 user-query 평가를 진행한다.
 
+## 현재 reviewer action generalization candidate
+
+Q7은 Q6의 실패한 fixture나 evaluator를 바꾸지 않고 v5 prompt candidate만 분리했다. Summary-only objective에서도 구체적 review action을 만들고, evidence에 owner와 trigger 또는 condition이 함께 있으면 둘을 그대로 포함하도록 trusted contract를 명시했다. Model에는 여전히 objective와 sanitized evidence만 전달하며 expected answer term, threshold, baseline 결과는 전달하지 않는다.
+
+같은 설치 모델 `qwen2.5:3b`, digest, Ollama `0.23.0`, input boundary와 unchanged all-pass threshold로 Q4 10-case와 Q6 12-case를 순차 실행했다. Q4는 10/10과 기존 metric parity를 유지했고, Q6는 11/12에서 12/12로 바뀌었다. 모든 generation은 source coverage와 specific review action을 통과했으며 external provider call과 model download는 없었다.
+
+`evidence/output-artifacts/local-answer-review-action-generalization.json`은 Q4·Q6 baseline hash, suite·threshold hash, model·runtime·v5 prompt hash, case별 input·response hash와 집계만 기록한다. Query, evidence, expected term, answer text와 raw error는 저장하지 않는다. 결과는 `review-action-generalization-passed-actual-evaluation-required`지만 synthetic fixture에 한정되므로 `actualUserQueryQualityValidated: false`, `generalAnswerQualityImprovementValidated: false`, `currentAnswerPathChanged: false`, activation·rollout·production claim은 계속 false다.
+
+다음 단계는 prompt를 runtime에 활성화하는 작업이 아니다. 별도 승인 아래 명시적 동의, 철회 가능성, 비식별 검토, current retention을 통과한 실제 user-query evaluation을 먼저 실행하고, Q4·Q6 회귀와 실제 분포가 함께 통과할 때만 다음 activation decision packet을 만든다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -756,6 +767,7 @@ Q6는 Q5 intake와 원본 synthetic dataset을 실행 직전에 다시 결합한
 | Q4 Answer composition robustness and hardening | 완료 | Q3 regression·한국어·다중 도메인·bounded context·prompt injection 10-case 평가와 deterministic instruction boundary | v2 9/10·canary 1에서 v3 10/10·canary 0으로 개선, 다른 지표 회귀 0, runtime 미활성화 |
 | Q5 Adversarial input boundary and user-query intake | 완료 | Unicode·다국어·split-letter 14-case 경계, 동일 모델 10-case 회귀, consent-first synthetic intake dry run | 입력 경계 14/14, v4 동일 suite 10/10, 실제 사용자 data·runtime activation·training 없음 |
 | Q6 Local user-query quality evaluation | stop condition 기록 | Q5 intake를 같은 model·runtime·v4 prompt와 결합한 content-free 12-case local replay | 11/12와 `invalid-review-action` 1건을 보존하고 current path 유지; candidate 교정 전 실제 사용자 평가 중단 |
+| Q7 Reviewer action generalization | 완료 | v5 prompt candidate를 Q4 10-case와 Q6 12-case에 같은 model·runtime·threshold로 재실행 | Q4 10/10 parity와 synthetic Q6 12/12, content-free evidence, current path·activation 불변 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
@@ -903,6 +915,8 @@ npm run build:user-query-evaluation-intake
 npm run smoke:user-query-evaluation-intake
 npm run evaluate:local-user-query-quality -- --endpoint http://127.0.0.1:11514 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-user-query-quality.json
 npm run smoke:local-user-query-quality
+npm run evaluate:local-answer-review-action-generalization -- --endpoint http://127.0.0.1:11514 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-review-action-generalization.json
+npm run smoke:local-answer-review-action-generalization
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```

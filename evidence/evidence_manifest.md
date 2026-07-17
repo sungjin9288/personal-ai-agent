@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, and content-free local user-query evaluation
-- Source code modified: yes, a fail-closed local evaluation runner now binds consented intake, exact model/runtime/prompt evidence, evaluator-only terms, and content-free failure reporting while preserving public answer paths, stored formats, and activation defaults
-- New feature development: yes, the same installed qwen2.5:3b ran all 12 synthetic Q6 cases with no external call; 11 passed and one `invalid-review-action` failure was retained as a stop condition without changing thresholds, training, activation, or rollout
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, and reviewer-action generalization
+- Source code modified: yes, a v5 candidate now makes summary-only reviewer actions retain evidence-bound owner and trigger details while preserving public answer paths, stored formats, evaluator boundaries, and activation defaults
+- New feature development: yes, the same installed qwen2.5:3b retained Q4 10/10 and passed all 12 synthetic Q6 cases with unchanged thresholds and no external call; actual-user quality, training, activation, and rollout remain unproven or disabled
 
 ## Generated Evidence Files
 
@@ -86,6 +86,7 @@
 - `evidence/output-artifacts/local-answer-composition-boundary-regression.json`
 - `evidence/output-artifacts/user-query-evaluation-intake.json`
 - `evidence/output-artifacts/local-user-query-quality.json`
+- `evidence/output-artifacts/local-answer-review-action-generalization.json`
 
 ### Architecture
 
@@ -110,7 +111,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 207/207 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 208/208 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -168,6 +169,7 @@
 - Answer composition boundary regression: verified with `npm run smoke:local-answer-composition-boundary-regression`
 - User-query evaluation intake dry run: verified with `npm run smoke:user-query-evaluation-intake`
 - Local user-query quality stop condition: verified with `npm run smoke:local-user-query-quality`
+- Reviewer action generalization candidate: verified with `npm run smoke:local-answer-review-action-generalization`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

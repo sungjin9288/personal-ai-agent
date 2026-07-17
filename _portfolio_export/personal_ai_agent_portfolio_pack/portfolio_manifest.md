@@ -77,6 +77,7 @@
 - evidence/output-artifacts/local-answer-composition-boundary-regression.json
 - evidence/output-artifacts/user-query-evaluation-intake.json
 - evidence/output-artifacts/local-user-query-quality.json
+- evidence/output-artifacts/local-answer-review-action-generalization.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/screenshots/user-learning-operator-surface.png
 - evidence/screenshots/local-training-permission-surface.png
