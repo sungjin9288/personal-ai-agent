@@ -92,7 +92,7 @@ const developmentPlan = fs.readFileSync(
   'utf8',
 );
 for (const term of [
-  'status: local-answer-composition-hardening-current',
+  'status: local-answer-input-boundary-current',
   '| R11 Local relevance shadow integration | 완료 |',
   'npm run smoke:local-relevance-shadow-integration',
   'providerInputPreserved: true',

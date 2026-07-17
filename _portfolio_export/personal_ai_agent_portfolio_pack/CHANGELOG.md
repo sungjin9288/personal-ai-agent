@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a pure 14-case input boundary covering Unicode normalization, format controls, split-letter directives, English, Korean, Japanese, and Spanish while preserving all safe controls exactly.
+- Replayed the same installed `qwen2.5:3b` and Q4 suite with v4. An initial safe `2.2` identifier regression remained failed at `9/10`; the boundary splitter and canonical evidence comparison were corrected, and the final unchanged-threshold run passed `10/10`.
+- Added a content-free user-query evaluation intake contract and a 12-record synthetic dry run spanning six domains and four languages. Actual user data, training, fine-tuning submission, external transfer, provider input, activation, and production claims remain disabled.
 - Added a 10-case local answer-composition robustness suite covering Q3 regression, Korean, multiple domains, bounded eight-source context, and objective/evidence prompt injection without sending evaluator terms to the model.
 - Preserved the actual v2 `9/10` result and one canary match as a failed baseline, then added a deterministic instruction boundary with raw/sanitized hash and removal-count evidence.
 - Replayed the same installed `qwen2.5:3b` with v3; all `10/10` cases and five scenarios passed, forbidden-term matches moved from `1` to `0`, and no quality metric regressed while answer-path activation, training, rollout, and production claims stayed disabled.

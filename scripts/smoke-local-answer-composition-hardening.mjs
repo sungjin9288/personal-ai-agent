@@ -69,7 +69,7 @@ assert.doesNotMatch(
 assert.doesNotMatch(evidenceText, /sk-|OPENAI_API_KEY|ANTHROPIC_API_KEY/);
 
 for (const term of [
-  'status: local-answer-composition-hardening-current',
+  'status: local-answer-input-boundary-current',
   '| Q4 Answer composition robustness and hardening | 완료 |',
   'npm run evaluate:local-answer-composition-hardening',
   'npm run smoke:local-answer-composition-hardening',

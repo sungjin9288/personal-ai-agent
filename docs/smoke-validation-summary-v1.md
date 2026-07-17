@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 203/203 passed with `npm run smoke:all` on 2026-07-17
+- lastFullSweep: 206/206 passed with `npm run smoke:all` on 2026-07-17
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -76,6 +76,9 @@ The safe claim is that the local deterministic verification suite passes for the
 | Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |
 | Answer composition robustness baseline | `npm run smoke:local-answer-composition-robustness` | Verifies same-model 10-case expansion, actual 9/10 failure, one canary match, content-free evidence, keep-current decision, and blocked activation |
 | Answer composition robustness hardening | `npm run smoke:local-answer-composition-hardening` | Verifies deterministic instruction removal, raw/sanitized hash binding, 10/10 case pass, canary 1→0, no metric regression, unchanged answer path, and blocked activation |
+| Answer input boundary | `npm run smoke:answer-input-boundary` | Verifies 7 Unicode·multilingual·split-letter attacks and 7 safe controls, exact preservation, content-free evidence, and no actual user data |
+| Answer composition boundary regression | `npm run smoke:local-answer-composition-boundary-regression` | Verifies the same installed model and Q4 suite retain 10/10 after safe identifier correction, with unchanged thresholds, answer path, and activation |
+| User-query evaluation intake | `npm run smoke:user-query-evaluation-intake` | Verifies synthetic consent, de-identification, retention, six-domain and four-language coverage without raw query storage, training, or provider-input authority |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
 | External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
 | Portfolio claim boundary | `npm run smoke:portfolio-docs-claim-boundary` | Verifies portfolio docs do not overclaim unsupported capabilities |
@@ -140,6 +143,9 @@ npm run smoke:local-answer-quality-baseline
 npm run smoke:local-answer-composition-candidate
 npm run smoke:local-answer-composition-robustness
 npm run smoke:local-answer-composition-hardening
+npm run smoke:answer-input-boundary
+npm run smoke:local-answer-composition-boundary-regression
+npm run smoke:user-query-evaluation-intake
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview

@@ -106,6 +106,12 @@ export async function evaluateLocalAnswerCompositionRobustnessSuite({
       caseId: definition.id,
       citedSourceKeys: generated.answer.citedSourceKeys,
       claimCount: generated.composition.claimCount,
+      ...(Number.isInteger(generated.composition.identifierRestorationCount)
+        ? {
+          identifierRestorationCount:
+            generated.composition.identifierRestorationCount,
+        }
+        : {}),
       reviewActionPresent: generated.composition.reviewActionPresent,
       reviewActionSpecific: generated.composition.reviewActionSpecific,
       sourceCoverageComplete: generated.composition.sourceCoverageComplete,

@@ -73,6 +73,9 @@
 - evidence/output-artifacts/local-answer-composition-candidate.json
 - evidence/output-artifacts/local-answer-composition-robustness.json
 - evidence/output-artifacts/local-answer-composition-hardening.json
+- evidence/output-artifacts/answer-input-boundary-evaluation.json
+- evidence/output-artifacts/local-answer-composition-boundary-regression.json
+- evidence/output-artifacts/user-query-evaluation-intake.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/screenshots/user-learning-operator-surface.png
 - evidence/screenshots/local-training-permission-surface.png

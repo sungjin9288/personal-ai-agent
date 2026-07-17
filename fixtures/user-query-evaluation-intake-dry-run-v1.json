@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "personal-ai-agent-user-query-evaluation-dataset/v1",
+  "datasetId": "q5-synthetic-user-query-intake-dry-run",
+  "actualUserQueryData": false,
+  "dataClassification": "curated-synthetic",
+  "productionReadyClaim": false,
+  "consent": {
+    "status": "not-applicable-synthetic"
+  },
+  "deidentification": {
+    "methodVersion": "manual-review-and-secret-scan/v1",
+    "directIdentifiersRemoved": true,
+    "freeTextReviewed": true,
+    "secretsScanned": true,
+    "reidentificationProhibited": true,
+    "reviewedAt": "2026-07-17T04:00:00.000Z",
+    "reviewerIdHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "usage": {
+    "evaluationAuthorized": true,
+    "trainingAuthorized": false,
+    "fineTuningSubmissionAuthorized": false,
+    "externalTransferAuthorized": false,
+    "providerInputAuthorized": false,
+    "retentionUntil": "2027-01-17T00:00:00.000Z"
+  },
+  "records": [
+    {
+      "id": "engineering-en",
+      "domain": "software-engineering",
+      "language": "en",
+      "source": "curated-synthetic",
+      "query": "Explain why the retry guard must remain idempotent.",
+      "evidence": ["The request key is stored before retry and duplicate writes are rejected."],
+      "expectedAnswerTerms": ["request key", "duplicate writes"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "engineering-ko",
+      "domain": "software-engineering",
+      "language": "ko",
+      "source": "curated-synthetic",
+      "query": "배포 전 snapshot hash 검증이 필요한 이유를 설명해줘.",
+      "evidence": ["배포 대상 snapshot hash는 승인 기록의 artifact hash와 일치해야 한다."],
+      "expectedAnswerTerms": ["snapshot hash", "승인 기록"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "operations-en",
+      "domain": "incident-operations",
+      "language": "en",
+      "source": "curated-synthetic",
+      "query": "Summarize the rollback owner and trigger.",
+      "evidence": ["The operations lead owns rollback when error rate exceeds the approved limit."],
+      "expectedAnswerTerms": ["operations lead", "error rate"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "operations-ja",
+      "domain": "incident-operations",
+      "language": "ja",
+      "source": "curated-synthetic",
+      "query": "復旧承認の手順を要約してください。",
+      "evidence": ["運用責任者が監査記録を確認してから復旧を承認する。"],
+      "expectedAnswerTerms": ["運用責任者", "監査記録"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "governance-ko",
+      "domain": "data-governance",
+      "language": "ko",
+      "source": "curated-synthetic",
+      "query": "데이터 보존과 삭제 증명 절차를 정리해줘.",
+      "evidence": ["보존 기간은 30일이며 삭제 후 법무 검토자가 삭제 증명서를 확인한다."],
+      "expectedAnswerTerms": ["30일", "삭제 증명서"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "governance-es",
+      "domain": "data-governance",
+      "language": "es",
+      "source": "curated-synthetic",
+      "query": "Resume el control de linaje de datos.",
+      "evidence": ["La persona responsable de datos verifica el hash de linaje antes de aprobar el cambio."],
+      "expectedAnswerTerms": ["responsable de datos", "hash de linaje"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "accessibility-en",
+      "domain": "accessibility",
+      "language": "en",
+      "source": "curated-synthetic",
+      "query": "What must be reviewed before the accessibility release?",
+      "evidence": ["The accessibility reviewer confirms keyboard-only focus order and signs the review record."],
+      "expectedAnswerTerms": ["keyboard-only", "review record"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "accessibility-ja",
+      "domain": "accessibility",
+      "language": "ja",
+      "source": "curated-synthetic",
+      "query": "アクセシビリティ承認の条件は何ですか。",
+      "evidence": ["レビュー担当者がキーボード操作とフォーカス順序を確認する。"],
+      "expectedAnswerTerms": ["キーボード操作", "フォーカス順序"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "security-en",
+      "domain": "security",
+      "language": "en",
+      "source": "curated-synthetic",
+      "query": "Explain the quarantine authorization check.",
+      "evidence": ["The incident reviewer verifies the content hash and authorization record before quarantine."],
+      "expectedAnswerTerms": ["content hash", "authorization record"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "security-es",
+      "domain": "security",
+      "language": "es",
+      "source": "curated-synthetic",
+      "query": "Explica la revisión de aislamiento.",
+      "evidence": ["La revisión de seguridad confirma el hash del contenido y el registro de autorización."],
+      "expectedAnswerTerms": ["hash del contenido", "registro de autorización"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "research-ko",
+      "domain": "research",
+      "language": "ko",
+      "source": "curated-synthetic",
+      "query": "연구 결과의 불확실성과 출처를 어떻게 검토해야 해?",
+      "evidence": ["의사결정 책임자는 evidence hash와 불확실성 경계를 함께 검토한다."],
+      "expectedAnswerTerms": ["evidence hash", "불확실성 경계"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    },
+    {
+      "id": "research-es",
+      "domain": "research",
+      "language": "es",
+      "source": "curated-synthetic",
+      "query": "Resume la procedencia de la revisión.",
+      "evidence": ["La persona responsable de la decisión verifica la procedencia y el límite de incertidumbre."],
+      "expectedAnswerTerms": ["procedencia", "límite de incertidumbre"],
+      "containsDirectIdentifiers": false,
+      "containsSensitiveData": false
+    }
+  ]
+}

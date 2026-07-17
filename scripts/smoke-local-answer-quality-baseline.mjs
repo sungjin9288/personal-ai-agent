@@ -59,7 +59,7 @@ assert.doesNotMatch(evidenceText, /Temporal fact graph provenance keeps/);
 assert.doesNotMatch(evidenceText, /sk-|OPENAI_API_KEY|ANTHROPIC_API_KEY/);
 
 for (const term of [
-  'status: local-answer-composition-hardening-current',
+  'status: local-answer-input-boundary-current',
   '| Q2 Actual local answer-quality baseline | 완료 |',
   'npm run evaluate:local-answer-quality-baseline',
   'npm run smoke:local-answer-quality-baseline',

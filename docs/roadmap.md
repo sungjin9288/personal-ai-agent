@@ -109,6 +109,10 @@
 - 완료: evaluator 정답을 model에 주지 않고 summary·source claim·review action을 분리한 Q3 candidate가 같은 Q1 두 case를 통과했으며 일반 품질·runtime activation은 계속 미검증
 - 완료: Q4 v2 robustness baseline에서 한국어·다중 도메인·bounded context·Q3 regression은 통과하고 objective injection canary 한 건을 실패로 고정
 - 완료: model 입력 전 instruction payload를 제거하고 raw·sanitized hash와 removal count를 남기는 Q4 v3 hardening이 동일 10-case에서 10/10을 통과했으며 일반 품질·runtime activation은 계속 미검증
+- 완료: Unicode·format control·split-letter와 영어·한국어·일본어·스페인어를 분리한 Q5 pure input boundary가 14/14를 통과
+- 완료: 같은 qwen2.5:3b와 Q4 suite의 v4 회귀에서 `2.2` safe-text 실패를 기준 완화 없이 교정하고 최종 10/10과 기존 지표 parity를 확인
+- 완료: consent·철회·de-identification·retention을 강제하는 synthetic user-query intake dry run 12건·6 domain·4 language 검증
+- 다음: 명시적 동의와 비식별 검토를 통과한 실제 user-query evaluation set을 별도 승인으로 수집하고 현재 gate를 재실행
 - 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증
 - 완료: verified workspace decision을 local operator가 bounded expiration으로 고정하고 expiry·clear 시 exact latest-revision fallback, repin parity, foreign·unretrieved memory 차단과 timeline audit를 확인한 controlled operator override 검증

@@ -139,7 +139,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: local-answer-composition-hardening-current',
+  'status: local-answer-input-boundary-current',
   '| P7 Local user learning personalization | 완료 |',
   'npm run smoke:local-user-learning-personalization',
   'actualLocalUserScopedPersonalizationValidated: true',

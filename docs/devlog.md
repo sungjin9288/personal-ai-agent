@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Adversarial Input Boundary and User-query Intake
+
+- separated Unicode normalization, format-control removal, split-letter detection, and English·Korean·Japanese·Spanish instruction filtering into a pure boundary with 7 attack cases and 7 exact-preservation controls
+- replayed the same qwen2.5:3b and Q4 suite; retained an initial 9/10 failure when safe identifier `2.2` became `2. 2`, then fixed the sentence boundary without lowering thresholds and reached 10/10
+- made evidence comparison key-order independent and kept evaluator terms, raw source text, raw answer text, and canaries outside model input and tracked evidence
+- added a content-free consent and de-identification intake dry run for 12 synthetic records across six domains and four languages; actual user data, training, external transfer, activation, and production claims remain false
+
 ## 2026-07-17 Answer Composition Robustness and Hardening
 
 - expanded Q3 into a 10-case suite covering the two original regressions, Korean, multiple domains, bounded eight-source context, and objective/evidence prompt injection without passing evaluator terms to the generator
@@ -4901,7 +4908,7 @@
 ## 2026-04-16 Trusted Workspace Execution Pass
 
 - date: 2026-04-16T06:49:00.000Z
-- widened the execution-capable gate from the single `personal-ai-agent` repo to the trusted personal workspace root so sibling repos under `/Users/sungjin/dev/personal` can now use the same `preflight -> approval lease -> execution session` flow
+- widened the execution-capable gate from the single `personal-ai-agent` repo to the trusted personal workspace root so sibling repos under `<local-workspace>/personal` can now use the same `preflight -> approval lease -> execution session` flow
 - moved execution policy and edit-path validation to the selected workspace root, and made fallback/stub execution manifests workspace-aware so non-default repos no longer assume `src/cli.mjs` from the current project
 - added sibling-workspace coverage to `smoke:execution-flow` and removed the empty-repo `git HEAD` warning by switching branch detection to `git symbolic-ref --short HEAD` before falling back to `rev-parse`
 <!-- document-log:end -->

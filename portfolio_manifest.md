@@ -73,6 +73,9 @@
 - evidence/output-artifacts/local-answer-composition-candidate.json
 - evidence/output-artifacts/local-answer-composition-robustness.json
 - evidence/output-artifacts/local-answer-composition-hardening.json
+- evidence/output-artifacts/answer-input-boundary-evaluation.json
+- evidence/output-artifacts/local-answer-composition-boundary-regression.json
+- evidence/output-artifacts/user-query-evaluation-intake.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/screenshots/user-learning-operator-surface.png
 - evidence/screenshots/local-training-permission-surface.png
@@ -104,6 +107,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,167,201 bytes
-- 압축 파일 SHA-256: `e050b4d2b1ab016d16ce45b30fbc0a27c321e4a68d55d8fc0f845ad57f7e4873`
+- 압축 파일 크기: 4,179,368 bytes
+- 압축 파일 SHA-256: `48799621877b316f16833ab7b01fe0b40d3c06d5433ce0db83fd3c6bd9667976`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

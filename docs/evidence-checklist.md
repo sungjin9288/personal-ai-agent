@@ -59,6 +59,9 @@
 | Evidence-first answer composition candidate | 완료 | `evidence/output-artifacts/local-answer-composition-candidate.json`, `src/core/local-answer-composition-candidate.mjs` | same-model source-complete claims, reviewer action, Q1 case pass 0.0→1.0, required-term coverage 0.6667→1.0, content-free baseline binding, and blocked activation verified by `npm run smoke:local-answer-composition-candidate` |
 | Answer composition robustness baseline | 완료 | `evidence/output-artifacts/local-answer-composition-robustness.json`, `src/core/local-answer-composition-robustness.mjs` | same-model 10-case replay, 9/10 case pass, objective canary 1건 failure, exact keep-current decision, and blocked activation verified by `npm run smoke:local-answer-composition-robustness` |
 | Answer composition robustness hardening | 완료 | `evidence/output-artifacts/local-answer-composition-hardening.json`, `src/core/local-answer-composition-hardening.mjs` | deterministic instruction boundary, raw/sanitized input hash, 10/10 case pass, canary 1→0, no metric regression, and blocked activation verified by `npm run smoke:local-answer-composition-hardening` |
+| Answer input boundary evaluation | 완료 | `evidence/output-artifacts/answer-input-boundary-evaluation.json`, `src/core/untrusted-instruction-boundary.mjs` | 7 attack·7 safe control, Unicode·multilingual·split-letter handling, exact safe preservation, actualUserQueryData=false verified by `npm run smoke:answer-input-boundary` |
+| Answer composition boundary regression | 완료 | `evidence/output-artifacts/local-answer-composition-boundary-regression.json`, `src/core/local-answer-composition-boundary-regression.mjs` | same model·Q4 suite에서 safe identifier failure를 기준 완화 없이 교정하고 최종 10/10 parity, activation false를 verified by `npm run smoke:local-answer-composition-boundary-regression` |
+| User-query evaluation intake dry run | 완료 | `evidence/output-artifacts/user-query-evaluation-intake.json`, `src/core/user-query-evaluation-intake.mjs` | 12 synthetic record·6 domain·4 language, consent·철회·비식별·retention guard, raw query 미저장과 training 권한 false를 verified by `npm run smoke:user-query-evaluation-intake` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
@@ -67,7 +70,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,167,201 bytes, SHA-256 `e050b4d2b1ab016d16ce45b30fbc0a27c321e4a68d55d8fc0f845ad57f7e4873` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,179,368 bytes, SHA-256 `48799621877b316f16833ab7b01fe0b40d3c06d5433ce0db83fd3c6bd9667976` |
 
 ## 검증 실패 / 보류
 

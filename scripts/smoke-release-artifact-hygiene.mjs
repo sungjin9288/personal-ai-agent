@@ -48,6 +48,18 @@ assert.equal(
   true,
 );
 assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/answer-input-boundary-evaluation.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-composition-boundary-regression.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/user-query-evaluation-intake.json'),
+  true,
+);
+assert.equal(
   result.scannedFiles.includes('evidence/screenshots/local-training-permission-surface.png'),
   true,
 );

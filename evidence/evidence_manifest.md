@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, evidence-first composition, and bounded composition robustness hardening
-- Source code modified: yes, same-model answer generation now includes exact source coverage and a deterministic instruction boundary with raw/sanitized hash and removal-count evidence
-- New feature development: yes, the already-installed qwen2.5:3b Q4 candidate moved the same 10-case suite from 9/10 with one canary match to 10/10 with zero canary matches without external calls, evaluator-answer prompt input, training, activation, or rollout
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, and synthetic user-query evaluation intake
+- Source code modified: yes, answer generation now uses a model-independent Unicode and multilingual instruction boundary while preserving public answer paths, stored formats, evaluator separation, and activation defaults
+- New feature development: yes, a 14-case pure boundary passed, the same installed qwen2.5:3b retained 10/10 on the Q4 suite after a safe identifier regression was fixed without threshold changes, and a content-free 12-record synthetic intake contract was verified without actual user data, external calls, training, activation, or rollout
 
 ## Generated Evidence Files
 
@@ -82,6 +82,9 @@
 - `evidence/output-artifacts/local-answer-composition-candidate.json`
 - `evidence/output-artifacts/local-answer-composition-robustness.json`
 - `evidence/output-artifacts/local-answer-composition-hardening.json`
+- `evidence/output-artifacts/answer-input-boundary-evaluation.json`
+- `evidence/output-artifacts/local-answer-composition-boundary-regression.json`
+- `evidence/output-artifacts/user-query-evaluation-intake.json`
 
 ### Architecture
 
@@ -106,7 +109,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 203/203 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 206/206 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -160,6 +163,9 @@
 - Evidence-first answer composition candidate: verified with `npm run smoke:local-answer-composition-candidate`
 - Answer composition robustness baseline: verified with `npm run smoke:local-answer-composition-robustness`
 - Answer composition robustness hardening: verified with `npm run smoke:local-answer-composition-hardening`
+- Answer input boundary evaluation: verified with `npm run smoke:answer-input-boundary`
+- Answer composition boundary regression: verified with `npm run smoke:local-answer-composition-boundary-regression`
+- User-query evaluation intake dry run: verified with `npm run smoke:user-query-evaluation-intake`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`
