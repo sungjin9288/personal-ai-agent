@@ -116,7 +116,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: local-training-permission-surface-current',
+  'status: local-answer-quality-baseline-current',
   '| R15 Shadow cache process isolation | 완료 |',
   'npm run smoke:local-relevance-shadow-cache-process-isolation',
   'actualLocalRelevanceShadowCacheProcessIsolationValidated: true',

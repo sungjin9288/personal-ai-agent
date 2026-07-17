@@ -32,6 +32,10 @@ assert.equal(
   true,
 );
 assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-quality-baseline.json'),
+  true,
+);
+assert.equal(
   result.scannedFiles.includes('evidence/screenshots/local-training-permission-surface.png'),
   true,
 );

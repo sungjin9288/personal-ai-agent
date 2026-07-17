@@ -81,6 +81,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/user-learning-operator-surface.json',
   'evidence/output-artifacts/local-training-runtime-contract.json',
   'evidence/output-artifacts/local-training-permission-surface.json',
+  'evidence/output-artifacts/local-answer-quality-baseline.json',
   'evidence/screenshots/user-learning-operator-surface.png',
   'evidence/screenshots/local-training-permission-surface.png',
   'docs/smoke-validation-summary-v1.md',

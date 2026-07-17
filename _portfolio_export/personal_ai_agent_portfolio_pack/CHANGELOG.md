@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a loopback-only structured Ollama answer generator and content-free evidence contract that keep Q1 required terms and golden answers out of model input.
+- Evaluated the already-installed `qwen2.5:3b` against both Q1 cases without model download, trainer installation, external provider calls, or training; retrieval and citation gates passed, but required-term coverage was `0.6667` in both cases.
+- Recorded the actual regression as `keep-current-answer-path` without lowering thresholds, authorizing activation, or changing the existing answer path.
 - Added a content-free local-training product permission contract that binds exact fine-tuning readiness, base model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner without starting model training.
 - Connected permission request, approval, read, and revocation to the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and actual local Chromium surface while keeping raw readiness in a private session file.
 - Preserved `actualModelTrainingExecuted: false`, external submission and rollout denial, and the requirement that a future training caller re-read current permission before process spawn.

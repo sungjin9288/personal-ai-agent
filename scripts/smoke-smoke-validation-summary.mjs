@@ -60,6 +60,7 @@ const expectedCommands = [
   'npm run smoke:local-training-permission-surface',
   'npm run smoke:local-training-permission-evidence',
   'npm run smoke:candidate-model-evaluation',
+  'npm run smoke:local-answer-quality-baseline',
   'npm run smoke:smoke-validation-summary',
   'npm run smoke:external-evidence-blockers',
   'npm run smoke:readme-portfolio-overview',

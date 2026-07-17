@@ -94,7 +94,7 @@ for (const forbidden of ['/Users/', '/private/var/folders/', 'OPENAI_API_KEY', '
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: local-training-permission-surface-current',
+  'status: local-answer-quality-baseline-current',
   '| R12 Multi-scenario shadow replay | 완료 |',
   'npm run smoke:local-relevance-shadow-replay',
   'actualLocalRelevanceShadowReplayValidated: true',

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Actual Local Answer Quality Baseline
+
+- added a loopback-only structured Ollama answer generator that sees the mission objective and retrieved evidence but never Q1 required terms or golden answers
+- ran the already-installed `qwen2.5:3b` against both Q1 cases with no model download, external provider call, trainer dependency, or training execution
+- preserved perfect retrieval and citation metrics while recording required-term coverage `0.6667` for both cases as a real regression and keeping the current answer path
+- stored only content-free hashes, timing, model inventory, license binding, and quality decisions; activation, rollout, actual training, and production claims remain false
+
 ## 2026-07-17 Local Training Permission Surface
 
 - bound exact F1 readiness, model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner into a content-free product permission without starting model training

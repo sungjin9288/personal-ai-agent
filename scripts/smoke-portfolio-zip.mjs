@@ -79,6 +79,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/user-learning-operator-surface.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-runtime-contract.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-permission-surface.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-quality-baseline.json',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/workspace-learning-operator-surface.png',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/user-learning-operator-surface.png',
   'personal_ai_agent_portfolio_pack/evidence/screenshots/local-training-permission-surface.png',

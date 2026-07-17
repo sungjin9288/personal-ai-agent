@@ -88,7 +88,7 @@ const evidenceManifest = fs.readFileSync(path.join(repoDir, 'evidence', 'evidenc
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoDir, 'package.json'), 'utf8'));
 const smokeRunner = fs.readFileSync(path.join(repoDir, 'scripts', 'run-all-smokes.mjs'), 'utf8');
 
-assert.equal(developmentPlan.includes('status: local-training-permission-surface-current'), true);
+assert.equal(developmentPlan.includes('status: local-answer-quality-baseline-current'), true);
 assert.equal(developmentPlan.includes('| P6 Workspace learning operator surface | 완료 |'), true);
 assert.equal(readme.includes('npm run smoke:workspace-learning-operator-surface'), true);
 assert.equal(evidenceManifest.includes('Workspace learning operator surface: verified'), true);

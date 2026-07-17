@@ -55,6 +55,7 @@
 | Fine-tuning readiness export | 완료 | `src/core/fine-tuning-readiness.mjs`, `fixtures/fine-tuning-readiness-cases-v1.json` | provider-neutral JSONL, Q1 baseline binding, reviewer checklist, export digest, pending submission requirements, and fineTuningExecutionAuthorized=false verified by `npm run smoke:fine-tuning-readiness` |
 | Local training runtime contract | 완료 | `src/core/local-training-runtime.mjs`, `evidence/output-artifacts/local-training-runtime-contract.json` | exact F1 and expiring approval binding, shell-free local stdio, environment and resource bounds, content-free candidate metadata, ten failure guards, store invariance, actualModelTrainingExecuted=false verified by `npm run smoke:local-training-runtime` |
 | Candidate model evaluation gate | 완료 | `src/core/candidate-model-evaluation.mjs`, `fixtures/candidate-model-evaluation-cases-v1.json` | same-suite non-regression, evidence binding, fixture vs recorded result boundary, keep-baseline rollback, and activationAuthorized=false verified by `npm run smoke:candidate-model-evaluation` |
+| Actual local answer-quality baseline | 완료 | `evidence/output-artifacts/local-answer-quality-baseline.json`, `src/core/ollama-answer-generator.mjs` | installed qwen2.5:3b Q1 generation, content-free integrity, citation success, required-term regression, keep-current decision, and no training or activation authority verified by `npm run smoke:local-answer-quality-baseline` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
@@ -63,7 +64,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,137,954 bytes, SHA-256 `879cc9fb6e6e3e3fc290c861b6d2660e2129ebb0982cf5d51ea4a201b679ecf7` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,142,561 bytes, SHA-256 `7003e3f15c7e7231c2b0b7d36c387f2ec2e2242c4bd6833acefe97009c5ea7e2` |
 
 ## 검증 실패 / 보류
 

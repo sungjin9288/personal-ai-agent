@@ -93,7 +93,7 @@ const evidenceManifest = readRequiredFile('evidence/evidence_manifest.md');
 const packageJson = JSON.parse(readRequiredFile('package.json'));
 const smokeRunner = readRequiredFile('scripts/run-all-smokes.mjs');
 
-assert.equal(developmentPlan.includes('status: local-training-permission-surface-current'), true);
+assert.equal(developmentPlan.includes('status: local-answer-quality-baseline-current'), true);
 assert.equal(developmentPlan.includes('| P10 User learning operator surface | 완료 |'), true);
 assert.equal(readme.includes('npm run smoke:user-learning-operator-surface'), true);
 assert.equal(evidenceManifest.includes('User learning operator surface: verified'), true);

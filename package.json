@@ -154,6 +154,8 @@
     "build:local-training-permission-surface-evidence": "node scripts/build-local-training-permission-surface-evidence.mjs",
     "smoke:local-training-permission-evidence": "node scripts/smoke-local-training-permission-evidence.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
+    "evaluate:local-answer-quality-baseline": "node scripts/evaluate-local-answer-quality-baseline.mjs",
+    "smoke:local-answer-quality-baseline": "node scripts/smoke-local-answer-quality-baseline.mjs",
     "smoke:smoke-validation-summary": "node scripts/smoke-smoke-validation-summary.mjs",
     "smoke:external-evidence-blockers": "node scripts/smoke-external-evidence-blockers.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",

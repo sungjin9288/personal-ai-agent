@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a loopback-only structured Ollama answer generator and content-free evidence contract that keep Q1 required terms and golden answers out of model input.
+- Evaluated the already-installed `qwen2.5:3b` against both Q1 cases without model download, trainer installation, external provider calls, or training; retrieval and citation gates passed, but required-term coverage was `0.6667` in both cases.
+- Recorded the actual regression as `keep-current-answer-path` without lowering thresholds, authorizing activation, or changing the existing answer path.
 - Added a content-free local-training product permission contract that binds exact fine-tuning readiness, base model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner without starting model training.
 - Connected permission request, approval, read, and revocation to the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and actual local Chromium surface while keeping raw readiness in a private session file.
 - Preserved `actualModelTrainingExecuted: false`, external submission and rollout denial, and the requirement that a future training caller re-read current permission before process spawn.
@@ -66,8 +69,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,137,954 bytes`
-- SHA-256: `879cc9fb6e6e3e3fc290c861b6d2660e2129ebb0982cf5d51ea4a201b679ecf7`
+- Size: `4,142,561 bytes`
+- SHA-256: `7003e3f15c7e7231c2b0b7d36c387f2ec2e2242c4bd6833acefe97009c5ea7e2`
 
 Included public surfaces:
 
