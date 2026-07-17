@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-17 Answer Composition Robustness and Hardening
+
+- expanded Q3 into a 10-case suite covering the two original regressions, Korean, multiple domains, bounded eight-source context, and objective/evidence prompt injection without passing evaluator terms to the generator
+- recorded the actual v2 result as a failed `9/10` baseline with one objective canary match instead of weakening the gate or changing the current answer path
+- added a deterministic instruction boundary that removes bounded override/output-command sentences before generation and records raw input hash, sanitized input hash, and objective/evidence removal counts without storing source or answer text
+- replayed the same installed qwen2.5:3b with v3; case pass moved from 0.9 to 1.0 and forbidden-term matches from 1 to 0 with no other metric regression, while activation, rollout, actual training, and production claims remain false
+
 ## 2026-07-17 Evidence-first Answer Composition Candidate
 
 - separated local answer generation into a concise summary, one claim per retrieved source, and an explicit reviewer action while keeping evaluator terms and golden answers outside the model prompt

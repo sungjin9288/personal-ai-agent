@@ -84,7 +84,7 @@ for (const forbiddenText of [
 }
 
 for (const term of [
-  'status: local-answer-composition-candidate-current',
+  'status: local-answer-composition-hardening-current',
   '| R8 Local relevance reranker evaluation | 완료 |',
   'actualLocalRelevanceRerankerQualityValidated: true',
   'actualLocalRelevanceRerankerQualified: false',

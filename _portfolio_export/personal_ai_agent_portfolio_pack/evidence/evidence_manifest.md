@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, and evidence-first answer composition
-- Source code modified: yes, same-model answer generation now has an evaluation-only summary, source-claim, and review-action candidate with exact baseline, model, prompt, and suite binding
-- New feature development: yes, the already-installed qwen2.5:3b Q1 candidate improved controlled case pass from 0.0 to 1.0 and required-term coverage from 0.6667 to 1.0 without external calls, evaluator-answer prompt input, training, activation, or rollout
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, evidence-first composition, and bounded composition robustness hardening
+- Source code modified: yes, same-model answer generation now includes exact source coverage and a deterministic instruction boundary with raw/sanitized hash and removal-count evidence
+- New feature development: yes, the already-installed qwen2.5:3b Q4 candidate moved the same 10-case suite from 9/10 with one canary match to 10/10 with zero canary matches without external calls, evaluator-answer prompt input, training, activation, or rollout
 
 ## Generated Evidence Files
 
@@ -80,6 +80,8 @@
 - `evidence/output-artifacts/local-training-permission-surface.json`
 - `evidence/output-artifacts/local-answer-quality-baseline.json`
 - `evidence/output-artifacts/local-answer-composition-candidate.json`
+- `evidence/output-artifacts/local-answer-composition-robustness.json`
+- `evidence/output-artifacts/local-answer-composition-hardening.json`
 
 ### Architecture
 
@@ -104,7 +106,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 199/199 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 203/203 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -156,6 +158,8 @@
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`
 - Evidence-first answer composition candidate: verified with `npm run smoke:local-answer-composition-candidate`
+- Answer composition robustness baseline: verified with `npm run smoke:local-answer-composition-robustness`
+- Answer composition robustness hardening: verified with `npm run smoke:local-answer-composition-hardening`
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

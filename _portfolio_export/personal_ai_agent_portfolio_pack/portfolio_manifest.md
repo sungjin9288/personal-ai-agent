@@ -71,6 +71,8 @@
 - evidence/output-artifacts/local-training-permission-surface.json
 - evidence/output-artifacts/local-answer-quality-baseline.json
 - evidence/output-artifacts/local-answer-composition-candidate.json
+- evidence/output-artifacts/local-answer-composition-robustness.json
+- evidence/output-artifacts/local-answer-composition-hardening.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/screenshots/user-learning-operator-surface.png
 - evidence/screenshots/local-training-permission-surface.png

@@ -85,6 +85,8 @@
 | Candidate model evaluation gate | `docs/ml-rag-development-plan-v1.md` | same-case and threshold quality comparison, candidate evidence binding, fixture and recorded result distinction, regression rollback, and blocked rollout authority |
 | Actual local answer-quality baseline | `evidence/output-artifacts/local-answer-quality-baseline.json` | actual installed qwen2.5:3b Q1 generation, content-free observations, citation success, required-term regression, keep-current decision, and no training or activation authority |
 | Evidence-first answer composition candidate | `evidence/output-artifacts/local-answer-composition-candidate.json` | same-model Q1 replay, source-complete claims, explicit reviewer action, 0.0→1.0 case pass, 0.6667→1.0 required-term coverage, content-free binding, and blocked runtime activation |
+| Answer composition robustness baseline | `evidence/output-artifacts/local-answer-composition-robustness.json` | same-model 10-case Q3 regression, Korean, multi-domain, bounded-context, and prompt-injection replay; 9/10 and one canary match retained as failed-keep-current evidence |
+| Answer composition robustness hardening | `evidence/output-artifacts/local-answer-composition-hardening.json` | deterministic instruction boundary, raw/sanitized hash binding, 10/10 case pass, canary 1→0, no metric regression, and blocked runtime activation |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
 | External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
 

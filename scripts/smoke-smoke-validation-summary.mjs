@@ -62,6 +62,8 @@ const expectedCommands = [
   'npm run smoke:candidate-model-evaluation',
   'npm run smoke:local-answer-quality-baseline',
   'npm run smoke:local-answer-composition-candidate',
+  'npm run smoke:local-answer-composition-robustness',
+  'npm run smoke:local-answer-composition-hardening',
   'npm run smoke:smoke-validation-summary',
   'npm run smoke:external-evidence-blockers',
   'npm run smoke:readme-portfolio-overview',

@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-17T03:11:43.777Z
+- generatedAt: 2026-07-17T03:50:07.156Z
 - verifiedCommit: fb0772e775cabced26cea2bd8aae25a5f4387939
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 6684cdc33964a603983ae97830ab818696ed728050df7458a908eefaf0506a86
-- fileCount: 105
+- bundleSha256: bfa431da32a9539c117fa5c1f35da79dd822f406630aa9d95046cab60a72e315
+- fileCount: 107
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 43386 | `9b3789a909fde4946808326327ac8c21bf55f0e7c515befc8c94ef66b8a3f7c1` |
-| `CHANGELOG.md` | 15004 | `34486e2e59c411f1216c466661297d6d6cafcc08a191456ca57e5c55569cc2d6` |
+| `README.md` | 44161 | `3de56826046d8bfd71c1a82f2afff3ea419c0014624cccd9405c2e6ad7f98337` |
+| `CHANGELOG.md` | 15676 | `6fe23150dbb4dfce6ecfbc1c264cb0dfdda313b731ba8b5051a14255ac9a7eaa` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -84,8 +84,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
 | `docs/memory-retrieval-quality-fixture-v1.md` | 16894 | `6efd3afdeb52bfc563dc5cb1ce66c310813fbde3187cd1f559e7bf6d561eaeaf` |
-| `docs/ml-rag-development-plan-v1.md` | 116759 | `e9e4e16887f9dc90fbdcf1cd094bcee9e72f5b34b60aa84a8143cbd349d31c78` |
-| `docs/smoke-validation-summary-v1.md` | 18034 | `5520f243de1449f4c5e0f3cc5deb51e10d3839dadea4b219dfe9d487dcf51948` |
+| `docs/ml-rag-development-plan-v1.md` | 120855 | `5c2dccee1695d41933a112b99f28488e6641e9127e2e1132ece9f44432d57630` |
+| `docs/smoke-validation-summary-v1.md` | 18649 | `5ae661a484c0fc4f1bb1233ad09af64c86fe4656e12af8b0127de4d85c12ac54` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
@@ -114,6 +114,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `evidence/output-artifacts/local-training-permission-surface.json` | 1401 | `e2c0acf8053c02054bec15615b3bff68ac9b291c9f36b5a58ea22f34d2962905` |
 | `evidence/output-artifacts/local-answer-quality-baseline.json` | 13952 | `34da61aa5715e235883aa6c10dff48c54acb905beb2d8704425e5dd091e23d2e` |
 | `evidence/output-artifacts/local-answer-composition-candidate.json` | 28268 | `1cb388d694e7a96bc2993a04a59903dd32cf15fe0e31cc2383fbb3b517927e1c` |
+| `evidence/output-artifacts/local-answer-composition-robustness.json` | 49779 | `1324d8267b75e40ccb950b458845929e1a55e40edc24ce9f5bf96c53faf662a8` |
+| `evidence/output-artifacts/local-answer-composition-hardening.json` | 76500 | `d83ac9eb399d4ed16f3596e77fe1b26e7091bb3639580049deffb7119c65278e` |
 | `evidence/screenshots/workspace-learning-operator-surface.png` | 617352 | `a2632b7a8cfd46943df39b978cd3c82bdbb0aa05c350dc5f42b7b105869228fe` |
 | `evidence/screenshots/user-learning-operator-surface.png` | 612712 | `2d6cf19a60308ce7c0a7a10f1d97ea1df0b726c77a8566c858a8781271d5400d` |
 | `evidence/screenshots/local-training-permission-surface.png` | 549515 | `e6748c2c82c9cb91d854e2c0b05e70d13cd28c226f390717a95f714509e27670` |

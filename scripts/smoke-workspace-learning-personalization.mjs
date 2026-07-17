@@ -178,7 +178,7 @@ for (const term of [
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: local-answer-composition-candidate-current',
+  'status: local-answer-composition-hardening-current',
   '| P3 Workspace learning personalization | 완료 |',
   'npm run smoke:workspace-learning-personalization',
   'actualWorkspaceLearningPersonalizationValidated: true',

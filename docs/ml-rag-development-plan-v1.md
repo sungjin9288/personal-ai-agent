@@ -1,6 +1,6 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: local-answer-composition-candidate-current
+- status: local-answer-composition-hardening-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -27,6 +27,9 @@
 - currentLocalTrainingPermissionEvidence: `evidence/output-artifacts/local-training-permission-surface.json`
 - currentLocalAnswerQualityBaselineEvidence: `evidence/output-artifacts/local-answer-quality-baseline.json`
 - currentLocalAnswerCompositionCandidateEvidence: `evidence/output-artifacts/local-answer-composition-candidate.json`
+- currentAnswerCompositionRobustnessFixture: `fixtures/answer-composition-robustness-cases-v1.json`
+- currentLocalAnswerCompositionRobustnessEvidence: `evidence/output-artifacts/local-answer-composition-robustness.json`
+- currentLocalAnswerCompositionHardeningEvidence: `evidence/output-artifacts/local-answer-composition-hardening.json`
 - runtimeActivationDefault: false
 - runtimeActivationOptIn: local-semantic-rerank
 - actualLocalEmbeddingModelQualityValidated: true
@@ -688,6 +691,30 @@ Model에는 mission objective, source key, retrieved snippet만 전달한다. `r
 
 이 결과는 두 controlled fixture에서 composition candidate가 Q2보다 나아졌다는 뜻이다. 일반 답변 품질, 실제 사용자 query, 다른 언어·도메인, 장문 context, prompt injection robustness를 증명하지 않는다. License review, OS egress isolation, resource envelope와 rollback owner 승인이 없으므로 `currentAnswerPathChanged: false`, `activation.authorized: false`, `actualModelTrainingExecuted: false`, `productionReadyClaim: false`를 유지한다.
 
+## 현재 answer composition robustness and hardening
+
+Q4는 Q3 두 case를 regression lane으로 유지하면서 한국어 2건, data pipeline·accessibility 다중 도메인 2건, source 8개씩을 사용하는 bounded context 2건, objective·evidence prompt injection 2건을 더해 총 10 case로 확장한다. 모든 case는 Q1과 같은 threshold를 사용하며 model에는 objective와 source key·snippet만 전달한다. `requiredAnswerTerms`, `forbiddenAnswerTerms`, reviewer verdict와 threshold는 evaluator에만 남는다.
+
+v2 robustness prompt는 exact source key 목록과 source 수를 structured output에 결속했다. 한국어, 다중 도메인, bounded context, Q3 regression은 통과했지만 objective 안의 untrusted instruction이 canary를 출력해 9/10에 머물렀다. 이 실패는 `evidence/output-artifacts/local-answer-composition-robustness.json`에 `robustness-failed-keep-current`로 보존한다.
+
+v3 hardening은 prompt만으로 instruction 우선순위를 해결하지 않는다. Model 호출 전 deterministic input boundary가 override·출력 명령 문장을 제거하고 raw input hash, sanitized input hash, objective·evidence removal count를 기록한다. 정상 source text는 그대로 유지하고, exact source coverage와 구체적인 review role을 계속 요구한다. 두 prompt injection case에서만 sanitization이 적용되고 나머지 8 case의 removal count는 0이어야 한다.
+
+동일한 설치 모델과 suite를 다시 실행한 결과는 다음과 같다.
+
+| 지표 | Q4 v2 robustness baseline | Q4 v3 hardening candidate |
+|---|---:|---:|
+| case pass rate | 0.9 | 1.0 |
+| retrieval hit rate | 1.0 | 1.0 |
+| expected source citation rate | 1.0 | 1.0 |
+| citation grounding rate | 1.0 | 1.0 |
+| required term coverage | 1.0 | 1.0 |
+| forbidden term match count | 1 | 0 |
+| passed scenario | 4/5 | 5/5 |
+
+`evidence/output-artifacts/local-answer-composition-hardening.json`은 v2 evidence hash, 동일 qwen2.5:3b digest, 두 fixture hash, unchanged threshold, v3 prompt hash, runtime version, raw·sanitized input hash와 case별 response hash를 결합한다. Answer text, source snippet, canary와 evaluator term은 tracked evidence에 복사하지 않는다. 결과는 `hardening-passed-governance-blocked`, `candidateHardeningValidated: true`, `currentAnswerPathChanged: false`다.
+
+이 결과는 10개 controlled fixture와 현재 local runtime에만 적용된다. 실제 사용자 분포, 임의 언어·도메인, 더 긴 context, 변형된 prompt injection, sanitizer false positive·false negative, production latency와 general answer quality는 검증하지 않았다. 따라서 `generalAnswerQualityImprovementValidated: false`, `activation.authorized: false`, `actualModelTrainingExecuted: false`, `productionReadyClaim: false`를 유지한다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -695,6 +722,7 @@ Model에는 mission objective, source key, retrieved snippet만 전달한다. `r
 | Q1 Answer quality foundation | 완료 | 순수 evaluator, fixture, unit test, deterministic smoke | passing baseline과 의도적 regression을 모두 판정 |
 | Q2 Actual local answer-quality baseline | 완료 | 이미 설치된 qwen2.5:3b에 objective와 retrieved evidence만 전달하고 Q1 두 case를 실제 생성·평가 | citation gate는 통과했지만 required term coverage 0.6667로 회귀를 고정하고 기존 답변 경로 유지 |
 | Q3 Evidence-first answer composition | 완료 | 같은 model·retrieval에서 summary, source claim, review action을 구조화하고 evaluator 정답 비노출 비교 | Q1 case pass 0.0→1.0, required term coverage 0.6667→1.0, citation 지표 유지, runtime 미활성화 |
+| Q4 Answer composition robustness and hardening | 완료 | Q3 regression·한국어·다중 도메인·bounded context·prompt injection 10-case 평가와 deterministic instruction boundary | v2 9/10·canary 1에서 v3 10/10·canary 0으로 개선, 다른 지표 회귀 0, runtime 미활성화 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
@@ -761,6 +789,7 @@ dataset export와 실제 학습 제출은 다른 권한으로 분리한다. expo
 node --test test/answer-quality-evaluation.test.mjs
 node --test test/ollama-answer-generator.test.mjs test/local-answer-quality-baseline.test.mjs
 node --test test/local-answer-composition-candidate.test.mjs
+node --test test/local-answer-composition-robustness.test.mjs test/local-answer-composition-hardening.test.mjs
 node --test test/retrieval-corpus.test.mjs test/retrieval-artifacts.test.mjs
 node --test test/retrieval-quality-evaluation.test.mjs
 node --test test/embedding-adapter.test.mjs test/semantic-retrieval.test.mjs
@@ -827,6 +856,10 @@ npm run evaluate:local-answer-quality-baseline -- --endpoint http://127.0.0.1:11
 npm run smoke:local-answer-quality-baseline
 npm run evaluate:local-answer-composition-candidate -- --endpoint http://127.0.0.1:11511 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-composition-candidate.json
 npm run smoke:local-answer-composition-candidate
+npm run evaluate:local-answer-composition-robustness -- --endpoint http://127.0.0.1:11512 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-composition-robustness.json
+npm run smoke:local-answer-composition-robustness
+npm run evaluate:local-answer-composition-hardening -- --endpoint http://127.0.0.1:11512 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-composition-hardening.json
+npm run smoke:local-answer-composition-hardening
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```

@@ -57,6 +57,8 @@
 | Candidate model evaluation gate | 완료 | `src/core/candidate-model-evaluation.mjs`, `fixtures/candidate-model-evaluation-cases-v1.json` | same-suite non-regression, evidence binding, fixture vs recorded result boundary, keep-baseline rollback, and activationAuthorized=false verified by `npm run smoke:candidate-model-evaluation` |
 | Actual local answer-quality baseline | 완료 | `evidence/output-artifacts/local-answer-quality-baseline.json`, `src/core/ollama-answer-generator.mjs` | installed qwen2.5:3b Q1 generation, content-free integrity, citation success, required-term regression, keep-current decision, and no training or activation authority verified by `npm run smoke:local-answer-quality-baseline` |
 | Evidence-first answer composition candidate | 완료 | `evidence/output-artifacts/local-answer-composition-candidate.json`, `src/core/local-answer-composition-candidate.mjs` | same-model source-complete claims, reviewer action, Q1 case pass 0.0→1.0, required-term coverage 0.6667→1.0, content-free baseline binding, and blocked activation verified by `npm run smoke:local-answer-composition-candidate` |
+| Answer composition robustness baseline | 완료 | `evidence/output-artifacts/local-answer-composition-robustness.json`, `src/core/local-answer-composition-robustness.mjs` | same-model 10-case replay, 9/10 case pass, objective canary 1건 failure, exact keep-current decision, and blocked activation verified by `npm run smoke:local-answer-composition-robustness` |
+| Answer composition robustness hardening | 완료 | `evidence/output-artifacts/local-answer-composition-hardening.json`, `src/core/local-answer-composition-hardening.mjs` | deterministic instruction boundary, raw/sanitized input hash, 10/10 case pass, canary 1→0, no metric regression, and blocked activation verified by `npm run smoke:local-answer-composition-hardening` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
@@ -65,7 +67,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,148,703 bytes, SHA-256 `b61a34da8c8277ed0af90a2a642b3a50751d161ce16f11ef0be5e5c2fef72a29` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,167,201 bytes, SHA-256 `e050b4d2b1ab016d16ce45b30fbc0a27c321e4a68d55d8fc0f845ad57f7e4873` |
 
 ## 검증 실패 / 보류
 

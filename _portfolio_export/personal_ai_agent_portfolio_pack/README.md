@@ -340,6 +340,8 @@ npm run smoke:local-training-permission-evidence
 npm run smoke:candidate-model-evaluation
 npm run smoke:local-answer-quality-baseline
 npm run smoke:local-answer-composition-candidate
+npm run smoke:local-answer-composition-robustness
+npm run smoke:local-answer-composition-hardening
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview
@@ -525,6 +527,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - F2b exposes bounded local-training permission through the existing approval inbox. The local replay verifies CLI request, approver-only HTTP approval and revocation, tenant isolation, ordered gateway audit, and an actual Chromium approval action with content-free evidence (`npm run smoke:local-training-permission-surface`, browser replay: `npm run smoke:local-training-permission-surface-browser`). Approval records owner-attested license, OS egress, resource, and rollback evidence hashes; it does not independently verify the environment, start training, authorize rollout, or establish production readiness. A future training caller must re-read the current permission before spawning so revocation cannot be bypassed by a previously exported execution approval.
 - Q2 runs the already-installed `qwen2.5:3b` against the two Q1 answer cases without model download, external provider calls, golden-answer text, or required-term prompt injection. Retrieval and citation metrics passed, but required-term coverage was `0.6667` in both cases against the `1.0` gate, so the tracked decision is `keep-current-answer-path` (`npm run smoke:local-answer-quality-baseline`). This is an actual local base-model evaluation, not training, qualification, activation, or production readiness.
 - Q3 evaluates an evidence-first composition candidate on the same model, retrieval results, case set, and thresholds. It separates summary, source-bound claims, and reviewer action without receiving required terms or golden answers; the controlled case pass rate moved from `0.0` to `1.0` and required-term coverage from `0.6667` to `1.0` with no citation regression (`npm run smoke:local-answer-composition-candidate`). This result is limited to two fixtures, and the current answer path, model training, activation, rollout, and production claims remain unchanged.
+- Q4 extends the same installed model to 10 controlled cases covering Q3 regression, Korean, multiple domains, bounded eight-source context, and objective/evidence prompt injection. The v2 robustness baseline passed `9/10` with one canary match; a v3 deterministic instruction boundary passed `10/10` and reduced forbidden-term matches from `1` to `0` without metric regression (`npm run smoke:local-answer-composition-robustness`, `npm run smoke:local-answer-composition-hardening`). This does not establish general answer quality or broad prompt-injection resistance, and the current answer path, model training, activation, rollout, and production claims remain unchanged.
 
 ## Links
 

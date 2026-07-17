@@ -4,6 +4,9 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a 10-case local answer-composition robustness suite covering Q3 regression, Korean, multiple domains, bounded eight-source context, and objective/evidence prompt injection without sending evaluator terms to the model.
+- Preserved the actual v2 `9/10` result and one canary match as a failed baseline, then added a deterministic instruction boundary with raw/sanitized hash and removal-count evidence.
+- Replayed the same installed `qwen2.5:3b` with v3; all `10/10` cases and five scenarios passed, forbidden-term matches moved from `1` to `0`, and no quality metric regressed while answer-path activation, training, rollout, and production claims stayed disabled.
 - Added an evidence-first local answer composition candidate that separates summary, source-bound claims, and reviewer action without passing required terms, golden answers, or thresholds to the model.
 - Replayed the same installed `qwen2.5:3b`, retrieval results, and Q1 gate; controlled case pass improved from `0.0` to `1.0` and required-term coverage from `0.6667` to `1.0` with citation metrics unchanged.
 - Bound the content-free candidate evidence to the Q2 baseline hash, model digest, fixture, prompt, cases, and thresholds while leaving the current answer path, activation, training, rollout, and production claims unchanged.
@@ -72,8 +75,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,148,703 bytes`
-- SHA-256: `b61a34da8c8277ed0af90a2a642b3a50751d161ce16f11ef0be5e5c2fef72a29`
+- Size: `4,167,201 bytes`
+- SHA-256: `e050b4d2b1ab016d16ce45b30fbc0a27c321e4a68d55d8fc0f845ad57f7e4873`
 
 Included public surfaces:
 

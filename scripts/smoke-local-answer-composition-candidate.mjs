@@ -64,7 +64,7 @@ assert.doesNotMatch(evidenceText, /Temporal fact graph provenance keeps/);
 assert.doesNotMatch(evidenceText, /sk-|OPENAI_API_KEY|ANTHROPIC_API_KEY/);
 
 for (const term of [
-  'status: local-answer-composition-candidate-current',
+  'status: local-answer-composition-hardening-current',
   '| Q3 Evidence-first answer composition | 완료 |',
   'npm run evaluate:local-answer-composition-candidate',
   'npm run smoke:local-answer-composition-candidate',

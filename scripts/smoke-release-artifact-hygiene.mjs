@@ -40,6 +40,14 @@ assert.equal(
   true,
 );
 assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-composition-robustness.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-composition-hardening.json'),
+  true,
+);
+assert.equal(
   result.scannedFiles.includes('evidence/screenshots/local-training-permission-surface.png'),
   true,
 );

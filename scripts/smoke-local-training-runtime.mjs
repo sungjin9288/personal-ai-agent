@@ -44,7 +44,7 @@ assert.equal(stored.security.shell, false);
 assert.equal(stored.storeMutation, false);
 
 for (const term of [
-  'status: local-answer-composition-candidate-current',
+  'status: local-answer-composition-hardening-current',
   '| F2a Local training runtime contract | 완료 |',
   'npm run smoke:local-training-runtime',
   'actualLocalTrainingRuntimeContractValidated: true',

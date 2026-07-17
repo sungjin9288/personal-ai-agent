@@ -86,7 +86,7 @@ for (const forbidden of ['/Users/', '/private/var/folders/', 'OPENAI_API_KEY', '
 
 const developmentPlan = readRequiredFile('docs/ml-rag-development-plan-v1.md');
 for (const term of [
-  'status: local-answer-composition-candidate-current',
+  'status: local-answer-composition-hardening-current',
   '| R14 Shadow cache lifecycle stress | 완료 |',
   'npm run smoke:local-relevance-shadow-cache-lifecycle',
   'actualLocalRelevanceShadowCacheLifecycleValidated: true',
