@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-17T06:53:31.315Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-17T06:53:23.940Z
 - branch: codex/f2c-local-training-preflight
 - commit: 303b9b384db582c66d558322a3d02db76d44f025
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/303b9b384db582c66d558322a3d02db76d44f025/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

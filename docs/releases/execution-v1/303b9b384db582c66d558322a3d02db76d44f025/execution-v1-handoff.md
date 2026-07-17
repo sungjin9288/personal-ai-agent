@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-17T06:53:31.315Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-17T06:53:30.382Z
 - localDate: 2026-07-17
 - branch: codex/f2c-local-training-preflight
 - commit: 303b9b384db582c66d558322a3d02db76d44f025
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/303b9b384db582c66d558322a3d02db76d44f025](releases/execution-v1/303b9b384db582c66d558322a3d02db76d44f025)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/303b9b384db582c66d558322a3d02db76d44f025/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/303b9b384db582c66d558322a3d02db76d44f025/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/303b9b384db582c66d558322a3d02db76d44f025](docs/releases/execution-v1/303b9b384db582c66d558322a3d02db76d44f025)
 - visualArtifactSetSha256: 0df1f28687a143af1f8487bd21ae974d130d234bab04ddd3a05fa797dc2c535c
 - commitPushStatus: not pushed, origin/codex/f2c-local-training-preflight not found
 

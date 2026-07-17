@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T06:53:31.315Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T06:53:23.782Z
 - branch: codex/f2c-local-training-preflight
 - commit: 303b9b384db582c66d558322a3d02db76d44f025
