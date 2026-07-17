@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-17T07:37:50.053Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-17T07:37:39.298Z
 - branch: codex/f2c3-acquisition-approval
 - commit: f668417c17ef6dc268eb3edafe6e3e85ff9a2110
