@@ -24,6 +24,7 @@ const providerReadinessMatrixPath = path.join(repoDir, 'docs', 'provider-readine
 const providerFailureRecoveryDemoPath = path.join(repoDir, 'docs', 'provider-failure-recovery-demo-v1.md');
 const memoryRetrievalQualityFixturePath = path.join(repoDir, 'docs', 'memory-retrieval-quality-fixture-v1.md');
 const mlRagDevelopmentPlanPath = path.join(repoDir, 'docs', 'ml-rag-development-plan-v1.md');
+const actualUserQueryEvaluationPath = path.join(repoDir, 'docs', 'actual-user-query-evaluation-v1.md');
 const smokeValidationSummaryPath = path.join(repoDir, 'docs', 'smoke-validation-summary-v1.md');
 const externalEvidenceBlockersPath = path.join(repoDir, 'docs', 'external-evidence-blockers-v1.md');
 const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
@@ -55,6 +56,7 @@ const providerReadinessMatrix = readRequiredFile(providerReadinessMatrixPath);
 const providerFailureRecoveryDemo = readRequiredFile(providerFailureRecoveryDemoPath);
 const memoryRetrievalQualityFixture = readRequiredFile(memoryRetrievalQualityFixturePath);
 const mlRagDevelopmentPlan = readRequiredFile(mlRagDevelopmentPlanPath);
+const actualUserQueryEvaluation = readRequiredFile(actualUserQueryEvaluationPath);
 const smokeValidationSummary = readRequiredFile(smokeValidationSummaryPath);
 const externalEvidenceBlockers = readRequiredFile(externalEvidenceBlockersPath);
 const forkOnboarding = readRequiredFile(forkOnboardingPath);
@@ -75,7 +77,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 112$/m);
+assert.match(manifest, /^- fileCount: 113$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -107,6 +109,7 @@ const requiredPaths = [
   'docs/provider-failure-recovery-demo-v1.md',
   'docs/memory-retrieval-quality-fixture-v1.md',
   'docs/ml-rag-development-plan-v1.md',
+  'docs/actual-user-query-evaluation-v1.md',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
@@ -353,6 +356,14 @@ assert.match(
   mlRagDevelopmentPlan,
   /\| Q7 Reviewer action generalization \| 완료 \|/,
 );
+assert.match(mlRagDevelopmentPlan, /npm run smoke:actual-user-query-evaluation-readiness/);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| Q8 Actual user-query evaluation protocol \| 프로토콜 완료 · 데이터 대기 \|/,
+);
+assert.match(actualUserQueryEvaluation, /^# Actual User-Query Evaluation v1$/m);
+assert.match(actualUserQueryEvaluation, /^- actualUserQueryData: false$/m);
+assert.match(actualUserQueryEvaluation, /Q7 v5 reviewer-action baseline/);
 assert.match(mlRagDevelopmentPlan, /\| Q5 Adversarial input boundary and user-query intake \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| Q2 Actual local answer-quality baseline \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-conflict-revocation/);

@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-17
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, and reviewer-action generalization
-- Source code modified: yes, a v5 candidate now makes summary-only reviewer actions retain evidence-bound owner and trigger details while preserving public answer paths, stored formats, evaluator boundaries, and activation defaults
-- New feature development: yes, the same installed qwen2.5:3b retained Q4 10/10 and passed all 12 synthetic Q6 cases with unchanged thresholds and no external call; actual-user quality, training, activation, and rollout remain unproven or disabled
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, actual-data intake now rejects tracked and unsafe paths, selects the exact Q7 v5 baseline, and rechecks consent before every model call while preserving synthetic evaluation, public answer paths, stored formats, and activation defaults
+- New feature development: yes, the actual-user evaluation protocol and mid-run withdrawal boundary are verified with a fake loopback runtime; no actual user dataset was provided or evaluated, and actual-user quality, training, activation, and rollout remain unproven or disabled
 
 ## Generated Evidence Files
 
@@ -106,12 +106,13 @@
 - `docs/provider-readiness-matrix-v1.md`
 - `docs/provider-failure-recovery-demo-v1.md`
 - `docs/memory-retrieval-quality-fixture-v1.md`
+- `docs/actual-user-query-evaluation-v1.md`
 - `docs/smoke-validation-summary-v1.md`
 - `docs/external-evidence-blockers-v1.md`
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 208/208 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 209/209 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -170,6 +171,7 @@
 - User-query evaluation intake dry run: verified with `npm run smoke:user-query-evaluation-intake`
 - Local user-query quality stop condition: verified with `npm run smoke:local-user-query-quality`
 - Reviewer action generalization candidate: verified with `npm run smoke:local-answer-review-action-generalization`
+- Actual user-query evaluation protocol: verified with `npm run smoke:actual-user-query-evaluation-readiness`; actual user data and quality remain unverified
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

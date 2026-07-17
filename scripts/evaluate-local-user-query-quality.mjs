@@ -7,23 +7,49 @@ import {
   summarizeLocalUserQueryEvaluation,
 } from '../src/core/local-user-query-quality.mjs';
 import { assertLocalAnswerCompositionBoundaryRegression } from '../src/core/local-answer-composition-boundary-regression.mjs';
+import {
+  assertLocalAnswerReviewActionGeneralization,
+} from '../src/core/local-answer-review-action-generalization.mjs';
 import { requestLoopbackJson } from '../src/core/loopback-json-client.mjs';
-import { createAdversarialHardenedOllamaAnswerGenerator } from '../src/core/ollama-answer-generator.mjs';
+import {
+  createAdversarialHardenedOllamaAnswerGenerator,
+  createReviewActionGeneralizedOllamaAnswerGenerator,
+} from '../src/core/ollama-answer-generator.mjs';
 import {
   assertLocalUserQueryEvaluationAuthorization,
   evaluateLocalUserQuerySuite,
   loadLocalUserQueryEvaluationSuite,
 } from './local-user-query-evaluation-suite.mjs';
+import {
+  assertPrivateActualEvaluationPaths,
+} from './private-user-query-evaluation-paths.mjs';
 
 const repoDir = process.cwd();
 const options = parseOptions(process.argv.slice(2));
-const baseline = readEvidence('local-answer-composition-boundary-regression.json');
-assertLocalAnswerCompositionBoundaryRegression(baseline);
 
 const { caseInputs, intake, suite } = loadLocalUserQueryEvaluationSuite({
   datasetPath: options.datasetPath,
   intakePath: options.intakePath,
 });
+assertPrivateActualEvaluationPaths({
+  actualUserQueryData: intake.actualUserQueryData,
+  errorMessage:
+    'Actual user query evaluation requires distinct private dataset, intake, and output paths outside tracked repository content.',
+  paths: [
+    options.datasetPath,
+    options.intakePath,
+    options.outputPath,
+  ].filter(Boolean),
+  repoDir,
+});
+const baseline = intake.actualUserQueryData
+  ? readEvidence('local-answer-review-action-generalization.json')
+  : readEvidence('local-answer-composition-boundary-regression.json');
+if (intake.actualUserQueryData) {
+  assertLocalAnswerReviewActionGeneralization(baseline);
+} else {
+  assertLocalAnswerCompositionBoundaryRegression(baseline);
+}
 assertLocalUserQueryEvaluationAuthorization({
   intake,
   observedAt: new Date().toISOString(),
@@ -50,22 +76,29 @@ if (
   throw new Error('Local user query quality model drifted from the Q4 baseline.');
 }
 
-const generator = createAdversarialHardenedOllamaAnswerGenerator({
+const createGenerator = intake.actualUserQueryData
+  ? createReviewActionGeneralizedOllamaAnswerGenerator
+  : createAdversarialHardenedOllamaAnswerGenerator;
+const generator = createGenerator({
   endpoint: options.endpoint,
   model: options.model,
   timeoutMs: options.timeoutMs,
 });
 const { answerQualityEvaluation, observations } = await evaluateLocalUserQuerySuite({
-  authorizeCase: () => assertLocalUserQueryEvaluationAuthorization({
-    intake,
-    observedAt: new Date().toISOString(),
+  authorizeCase: () => readCurrentAuthorizedIntake({
+    expectedEvidenceHash: intake.evidenceHash,
+    options,
   }),
   caseInputs,
   generator,
   thresholds: suite.thresholds,
 });
 const observedAt = new Date().toISOString();
-assertLocalUserQueryEvaluationAuthorization({ intake, observedAt });
+readCurrentAuthorizedIntake({
+  expectedEvidenceHash: intake.evidenceHash,
+  observedAt,
+  options,
+});
 const evidence = buildLocalUserQueryQuality({
   baseline,
   evaluation: summarizeLocalUserQueryEvaluation({
@@ -117,6 +150,7 @@ console.log(JSON.stringify({
   outputPath: options.outputPath
     ? path.relative(repoDir, options.outputPath).split(path.sep).join('/')
     : null,
+  promptVersion: evidence.prompt.version,
   productionReadyClaim: evidence.productionReadyClaim,
   status: evidence.status,
 }, null, 2));
@@ -126,6 +160,26 @@ function readEvidence(filename) {
     path.join(repoDir, 'evidence', 'output-artifacts', filename),
     'utf8',
   ));
+}
+
+function readCurrentAuthorizedIntake({
+  expectedEvidenceHash,
+  observedAt = new Date().toISOString(),
+  options,
+}) {
+  const { intake: currentIntake } = loadLocalUserQueryEvaluationSuite({
+    datasetPath: options.datasetPath,
+    intakePath: options.intakePath,
+  });
+  if (currentIntake.evidenceHash !== expectedEvidenceHash) {
+    throw new Error(
+      'Local user query evaluation authorization changed during execution.',
+    );
+  }
+  return assertLocalUserQueryEvaluationAuthorization({
+    intake: currentIntake,
+    observedAt,
+  });
 }
 
 function parseOptions(args) {

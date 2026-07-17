@@ -2,7 +2,10 @@ import { createHash } from 'node:crypto';
 
 import { ANSWER_QUALITY_EVALUATION_SCHEMA_VERSION } from './answer-quality-evaluation.mjs';
 import { assertLocalAnswerCompositionBoundaryRegression } from './local-answer-composition-boundary-regression.mjs';
-import { ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION } from './ollama-answer-generator.mjs';
+import {
+  ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION,
+  REVIEW_ACTION_GENERALIZED_ANSWER_PROMPT_VERSION,
+} from './ollama-answer-generator.mjs';
 import { assertUserQueryEvaluationIntake } from './user-query-evaluation-intake.mjs';
 
 export const LOCAL_USER_QUERY_QUALITY_SCHEMA_VERSION =
@@ -235,7 +238,10 @@ function normalizeEvaluation(evaluation = {}) {
   };
 }
 
-function normalizeObservation(observation = {}) {
+function normalizeObservation(
+  observation = {},
+  expectedPromptVersion = ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION,
+) {
   const citedSourceKeyHashes = Array.isArray(observation.citedSourceKeyHashes)
     ? [...new Set(observation.citedSourceKeyHashes.map(normalizeText).filter(Boolean))].sort()
     : Array.isArray(observation.citedSourceKeys)
@@ -300,7 +306,7 @@ function normalizeObservation(observation = {}) {
     !isSha256(normalized.inputHash) ||
     normalized.maxOutputTokens > 2_048 ||
     !isSha256(normalized.promptHash) ||
-    normalized.promptVersion !== ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION ||
+    normalized.promptVersion !== expectedPromptVersion ||
     !isSha256(normalized.rawInputHash) ||
     !isSha256(normalized.responseHash) ||
     !Number.isInteger(normalized.outputBytes) ||
@@ -442,6 +448,72 @@ function check(id, passed) {
   return { id, passed: Boolean(passed), status: passed ? 'passed' : 'failed' };
 }
 
+function resolveBaseline(baseline, actualUserQueryData) {
+  if (!actualUserQueryData) {
+    assertLocalAnswerCompositionBoundaryRegression(baseline);
+    return {
+      checkId: 'q4-boundary-regression-baseline-passed',
+      evidence: {
+        evidenceHash: baseline.evidenceHash,
+        evaluationHash: baseline.evaluation.evaluationHash,
+        promptHash: baseline.prompt.candidateHash,
+      },
+      model: baseline.model,
+      promptHash: baseline.prompt.candidateHash,
+      promptVersion: ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION,
+      runtime: baseline.runtime,
+      validated: baseline.candidateBoundaryRegressionValidated === true,
+    };
+  }
+
+  const {
+    evidenceHash,
+    id,
+    ...content
+  } = baseline || {};
+  const expectedHash = hashRecord(content);
+  const q4 = content.candidate?.q4;
+  const q6 = content.candidate?.q6;
+  if (
+    evidenceHash !== expectedHash ||
+    id !== `local-answer-review-action-generalization-${expectedHash}` ||
+    content.schemaVersion !==
+      'personal-ai-agent-local-answer-review-action-generalization/v1' ||
+    content.reviewActionGeneralizationValidated !== true ||
+    content.actualUserQueryData !== false ||
+    content.currentAnswerPathChanged !== false ||
+    content.activation?.authorized !== false ||
+    content.productionReadyClaim !== false ||
+    content.prompt?.candidateVersion !==
+      REVIEW_ACTION_GENERALIZED_ANSWER_PROMPT_VERSION ||
+    !isSha256(content.prompt?.candidateHash) ||
+    q4?.caseCount !== 10 ||
+    q4?.evaluation?.status !== 'passed' ||
+    q4?.evaluation?.metrics?.casePassRate !== 1 ||
+    q6?.caseCount !== 12 ||
+    q6?.evaluation?.status !== 'passed' ||
+    q6?.evaluation?.metrics?.casePassRate !== 1
+  ) {
+    throw new Error(
+      'Actual user query quality requires the validated Q7 review-action baseline.',
+    );
+  }
+  return {
+    checkId: 'q7-review-action-generalization-baseline-passed',
+    evidence: {
+      evidenceHash,
+      evaluationHash: q6.evaluation.evaluationHash,
+      kind: 'review-action-generalization-v5',
+      promptHash: content.prompt.candidateHash,
+    },
+    model: content.model,
+    promptHash: content.prompt.candidateHash,
+    promptVersion: REVIEW_ACTION_GENERALIZED_ANSWER_PROMPT_VERSION,
+    runtime: content.runtime,
+    validated: true,
+  };
+}
+
 export function buildLocalUserQueryQuality({
   baseline,
   evaluation,
@@ -452,14 +524,18 @@ export function buildLocalUserQueryQuality({
   runtime,
   suite,
 } = {}) {
-  assertLocalAnswerCompositionBoundaryRegression(baseline);
   assertUserQueryEvaluationIntake(intake);
+  const baselineContract = resolveBaseline(
+    baseline,
+    intake.actualUserQueryData === true,
+  );
   const normalizedObservedAt = requireTimestamp(observedAt);
   const normalizedEvaluation = normalizeEvaluation(evaluation);
   const normalizedSuite = normalizeSuite(suite);
   const normalizedModel = normalizeModel(model);
   const normalizedRuntime = normalizeRuntime(runtime);
-  const normalizedObservations = observations.map(normalizeObservation)
+  const normalizedObservations = observations.map((observation) =>
+    normalizeObservation(observation, baselineContract.promptVersion))
     .sort((left, right) => left.caseIdHash.localeCompare(right.caseIdHash));
   const intakeRecords = new Map(intake.records.map((record) => [record.idHash, record]));
   const suiteCaseIds = normalizedSuite.cases.map((item) => item.idHash);
@@ -470,7 +546,7 @@ export function buildLocalUserQueryQuality({
   )];
 
   if (
-    baseline.candidateBoundaryRegressionValidated !== true ||
+    baselineContract.validated !== true ||
     intake.usage.localModelInputAuthorized !== true ||
     intake.usage.externalTransferAuthorized !== false ||
     intake.usage.trainingAuthorized !== false ||
@@ -492,13 +568,13 @@ export function buildLocalUserQueryQuality({
     }) ||
     !recordsEqual(evaluationCaseIds, suiteCaseIds) ||
     !recordsEqual(observationCaseIds, suiteCaseIds) ||
-    normalizedModel.id !== baseline.model.id ||
-    normalizedModel.digest !== baseline.model.digest ||
-    normalizedModel.sizeBytes !== baseline.model.sizeBytes ||
-    normalizedRuntime.version !== baseline.runtime.version ||
+    normalizedModel.id !== baselineContract.model.id ||
+    normalizedModel.digest !== baselineContract.model.digest ||
+    normalizedModel.sizeBytes !== baselineContract.model.sizeBytes ||
+    normalizedRuntime.version !== baselineContract.runtime.version ||
     normalizedEvaluation.thresholdsHash !== hashRecord(normalizedSuite.thresholds) ||
     promptHashes.length !== 1 ||
-    promptHashes[0] !== baseline.prompt.candidateHash ||
+    promptHashes[0] !== baselineContract.promptHash ||
     normalizedObservations.some((observation) => {
       const definition = normalizedSuite.cases.find(
         (item) => item.idHash === observation.caseIdHash,
@@ -526,14 +602,20 @@ export function buildLocalUserQueryQuality({
   const syntheticUserQueryQualityValidated =
     !intake.actualUserQueryData && qualityPassed;
   const checks = [
-    check('q4-boundary-regression-baseline-passed', baseline.candidateBoundaryRegressionValidated),
+    check(baselineContract.checkId, baselineContract.validated),
     check('q5-intake-integrity-validated', normalizedSuite.intakeEvidenceHash === intake.evidenceHash),
     check('local-model-input-authorized', intake.usage.localModelInputAuthorized),
     check('external-transfer-denied', !intake.usage.externalTransferAuthorized),
     check('training-use-denied', !intake.usage.trainingAuthorized),
-    check('same-model-digest-bound', normalizedModel.digest === baseline.model.digest),
-    check('same-runtime-version-bound', normalizedRuntime.version === baseline.runtime.version),
-    check('same-prompt-bound', promptHashes[0] === baseline.prompt.candidateHash),
+    check(
+      'same-model-digest-bound',
+      normalizedModel.digest === baselineContract.model.digest,
+    ),
+    check(
+      'same-runtime-version-bound',
+      normalizedRuntime.version === baselineContract.runtime.version,
+    ),
+    check('same-prompt-bound', promptHashes[0] === baselineContract.promptHash),
     check('all-intake-cases-observed', observationCaseIds.length === suiteCaseIds.length),
     check('all-generations-completed', normalizedObservations.every(
       (item) => item.generationStatus === 'passed',
@@ -559,11 +641,7 @@ export function buildLocalUserQueryQuality({
     actualModelTrainingExecuted: false,
     actualUserQueryData: intake.actualUserQueryData,
     actualUserQueryQualityValidated,
-    baseline: {
-      evidenceHash: baseline.evidenceHash,
-      evaluationHash: baseline.evaluation.evaluationHash,
-      promptHash: baseline.prompt.candidateHash,
-    },
+    baseline: baselineContract.evidence,
     checks,
     contentRetention: 'hashes-and-metrics-only',
     costFree: true,
@@ -589,7 +667,7 @@ export function buildLocalUserQueryQuality({
     productionReadyClaim: false,
     prompt: {
       hash: promptHashes[0],
-      version: ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION,
+      version: baselineContract.promptVersion,
     },
     rolloutAuthorized: false,
     runtime: normalizedRuntime,
@@ -615,6 +693,9 @@ export function assertLocalUserQueryQuality(evidence) {
   const { evidenceHash, id, ...content } = evidence || {};
   const expectedHash = hashRecord(content);
   const qualityPassed = content?.evaluation?.status === 'passed';
+  const expectedPromptVersion = content.actualUserQueryData === true
+    ? REVIEW_ACTION_GENERALIZED_ANSWER_PROMPT_VERSION
+    : ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION;
   if (
     evidenceHash !== expectedHash ||
     id !== `local-user-query-quality-${expectedHash}` ||
@@ -635,8 +716,12 @@ export function assertLocalUserQueryQuality(evidence) {
     content.suiteHash !== hashRecord(content.suite) ||
     content.suite?.actualUserQueryData !== content.actualUserQueryData ||
     content.suite?.intakeEvidenceHash !== content.intake?.evidenceHash ||
-    content.prompt?.version !== ADVERSARIAL_HARDENED_ANSWER_PROMPT_VERSION ||
+    content.prompt?.version !== expectedPromptVersion ||
     content.prompt?.hash !== content.baseline?.promptHash ||
+    (content.actualUserQueryData === true &&
+      content.baseline?.kind !== 'review-action-generalization-v5') ||
+    (content.actualUserQueryData === false &&
+      content.baseline?.kind !== undefined) ||
     !Array.isArray(content.checks) ||
     content.checks.some((item) =>
       !normalizeText(item?.id) ||
@@ -649,6 +734,7 @@ export function assertLocalUserQueryQuality(evidence) {
   normalizeModel(content.model);
   normalizeRuntime(content.runtime);
   requireTimestamp(content.observedAt);
-  content.observations.map(normalizeObservation);
+  content.observations.map((observation) =>
+    normalizeObservation(observation, expectedPromptVersion));
   return evidence;
 }

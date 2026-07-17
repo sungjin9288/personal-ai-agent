@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a private actual-user query evaluation protocol that rejects tracked paths, symlinks, oversized inputs, and stale consent before local model execution.
+- Actual-data runs now bind the Q7 v5 review-action baseline and re-read the dataset and content-free intake before every model call. Fake loopback tests prove protocol execution and mid-run withdrawal only; no actual user data was provided or evaluated, and quality, activation, training, rollout, and production claims remain unchanged.
 - Added a v5 review-action generalization candidate that requires summary-only objectives to retain an evidence-bound owner and trigger when both are present.
 - Replayed the same installed `qwen2.5:3b` with unchanged thresholds: Q4 remained `10/10` and the synthetic Q6 suite moved from `11/12` to `12/12`. The current answer path, training, activation, rollout, actual-user quality, and production claims remain unchanged.
 - Added a cloud-disabled local user-query evaluation runner that binds the Q5 consent and de-identification intake to the exact Q4 model, runtime, v4 prompt, and unchanged quality thresholds. The synthetic 12-case replay passed 11 cases and retained one `invalid-review-action` failure, so activation and the current answer path remain unchanged.

@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a private actual-user query evaluation protocol that rejects tracked paths, symlinks, oversized inputs, and stale consent before local model execution.
+- Actual-data runs now bind the Q7 v5 review-action baseline and re-read the dataset and content-free intake before every model call. Fake loopback tests prove protocol execution and mid-run withdrawal only; no actual user data was provided or evaluated, and quality, activation, training, rollout, and production claims remain unchanged.
 - Added a v5 review-action generalization candidate that requires summary-only objectives to retain an evidence-bound owner and trigger when both are present.
 - Replayed the same installed `qwen2.5:3b` with unchanged thresholds: Q4 remained `10/10` and the synthetic Q6 suite moved from `11/12` to `12/12`. The current answer path, training, activation, rollout, actual-user quality, and production claims remain unchanged.
 - Added a cloud-disabled local user-query evaluation runner that binds the Q5 consent and de-identification intake to the exact Q4 model, runtime, v4 prompt, and unchanged quality thresholds. The synthetic 12-case replay passed 11 cases and retained one `invalid-review-action` failure, so activation and the current answer path remain unchanged.
@@ -82,8 +84,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,197,110 bytes`
-- SHA-256: `0d1fc7755388ba4660b7bb066da6df3acd2da32ae3a5297bd099b1238f6b38f1`
+- Size: `4,201,686 bytes`
+- SHA-256: `d8c64e5f3b94cdbf8aa33a47ba490fc3bb4391e0c121b9fe04467f09ac3ad101`
 
 Included public surfaces:
 

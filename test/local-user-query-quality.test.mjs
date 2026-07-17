@@ -22,6 +22,9 @@ import {
 const baseline = readJson(
   'evidence/output-artifacts/local-answer-composition-boundary-regression.json',
 );
+const reviewActionBaseline = readJson(
+  'evidence/output-artifacts/local-answer-review-action-generalization.json',
+);
 const fixturePath = path.resolve(
   'fixtures/user-query-evaluation-intake-dry-run-v1.json',
 );
@@ -175,6 +178,27 @@ test('consented deidentified records can validate local quality without authoriz
     assert.equal(evidence.generalAnswerQualityImprovementValidated, false);
     assert.equal(evidence.rolloutAuthorized, false);
     assert.equal(evidence.status, 'actual-user-query-quality-passed-governance-blocked');
+    assert.equal(
+      evidence.baseline.kind,
+      'review-action-generalization-v5',
+    );
+    assert.equal(
+      evidence.prompt.version,
+      reviewActionBaseline.prompt.candidateVersion,
+    );
+    assert.throws(
+      () => buildLocalUserQueryQuality({
+        baseline: reviewActionBaseline,
+        evaluation: context.evaluation,
+        intake: context.intake,
+        model: reviewActionBaseline.model,
+        observations: context.observations,
+        observedAt: '2026-08-18T00:00:00.000Z',
+        runtime: reviewActionBaseline.runtime,
+        suite: context.suite,
+      }),
+      /bind the Q4 baseline, Q5 intake/,
+    );
     assert.throws(
       () => buildLocalUserQueryQuality({
         baseline,
@@ -182,11 +206,11 @@ test('consented deidentified records can validate local quality without authoriz
         intake: context.intake,
         model: baseline.model,
         observations: context.observations,
-        observedAt: '2026-08-18T00:00:00.000Z',
+        observedAt: '2026-07-17T07:00:00.000Z',
         runtime: baseline.runtime,
         suite: context.suite,
       }),
-      /bind the Q4 baseline, Q5 intake/,
+      /validated Q7 review-action baseline/,
     );
   } finally {
     fs.rmSync(directory, { force: true, recursive: true });
@@ -216,6 +240,11 @@ function buildContext({
     cases,
     thresholds: LOCAL_USER_QUERY_QUALITY_THRESHOLDS,
   });
+  const selectedBaseline = intake.actualUserQueryData
+    ? reviewActionBaseline
+    : baseline;
+  const promptHash = selectedBaseline.prompt.candidateHash;
+  const promptVersion = selectedBaseline.prompt.candidateVersion;
   const observations = caseInputs.map((item) => ({
     caseIdHash: item.idHash,
     citedSourceKeys: item.evidence.map((evidence) => evidence.sourceKey),
@@ -227,8 +256,8 @@ function buildContext({
     inputHash: sha256(`input:${item.idHash}`),
     maxOutputTokens: 1024,
     outputBytes: 100,
-    promptHash: baseline.prompt.candidateHash,
-    promptVersion: baseline.prompt.candidateVersion,
+    promptHash,
+    promptVersion,
     rawInputHash: sha256(`raw:${item.idHash}`),
     responseHash: sha256(`response:${item.idHash}`),
     reviewActionPresent: true,
@@ -250,20 +279,22 @@ function buildContext({
       suite,
     }),
     intake,
+    baseline: selectedBaseline,
     observations,
     suite,
   };
 }
 
 function buildEvidence(context) {
+  const selectedBaseline = context.baseline || baseline;
   return buildLocalUserQueryQuality({
-    baseline,
+    baseline: selectedBaseline,
     evaluation: context.evaluation,
     intake: context.intake,
-    model: context.model || baseline.model,
+    model: context.model || selectedBaseline.model,
     observations: context.observations,
     observedAt: '2026-07-17T07:00:00.000Z',
-    runtime: baseline.runtime,
+    runtime: selectedBaseline.runtime,
     suite: context.suite,
   });
 }

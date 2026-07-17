@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 208/208 passed with `npm run smoke:all` on 2026-07-17
+- lastFullSweep: 209/209 passed with `npm run smoke:all` on 2026-07-17
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -81,6 +81,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | User-query evaluation intake | `npm run smoke:user-query-evaluation-intake` | Verifies synthetic consent, de-identification, retention, six-domain and four-language coverage without raw query storage, training, or provider-input authority |
 | Local user-query quality | `npm run smoke:local-user-query-quality` | Verifies the exact local model/runtime/prompt/intake binding, 11/12 synthetic stop condition, bounded `invalid-review-action` evidence, raw-content exclusion, and unchanged answer path |
 | Reviewer action generalization | `npm run smoke:local-answer-review-action-generalization` | Verifies v5 prompt binding, Q4 10/10 parity, synthetic Q6 12/12, content-free evidence, unchanged thresholds, and no answer-path activation |
+| Actual user-query evaluation readiness | `npm run smoke:actual-user-query-evaluation-readiness` | Verifies private-path intake, tracked-path refusal, Q7 v5 selection, per-case authorization reload, withdrawal fail-closed, and unchanged actual-data and activation claims |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
 | External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
 | Portfolio claim boundary | `npm run smoke:portfolio-docs-claim-boundary` | Verifies portfolio docs do not overclaim unsupported capabilities |
@@ -150,6 +151,7 @@ npm run smoke:local-answer-composition-boundary-regression
 npm run smoke:user-query-evaluation-intake
 npm run smoke:local-user-query-quality
 npm run smoke:local-answer-review-action-generalization
+npm run smoke:actual-user-query-evaluation-readiness
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview

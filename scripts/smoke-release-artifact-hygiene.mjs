@@ -23,6 +23,7 @@ assert.equal(result.scannedFiles.includes('docs/architecture-code-walkthrough-v1
 assert.equal(result.scannedFiles.includes('docs/provider-readiness-matrix-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/provider-failure-recovery-demo-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/memory-retrieval-quality-fixture-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/actual-user-query-evaluation-v1.md'), true);
 assert.equal(
   result.scannedFiles.includes('evidence/output-artifacts/local-training-runtime-contract.json'),
   true,

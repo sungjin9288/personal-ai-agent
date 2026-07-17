@@ -64,6 +64,7 @@
 | User-query evaluation intake dry run | 완료 | `evidence/output-artifacts/user-query-evaluation-intake.json`, `src/core/user-query-evaluation-intake.mjs` | 12 synthetic record·6 domain·4 language, consent·철회·비식별·retention guard, raw query 미저장과 training 권한 false를 verified by `npm run smoke:user-query-evaluation-intake` |
 | Local user-query quality stop condition | 완료 | `evidence/output-artifacts/local-user-query-quality.json`, `src/core/local-user-query-quality.mjs` | 같은 qwen2.5:3b·runtime·v4 prompt로 12건을 실행해 11/12와 `invalid-review-action` 1건을 content-free로 보존하고 current path 유지 verified by `npm run smoke:local-user-query-quality` |
 | Reviewer action generalization candidate | 완료 | `evidence/output-artifacts/local-answer-review-action-generalization.json`, `src/core/local-answer-review-action-generalization.mjs` | 같은 model·runtime·threshold에서 Q4 10/10 parity와 synthetic Q6 12/12를 content-free로 검증하고 actual-user evaluation·activation을 보류 verified by `npm run smoke:local-answer-review-action-generalization` |
+| Actual user-query evaluation protocol | 준비 완료 · 데이터 대기 | `docs/actual-user-query-evaluation-v1.md`, `scripts/build-user-query-evaluation-intake.mjs`, `scripts/evaluate-local-user-query-quality.mjs` | private path, Q7 v5 binding, case별 consent 재확인, withdrawal fail-closed와 actualUserQueryData=false 경계를 verified by `npm run smoke:actual-user-query-evaluation-readiness` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
@@ -72,7 +73,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,197,110 bytes, SHA-256 `0d1fc7755388ba4660b7bb066da6df3acd2da32ae3a5297bd099b1238f6b38f1` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,201,686 bytes, SHA-256 `d8c64e5f3b94cdbf8aa33a47ba490fc3bb4391e0c121b9fe04467f09ac3ad101` |
 
 ## 검증 실패 / 보류
 

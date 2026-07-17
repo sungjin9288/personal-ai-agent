@@ -5,6 +5,7 @@
 - costFreeDefault: true
 - externalProviderCalls: none
 - paidCloudExecution: none
+- currentActualUserQueryEvaluationRunbook: `docs/actual-user-query-evaluation-v1.md`
 - currentFixture: `fixtures/answer-quality-cases-v1.json`
 - currentCorpusFixture: `fixtures/retrieval-corpus-cases-v1.json`
 - currentRetrievalFixture: `fixtures/retrieval-quality-cases-v1.json`
@@ -757,6 +758,14 @@ Q7은 Q6의 실패한 fixture나 evaluator를 바꾸지 않고 v5 prompt candida
 
 다음 단계는 prompt를 runtime에 활성화하는 작업이 아니다. 별도 승인 아래 명시적 동의, 철회 가능성, 비식별 검토, current retention을 통과한 실제 user-query evaluation을 먼저 실행하고, Q4·Q6 회귀와 실제 분포가 함께 통과할 때만 다음 activation decision packet을 만든다.
 
+## 현재 actual user-query evaluation protocol
+
+Q8은 실제 사용자 dataset을 repository에 추가하지 않고 다음 평가 경로만 실행 가능하게 만들었다. Intake CLI는 2 MiB 이하 regular file만 읽고 symlink를 거부한다. 실제 dataset과 intake는 repository 밖 private directory 또는 Git이 무시하는 `var/` 아래에만 둘 수 있으며 tracked 경로를 지정하면 model 호출 전에 중단한다.
+
+Actual intake가 확인되면 evaluator는 Q4 v4가 아니라 Q7 review-action generalization v5의 exact model, runtime, prompt, threshold baseline을 사용한다. Synthetic Q6 evidence와 기존 v4 runner contract는 바꾸지 않는다. 각 case 직전에 dataset과 content-free intake를 다시 읽어 consent, retention, local-model authorization, dataset hash가 현재 상태인지 확인하므로 중간 철회나 교체는 다음 model 호출 전에 실패한다.
+
+Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 intake 삭제 시 중단을 검증한다. 이 테스트는 사용자 질의가 아닌 test fixture로 실행되므로 실제 평가 증적이 아니다. 현재 `actualUserQueryData: false`, `actualEvaluationExecuted: false`, `actualUserQueryQualityValidated: false`, `currentAnswerPathChanged: false`, `productionReadyClaim: false`를 유지한다. 실제 실행 절차와 삭제 경계는 `docs/actual-user-query-evaluation-v1.md`에 고정했다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -768,6 +777,7 @@ Q7은 Q6의 실패한 fixture나 evaluator를 바꾸지 않고 v5 prompt candida
 | Q5 Adversarial input boundary and user-query intake | 완료 | Unicode·다국어·split-letter 14-case 경계, 동일 모델 10-case 회귀, consent-first synthetic intake dry run | 입력 경계 14/14, v4 동일 suite 10/10, 실제 사용자 data·runtime activation·training 없음 |
 | Q6 Local user-query quality evaluation | stop condition 기록 | Q5 intake를 같은 model·runtime·v4 prompt와 결합한 content-free 12-case local replay | 11/12와 `invalid-review-action` 1건을 보존하고 current path 유지; candidate 교정 전 실제 사용자 평가 중단 |
 | Q7 Reviewer action generalization | 완료 | v5 prompt candidate를 Q4 10-case와 Q6 12-case에 같은 model·runtime·threshold로 재실행 | Q4 10/10 parity와 synthetic Q6 12/12, content-free evidence, current path·activation 불변 |
+| Q8 Actual user-query evaluation protocol | 프로토콜 완료 · 데이터 대기 | private intake, tracked-path refusal, Q7 v5 binding, per-case consent reload, withdrawal fail-closed | fake loopback protocol 검증 완료; actual user data·quality·activation·training 없음 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
@@ -917,6 +927,7 @@ npm run evaluate:local-user-query-quality -- --endpoint http://127.0.0.1:11514 -
 npm run smoke:local-user-query-quality
 npm run evaluate:local-answer-review-action-generalization -- --endpoint http://127.0.0.1:11514 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-review-action-generalization.json
 npm run smoke:local-answer-review-action-generalization
+npm run smoke:actual-user-query-evaluation-readiness
 npm run smoke:retrieval-memory
 npm run smoke:memory-retrieval-quality-fixture
 ```

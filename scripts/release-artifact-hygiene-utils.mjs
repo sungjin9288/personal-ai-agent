@@ -57,6 +57,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'docs/provider-readiness-matrix-v1.md',
   'docs/provider-failure-recovery-demo-v1.md',
   'docs/memory-retrieval-quality-fixture-v1.md',
+  'docs/actual-user-query-evaluation-v1.md',
   'evidence/output-artifacts/local-embedding-model-qualification.json',
   'evidence/output-artifacts/local-retrieval-robustness.json',
   'evidence/output-artifacts/local-relevance-reranker-evaluation.json',

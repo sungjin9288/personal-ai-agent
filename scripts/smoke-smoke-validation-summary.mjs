@@ -69,6 +69,7 @@ const expectedCommands = [
   'npm run smoke:user-query-evaluation-intake',
   'npm run smoke:local-user-query-quality',
   'npm run smoke:local-answer-review-action-generalization',
+  'npm run smoke:actual-user-query-evaluation-readiness',
   'npm run smoke:smoke-validation-summary',
   'npm run smoke:external-evidence-blockers',
   'npm run smoke:readme-portfolio-overview',
