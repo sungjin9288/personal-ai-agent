@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T16:07:28.839Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T16:07:20.279Z
 - branch: codex/f2c18-host-restart-rehearsal
 - commit: c04f4e4f3761069d64c3fe3ad135355ab6ce5140

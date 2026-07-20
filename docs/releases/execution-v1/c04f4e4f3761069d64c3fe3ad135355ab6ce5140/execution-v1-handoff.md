@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T16:07:28.839Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T16:07:27.854Z
 - localDate: 2026-07-21
 - branch: codex/f2c18-host-restart-rehearsal
 - commit: c04f4e4f3761069d64c3fe3ad135355ab6ce5140
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c04f4e4f3761069d64c3fe3ad135355ab6ce5140](releases/execution-v1/c04f4e4f3761069d64c3fe3ad135355ab6ce5140)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c04f4e4f3761069d64c3fe3ad135355ab6ce5140/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/c04f4e4f3761069d64c3fe3ad135355ab6ce5140/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/c04f4e4f3761069d64c3fe3ad135355ab6ce5140](docs/releases/execution-v1/c04f4e4f3761069d64c3fe3ad135355ab6ce5140)
 - visualArtifactSetSha256: 29dfc6bf5a80df1e4a360d76d34c75653e0b53d12fa6d9b4c908b6b42afca4b5
 - commitPushStatus: not pushed, origin/codex/f2c18-host-restart-rehearsal not found
 

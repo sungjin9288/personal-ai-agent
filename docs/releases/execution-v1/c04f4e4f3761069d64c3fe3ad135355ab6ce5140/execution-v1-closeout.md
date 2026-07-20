@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-20T16:07:28.839Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-20T16:07:20.372Z
 - branch: codex/f2c18-host-restart-rehearsal
 - commit: c04f4e4f3761069d64c3fe3ad135355ab6ce5140
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/c04f4e4f3761069d64c3fe3ad135355ab6ce5140/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
