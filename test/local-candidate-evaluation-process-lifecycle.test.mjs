@@ -300,7 +300,19 @@ test('synchronous spawn adapter failures preserve their original error', async (
       },
       timeoutMs: 500,
     }),
-    /fixture synchronous spawn failure/u,
+    (error) => {
+      assert.match(
+        error.message,
+        /fixture synchronous spawn failure/u,
+      );
+      assert.equal(
+        isLocalCandidateEvaluationWorkspaceCleanupAuthorized(
+          error,
+        ),
+        true,
+      );
+      return true;
+    },
   );
 });
 
@@ -320,6 +332,83 @@ test('unknown process-group state rejects cleanup even after a normal close', as
         false,
       );
       return true;
+    },
+  );
+});
+
+test('process-group state failures reject cleanup instead of escaping finalization', async () => {
+  await assert.rejects(
+    runWorker({
+      mode: 'success',
+      processGroupState() {
+        throw new Error('fixture group lookup failure');
+      },
+    }),
+    (error) => {
+      assert.equal(
+        isLocalCandidateEvaluationWorkspaceCleanupAuthorized(
+          error,
+        ),
+        false,
+      );
+      return /process-group-quiescence/u.test(
+        error.message,
+      );
+    },
+  );
+});
+
+test('quiescence uses a monotonic deadline when the group stays live', async () => {
+  const observations = [0, 1_000];
+  await assert.rejects(
+    runWorker({
+      mode: 'success',
+      monotonicNow() {
+        return observations.shift() ?? 1_000;
+      },
+      processGroupState() {
+        return 'live';
+      },
+      quiescenceTimeoutMs: 300,
+    }),
+    (error) => {
+      assert.equal(
+        isLocalCandidateEvaluationWorkspaceCleanupAuthorized(
+          error,
+        ),
+        false,
+      );
+      return /process-group-quiescence/u.test(
+        error.message,
+      );
+    },
+  );
+});
+
+test('pre-spawn platform refusal explicitly authorizes workspace cleanup', () => {
+  assert.throws(
+    () =>
+      runLocalCandidateEvaluationProcess({
+        args: [],
+        command: process.execPath,
+        cwd: process.cwd(),
+        environment: {},
+        maxOutputBytes: 128,
+        payload: {},
+        platform: 'win32',
+        spawnProcess: spawn,
+        timeoutMs: 500,
+      }),
+    (error) => {
+      assert.equal(
+        isLocalCandidateEvaluationWorkspaceCleanupAuthorized(
+          error,
+        ),
+        true,
+      );
+      return /requires POSIX process groups/u.test(
+        error.message,
+      );
     },
   );
 });

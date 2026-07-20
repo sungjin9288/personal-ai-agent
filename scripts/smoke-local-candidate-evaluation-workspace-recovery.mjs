@@ -17,7 +17,7 @@ const evidence = JSON.parse(
 
 assert.equal(
   evidence.schemaVersion,
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v5',
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v6',
 );
 assert.equal(
   evidence.failureGuards.stalePreparingWorkspaceRecovered,
@@ -34,11 +34,11 @@ assert.equal(
 );
 assert.equal(
   evidence.security.workspaceRecovery,
-  'expired-dead-preparing-only',
+  'expired-dead-preparing-or-expired-prior-boot-spawning',
 );
 assert.equal(
   evidence.execution.workspaceRecoveryCount,
-  1,
+  2,
 );
 
 const docs = [

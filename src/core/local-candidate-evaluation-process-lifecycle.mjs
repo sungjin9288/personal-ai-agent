@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { performance } from 'node:perf_hooks';
 
 export const LOCAL_CANDIDATE_EVALUATION_PROCESS_LIFECYCLE_SCHEMA_VERSION =
   'personal-ai-agent-local-candidate-evaluation-process-lifecycle/v1';
@@ -65,18 +66,35 @@ function delay(durationMs) {
 }
 
 async function waitForProcessGroupAbsence({
+  monotonicNow,
   processGroupId,
   processGroupState,
   quiescencePollMs,
   quiescenceTimeoutMs,
 }) {
-  const deadline = Date.now() + quiescenceTimeoutMs;
+  let startedAt;
+  try {
+    startedAt = monotonicNow();
+  } catch {
+    return false;
+  }
   while (true) {
-    const state = processGroupState(processGroupId);
+    let elapsed;
+    let state;
+    try {
+      state = processGroupState(processGroupId);
+      elapsed = monotonicNow() - startedAt;
+    } catch {
+      return false;
+    }
     if (state === 'absent') {
       return true;
     }
-    if (state === 'unknown' || Date.now() >= deadline) {
+    if (
+      state === 'unknown' ||
+      !Number.isFinite(elapsed) ||
+      elapsed >= quiescenceTimeoutMs
+    ) {
       return false;
     }
     await delay(quiescencePollMs);
@@ -137,7 +155,7 @@ export function assertLocalCandidateEvaluationProcessLifecycle(
 export function isLocalCandidateEvaluationWorkspaceCleanupAuthorized(
   error,
 ) {
-  return error?.workspaceCleanupAuthorized !== false;
+  return error?.workspaceCleanupAuthorized === true;
 }
 
 export function runLocalCandidateEvaluationProcess({
@@ -146,6 +164,7 @@ export function runLocalCandidateEvaluationProcess({
   cwd,
   environment,
   maxOutputBytes,
+  monotonicNow = () => performance.now(),
   payload,
   platform = process.platform,
   processGroupState = defaultProcessGroupState,
@@ -156,18 +175,23 @@ export function runLocalCandidateEvaluationProcess({
   timeoutMs,
 }) {
   if (platform === 'win32') {
-    throw new Error(
+    throw createRuntimeError(
       'Local candidate evaluation process lifecycle requires POSIX process groups.',
+      true,
     );
   }
-  requirePositiveInteger(
-    quiescencePollMs,
-    'quiescencePollMs',
-  );
-  requirePositiveInteger(
-    quiescenceTimeoutMs,
-    'quiescenceTimeoutMs',
-  );
+  try {
+    requirePositiveInteger(
+      quiescencePollMs,
+      'quiescencePollMs',
+    );
+    requirePositiveInteger(
+      quiescenceTimeoutMs,
+      'quiescenceTimeoutMs',
+    );
+  } catch (error) {
+    throw createRuntimeError(error.message, true);
+  }
 
   return new Promise((resolve, reject) => {
     let child;
@@ -180,6 +204,26 @@ export function runLocalCandidateEvaluationProcess({
         stdio: ['pipe', 'pipe', 'pipe'],
       });
     } catch (error) {
+      try {
+        Object.defineProperty(
+          error,
+          'workspaceCleanupAuthorized',
+          {
+            configurable: false,
+            enumerable: false,
+            value: true,
+            writable: false,
+          },
+        );
+      } catch {
+        reject(
+          createRuntimeError(
+            String(error?.message || error),
+            true,
+          ),
+        );
+        return;
+      }
       reject(error);
       return;
     }
@@ -267,6 +311,7 @@ export function runLocalCandidateEvaluationProcess({
       clearTimers();
       const groupAbsent =
         await waitForProcessGroupAbsence({
+          monotonicNow,
           processGroupId,
           processGroupState,
           quiescencePollMs,
@@ -328,7 +373,13 @@ export function runLocalCandidateEvaluationProcess({
         );
       }, timeoutMs);
       executionTimer.unref?.();
-      child.stdin.end(JSON.stringify(payload));
+      try {
+        child.stdin.end(JSON.stringify(payload));
+      } catch {
+        requestTermination(
+          'Local candidate evaluation runtime command stdin failed.',
+        );
+      }
     });
     child.on('error', (error) => {
       const message =

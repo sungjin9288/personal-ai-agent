@@ -42,6 +42,19 @@ const EVALUATION_SUITE_CONTENT = fs.readFileSync(
 const EVALUATOR =
   createLocalCandidateEvaluatorFixture();
 const commandPath = EVALUATOR.entryPath;
+const CURRENT_BOOT = 'fixture-current-runtime-boot';
+
+function createBootIdentity(value = CURRENT_BOOT) {
+  return {
+    available: true,
+    identityHash: createHash('sha256')
+      .update(value)
+      .digest('hex'),
+    schemaVersion:
+      'personal-ai-agent-local-candidate-evaluation-host-boot-identity/v1',
+    source: 'linux-proc-boot-id',
+  };
+}
 
 async function buildFixture(
   evaluationKind = 'fixture-simulated',
@@ -142,6 +155,8 @@ function createRuntime(
   ];
   return createLocalCandidateEvaluationRuntime({
     args: [commandPath, '--mode', mode],
+    bootIdentityProvider: () =>
+      createBootIdentity(),
     candidateVerifier: fixture.verifier,
     clock: () =>
       timestamps.shift() ||
@@ -276,6 +291,15 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
   );
   assert.equal('pid' in result.run.processLifecycle, false);
   assert.equal(
+    result.run.workspaceRecovery.bootIdentityAvailable,
+    true,
+  );
+  assert.deepEqual(
+    result.run.workspaceRecovery
+      .recoveredPriorBootSpawningLeaseIds,
+    [],
+  );
+  assert.equal(
     result.candidateEvidence.evaluationRunId,
     result.run.id,
   );
@@ -330,6 +354,54 @@ test('runtime recovers an expired dead preparing workspace after authority reval
     result.run.workspaceRecovery.status,
     'completed',
   );
+  assert.equal(
+    fs.existsSync(staleWorkspace.rootDir),
+    false,
+  );
+  assert.deepEqual(
+    listManagedWorkspaces(temporaryDirectory),
+    [],
+  );
+});
+
+test('runtime recovers an expired prior-boot spawning workspace after authority revalidation', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+  const staleWorkspace =
+    createLocalCandidateEvaluationWorkspace({
+      bootIdentityProvider: () =>
+        createBootIdentity('fixture-prior-runtime-boot'),
+      createdAt: '2026-07-17T08:00:00.000Z',
+      isProcessAlive: () => true,
+      leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+      processId: 41005,
+      temporaryDirectory,
+    });
+  staleWorkspace.markSpawning();
+  let processChecks = 0;
+
+  const result = await createRuntime(fixture, 'success', {
+    bootIdentityProvider: () =>
+      createBootIdentity(CURRENT_BOOT),
+    isProcessAlive() {
+      processChecks += 1;
+      return true;
+    },
+    processId: 41006,
+    temporaryDirectory,
+  }).run(runInput(fixture));
+
+  assert.deepEqual(
+    result.run.workspaceRecovery.recoveredLeaseIds,
+    [staleWorkspace.lease.leaseId],
+  );
+  assert.deepEqual(
+    result.run.workspaceRecovery
+      .recoveredPriorBootSpawningLeaseIds,
+    [staleWorkspace.lease.leaseId],
+  );
+  assert.equal(processChecks, 0);
   assert.equal(
     fs.existsSync(staleWorkspace.rootDir),
     false,

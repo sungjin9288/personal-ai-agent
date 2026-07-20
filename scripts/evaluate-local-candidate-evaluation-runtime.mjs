@@ -27,18 +27,31 @@ import {
 } from './local-candidate-evaluator-fixture.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_RUNTIME_EVIDENCE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v5';
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v6';
 
 const EVALUATOR_ID =
   'fixture-local-candidate-evaluator-v1';
 const REQUESTED_AT = '2026-07-17T08:43:00.000Z';
 const ADMITTED_AT = '2026-07-17T08:44:00.000Z';
 const EXPIRES_AT = '2026-07-17T09:20:00.000Z';
+const CURRENT_BOOT = 'fixture-current-evidence-boot';
 
 function hashRecord(value) {
   return createHash('sha256')
     .update(JSON.stringify(value))
     .digest('hex');
+}
+
+function createBootIdentity(value = CURRENT_BOOT) {
+  return {
+    available: true,
+    identityHash: createHash('sha256')
+      .update(value)
+      .digest('hex'),
+    schemaVersion:
+      'personal-ai-agent-local-candidate-evaluation-host-boot-identity/v1',
+    source: 'linux-proc-boot-id',
+  };
 }
 
 function listManagedWorkspaces(temporaryDirectory) {
@@ -89,6 +102,8 @@ function createRuntime(
       mode,
     ],
     candidateVerifier: fixture.verifier,
+    bootIdentityProvider: () =>
+      createBootIdentity(),
     clock: () =>
       timestamps.shift() ||
       '2026-07-17T08:47:00.000Z',
@@ -218,14 +233,27 @@ export async function evaluateLocalCandidateEvaluationRuntime({
       repoDir,
     });
   try {
-    const staleWorkspace =
+    const stalePreparingWorkspace =
       createLocalCandidateEvaluationWorkspace({
+        bootIdentityProvider: () =>
+          createBootIdentity(),
         createdAt: '2026-07-17T08:00:00.000Z',
         isProcessAlive: () => true,
         leaseExpiresAt: '2026-07-17T08:30:00.000Z',
         processId: 41001,
         temporaryDirectory: fixture.temporaryDirectory,
       });
+    const staleSpawningWorkspace =
+      createLocalCandidateEvaluationWorkspace({
+        bootIdentityProvider: () =>
+          createBootIdentity('fixture-prior-evidence-boot'),
+        createdAt: '2026-07-17T08:00:00.000Z',
+        isProcessAlive: () => true,
+        leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+        processId: 41005,
+        temporaryDirectory: fixture.temporaryDirectory,
+      });
+    staleSpawningWorkspace.markSpawning();
     const runtime = createRuntime(
       fixture,
       repoDir,
@@ -523,13 +551,24 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         ),
       stalePreparingWorkspaceRecovered:
         result.run.workspaceRecovery
-          .scannedWorkspaceCount === 1 &&
+          .scannedWorkspaceCount === 2 &&
         result.run.workspaceRecovery
-          .recoveredLeaseIds.length === 1 &&
+          .recoveredLeaseIds.includes(
+            stalePreparingWorkspace.lease.leaseId,
+          ) &&
+        !fs.existsSync(stalePreparingWorkspace.rootDir),
+      staleSpawningWorkspaceRecoveredAfterBootChange:
         result.run.workspaceRecovery
-          .recoveredLeaseIds[0] ===
-          staleWorkspace.lease.leaseId &&
-        !fs.existsSync(staleWorkspace.rootDir),
+          .bootIdentityAvailable === true &&
+        result.run.workspaceRecovery
+          .recoveredLeaseIds.length === 2 &&
+        result.run.workspaceRecovery
+          .recoveredPriorBootSpawningLeaseIds
+          .length === 1 &&
+        result.run.workspaceRecovery
+          .recoveredPriorBootSpawningLeaseIds[0] ===
+          staleSpawningWorkspace.lease.leaseId &&
+        !fs.existsSync(staleSpawningWorkspace.rootDir),
       timeoutBounded: await rejectionMatches(
         () =>
           createRuntime(fixture, repoDir, 'hang', {
@@ -586,6 +625,7 @@ export async function evaluateLocalCandidateEvaluationRuntime({
     const content = {
       claimBoundary: {
         actualCandidateArtifactsObserved: false,
+        actualHostRestartObserved: false,
         actualModelEvaluated: false,
         externalProviderCalls: 'none',
         externalSubmissionAuthorized: false,
@@ -620,6 +660,10 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         workspaceRecoveryCount:
           result.run.workspaceRecovery
             .recoveredLeaseIds.length,
+        workspaceRecoveryPriorBootSpawningCount:
+          result.run.workspaceRecovery
+            .recoveredPriorBootSpawningLeaseIds
+            .length,
       },
       failureGuards,
       mode: 'local-candidate-evaluation-runtime',
@@ -652,7 +696,7 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         workspaceCleanupPolicy:
           result.run.security.workspaceCleanupPolicy,
         workspaceRecovery:
-          'expired-dead-preparing-only',
+          'expired-dead-preparing-or-expired-prior-boot-spawning',
       },
       storeMutation: false,
     };

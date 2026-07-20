@@ -93,7 +93,7 @@ assert.equal(
 );
 assert.equal(
   stored.security.workspaceRecovery,
-  'expired-dead-preparing-only',
+  'expired-dead-preparing-or-expired-prior-boot-spawning',
 );
 assert.equal(
   stored.security.workspaceCleanupPolicy,
@@ -104,11 +104,21 @@ assert.equal(
   true,
 );
 assert.equal(
+  stored.failureGuards
+    .staleSpawningWorkspaceRecoveredAfterBootChange,
+  true,
+);
+assert.equal(
   stored.failureGuards.workspaceRecoveryContentFree,
   true,
 );
 assert.equal(
   stored.execution.workspaceRecoveryCount,
+  2,
+);
+assert.equal(
+  stored.execution
+    .workspaceRecoveryPriorBootSpawningCount,
   1,
 );
 assert.equal(stored.execution.processGroupQuiesced, true);
@@ -121,6 +131,10 @@ assert.equal(
   true,
 );
 assert.equal(stored.claimBoundary.actualModelEvaluated, false);
+assert.equal(
+  stored.claimBoundary.actualHostRestartObserved,
+  false,
+);
 assert.equal(
   stored.claimBoundary.externalProviderCalls,
   'none',
@@ -160,12 +174,15 @@ for (const term of [
   '| F2c.12 Local candidate evaluation runtime | 완료 · fixture 증적 |',
   '| F2c.13 Immutable evaluation input view | 완료 · fixture 증적 |',
   '| F2c.16 Post-spawn evaluator process lifecycle | 완료 · fixture 증적 |',
+  '| F2c.17 Host boot identity recovery | 완료 · fixture 증적 |',
   'npm run smoke:local-candidate-evaluation-runtime',
   'npm run smoke:local-candidate-evaluation-input-view',
   'npm run smoke:local-candidate-evaluation-process-lifecycle',
+  'npm run smoke:local-candidate-evaluation-host-boot-recovery',
   'actualLocalCandidateEvaluationRuntimeValidated: true',
   'actualLocalCandidateEvaluationInputViewValidated: true',
   'actualLocalCandidateEvaluationProcessLifecycleValidated: true',
+  'localCandidateEvaluationPriorBootRecoveryContractValidated: true',
   'actualModelEvaluated: false',
 ]) {
   assert.ok(

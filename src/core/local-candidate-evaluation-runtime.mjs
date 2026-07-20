@@ -42,7 +42,7 @@ import {
 export const LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION =
   'personal-ai-agent-local-candidate-evaluation/v2';
 export const LOCAL_CANDIDATE_EVALUATION_RUN_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-run/v5';
+  'personal-ai-agent-local-candidate-evaluation-run/v6';
 
 const DEFAULT_MAX_INPUT_BYTES = 1024 * 1024;
 const DEFAULT_MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
@@ -980,7 +980,9 @@ export function assertLocalCandidateEvaluationRun({
       'workspaceCleanupPolicy',
     ]) ||
     !hasExactKeys(record.workspaceRecovery, [
+      'bootIdentityAvailable',
       'recoveredLeaseIds',
+      'recoveredPriorBootSpawningLeaseIds',
       'recoveryHash',
       'scannedAt',
       'scannedWorkspaceCount',
@@ -1182,6 +1184,7 @@ export function assertLocalCandidateEvaluationRun({
 
 export function createLocalCandidateEvaluationRuntime({
   args = [],
+  bootIdentityProvider,
   candidateVerifier,
   clock = () => new Date().toISOString(),
   command,
@@ -1193,6 +1196,7 @@ export function createLocalCandidateEvaluationRuntime({
   isProcessAlive,
   maxInputBytes = DEFAULT_MAX_INPUT_BYTES,
   maxOutputBytes = DEFAULT_MAX_OUTPUT_BYTES,
+  monotonicNow,
   platform = process.platform,
   processId = process.pid,
   processGroupState,
@@ -1397,6 +1401,7 @@ export function createLocalCandidateEvaluationRuntime({
           await createLocalCandidateEvaluationInputView({
             candidateArtifactVerification:
               reverifiedCandidate,
+            bootIdentityProvider,
             candidateVerificationInput,
             createdAt: candidateVerifiedAt,
             evaluationSuite: request.evaluationSuite,
@@ -1407,6 +1412,7 @@ export function createLocalCandidateEvaluationRuntime({
             leaseExpiresAt: admission.expiresAt,
             maximumDiskBytes:
               request.resourceLimits.maxDiskBytes,
+            platform,
             processId,
             repoDir: normalizedRepoDir,
             suiteContent: evaluationSuiteContent,
@@ -1477,6 +1483,7 @@ export function createLocalCandidateEvaluationRuntime({
               cwd: inputView.rootDir,
               environment,
               maxOutputBytes: normalizedMaxOutputBytes,
+              monotonicNow,
               payload,
               platform,
               processGroupState,

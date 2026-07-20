@@ -1,6 +1,7 @@
 {
   "claimBoundary": {
     "actualCandidateArtifactsObserved": false,
+    "actualHostRestartObserved": false,
     "actualModelEvaluated": false,
     "externalProviderCalls": "none",
     "externalSubmissionAuthorized": false,
@@ -22,7 +23,8 @@
     "runHashBound": true,
     "suiteArtifactSha256": "bdcdeaa8e394e3eba04b6026e0d11674d6a64f625cb9cefa42823cc23eec1e09",
     "status": "completed",
-    "workspaceRecoveryCount": 1
+    "workspaceRecoveryCount": 2,
+    "workspaceRecoveryPriorBootSpawningCount": 1
   },
   "failureGuards": {
     "actualModelClaimRemainsFalse": true,
@@ -50,6 +52,7 @@
     "candidateSnapshotPostVerificationRequired": true,
     "suiteSnapshotPostVerificationRequired": true,
     "stalePreparingWorkspaceRecovered": true,
+    "staleSpawningWorkspaceRecoveredAfterBootChange": true,
     "timeoutBounded": true,
     "trainingRemainsBlocked": true,
     "unsupportedResultFieldsRejected": true,
@@ -58,7 +61,7 @@
     "artifactReverificationRequired": true
   },
   "mode": "local-candidate-evaluation-runtime",
-  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v5",
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v6",
   "security": {
     "artifactReverifiedBeforeSpawn": true,
     "authorityRevalidatedAfterInputVerification": true,
@@ -79,9 +82,9 @@
     "sourceWorkspaceAsCwd": false,
     "temporaryInputViewCleanup": "completed",
     "workspaceCleanupPolicy": "close-and-process-group-absence",
-    "workspaceRecovery": "expired-dead-preparing-only"
+    "workspaceRecovery": "expired-dead-preparing-or-expired-prior-boot-spawning"
   },
   "storeMutation": false,
-  "evidenceHash": "075bfdfa7286d3cc1983212cc25d3bd0af39a49e67460659d047e4c8763872b6",
-  "id": "local-candidate-evaluation-runtime-evidence-075bfdfa7286d3cc1983212cc25d3bd0af39a49e67460659d047e4c8763872b6"
+  "evidenceHash": "6faa2fcda402342cda0ec97ec002c3a481152877f95af9ef3173834ebbb7273a",
+  "id": "local-candidate-evaluation-runtime-evidence-6faa2fcda402342cda0ec97ec002c3a481152877f95af9ef3173834ebbb7273a"
 }

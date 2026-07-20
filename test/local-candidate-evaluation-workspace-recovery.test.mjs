@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -15,6 +16,63 @@ import {
 const CREATED_AT = '2026-07-17T08:00:00.000Z';
 const EXPIRES_AT = '2026-07-17T08:30:00.000Z';
 const RECOVERED_AT = '2026-07-17T08:45:00.000Z';
+const CURRENT_BOOT = 'fixture-current-boot';
+
+function createBootIdentity(value = CURRENT_BOOT) {
+  return {
+    available: true,
+    identityHash: createHash('sha256')
+      .update(value)
+      .digest('hex'),
+    schemaVersion:
+      'personal-ai-agent-local-candidate-evaluation-host-boot-identity/v1',
+    source: 'linux-proc-boot-id',
+  };
+}
+
+function unavailableBootIdentity() {
+  return {
+    available: false,
+    identityHash: null,
+    schemaVersion:
+      'personal-ai-agent-local-candidate-evaluation-host-boot-identity/v1',
+    source: 'unavailable',
+  };
+}
+
+function hashRecord(value) {
+  return createHash('sha256')
+    .update(JSON.stringify(value))
+    .digest('hex');
+}
+
+function writeLegacyLease(workspace) {
+  const current = workspace.lease;
+  const binding = {
+    createdAt: current.createdAt,
+    leaseExpiresAt: current.leaseExpiresAt,
+    namespacePathHash: current.namespacePathHash,
+    ownerPid: current.ownerPid,
+    phase: current.phase,
+    schemaVersion:
+      'personal-ai-agent-local-candidate-evaluation-workspace-lease/v1',
+    workspacePathHash: current.workspacePathHash,
+  };
+  fs.writeFileSync(
+    path.join(
+      workspace.rootDir,
+      '.workspace-lease.json',
+    ),
+    `${JSON.stringify({
+      ...binding,
+      leaseId:
+        `local-candidate-evaluation-workspace-lease-${hashRecord(binding)}`,
+    })}\n`,
+    {
+      mode: 0o600,
+    },
+  );
+}
 
 function createTemporaryDirectory(t) {
   const temporaryDirectory = fs.mkdtempSync(
@@ -35,6 +93,8 @@ function createTemporaryDirectory(t) {
 function createWorkspace(
   t,
   {
+    bootIdentityProvider = () =>
+      createBootIdentity(),
     createdAt = CREATED_AT,
     isProcessAlive = () => true,
     leaseExpiresAt = EXPIRES_AT,
@@ -43,6 +103,7 @@ function createWorkspace(
 ) {
   const temporaryDirectory = createTemporaryDirectory(t);
   const workspace = createLocalCandidateEvaluationWorkspace({
+    bootIdentityProvider,
     createdAt,
     isProcessAlive,
     leaseExpiresAt,
@@ -56,11 +117,14 @@ function createWorkspace(
 }
 
 function recover({
+  bootIdentityProvider = () =>
+    createBootIdentity(),
   isProcessAlive,
   processId = 41002,
   temporaryDirectory,
 }) {
   return recoverStaleLocalCandidateEvaluationWorkspaces({
+    bootIdentityProvider,
     isProcessAlive,
     now: RECOVERED_AT,
     processId,
@@ -222,6 +286,180 @@ test('recovery preserves unexpired, live, unknown, and spawning workspaces', (t)
     );
     workspace.cleanup();
   }
+});
+
+test('recovery removes only an expired prior-boot v2 spawning workspace', (t) => {
+  const { temporaryDirectory, workspace } =
+    createWorkspace(t, {
+      bootIdentityProvider: () =>
+        createBootIdentity('fixture-prior-boot'),
+    });
+  workspace.markSpawning();
+  let processChecks = 0;
+
+  const recovery = recover({
+    bootIdentityProvider: () =>
+      createBootIdentity(CURRENT_BOOT),
+    isProcessAlive() {
+      processChecks += 1;
+      return true;
+    },
+    temporaryDirectory,
+  });
+
+  assert.deepEqual(recovery.recoveredLeaseIds, [
+    workspace.lease.leaseId,
+  ]);
+  assert.deepEqual(
+    recovery.recoveredPriorBootSpawningLeaseIds,
+    [workspace.lease.leaseId],
+  );
+  assert.equal(recovery.bootIdentityAvailable, true);
+  assert.equal(processChecks, 0);
+  assert.equal(fs.existsSync(workspace.rootDir), false);
+});
+
+test('recovery preserves a live or unknown atomic claim on a prior-boot spawning workspace', (t) => {
+  for (const claimantState of [true, null]) {
+    const { temporaryDirectory, workspace } =
+      createWorkspace(t, {
+        bootIdentityProvider: () =>
+          createBootIdentity('fixture-prior-boot'),
+      });
+    workspace.markSpawning();
+    const claimantProcessId = 41003;
+    fs.renameSync(
+      path.join(
+        workspace.rootDir,
+        '.workspace-lease.json',
+      ),
+      path.join(
+        workspace.rootDir,
+        `.workspace-lease.recovery-${claimantProcessId}.json`,
+      ),
+    );
+    const checkedProcessIds = [];
+
+    const recovery = recover({
+      bootIdentityProvider: () =>
+        createBootIdentity(CURRENT_BOOT),
+      isProcessAlive(processId) {
+        checkedProcessIds.push(processId);
+        return claimantState;
+      },
+      temporaryDirectory,
+    });
+
+    assert.deepEqual(recovery.recoveredLeaseIds, []);
+    assert.equal(
+      recovery.skippedActiveWorkspaceCount,
+      1,
+    );
+    assert.deepEqual(checkedProcessIds, [
+      claimantProcessId,
+    ]);
+    assert.equal(fs.existsSync(workspace.rootDir), true);
+    workspace.cleanup();
+  }
+});
+
+test('recovery preserves prior-boot spawning workspaces without every deletion proof', (t) => {
+  const cases = [
+    {
+      currentBootIdentity: createBootIdentity(
+        CURRENT_BOOT,
+      ),
+      leaseExpiresAt: '2026-07-17T09:00:00.000Z',
+      name: 'unexpired-v2',
+    },
+    {
+      currentBootIdentity: unavailableBootIdentity(),
+      name: 'unavailable-current-boot',
+    },
+    {
+      currentBootIdentity: createBootIdentity(
+        CURRENT_BOOT,
+      ),
+      legacy: true,
+      name: 'legacy-v1',
+    },
+  ];
+
+  for (const item of cases) {
+    const { temporaryDirectory, workspace } =
+      createWorkspace(t, {
+        bootIdentityProvider: () =>
+          createBootIdentity('fixture-prior-boot'),
+        leaseExpiresAt:
+          item.leaseExpiresAt ?? EXPIRES_AT,
+      });
+    workspace.markSpawning();
+    if (item.legacy) {
+      writeLegacyLease(workspace);
+    }
+
+    const recovery = recover({
+      bootIdentityProvider: () =>
+        item.currentBootIdentity,
+      isProcessAlive: () => false,
+      temporaryDirectory,
+    });
+
+    assert.deepEqual(
+      recovery.recoveredLeaseIds,
+      [],
+      item.name,
+    );
+    assert.equal(
+      recovery.skippedActiveWorkspaceCount,
+      1,
+      item.name,
+    );
+    assert.equal(
+      fs.existsSync(workspace.rootDir),
+      true,
+      item.name,
+    );
+    workspace.cleanup();
+  }
+});
+
+test('recovery treats a malformed stored boot identity as unsafe', (t) => {
+  const { temporaryDirectory, workspace } =
+    createWorkspace(t, {
+      bootIdentityProvider: () =>
+        createBootIdentity('fixture-prior-boot'),
+    });
+  workspace.markSpawning();
+  const markerPath = path.join(
+    workspace.rootDir,
+    '.workspace-lease.json',
+  );
+  const malformed = {
+    ...JSON.parse(fs.readFileSync(markerPath, 'utf8')),
+    ownerBootIdentityHash: 'malformed',
+  };
+  fs.writeFileSync(
+    markerPath,
+    `${JSON.stringify(malformed)}\n`,
+    {
+      mode: 0o600,
+    },
+  );
+
+  const recovery = recover({
+    bootIdentityProvider: () =>
+      createBootIdentity(CURRENT_BOOT),
+    isProcessAlive: () => false,
+    temporaryDirectory,
+  });
+
+  assert.deepEqual(recovery.recoveredLeaseIds, []);
+  assert.equal(
+    recovery.skippedUnsafeWorkspaceCount,
+    1,
+  );
+  assert.equal(fs.existsSync(workspace.rootDir), true);
 });
 
 test('recovery skips malformed and symlinked workspace content', (t) => {

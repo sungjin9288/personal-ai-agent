@@ -23,7 +23,7 @@ assert.equal(
 );
 assert.equal(
   runtime.schemaVersion,
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v5',
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v6',
 );
 assert.equal(
   admission.failureGuards.evaluatorProvenanceIntegrityRequired,

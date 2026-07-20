@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a host-boot-bound v2 lease for local candidate evaluation workspaces. Recovery now removes an expired `spawning` workspace only when a reliable kernel boot identity proves it came from a prior boot; same-boot, legacy, unavailable-identity, and unsafe states remain preserved. The tracked replay simulates the boot transition and does not claim an observed host restart, escaped-session containment, actual model evaluation, rollout, or production readiness.
 - Added a detached POSIX process-group lifecycle for local candidate evaluation. Timeout and output overflow now wait for leader close and group absence before workspace cleanup, while late or unknown quiescence preserves the `spawning` workspace and emits no completed run evidence. OS restart recovery, escaped sessions, OS resource and network isolation, actual model evaluation, rollout, and production readiness remain unverified.
 - Bound local candidate evaluation admission to the exact F1 suite bytes and moved evaluator input into a temporary workspace containing only the admitted suite and manifest-listed candidate files.
 - Added pre-run and post-run candidate and suite verification, combined disk-envelope enforcement, source-workspace exclusion, and cleanup-before-evidence guards. The tracked replay remains fixture-only; evaluator executable provenance, OS resource and network isolation, actual model evaluation, rollout, and production claims remain unverified.

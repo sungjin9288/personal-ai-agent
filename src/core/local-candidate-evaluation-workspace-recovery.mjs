@@ -2,13 +2,20 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import {
+  assertLocalCandidateEvaluationHostBootIdentity,
+  readLocalCandidateEvaluationHostBootIdentity,
+} from './local-candidate-evaluation-host-boot-identity.mjs';
+
 export const LOCAL_CANDIDATE_EVALUATION_WORKSPACE_LEASE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-workspace-lease/v1';
+  'personal-ai-agent-local-candidate-evaluation-workspace-lease/v2';
 export const LOCAL_CANDIDATE_EVALUATION_WORKSPACE_RECOVERY_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-workspace-recovery/v1';
+  'personal-ai-agent-local-candidate-evaluation-workspace-recovery/v2';
 export const LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE =
   'personal-ai-agent-candidate-evaluation-v1';
 
+const LEGACY_WORKSPACE_LEASE_SCHEMA_VERSION =
+  'personal-ai-agent-local-candidate-evaluation-workspace-lease/v1';
 const LEASE_MARKER_NAME = '.workspace-lease.json';
 const NAMESPACE_MARKER_NAME = '.namespace.json';
 const NAMESPACE_SCHEMA_VERSION =
@@ -28,6 +35,10 @@ function hashValue(value) {
 
 function hashRecord(value) {
   return hashValue(JSON.stringify(value));
+}
+
+function isSha256(value) {
+  return /^[a-f0-9]{64}$/u.test(String(value || ''));
 }
 
 function hasExactKeys(value, expectedKeys) {
@@ -79,6 +90,26 @@ function resolveCurrentUserId(value) {
     );
   }
   return currentUserId;
+}
+
+function resolveHostBootIdentity({
+  bootIdentityProvider,
+  fileSystem,
+  platform,
+}) {
+  try {
+    return assertLocalCandidateEvaluationHostBootIdentity(
+      bootIdentityProvider({
+        fileSystem,
+        platform,
+      }),
+    );
+  } catch {
+    return {
+      available: false,
+      identityHash: null,
+    };
+  }
 }
 
 function assertFileSystem(fileSystem) {
@@ -336,20 +367,35 @@ function buildLease({
   createdAt,
   leaseExpiresAt,
   namespacePath,
+  ownerBootIdentityHash,
   ownerPid,
   phase,
+  schemaVersion =
+    LOCAL_CANDIDATE_EVALUATION_WORKSPACE_LEASE_SCHEMA_VERSION,
   workspacePath,
 }) {
-  const binding = {
-    createdAt,
-    leaseExpiresAt,
-    namespacePathHash: hashValue(namespacePath),
-    ownerPid,
-    phase,
-    schemaVersion:
-      LOCAL_CANDIDATE_EVALUATION_WORKSPACE_LEASE_SCHEMA_VERSION,
-    workspacePathHash: hashValue(workspacePath),
-  };
+  const binding =
+    schemaVersion ===
+    LEGACY_WORKSPACE_LEASE_SCHEMA_VERSION
+      ? {
+          createdAt,
+          leaseExpiresAt,
+          namespacePathHash: hashValue(namespacePath),
+          ownerPid,
+          phase,
+          schemaVersion,
+          workspacePathHash: hashValue(workspacePath),
+        }
+      : {
+          createdAt,
+          leaseExpiresAt,
+          namespacePathHash: hashValue(namespacePath),
+          ownerBootIdentityHash,
+          ownerPid,
+          phase,
+          schemaVersion,
+          workspacePathHash: hashValue(workspacePath),
+        };
   return {
     ...binding,
     leaseId:
@@ -362,17 +408,36 @@ function assertLease({
   namespacePath,
   workspacePath,
 }) {
+  const legacy =
+    lease?.schemaVersion ===
+    LEGACY_WORKSPACE_LEASE_SCHEMA_VERSION;
+  const expectedKeys = legacy
+    ? [
+        'createdAt',
+        'leaseExpiresAt',
+        'leaseId',
+        'namespacePathHash',
+        'ownerPid',
+        'phase',
+        'schemaVersion',
+        'workspacePathHash',
+      ]
+    : [
+        'createdAt',
+        'leaseExpiresAt',
+        'leaseId',
+        'namespacePathHash',
+        'ownerBootIdentityHash',
+        'ownerPid',
+        'phase',
+        'schemaVersion',
+        'workspacePathHash',
+      ];
   if (
-    !hasExactKeys(lease, [
-      'createdAt',
-      'leaseExpiresAt',
-      'leaseId',
-      'namespacePathHash',
-      'ownerPid',
-      'phase',
-      'schemaVersion',
-      'workspacePathHash',
-    ])
+    !hasExactKeys(lease, expectedKeys) ||
+    (!legacy &&
+      lease?.schemaVersion !==
+        LOCAL_CANDIDATE_EVALUATION_WORKSPACE_LEASE_SCHEMA_VERSION)
   ) {
     throw new Error(
       'Local candidate evaluation workspace lease failed: integrity.',
@@ -388,12 +453,19 @@ function assertLease({
       'leaseExpiresAt',
     ),
     namespacePath,
+    ownerBootIdentityHash: legacy
+      ? undefined
+      : lease.ownerBootIdentityHash,
     ownerPid: requireProcessId(lease.ownerPid),
     phase: lease.phase,
+    schemaVersion: lease.schemaVersion,
     workspacePath,
   });
   if (
     !['preparing', 'spawning'].includes(lease.phase) ||
+    (!legacy &&
+      lease.ownerBootIdentityHash !== null &&
+      !isSha256(lease.ownerBootIdentityHash)) ||
     Date.parse(lease.createdAt) >=
       Date.parse(lease.leaseExpiresAt) ||
     JSON.stringify(lease) !== JSON.stringify(expected)
@@ -621,7 +693,10 @@ function findLeaseMarker(entries) {
   return {
     markerName,
     recoveryOwnerPid: recoveryMatch
-      ? Number(recoveryMatch[1])
+      ? requireProcessId(
+          Number(recoveryMatch[1]),
+          'recoveryOwnerPid',
+        )
       : null,
   };
 }
@@ -691,7 +766,9 @@ export function assertLocalCandidateEvaluationWorkspaceRecovery(
   const { recoveryHash, ...content } = recovery || {};
   if (
     !hasExactKeys(content, [
+      'bootIdentityAvailable',
       'recoveredLeaseIds',
+      'recoveredPriorBootSpawningLeaseIds',
       'scannedAt',
       'scannedWorkspaceCount',
       'schemaVersion',
@@ -700,8 +777,12 @@ export function assertLocalCandidateEvaluationWorkspaceRecovery(
     ]) ||
     content.schemaVersion !==
       LOCAL_CANDIDATE_EVALUATION_WORKSPACE_RECOVERY_SCHEMA_VERSION ||
+    typeof content.bootIdentityAvailable !== 'boolean' ||
     !Number.isFinite(Date.parse(content.scannedAt)) ||
     !Array.isArray(content.recoveredLeaseIds) ||
+    !Array.isArray(
+      content.recoveredPriorBootSpawningLeaseIds,
+    ) ||
     content.recoveredLeaseIds.some(
       (leaseId) =>
         !/^local-candidate-evaluation-workspace-lease-[a-f0-9]{64}$/u.test(
@@ -710,8 +791,27 @@ export function assertLocalCandidateEvaluationWorkspaceRecovery(
     ) ||
     new Set(content.recoveredLeaseIds).size !==
       content.recoveredLeaseIds.length ||
+    content.recoveredPriorBootSpawningLeaseIds.some(
+      (leaseId) =>
+        !content.recoveredLeaseIds.includes(leaseId),
+    ) ||
+    new Set(
+      content.recoveredPriorBootSpawningLeaseIds,
+    ).size !==
+      content.recoveredPriorBootSpawningLeaseIds.length ||
+    (!content.bootIdentityAvailable &&
+      content.recoveredPriorBootSpawningLeaseIds
+        .length > 0) ||
     JSON.stringify(content.recoveredLeaseIds) !==
       JSON.stringify([...content.recoveredLeaseIds].sort()) ||
+    JSON.stringify(
+      content.recoveredPriorBootSpawningLeaseIds,
+    ) !==
+      JSON.stringify(
+        [
+          ...content.recoveredPriorBootSpawningLeaseIds,
+        ].sort(),
+      ) ||
     !Number.isSafeInteger(content.scannedWorkspaceCount) ||
     content.scannedWorkspaceCount < 0 ||
     !Number.isSafeInteger(
@@ -735,9 +835,10 @@ export function assertLocalCandidateEvaluationWorkspaceRecovery(
   return recovery;
 }
 
-export function recoverStaleLocalCandidateEvaluationWorkspaces({
+function recoverWithHostBootIdentity({
   currentUserId,
   fileSystem = fs,
+  hostBootIdentity,
   isProcessAlive = defaultIsProcessAlive,
   now,
   processId = process.pid,
@@ -756,6 +857,7 @@ export function recoverStaleLocalCandidateEvaluationWorkspaces({
     temporaryDirectory,
   });
   const recoveredLeaseIds = [];
+  const recoveredPriorBootSpawningLeaseIds = [];
   let scannedWorkspaceCount = 0;
   let skippedActiveWorkspaceCount = 0;
   let skippedUnsafeWorkspaceCount = 0;
@@ -774,22 +876,48 @@ export function recoverStaleLocalCandidateEvaluationWorkspaces({
         workspaceName,
       });
       if (
-        workspace.lease.phase !== 'preparing' ||
         Date.parse(workspace.lease.leaseExpiresAt) >
           Date.parse(scannedAt)
       ) {
         skippedActiveWorkspaceCount += 1;
         continue;
       }
-      const processToCheck =
-        workspace.recoveryOwnerPid ??
-        workspace.lease.ownerPid;
+      const fromPriorBoot =
+        workspace.lease.schemaVersion ===
+          LOCAL_CANDIDATE_EVALUATION_WORKSPACE_LEASE_SCHEMA_VERSION &&
+        isSha256(
+          workspace.lease.ownerBootIdentityHash,
+        ) &&
+        hostBootIdentity.available &&
+        workspace.lease.ownerBootIdentityHash !==
+          hostBootIdentity.identityHash;
       if (
-        getProcessState(isProcessAlive, processToCheck) !==
-        'dead'
+        workspace.recoveryOwnerPid !== null &&
+        getProcessState(
+          isProcessAlive,
+          workspace.recoveryOwnerPid,
+        ) !== 'dead'
       ) {
         skippedActiveWorkspaceCount += 1;
         continue;
+      }
+      if (workspace.lease.phase === 'spawning') {
+        if (!fromPriorBoot) {
+          skippedActiveWorkspaceCount += 1;
+          continue;
+        }
+      } else if (
+        workspace.recoveryOwnerPid === null
+      ) {
+        if (
+          getProcessState(
+            isProcessAlive,
+            workspace.lease.ownerPid,
+          ) !== 'dead'
+        ) {
+          skippedActiveWorkspaceCount += 1;
+          continue;
+        }
       }
       inspectRecoveryTree({
         currentUserId: ownerUserId,
@@ -827,12 +955,23 @@ export function recoverStaleLocalCandidateEvaluationWorkspaces({
         rootPath: workspace.workspacePath,
       });
       recoveredLeaseIds.push(workspace.lease.leaseId);
+      if (
+        fromPriorBoot &&
+        workspace.lease.phase === 'spawning'
+      ) {
+        recoveredPriorBootSpawningLeaseIds.push(
+          workspace.lease.leaseId,
+        );
+      }
     } catch {
       skippedUnsafeWorkspaceCount += 1;
     }
   }
   const content = {
+    bootIdentityAvailable: hostBootIdentity.available,
     recoveredLeaseIds: recoveredLeaseIds.sort(),
+    recoveredPriorBootSpawningLeaseIds:
+      recoveredPriorBootSpawningLeaseIds.sort(),
     scannedAt,
     scannedWorkspaceCount,
     schemaVersion:
@@ -843,6 +982,33 @@ export function recoverStaleLocalCandidateEvaluationWorkspaces({
   return assertLocalCandidateEvaluationWorkspaceRecovery({
     ...content,
     recoveryHash: hashRecord(content),
+  });
+}
+
+export function recoverStaleLocalCandidateEvaluationWorkspaces({
+  bootIdentityProvider =
+    readLocalCandidateEvaluationHostBootIdentity,
+  currentUserId,
+  fileSystem = fs,
+  isProcessAlive = defaultIsProcessAlive,
+  now,
+  platform = process.platform,
+  processId = process.pid,
+  temporaryDirectory,
+} = {}) {
+  const hostBootIdentity = resolveHostBootIdentity({
+    bootIdentityProvider,
+    fileSystem,
+    platform,
+  });
+  return recoverWithHostBootIdentity({
+    currentUserId,
+    fileSystem,
+    hostBootIdentity,
+    isProcessAlive,
+    now,
+    processId,
+    temporaryDirectory,
   });
 }
 
@@ -870,11 +1036,14 @@ function unlockTreeForRemoval(fileSystem, root) {
 }
 
 export function createLocalCandidateEvaluationWorkspace({
+  bootIdentityProvider =
+    readLocalCandidateEvaluationHostBootIdentity,
   createdAt,
   currentUserId,
   fileSystem = fs,
   isProcessAlive = defaultIsProcessAlive,
   leaseExpiresAt,
+  platform = process.platform,
   processId = process.pid,
   temporaryDirectory,
 } = {}) {
@@ -897,10 +1066,16 @@ export function createLocalCandidateEvaluationWorkspace({
   }
   const normalizedProcessId = requireProcessId(processId);
   const ownerUserId = resolveCurrentUserId(currentUserId);
+  const hostBootIdentity = resolveHostBootIdentity({
+    bootIdentityProvider,
+    fileSystem,
+    platform,
+  });
   const recovery =
-    recoverStaleLocalCandidateEvaluationWorkspaces({
+    recoverWithHostBootIdentity({
       currentUserId: ownerUserId,
       fileSystem,
+      hostBootIdentity,
       isProcessAlive,
       now: normalizedCreatedAt,
       processId: normalizedProcessId,
@@ -920,6 +1095,8 @@ export function createLocalCandidateEvaluationWorkspace({
     createdAt: normalizedCreatedAt,
     leaseExpiresAt: normalizedExpiresAt,
     namespacePath,
+    ownerBootIdentityHash:
+      hostBootIdentity.identityHash,
     ownerPid: normalizedProcessId,
     phase: 'preparing',
     workspacePath: rootDir,
@@ -984,8 +1161,11 @@ export function createLocalCandidateEvaluationWorkspace({
         createdAt: lease.createdAt,
         leaseExpiresAt: lease.leaseExpiresAt,
         namespacePath,
+        ownerBootIdentityHash:
+          lease.ownerBootIdentityHash,
         ownerPid: lease.ownerPid,
         phase: 'spawning',
+        schemaVersion: lease.schemaVersion,
         workspacePath: rootDir,
       });
       writeLeaseAtomically({

@@ -17,7 +17,7 @@ const evidence = JSON.parse(
 
 assert.equal(
   evidence.schemaVersion,
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v5',
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v6',
 );
 assert.equal(
   evidence.failureGuards.processGroupAbsenceRequired,

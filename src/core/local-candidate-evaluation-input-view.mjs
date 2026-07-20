@@ -535,6 +535,7 @@ function lockTree(fileSystem, root) {
 }
 
 export async function createLocalCandidateEvaluationInputView({
+  bootIdentityProvider,
   candidateArtifactVerification,
   candidateVerificationInput,
   createdAt,
@@ -545,6 +546,7 @@ export async function createLocalCandidateEvaluationInputView({
   isProcessAlive,
   leaseExpiresAt,
   maximumDiskBytes,
+  platform,
   processId,
   repoDir,
   suiteContent,
@@ -599,10 +601,12 @@ export async function createLocalCandidateEvaluationInputView({
 
   const workspace =
     createLocalCandidateEvaluationWorkspace({
+      bootIdentityProvider,
       createdAt,
       fileSystem,
       isProcessAlive,
       leaseExpiresAt,
+      platform,
       processId,
       temporaryDirectory,
     });
