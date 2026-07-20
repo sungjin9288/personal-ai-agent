@@ -80,6 +80,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Local training acquisition artifact verification | `npm run smoke:local-training-acquisition-artifact-verification` | Verifies current authority and run binding, approved-root containment, regular-file and symlink guards, exact manifest pins, streamed file hashes, adapter artifact-set binding, resource limits, content-free fixture evidence, and no actual acquisition provenance, installation, download, training, external call, or rollout |
 | Local training post-acquisition readiness | `npm run smoke:local-training-post-acquisition-readiness` | Verifies fixture-only provenance, egress closure, offline artifact resource canary, and post-review product permission evidence binding while keeping all actual gates, training, external submission, rollout, and production claims false |
 | Local training candidate artifact verification | `npm run smoke:local-training-candidate-artifact-verification` | Verifies fixed candidate-root containment, complete manifest inventory, regular-file and symlink guards, streamed SHA-256, F2c.9 run binding, current permission disk envelope, content-free evidence, and false actual-training, evaluation, rollout, and production claims |
+| Local candidate evaluation admission | `npm run smoke:local-candidate-evaluation-admission` | Verifies recorded artifact verification, current permission, explicit no-revocation, F1 case and threshold binding, current CPU·memory·disk·runtime envelope, bounded request window, content-free operator metadata, local-evaluation-only authority, and false actual-evaluation, training, rollout, and production claims |
 | Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
 | Actual local answer-quality baseline | `npm run smoke:local-answer-quality-baseline` | Verifies actual installed qwen2.5:3b Q1 evidence integrity, content-free observations, required-term regression, keep-current decision, and no training or activation authority |
 | Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |
@@ -159,6 +160,7 @@ npm run smoke:local-training-acquisition-runtime
 npm run smoke:local-training-acquisition-artifact-verification
 npm run smoke:local-training-post-acquisition-readiness
 npm run smoke:local-training-candidate-artifact-verification
+npm run smoke:local-candidate-evaluation-admission
 npm run smoke:candidate-model-evaluation
 npm run smoke:local-answer-quality-baseline
 npm run smoke:local-answer-composition-candidate

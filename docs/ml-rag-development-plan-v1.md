@@ -42,6 +42,8 @@
 - actualLocalTrainingExecutionAdmissionValidated: true
 - currentLocalTrainingCandidateArtifactVerificationEvidence: `evidence/output-artifacts/local-training-candidate-artifact-verification.json`
 - actualLocalTrainingCandidateArtifactVerificationValidated: true
+- currentLocalCandidateEvaluationAdmissionEvidence: `evidence/output-artifacts/local-candidate-evaluation-admission.json`
+- actualLocalCandidateEvaluationAdmissionValidated: true
 - actualArtifactSetsObserved: false
 - actualCandidateArtifactsObserved: false
 - actualPostInstallProductPermissionApproved: false
@@ -826,6 +828,19 @@ npm run smoke:local-training-candidate-artifact-verification
 
 Tracked replay는 temporary candidate files와 fixture child process를 사용한다. 따라서 independent artifact verification contract만 검증하며 `actualCandidateArtifactsObserved: false`, `actualModelTrainingExecuted: false`, `candidateEvaluationAuthorized: false`, `rolloutAuthorized: false`, `productionReadyClaim: false`를 유지한다. Recorded mode에서 실제 candidate files가 확인되어도 explicit local evaluation request를 받을 준비만 표시하고 training process provenance, candidate quality non-regression, rollout review를 별도 gate로 남긴다.
 
+## 현재 local candidate evaluation admission
+
+F2c.11은 F2c.10과 O1a 사이에 explicit request와 admission을 둔다. `src/core/local-candidate-evaluation-admission.mjs`는 recorded F2c.10 verification만 받고, current product permission과 명시적인 no-revocation 상태를 다시 확인한다. Request는 candidate model id·artifact format·artifact-set SHA-256, F1 dataset·readiness hash, baseline evaluation hash, 정렬된 case id, threshold hash, current CPU·memory·disk·runtime envelope, operator, expiration을 하나의 hash-bound record로 고정한다.
+
+Admission 시 request integrity, resource envelope와 time window를 다시 확인한다. 현재 permission이 바뀌거나 철회 상태가 명시되지 않았거나 F1 suite·candidate verification·resource limit가 달라지면 local process를 열기 전에 실패한다. 통과하면 `candidateEvaluationAuthorized: true`만 부여하며 `actualModelEvaluated: false`, `trainingAuthorized: false`, `externalSubmissionAuthorized: false`, `rolloutAuthorized: false`, `productionReadyClaim: false`를 유지한다.
+
+```bash
+npm run build:local-candidate-evaluation-admission-evidence
+npm run smoke:local-candidate-evaluation-admission
+```
+
+Tracked replay는 temporary candidate artifact와 recorded-mode fixture verification을 사용해 request와 admission contract만 검증한다. 실제 candidate artifact, training provenance, model evaluation, quality non-regression, rollout review는 완료하지 않았으며 다음 단계는 admission을 다시 검증하는 bounded local evaluation runtime이다.
+
 ## 현재 candidate model evaluation gate
 
 `src/core/candidate-model-evaluation.mjs`는 candidate 결과를 직접 생성하거나 모델을 호출하지 않는다. F1 readiness packet의 JSONL digest, evaluation manifest hash, Q1 baseline hash, review·rollback 경계를 다시 계산하고, 같은 answer-quality case set과 같은 threshold로 만들어진 candidate evaluation result만 비교한다.
@@ -987,6 +1002,7 @@ Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 
 | F2c.8 Local training post-acquisition readiness | 완료 · fixture 증적 | provenance·egress·offline canary evidence를 owner·artifact verification·run에 binding하고 기존 product permission evidence hash와 재결합 | fixture contract만 검증; 실제 artifact·review·canary·post-install permission·training은 미실행 |
 | F2c.9 Local training execution admission | 완료 · fixture 증적 | recorded readiness의 F1 target과 current permission·revocation 상태를 process spawn 직전에 재검증하고 run lineage 기록 | fixture child process만 검증; 실제 acquisition·owner review·training·external call·rollout은 미실행 |
 | F2c.10 Local training candidate artifact verification | 완료 · fixture 증적 | fixed candidate root의 complete manifest inventory, regular-file bytes·SHA-256, run-reported artifact set, current permission disk envelope를 독립 검증 | temp candidate files만 검증; actual artifact·training provenance·candidate evaluation·rollout은 미실행 |
+| F2c.11 Local candidate evaluation admission | 완료 · fixture 증적 | recorded candidate verification, current permission, explicit no-revocation, F1 case·threshold contract, resource envelope, operator와 expiration을 request·admission hash에 binding | bounded local evaluation만 허용; actual artifact·model evaluation·training provenance·rollout은 미실행 |
 | F2c 실제 local model training | 승인 작업 | 실제 license·egress·resource evidence가 owner review를 통과한 환경에서 같은 protocol로 실행 | actual model artifact, independently checked resource evidence, rollback owner와 candidate evaluation evidence 기록 |
 | F2d 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1a Candidate evaluation gate | 완료 | F1 packet과 같은 Q1 suite에서 fixture·recorded candidate result의 품질·증적·권한·rollback 판정 | 회귀 시 keep-baseline, 통과 시 rollout 없이 reviewer 대기 |
@@ -1103,6 +1119,8 @@ npm run build:local-training-post-acquisition-readiness-evidence
 npm run smoke:local-training-post-acquisition-readiness
 npm run build:local-training-candidate-artifact-verification-evidence
 npm run smoke:local-training-candidate-artifact-verification
+npm run build:local-candidate-evaluation-admission-evidence
+npm run smoke:local-candidate-evaluation-admission
 npm run smoke:candidate-model-evaluation
 npm run evaluate:local-answer-quality-baseline -- --endpoint http://127.0.0.1:11510 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-quality-baseline.json
 npm run smoke:local-answer-quality-baseline
@@ -1144,6 +1162,6 @@ npm run smoke:memory-retrieval-quality-fixture
 
 현재 안전하게 말할 수 있는 범위는 credential-free fixture가 retrieval hit, source citation, citation grounding, required content, unsupported citation, forbidden source와 reviewer verdict를 deterministic하게 검사하고, memory·attachment·fact source에서 동일한 corpus identity와 provenance를 재생성하며, controlled retrieval case에서 lexical baseline, local-command semantic experiment, deterministic semantic+lexical reranker를 같은 quality evaluator로 비교하고, 명시적 fixture command를 mission runtime에 연결해 scope 거부·lexical rollback·failure-before-provider를 재현하며, 실제 설치된 qwen2.5 3종을 같은 3-case suite로 측정한 뒤 selected 3B의 R7 15-case 실패, R8 독립 relevance scoring의 반복 안정적 15-case 통과, R9 top-2 evaluation의 동일 품질과 inference·p50·p95·total 감소 및 loaded-model snapshot, R10의 cold 1·warm 3·concurrent client worker 2 bounded 관측과 6-run 품질·resource parity, R11 controlled stub mission 4-role shadow path의 lexical provider input·store 불변과 fail-open, R12의 3 scenario·15 mission·60 role observation에서 full-query hard-negative 실패와 mission-objective query correction, R13의 exact hash-bound process-local cache에서 15/15 품질을 유지한 120 request·30 inference·90 hit와 maximum latency 회귀, R14의 8-entry eviction·in-flight invalidation·stale-result drop·rollback close, R15의 동시 child process 2개와 restart process 1개에서 각 cache의 cold miss·local hit·shutdown close, R16의 warm worker SIGKILL 뒤 cold recovery와 16-entry·48-pair bounded soak를 content-free evidence로 비교하고, P1의 approved mission memory가 다음 retrieval·planner·deliverable에 적용된 뒤 rollback으로 exact baseline artifact를 복원하며, P2의 같은-workspace 3 mission에서 승인 전·후·rollback Q1 case pass를 0/3·3/3·0/3으로 관찰하고 각 case의 foreign mission memory 후보 2개가 retrieval과 deliverable에 섞이지 않는지 확인하며, P3의 명시적 mission→workspace authorization 뒤 sibling mission에만 memory가 노출되고 foreign workspace는 차단되며 rollback이 exact baseline을 복원하는지 7개 session과 timeline audit으로 확인하고, 실제 local approval lifecycle에서 sanitized training record를 만든 뒤 중복 제거, mission-scope split, leakage 검사를 통과한 dataset을 provider-neutral JSONL과 reviewer evaluation manifest로 재생성하고 fixture candidate result의 non-regression과 rollback decision을 판정한다는 것이다.
 
-추가로 P4~P6은 같은 workspace의 decision 충돌·revocation·bounded override와 HTTP/Chromium operator surface를, P7~P10은 tenant-free local user decision의 cross-workspace 적용·revocation·bounded override와 operator surface를 controlled replay로 확인한다. F2a는 exact F1 hash와 별도 local approval에 묶인 child-process protocol, content-free candidate artifact metadata와 store 불변을 검증한다. F2b는 license·egress·resource evidence digest와 owner를 기존 approval·RBAC·tenant·audit에 묶고 CLI·HTTP·Chromium에서 승인과 철회를 재생한다. F2c.9는 recorded post-acquisition readiness와 current permission·revocation을 process spawn 직전에 다시 확인하며, F2c.10은 trainer가 보고한 candidate artifact set을 fixed repo-local root의 complete inventory와 실제 file hash로 독립 재검증한다. 이 단계들은 실제 모델 학습이나 rollout 증적이 아니다.
+추가로 P4~P6은 같은 workspace의 decision 충돌·revocation·bounded override와 HTTP/Chromium operator surface를, P7~P10은 tenant-free local user decision의 cross-workspace 적용·revocation·bounded override와 operator surface를 controlled replay로 확인한다. F2a는 exact F1 hash와 별도 local approval에 묶인 child-process protocol, content-free candidate artifact metadata와 store 불변을 검증한다. F2b는 license·egress·resource evidence digest와 owner를 기존 approval·RBAC·tenant·audit에 묶고 CLI·HTTP·Chromium에서 승인과 철회를 재생한다. F2c.9는 recorded post-acquisition readiness와 current permission·revocation을 process spawn 직전에 다시 확인하며, F2c.10은 trainer가 보고한 candidate artifact set을 fixed repo-local root의 complete inventory와 실제 file hash로 독립 재검증한다. F2c.11은 그 verification과 F1 suite를 explicit request·current permission·no-revocation 상태에 다시 묶어 bounded local evaluation admission만 만든다. 이 단계들은 실제 모델 학습이나 rollout 증적이 아니다.
 
 이 결과는 qwen2.5 3B relevance scorer의 controlled fixture 품질, 한 로컬 환경의 evaluation-only resource·bounded stability snapshot, controlled stub mission shadow replay, 단일-process lifecycle, 세 child-process isolation, evaluation SIGKILL recovery와 48-pair soak, mission-scoped 세 사례의 feedback lifecycle, 한 source workspace 안에서 명시적으로 승인된 decision의 sibling 적용·foreign 차단·rollback 관측만 보여 주며 provider-input 활성화, production server parallelism, production supervisor·worker pool·shared cache, killed process 내부 cleanup, OS restart, long-duration·반복 soak, thermal behavior, 실제 model binary 교체, 실제 사용자 query 분포, cross-mission generalization, 일반적인 workspace personalization, user personalization, retrieval 전용 learned reranker 성능, 실제 trained candidate model 평가, 일반적인 답변 정확도, fine-tuning 효과, production RAG 품질, 고객 업무 성과를 증명하지 않는다. Product permission surface는 연결됐지만 local model license의 실제 owner 승인, OS-level egress isolation, 승인된 resource·cold-start·concurrency·latency limit, long-duration soak와 thermal telemetry, cache lifecycle과 rollback owner 승인, provider-input activation, provider-specific submission adapter, 실제 local model training, 외부 fine-tuning 실행, model registry, 실제 model rollout은 아직 완료되지 않았으며 `productionReadyClaim: false`는 모든 단계에서 유지한다.

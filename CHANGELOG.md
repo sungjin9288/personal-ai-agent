@@ -95,8 +95,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,223,181 bytes`
-- SHA-256: `30697d1131fe89a476b55a703960aaf9b67c9a1cbb76d000b1f227ee82897da5`
+- Size: `4,225,282 bytes`
+- SHA-256: `4a54fa19e1b1758425c6a4de69546b698b9e2c44c091d1be302df69b111c45ce`
 
 Included public surfaces:
 
