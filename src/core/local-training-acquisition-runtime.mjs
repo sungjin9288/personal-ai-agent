@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import {
   assertLocalTrainingAcquisitionRequest,
   buildLocalTrainingAcquisitionPlan,
+  LOCAL_TRAINING_ACQUISITION_ACTIONS,
 } from './local-training-acquisition-approval.mjs';
 
 export const LOCAL_TRAINING_ACQUISITION_RUNTIME_PROTOCOL_VERSION =
@@ -297,6 +298,127 @@ function buildRunRecord({
     id: `local-training-acquisition-run-${runHash}`,
     runHash,
   };
+}
+
+export function assertLocalTrainingAcquisitionRun(run) {
+  const {
+    id,
+    runHash,
+    ...record
+  } = run || {};
+  const expectedHash = hashRecord(record);
+  const executionKind = record.execution?.kind;
+  const isFixture = executionKind === 'fixture-simulated';
+  const expectedStatus = isFixture
+    ? 'fixture-validated'
+    : 'adapter-completed-independent-verification-required';
+  const expectedStepStatus = isFixture ? 'simulated' : 'completed';
+  const expectedExternalCalls = isFixture
+    ? 'none'
+    : 'not-observed-by-runtime';
+  const artifactEvidence = record.adapterReport?.artifactEvidence;
+  const validArtifactEvidence = isFixture
+    ? artifactEvidence === null
+    : hasOnlyKeys(
+        artifactEvidence,
+        ['sourceModelSha256', 'trainerPackageSha256'],
+      ) &&
+      isSha256(artifactEvidence.sourceModelSha256) &&
+      isSha256(artifactEvidence.trainerPackageSha256);
+  const validSteps =
+    Array.isArray(record.steps) &&
+    record.steps.length === LOCAL_TRAINING_ACQUISITION_ACTIONS.length &&
+    record.steps.every(
+      (step, index) =>
+        hasOnlyKeys(step, ['id', 'order', 'status']) &&
+        step.id === LOCAL_TRAINING_ACQUISITION_ACTIONS[index] &&
+        step.order === index + 1 &&
+        step.status === expectedStepStatus,
+    );
+  if (
+    !hasOnlyKeys(record, [
+      'actualDependencyInstallationPerformed',
+      'actualModelDownloadPerformed',
+      'actualModelTrainingExecuted',
+      'adapterReport',
+      'approval',
+      'completedAt',
+      'execution',
+      'externalProviderCalls',
+      'externalSubmissionAuthorized',
+      'independentVerificationRequired',
+      'productionReadyClaim',
+      'request',
+      'rolloutAuthorized',
+      'schemaVersion',
+      'security',
+      'startedAt',
+      'status',
+      'steps',
+      'trainingAuthorized',
+    ]) ||
+    !hasOnlyKeys(record.adapterReport, [
+      'artifactEvidence',
+      'dependencyInstallationPerformed',
+      'egressClosed',
+      'modelDownloadPerformed',
+    ]) ||
+    !hasOnlyKeys(record.approval, ['approvalHash', 'id']) ||
+    !hasOnlyKeys(record.execution, [
+      'kind',
+      'protocolVersion',
+      'stepCount',
+    ]) ||
+    !hasOnlyKeys(record.request, ['id', 'requestHash']) ||
+    !hasOnlyKeys(record.security, [
+      'adapterSideEffects',
+      'inputPolicy',
+      'networkIsolation',
+      'timeoutEnforcement',
+    ]) ||
+    !EXECUTION_KINDS.has(executionKind) ||
+    record.schemaVersion !==
+      LOCAL_TRAINING_ACQUISITION_RUN_SCHEMA_VERSION ||
+    record.execution.protocolVersion !==
+      LOCAL_TRAINING_ACQUISITION_RUNTIME_PROTOCOL_VERSION ||
+    record.execution.stepCount !==
+      LOCAL_TRAINING_ACQUISITION_ACTIONS.length ||
+    record.status !== expectedStatus ||
+    record.actualDependencyInstallationPerformed !== false ||
+    record.actualModelDownloadPerformed !== false ||
+    record.actualModelTrainingExecuted !== false ||
+    record.adapterReport.dependencyInstallationPerformed !== !isFixture ||
+    record.adapterReport.modelDownloadPerformed !== !isFixture ||
+    record.adapterReport.egressClosed !== !isFixture ||
+    record.externalProviderCalls !== expectedExternalCalls ||
+    record.externalSubmissionAuthorized !== false ||
+    record.independentVerificationRequired !== !isFixture ||
+    record.productionReadyClaim !== false ||
+    record.rolloutAuthorized !== false ||
+    record.trainingAuthorized !== false ||
+    record.security.adapterSideEffects !== 'caller-owned' ||
+    record.security.inputPolicy !== 'content-free-metadata-only' ||
+    record.security.networkIsolation !== 'caller-owned' ||
+    record.security.timeoutEnforcement !== 'adapter-caller-owned' ||
+    !isSha256(record.approval.approvalHash) ||
+    record.approval.id !==
+      `local-training-acquisition-approval-${record.approval.approvalHash}` ||
+    !isSha256(record.request.requestHash) ||
+    record.request.id !==
+      `local-training-acquisition-request-${record.request.requestHash}` ||
+    !Number.isFinite(Date.parse(record.startedAt)) ||
+    !Number.isFinite(Date.parse(record.completedAt)) ||
+    Date.parse(record.completedAt) < Date.parse(record.startedAt) ||
+    !validArtifactEvidence ||
+    !validSteps ||
+    runHash !== expectedHash ||
+    id !== `local-training-acquisition-run-${expectedHash}`
+  ) {
+    throw new Error(
+      'Local training acquisition run failed: integrity.',
+    );
+  }
+  return run;
 }
 
 export function createLocalTrainingAcquisitionRuntime({

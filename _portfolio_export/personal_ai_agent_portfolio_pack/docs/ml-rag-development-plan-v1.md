@@ -35,6 +35,9 @@
 - currentLocalTrainingAcquisitionExecutionPlanSurface: `scripts/plan-local-training-acquisition-execution.mjs`
 - currentLocalTrainingAcquisitionRuntimeEvidence: `evidence/output-artifacts/local-training-acquisition-runtime-contract.json`
 - actualLocalTrainingAcquisitionRuntimeContractValidated: true
+- currentLocalTrainingAcquisitionArtifactVerificationEvidence: `evidence/output-artifacts/local-training-acquisition-artifact-verification.json`
+- actualLocalTrainingAcquisitionArtifactVerificationValidated: true
+- actualArtifactSetsObserved: false
 - actualLocalTrainingAcquisitionApproved: false
 - currentLocalAnswerQualityBaselineEvidence: `evidence/output-artifacts/local-answer-quality-baseline.json`
 - currentLocalAnswerCompositionCandidateEvidence: `evidence/output-artifacts/local-answer-composition-candidate.json`
@@ -764,6 +767,19 @@ npm run smoke:local-training-acquisition-runtime
 
 실제 owner approval, dependency installation, model download, training, external provider call, rollout은 실행하지 않았다. 실제 acquisition adapter의 filesystem, process, network isolation과 timeout enforcement는 caller가 소유하며 별도 독립 증적이 있어야 한다. `productionReadyClaim: false`를 유지한다.
 
+## 현재 local training acquisition artifact verification
+
+F2c.7은 F2c.6 adapter가 보고한 두 artifact-set hash를 독립 filesystem 관찰과 대조하는 경계를 `src/core/local-training-acquisition-artifact-verification.mjs`로 고정한다. Verifier는 현재 request, toolchain decision, approval 만료, exact plan, acquisition run integrity를 먼저 다시 확인한다. 그다음 approved mutable root 안의 trainer와 source-model manifest를 읽고 exact identity pin, 정렬된 bounded file 목록, file size와 streamed SHA-256을 검증한다.
+
+모든 manifest와 artifact는 repository realpath 안의 regular file·directory여야 한다. Relative path escape, symbolic link, missing file, schema 확장, pin drift, file hash mismatch, adapter artifact-set hash mismatch, approved download·disk envelope 초과는 증적 생성 전에 실패한다. Tracked evidence와 반환 record에는 파일 내용과 machine-local path를 남기지 않고 relative path hash, content hash, byte count만 기록한다.
+
+```bash
+npm run build:local-training-acquisition-artifact-verification-evidence
+npm run smoke:local-training-acquisition-artifact-verification
+```
+
+Tracked replay는 임시 directory에 synthetic trainer와 source-model fixture를 만들고 실제 filesystem I/O로 contract만 검증한다. 따라서 `actualArtifactSetsObserved: false`, `actualDependencyInstallationPerformed: false`, `actualModelDownloadPerformed: false`, `actualModelTrainingExecuted: false`를 유지한다. 실제 artifact가 같은 검증을 통과해도 acquisition provenance, egress closure review, offline resource canary, post-install product permission은 별도 gate로 남으며 file 존재만으로 설치·다운로드 사실을 승격하지 않는다.
+
 ## 현재 candidate model evaluation gate
 
 `src/core/candidate-model-evaluation.mjs`는 candidate 결과를 직접 생성하거나 모델을 호출하지 않는다. F1 readiness packet의 JSONL digest, evaluation manifest hash, Q1 baseline hash, review·rollback 경계를 다시 계산하고, 같은 answer-quality case set과 같은 threshold로 만들어진 candidate evaluation result만 비교한다.
@@ -921,6 +937,7 @@ Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 
 | F2c.4 Local training acquisition resolution surface | 완료 · 실제 decision 대기 | private decision file, exact owner field, tracked·symlink refusal, current decision 재검증, request당 1회 content-free history 기록 | 실제 operator decision은 tracked하지 않음; approve도 acquisition만 허용하고 설치·다운로드·학습은 실행하지 않음 |
 | F2c.5 Local training acquisition execution plan | 완료 · 실제 승인 대기 | approved private resolution의 exact field·integrity·expiry·current request binding을 재검증하고 7개 action을 pending plan으로 기록 | private 0600 plan은 실행 권한이 아니며 rejection·tampering·stale input은 file 생성 전 차단 |
 | F2c.6 Local training acquisition runtime contract | 완료 · 실제 실행 차단 | current approval·request·toolchain·exact plan을 재검증하고 content-free metadata만 injected adapter에 전달 | fixture evidence만 검증; adapter 자기보고는 실제 설치·download 증적이 아니며 training·external call·rollout 없음 |
+| F2c.7 Local training acquisition artifact verification | 완료 · fixture 증적 | approved root 안의 exact trainer·source-model manifest와 실제 file bytes·SHA-256을 독립 검증하고 adapter artifact-set hash와 resource envelope에 binding | temp fixture만 관찰; actual artifact·acquisition provenance·egress review·resource canary·product permission·training은 미검증 |
 | F2c 실제 local model training | 승인 작업 | 실제 license·egress·resource evidence가 owner review를 통과한 환경에서 같은 protocol로 실행 | actual model artifact, independently checked resource evidence, rollback owner와 candidate evaluation evidence 기록 |
 | F2d 외부 fine-tuning 실행 | 외부 작업 | 승인된 provider·budget·model이 있을 때 별도 adapter로 제출 | 명시 승인, 비용 한도, model id, 결과, rollback 기록 |
 | O1a Candidate evaluation gate | 완료 | F1 packet과 같은 Q1 suite에서 fixture·recorded candidate result의 품질·증적·권한·rollback 판정 | 회귀 시 keep-baseline, 통과 시 rollout 없이 reviewer 대기 |
@@ -1031,6 +1048,8 @@ npm run plan:local-training-acquisition-execution -- --resolution var/local-trai
 npm run smoke:local-training-acquisition-execution-plan
 npm run build:local-training-acquisition-runtime-evidence
 npm run smoke:local-training-acquisition-runtime
+npm run build:local-training-acquisition-artifact-verification-evidence
+npm run smoke:local-training-acquisition-artifact-verification
 npm run smoke:candidate-model-evaluation
 npm run evaluate:local-answer-quality-baseline -- --endpoint http://127.0.0.1:11510 --model qwen2.5:3b --cloud-features-disabled --output evidence/output-artifacts/local-answer-quality-baseline.json
 npm run smoke:local-answer-quality-baseline

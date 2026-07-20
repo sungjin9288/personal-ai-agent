@@ -1,0 +1,59 @@
+{
+  "artifacts": {
+    "sourceModel": {
+      "artifactSetSha256": "2bc16d4ec72b927e54f4bddeb28715aabdfdaf4a9549d71ac1e44d9d349f1536",
+      "fileCount": 2,
+      "totalBytes": 51
+    },
+    "trainerPackage": {
+      "artifactSetSha256": "b1f91c34396884febc3382af2646dddcb3c7d03a3c7ed94661b3ff6610480e2f",
+      "fileCount": 1,
+      "totalBytes": 23
+    }
+  },
+  "claimBoundary": {
+    "actualArtifactSetsObserved": false,
+    "actualDependencyInstallationPerformed": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "independentArtifactVerificationContractValidated": true,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "failureGuards": {
+    "adapterHashMismatchBlocked": true,
+    "fileHashMismatchBlocked": true,
+    "manifestPinDriftBlocked": true,
+    "pathEscapeBlocked": true,
+    "planTamperingBlocked": true,
+    "resourceEnvelopeBlocked": true,
+    "runSemanticTamperingBlocked": true,
+    "symlinkBlocked": true,
+    "unsafePathMetadataBlocked": true
+  },
+  "mode": "local-training-acquisition-artifact-verification",
+  "schemaVersion": "personal-ai-agent-local-training-acquisition-artifact-verification-evidence/v1",
+  "security": {
+    "approvedRootContainmentValidated": true,
+    "fileContentStored": false,
+    "manifestAndFileHashesRecomputed": true,
+    "regularFilesOnly": true,
+    "symlinksRejected": true
+  },
+  "verification": {
+    "remainingGates": [
+      "acquisition-provenance-reviewed",
+      "egress-closure-independently-reviewed",
+      "offline-resource-canary-passed",
+      "post-install-product-permission-approved"
+    ],
+    "schemaVersion": "personal-ai-agent-local-training-acquisition-artifact-verification/v1",
+    "status": "fixture-artifacts-verified-no-acquisition",
+    "verificationHash": "ceafbe7bf187ccd5193a556aab2e53e4a0fdf003a8f1092d7dd9de0687f2d0d8"
+  },
+  "evidenceHash": "c6a38074c9af5b2709a57409698a92161ec917515ae5ee730597bc7da75cef64",
+  "id": "local-training-acquisition-artifact-verification-evidence-c6a38074c9af5b2709a57409698a92161ec917515ae5ee730597bc7da75cef64"
+}

@@ -165,6 +165,8 @@
     "smoke:local-training-acquisition-execution-plan": "node scripts/smoke-local-training-acquisition-execution-plan.mjs",
     "build:local-training-acquisition-runtime-evidence": "node scripts/build-local-training-acquisition-runtime-evidence.mjs",
     "smoke:local-training-acquisition-runtime": "node scripts/smoke-local-training-acquisition-runtime.mjs",
+    "build:local-training-acquisition-artifact-verification-evidence": "node scripts/build-local-training-acquisition-artifact-verification-evidence.mjs",
+    "smoke:local-training-acquisition-artifact-verification": "node scripts/smoke-local-training-acquisition-artifact-verification.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
     "evaluate:local-answer-quality-baseline": "node scripts/evaluate-local-answer-quality-baseline.mjs",
     "smoke:local-answer-quality-baseline": "node scripts/smoke-local-answer-quality-baseline.mjs",

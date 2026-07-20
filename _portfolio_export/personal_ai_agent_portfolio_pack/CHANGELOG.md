@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added an independent local-training acquisition artifact verifier that rechecks the current approval, request, toolchain pins, exact plan, and F2c.6 run before reading bounded manifests and hashing regular files inside the approved repository root.
+- Added deterministic real-filesystem fixture evidence for path containment, symlink refusal, manifest pinning, file and adapter hash binding, and resource-envelope enforcement. The verifier does not treat observed files as acquisition provenance: no actual dependency installation, model download, training, external provider call, rollout, or production claim was performed.
 - Added a dependency-injected local-training acquisition runtime contract that revalidates the current approval, request, toolchain decision, and exact seven-step plan before delegating to an adapter.
 - Added deterministic fixture evidence for payload minimization, ordered result validation, tamper and expiry refusal, and unsupported-output blocking. Adapter-reported installation or download remains independently unverified; no dependency installation, model download, training, external provider call, rollout, or production claim was performed.
 - Added a private actual-user query evaluation protocol that rejects tracked paths, symlinks, oversized inputs, and stale consent before local model execution.

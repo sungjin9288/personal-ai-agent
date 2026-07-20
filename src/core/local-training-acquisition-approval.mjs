@@ -13,7 +13,7 @@ export const LOCAL_TRAINING_ACQUISITION_APPROVAL_SCHEMA_VERSION =
 
 const DECISIONS = new Set(['approve', 'reject']);
 const MUTABLE_ROOT = 'var/local-training/mlx-lm-lora-qwen2.5-1.5b';
-const REQUESTED_ACTIONS = [
+export const LOCAL_TRAINING_ACQUISITION_ACTIONS = Object.freeze([
   'create-isolated-python-environment',
   'install-pinned-trainer-package',
   'download-pinned-trainable-source',
@@ -21,7 +21,7 @@ const REQUESTED_ACTIONS = [
   'close-acquisition-egress',
   'run-offline-resource-canary',
   'request-post-install-product-permission',
-];
+]);
 
 function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
@@ -208,7 +208,7 @@ function buildRequestContent({
     proposedResourceEnvelope: normalizeResourceEnvelope(
       proposedResourceEnvelope,
     ),
-    requestedActions: [...REQUESTED_ACTIONS],
+    requestedActions: [...LOCAL_TRAINING_ACQUISITION_ACTIONS],
     requestedAt: normalizedRequestedAt,
     requestedBy: requireMetadata(requestedBy, 'requestedBy'),
     requiredOwnerRoles: [
@@ -440,7 +440,7 @@ export function assertApprovedLocalTrainingAcquisition({
     JSON.stringify(approval.resourceEnvelope) !==
       JSON.stringify(normalizedResourceEnvelope) ||
     JSON.stringify(approval.requestedActions) !==
-      JSON.stringify(REQUESTED_ACTIONS) ||
+      JSON.stringify(LOCAL_TRAINING_ACQUISITION_ACTIONS) ||
     Date.parse(approval.expiresAt) <= Date.parse(normalizedNow) ||
     JSON.stringify(approval.toolchainDecision) !==
       JSON.stringify(currentDecision)

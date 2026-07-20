@@ -84,6 +84,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-toolchain-decision.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-acquisition-request.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-acquisition-runtime-contract.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-acquisition-artifact-verification.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-quality-baseline.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-composition-candidate.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-composition-robustness.json',

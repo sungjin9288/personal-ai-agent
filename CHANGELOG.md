@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added an independent local-training acquisition artifact verifier that rechecks the current approval, request, toolchain pins, exact plan, and F2c.6 run before reading bounded manifests and hashing regular files inside the approved repository root.
+- Added deterministic real-filesystem fixture evidence for path containment, symlink refusal, manifest pinning, file and adapter hash binding, and resource-envelope enforcement. The verifier does not treat observed files as acquisition provenance: no actual dependency installation, model download, training, external provider call, rollout, or production claim was performed.
 - Added a dependency-injected local-training acquisition runtime contract that revalidates the current approval, request, toolchain decision, and exact seven-step plan before delegating to an adapter.
 - Added deterministic fixture evidence for payload minimization, ordered result validation, tamper and expiry refusal, and unsupported-output blocking. Adapter-reported installation or download remains independently unverified; no dependency installation, model download, training, external provider call, rollout, or production claim was performed.
 - Added a private actual-user query evaluation protocol that rejects tracked paths, symlinks, oversized inputs, and stale consent before local model execution.
@@ -91,8 +93,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,215,976 bytes`
-- SHA-256: `1869bb4ccc26d2d37a3cadea7fa119164deafb4d63788a90aef58d38d378bb42`
+- Size: `4,218,503 bytes`
+- SHA-256: `d9b25d1eb03b40742c5ff8c48636df63a268322936620565377d71212b6c91cb`
 
 Included public surfaces:
 
