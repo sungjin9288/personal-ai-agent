@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-20T14:43:09.628Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-20T14:42:49.073Z
 - branch: codex/f2c17-evaluator-boot-recovery
 - commit: aea54690ee516fb3d796853a9c83db09bfae22d2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aea54690ee516fb3d796853a9c83db09bfae22d2/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

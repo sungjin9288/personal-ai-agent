@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T14:43:09.628Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T14:43:08.491Z
 - localDate: 2026-07-20
 - branch: codex/f2c17-evaluator-boot-recovery
 - commit: aea54690ee516fb3d796853a9c83db09bfae22d2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/aea54690ee516fb3d796853a9c83db09bfae22d2](releases/execution-v1/aea54690ee516fb3d796853a9c83db09bfae22d2)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/aea54690ee516fb3d796853a9c83db09bfae22d2/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/aea54690ee516fb3d796853a9c83db09bfae22d2/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/aea54690ee516fb3d796853a9c83db09bfae22d2](docs/releases/execution-v1/aea54690ee516fb3d796853a9c83db09bfae22d2)
 - visualArtifactSetSha256: 5281243069219fa925f5324e0f717aaa4f29d0d390ea7d0e948673fe0dd27266
 - commitPushStatus: not pushed, origin/codex/f2c17-evaluator-boot-recovery not found
 
