@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T08:11:06.233Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T08:10:48.620Z
 - branch: codex/f2c15-evaluation-workspace-recovery
 - commit: 60e75ddf6b5daa065a50548be2d334b294e562eb

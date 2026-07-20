@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T08:11:06.233Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T08:11:05.182Z
 - localDate: 2026-07-20
 - branch: codex/f2c15-evaluation-workspace-recovery
 - commit: 60e75ddf6b5daa065a50548be2d334b294e562eb
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/60e75ddf6b5daa065a50548be2d334b294e562eb](releases/execution-v1/60e75ddf6b5daa065a50548be2d334b294e562eb)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/60e75ddf6b5daa065a50548be2d334b294e562eb/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/60e75ddf6b5daa065a50548be2d334b294e562eb/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/60e75ddf6b5daa065a50548be2d334b294e562eb](docs/releases/execution-v1/60e75ddf6b5daa065a50548be2d334b294e562eb)
 - visualArtifactSetSha256: 56b85e9a46bf2a35f2bd1f4beeb3ab81d82c4d215f36527048827c3a30273ab7
 - commitPushStatus: not pushed, origin/codex/f2c15-evaluation-workspace-recovery not found
 

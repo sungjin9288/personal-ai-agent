@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-20T08:11:06.233Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-20T08:10:48.711Z
 - branch: codex/f2c15-evaluation-workspace-recovery
 - commit: 60e75ddf6b5daa065a50548be2d334b294e562eb
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/60e75ddf6b5daa065a50548be2d334b294e562eb/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
