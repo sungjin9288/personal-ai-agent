@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T00:51:34.647Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T00:51:23.243Z
 - branch: codex/f2c7-acquisition-verification
 - commit: be5468fbc8147e724c299bd231777b055e1d6b28

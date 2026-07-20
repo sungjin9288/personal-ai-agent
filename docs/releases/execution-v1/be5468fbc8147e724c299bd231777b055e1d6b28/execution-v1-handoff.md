@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T00:51:34.647Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T00:51:33.270Z
 - localDate: 2026-07-20
 - branch: codex/f2c7-acquisition-verification
 - commit: be5468fbc8147e724c299bd231777b055e1d6b28
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/be5468fbc8147e724c299bd231777b055e1d6b28](releases/execution-v1/be5468fbc8147e724c299bd231777b055e1d6b28)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/be5468fbc8147e724c299bd231777b055e1d6b28/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/be5468fbc8147e724c299bd231777b055e1d6b28/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/be5468fbc8147e724c299bd231777b055e1d6b28](docs/releases/execution-v1/be5468fbc8147e724c299bd231777b055e1d6b28)
 - visualArtifactSetSha256: 49d402f5dbc2059715add3e1a5126dfcf98f570972d740974c78bfe65b59e324
 - commitPushStatus: not pushed, origin/codex/f2c7-acquisition-verification not found
 
