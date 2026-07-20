@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a detached POSIX process-group lifecycle for local candidate evaluation. Timeout and output overflow now wait for leader close and group absence before workspace cleanup, while late or unknown quiescence preserves the `spawning` workspace and emits no completed run evidence. OS restart recovery, escaped sessions, OS resource and network isolation, actual model evaluation, rollout, and production readiness remain unverified.
 - Bound local candidate evaluation admission to the exact F1 suite bytes and moved evaluator input into a temporary workspace containing only the admitted suite and manifest-listed candidate files.
 - Added pre-run and post-run candidate and suite verification, combined disk-envelope enforcement, source-workspace exclusion, and cleanup-before-evidence guards. The tracked replay remains fixture-only; evaluator executable provenance, OS resource and network isolation, actual model evaluation, rollout, and production claims remain unverified.
 - Added a fixture-only post-acquisition readiness gate that binds artifact verification to owner-reviewed provenance, closed egress, an offline resource canary, and the existing product permission evidence without authorizing training.
@@ -97,8 +98,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,232,607 bytes`
-- SHA-256: `f3420aae6623f05c788b9a28650c12b779c8697b195a655a1772f83cb4031da2`
+- Size: `4,234,319 bytes`
+- SHA-256: `39b31ef583448b05eb92b60ac3b6721f2696874a8efe5bba95943640227b4664`
 
 Included public surfaces:
 

@@ -82,6 +82,10 @@ assert.equal(
   stored.security.postExecutionInputVerification,
   true,
 );
+assert.equal(
+  stored.security.processGroupIsolation,
+  'detached-posix-process-group',
+);
 assert.equal(stored.security.sourceWorkspaceAsCwd, false);
 assert.equal(
   stored.security.temporaryInputViewCleanup,
@@ -90,6 +94,10 @@ assert.equal(
 assert.equal(
   stored.security.workspaceRecovery,
   'expired-dead-preparing-only',
+);
+assert.equal(
+  stored.security.workspaceCleanupPolicy,
+  'close-and-process-group-absence',
 );
 assert.equal(
   stored.failureGuards.stalePreparingWorkspaceRecovered,
@@ -102,6 +110,15 @@ assert.equal(
 assert.equal(
   stored.execution.workspaceRecoveryCount,
   1,
+);
+assert.equal(stored.execution.processGroupQuiesced, true);
+assert.equal(
+  stored.failureGuards.processGroupAbsenceRequired,
+  true,
+);
+assert.equal(
+  stored.failureGuards.processLifecycleContentFree,
+  true,
 );
 assert.equal(stored.claimBoundary.actualModelEvaluated, false);
 assert.equal(
@@ -142,10 +159,13 @@ const docs = {
 for (const term of [
   '| F2c.12 Local candidate evaluation runtime | 완료 · fixture 증적 |',
   '| F2c.13 Immutable evaluation input view | 완료 · fixture 증적 |',
+  '| F2c.16 Post-spawn evaluator process lifecycle | 완료 · fixture 증적 |',
   'npm run smoke:local-candidate-evaluation-runtime',
   'npm run smoke:local-candidate-evaluation-input-view',
+  'npm run smoke:local-candidate-evaluation-process-lifecycle',
   'actualLocalCandidateEvaluationRuntimeValidated: true',
   'actualLocalCandidateEvaluationInputViewValidated: true',
+  'actualLocalCandidateEvaluationProcessLifecycleValidated: true',
   'actualModelEvaluated: false',
 ]) {
   assert.ok(
@@ -161,6 +181,11 @@ assert.ok(
 assert.ok(
   docs.readme.includes(
     'npm run smoke:local-candidate-evaluation-input-view',
+  ),
+);
+assert.ok(
+  docs.readme.includes(
+    'npm run smoke:local-candidate-evaluation-process-lifecycle',
   ),
 );
 assert.ok(

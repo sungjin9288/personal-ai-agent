@@ -27,7 +27,7 @@ import {
 } from './local-candidate-evaluator-fixture.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_RUNTIME_EVIDENCE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v4';
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v5';
 
 const EVALUATOR_ID =
   'fixture-local-candidate-evaluator-v1';
@@ -52,6 +52,23 @@ function listManagedWorkspaces(temporaryDirectory) {
   return fs
     .readdirSync(namespacePath)
     .filter((name) => name.startsWith('workspace-'));
+}
+
+function unlockDirectories(directory) {
+  let entries;
+  try {
+    fs.chmodSync(directory, 0o700);
+    entries = fs.readdirSync(directory, {
+      withFileTypes: true,
+    });
+  } catch {
+    return;
+  }
+  for (const entry of entries) {
+    if (entry.isDirectory() && !entry.isSymbolicLink()) {
+      unlockDirectories(path.join(directory, entry.name));
+    }
+  }
 }
 
 function createRuntime(
@@ -265,6 +282,42 @@ export async function evaluateLocalCandidateEvaluationRuntime({
       fs.existsSync(authorityGuardWorkspace.rootDir);
     authorityGuardWorkspace.cleanup();
 
+    const lifecycleGuardTemporaryDirectory = fs.mkdtempSync(
+      path.join(
+        os.tmpdir(),
+        'personal-ai-agent-lifecycle-guard-evidence-',
+      ),
+    );
+    let processGroupAbsenceRequired;
+    try {
+      processGroupAbsenceRequired =
+        await rejectionMatches(
+          () =>
+            createRuntime(
+              fixture,
+              repoDir,
+              'success',
+              {
+                processGroupState: () => 'unknown',
+                quiescencePollMs: 1,
+                quiescenceTimeoutMs: 10,
+                temporaryDirectory:
+                  lifecycleGuardTemporaryDirectory,
+              },
+            ).run(runInput(fixture)),
+          /process-group-quiescence/,
+        ) &&
+        listManagedWorkspaces(
+          lifecycleGuardTemporaryDirectory,
+        ).length === 1;
+    } finally {
+      unlockDirectories(lifecycleGuardTemporaryDirectory);
+      fs.rmSync(lifecycleGuardTemporaryDirectory, {
+        force: true,
+        recursive: true,
+      });
+    }
+
     const failureGuards = {
       actualModelClaimRemainsFalse:
         result.run.actualModelEvaluated === false &&
@@ -371,6 +424,22 @@ export async function evaluateLocalCandidateEvaluationRuntime({
             })),
           /permission failed: integrity|current-permission-binding/,
         ),
+      processGroupAbsenceRequired,
+      processLifecycleContentFree:
+        !JSON.stringify(
+          result.run.processLifecycle,
+        ).includes(fixture.temporaryDirectory) &&
+        !Object.hasOwn(result.run.processLifecycle, 'pid') &&
+        !Object.hasOwn(
+          result.run.processLifecycle,
+          'processGroupId',
+        ),
+      processLifecycleIntegrityBound:
+        /^[a-f0-9]{64}$/u.test(
+          result.run.processLifecycle.lifecycleHash,
+        ) &&
+        result.run.processLifecycle
+          .processGroupAbsenceConfirmed === true,
       rawResultFieldsRejected: await rejectionMatches(
         () =>
           createRuntime(
@@ -539,6 +608,11 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         gateStatus: gate.status,
         protocolVersion:
           LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION,
+        processLifecycleHash:
+          result.run.processLifecycle.lifecycleHash,
+        processGroupQuiesced:
+          result.run.processLifecycle
+            .processGroupAbsenceConfirmed,
         runHashBound: true,
         suiteArtifactSha256:
           result.run.inputSnapshot.suiteSha256,
@@ -568,11 +642,15 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         localProcessStdio: true,
         networkIsolation: 'caller-owned',
         postExecutionInputVerification: true,
+        processGroupIsolation:
+          result.run.security.processGroupIsolation,
         resourceEnforcement:
           'runtime-timeout-io-and-input-view',
         shell: false,
         sourceWorkspaceAsCwd: false,
         temporaryInputViewCleanup: 'completed',
+        workspaceCleanupPolicy:
+          result.run.security.workspaceCleanupPolicy,
         workspaceRecovery:
           'expired-dead-preparing-only',
       },

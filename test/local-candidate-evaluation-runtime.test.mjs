@@ -91,12 +91,30 @@ function createTemporaryDirectory(t) {
     ),
   );
   t.after(() => {
+    unlockDirectories(temporaryDirectory);
     fs.rmSync(temporaryDirectory, {
       force: true,
       recursive: true,
     });
   });
   return temporaryDirectory;
+}
+
+function unlockDirectories(directory) {
+  let entries;
+  try {
+    fs.chmodSync(directory, 0o700);
+    entries = fs.readdirSync(directory, {
+      withFileTypes: true,
+    });
+  } catch {
+    return;
+  }
+  for (const entry of entries) {
+    if (entry.isDirectory() && !entry.isSymbolicLink()) {
+      unlockDirectories(path.join(directory, entry.name));
+    }
+  }
 }
 
 function listManagedWorkspaces(temporaryDirectory) {
@@ -212,6 +230,10 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
     runtime.security.postExecutionInputVerification,
     true,
   );
+  assert.equal(
+    runtime.security.processGroupIsolation,
+    'detached-posix-process-group',
+  );
   assert.equal(runtime.security.sourceWorkspaceAsCwd, false);
   assert.notEqual(spawnedEntryPath, commandPath);
   assert.match(
@@ -244,6 +266,15 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
     result.run.inputSnapshot.cleanup,
     'completed',
   );
+  assert.equal(
+    result.run.processLifecycle.processGroupAbsenceConfirmed,
+    true,
+  );
+  assert.equal(
+    result.run.processLifecycle.cleanupAuthorized,
+    true,
+  );
+  assert.equal('pid' in result.run.processLifecycle, false);
   assert.equal(
     result.candidateEvidence.evaluationRunId,
     result.run.id,
@@ -663,6 +694,39 @@ test('runtime rejects unbound, raw, inconsistent, and unbounded child results', 
       }),
     /must not reference absolute files/,
   );
+});
+
+test('runtime preserves a spawning workspace when process-group absence is unknown', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+
+  await assert.rejects(
+    createRuntime(fixture, 'success', {
+      processGroupState: () => 'unknown',
+      quiescencePollMs: 1,
+      quiescenceTimeoutMs: 10,
+      temporaryDirectory,
+    }).run(runInput(fixture)),
+    /process-group-quiescence/u,
+  );
+
+  const workspaces = listManagedWorkspaces(
+    temporaryDirectory,
+  );
+  assert.equal(workspaces.length, 1);
+  const lease = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        temporaryDirectory,
+        LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE,
+        workspaces[0],
+        '.workspace-lease.json',
+      ),
+      'utf8',
+    ),
+  );
+  assert.equal(lease.phase, 'spawning');
 });
 
 test('recorded local evaluation marks model evidence without authorizing rollout', async (t) => {

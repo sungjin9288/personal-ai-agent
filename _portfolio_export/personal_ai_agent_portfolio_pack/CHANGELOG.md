@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a detached POSIX process-group lifecycle for local candidate evaluation. Timeout and output overflow now wait for leader close and group absence before workspace cleanup, while late or unknown quiescence preserves the `spawning` workspace and emits no completed run evidence. OS restart recovery, escaped sessions, OS resource and network isolation, actual model evaluation, rollout, and production readiness remain unverified.
 - Bound local candidate evaluation admission to the exact F1 suite bytes and moved evaluator input into a temporary workspace containing only the admitted suite and manifest-listed candidate files.
 - Added pre-run and post-run candidate and suite verification, combined disk-envelope enforcement, source-workspace exclusion, and cleanup-before-evidence guards. The tracked replay remains fixture-only; evaluator executable provenance, OS resource and network isolation, actual model evaluation, rollout, and production claims remain unverified.
 - Added a fixture-only post-acquisition readiness gate that binds artifact verification to owner-reviewed provenance, closed egress, an offline resource canary, and the existing product permission evidence without authorizing training.

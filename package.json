@@ -176,6 +176,7 @@
     "build:local-candidate-evaluation-runtime-evidence": "node scripts/build-local-candidate-evaluation-runtime-evidence.mjs",
     "smoke:local-candidate-evaluation-runtime": "node scripts/smoke-local-candidate-evaluation-runtime.mjs",
     "smoke:local-candidate-evaluation-input-view": "node scripts/smoke-local-candidate-evaluation-input-view.mjs",
+    "smoke:local-candidate-evaluation-process-lifecycle": "node scripts/smoke-local-candidate-evaluation-process-lifecycle.mjs",
     "smoke:local-candidate-evaluation-workspace-recovery": "node scripts/smoke-local-candidate-evaluation-workspace-recovery.mjs",
     "smoke:local-candidate-evaluator-provenance": "node scripts/smoke-local-candidate-evaluator-provenance.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",

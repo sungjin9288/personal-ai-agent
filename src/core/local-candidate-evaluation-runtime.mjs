@@ -20,6 +20,11 @@ import {
   createLocalCandidateEvaluationInputView,
 } from './local-candidate-evaluation-input-view.mjs';
 import {
+  assertLocalCandidateEvaluationProcessLifecycle,
+  isLocalCandidateEvaluationWorkspaceCleanupAuthorized,
+  runLocalCandidateEvaluationProcess,
+} from './local-candidate-evaluation-process-lifecycle.mjs';
+import {
   assertLocalCandidateEvaluationWorkspaceRecovery,
 } from './local-candidate-evaluation-workspace-recovery.mjs';
 import {
@@ -37,7 +42,7 @@ import {
 export const LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION =
   'personal-ai-agent-local-candidate-evaluation/v2';
 export const LOCAL_CANDIDATE_EVALUATION_RUN_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-run/v4';
+  'personal-ai-agent-local-candidate-evaluation-run/v5';
 
 const DEFAULT_MAX_INPUT_BYTES = 1024 * 1024;
 const DEFAULT_MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
@@ -333,117 +338,6 @@ function buildEvaluationPayload({
     schemaVersion:
       LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION,
   };
-}
-
-function runLocalCommand({
-  args,
-  command,
-  cwd,
-  environment,
-  maxOutputBytes,
-  payload,
-  spawnProcess,
-  timeoutMs,
-}) {
-  return new Promise((resolve, reject) => {
-    const child = spawnProcess(command, args, {
-      cwd,
-      env: environment,
-      shell: false,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
-    let settled = false;
-    let stderrBytes = 0;
-    let stdout = '';
-
-    function finish(error, result) {
-      if (settled) {
-        return;
-      }
-      settled = true;
-      clearTimeout(timer);
-      if (error) {
-        reject(error);
-      } else {
-        resolve(result);
-      }
-    }
-
-    function appendStdout(chunk) {
-      const next = stdout + String(chunk);
-      if (Buffer.byteLength(next, 'utf8') > maxOutputBytes) {
-        child.kill('SIGKILL');
-        finish(
-          new Error(
-            `Local candidate evaluation runtime stdout exceeds ${maxOutputBytes} bytes.`,
-          ),
-        );
-        return;
-      }
-      stdout = next;
-    }
-
-    const timer = setTimeout(() => {
-      child.kill('SIGKILL');
-      finish(
-        new Error(
-          `Local candidate evaluation runtime command timed out after ${timeoutMs}ms.`,
-        ),
-      );
-    }, timeoutMs);
-
-    child.on('error', (error) => {
-      finish(
-        new Error(
-          error?.code === 'ENOENT'
-            ? 'Local candidate evaluation runtime command not found.'
-            : 'Local candidate evaluation runtime command failed to start.',
-        ),
-      );
-    });
-    child.stdout.on('data', appendStdout);
-    child.stderr.on('data', (chunk) => {
-      stderrBytes += Buffer.byteLength(chunk);
-      if (stderrBytes > maxOutputBytes) {
-        child.kill('SIGKILL');
-        finish(
-          new Error(
-            `Local candidate evaluation runtime stderr exceeds ${maxOutputBytes} bytes.`,
-          ),
-        );
-      }
-    });
-    child.on('close', (exitCode) => {
-      if (settled) {
-        return;
-      }
-      if (exitCode !== 0) {
-        finish(
-          new Error(
-            `Local candidate evaluation runtime command exited with code ${exitCode}.`,
-          ),
-        );
-        return;
-      }
-      try {
-        finish(null, JSON.parse(stdout));
-      } catch {
-        finish(
-          new Error(
-            'Local candidate evaluation runtime command returned invalid JSON.',
-          ),
-        );
-      }
-    });
-    child.stdin.on('error', () => {
-      finish(
-        new Error(
-          'Local candidate evaluation runtime command stdin failed.',
-        ),
-      );
-    });
-    child.stdin.end(JSON.stringify(payload));
-  });
 }
 
 function ratio(numerator, denominator) {
@@ -867,6 +761,7 @@ function buildRunRecord({
   evaluatorId,
   evaluatorProvenance,
   executionKind,
+  processLifecycle,
   request,
   reverifiedCandidate,
   security,
@@ -940,6 +835,7 @@ function buildRunRecord({
       id: currentPermission.id,
       permissionHash: currentPermission.permissionHash,
     },
+    processLifecycle,
     productionReadyClaim: false,
     request: {
       id: request.id,
@@ -1003,6 +899,7 @@ export function assertLocalCandidateEvaluationRun({
       'inputSnapshot',
       'localExecutionAuthorized',
       'productPermission',
+      'processLifecycle',
       'productionReadyClaim',
       'request',
       'resourceLimits',
@@ -1054,6 +951,7 @@ export function assertLocalCandidateEvaluationRun({
       'id',
       'permissionHash',
     ]) ||
+    !record.processLifecycle ||
     !hasExactKeys(record.request, ['id', 'requestHash']) ||
     !hasExactKeys(record.resourceLimits, [
       'maxCpuThreads',
@@ -1074,10 +972,12 @@ export function assertLocalCandidateEvaluationRun({
       'executableVerification',
       'networkIsolation',
       'postExecutionInputVerification',
+      'processGroupIsolation',
       'resourceEnforcement',
       'shell',
       'sourceWorkspaceAsCwd',
       'transport',
+      'workspaceCleanupPolicy',
     ]) ||
     !hasExactKeys(record.workspaceRecovery, [
       'recoveredLeaseIds',
@@ -1141,6 +1041,9 @@ export function assertLocalCandidateEvaluationRun({
   } = record.workspaceRecovery;
   assertLocalCandidateEvaluationWorkspaceRecovery(
     workspaceRecovery,
+  );
+  assertLocalCandidateEvaluationProcessLifecycle(
+    record.processLifecycle,
   );
   if (
     record.schemaVersion !==
@@ -1236,11 +1139,15 @@ export function assertLocalCandidateEvaluationRun({
       'sha256-before-and-after' ||
     record.security.networkIsolation !== 'caller-owned' ||
     record.security.postExecutionInputVerification !== true ||
+    record.security.processGroupIsolation !==
+      'detached-posix-process-group' ||
     record.security.resourceEnforcement !==
       'runtime-timeout-io-and-input-view' ||
     record.security.shell !== false ||
     record.security.sourceWorkspaceAsCwd !== false ||
     record.security.transport !== 'local-process-stdio' ||
+    record.security.workspaceCleanupPolicy !==
+      'close-and-process-group-absence' ||
     !Number.isFinite(startedAtMs) ||
     !Number.isFinite(completedAtMs) ||
     completedAtMs < startedAtMs ||
@@ -1286,8 +1193,13 @@ export function createLocalCandidateEvaluationRuntime({
   isProcessAlive,
   maxInputBytes = DEFAULT_MAX_INPUT_BYTES,
   maxOutputBytes = DEFAULT_MAX_OUTPUT_BYTES,
+  platform = process.platform,
   processId = process.pid,
+  processGroupState,
+  quiescencePollMs,
+  quiescenceTimeoutMs,
   repoDir,
+  signalProcessGroup,
   spawnProcess = nodeSpawn,
   temporaryDirectory = os.tmpdir(),
   timeoutMs = DEFAULT_TIMEOUT_MS,
@@ -1371,11 +1283,15 @@ export function createLocalCandidateEvaluationRuntime({
       'sha256-before-and-after',
     networkIsolation: 'caller-owned',
     postExecutionInputVerification: true,
+    processGroupIsolation:
+      'detached-posix-process-group',
     resourceEnforcement:
       'runtime-timeout-io-and-input-view',
     shell: false,
     sourceWorkspaceAsCwd: false,
     transport: 'local-process-stdio',
+    workspaceCleanupPolicy:
+      'close-and-process-group-absence',
   };
 
   return {
@@ -1468,9 +1384,11 @@ export function createLocalCandidateEvaluationRuntime({
         startedAt: candidateVerifiedAt,
       });
       let inputView;
+      let workspaceCleanupAuthorized = true;
       let candidateSnapshotPreVerification;
       let candidateSnapshotPostVerification;
       let completedAt;
+      let processLifecycle;
       let startedAt;
       let validated;
       let workspaceRecovery;
@@ -1547,19 +1465,36 @@ export function createLocalCandidateEvaluationRuntime({
           );
         }
         inputView.markSpawning();
-        const result = await runLocalCommand({
-          args: [
-            inputView.evaluatorEntryPath,
-            ...normalizedArgs.slice(1),
-          ],
-          command: normalizedCommand,
-          cwd: inputView.rootDir,
-          environment,
-          maxOutputBytes: normalizedMaxOutputBytes,
-          payload,
-          spawnProcess,
-          timeoutMs: normalizedTimeoutMs,
-        });
+        let result;
+        try {
+          const execution =
+            await runLocalCandidateEvaluationProcess({
+              args: [
+                inputView.evaluatorEntryPath,
+                ...normalizedArgs.slice(1),
+              ],
+              command: normalizedCommand,
+              cwd: inputView.rootDir,
+              environment,
+              maxOutputBytes: normalizedMaxOutputBytes,
+              payload,
+              platform,
+              processGroupState,
+              quiescencePollMs,
+              quiescenceTimeoutMs,
+              signalProcessGroup,
+              spawnProcess,
+              timeoutMs: normalizedTimeoutMs,
+            });
+          processLifecycle = execution.processLifecycle;
+          result = execution.result;
+        } catch (error) {
+          workspaceCleanupAuthorized =
+            isLocalCandidateEvaluationWorkspaceCleanupAuthorized(
+              error,
+            );
+          throw error;
+        }
         const postVerificationAt = requireTimestamp(
           clock(),
           'postVerificationAt',
@@ -1632,7 +1567,9 @@ export function createLocalCandidateEvaluationRuntime({
         inputView.cleanup();
         inputView = null;
       } finally {
-        inputView?.cleanup();
+        if (workspaceCleanupAuthorized) {
+          inputView?.cleanup();
+        }
       }
       const run = buildRunRecord({
         admission,
@@ -1646,6 +1583,7 @@ export function createLocalCandidateEvaluationRuntime({
         evaluatorId: normalizedEvaluatorId,
         evaluatorProvenance,
         executionKind: normalizedExecutionKind,
+        processLifecycle,
         request,
         reverifiedCandidate,
         security,

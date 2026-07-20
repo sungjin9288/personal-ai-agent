@@ -17,7 +17,7 @@ const evidence = JSON.parse(
 
 assert.equal(
   evidence.schemaVersion,
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v4',
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v5',
 );
 assert.equal(
   evidence.failureGuards.stalePreparingWorkspaceRecovered,
