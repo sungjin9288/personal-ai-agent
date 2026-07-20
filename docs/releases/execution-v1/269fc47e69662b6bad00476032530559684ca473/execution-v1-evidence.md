@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T03:16:55.647Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T03:16:47.843Z
 - branch: codex/f2c10-candidate-artifact-verification
 - commit: 269fc47e69662b6bad00476032530559684ca473

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T03:16:55.647Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T03:16:54.678Z
 - localDate: 2026-07-20
 - branch: codex/f2c10-candidate-artifact-verification
 - commit: 269fc47e69662b6bad00476032530559684ca473
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/269fc47e69662b6bad00476032530559684ca473](releases/execution-v1/269fc47e69662b6bad00476032530559684ca473)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/269fc47e69662b6bad00476032530559684ca473/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/269fc47e69662b6bad00476032530559684ca473/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/269fc47e69662b6bad00476032530559684ca473](docs/releases/execution-v1/269fc47e69662b6bad00476032530559684ca473)
 - visualArtifactSetSha256: 4c45c331e618a954d5bf7bf57bc3f31e6739d2085cb9dca267f31e1840cf084e
 - commitPushStatus: not pushed, origin/codex/f2c10-candidate-artifact-verification not found
 
