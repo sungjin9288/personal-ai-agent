@@ -18,6 +18,9 @@ import {
   LOCAL_TRAINING_RUN_SCHEMA_VERSION,
 } from '../src/core/local-training-runtime.mjs';
 import { buildTrainingDatasetManifest } from '../src/core/training-dataset-quality.mjs';
+import {
+  createLocalTrainingPostAcquisitionReadinessFixture,
+} from '../scripts/evaluate-local-training-post-acquisition-readiness.mjs';
 import { buildApprovedTrainingRecordFixture } from './helpers/approved-training-record-fixture.mjs';
 
 const commandPath = path.resolve('fixtures/local-training-command.mjs');
@@ -272,6 +275,130 @@ test('actual local model training requires product permission and enforces its r
     /resource-limit/,
   );
   assert.equal(spawnCalled, false);
+});
+
+test('actual local model training revalidates post-acquisition admission and records its lineage', async (t) => {
+  const fixture =
+    await createLocalTrainingPostAcquisitionReadinessFixture({
+      mode: 'recorded-local-acquisition',
+    });
+  t.after(fixture.cleanup);
+  const target = fixture.postAcquisitionReadiness.trainingTarget;
+  const approval = buildLocalTrainingExecutionApproval({
+    approvedAt: fixture.permission.resolvedAt,
+    approvedBy: fixture.permission.resolvedBy,
+    baseModelId: target.baseModelId,
+    executionKind: 'local-model-training',
+    expiresAt: fixture.permission.expiresAt,
+    permission: fixture.permission,
+    readinessPackage: fixture.readinessPackage,
+    rollbackOwner: target.rollbackOwner,
+    trainerId: target.trainerId,
+  });
+  const timestamps = [
+    '2026-07-17T08:41:00.000Z',
+    '2026-07-17T08:41:01.000Z',
+  ];
+  const runtime = createRuntime('simulate-local-model-training', {
+    clock: () => timestamps.shift() || '2026-07-17T08:41:01.000Z',
+    trainerId: target.trainerId,
+  });
+  const run = await runtime.run({
+    approval,
+    currentPermission: fixture.permission,
+    permissionRevocation: null,
+    postAcquisitionReadiness:
+      fixture.postAcquisitionReadiness,
+    readinessPackage: fixture.readinessPackage,
+  });
+
+  assert.equal(run.actualModelTrainingExecuted, false);
+  assert.equal(
+    run.trainerReportedActualModelTrainingExecuted,
+    true,
+  );
+  assert.equal(
+    run.admission.postAcquisitionReadiness.readinessHash,
+    fixture.postAcquisitionReadiness.readinessHash,
+  );
+  assert.equal(
+    run.admission.productPermission.permissionHash,
+    fixture.permission.permissionHash,
+  );
+  assert.equal(run.externalSubmissionAuthorized, false);
+  assert.equal(run.rolloutAuthorized, false);
+  assert.equal(run.productionReadyClaim, false);
+});
+
+test('actual local model training blocks missing, stale, or revoked admission before spawn', async (t) => {
+  const fixture =
+    await createLocalTrainingPostAcquisitionReadinessFixture({
+      mode: 'recorded-local-acquisition',
+    });
+  t.after(fixture.cleanup);
+  const target = fixture.postAcquisitionReadiness.trainingTarget;
+  const approval = buildLocalTrainingExecutionApproval({
+    approvedAt: fixture.permission.resolvedAt,
+    approvedBy: fixture.permission.resolvedBy,
+    baseModelId: target.baseModelId,
+    executionKind: 'local-model-training',
+    expiresAt: fixture.permission.expiresAt,
+    permission: fixture.permission,
+    readinessPackage: fixture.readinessPackage,
+    rollbackOwner: target.rollbackOwner,
+    trainerId: target.trainerId,
+  });
+  let spawnCount = 0;
+
+  function blockedRuntime() {
+    return createLocalTrainingRuntime({
+      clock: () => '2026-07-17T08:41:00.000Z',
+      command: process.execPath,
+      spawnProcess: () => {
+        spawnCount += 1;
+        throw new Error('spawn must not be reached');
+      },
+      trainerId: target.trainerId,
+    });
+  }
+
+  await assert.rejects(
+    blockedRuntime().run({
+      approval,
+      currentPermission: fixture.permission,
+      permissionRevocation: null,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    /post-acquisition-admission/,
+  );
+  await assert.rejects(
+    blockedRuntime().run({
+      approval,
+      currentPermission: {
+        ...fixture.permission,
+        id: 'local-training-permission-stale',
+      },
+      permissionRevocation: null,
+      postAcquisitionReadiness:
+        fixture.postAcquisitionReadiness,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    /permission-current-state/,
+  );
+  await assert.rejects(
+    blockedRuntime().run({
+      approval,
+      currentPermission: fixture.permission,
+      permissionRevocation: {
+        status: 'revoked',
+      },
+      postAcquisitionReadiness:
+        fixture.postAcquisitionReadiness,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    /post-acquisition-admission/,
+  );
+  assert.equal(spawnCount, 0);
 });
 
 test('local training runtime bounds timeout and output without leaking child stderr', async () => {

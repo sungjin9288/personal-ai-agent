@@ -16,6 +16,8 @@
     "trainingAuthorized": false
   },
   "failureGuards": {
+    "admissionPermissionRevocationBlocked": true,
+    "admissionTargetDriftBlocked": true,
     "artifactVerificationTamperingBlocked": true,
     "automaticTrainingAuthorizationBlocked": true,
     "contentBearingMetadataBlocked": true,
@@ -25,6 +27,7 @@
     "permissionRevocationBlocked": true,
     "provenanceOwnerMismatchBlocked": true,
     "resourceEnvelopeDriftBlocked": true,
+    "recordedAdmissionBindingValidated": true,
     "unsupportedModeBlocked": true
   },
   "gates": {
@@ -35,7 +38,7 @@
   },
   "mode": "local-training-post-acquisition-readiness",
   "readiness": {
-    "readinessHash": "a9fd03a8f79c704e8668eb2f770576fc8b9c730a9ff9b7f1e2406064b671998e",
+    "currentPermissionBound": true,
     "readyForExplicitTrainingRequest": false,
     "remainingGates": [
       "acquisition-provenance-reviewed",
@@ -44,16 +47,20 @@
       "post-install-product-permission-approved"
     ],
     "schemaVersion": "personal-ai-agent-local-training-post-acquisition-readiness/v1",
-    "status": "fixture-readiness-validated-no-acquisition"
+    "status": "fixture-readiness-validated-no-acquisition",
+    "trainingTargetBoundToF1": true
   },
   "schemaVersion": "personal-ai-agent-local-training-post-acquisition-readiness-evidence/v1",
   "security": {
     "artifactVerificationRevalidated": true,
     "contentFreeEvidenceOnly": true,
+    "currentPermissionStateRequired": true,
     "evidenceHashesBoundToProductPermission": true,
+    "executionAdmissionRevalidation": true,
     "ownerBindingsRevalidated": true,
-    "permissionApprovedAfterGateReviews": true
+    "permissionApprovedAfterGateReviews": true,
+    "trainingTargetBoundToF1": true
   },
-  "evidenceHash": "4d509a9c1b643abbefed3c2bb34fea3f77b997811c3e2d954f926f683a7eed51",
-  "id": "local-training-post-acquisition-readiness-evidence-4d509a9c1b643abbefed3c2bb34fea3f77b997811c3e2d954f926f683a7eed51"
+  "evidenceHash": "294b11a1ab50b8d3d2e1434da45a3c21910cc02c7b8edb133353daf471fbe0ed",
+  "id": "local-training-post-acquisition-readiness-evidence-294b11a1ab50b8d3d2e1434da45a3c21910cc02c7b8edb133353daf471fbe0ed"
 }

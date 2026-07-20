@@ -26,12 +26,20 @@ const expectedEvidenceHash = createHash('sha256')
 assert.equal(evidenceHash, expectedEvidenceHash);
 assert.equal(id, `local-training-runtime-evidence-${expectedEvidenceHash}`);
 assert.equal(expected.claimBoundary.localTrainingRuntimeContractValidated, true);
+assert.equal(
+  expected.claimBoundary.postAcquisitionAdmissionContractValidated,
+  true,
+);
 assert.equal(expected.claimBoundary.actualModelTrainingExecuted, false);
 assert.equal(expected.dataset.trainLineCount, stored.dataset.trainLineCount);
 assert.equal(expected.dataset.validationLineCount, stored.dataset.validationLineCount);
 assert.deepEqual(expected.security, stored.security);
 assert.deepEqual(expected.failureGuards, stored.failureGuards);
 assert.equal(stored.claimBoundary.localTrainingRuntimeContractValidated, true);
+assert.equal(
+  stored.claimBoundary.postAcquisitionAdmissionContractValidated,
+  true,
+);
 assert.equal(stored.claimBoundary.actualModelTrainingExecuted, false);
 assert.equal(stored.claimBoundary.externalProviderCalls, 'none');
 assert.equal(stored.claimBoundary.externalSubmissionAuthorized, false);
@@ -41,13 +49,23 @@ assert.equal(Object.values(stored.failureGuards).every(Boolean), true);
 assert.equal(stored.security.environmentPolicy, 'allowlist');
 assert.equal(stored.security.networkIsolation, 'caller-owned');
 assert.equal(stored.security.shell, false);
+assert.equal(
+  stored.security.currentPermissionState,
+  'revalidated-before-spawn',
+);
+assert.equal(
+  stored.security.postAcquisitionAdmission,
+  'required-before-spawn',
+);
 assert.equal(stored.storeMutation, false);
 
 for (const term of [
   'status: local-answer-input-boundary-current',
   '| F2a Local training runtime contract | 완료 |',
+  '| F2c.9 Local training execution admission | 완료 · fixture 증적 |',
   'npm run smoke:local-training-runtime',
   'actualLocalTrainingRuntimeContractValidated: true',
+  'actualLocalTrainingExecutionAdmissionValidated: true',
   'actualModelTrainingExecuted: false',
 ]) {
   assert.ok(plan.includes(term), `ML/RAG development plan missing ${term}`);

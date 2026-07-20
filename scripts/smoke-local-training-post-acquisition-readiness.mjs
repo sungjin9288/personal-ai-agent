@@ -91,11 +91,24 @@ assert.equal(
   false,
 );
 assert.equal(stored.readiness.remainingGates.length, 4);
+assert.equal(stored.readiness.currentPermissionBound, true);
+assert.equal(stored.readiness.trainingTargetBoundToF1, true);
+assert.equal(
+  stored.security.currentPermissionStateRequired,
+  true,
+);
+assert.equal(
+  stored.security.executionAdmissionRevalidation,
+  true,
+);
+assert.equal(stored.security.trainingTargetBoundToF1, true);
 
 for (const term of [
   '| F2c.8 Local training post-acquisition readiness | 완료 · fixture 증적 |',
+  '| F2c.9 Local training execution admission | 완료 · fixture 증적 |',
   'npm run smoke:local-training-post-acquisition-readiness',
   'actualLocalTrainingPostAcquisitionReadinessValidated: true',
+  'actualLocalTrainingExecutionAdmissionValidated: true',
   'actualPostInstallProductPermissionApproved: false',
 ]) {
   assert.ok(

@@ -74,11 +74,14 @@ const productionLikeReleaseDrillDocPath = path.join(rootDir, 'docs', 'production
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
 const executionV1ReleaseArtifactRoot = path.join(rootDir, 'output', 'playwright');
 const executionV1MutableArtifactPaths = new Set([
+  'CHANGELOG.md',
+  '_portfolio_export/personal_ai_agent_portfolio_pack.zip',
   'docs/execution-v1-closeout.md',
   'docs/execution-v1-evidence.md',
   'docs/execution-v1-handoff.md',
   'docs/clean-deployment-release-v1.md',
   'docs/demo-evidence-index-v1.md',
+  'docs/evidence-checklist.md',
   'docs/pilot-export-package-v1.md',
   'docs/production-like-release-drill-v1.md',
   'docs/production-slo-operating-v1.md',
@@ -90,6 +93,10 @@ const executionV1MutableArtifactPaths = new Set([
   'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
   'evidence/output-artifacts/representative-release-demo-summary.json',
   'evidence/screenshots/representative-release-demo-release-status.png',
+  'portfolio_manifest.md',
+]);
+const executionV1MutableArtifactPathPrefixes = new Set([
+  '_portfolio_export/personal_ai_agent_portfolio_pack',
 ]);
 const executionV1ReleaseEvidenceDocPaths = new Set([
   ...executionV1MutableArtifactPaths,
@@ -375,6 +382,7 @@ const executionV1ReleaseHandoffArtifactSpecs = [
 const releaseArtifactResolver = createExecutionV1ReleaseArtifactResolver({
   evidenceDocPaths: executionV1ReleaseEvidenceDocPaths,
   handoffArtifactSpecs: executionV1ReleaseHandoffArtifactSpecs,
+  mutableArtifactPathPrefixes: executionV1MutableArtifactPathPrefixes,
   mutableArtifactPaths: executionV1MutableArtifactPaths,
   rootDir,
 });

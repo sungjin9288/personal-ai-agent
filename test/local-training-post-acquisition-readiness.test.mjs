@@ -6,6 +6,7 @@ import {
   assertLocalTrainingAcquisitionArtifactVerification,
 } from '../src/core/local-training-acquisition-artifact-verification.mjs';
 import {
+  assertLocalTrainingPostAcquisitionAdmission,
   buildLocalTrainingAcquisitionProvenanceReview,
   buildLocalTrainingEgressClosureReview,
   buildLocalTrainingOfflineResourceCanary,
@@ -198,6 +199,16 @@ test('fixture validates the readiness contract without closing actual gates', as
   assert.equal(readiness.rolloutAuthorized, false);
   assert.equal(readiness.productionReadyClaim, false);
   assert.equal(readiness.remainingGates.length, 4);
+  assert.throws(
+    () => assertLocalTrainingPostAcquisitionAdmission({
+      now: TIMESTAMPS.now,
+      permission: fixture.permission,
+      permissionRevocation: null,
+      readiness,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    /claim-boundary/,
+  );
 });
 
 test('recorded evidence becomes ready only for an explicit training request', async (t) => {
@@ -231,6 +242,77 @@ test('recorded evidence becomes ready only for an explicit training request', as
   assert.equal(
     readiness.externalProviderCalls,
     'not-observed-by-readiness',
+  );
+  assert.equal(
+    readiness.productPermission.permissionHash,
+    fixture.permission.permissionHash,
+  );
+  assert.equal(
+    readiness.trainingTarget.readinessHash,
+    fixture.readinessPackage.readinessHash,
+  );
+  assert.equal(
+    assertLocalTrainingPostAcquisitionAdmission({
+      now: TIMESTAMPS.now,
+      permission: fixture.permission,
+      permissionRevocation: null,
+      readiness,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    readiness,
+  );
+});
+
+test('recorded admission revalidates current permission, revocation, and F1 target binding', async (t) => {
+  const fixture = await buildFixture(t, {
+    mode: 'recorded-local-acquisition',
+  });
+  const readiness = evaluate(fixture);
+  const changedTarget = reseal({
+    ...readiness,
+    trainingTarget: {
+      ...readiness.trainingTarget,
+      datasetHash: sha256('different-dataset'),
+    },
+  }, {
+    hashField: 'readinessHash',
+    prefix: 'local-training-post-acquisition-readiness',
+  });
+
+  assert.throws(
+    () => assertLocalTrainingPostAcquisitionAdmission({
+      now: TIMESTAMPS.now,
+      permission: fixture.permission,
+      permissionRevocation: null,
+      readiness: changedTarget,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    /training-target/,
+  );
+  assert.throws(
+    () => assertLocalTrainingPostAcquisitionAdmission({
+      now: TIMESTAMPS.now,
+      permission: fixture.permission,
+      permissionRevocation: {
+        status: 'revoked',
+      },
+      readiness,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    /product-permission/,
+  );
+  assert.throws(
+    () => assertLocalTrainingPostAcquisitionAdmission({
+      now: TIMESTAMPS.now,
+      permission: {
+        ...fixture.permission,
+        id: 'local-training-permission-stale',
+      },
+      permissionRevocation: null,
+      readiness,
+      readinessPackage: fixture.readinessPackage,
+    }),
+    /product-permission/,
   );
 });
 

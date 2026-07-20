@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 
 import {
+  assertLocalTrainingPostAcquisitionAdmission,
   buildLocalTrainingAcquisitionProvenanceReview,
   buildLocalTrainingEgressClosureReview,
   buildLocalTrainingOfflineResourceCanary,
@@ -90,19 +91,19 @@ function buildPermission({
   });
 }
 
-function buildScenario(fixture) {
+function buildScenario(fixture, mode = MODE) {
   const readinessPackage = buildLocalTrainingReadinessFixture();
   const provenanceReview =
     buildLocalTrainingAcquisitionProvenanceReview({
       evidenceSha256: sha256('fixture-provenance-review'),
-      mode: MODE,
+      mode,
       owner: fixture.approval.owners.licenseOwner,
       reviewedAt: TIMESTAMPS.provenance,
       verification: fixture.verification,
     });
   const egressReview = buildLocalTrainingEgressClosureReview({
     evidenceSha256: sha256('fixture-egress-closure-review'),
-    mode: MODE,
+    mode,
     owner: fixture.approval.owners.egressOwner,
     reviewedAt: TIMESTAMPS.egress,
     run: fixture.run,
@@ -110,7 +111,7 @@ function buildScenario(fixture) {
   });
   const resourceCanary = buildLocalTrainingOfflineResourceCanary({
     evidenceSha256: sha256('fixture-offline-resource-canary'),
-    mode: MODE,
+    mode,
     observedAt: TIMESTAMPS.canary,
     observedDiskBytes:
       fixture.verification.artifacts.sourceModel.totalBytes +
@@ -129,6 +130,7 @@ function buildScenario(fixture) {
   });
   return {
     egressReview,
+    mode,
     permission,
     provenanceReview,
     readinessPackage,
@@ -140,7 +142,7 @@ function evaluate(fixture, scenario, overrides = {}) {
   return evaluateLocalTrainingPostAcquisitionReadiness({
     approval: fixture.approval,
     egressReview: scenario.egressReview,
-    mode: MODE,
+    mode: scenario.mode,
     now: TIMESTAMPS.now,
     permission: scenario.permission,
     permissionRevocation: null,
@@ -154,6 +156,28 @@ function evaluate(fixture, scenario, overrides = {}) {
   });
 }
 
+export async function createLocalTrainingPostAcquisitionReadinessFixture({
+  mode = MODE,
+  repoDir = process.cwd(),
+} = {}) {
+  const fixture =
+    await createLocalTrainingAcquisitionArtifactVerificationFixture({
+      mode,
+      repoDir,
+    });
+  try {
+    const scenario = buildScenario(fixture, mode);
+    return {
+      ...fixture,
+      ...scenario,
+      postAcquisitionReadiness: evaluate(fixture, scenario),
+    };
+  } catch (error) {
+    fixture.cleanup();
+    throw error;
+  }
+}
+
 function rejectionMatches(operation, pattern) {
   try {
     operation();
@@ -163,6 +187,25 @@ function rejectionMatches(operation, pattern) {
   }
 }
 
+function resealReadiness(readiness, changes) {
+  const {
+    id: ignoredId,
+    readinessHash: ignoredHash,
+    ...content
+  } = readiness;
+  const changed = {
+    ...content,
+    ...changes,
+  };
+  const readinessHash = hashRecord(changed);
+  return {
+    ...changed,
+    id:
+      `local-training-post-acquisition-readiness-${readinessHash}`,
+    readinessHash,
+  };
+}
+
 export async function evaluateLocalTrainingPostAcquisitionReadinessEvidence({
   repoDir = process.cwd(),
 } = {}) {
@@ -170,6 +213,7 @@ export async function evaluateLocalTrainingPostAcquisitionReadinessEvidence({
     await createLocalTrainingAcquisitionArtifactVerificationFixture({
       repoDir,
     });
+  let recordedFixture;
   try {
     const scenario = buildScenario(fixture);
     const readiness = evaluate(fixture, scenario);
@@ -231,8 +275,46 @@ export async function evaluateLocalTrainingPostAcquisitionReadinessEvidence({
     const tamperedVerification =
       structuredClone(fixture.verification);
     tamperedVerification.artifacts.sourceModel.totalBytes += 1;
+    recordedFixture =
+      await createLocalTrainingPostAcquisitionReadinessFixture({
+        mode: 'recorded-local-acquisition',
+        repoDir,
+      });
+    const recordedReadiness =
+      recordedFixture.postAcquisitionReadiness;
+    const changedTarget = resealReadiness(
+      recordedReadiness,
+      {
+        trainingTarget: {
+          ...recordedReadiness.trainingTarget,
+          datasetHash: sha256('different-dataset'),
+        },
+      },
+    );
 
     const failureGuards = {
+      admissionPermissionRevocationBlocked: rejectionMatches(
+        () => assertLocalTrainingPostAcquisitionAdmission({
+          now: TIMESTAMPS.now,
+          permission: recordedFixture.permission,
+          permissionRevocation: {
+            status: 'revoked',
+          },
+          readiness: recordedReadiness,
+          readinessPackage: recordedFixture.readinessPackage,
+        }),
+        /product-permission/,
+      ),
+      admissionTargetDriftBlocked: rejectionMatches(
+        () => assertLocalTrainingPostAcquisitionAdmission({
+          now: TIMESTAMPS.now,
+          permission: recordedFixture.permission,
+          permissionRevocation: null,
+          readiness: changedTarget,
+          readinessPackage: recordedFixture.readinessPackage,
+        }),
+        /training-target/,
+      ),
       artifactVerificationTamperingBlocked:
         rejectionMatches(
           () => evaluate(fixture, scenario, {
@@ -295,6 +377,14 @@ export async function evaluateLocalTrainingPostAcquisitionReadinessEvidence({
         }),
         /resource-canary/,
       ),
+      recordedAdmissionBindingValidated:
+        assertLocalTrainingPostAcquisitionAdmission({
+          now: TIMESTAMPS.now,
+          permission: recordedFixture.permission,
+          permissionRevocation: null,
+          readiness: recordedReadiness,
+          readinessPackage: recordedFixture.readinessPackage,
+        }) === recordedReadiness,
       unsupportedModeBlocked: rejectionMatches(
         () => evaluate(fixture, scenario, {
           mode: 'automatic-live-training',
@@ -335,21 +425,37 @@ export async function evaluateLocalTrainingPostAcquisitionReadinessEvidence({
       },
       mode: 'local-training-post-acquisition-readiness',
       readiness: {
-        readinessHash: readiness.readinessHash,
+        currentPermissionBound:
+          readiness.productPermission.id ===
+            scenario.permission.id &&
+          readiness.productPermission.permissionHash ===
+            scenario.permission.permissionHash,
         readyForExplicitTrainingRequest:
           readiness.readyForExplicitTrainingRequest,
         remainingGates: readiness.remainingGates,
         schemaVersion: readiness.schemaVersion,
         status: readiness.status,
+        trainingTargetBoundToF1:
+          readiness.trainingTarget.readinessHash ===
+            scenario.readinessPackage.readinessHash &&
+          readiness.trainingTarget.datasetHash ===
+            scenario.readinessPackage.dataset.datasetHash &&
+          readiness.trainingTarget.exportDigests.train ===
+            scenario.readinessPackage.exportDigests.train &&
+          readiness.trainingTarget.exportDigests.validation ===
+            scenario.readinessPackage.exportDigests.validation,
       },
       schemaVersion:
         LOCAL_TRAINING_POST_ACQUISITION_READINESS_EVIDENCE_SCHEMA_VERSION,
       security: {
         artifactVerificationRevalidated: true,
         contentFreeEvidenceOnly: true,
+        currentPermissionStateRequired: true,
         evidenceHashesBoundToProductPermission: true,
+        executionAdmissionRevalidation: true,
         ownerBindingsRevalidated: true,
         permissionApprovedAfterGateReviews: true,
+        trainingTargetBoundToF1: true,
       },
     };
     const evidenceHash = hashRecord(evidence);
@@ -360,6 +466,7 @@ export async function evaluateLocalTrainingPostAcquisitionReadinessEvidence({
         `local-training-post-acquisition-readiness-evidence-${evidenceHash}`,
     };
   } finally {
+    recordedFixture?.cleanup();
     fixture.cleanup();
   }
 }

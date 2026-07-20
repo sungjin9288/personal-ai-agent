@@ -4,6 +4,9 @@ import { createHash } from 'node:crypto';
 import { assertFineTuningReadinessPackage } from './fine-tuning-readiness.mjs';
 import { assertApprovedLocalTrainingPermission } from './local-training-permission.mjs';
 import {
+  assertLocalTrainingPostAcquisitionAdmission,
+} from './local-training-post-acquisition-readiness.mjs';
+import {
   containsRawCustomerPayload,
   containsTrainingSecret,
 } from './training-content-safety.mjs';
@@ -190,7 +193,10 @@ export function buildLocalTrainingExecutionApproval({
 
 function assertLocalTrainingExecutionApproval({
   approval,
+  currentPermission,
   now,
+  permissionRevocation,
+  postAcquisitionReadiness,
   readinessPackage,
   timeoutMs,
   trainerId,
@@ -262,6 +268,24 @@ function assertLocalTrainingExecutionApproval({
       });
     } catch {
       errors.push('permission-binding');
+    }
+    if (
+      approval?.permission?.id !== currentPermission?.id ||
+      approval?.permission?.permissionHash !==
+        currentPermission?.permissionHash
+    ) {
+      errors.push('permission-current-state');
+    }
+    try {
+      assertLocalTrainingPostAcquisitionAdmission({
+        now,
+        permission: currentPermission,
+        permissionRevocation,
+        readiness: postAcquisitionReadiness,
+        readinessPackage,
+      });
+    } catch {
+      errors.push('post-acquisition-admission');
     }
     if (timeoutMs > Number(approval?.permission?.evidence?.resource?.limits?.maxRuntimeMs || 0)) {
       errors.push('resource-limit');
@@ -438,12 +462,29 @@ function buildRunRecord({
   approval,
   candidate,
   completedAt,
+  currentPermission,
+  postAcquisitionReadiness,
   security,
   startedAt,
   trainerReportedActualModelTrainingExecuted,
 }) {
   const record = {
     actualModelTrainingExecuted: false,
+    ...(approval.executionKind === 'local-model-training'
+      ? {
+          admission: {
+            postAcquisitionReadiness: {
+              id: postAcquisitionReadiness.id,
+              readinessHash:
+                postAcquisitionReadiness.readinessHash,
+            },
+            productPermission: {
+              id: currentPermission.id,
+              permissionHash: currentPermission.permissionHash,
+            },
+          },
+        }
+      : {}),
     approval: {
       approvalHash: approval.approvalHash,
       id: approval.id,
@@ -526,12 +567,21 @@ export function createLocalTrainingRuntime({
     protocolVersion: LOCAL_TRAINING_PROTOCOL_VERSION,
     security,
     trainerId: normalizedTrainerId,
-    async run({ approval, readinessPackage } = {}) {
+    async run({
+      approval,
+      currentPermission,
+      permissionRevocation,
+      postAcquisitionReadiness,
+      readinessPackage,
+    } = {}) {
       assertFineTuningReadinessPackage(readinessPackage);
       const startedAt = requireTimestamp(clock(), 'startedAt');
       assertLocalTrainingExecutionApproval({
         approval,
+        currentPermission,
         now: startedAt,
+        permissionRevocation,
+        postAcquisitionReadiness,
         readinessPackage,
         timeoutMs: normalizedTimeoutMs,
         trainerId: normalizedTrainerId,
@@ -560,6 +610,8 @@ export function createLocalTrainingRuntime({
         approval,
         candidate,
         completedAt,
+        currentPermission,
+        postAcquisitionReadiness,
         security,
         startedAt,
         trainerReportedActualModelTrainingExecuted:

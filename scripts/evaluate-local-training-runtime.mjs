@@ -6,10 +6,6 @@ import path from 'node:path';
 import { evaluateAnswerQualitySuite } from '../src/core/answer-quality-evaluation.mjs';
 import { buildFineTuningReadinessPackage } from '../src/core/fine-tuning-readiness.mjs';
 import {
-  buildLocalTrainingPermissionRequest,
-  resolveLocalTrainingPermissionRequest,
-} from '../src/core/local-training-permission.mjs';
-import {
   buildLocalTrainingExecutionApproval,
   createLocalTrainingRuntime,
   LOCAL_TRAINING_PROTOCOL_VERSION,
@@ -17,6 +13,9 @@ import {
 import { buildRetrievalContext } from '../src/core/retrieval-service.mjs';
 import { buildTrainingDatasetManifest } from '../src/core/training-dataset-quality.mjs';
 import { createApprovedTrainingRecordFixtureSet } from './training-record-fixture-runtime.mjs';
+import {
+  createLocalTrainingPostAcquisitionReadinessFixture,
+} from './evaluate-local-training-post-acquisition-readiness.mjs';
 
 export const LOCAL_TRAINING_RUNTIME_EVIDENCE_SCHEMA_VERSION =
   'personal-ai-agent-local-training-runtime-evidence/v1';
@@ -29,10 +28,6 @@ const TRAINER_ID = 'fixture-local-trainer-v1';
 
 function hashRecord(value) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
-}
-
-function hashValue(value) {
-  return createHash('sha256').update(String(value)).digest('hex');
 }
 
 function readJson(repoDir, relativePath) {
@@ -71,45 +66,6 @@ function buildApproval(readinessPackage, overrides = {}) {
   });
 }
 
-function buildActualTrainingPermission(readinessPackage) {
-  const request = buildLocalTrainingPermissionRequest({
-    approvalOwner: 'local-operator',
-    baseModelId: 'approved-local-base-model',
-    evidence: {
-      egress: {
-        evidenceSha256: hashValue('fixture-egress-evidence'),
-        owner: 'fixture-security-owner',
-      },
-      license: {
-        evidenceSha256: hashValue('fixture-license-evidence'),
-        owner: 'fixture-license-owner',
-      },
-      resource: {
-        evidenceSha256: hashValue('fixture-resource-evidence'),
-        limits: {
-          maxCpuThreads: 4,
-          maxDiskBytes: 20_000_000_000,
-          maxMemoryBytes: 8_000_000_000,
-          maxRuntimeMs: 15 * 60 * 1000,
-        },
-        owner: 'fixture-resource-owner',
-      },
-    },
-    expiresAt: EXPIRES_AT,
-    readinessPackage,
-    requestedAt: '2026-07-17T00:45:00.000Z',
-    rollbackOwner: 'local-operator',
-    trainerId: TRAINER_ID,
-  });
-  return resolveLocalTrainingPermissionRequest({
-    decision: 'approve',
-    reason: 'Fixture-only local training permission review.',
-    request,
-    resolvedAt: '2026-07-17T00:50:00.000Z',
-    resolvedBy: 'local-operator',
-  });
-}
-
 async function rejectionMatches(operation, pattern) {
   try {
     await operation();
@@ -127,6 +83,7 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
     cases: datasetFixture.cases,
     tempPrefix: 'personal-ai-agent-local-training-runtime-',
   });
+  let admissionFixture;
 
   try {
     const datasetManifest = buildTrainingDatasetManifest({
@@ -146,9 +103,38 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
       records,
     });
     const approval = buildApproval(readinessPackage);
-    const actualTrainingPermission = buildActualTrainingPermission(readinessPackage);
     const runtime = createRuntime(repoDir);
     const run = await runtime.run({ approval, readinessPackage });
+    admissionFixture =
+      await createLocalTrainingPostAcquisitionReadinessFixture({
+        mode: 'recorded-local-acquisition',
+        repoDir,
+      });
+    const admissionTarget =
+      admissionFixture.postAcquisitionReadiness.trainingTarget;
+    const admissionApproval = buildLocalTrainingExecutionApproval({
+      approvedAt: admissionFixture.permission.resolvedAt,
+      approvedBy: admissionFixture.permission.resolvedBy,
+      baseModelId: admissionTarget.baseModelId,
+      executionKind: 'local-model-training',
+      expiresAt: admissionFixture.permission.expiresAt,
+      permission: admissionFixture.permission,
+      readinessPackage: admissionFixture.readinessPackage,
+      rollbackOwner: admissionTarget.rollbackOwner,
+      trainerId: admissionTarget.trainerId,
+    });
+    const admissionInput = {
+      approval: admissionApproval,
+      currentPermission: admissionFixture.permission,
+      permissionRevocation: null,
+      postAcquisitionReadiness:
+        admissionFixture.postAcquisitionReadiness,
+      readinessPackage: admissionFixture.readinessPackage,
+    };
+    const admissionRuntimeOptions = {
+      clock: () => '2026-07-17T08:41:00.000Z',
+      trainerId: admissionTarget.trainerId,
+    };
 
     const tamperedReadiness = structuredClone(readinessPackage);
     tamperedReadiness.exports.train.content += 'tampered\n';
@@ -160,14 +146,50 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
         /time-window/,
       ),
       trainerReportMismatchBlocked: await rejectionMatches(
-        () => createRuntime(repoDir).run({
-          approval: buildApproval(readinessPackage, {
-            executionKind: 'local-model-training',
-            permission: actualTrainingPermission,
-          }),
-          readinessPackage,
-        }),
+        () => createRuntime(
+          repoDir,
+          'success',
+          admissionRuntimeOptions,
+        ).run(admissionInput),
         /does not match the approved execution request/,
+      ),
+      postAcquisitionAdmissionRequired: await rejectionMatches(
+        () => createRuntime(
+          repoDir,
+          'success',
+          admissionRuntimeOptions,
+        ).run({
+          ...admissionInput,
+          postAcquisitionReadiness: undefined,
+        }),
+        /post-acquisition-admission/,
+      ),
+      permissionRevocationBlocked: await rejectionMatches(
+        () => createRuntime(
+          repoDir,
+          'success',
+          admissionRuntimeOptions,
+        ).run({
+          ...admissionInput,
+          permissionRevocation: {
+            status: 'revoked',
+          },
+        }),
+        /post-acquisition-admission/,
+      ),
+      staleCurrentPermissionBlocked: await rejectionMatches(
+        () => createRuntime(
+          repoDir,
+          'success',
+          admissionRuntimeOptions,
+        ).run({
+          ...admissionInput,
+          currentPermission: {
+            ...admissionFixture.permission,
+            id: 'local-training-permission-stale',
+          },
+        }),
+        /permission-current-state/,
       ),
       inputLimitBlocked: await rejectionMatches(
         () => createRuntime(repoDir, 'success', { maxInputBytes: 128 }).run({
@@ -234,6 +256,7 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
         externalProviderCalls: 'none',
         externalSubmissionAuthorized: false,
         localTrainingRuntimeContractValidated: true,
+        postAcquisitionAdmissionContractValidated: true,
         productionReadyClaim: false,
         rolloutAuthorized: false,
       },
@@ -260,7 +283,13 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
       failureGuards,
       mode: 'local-training-runtime-contract',
       schemaVersion: LOCAL_TRAINING_RUNTIME_EVIDENCE_SCHEMA_VERSION,
-      security: runtime.security,
+      security: {
+        ...runtime.security,
+        currentPermissionState:
+          'revalidated-before-spawn',
+        postAcquisitionAdmission:
+          'required-before-spawn',
+      },
       storeMutation: false,
     };
     const evidenceHash = hashRecord(evidence);
@@ -270,6 +299,7 @@ export async function evaluateLocalTrainingRuntimeContract({ repoDir = process.c
       id: `local-training-runtime-evidence-${evidenceHash}`,
     };
   } finally {
+    admissionFixture?.cleanup();
     fs.rmSync(tempRoot, { force: true, recursive: true });
   }
 }

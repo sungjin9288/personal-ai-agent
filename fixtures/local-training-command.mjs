@@ -50,7 +50,8 @@ if (mode === 'hang') {
     readinessHash: payload.dataset.readinessHash,
     schemaVersion: payload.schemaVersion,
     status: 'completed',
-    trainerReportedActualModelTrainingExecuted: false,
+    trainerReportedActualModelTrainingExecuted:
+      mode === 'simulate-local-model-training',
     trainerId: payload.trainerId,
     trainSha256,
     validationSha256,

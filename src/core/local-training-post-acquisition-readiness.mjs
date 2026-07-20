@@ -120,6 +120,27 @@ function verificationReference(verification) {
   };
 }
 
+function permissionReference(permission) {
+  return {
+    id: permission.id,
+    permissionHash: permission.permissionHash,
+  };
+}
+
+function trainingTarget({ approval, readinessPackage }) {
+  return {
+    baseModelId: approval.toolchainDecision.sourceModel.id,
+    datasetHash: readinessPackage.dataset.datasetHash,
+    exportDigests: {
+      train: readinessPackage.exportDigests.train,
+      validation: readinessPackage.exportDigests.validation,
+    },
+    readinessHash: readinessPackage.readinessHash,
+    rollbackOwner: approval.owners.rollbackOwner,
+    trainerId: approval.toolchainDecision.trainer.id,
+  };
+}
+
 function runReference(run) {
   assertLocalTrainingAcquisitionRun(run);
   return {
@@ -298,6 +319,140 @@ function assertCommonReview({
       'Local training post-acquisition evidence failed: claim-boundary.',
     );
   }
+}
+
+export function assertLocalTrainingPostAcquisitionAdmission({
+  now,
+  permission,
+  permissionRevocation,
+  readiness,
+  readinessPackage,
+} = {}) {
+  const normalizedNow = requireTimestamp(now, 'admission now');
+  const content = assertSealedRecord({
+    expectedKeys: [
+      'actualAcquisitionProvenanceReviewed',
+      'actualArtifactSetsObserved',
+      'actualEgressClosureReviewed',
+      'actualModelTrainingExecuted',
+      'actualOfflineResourceCanaryExecuted',
+      'actualPostInstallProductPermissionApproved',
+      'artifactVerification',
+      'externalProviderCalls',
+      'externalSubmissionAuthorized',
+      'mode',
+      'observedAt',
+      'productPermission',
+      'productionReadyClaim',
+      'readyForExplicitTrainingRequest',
+      'remainingGates',
+      'rolloutAuthorized',
+      'schemaVersion',
+      'status',
+      'trainingAuthorized',
+      'trainingTarget',
+    ],
+    hashField: 'readinessHash',
+    idPrefix: 'local-training-post-acquisition-readiness',
+    record: readiness,
+    schemaVersion:
+      LOCAL_TRAINING_POST_ACQUISITION_READINESS_SCHEMA_VERSION,
+  });
+
+  if (
+    !hasExactKeys(content.artifactVerification, [
+      'id',
+      'verificationHash',
+    ]) ||
+    !requireMetadata(
+      content.artifactVerification.id,
+      'artifact verification id',
+    ) ||
+    !isSha256(content.artifactVerification.verificationHash) ||
+    !hasExactKeys(content.productPermission, [
+      'id',
+      'permissionHash',
+    ]) ||
+    !hasExactKeys(content.trainingTarget, [
+      'baseModelId',
+      'datasetHash',
+      'exportDigests',
+      'readinessHash',
+      'rollbackOwner',
+      'trainerId',
+    ]) ||
+    !hasExactKeys(content.trainingTarget.exportDigests, [
+      'train',
+      'validation',
+    ])
+  ) {
+    throw new Error(
+      'Local training post-acquisition admission failed: integrity.',
+    );
+  }
+
+  if (
+    permissionRevocation !== null ||
+    content.productPermission.id !== permission?.id ||
+    content.productPermission.permissionHash !==
+      permission?.permissionHash
+  ) {
+    throw new Error(
+      'Local training post-acquisition admission failed: product-permission.',
+    );
+  }
+
+  const target = content.trainingTarget;
+  assertApprovedLocalTrainingPermission({
+    baseModelId: target.baseModelId,
+    now: normalizedNow,
+    permission,
+    readinessPackage,
+    rollbackOwner: target.rollbackOwner,
+    trainerId: target.trainerId,
+  });
+  if (
+    target.readinessHash !== readinessPackage.readinessHash ||
+    target.datasetHash !== readinessPackage.dataset.datasetHash ||
+    target.exportDigests.train !==
+      readinessPackage.exportDigests.train ||
+    target.exportDigests.validation !==
+      readinessPackage.exportDigests.validation
+  ) {
+    throw new Error(
+      'Local training post-acquisition admission failed: training-target.',
+    );
+  }
+
+  const observedAt = Date.parse(
+    requireTimestamp(content.observedAt, 'admission observedAt'),
+  );
+  if (
+    content.mode !== 'recorded-local-acquisition' ||
+    content.status !== 'ready-for-explicit-training-request' ||
+    content.readyForExplicitTrainingRequest !== true ||
+    content.actualArtifactSetsObserved !== true ||
+    content.actualAcquisitionProvenanceReviewed !== true ||
+    content.actualEgressClosureReviewed !== true ||
+    content.actualOfflineResourceCanaryExecuted !== true ||
+    content.actualPostInstallProductPermissionApproved !== true ||
+    content.actualModelTrainingExecuted !== false ||
+    content.externalProviderCalls !==
+      'not-observed-by-readiness' ||
+    content.externalSubmissionAuthorized !== false ||
+    content.trainingAuthorized !== false ||
+    content.rolloutAuthorized !== false ||
+    content.productionReadyClaim !== false ||
+    !Array.isArray(content.remainingGates) ||
+    content.remainingGates.length !== 0 ||
+    observedAt > Date.parse(normalizedNow) ||
+    observedAt < Date.parse(permission.resolvedAt)
+  ) {
+    throw new Error(
+      'Local training post-acquisition admission failed: claim-boundary.',
+    );
+  }
+  return readiness;
 }
 
 export function evaluateLocalTrainingPostAcquisitionReadiness({
@@ -518,6 +673,7 @@ export function evaluateLocalTrainingPostAcquisitionReadiness({
     externalSubmissionAuthorized: false,
     mode: normalizedMode,
     observedAt: normalizedNow,
+    productPermission: permissionReference(permission),
     productionReadyClaim: false,
     readyForExplicitTrainingRequest: recorded,
     remainingGates,
@@ -528,6 +684,10 @@ export function evaluateLocalTrainingPostAcquisitionReadiness({
       ? 'ready-for-explicit-training-request'
       : 'fixture-readiness-validated-no-acquisition',
     trainingAuthorized: false,
+    trainingTarget: trainingTarget({
+      approval,
+      readinessPackage,
+    }),
   };
   const readinessHash = hashRecord(readiness);
   return {
