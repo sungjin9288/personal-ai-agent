@@ -1,6 +1,7 @@
 import { spawn as nodeSpawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
 
 import {
   ANSWER_QUALITY_EVALUATION_SCHEMA_VERSION,
@@ -15,7 +16,11 @@ import {
   assertCurrentLocalCandidateEvaluationAdmission,
 } from './local-candidate-evaluation-admission.mjs';
 import {
+  createLocalCandidateEvaluationInputView,
+} from './local-candidate-evaluation-input-view.mjs';
+import {
   assertLocalTrainingCandidateArtifactVerification,
+  createLocalTrainingCandidateArtifactVerifier,
 } from './local-training-candidate-artifact-verification.mjs';
 import {
   containsRawCustomerPayload,
@@ -23,9 +28,9 @@ import {
 } from './training-content-safety.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION =
-  'personal-ai-agent-local-candidate-evaluation/v1';
+  'personal-ai-agent-local-candidate-evaluation/v2';
 export const LOCAL_CANDIDATE_EVALUATION_RUN_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-run/v1';
+  'personal-ai-agent-local-candidate-evaluation-run/v2';
 
 const DEFAULT_MAX_INPUT_BYTES = 1024 * 1024;
 const DEFAULT_MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
@@ -197,6 +202,7 @@ function assertRuntimeAuthority({
   admission,
   candidateArtifactVerification,
   currentPermission,
+  evaluationSuiteContent,
   evaluatorId,
   now,
   permissionRevocation,
@@ -208,6 +214,7 @@ function assertRuntimeAuthority({
     admission,
     candidateArtifactVerification,
     currentPermission,
+    evaluationSuiteContent,
     now,
     permissionRevocation,
     readinessPackage,
@@ -280,6 +287,7 @@ function assertCandidateReverification({
 function buildEvaluationPayload({
   admission,
   candidateArtifactVerification,
+  candidateArtifactRoot,
   evaluatorId,
   executionKind,
   request,
@@ -291,11 +299,7 @@ function buildEvaluationPayload({
     },
     candidate: {
       artifactFormat: request.candidate.artifactFormat,
-      artifactRoot: path.posix.join(
-        'var/local-training/candidates',
-        candidateArtifactVerification.approval.id,
-        'artifact',
-      ),
+      artifactRoot: candidateArtifactRoot,
       artifactSetSha256:
         request.candidate.artifactSetSha256,
       modelId: request.candidate.modelId,
@@ -745,9 +749,16 @@ function validateEvaluationResult(result, {
       'readinessHash',
     ]) ||
     !hasExactKeys(result.evaluationSuite, [
+      'artifact',
       'baselineEvaluationHash',
       'caseIds',
       'thresholdsHash',
+    ]) ||
+    !hasExactKeys(result.evaluationSuite.artifact, [
+      'byteLength',
+      'path',
+      'schemaVersion',
+      'sha256',
     ])
   ) {
     throw new Error(
@@ -837,6 +848,8 @@ function buildRunRecord({
   admission,
   candidateArtifactVerification,
   candidateEvaluation,
+  candidateSnapshotPostVerification,
+  candidateSnapshotPreVerification,
   completedAt,
   currentPermission,
   evaluatorId,
@@ -891,6 +904,19 @@ function buildRunRecord({
       ? 'not-observed-by-runtime'
       : 'none',
     externalSubmissionAuthorized: false,
+    inputSnapshot: {
+      candidateArtifactSetSha256:
+        request.candidate.artifactSetSha256,
+      candidatePostRunVerificationHash:
+        candidateSnapshotPostVerification.verificationHash,
+      candidatePreRunVerificationHash:
+        candidateSnapshotPreVerification.verificationHash,
+      cleanup: 'completed',
+      suiteByteLength:
+        request.evaluationSuite.artifact.byteLength,
+      suiteSha256:
+        request.evaluationSuite.artifact.sha256,
+    },
     localExecutionAuthorized: true,
     productPermission: {
       id: currentPermission.id,
@@ -927,6 +953,8 @@ export function assertLocalCandidateEvaluationRun({
   admission,
   candidateArtifactVerification,
   candidateEvaluation,
+  candidateSnapshotPostVerification,
+  candidateSnapshotPreVerification,
   currentPermission,
   request,
   run,
@@ -950,6 +978,7 @@ export function assertLocalCandidateEvaluationRun({
       'evaluator',
       'externalProviderCalls',
       'externalSubmissionAuthorized',
+      'inputSnapshot',
       'localExecutionAuthorized',
       'productPermission',
       'productionReadyClaim',
@@ -988,6 +1017,14 @@ export function assertLocalCandidateEvaluationRun({
       'executionKind',
       'protocolVersion',
     ]) ||
+    !hasExactKeys(record.inputSnapshot, [
+      'candidateArtifactSetSha256',
+      'candidatePostRunVerificationHash',
+      'candidatePreRunVerificationHash',
+      'cleanup',
+      'suiteByteLength',
+      'suiteSha256',
+    ]) ||
     !hasExactKeys(record.productPermission, [
       'id',
       'permissionHash',
@@ -1005,11 +1042,14 @@ export function assertLocalCandidateEvaluationRun({
       'owner',
     ]) ||
     !hasExactKeys(record.security, [
+      'candidateSnapshot',
       'environmentKeys',
       'environmentPolicy',
       'networkIsolation',
+      'postExecutionInputVerification',
       'resourceEnforcement',
       'shell',
+      'sourceWorkspaceAsCwd',
       'transport',
     ]) ||
     runHash !== expectedHash ||
@@ -1019,6 +1059,43 @@ export function assertLocalCandidateEvaluationRun({
       'Local candidate evaluation run failed: integrity.',
     );
   }
+  const snapshotEvidenceProvided =
+    candidateSnapshotPreVerification !== undefined ||
+    candidateSnapshotPostVerification !== undefined;
+  if (
+    snapshotEvidenceProvided &&
+    (
+      candidateSnapshotPreVerification === undefined ||
+      candidateSnapshotPostVerification === undefined
+    )
+  ) {
+    throw new Error(
+      'Local candidate evaluation run failed: incomplete-input-snapshot-evidence.',
+    );
+  }
+  if (snapshotEvidenceProvided) {
+    assertCandidateReverification({
+      admittedVerification: candidateArtifactVerification,
+      reverifiedCandidate:
+        candidateSnapshotPreVerification,
+      request,
+      startedAt: record.startedAt,
+    });
+    assertCandidateReverification({
+      admittedVerification:
+        candidateSnapshotPreVerification,
+      reverifiedCandidate:
+        candidateSnapshotPostVerification,
+      request,
+      startedAt: record.completedAt,
+    });
+  }
+  const expectedPreRunVerificationHash =
+    candidateSnapshotPreVerification?.verificationHash ??
+    record.inputSnapshot.candidatePreRunVerificationHash;
+  const expectedPostRunVerificationHash =
+    candidateSnapshotPostVerification?.verificationHash ??
+    record.inputSnapshot.candidatePostRunVerificationHash;
   const startedAtMs = Date.parse(record.startedAt);
   const completedAtMs = Date.parse(record.completedAt);
   if (
@@ -1058,6 +1135,21 @@ export function assertLocalCandidateEvaluationRun({
         ? 'not-observed-by-runtime'
         : 'none') ||
     record.externalSubmissionAuthorized !== false ||
+    record.inputSnapshot.candidateArtifactSetSha256 !==
+      request?.candidate?.artifactSetSha256 ||
+    record.inputSnapshot.candidatePreRunVerificationHash !==
+      expectedPreRunVerificationHash ||
+    record.inputSnapshot.candidatePostRunVerificationHash !==
+      expectedPostRunVerificationHash ||
+    record.inputSnapshot.cleanup !== 'completed' ||
+    !Number.isSafeInteger(
+      record.inputSnapshot.suiteByteLength,
+    ) ||
+    record.inputSnapshot.suiteByteLength <= 0 ||
+    record.inputSnapshot.suiteByteLength !==
+      request?.evaluationSuite?.artifact?.byteLength ||
+    record.inputSnapshot.suiteSha256 !==
+      request?.evaluationSuite?.artifact?.sha256 ||
     record.localExecutionAuthorized !== true ||
     record.productPermission.id !== currentPermission?.id ||
     record.productPermission.permissionHash !==
@@ -1073,6 +1165,8 @@ export function assertLocalCandidateEvaluationRun({
     record.rollback.owner !== admission?.rollback?.owner ||
     record.rolloutAuthorized !== false ||
     record.trainingAuthorized !== false ||
+    record.security.candidateSnapshot !==
+      'bounded-read-only-temporary-copy' ||
     !Array.isArray(record.security.environmentKeys) ||
     JSON.stringify(record.security.environmentKeys) !==
       JSON.stringify(
@@ -1083,9 +1177,11 @@ export function assertLocalCandidateEvaluationRun({
     ) ||
     record.security.environmentPolicy !== 'allowlist' ||
     record.security.networkIsolation !== 'caller-owned' ||
+    record.security.postExecutionInputVerification !== true ||
     record.security.resourceEnforcement !==
-      'runtime-timeout-and-artifact-reverification' ||
+      'runtime-timeout-io-and-input-view' ||
     record.security.shell !== false ||
+    record.security.sourceWorkspaceAsCwd !== false ||
     record.security.transport !== 'local-process-stdio' ||
     !Number.isFinite(startedAtMs) ||
     !Number.isFinite(completedAtMs) ||
@@ -1096,6 +1192,16 @@ export function assertLocalCandidateEvaluationRun({
     ) ||
     record.candidateArtifactReverification.id !==
       `local-training-candidate-artifact-verification-${record.candidateArtifactReverification.verificationHash}` ||
+    !isSha256(
+      record.inputSnapshot.candidateArtifactSetSha256,
+    ) ||
+    !isSha256(
+      record.inputSnapshot.candidatePreRunVerificationHash,
+    ) ||
+    !isSha256(
+      record.inputSnapshot.candidatePostRunVerificationHash,
+    ) ||
+    !isSha256(record.inputSnapshot.suiteSha256) ||
     !Number.isFinite(
       Date.parse(
         record.candidateArtifactReverification.observedAt,
@@ -1117,11 +1223,15 @@ export function createLocalCandidateEvaluationRuntime({
   env = process.env,
   evaluatorId,
   executionKind = 'fixture-simulated',
+  fileSystem = fs,
   maxInputBytes = DEFAULT_MAX_INPUT_BYTES,
   maxOutputBytes = DEFAULT_MAX_OUTPUT_BYTES,
   repoDir,
   spawnProcess = nodeSpawn,
+  temporaryDirectory = os.tmpdir(),
   timeoutMs = DEFAULT_TIMEOUT_MS,
+  verifierFactory =
+    createLocalTrainingCandidateArtifactVerifier,
 } = {}) {
   const normalizedCommand = requireMetadata(command, 'command');
   const normalizedEvaluatorId = requireMetadata(
@@ -1160,12 +1270,16 @@ export function createLocalCandidateEvaluationRuntime({
   );
   const environment = buildLocalEnvironment(env);
   const security = {
+    candidateSnapshot:
+      'bounded-read-only-temporary-copy',
     environmentKeys: Object.keys(environment).sort(),
     environmentPolicy: 'allowlist',
     networkIsolation: 'caller-owned',
+    postExecutionInputVerification: true,
     resourceEnforcement:
-      'runtime-timeout-and-artifact-reverification',
+      'runtime-timeout-io-and-input-view',
     shell: false,
+    sourceWorkspaceAsCwd: false,
     transport: 'local-process-stdio',
   };
 
@@ -1180,6 +1294,7 @@ export function createLocalCandidateEvaluationRuntime({
       candidateArtifactVerification,
       candidateVerificationInput,
       currentPermission,
+      evaluationSuiteContent,
       permissionRevocation,
       readinessPackage,
       request,
@@ -1192,6 +1307,7 @@ export function createLocalCandidateEvaluationRuntime({
         admission,
         candidateArtifactVerification,
         currentPermission,
+        evaluationSuiteContent,
         evaluatorId: normalizedEvaluatorId,
         now: preflightAt,
         permissionRevocation,
@@ -1208,83 +1324,165 @@ export function createLocalCandidateEvaluationRuntime({
         await candidateVerifier.verify(
           candidateVerificationInput,
         );
-      const startedAt = requireTimestamp(clock(), 'startedAt');
-      assertRuntimeAuthority({
-        admission,
-        candidateArtifactVerification,
-        currentPermission,
-        evaluatorId: normalizedEvaluatorId,
-        now: startedAt,
-        permissionRevocation,
-        readinessPackage,
-        request,
-        timeoutMs: normalizedTimeoutMs,
-      });
-      assertCandidateReverification({
-        admittedVerification:
+      let inputView;
+      let candidateSnapshotPreVerification;
+      let candidateSnapshotPostVerification;
+      let completedAt;
+      let startedAt;
+      let validated;
+      try {
+        inputView =
+          await createLocalCandidateEvaluationInputView({
+            candidateArtifactVerification:
+              reverifiedCandidate,
+            candidateVerificationInput,
+            evaluationSuite: request.evaluationSuite,
+            fileSystem,
+            maximumDiskBytes:
+              request.resourceLimits.maxDiskBytes,
+            repoDir: normalizedRepoDir,
+            suiteContent: evaluationSuiteContent,
+            temporaryDirectory,
+            verifierFactory,
+          });
+        startedAt = requireTimestamp(clock(), 'startedAt');
+        assertRuntimeAuthority({
+          admission,
           candidateArtifactVerification,
-        reverifiedCandidate,
-        request,
-        startedAt,
-      });
-      const payload = buildEvaluationPayload({
-        admission,
-        candidateArtifactVerification,
-        evaluatorId: normalizedEvaluatorId,
-        executionKind: normalizedExecutionKind,
-        request,
-      });
-      const input = JSON.stringify(payload);
-      if (
-        Buffer.byteLength(input, 'utf8') >
-        normalizedMaxInputBytes
-      ) {
-        throw new Error(
-          `Local candidate evaluation runtime input exceeds ${normalizedMaxInputBytes} bytes.`,
+          currentPermission,
+          evaluationSuiteContent,
+          evaluatorId: normalizedEvaluatorId,
+          now: startedAt,
+          permissionRevocation,
+          readinessPackage,
+          request,
+          timeoutMs: normalizedTimeoutMs,
+        });
+        assertCandidateReverification({
+          admittedVerification:
+            candidateArtifactVerification,
+          reverifiedCandidate,
+          request,
+          startedAt,
+        });
+        const preRunInputs =
+          await inputView.verifyInputs(startedAt);
+        candidateSnapshotPreVerification =
+          preRunInputs.candidateVerification;
+        assertCandidateReverification({
+          admittedVerification: reverifiedCandidate,
+          reverifiedCandidate:
+            candidateSnapshotPreVerification,
+          request,
+          startedAt,
+        });
+        const payload = buildEvaluationPayload({
+          admission,
+          candidateArtifactRoot:
+            inputView.candidateArtifactRoot,
+          candidateArtifactVerification,
+          evaluatorId: normalizedEvaluatorId,
+          executionKind: normalizedExecutionKind,
+          request,
+        });
+        const input = JSON.stringify(payload);
+        if (
+          Buffer.byteLength(input, 'utf8') >
+          normalizedMaxInputBytes
+        ) {
+          throw new Error(
+            `Local candidate evaluation runtime input exceeds ${normalizedMaxInputBytes} bytes.`,
+          );
+        }
+        const result = await runLocalCommand({
+          args: normalizedArgs,
+          command: normalizedCommand,
+          cwd: inputView.rootDir,
+          environment,
+          maxOutputBytes: normalizedMaxOutputBytes,
+          payload,
+          spawnProcess,
+          timeoutMs: normalizedTimeoutMs,
+        });
+        const postVerificationAt = requireTimestamp(
+          clock(),
+          'postVerificationAt',
         );
-      }
-      const result = await runLocalCommand({
-        args: normalizedArgs,
-        command: normalizedCommand,
-        cwd: normalizedRepoDir,
-        environment,
-        maxOutputBytes: normalizedMaxOutputBytes,
-        payload,
-        spawnProcess,
-        timeoutMs: normalizedTimeoutMs,
-      });
-      const completedAt = requireTimestamp(
-        clock(),
-        'completedAt',
-      );
-      assertRuntimeAuthority({
-        admission,
-        candidateArtifactVerification,
-        currentPermission,
-        evaluatorId: normalizedEvaluatorId,
-        now: completedAt,
-        permissionRevocation,
-        readinessPackage,
-        request,
-        timeoutMs: 1,
-      });
-      if (Date.parse(completedAt) < Date.parse(startedAt)) {
-        throw new Error(
-          'Local candidate evaluation runtime completedAt must not precede startedAt.',
+        assertRuntimeAuthority({
+          admission,
+          candidateArtifactVerification,
+          currentPermission,
+          evaluationSuiteContent,
+          evaluatorId: normalizedEvaluatorId,
+          now: postVerificationAt,
+          permissionRevocation,
+          readinessPackage,
+          request,
+          timeoutMs: 1,
+        });
+        if (
+          Date.parse(postVerificationAt) <
+          Date.parse(startedAt)
+        ) {
+          throw new Error(
+            'Local candidate evaluation runtime postVerificationAt must not precede startedAt.',
+          );
+        }
+        const postRunInputs =
+          await inputView.verifyInputs(postVerificationAt);
+        candidateSnapshotPostVerification =
+          postRunInputs.candidateVerification;
+        assertCandidateReverification({
+          admittedVerification:
+            candidateSnapshotPreVerification,
+          reverifiedCandidate:
+            candidateSnapshotPostVerification,
+          request,
+          startedAt: postVerificationAt,
+        });
+        validated = validateEvaluationResult(result, {
+          admission,
+          candidateArtifactVerification,
+          evaluatorId: normalizedEvaluatorId,
+          executionKind: normalizedExecutionKind,
+          request,
+        });
+        completedAt = requireTimestamp(
+          clock(),
+          'completedAt',
         );
+        assertRuntimeAuthority({
+          admission,
+          candidateArtifactVerification,
+          currentPermission,
+          evaluationSuiteContent,
+          evaluatorId: normalizedEvaluatorId,
+          now: completedAt,
+          permissionRevocation,
+          readinessPackage,
+          request,
+          timeoutMs: 1,
+        });
+        if (
+          Date.parse(completedAt) <
+          Date.parse(postVerificationAt)
+        ) {
+          throw new Error(
+            'Local candidate evaluation runtime completedAt must not precede postVerificationAt.',
+          );
+        }
+        inputView.cleanup();
+        inputView = null;
+      } finally {
+        inputView?.cleanup();
       }
-      const validated = validateEvaluationResult(result, {
-        admission,
-        candidateArtifactVerification,
-        evaluatorId: normalizedEvaluatorId,
-        executionKind: normalizedExecutionKind,
-        request,
-      });
       const run = buildRunRecord({
         admission,
         candidateArtifactVerification,
         candidateEvaluation:
           validated.candidateEvaluation,
+        candidateSnapshotPostVerification,
+        candidateSnapshotPreVerification,
         completedAt,
         currentPermission,
         evaluatorId: normalizedEvaluatorId,
@@ -1299,6 +1497,8 @@ export function createLocalCandidateEvaluationRuntime({
         candidateArtifactVerification,
         candidateEvaluation:
           validated.candidateEvaluation,
+        candidateSnapshotPostVerification,
+        candidateSnapshotPreVerification,
         currentPermission,
         request,
         run,

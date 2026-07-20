@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import {
   admitLocalCandidateEvaluation,
@@ -9,7 +11,7 @@ import {
 } from './evaluate-local-training-candidate-artifact-verification.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_ADMISSION_EVIDENCE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-admission-evidence/v2';
+  'personal-ai-agent-local-candidate-evaluation-admission-evidence/v3';
 
 const REQUESTED_AT = '2026-07-17T08:43:00.000Z';
 const ADMITTED_AT = '2026-07-17T08:44:00.000Z';
@@ -55,6 +57,7 @@ function buildRequest(fixture, verification, overrides = {}) {
     candidateArtifactVerification: verification,
     currentPermission: fixture.permission,
     evaluationKind: 'fixture-simulated',
+    evaluationSuiteContent: fixture.evaluationSuiteContent,
     evaluatorId: 'fixture-local-candidate-evaluator-v1',
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
@@ -69,6 +72,7 @@ function admit(fixture, verification, request, overrides = {}) {
   return admitLocalCandidateEvaluation({
     candidateArtifactVerification: verification,
     currentPermission: fixture.permission,
+    evaluationSuiteContent: fixture.evaluationSuiteContent,
     now: ADMITTED_AT,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
@@ -91,6 +95,16 @@ export async function evaluateLocalCandidateEvaluationAdmission({
       repoDir,
     });
   try {
+    fixture.evaluationSuiteContent = fs.readFileSync(
+      path.join(
+        repoDir,
+        'fixtures',
+        'answer-quality-cases-v1.json',
+      ),
+      'utf8',
+    );
+    fixtureOnly.evaluationSuiteContent =
+      fixture.evaluationSuiteContent;
     const verification = await fixture.verifier.verify(
       fixture.input,
     );
@@ -108,6 +122,8 @@ export async function evaluateLocalCandidateEvaluationAdmission({
         thresholdsHash: '0'.repeat(64),
       },
     });
+    const suiteContentDrift =
+      `${fixture.evaluationSuiteContent}\n`;
     const artifactDrift = resealRequest(request, {
       candidateArtifactVerification: {
         ...request.candidateArtifactVerification,
@@ -169,6 +185,17 @@ export async function evaluateLocalCandidateEvaluationAdmission({
           fixture,
           verification,
           suiteDrift,
+        ),
+        /integrity-or-current-binding/,
+      ),
+      f1EvaluationSuiteBytesRequired: rejectionMatches(
+        () => admit(
+          fixture,
+          verification,
+          request,
+          {
+            evaluationSuiteContent: suiteContentDrift,
+          },
         ),
         /integrity-or-current-binding/,
       ),
@@ -248,6 +275,10 @@ export async function evaluateLocalCandidateEvaluationAdmission({
           request.candidateEvaluationAuthorized,
         caseCount:
           request.evaluationSuite.caseIds.length,
+        evaluationSuiteArtifactByteLength:
+          request.evaluationSuite.artifact.byteLength,
+        evaluationSuiteArtifactSha256:
+          request.evaluationSuite.artifact.sha256,
         evaluationSuiteHash:
           hashRecord(request.evaluationSuite),
         evaluationKind: request.evaluationKind,
@@ -262,6 +293,7 @@ export async function evaluateLocalCandidateEvaluationAdmission({
         currentPermissionRevalidated: true,
         explicitNoRevocationRequired: true,
         f1EvaluationSuiteBound: true,
+        f1EvaluationSuiteBytesBound: true,
         localEvaluationOnly: true,
         resourceEnvelopeBound: true,
       },

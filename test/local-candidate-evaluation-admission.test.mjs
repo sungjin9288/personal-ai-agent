@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { test } from 'node:test';
 
 import {
@@ -14,6 +15,10 @@ import {
 const REQUESTED_AT = '2026-07-17T08:43:00.000Z';
 const ADMITTED_AT = '2026-07-17T08:44:00.000Z';
 const EXPIRES_AT = '2026-07-17T09:20:00.000Z';
+const EVALUATION_SUITE_CONTENT = fs.readFileSync(
+  'fixtures/answer-quality-cases-v1.json',
+  'utf8',
+);
 
 async function buildFixture(mode = 'recorded-local-training') {
   const source =
@@ -34,6 +39,7 @@ function buildRequest(fixture, overrides = {}) {
     candidateArtifactVerification: fixture.verification,
     currentPermission: fixture.permission,
     evaluationKind: 'fixture-simulated',
+    evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     evaluatorId: 'fixture-local-candidate-evaluator-v1',
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
@@ -65,6 +71,14 @@ test('candidate evaluation request binds a recorded artifact and the F1 suite', 
     fixture.readinessPackage.evaluationManifest
       .answerQualityBaseline.evaluationHash,
   );
+  assert.equal(
+    request.evaluationSuite.artifact.byteLength,
+    Buffer.byteLength(EVALUATION_SUITE_CONTENT),
+  );
+  assert.match(
+    request.evaluationSuite.artifact.sha256,
+    /^[a-f0-9]{64}$/u,
+  );
   assert.equal(request.candidateEvaluationAuthorized, false);
   assert.equal(request.evaluationKind, 'fixture-simulated');
   assert.equal(
@@ -93,6 +107,7 @@ test('admission authorizes only bounded local candidate evaluation', async (t) =
   const admission = admitLocalCandidateEvaluation({
     candidateArtifactVerification: fixture.verification,
     currentPermission: fixture.permission,
+    evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     now: ADMITTED_AT,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
@@ -134,6 +149,7 @@ test('admission authorizes only bounded local candidate evaluation', async (t) =
       admission,
       candidateArtifactVerification: fixture.verification,
       currentPermission: fixture.permission,
+      evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
       now: '2026-07-17T08:45:00.000Z',
       permissionRevocation: null,
       readinessPackage: fixture.readinessPackage,
@@ -177,6 +193,7 @@ test('request and admission fail closed on permission, revocation, and time drif
     () => admitLocalCandidateEvaluation({
       candidateArtifactVerification: fixture.verification,
       currentPermission: fixture.permission,
+      evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
       now: EXPIRES_AT,
       permissionRevocation: null,
       readinessPackage: fixture.readinessPackage,
@@ -188,6 +205,7 @@ test('request and admission fail closed on permission, revocation, and time drif
     () => admitLocalCandidateEvaluation({
       candidateArtifactVerification: fixture.verification,
       currentPermission: fixture.permission,
+      evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
       now: ADMITTED_AT,
       permissionRevocation: {
         status: 'revoked',
@@ -206,6 +224,7 @@ test('candidate evaluation admission rejects semantic tampering', async (t) => {
   const admission = admitLocalCandidateEvaluation({
     candidateArtifactVerification: fixture.verification,
     currentPermission: fixture.permission,
+    evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     now: ADMITTED_AT,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
@@ -242,5 +261,23 @@ test('candidate evaluation admission rejects semantic tampering', async (t) => {
       evaluatorId: 'another-evaluator',
     }),
     /admission failed: integrity/,
+  );
+  assert.throws(
+    () =>
+      assertCurrentLocalCandidateEvaluationAdmission({
+        admission,
+        candidateArtifactVerification: fixture.verification,
+        currentPermission: fixture.permission,
+        evaluationSuiteContent:
+          EVALUATION_SUITE_CONTENT.replace(
+            'Weekend hiking routes',
+            'Weekend cycling routes',
+          ),
+        now: '2026-07-17T08:45:00.000Z',
+        permissionRevocation: null,
+        readinessPackage: fixture.readinessPackage,
+        request,
+      }),
+    /integrity-or-current-binding/,
   );
 });

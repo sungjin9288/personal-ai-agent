@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-20T05:01:40.792Z
+- generatedAt: 2026-07-20T05:36:05.893Z
 - verifiedCommit: a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 587ec75b9dfd397c955c403b98388afd3d2b84aa3331257863b0f9c959b57436
+- bundleSha256: d7393b36ab8105a3c4c65bc09ea5d424defcd61f8360a25e257d1745564d87cf
 - fileCount: 122
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 54211 | `0cbb702d9388f9443d1a6a313c2f534513c2be921004474e414ec55cdb30855d` |
-| `CHANGELOG.md` | 21733 | `5b7234c90a0123047c0fb1f939918abc579c2715a1e40873e0c6f84ef550f50f` |
+| `README.md` | 54661 | `954ed386b6a353c3ebce528e3d9626e53231fcdc0082e9cfaad281156bbe8c57` |
+| `CHANGELOG.md` | 22278 | `aabe0b236548aa64fa09ccad8d038cf6ac60dd39c49d7dfb6ff5edbdb641ddbe` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -84,9 +84,9 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
 | `docs/memory-retrieval-quality-fixture-v1.md` | 16894 | `6efd3afdeb52bfc563dc5cb1ce66c310813fbde3187cd1f559e7bf6d561eaeaf` |
-| `docs/ml-rag-development-plan-v1.md` | 162015 | `e74f3a85aef69282c2a436c42aec8cc83878f596250b3673f4cc7b7ee8ae26be` |
+| `docs/ml-rag-development-plan-v1.md` | 164248 | `115539d0335c30ab3414bf1f6ae3759fd84539da15d0c874458f3c8583dcadca` |
 | `docs/actual-user-query-evaluation-v1.md` | 6786 | `60b3bb9e3a41c24a2f2fbc3d576f1763a84c54c526984bf02df2d0167568697c` |
-| `docs/smoke-validation-summary-v1.md` | 25211 | `0ffe82f521e3f006e3c3e8af1ec4ec6d6bf56b37de2d12d2fcc12000f6272d64` |
+| `docs/smoke-validation-summary-v1.md` | 25721 | `06bd18193f2b54cffa1b778e65286a3cfd3423ee666442d3b095206522d6b66f` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
@@ -120,8 +120,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `evidence/output-artifacts/local-training-acquisition-artifact-verification.json` | 2220 | `fd904fec00f52606dae155c5b730ca2d44f63ee190c1d2e61d5c4e395d0d460e` |
 | `evidence/output-artifacts/local-training-post-acquisition-readiness.json` | 2714 | `768058529b39638e82f920cc58fbffbf751337349066d1a804c33c98006a0ff1` |
 | `evidence/output-artifacts/local-training-candidate-artifact-verification.json` | 2254 | `aa86aaa074332fd6fa09dbbb8c35046f935b8ef8828a82ff397f4301b7344498` |
-| `evidence/output-artifacts/local-candidate-evaluation-admission.json` | 2386 | `451a63f5f9ea179fcb5f75add8d35ca8f24903a892d0f30285e955380599c4f3` |
-| `evidence/output-artifacts/local-candidate-evaluation-runtime.json` | 2126 | `cba5c7f318ff2c5dc808b240e10b86b760bb1abcd580acc1fc3edbbfcfd574ae` |
+| `evidence/output-artifacts/local-candidate-evaluation-admission.json` | 2623 | `c1a69d45f895fd148539e70e5680be007d38bf662a748f2e6d65013c35a0fb44` |
+| `evidence/output-artifacts/local-candidate-evaluation-runtime.json` | 2732 | `94b35cd714fc07275b9e668bc155e92af3d2a338cb68230037fe0c321a7f207c` |
 | `evidence/output-artifacts/local-answer-quality-baseline.json` | 13952 | `34da61aa5715e235883aa6c10dff48c54acb905beb2d8704425e5dd091e23d2e` |
 | `evidence/output-artifacts/local-answer-composition-candidate.json` | 28268 | `1cb388d694e7a96bc2993a04a59903dd32cf15fe0e31cc2383fbb3b517927e1c` |
 | `evidence/output-artifacts/local-answer-composition-robustness.json` | 49779 | `1324d8267b75e40ccb950b458845929e1a55e40edc24ce9f5bf96c53faf662a8` |

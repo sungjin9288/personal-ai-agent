@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -39,7 +40,7 @@ if (mode === 'hang') {
   process.stdout.write('not-json');
 } else {
   assertCandidateRoot(payload.candidate.artifactRoot);
-  const evaluation = buildCandidateEvaluation();
+  const evaluation = buildCandidateEvaluation(payload);
   if (mode === 'case-drift') {
     evaluation.cases.pop();
     evaluation.summary.caseCount -= 1;
@@ -55,6 +56,12 @@ if (mode === 'hang') {
   }
   if (mode === 'invalid-summary') {
     evaluation.summary.totals.citedSourceCount += 1;
+  }
+  if (mode === 'tamper-candidate-view') {
+    tamperCandidateView(payload.candidate.artifactRoot);
+  }
+  if (mode === 'tamper-suite-view') {
+    tamperSuiteView(payload.evaluationSuite.artifact.path);
   }
   const result = {
     actualModelEvaluated:
@@ -90,9 +97,9 @@ if (mode === 'hang') {
   process.stdout.write(JSON.stringify(result));
 }
 
-function buildCandidateEvaluation() {
-  const answerQualityFixture = readFixture(
-    'answer-quality-cases-v1.json',
+function buildCandidateEvaluation(payload) {
+  const answerQualityFixture = readEvaluationSuite(
+    payload.evaluationSuite.artifact,
   );
   const candidateFixture = readFixture(
     'candidate-model-evaluation-cases-v1.json',
@@ -110,6 +117,46 @@ function buildCandidateEvaluation() {
   });
 }
 
+function resolveWorkspaceFile(relativePath) {
+  const cwd = fs.realpathSync(process.cwd());
+  const target = path.resolve(cwd, relativePath);
+  const relative = path.relative(cwd, target);
+  if (
+    relative.startsWith('..') ||
+    path.isAbsolute(relative)
+  ) {
+    throw new Error(
+      'Evaluation input escaped the temporary workspace.',
+    );
+  }
+  return target;
+}
+
+function readEvaluationSuite(artifact) {
+  const suitePath = resolveWorkspaceFile(artifact.path);
+  const stat = fs.lstatSync(suitePath);
+  if (!stat.isFile() || stat.isSymbolicLink()) {
+    throw new Error(
+      'Evaluation suite must be a regular workspace file.',
+    );
+  }
+  const content = fs.readFileSync(suitePath);
+  const sha256 = createHash('sha256')
+    .update(content)
+    .digest('hex');
+  const suite = JSON.parse(content.toString('utf8'));
+  if (
+    content.byteLength !== artifact.byteLength ||
+    sha256 !== artifact.sha256 ||
+    suite.schemaVersion !== artifact.schemaVersion
+  ) {
+    throw new Error(
+      'Evaluation suite bytes do not match the admitted artifact.',
+    );
+  }
+  return suite;
+}
+
 function assertCandidateRoot(relativeRoot) {
   const cwd = fs.realpathSync(process.cwd());
   const candidateRoot = fs.realpathSync(
@@ -125,6 +172,41 @@ function assertCandidateRoot(relativeRoot) {
       'Candidate artifact root escaped the evaluation workspace.',
     );
   }
+}
+
+function tamperCandidateView(relativeRoot) {
+  const candidateRoot = resolveWorkspaceFile(relativeRoot);
+  const target = findFirstRegularFile(candidateRoot);
+  if (!target) {
+    throw new Error(
+      'Candidate execution view has no regular artifact file.',
+    );
+  }
+  fs.chmodSync(target, 0o600);
+  fs.appendFileSync(target, 'tampered-after-evaluation');
+}
+
+function findFirstRegularFile(directory) {
+  for (const name of fs.readdirSync(directory).sort()) {
+    const target = path.join(directory, name);
+    const stat = fs.lstatSync(target);
+    if (stat.isFile() && !stat.isSymbolicLink()) {
+      return target;
+    }
+    if (stat.isDirectory() && !stat.isSymbolicLink()) {
+      const nested = findFirstRegularFile(target);
+      if (nested) {
+        return nested;
+      }
+    }
+  }
+  return null;
+}
+
+function tamperSuiteView(relativePath) {
+  const target = resolveWorkspaceFile(relativePath);
+  fs.chmodSync(target, 0o600);
+  fs.appendFileSync(target, '\n');
 }
 
 function readFixture(fileName) {

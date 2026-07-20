@@ -53,8 +53,30 @@ assert.equal(
   true,
 );
 assert.equal(
+  stored.security
+    .authorityRevalidatedAfterInputVerification,
+  true,
+);
+assert.equal(
+  stored.security.candidateSnapshot,
+  'bounded-read-only-temporary-copy',
+);
+assert.equal(
   stored.security.currentAdmissionRevalidated,
   true,
+);
+assert.equal(
+  stored.security.evaluationSuiteBytesBound,
+  true,
+);
+assert.equal(
+  stored.security.postExecutionInputVerification,
+  true,
+);
+assert.equal(stored.security.sourceWorkspaceAsCwd, false);
+assert.equal(
+  stored.security.temporaryInputViewCleanup,
+  'completed',
 );
 assert.equal(stored.claimBoundary.actualModelEvaluated, false);
 assert.equal(
@@ -94,8 +116,11 @@ const docs = {
 };
 for (const term of [
   '| F2c.12 Local candidate evaluation runtime | 완료 · fixture 증적 |',
+  '| F2c.13 Immutable evaluation input view | 완료 · fixture 증적 |',
   'npm run smoke:local-candidate-evaluation-runtime',
+  'npm run smoke:local-candidate-evaluation-input-view',
   'actualLocalCandidateEvaluationRuntimeValidated: true',
+  'actualLocalCandidateEvaluationInputViewValidated: true',
   'actualModelEvaluated: false',
 ]) {
   assert.ok(
@@ -106,6 +131,11 @@ for (const term of [
 assert.ok(
   docs.readme.includes(
     'npm run smoke:local-candidate-evaluation-runtime',
+  ),
+);
+assert.ok(
+  docs.readme.includes(
+    'npm run smoke:local-candidate-evaluation-input-view',
   ),
 );
 assert.ok(

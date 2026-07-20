@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import { spawn as nodeSpawn } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 
@@ -25,6 +27,10 @@ const EVALUATOR_ID =
 const REQUESTED_AT = '2026-07-17T08:43:00.000Z';
 const ADMITTED_AT = '2026-07-17T08:44:00.000Z';
 const EXPIRES_AT = '2026-07-17T09:20:00.000Z';
+const EVALUATION_SUITE_CONTENT = fs.readFileSync(
+  'fixtures/answer-quality-cases-v1.json',
+  'utf8',
+);
 const commandPath = path.resolve(
   'fixtures/local-candidate-evaluation-command.mjs',
 );
@@ -42,6 +48,7 @@ async function buildFixture(
     candidateArtifactVerification,
     currentPermission: source.permission,
     evaluationKind,
+    evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     evaluatorId: EVALUATOR_ID,
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
@@ -52,6 +59,7 @@ async function buildFixture(
   const admission = admitLocalCandidateEvaluation({
     candidateArtifactVerification,
     currentPermission: source.permission,
+    evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     now: ADMITTED_AT,
     permissionRevocation: null,
     readinessPackage: source.readinessPackage,
@@ -61,8 +69,25 @@ async function buildFixture(
     ...source,
     admission,
     candidateArtifactVerification,
+    evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     request,
   };
+}
+
+function createTemporaryDirectory(t) {
+  const temporaryDirectory = fs.mkdtempSync(
+    path.join(
+      os.tmpdir(),
+      'personal-ai-agent-runtime-test-',
+    ),
+  );
+  t.after(() => {
+    fs.rmSync(temporaryDirectory, {
+      force: true,
+      recursive: true,
+    });
+  });
+  return temporaryDirectory;
 }
 
 function createRuntime(
@@ -102,6 +127,8 @@ function runInput(fixture, overrides = {}) {
       fixture.candidateArtifactVerification,
     candidateVerificationInput: fixture.input,
     currentPermission: fixture.permission,
+    evaluationSuiteContent:
+      fixture.evaluationSuiteContent,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
     request: fixture.request,
@@ -112,7 +139,10 @@ function runInput(fixture, overrides = {}) {
 test('bounded runtime revalidates the candidate and produces an O1a-ready fixture result', async (t) => {
   const fixture = await buildFixture();
   t.after(fixture.cleanup);
-  const runtime = createRuntime(fixture);
+  const temporaryDirectory = createTemporaryDirectory(t);
+  const runtime = createRuntime(fixture, 'success', {
+    temporaryDirectory,
+  });
 
   const result = await runtime.run(runInput(fixture));
   const gate = evaluateCandidateModelGate({
@@ -130,6 +160,15 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
     runtime.security.networkIsolation,
     'caller-owned',
   );
+  assert.equal(
+    runtime.security.candidateSnapshot,
+    'bounded-read-only-temporary-copy',
+  );
+  assert.equal(
+    runtime.security.postExecutionInputVerification,
+    true,
+  );
+  assert.equal(runtime.security.sourceWorkspaceAsCwd, false);
   assert.deepEqual(runtime.security.environmentKeys.sort(), [
     'HOME',
     'PATH',
@@ -149,6 +188,14 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
   assert.equal(result.run.rolloutAuthorized, false);
   assert.equal(result.run.productionReadyClaim, false);
   assert.equal(
+    result.run.inputSnapshot.suiteSha256,
+    fixture.request.evaluationSuite.artifact.sha256,
+  );
+  assert.equal(
+    result.run.inputSnapshot.cleanup,
+    'completed',
+  );
+  assert.equal(
     result.candidateEvidence.evaluationRunId,
     result.run.id,
   );
@@ -165,6 +212,7 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
     ),
     false,
   );
+  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
 });
 
 test('runtime stops stale authority and evaluator drift before spawn', async (t) => {
@@ -243,6 +291,100 @@ test('runtime blocks artifact drift during fresh verification before spawn', asy
     /candidate verification failed: file-integrity/,
   );
   assert.equal(spawnCount, 0);
+});
+
+test('runtime binds exact suite bytes before creating the execution view', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+  let spawnCount = 0;
+
+  await assert.rejects(
+    createRuntime(fixture, 'success', {
+      spawnProcess: () => {
+        spawnCount += 1;
+        throw new Error('spawn must not be reached');
+      },
+      temporaryDirectory,
+    }).run(runInput(fixture, {
+      evaluationSuiteContent:
+        `${fixture.evaluationSuiteContent}\n`,
+    })),
+    /integrity-or-current-binding/,
+  );
+  assert.equal(spawnCount, 0);
+  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+});
+
+test('runtime rechecks authority after post-run input verification', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+  const timestamps = [
+    '2026-07-17T08:45:00.000Z',
+    '2026-07-17T08:46:00.000Z',
+    '2026-07-17T08:47:00.000Z',
+    EXPIRES_AT,
+  ];
+
+  await assert.rejects(
+    createRuntime(fixture, 'success', {
+      clock: () => timestamps.shift() || EXPIRES_AT,
+      temporaryDirectory,
+    }).run(runInput(fixture)),
+    /integrity-or-current-binding/,
+  );
+  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+});
+
+test('runtime executes the snapshot even when the source changes after preparation', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+  const artifactFile = path.join(
+    fixture.artifactRoot,
+    fs.readdirSync(fixture.artifactRoot)[0],
+  );
+  let sourceChanged = false;
+  const spawnProcess = (command, args, options) => {
+    fs.appendFileSync(artifactFile, 'source-changed-after-copy');
+    sourceChanged = true;
+    return nodeSpawn(command, args, options);
+  };
+
+  const result = await createRuntime(fixture, 'success', {
+    spawnProcess,
+    temporaryDirectory,
+  }).run(runInput(fixture));
+
+  assert.equal(sourceChanged, true);
+  assert.equal(result.run.status, 'completed');
+  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+});
+
+test('runtime rejects candidate and suite mutation inside the execution view', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+
+  for (const [mode, pattern] of [
+    [
+      'tamper-candidate-view',
+      /candidate verification failed: file-integrity/,
+    ],
+    [
+      'tamper-suite-view',
+      /suite artifact failed: integrity-or-binding/,
+    ],
+  ]) {
+    await assert.rejects(
+      createRuntime(fixture, mode, {
+        temporaryDirectory,
+      }).run(runInput(fixture)),
+      pattern,
+    );
+    assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+  }
 });
 
 test('runtime rejects unbound, raw, inconsistent, and unbounded child results', async (t) => {

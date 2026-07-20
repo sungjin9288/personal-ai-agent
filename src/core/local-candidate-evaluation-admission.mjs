@@ -2,6 +2,9 @@ import { createHash } from 'node:crypto';
 
 import { assertFineTuningReadinessPackage } from './fine-tuning-readiness.mjs';
 import {
+  describeLocalCandidateEvaluationSuite,
+} from './local-candidate-evaluation-input-view.mjs';
+import {
   assertLocalTrainingCandidateArtifactVerification,
 } from './local-training-candidate-artifact-verification.mjs';
 import {
@@ -13,9 +16,9 @@ import {
 } from './training-content-safety.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_REQUEST_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-request/v2';
+  'personal-ai-agent-local-candidate-evaluation-request/v3';
 export const LOCAL_CANDIDATE_EVALUATION_ADMISSION_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-admission/v2';
+  'personal-ai-agent-local-candidate-evaluation-admission/v3';
 
 const REQUEST_STATUS = 'pending-local-candidate-evaluation-admission';
 const ADMISSION_STATUS = 'authorized-for-bounded-local-candidate-evaluation';
@@ -102,7 +105,10 @@ function requireEvaluationKind(value) {
   return normalized;
 }
 
-function buildEvaluationSuite(readinessPackage) {
+function buildEvaluationSuite(
+  readinessPackage,
+  evaluationSuiteContent,
+) {
   const baseline =
     readinessPackage.evaluationManifest.answerQualityBaseline;
   const caseIds = baseline.caseResults
@@ -117,10 +123,17 @@ function buildEvaluationSuite(readinessPackage) {
       'Local candidate evaluation requires a valid F1 evaluation suite.',
     );
   }
-  return {
+  const evaluationSuite = {
     baselineEvaluationHash: baseline.evaluationHash,
     caseIds,
     thresholdsHash: hashRecord(baseline.thresholds),
+  };
+  return {
+    artifact: describeLocalCandidateEvaluationSuite(
+      evaluationSuiteContent,
+      evaluationSuite,
+    ),
+    ...evaluationSuite,
   };
 }
 
@@ -176,6 +189,7 @@ function buildRequestContent({
   candidateArtifactVerification,
   currentPermission,
   evaluationKind,
+  evaluationSuiteContent,
   evaluatorId,
   expiresAt,
   readinessPackage,
@@ -201,7 +215,10 @@ function buildRequestContent({
       datasetHash: readinessPackage.dataset.datasetHash,
       readinessHash: readinessPackage.readinessHash,
     },
-    evaluationSuite: buildEvaluationSuite(readinessPackage),
+    evaluationSuite: buildEvaluationSuite(
+      readinessPackage,
+      evaluationSuiteContent,
+    ),
     evaluationKind,
     evaluatorId,
     expiresAt,
@@ -229,6 +246,7 @@ export function buildLocalCandidateEvaluationRequest({
   candidateArtifactVerification,
   currentPermission,
   evaluationKind = 'local-model-evaluation',
+  evaluationSuiteContent,
   evaluatorId,
   expiresAt,
   permissionRevocation,
@@ -272,6 +290,7 @@ export function buildLocalCandidateEvaluationRequest({
     currentPermission,
     evaluationKind:
       requireEvaluationKind(evaluationKind),
+    evaluationSuiteContent,
     evaluatorId: requireMetadata(evaluatorId, 'evaluatorId'),
     expiresAt: normalizedExpiresAt,
     readinessPackage,
@@ -289,6 +308,7 @@ export function buildLocalCandidateEvaluationRequest({
 export function assertLocalCandidateEvaluationRequest({
   candidateArtifactVerification,
   currentPermission,
+  evaluationSuiteContent,
   now,
   permissionRevocation,
   readinessPackage,
@@ -331,6 +351,7 @@ export function assertLocalCandidateEvaluationRequest({
     candidateArtifactVerification,
     currentPermission,
     evaluationKind,
+    evaluationSuiteContent,
     evaluatorId,
     expiresAt,
     readinessPackage,
@@ -404,6 +425,7 @@ function buildAdmissionContent({
 export function admitLocalCandidateEvaluation({
   candidateArtifactVerification,
   currentPermission,
+  evaluationSuiteContent,
   now,
   permissionRevocation,
   readinessPackage,
@@ -413,6 +435,7 @@ export function admitLocalCandidateEvaluation({
   assertLocalCandidateEvaluationRequest({
     candidateArtifactVerification,
     currentPermission,
+    evaluationSuiteContent,
     now: normalizedNow,
     permissionRevocation,
     readinessPackage,
@@ -468,9 +491,16 @@ function assertAdmissionShape(content) {
       'verificationHash',
     ]) ||
     !hasExactKeys(content.evaluationSuite, [
+      'artifact',
       'baselineEvaluationHash',
       'caseIds',
       'thresholdsHash',
+    ]) ||
+    !hasExactKeys(content.evaluationSuite.artifact, [
+      'byteLength',
+      'path',
+      'schemaVersion',
+      'sha256',
     ]) ||
     !hasExactKeys(content.productPermission, [
       'id',
@@ -497,6 +527,7 @@ function assertAdmissionShape(content) {
 
 function assertAdmissionReferences(content) {
   const caseIds = content.evaluationSuite.caseIds;
+  const suiteArtifact = content.evaluationSuite.artifact;
   requireMetadata(content.candidate.modelId, 'candidate modelId');
   requireMetadata(
     content.candidate.artifactFormat,
@@ -517,6 +548,17 @@ function assertAdmissionReferences(content) {
     ) ||
     content.candidateArtifactVerification.id !==
       `local-training-candidate-artifact-verification-${content.candidateArtifactVerification.verificationHash}` ||
+    !Number.isSafeInteger(suiteArtifact.byteLength) ||
+    suiteArtifact.byteLength <= 0 ||
+    !requireMetadata(
+      suiteArtifact.path,
+      'evaluation suite artifact path',
+    ) ||
+    !requireMetadata(
+      suiteArtifact.schemaVersion,
+      'evaluation suite artifact schemaVersion',
+    ) ||
+    !isSha256(suiteArtifact.sha256) ||
     !isSha256(content.evaluationSuite.baselineEvaluationHash) ||
     !isSha256(content.evaluationSuite.thresholdsHash) ||
     !Array.isArray(caseIds) ||
@@ -590,6 +632,7 @@ export function assertCurrentLocalCandidateEvaluationAdmission({
   admission,
   candidateArtifactVerification,
   currentPermission,
+  evaluationSuiteContent,
   now,
   permissionRevocation,
   readinessPackage,
@@ -600,6 +643,7 @@ export function assertCurrentLocalCandidateEvaluationAdmission({
   assertLocalCandidateEvaluationRequest({
     candidateArtifactVerification,
     currentPermission,
+    evaluationSuiteContent,
     now: normalizedNow,
     permissionRevocation,
     readinessPackage,
@@ -608,6 +652,7 @@ export function assertCurrentLocalCandidateEvaluationAdmission({
   const expectedAdmission = admitLocalCandidateEvaluation({
     candidateArtifactVerification,
     currentPermission,
+    evaluationSuiteContent,
     now: admission.admittedAt,
     permissionRevocation,
     readinessPackage,

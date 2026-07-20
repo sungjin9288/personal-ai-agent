@@ -28,6 +28,7 @@
     "explicitNoRevocationRequired": true,
     "externalCallsRemainDisabled": true,
     "f1EvaluationSuiteBindingRequired": true,
+    "f1EvaluationSuiteBytesRequired": true,
     "requestIntegrityRequired": true,
     "resourceEnvelopeBindingRequired": true,
     "requestTimeWindowRequired": true,
@@ -41,21 +42,24 @@
     "artifactSetBound": true,
     "candidateEvaluationAuthorized": false,
     "caseCount": 2,
-    "evaluationSuiteHash": "7ff96e6da04497f582211e351e3b2f510706a75c2c82440bf2d7151d1f138683",
+    "evaluationSuiteArtifactByteLength": 4617,
+    "evaluationSuiteArtifactSha256": "bdcdeaa8e394e3eba04b6026e0d11674d6a64f625cb9cefa42823cc23eec1e09",
+    "evaluationSuiteHash": "c2609282386915dbcbabd8a7b4ec1bd057e5c9f6364069eb205f0c862c6a1ed4",
     "evaluationKind": "fixture-simulated",
     "evaluatorIdHash": "5e2b57a9521383681c956092bde3c78054756a4b4319b501ac0d8696091ce9e0",
     "modelIdHash": "516fe655ec266b6a0a6646f031f0fe8fe84985569e2d0384d7631eb6ffcce03c",
     "status": "pending-local-candidate-evaluation-admission"
   },
-  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-admission-evidence/v2",
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-admission-evidence/v3",
   "security": {
     "contentFreeEvidence": true,
     "currentPermissionRevalidated": true,
     "explicitNoRevocationRequired": true,
     "f1EvaluationSuiteBound": true,
+    "f1EvaluationSuiteBytesBound": true,
     "localEvaluationOnly": true,
     "resourceEnvelopeBound": true
   },
-  "evidenceHash": "9fd33be31fb12ac367fa33b763cd13285c9b4661423dca79abeb46e0d9646637",
-  "id": "local-candidate-evaluation-admission-evidence-9fd33be31fb12ac367fa33b763cd13285c9b4661423dca79abeb46e0d9646637"
+  "evidenceHash": "b1123aca36e4c1e1b40742d9d1a81bb89ff70e50ce4383e1402267c735d7825c",
+  "id": "local-candidate-evaluation-admission-evidence-b1123aca36e4c1e1b40742d9d1a81bb89ff70e50ce4383e1402267c735d7825c"
 }

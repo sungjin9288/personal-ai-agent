@@ -49,6 +49,18 @@ assert.equal(
   true,
 );
 assert.equal(stored.security.resourceEnvelopeBound, true);
+assert.equal(
+  stored.security.f1EvaluationSuiteBytesBound,
+  true,
+);
+assert.equal(
+  stored.failureGuards.f1EvaluationSuiteBytesRequired,
+  true,
+);
+assert.match(
+  stored.request.evaluationSuiteArtifactSha256,
+  /^[a-f0-9]{64}$/u,
+);
 assert.equal(stored.admission.actualModelEvaluated, false);
 assert.equal(
   stored.admission.trainingProcessProvenanceVerified,

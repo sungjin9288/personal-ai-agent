@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Bound local candidate evaluation admission to the exact F1 suite bytes and moved evaluator input into a temporary workspace containing only the admitted suite and manifest-listed candidate files.
+- Added pre-run and post-run candidate and suite verification, combined disk-envelope enforcement, source-workspace exclusion, and cleanup-before-evidence guards. The tracked replay remains fixture-only; evaluator executable provenance, OS resource and network isolation, actual model evaluation, rollout, and production claims remain unverified.
 - Added a fixture-only post-acquisition readiness gate that binds artifact verification to owner-reviewed provenance, closed egress, an offline resource canary, and the existing product permission evidence without authorizing training.
 - Added fail-closed checks for evidence integrity, owner and timestamp binding, artifact bytes, approved runtime, permission ordering, and exact license, egress, and resource hashes. All actual acquisition, review, canary, permission, training, rollout, and production claims remain false in tracked evidence.
 - Added an independent local-training acquisition artifact verifier that rechecks the current approval, request, toolchain pins, exact plan, and F2c.6 run before reading bounded manifests and hashing regular files inside the approved repository root.

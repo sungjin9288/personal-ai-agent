@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Bound local candidate evaluation admission to the exact F1 suite bytes and moved evaluator input into a temporary workspace containing only the admitted suite and manifest-listed candidate files.
+- Added pre-run and post-run candidate and suite verification, combined disk-envelope enforcement, source-workspace exclusion, and cleanup-before-evidence guards. The tracked replay remains fixture-only; evaluator executable provenance, OS resource and network isolation, actual model evaluation, rollout, and production claims remain unverified.
 - Added a fixture-only post-acquisition readiness gate that binds artifact verification to owner-reviewed provenance, closed egress, an offline resource canary, and the existing product permission evidence without authorizing training.
 - Added fail-closed checks for evidence integrity, owner and timestamp binding, artifact bytes, approved runtime, permission ordering, and exact license, egress, and resource hashes. All actual acquisition, review, canary, permission, training, rollout, and production claims remain false in tracked evidence.
 - Added an independent local-training acquisition artifact verifier that rechecks the current approval, request, toolchain pins, exact plan, and F2c.6 run before reading bounded manifests and hashing regular files inside the approved repository root.
@@ -95,8 +97,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,227,702 bytes`
-- SHA-256: `d04ca15c9d0ab2bc453c3977efc68a9bace742d5e302708dda1b864c80522acf`
+- Size: `4,229,622 bytes`
+- SHA-256: `e15f434042653777dd5fdf8a434c2727ac3d741edb1170aaa8195ba751e2419e`
 
 Included public surfaces:
 

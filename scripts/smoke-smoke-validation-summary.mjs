@@ -70,6 +70,7 @@ const expectedCommands = [
   'npm run smoke:local-training-candidate-artifact-verification',
   'npm run smoke:local-candidate-evaluation-admission',
   'npm run smoke:local-candidate-evaluation-runtime',
+  'npm run smoke:local-candidate-evaluation-input-view',
   'npm run smoke:candidate-model-evaluation',
   'npm run smoke:local-answer-quality-baseline',
   'npm run smoke:local-answer-composition-candidate',

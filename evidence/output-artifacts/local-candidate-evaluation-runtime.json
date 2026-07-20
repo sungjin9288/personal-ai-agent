@@ -14,15 +14,18 @@
     "evaluationSource": "fixture-simulated",
     "gateDecision": "hold-for-review",
     "gateStatus": "ready-for-review",
-    "protocolVersion": "personal-ai-agent-local-candidate-evaluation/v1",
+    "protocolVersion": "personal-ai-agent-local-candidate-evaluation/v2",
     "runHashBound": true,
+    "suiteArtifactSha256": "bdcdeaa8e394e3eba04b6026e0d11674d6a64f625cb9cefa42823cc23eec1e09",
     "status": "completed"
   },
   "failureGuards": {
     "actualModelClaimRemainsFalse": true,
     "admissionCurrentStateRequired": true,
+    "authorityRequiredAfterInputVerification": true,
     "evaluatorBindingRequired": true,
     "executionKindBindingRequired": true,
+    "evaluationSuiteBytesRequired": true,
     "inputBounded": true,
     "o1aComparisonPassed": true,
     "outputBounded": true,
@@ -34,24 +37,33 @@
     "rolloutRemainsBlocked": true,
     "stderrRedacted": true,
     "thresholdBindingRequired": true,
+    "candidateSnapshotPostVerificationRequired": true,
+    "suiteSnapshotPostVerificationRequired": true,
     "timeoutBounded": true,
     "trainingRemainsBlocked": true,
     "unsupportedResultFieldsRejected": true,
+    "temporaryInputViewCleaned": true,
     "artifactReverificationRequired": true
   },
   "mode": "local-candidate-evaluation-runtime",
-  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v1",
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v2",
   "security": {
     "artifactReverifiedBeforeSpawn": true,
+    "authorityRevalidatedAfterInputVerification": true,
+    "candidateSnapshot": "bounded-read-only-temporary-copy",
     "contentFreeRunRecord": true,
     "currentAdmissionRevalidated": true,
     "environmentAllowlisted": true,
+    "evaluationSuiteBytesBound": true,
     "localProcessStdio": true,
     "networkIsolation": "caller-owned",
-    "resourceEnforcement": "runtime-timeout-and-artifact-reverification",
-    "shell": false
+    "postExecutionInputVerification": true,
+    "resourceEnforcement": "runtime-timeout-io-and-input-view",
+    "shell": false,
+    "sourceWorkspaceAsCwd": false,
+    "temporaryInputViewCleanup": "completed"
   },
   "storeMutation": false,
-  "evidenceHash": "986c12fb4a4c63eed3c0c6f8cb40feaab5b23a1667ef68cac0a4643f7655217a",
-  "id": "local-candidate-evaluation-runtime-evidence-986c12fb4a4c63eed3c0c6f8cb40feaab5b23a1667ef68cac0a4643f7655217a"
+  "evidenceHash": "f667f6f97ff665345635c708398af1030bc039a70f507c53371d19a93a0f2b48",
+  "id": "local-candidate-evaluation-runtime-evidence-f667f6f97ff665345635c708398af1030bc039a70f507c53371d19a93a0f2b48"
 }
