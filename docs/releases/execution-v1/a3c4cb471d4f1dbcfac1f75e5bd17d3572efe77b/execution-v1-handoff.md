@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T05:01:08.251Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T05:01:07.171Z
 - localDate: 2026-07-20
 - branch: codex/f2c12-local-candidate-evaluation-runtime
 - commit: a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b](releases/execution-v1/a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b](docs/releases/execution-v1/a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b)
 - visualArtifactSetSha256: 1cfd971a7945ba248e1bc3e245ca861287e9ad0b20cbd09b64f76d7b0448f872
 - commitPushStatus: not pushed, origin/codex/f2c12-local-candidate-evaluation-runtime not found
 

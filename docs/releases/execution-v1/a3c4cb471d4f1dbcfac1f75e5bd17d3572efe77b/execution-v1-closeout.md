@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-20T05:01:08.251Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-20T05:00:58.196Z
 - branch: codex/f2c12-local-candidate-evaluation-runtime
 - commit: a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a3c4cb471d4f1dbcfac1f75e5bd17d3572efe77b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
