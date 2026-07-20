@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import {
   admitLocalCandidateEvaluation,
+  assertCurrentLocalCandidateEvaluationAdmission,
   assertLocalCandidateEvaluationAdmission,
   buildLocalCandidateEvaluationRequest,
 } from '../src/core/local-candidate-evaluation-admission.mjs';
@@ -32,6 +33,8 @@ function buildRequest(fixture, overrides = {}) {
   return buildLocalCandidateEvaluationRequest({
     candidateArtifactVerification: fixture.verification,
     currentPermission: fixture.permission,
+    evaluationKind: 'fixture-simulated',
+    evaluatorId: 'fixture-local-candidate-evaluator-v1',
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
@@ -63,6 +66,11 @@ test('candidate evaluation request binds a recorded artifact and the F1 suite', 
       .answerQualityBaseline.evaluationHash,
   );
   assert.equal(request.candidateEvaluationAuthorized, false);
+  assert.equal(request.evaluationKind, 'fixture-simulated');
+  assert.equal(
+    request.evaluatorId,
+    'fixture-local-candidate-evaluator-v1',
+  );
   assert.equal(request.actualModelEvaluated, false);
   assert.equal(request.trainingAuthorized, false);
   assert.equal(request.rolloutAuthorized, false);
@@ -92,6 +100,11 @@ test('admission authorizes only bounded local candidate evaluation', async (t) =
   });
 
   assert.equal(admission.candidateEvaluationAuthorized, true);
+  assert.equal(admission.evaluationKind, 'fixture-simulated');
+  assert.equal(
+    admission.evaluatorId,
+    'fixture-local-candidate-evaluator-v1',
+  );
   assert.equal(admission.actualModelEvaluated, false);
   assert.equal(admission.trainingAuthorized, false);
   assert.equal(admission.externalProviderCalls, 'none');
@@ -114,6 +127,18 @@ test('admission authorizes only bounded local candidate evaluation', async (t) =
   ]);
   assert.equal(
     assertLocalCandidateEvaluationAdmission(admission),
+    admission,
+  );
+  assert.equal(
+    assertCurrentLocalCandidateEvaluationAdmission({
+      admission,
+      candidateArtifactVerification: fixture.verification,
+      currentPermission: fixture.permission,
+      now: '2026-07-17T08:45:00.000Z',
+      permissionRevocation: null,
+      readinessPackage: fixture.readinessPackage,
+      request,
+    }),
     admission,
   );
 });
@@ -210,5 +235,12 @@ test('candidate evaluation admission rejects semantic tampering', async (t) => {
       },
     }),
     /must be a positive integer/,
+  );
+  assert.throws(
+    () => assertLocalCandidateEvaluationAdmission({
+      ...admission,
+      evaluatorId: 'another-evaluator',
+    }),
+    /admission failed: integrity/,
   );
 });

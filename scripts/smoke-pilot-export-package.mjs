@@ -77,7 +77,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 121$/m);
+assert.match(manifest, /^- fileCount: 122$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -145,6 +145,7 @@ const requiredPaths = [
   'evidence/output-artifacts/local-training-post-acquisition-readiness.json',
   'evidence/output-artifacts/local-training-candidate-artifact-verification.json',
   'evidence/output-artifacts/local-candidate-evaluation-admission.json',
+  'evidence/output-artifacts/local-candidate-evaluation-runtime.json',
   'evidence/output-artifacts/local-answer-quality-baseline.json',
   'evidence/output-artifacts/local-answer-composition-candidate.json',
   'evidence/output-artifacts/local-answer-composition-robustness.json',

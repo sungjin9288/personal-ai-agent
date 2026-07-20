@@ -9,7 +9,7 @@ import {
 } from './evaluate-local-training-candidate-artifact-verification.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_ADMISSION_EVIDENCE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-admission-evidence/v1';
+  'personal-ai-agent-local-candidate-evaluation-admission-evidence/v2';
 
 const REQUESTED_AT = '2026-07-17T08:43:00.000Z';
 const ADMITTED_AT = '2026-07-17T08:44:00.000Z';
@@ -54,6 +54,8 @@ function buildRequest(fixture, verification, overrides = {}) {
   return buildLocalCandidateEvaluationRequest({
     candidateArtifactVerification: verification,
     currentPermission: fixture.permission,
+    evaluationKind: 'fixture-simulated',
+    evaluatorId: 'fixture-local-candidate-evaluator-v1',
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
@@ -248,6 +250,8 @@ export async function evaluateLocalCandidateEvaluationAdmission({
           request.evaluationSuite.caseIds.length,
         evaluationSuiteHash:
           hashRecord(request.evaluationSuite),
+        evaluationKind: request.evaluationKind,
+        evaluatorIdHash: hashValue(request.evaluatorId),
         modelIdHash: hashValue(request.candidate.modelId),
         status: request.status,
       },

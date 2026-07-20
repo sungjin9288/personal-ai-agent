@@ -13,12 +13,16 @@ import {
 } from './training-content-safety.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_REQUEST_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-request/v1';
+  'personal-ai-agent-local-candidate-evaluation-request/v2';
 export const LOCAL_CANDIDATE_EVALUATION_ADMISSION_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-admission/v1';
+  'personal-ai-agent-local-candidate-evaluation-admission/v2';
 
 const REQUEST_STATUS = 'pending-local-candidate-evaluation-admission';
 const ADMISSION_STATUS = 'authorized-for-bounded-local-candidate-evaluation';
+const EVALUATION_KINDS = new Set([
+  'fixture-simulated',
+  'local-model-evaluation',
+]);
 const REMAINING_GATES = Object.freeze([
   'training-process-provenance-review',
   'local-candidate-evaluation-execution',
@@ -83,6 +87,16 @@ function requirePositiveInteger(value, fieldName) {
   if (!Number.isSafeInteger(normalized) || normalized <= 0) {
     throw new Error(
       `Local candidate evaluation ${fieldName} must be a positive integer.`,
+    );
+  }
+  return normalized;
+}
+
+function requireEvaluationKind(value) {
+  const normalized = normalizeText(value);
+  if (!EVALUATION_KINDS.has(normalized)) {
+    throw new Error(
+      'Unsupported local candidate evaluation kind.',
     );
   }
   return normalized;
@@ -161,6 +175,8 @@ function assertCurrentPermission({
 function buildRequestContent({
   candidateArtifactVerification,
   currentPermission,
+  evaluationKind,
+  evaluatorId,
   expiresAt,
   readinessPackage,
   requestedAt,
@@ -186,6 +202,8 @@ function buildRequestContent({
       readinessHash: readinessPackage.readinessHash,
     },
     evaluationSuite: buildEvaluationSuite(readinessPackage),
+    evaluationKind,
+    evaluatorId,
     expiresAt,
     externalProviderCalls: 'none',
     externalSubmissionAuthorized: false,
@@ -210,6 +228,8 @@ function buildRequestContent({
 export function buildLocalCandidateEvaluationRequest({
   candidateArtifactVerification,
   currentPermission,
+  evaluationKind = 'local-model-evaluation',
+  evaluatorId,
   expiresAt,
   permissionRevocation,
   readinessPackage,
@@ -250,6 +270,9 @@ export function buildLocalCandidateEvaluationRequest({
   const content = buildRequestContent({
     candidateArtifactVerification,
     currentPermission,
+    evaluationKind:
+      requireEvaluationKind(evaluationKind),
+    evaluatorId: requireMetadata(evaluatorId, 'evaluatorId'),
     expiresAt: normalizedExpiresAt,
     readinessPackage,
     requestedAt: normalizedRequestedAt,
@@ -291,6 +314,13 @@ export function assertLocalCandidateEvaluationRequest({
     request?.expiresAt,
     'expiresAt',
   );
+  const evaluatorId = requireMetadata(
+    request?.evaluatorId,
+    'evaluatorId',
+  );
+  const evaluationKind = requireEvaluationKind(
+    request?.evaluationKind,
+  );
   const requestedBy = requireMetadata(
     request?.requestedBy,
     'requestedBy',
@@ -300,6 +330,8 @@ export function assertLocalCandidateEvaluationRequest({
   const expectedContent = buildRequestContent({
     candidateArtifactVerification,
     currentPermission,
+    evaluationKind,
+    evaluatorId,
     expiresAt,
     readinessPackage,
     requestedAt,
@@ -339,7 +371,9 @@ function buildAdmissionContent({
     candidateArtifactVerification:
       request.candidateArtifactVerification,
     candidateEvaluationAuthorized: true,
+    evaluationKind: request.evaluationKind,
     evaluationSuite: request.evaluationSuite,
+    evaluatorId: request.evaluatorId,
     expiresAt: request.expiresAt,
     externalProviderCalls: 'none',
     externalSubmissionAuthorized: false,
@@ -406,7 +440,9 @@ function assertAdmissionShape(content) {
       'candidate',
       'candidateArtifactVerification',
       'candidateEvaluationAuthorized',
+      'evaluationKind',
       'evaluationSuite',
+      'evaluatorId',
       'expiresAt',
       'externalProviderCalls',
       'externalSubmissionAuthorized',
@@ -466,6 +502,8 @@ function assertAdmissionReferences(content) {
     content.candidate.artifactFormat,
     'candidate artifactFormat',
   );
+  requireEvaluationKind(content.evaluationKind);
+  requireMetadata(content.evaluatorId, 'evaluatorId');
   requireMetadata(content.rollback.owner, 'rollback owner');
   for (const [fieldName, value] of Object.entries(
     content.resourceLimits,
@@ -543,6 +581,45 @@ export function assertLocalCandidateEvaluationAdmission(admission) {
   ) {
     throw new Error(
       'Local candidate evaluation admission failed: integrity.',
+    );
+  }
+  return admission;
+}
+
+export function assertCurrentLocalCandidateEvaluationAdmission({
+  admission,
+  candidateArtifactVerification,
+  currentPermission,
+  now,
+  permissionRevocation,
+  readinessPackage,
+  request,
+} = {}) {
+  const normalizedNow = requireTimestamp(now, 'runtime now');
+  assertLocalCandidateEvaluationAdmission(admission);
+  assertLocalCandidateEvaluationRequest({
+    candidateArtifactVerification,
+    currentPermission,
+    now: normalizedNow,
+    permissionRevocation,
+    readinessPackage,
+    request,
+  });
+  const expectedAdmission = admitLocalCandidateEvaluation({
+    candidateArtifactVerification,
+    currentPermission,
+    now: admission.admittedAt,
+    permissionRevocation,
+    readinessPackage,
+    request,
+  });
+  if (
+    JSON.stringify(admission) !== JSON.stringify(expectedAdmission) ||
+    Date.parse(admission.admittedAt) > Date.parse(normalizedNow) ||
+    Date.parse(admission.expiresAt) <= Date.parse(normalizedNow)
+  ) {
+    throw new Error(
+      'Local candidate evaluation admission failed: current-runtime-binding.',
     );
   }
   return admission;

@@ -42,10 +42,12 @@
     "candidateEvaluationAuthorized": false,
     "caseCount": 2,
     "evaluationSuiteHash": "7ff96e6da04497f582211e351e3b2f510706a75c2c82440bf2d7151d1f138683",
+    "evaluationKind": "fixture-simulated",
+    "evaluatorIdHash": "5e2b57a9521383681c956092bde3c78054756a4b4319b501ac0d8696091ce9e0",
     "modelIdHash": "516fe655ec266b6a0a6646f031f0fe8fe84985569e2d0384d7631eb6ffcce03c",
     "status": "pending-local-candidate-evaluation-admission"
   },
-  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-admission-evidence/v1",
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-admission-evidence/v2",
   "security": {
     "contentFreeEvidence": true,
     "currentPermissionRevalidated": true,
@@ -54,6 +56,6 @@
     "localEvaluationOnly": true,
     "resourceEnvelopeBound": true
   },
-  "evidenceHash": "25828386de458c8b3cbbd8bffaa9009c3206c2030337d574d2bbf04fdb919b11",
-  "id": "local-candidate-evaluation-admission-evidence-25828386de458c8b3cbbd8bffaa9009c3206c2030337d574d2bbf04fdb919b11"
+  "evidenceHash": "9fd33be31fb12ac367fa33b763cd13285c9b4661423dca79abeb46e0d9646637",
+  "id": "local-candidate-evaluation-admission-evidence-9fd33be31fb12ac367fa33b763cd13285c9b4661423dca79abeb46e0d9646637"
 }

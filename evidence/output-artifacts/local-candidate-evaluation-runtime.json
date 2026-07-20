@@ -1,0 +1,57 @@
+{
+  "claimBoundary": {
+    "actualCandidateArtifactsObserved": false,
+    "actualModelEvaluated": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "execution": {
+    "candidateEvaluationAuthorized": true,
+    "evaluationHash": "a971c58a40e23080e21cd27ba5093dcdb9d06d93c90c3324a66a6be1384f24e1",
+    "evaluationSource": "fixture-simulated",
+    "gateDecision": "hold-for-review",
+    "gateStatus": "ready-for-review",
+    "protocolVersion": "personal-ai-agent-local-candidate-evaluation/v1",
+    "runHashBound": true,
+    "status": "completed"
+  },
+  "failureGuards": {
+    "actualModelClaimRemainsFalse": true,
+    "admissionCurrentStateRequired": true,
+    "evaluatorBindingRequired": true,
+    "executionKindBindingRequired": true,
+    "inputBounded": true,
+    "o1aComparisonPassed": true,
+    "outputBounded": true,
+    "permissionCurrentStateRequired": true,
+    "rawResultFieldsRejected": true,
+    "resultLineageRequired": true,
+    "resultSummaryIntegrityRequired": true,
+    "revocationStateRequired": true,
+    "rolloutRemainsBlocked": true,
+    "stderrRedacted": true,
+    "thresholdBindingRequired": true,
+    "timeoutBounded": true,
+    "trainingRemainsBlocked": true,
+    "unsupportedResultFieldsRejected": true,
+    "artifactReverificationRequired": true
+  },
+  "mode": "local-candidate-evaluation-runtime",
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v1",
+  "security": {
+    "artifactReverifiedBeforeSpawn": true,
+    "contentFreeRunRecord": true,
+    "currentAdmissionRevalidated": true,
+    "environmentAllowlisted": true,
+    "localProcessStdio": true,
+    "networkIsolation": "caller-owned",
+    "resourceEnforcement": "runtime-timeout-and-artifact-reverification",
+    "shell": false
+  },
+  "storeMutation": false,
+  "evidenceHash": "986c12fb4a4c63eed3c0c6f8cb40feaab5b23a1667ef68cac0a4643f7655217a",
+  "id": "local-candidate-evaluation-runtime-evidence-986c12fb4a4c63eed3c0c6f8cb40feaab5b23a1667ef68cac0a4643f7655217a"
+}

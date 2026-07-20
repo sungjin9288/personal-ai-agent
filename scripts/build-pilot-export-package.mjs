@@ -67,6 +67,7 @@ const BASE_PACKAGE_FILES = [
   'evidence/output-artifacts/local-training-post-acquisition-readiness.json',
   'evidence/output-artifacts/local-training-candidate-artifact-verification.json',
   'evidence/output-artifacts/local-candidate-evaluation-admission.json',
+  'evidence/output-artifacts/local-candidate-evaluation-runtime.json',
   'evidence/output-artifacts/local-answer-quality-baseline.json',
   'evidence/output-artifacts/local-answer-composition-candidate.json',
   'evidence/output-artifacts/local-answer-composition-robustness.json',

@@ -173,6 +173,8 @@
     "smoke:local-training-candidate-artifact-verification": "node scripts/smoke-local-training-candidate-artifact-verification.mjs",
     "build:local-candidate-evaluation-admission-evidence": "node scripts/build-local-candidate-evaluation-admission-evidence.mjs",
     "smoke:local-candidate-evaluation-admission": "node scripts/smoke-local-candidate-evaluation-admission.mjs",
+    "build:local-candidate-evaluation-runtime-evidence": "node scripts/build-local-candidate-evaluation-runtime-evidence.mjs",
+    "smoke:local-candidate-evaluation-runtime": "node scripts/smoke-local-candidate-evaluation-runtime.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",
     "evaluate:local-answer-quality-baseline": "node scripts/evaluate-local-answer-quality-baseline.mjs",
     "smoke:local-answer-quality-baseline": "node scripts/smoke-local-answer-quality-baseline.mjs",
