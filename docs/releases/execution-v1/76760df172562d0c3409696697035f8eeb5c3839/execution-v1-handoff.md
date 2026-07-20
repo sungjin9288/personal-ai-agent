@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T01:20:25.642Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T01:20:24.658Z
 - localDate: 2026-07-20
 - branch: codex/f2c8-post-acquisition-readiness
 - commit: 76760df172562d0c3409696697035f8eeb5c3839
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839](releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839](docs/releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839)
 - visualArtifactSetSha256: b09d4da6c58f30e5feb5d6e8be40e8c2ad29fdd935f2d88af56d36ab985f5441
 - commitPushStatus: not pushed, origin/codex/f2c8-post-acquisition-readiness not found
 

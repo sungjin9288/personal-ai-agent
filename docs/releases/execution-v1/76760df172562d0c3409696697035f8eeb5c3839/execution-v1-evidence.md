@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T01:20:25.642Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T01:20:17.996Z
 - branch: codex/f2c8-post-acquisition-readiness
 - commit: 76760df172562d0c3409696697035f8eeb5c3839
