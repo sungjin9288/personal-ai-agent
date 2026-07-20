@@ -84,6 +84,7 @@
 - `evidence/output-artifacts/local-training-acquisition-runtime-contract.json`
 - `evidence/output-artifacts/local-training-acquisition-artifact-verification.json`
 - `evidence/output-artifacts/local-training-post-acquisition-readiness.json`
+- `evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json`
 - `evidence/output-artifacts/local-answer-quality-baseline.json`
 - `evidence/output-artifacts/local-answer-composition-candidate.json`
 - `evidence/output-artifacts/local-answer-composition-robustness.json`
@@ -182,6 +183,7 @@
 - Local candidate evaluation pre-spawn workspace recovery: verified with `npm run smoke:local-candidate-evaluation-workspace-recovery`
 - Local candidate evaluation post-spawn process lifecycle: verified with `npm run smoke:local-candidate-evaluation-process-lifecycle`
 - Local candidate evaluation host boot identity recovery: verified with `npm run smoke:local-candidate-evaluation-host-boot-recovery`
+- Local candidate evaluation manual host restart rehearsal protocol: verified with `npm run smoke:local-candidate-evaluation-host-restart-rehearsal`
 - Local candidate evaluator provenance: verified with `npm run smoke:local-candidate-evaluator-provenance`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`
