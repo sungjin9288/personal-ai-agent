@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T05:59:18.961Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T05:59:08.057Z
 - branch: codex/f2c13-immutable-evaluation-inputs
 - commit: 87ef1970b00dc6a623ec5df3d15c22bb02a30993

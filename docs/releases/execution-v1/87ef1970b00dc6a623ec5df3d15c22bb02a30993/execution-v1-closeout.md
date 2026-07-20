@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-20T05:59:18.961Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-20T05:59:08.148Z
 - branch: codex/f2c13-immutable-evaluation-inputs
 - commit: 87ef1970b00dc6a623ec5df3d15c22bb02a30993
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/87ef1970b00dc6a623ec5df3d15c22bb02a30993/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

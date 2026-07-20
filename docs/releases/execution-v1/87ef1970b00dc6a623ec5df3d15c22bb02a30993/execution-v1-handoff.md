@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T05:59:18.961Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T05:59:17.951Z
 - localDate: 2026-07-20
 - branch: codex/f2c13-immutable-evaluation-inputs
 - commit: 87ef1970b00dc6a623ec5df3d15c22bb02a30993
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/87ef1970b00dc6a623ec5df3d15c22bb02a30993](releases/execution-v1/87ef1970b00dc6a623ec5df3d15c22bb02a30993)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/87ef1970b00dc6a623ec5df3d15c22bb02a30993/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/87ef1970b00dc6a623ec5df3d15c22bb02a30993/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/87ef1970b00dc6a623ec5df3d15c22bb02a30993](docs/releases/execution-v1/87ef1970b00dc6a623ec5df3d15c22bb02a30993)
 - visualArtifactSetSha256: 2eeb9d3743aac94e69130d83b5194b01510b2cc42c45289dc2013f9a4ece6b2e
 - commitPushStatus: not pushed, origin/codex/f2c13-immutable-evaluation-inputs not found
 
