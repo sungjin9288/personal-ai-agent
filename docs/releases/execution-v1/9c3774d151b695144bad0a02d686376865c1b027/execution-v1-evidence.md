@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T04:13:44.411Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T04:13:34.153Z
 - branch: codex/f2c11-candidate-evaluation-admission
 - commit: 9c3774d151b695144bad0a02d686376865c1b027

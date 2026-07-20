@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T04:13:44.411Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T04:13:43.361Z
 - localDate: 2026-07-20
 - branch: codex/f2c11-candidate-evaluation-admission
 - commit: 9c3774d151b695144bad0a02d686376865c1b027
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9c3774d151b695144bad0a02d686376865c1b027](releases/execution-v1/9c3774d151b695144bad0a02d686376865c1b027)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/9c3774d151b695144bad0a02d686376865c1b027/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/9c3774d151b695144bad0a02d686376865c1b027/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/9c3774d151b695144bad0a02d686376865c1b027](docs/releases/execution-v1/9c3774d151b695144bad0a02d686376865c1b027)
 - visualArtifactSetSha256: 9aad31f881ffd1167f698dcf093d35f1557a2443fba4577c568c8fb4ade2b693
 - commitPushStatus: not pushed, origin/codex/f2c11-candidate-evaluation-admission not found
 
