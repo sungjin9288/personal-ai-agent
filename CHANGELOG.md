@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a fixture-only post-acquisition readiness gate that binds artifact verification to owner-reviewed provenance, closed egress, an offline resource canary, and the existing product permission evidence without authorizing training.
+- Added fail-closed checks for evidence integrity, owner and timestamp binding, artifact bytes, approved runtime, permission ordering, and exact license, egress, and resource hashes. All actual acquisition, review, canary, permission, training, rollout, and production claims remain false in tracked evidence.
 - Added an independent local-training acquisition artifact verifier that rechecks the current approval, request, toolchain pins, exact plan, and F2c.6 run before reading bounded manifests and hashing regular files inside the approved repository root.
 - Added deterministic real-filesystem fixture evidence for path containment, symlink refusal, manifest pinning, file and adapter hash binding, and resource-envelope enforcement. The verifier does not treat observed files as acquisition provenance: no actual dependency installation, model download, training, external provider call, rollout, or production claim was performed.
 - Added a dependency-injected local-training acquisition runtime contract that revalidates the current approval, request, toolchain decision, and exact seven-step plan before delegating to an adapter.
@@ -93,8 +95,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,218,503 bytes`
-- SHA-256: `d9b25d1eb03b40742c5ff8c48636df63a268322936620565377d71212b6c91cb`
+- Size: `4,220,879 bytes`
+- SHA-256: `0dce4002b6f315231473e429cbb2b88a56137209a88f4d5450553f441e296113`
 
 Included public surfaces:
 

@@ -39,6 +39,12 @@ const VERIFICATION_MODES = new Set([
 ]);
 const MAX_MANIFEST_BYTES = 256 * 1024;
 const MAX_MANIFEST_FILES = 1_000;
+const REMAINING_GATES = Object.freeze([
+  'acquisition-provenance-reviewed',
+  'egress-closure-independently-reviewed',
+  'offline-resource-canary-passed',
+  'post-install-product-permission-approved',
+]);
 
 function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
@@ -468,12 +474,7 @@ function buildVerificationRecord({
     mode,
     observedAt,
     productionReadyClaim: false,
-    remainingGates: [
-      'acquisition-provenance-reviewed',
-      'egress-closure-independently-reviewed',
-      'offline-resource-canary-passed',
-      'post-install-product-permission-approved',
-    ],
+    remainingGates: [...REMAINING_GATES],
     request: {
       id: request.id,
       requestHash: request.requestHash,
@@ -497,6 +498,140 @@ function buildVerificationRecord({
     id: `local-training-acquisition-artifact-verification-${verificationHash}`,
     verificationHash,
   };
+}
+
+function assertArtifactSummary(summary) {
+  if (
+    !hasExactKeys(summary, [
+      'artifactSetSha256',
+      'fileCount',
+      'files',
+      'totalBytes',
+    ]) ||
+    !isSha256(summary.artifactSetSha256) ||
+    !Number.isSafeInteger(summary.fileCount) ||
+    summary.fileCount <= 0 ||
+    !Number.isSafeInteger(summary.totalBytes) ||
+    summary.totalBytes <= 0 ||
+    !Array.isArray(summary.files) ||
+    summary.files.length !== summary.fileCount
+  ) {
+    throw new Error(
+      'Local training artifact verification record failed: artifacts.',
+    );
+  }
+
+  let totalBytes = 0;
+  for (const file of summary.files) {
+    if (
+      !hasExactKeys(file, ['bytes', 'pathHash', 'sha256']) ||
+      !Number.isSafeInteger(file.bytes) ||
+      file.bytes <= 0 ||
+      !isSha256(file.pathHash) ||
+      !isSha256(file.sha256)
+    ) {
+      throw new Error(
+        'Local training artifact verification record failed: artifacts.',
+      );
+    }
+    totalBytes += file.bytes;
+  }
+  if (totalBytes !== summary.totalBytes) {
+    throw new Error(
+      'Local training artifact verification record failed: artifacts.',
+    );
+  }
+}
+
+export function assertLocalTrainingAcquisitionArtifactVerification(
+  verification,
+) {
+  const {
+    id,
+    verificationHash,
+    ...record
+  } = verification || {};
+  const expectedHash = hashRecord(record);
+  const mode = record.mode;
+  const isFixture = mode === 'fixture-simulated';
+  const expectedStatus = isFixture
+    ? 'fixture-artifacts-verified-no-acquisition'
+    : 'artifact-sets-observed-provenance-required';
+  const expectedExternalCalls = isFixture
+    ? 'none'
+    : 'not-observed-by-verifier';
+
+  if (
+    !hasExactKeys(record, [
+      'acquisitionProvenanceVerified',
+      'actualArtifactSetsObserved',
+      'actualDependencyInstallationPerformed',
+      'actualModelDownloadPerformed',
+      'actualModelTrainingExecuted',
+      'approval',
+      'artifacts',
+      'externalProviderCalls',
+      'externalSubmissionAuthorized',
+      'fileContentStored',
+      'independentArtifactVerificationPassed',
+      'mode',
+      'observedAt',
+      'productionReadyClaim',
+      'remainingGates',
+      'request',
+      'rolloutAuthorized',
+      'run',
+      'schemaVersion',
+      'status',
+      'trainingAuthorized',
+    ]) ||
+    !hasExactKeys(record.approval, ['approvalHash', 'id']) ||
+    !hasExactKeys(record.artifacts, [
+      'sourceModel',
+      'trainerPackage',
+    ]) ||
+    !hasExactKeys(record.request, ['id', 'requestHash']) ||
+    !hasExactKeys(record.run, ['id', 'runHash']) ||
+    !VERIFICATION_MODES.has(mode) ||
+    record.schemaVersion !==
+      LOCAL_TRAINING_ACQUISITION_ARTIFACT_VERIFICATION_SCHEMA_VERSION ||
+    record.status !== expectedStatus ||
+    record.acquisitionProvenanceVerified !== false ||
+    record.actualArtifactSetsObserved !== !isFixture ||
+    record.actualDependencyInstallationPerformed !== false ||
+    record.actualModelDownloadPerformed !== false ||
+    record.actualModelTrainingExecuted !== false ||
+    record.externalProviderCalls !== expectedExternalCalls ||
+    record.externalSubmissionAuthorized !== false ||
+    record.fileContentStored !== false ||
+    record.independentArtifactVerificationPassed !== true ||
+    record.productionReadyClaim !== false ||
+    record.rolloutAuthorized !== false ||
+    record.trainingAuthorized !== false ||
+    JSON.stringify(record.remainingGates) !==
+      JSON.stringify(REMAINING_GATES) ||
+    !isSha256(record.approval.approvalHash) ||
+    record.approval.id !==
+      `local-training-acquisition-approval-${record.approval.approvalHash}` ||
+    !isSha256(record.request.requestHash) ||
+    record.request.id !==
+      `local-training-acquisition-request-${record.request.requestHash}` ||
+    !isSha256(record.run.runHash) ||
+    record.run.id !==
+      `local-training-acquisition-run-${record.run.runHash}` ||
+    !Number.isFinite(Date.parse(record.observedAt)) ||
+    verificationHash !== expectedHash ||
+    id !==
+      `local-training-acquisition-artifact-verification-${expectedHash}`
+  ) {
+    throw new Error(
+      'Local training artifact verification record failed: integrity.',
+    );
+  }
+
+  assertArtifactSummary(record.artifacts.sourceModel);
+  assertArtifactSummary(record.artifacts.trainerPackage);
+  return verification;
 }
 
 export function createLocalTrainingAcquisitionArtifactVerifier({
@@ -653,7 +788,7 @@ export function createLocalTrainingAcquisitionArtifactVerifier({
           'Local training artifact verification failed: resource-envelope.',
         );
       }
-      return buildVerificationRecord({
+      const verification = buildVerificationRecord({
         approval,
         artifacts,
         mode: normalizedMode,
@@ -661,6 +796,9 @@ export function createLocalTrainingAcquisitionArtifactVerifier({
         request,
         run,
       });
+      return assertLocalTrainingAcquisitionArtifactVerification(
+        verification,
+      );
     },
   };
 }

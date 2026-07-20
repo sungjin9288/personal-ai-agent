@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a fixture-only post-acquisition readiness gate that binds artifact verification to owner-reviewed provenance, closed egress, an offline resource canary, and the existing product permission evidence without authorizing training.
+- Added fail-closed checks for evidence integrity, owner and timestamp binding, artifact bytes, approved runtime, permission ordering, and exact license, egress, and resource hashes. All actual acquisition, review, canary, permission, training, rollout, and production claims remain false in tracked evidence.
 - Added an independent local-training acquisition artifact verifier that rechecks the current approval, request, toolchain pins, exact plan, and F2c.6 run before reading bounded manifests and hashing regular files inside the approved repository root.
 - Added deterministic real-filesystem fixture evidence for path containment, symlink refusal, manifest pinning, file and adapter hash binding, and resource-envelope enforcement. The verifier does not treat observed files as acquisition provenance: no actual dependency installation, model download, training, external provider call, rollout, or production claim was performed.
 - Added a dependency-injected local-training acquisition runtime contract that revalidates the current approval, request, toolchain decision, and exact seven-step plan before delegating to an adapter.

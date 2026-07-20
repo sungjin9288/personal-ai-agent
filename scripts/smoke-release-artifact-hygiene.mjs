@@ -59,6 +59,7 @@ assert.equal(
 assert.equal(
   result.scannedFiles.includes(
     'evidence/output-artifacts/local-training-acquisition-artifact-verification.json',
+    'evidence/output-artifacts/local-training-post-acquisition-readiness.json',
   ),
   true,
 );

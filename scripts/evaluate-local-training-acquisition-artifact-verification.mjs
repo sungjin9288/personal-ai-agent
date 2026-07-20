@@ -252,6 +252,40 @@ function verificationInput(fixture, overrides = {}) {
   };
 }
 
+export async function createLocalTrainingAcquisitionArtifactVerificationFixture({
+  mode = 'fixture-simulated',
+  repoDir = process.cwd(),
+} = {}) {
+  const toolchainDecision = readJson(
+    repoDir,
+    'evidence/output-artifacts/local-training-toolchain-decision.json',
+  );
+  const fixture = await createFixture(toolchainDecision);
+  const verifier = createVerifier(fixture);
+  try {
+    const verification = await verifier.verify(
+      verificationInput(fixture, { mode }),
+    );
+    return {
+      ...fixture,
+      cleanup() {
+        fs.rmSync(fixture.fixtureRepoDir, {
+          force: true,
+          recursive: true,
+        });
+      },
+      verification,
+      verifier,
+    };
+  } catch (error) {
+    fs.rmSync(fixture.fixtureRepoDir, {
+      force: true,
+      recursive: true,
+    });
+    throw error;
+  }
+}
+
 async function rejectionMatches(operation, pattern) {
   try {
     await operation();
@@ -278,17 +312,14 @@ function rehashRun(run) {
 export async function evaluateLocalTrainingAcquisitionArtifactVerification({
   repoDir = process.cwd(),
 } = {}) {
-  const toolchainDecision = readJson(
-    repoDir,
-    'evidence/output-artifacts/local-training-toolchain-decision.json',
-  );
-  const fixture = await createFixture(toolchainDecision);
+  const fixture =
+    await createLocalTrainingAcquisitionArtifactVerificationFixture({
+      repoDir,
+    });
+  const toolchainDecision = fixture.toolchainDecision;
   const cleanupPaths = [fixture.fixtureRepoDir];
   try {
-    const verifier = createVerifier(fixture);
-    const verification = await verifier.verify(
-      verificationInput(fixture),
-    );
+    const { verification, verifier } = fixture;
 
     const changedPlan = structuredClone(fixture.plan);
     changedPlan.steps[0].status = 'completed';

@@ -1,0 +1,59 @@
+{
+  "claimBoundary": {
+    "actualAcquisitionProvenanceReviewed": false,
+    "actualArtifactSetsObserved": false,
+    "actualDependencyInstallationPerformed": false,
+    "actualEgressClosureReviewed": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "actualOfflineResourceCanaryExecuted": false,
+    "actualPostInstallProductPermissionApproved": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "postAcquisitionReadinessContractValidated": true,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "failureGuards": {
+    "artifactVerificationTamperingBlocked": true,
+    "automaticTrainingAuthorizationBlocked": true,
+    "contentBearingMetadataBlocked": true,
+    "permissionEvidenceMismatchBlocked": true,
+    "permissionOrderingBlocked": true,
+    "permissionResourceEnvelopeMismatchBlocked": true,
+    "permissionRevocationBlocked": true,
+    "provenanceOwnerMismatchBlocked": true,
+    "resourceEnvelopeDriftBlocked": true,
+    "unsupportedModeBlocked": true
+  },
+  "gates": {
+    "acquisitionProvenance": "fixture-contract-validated",
+    "egressClosure": "fixture-contract-validated",
+    "offlineResourceCanary": "fixture-contract-validated",
+    "productPermission": "fixture-contract-validated"
+  },
+  "mode": "local-training-post-acquisition-readiness",
+  "readiness": {
+    "readinessHash": "a9fd03a8f79c704e8668eb2f770576fc8b9c730a9ff9b7f1e2406064b671998e",
+    "readyForExplicitTrainingRequest": false,
+    "remainingGates": [
+      "acquisition-provenance-reviewed",
+      "egress-closure-independently-reviewed",
+      "offline-resource-canary-passed",
+      "post-install-product-permission-approved"
+    ],
+    "schemaVersion": "personal-ai-agent-local-training-post-acquisition-readiness/v1",
+    "status": "fixture-readiness-validated-no-acquisition"
+  },
+  "schemaVersion": "personal-ai-agent-local-training-post-acquisition-readiness-evidence/v1",
+  "security": {
+    "artifactVerificationRevalidated": true,
+    "contentFreeEvidenceOnly": true,
+    "evidenceHashesBoundToProductPermission": true,
+    "ownerBindingsRevalidated": true,
+    "permissionApprovedAfterGateReviews": true
+  },
+  "evidenceHash": "4d509a9c1b643abbefed3c2bb34fea3f77b997811c3e2d954f926f683a7eed51",
+  "id": "local-training-post-acquisition-readiness-evidence-4d509a9c1b643abbefed3c2bb34fea3f77b997811c3e2d954f926f683a7eed51"
+}
