@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-20T12:50:42.916Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-20T12:50:33.016Z
 - branch: codex/f2c16-evaluator-process-lifecycle
 - commit: e99df303064d4857122da27ffd2b2dfc8b05899b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e99df303064d4857122da27ffd2b2dfc8b05899b/execution-v1-evidence.md)
 
 ## Closeout Checklist
 

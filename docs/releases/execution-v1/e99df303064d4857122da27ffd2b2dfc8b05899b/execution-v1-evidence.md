@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-20T12:50:42.916Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-20T12:38:09.486Z
 - branch: codex/f2c16-evaluator-process-lifecycle
 - commit: e99df303064d4857122da27ffd2b2dfc8b05899b

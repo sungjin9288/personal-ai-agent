@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-20T12:50:42.916Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-20T12:50:41.915Z
 - localDate: 2026-07-20
 - branch: codex/f2c16-evaluator-process-lifecycle
 - commit: e99df303064d4857122da27ffd2b2dfc8b05899b
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/e99df303064d4857122da27ffd2b2dfc8b05899b](releases/execution-v1/e99df303064d4857122da27ffd2b2dfc8b05899b)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/e99df303064d4857122da27ffd2b2dfc8b05899b/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/e99df303064d4857122da27ffd2b2dfc8b05899b/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/e99df303064d4857122da27ffd2b2dfc8b05899b](docs/releases/execution-v1/e99df303064d4857122da27ffd2b2dfc8b05899b)
 - visualArtifactSetSha256: f1209f038fccdfc43835ff91af8ac96390f8cc8ff7cb2fea7fc8f39839558b7e
 - commitPushStatus: pushed to origin/codex/f2c16-evaluator-process-lifecycle
 
