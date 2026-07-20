@@ -20,6 +20,9 @@ import {
   createLocalCandidateEvaluationInputView,
 } from './local-candidate-evaluation-input-view.mjs';
 import {
+  assertLocalCandidateEvaluationWorkspaceRecovery,
+} from './local-candidate-evaluation-workspace-recovery.mjs';
+import {
   describeLocalCandidateEvaluator,
 } from './local-candidate-evaluator-provenance.mjs';
 import {
@@ -34,7 +37,7 @@ import {
 export const LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION =
   'personal-ai-agent-local-candidate-evaluation/v2';
 export const LOCAL_CANDIDATE_EVALUATION_RUN_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-run/v3';
+  'personal-ai-agent-local-candidate-evaluation-run/v4';
 
 const DEFAULT_MAX_INPUT_BYTES = 1024 * 1024;
 const DEFAULT_MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
@@ -868,6 +871,7 @@ function buildRunRecord({
   reverifiedCandidate,
   security,
   startedAt,
+  workspaceRecovery,
 }) {
   const actualModelEvaluated =
     executionKind === 'local-model-evaluation';
@@ -954,6 +958,10 @@ function buildRunRecord({
     startedAt,
     status: 'completed',
     trainingAuthorized: false,
+    workspaceRecovery: {
+      ...workspaceRecovery,
+      status: 'completed',
+    },
   };
   const runHash = hashRecord(record);
   return {
@@ -1005,6 +1013,7 @@ export function assertLocalCandidateEvaluationRun({
       'startedAt',
       'status',
       'trainingAuthorized',
+      'workspaceRecovery',
     ]) ||
     !hasExactKeys(record.admission, ['admissionHash', 'id']) ||
     !hasExactKeys(record.candidate, [
@@ -1070,6 +1079,16 @@ export function assertLocalCandidateEvaluationRun({
       'sourceWorkspaceAsCwd',
       'transport',
     ]) ||
+    !hasExactKeys(record.workspaceRecovery, [
+      'recoveredLeaseIds',
+      'recoveryHash',
+      'scannedAt',
+      'scannedWorkspaceCount',
+      'schemaVersion',
+      'skippedActiveWorkspaceCount',
+      'skippedUnsafeWorkspaceCount',
+      'status',
+    ]) ||
     runHash !== expectedHash ||
     id !== `local-candidate-evaluation-run-${expectedHash}`
   ) {
@@ -1116,6 +1135,13 @@ export function assertLocalCandidateEvaluationRun({
     record.inputSnapshot.candidatePostRunVerificationHash;
   const startedAtMs = Date.parse(record.startedAt);
   const completedAtMs = Date.parse(record.completedAt);
+  const {
+    status: workspaceRecoveryStatus,
+    ...workspaceRecovery
+  } = record.workspaceRecovery;
+  assertLocalCandidateEvaluationWorkspaceRecovery(
+    workspaceRecovery,
+  );
   if (
     record.schemaVersion !==
       LOCAL_CANDIDATE_EVALUATION_RUN_SCHEMA_VERSION ||
@@ -1190,6 +1216,9 @@ export function assertLocalCandidateEvaluationRun({
     record.rollback.owner !== admission?.rollback?.owner ||
     record.rolloutAuthorized !== false ||
     record.trainingAuthorized !== false ||
+    workspaceRecoveryStatus !== 'completed' ||
+    Date.parse(workspaceRecovery.scannedAt) >
+      startedAtMs ||
     record.security.candidateSnapshot !==
       'bounded-read-only-temporary-copy' ||
     !Array.isArray(record.security.environmentKeys) ||
@@ -1254,8 +1283,10 @@ export function createLocalCandidateEvaluationRuntime({
   evaluatorId,
   executionKind = 'fixture-simulated',
   fileSystem = fs,
+  isProcessAlive,
   maxInputBytes = DEFAULT_MAX_INPUT_BYTES,
   maxOutputBytes = DEFAULT_MAX_OUTPUT_BYTES,
+  processId = process.pid,
   repoDir,
   spawnProcess = nodeSpawn,
   temporaryDirectory = os.tmpdir(),
@@ -1404,29 +1435,67 @@ export function createLocalCandidateEvaluationRuntime({
         await candidateVerifier.verify(
           candidateVerificationInput,
         );
+      const candidateVerifiedAt = requireTimestamp(
+        clock(),
+        'candidateVerifiedAt',
+      );
+      if (
+        Date.parse(candidateVerifiedAt) <
+        Date.parse(preflightAt)
+      ) {
+        throw new Error(
+          'Local candidate evaluation runtime candidateVerifiedAt must not precede preflightAt.',
+        );
+      }
+      assertRuntimeAuthority({
+        admission,
+        candidateArtifactVerification,
+        currentPermission,
+        evaluationSuiteContent,
+        evaluatorId: normalizedEvaluatorId,
+        evaluatorProvenance,
+        now: candidateVerifiedAt,
+        permissionRevocation,
+        readinessPackage,
+        request,
+        timeoutMs: normalizedTimeoutMs,
+      });
+      assertCandidateReverification({
+        admittedVerification:
+          candidateArtifactVerification,
+        reverifiedCandidate,
+        request,
+        startedAt: candidateVerifiedAt,
+      });
       let inputView;
       let candidateSnapshotPreVerification;
       let candidateSnapshotPostVerification;
       let completedAt;
       let startedAt;
       let validated;
+      let workspaceRecovery;
       try {
         inputView =
           await createLocalCandidateEvaluationInputView({
             candidateArtifactVerification:
               reverifiedCandidate,
             candidateVerificationInput,
+            createdAt: candidateVerifiedAt,
             evaluationSuite: request.evaluationSuite,
             evaluatorDefinition,
             evaluatorProvenance,
             fileSystem,
+            isProcessAlive,
+            leaseExpiresAt: admission.expiresAt,
             maximumDiskBytes:
               request.resourceLimits.maxDiskBytes,
+            processId,
             repoDir: normalizedRepoDir,
             suiteContent: evaluationSuiteContent,
             temporaryDirectory,
             verifierFactory,
           });
+        workspaceRecovery = inputView.workspaceRecovery;
         startedAt = requireTimestamp(clock(), 'startedAt');
         assertRuntimeAuthority({
           admission,
@@ -1477,6 +1546,7 @@ export function createLocalCandidateEvaluationRuntime({
             `Local candidate evaluation runtime input exceeds ${normalizedMaxInputBytes} bytes.`,
           );
         }
+        inputView.markSpawning();
         const result = await runLocalCommand({
           args: [
             inputView.evaluatorEntryPath,
@@ -1580,6 +1650,7 @@ export function createLocalCandidateEvaluationRuntime({
         reverifiedCandidate,
         security,
         startedAt,
+        workspaceRecovery,
       });
       assertLocalCandidateEvaluationRun({
         admission,

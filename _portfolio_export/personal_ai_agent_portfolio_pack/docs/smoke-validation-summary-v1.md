@@ -84,6 +84,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Local candidate evaluation runtime | `npm run smoke:local-candidate-evaluation-runtime` | Verifies current authority revalidation, manifest-listed candidate snapshot, exact suite bytes, pre/post input hashes, cleanup-before-evidence, evaluator identity, allowlisted local stdio, bounded time and I/O, canonical content-free quality summary, O1a run lineage, fixture-only execution, caller-owned executable provenance and OS resource·network isolation, and blocked training, rollout, and production claims |
 | Local candidate evaluation input view | `npm run smoke:local-candidate-evaluation-input-view` | Verifies the F2c.13 exact-suite-byte binding, bounded read-only temporary candidate view, source-workspace exclusion, post-execution candidate and suite verification, content-free run record, cleanup completion, and false production claim |
 | F2c.14 Evaluator bundle provenance | `npm run smoke:local-candidate-evaluator-provenance` | Verifies request·admission-bound executable SHA-256 and static ESM module·resource inventory, snapshot entry execution, pre/post source and snapshot verification, content-free run hashes, and the caller-owned OS isolation boundary |
+| F2c.15 Pre-spawn workspace recovery | `npm run smoke:local-candidate-evaluation-workspace-recovery` | Verifies owner-only namespace and exact leases, current-authority-first ordering, `expired + dead PID + preparing` recovery, active·unknown·spawning·unsafe preservation, atomic claim resume, bounded deletion, and false post-spawn cleanup and production claims |
 | Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
 | Actual local answer-quality baseline | `npm run smoke:local-answer-quality-baseline` | Verifies actual installed qwen2.5:3b Q1 evidence integrity, content-free observations, required-term regression, keep-current decision, and no training or activation authority |
 | Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |
@@ -166,6 +167,7 @@ npm run smoke:local-training-candidate-artifact-verification
 npm run smoke:local-candidate-evaluation-admission
 npm run smoke:local-candidate-evaluation-runtime
 npm run smoke:local-candidate-evaluation-input-view
+npm run smoke:local-candidate-evaluation-workspace-recovery
 npm run smoke:local-candidate-evaluator-provenance
 npm run smoke:candidate-model-evaluation
 npm run smoke:local-answer-quality-baseline

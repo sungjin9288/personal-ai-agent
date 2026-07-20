@@ -16,6 +16,10 @@ import {
   LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION,
 } from '../src/core/local-candidate-evaluation-runtime.mjs';
 import {
+  createLocalCandidateEvaluationWorkspace,
+  LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE,
+} from '../src/core/local-candidate-evaluation-workspace-recovery.mjs';
+import {
   createLocalTrainingCandidateArtifactVerificationFixture,
 } from './evaluate-local-training-candidate-artifact-verification.mjs';
 import {
@@ -23,7 +27,7 @@ import {
 } from './local-candidate-evaluator-fixture.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_RUNTIME_EVIDENCE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v3';
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v4';
 
 const EVALUATOR_ID =
   'fixture-local-candidate-evaluator-v1';
@@ -35,6 +39,19 @@ function hashRecord(value) {
   return createHash('sha256')
     .update(JSON.stringify(value))
     .digest('hex');
+}
+
+function listManagedWorkspaces(temporaryDirectory) {
+  const namespacePath = path.join(
+    temporaryDirectory,
+    LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE,
+  );
+  if (!fs.existsSync(namespacePath)) {
+    return [];
+  }
+  return fs
+    .readdirSync(namespacePath)
+    .filter((name) => name.startsWith('workspace-'));
 }
 
 function createRuntime(
@@ -184,13 +201,70 @@ export async function evaluateLocalCandidateEvaluationRuntime({
       repoDir,
     });
   try {
-    const runtime = createRuntime(fixture, repoDir);
+    const staleWorkspace =
+      createLocalCandidateEvaluationWorkspace({
+        createdAt: '2026-07-17T08:00:00.000Z',
+        isProcessAlive: () => true,
+        leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+        processId: 41001,
+        temporaryDirectory: fixture.temporaryDirectory,
+      });
+    const runtime = createRuntime(
+      fixture,
+      repoDir,
+      'success',
+      {
+        isProcessAlive: (processId) =>
+          processId === 41001 ? false : true,
+        processId: 41002,
+      },
+    );
     const result = await runtime.run(runInput(fixture));
     const gate = evaluateCandidateModelGate({
       candidateEvaluation: result.candidateEvaluation,
       candidateEvidence: result.candidateEvidence,
       readinessPackage: fixture.readinessPackage,
     });
+    const authorityGuardWorkspace =
+      createLocalCandidateEvaluationWorkspace({
+        createdAt: '2026-07-17T08:00:00.000Z',
+        isProcessAlive: () => true,
+        leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+        processId: 41003,
+        temporaryDirectory: fixture.temporaryDirectory,
+      });
+    const currentPermission =
+      structuredClone(fixture.permission);
+    const authorityChangingVerifier = {
+      async verify(input) {
+        const verification =
+          await fixture.verifier.verify(input);
+        currentPermission.id =
+          'local-training-permission-stale';
+        return verification;
+      },
+    };
+    const authorityRequiredBeforeWorkspaceRecovery =
+      await rejectionMatches(
+        () =>
+          createRuntime(
+            fixture,
+            repoDir,
+            'success',
+            {
+              candidateVerifier:
+                authorityChangingVerifier,
+              isProcessAlive: () => false,
+              processId: 41004,
+            },
+          ).run(runInput(fixture, {
+            currentPermission,
+          })),
+        /permission failed: integrity|current-permission-binding/,
+      ) &&
+      fs.existsSync(authorityGuardWorkspace.rootDir);
+    authorityGuardWorkspace.cleanup();
+
     const failureGuards = {
       actualModelClaimRemainsFalse:
         result.run.actualModelEvaluated === false &&
@@ -209,6 +283,7 @@ export async function evaluateLocalCandidateEvaluationRuntime({
               '2026-07-17T08:45:00.000Z',
               '2026-07-17T08:46:00.000Z',
               '2026-07-17T08:47:00.000Z',
+              '2026-07-17T08:48:00.000Z',
               EXPIRES_AT,
             ];
             return createRuntime(
@@ -223,6 +298,7 @@ export async function evaluateLocalCandidateEvaluationRuntime({
           },
           /integrity-or-current-binding/,
         ),
+      authorityRequiredBeforeWorkspaceRecovery,
       evaluatorBindingRequired: await rejectionMatches(
         () =>
           createRuntime(fixture, repoDir, 'success', {
@@ -376,6 +452,15 @@ export async function evaluateLocalCandidateEvaluationRuntime({
             ).run(runInput(fixture)),
           /suite artifact failed: integrity-or-binding/,
         ),
+      stalePreparingWorkspaceRecovered:
+        result.run.workspaceRecovery
+          .scannedWorkspaceCount === 1 &&
+        result.run.workspaceRecovery
+          .recoveredLeaseIds.length === 1 &&
+        result.run.workspaceRecovery
+          .recoveredLeaseIds[0] ===
+          staleWorkspace.lease.leaseId &&
+        !fs.existsSync(staleWorkspace.rootDir),
       timeoutBounded: await rejectionMatches(
         () =>
           createRuntime(fixture, repoDir, 'hang', {
@@ -396,7 +481,13 @@ export async function evaluateLocalCandidateEvaluationRuntime({
           /contains unsupported fields/,
         ),
       temporaryInputViewCleaned:
-        fs.readdirSync(fixture.temporaryDirectory).length === 0,
+        listManagedWorkspaces(
+          fixture.temporaryDirectory,
+        ).length === 0,
+      workspaceRecoveryContentFree:
+        !JSON.stringify(
+          result.run.workspaceRecovery,
+        ).includes(fixture.temporaryDirectory),
     };
 
     const artifactFile = fs.readdirSync(
@@ -452,6 +543,9 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         suiteArtifactSha256:
           result.run.inputSnapshot.suiteSha256,
         status: result.run.status,
+        workspaceRecoveryCount:
+          result.run.workspaceRecovery
+            .recoveredLeaseIds.length,
       },
       failureGuards,
       mode: 'local-candidate-evaluation-runtime',
@@ -479,6 +573,8 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         shell: false,
         sourceWorkspaceAsCwd: false,
         temporaryInputViewCleanup: 'completed',
+        workspaceRecovery:
+          'expired-dead-preparing-only',
       },
       storeMutation: false,
     };

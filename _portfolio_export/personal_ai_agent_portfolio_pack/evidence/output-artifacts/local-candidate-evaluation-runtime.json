@@ -19,12 +19,14 @@
     "protocolVersion": "personal-ai-agent-local-candidate-evaluation/v2",
     "runHashBound": true,
     "suiteArtifactSha256": "bdcdeaa8e394e3eba04b6026e0d11674d6a64f625cb9cefa42823cc23eec1e09",
-    "status": "completed"
+    "status": "completed",
+    "workspaceRecoveryCount": 1
   },
   "failureGuards": {
     "actualModelClaimRemainsFalse": true,
     "admissionCurrentStateRequired": true,
     "authorityRequiredAfterInputVerification": true,
+    "authorityRequiredBeforeWorkspaceRecovery": true,
     "evaluatorBindingRequired": true,
     "executionKindBindingRequired": true,
     "evaluationSuiteBytesRequired": true,
@@ -42,14 +44,16 @@
     "thresholdBindingRequired": true,
     "candidateSnapshotPostVerificationRequired": true,
     "suiteSnapshotPostVerificationRequired": true,
+    "stalePreparingWorkspaceRecovered": true,
     "timeoutBounded": true,
     "trainingRemainsBlocked": true,
     "unsupportedResultFieldsRejected": true,
     "temporaryInputViewCleaned": true,
+    "workspaceRecoveryContentFree": true,
     "artifactReverificationRequired": true
   },
   "mode": "local-candidate-evaluation-runtime",
-  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v3",
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v4",
   "security": {
     "artifactReverifiedBeforeSpawn": true,
     "authorityRevalidatedAfterInputVerification": true,
@@ -67,9 +71,10 @@
     "resourceEnforcement": "runtime-timeout-io-and-input-view",
     "shell": false,
     "sourceWorkspaceAsCwd": false,
-    "temporaryInputViewCleanup": "completed"
+    "temporaryInputViewCleanup": "completed",
+    "workspaceRecovery": "expired-dead-preparing-only"
   },
   "storeMutation": false,
-  "evidenceHash": "033e0dc25a6a9a8b90c9b72dab20e5cf9f5c5d86f42bd74bb49a7403f555b940",
-  "id": "local-candidate-evaluation-runtime-evidence-033e0dc25a6a9a8b90c9b72dab20e5cf9f5c5d86f42bd74bb49a7403f555b940"
+  "evidenceHash": "111bb9cf44944460527dca8a08faf3fb4be6875e4debdce212fbbcc5342744d5",
+  "id": "local-candidate-evaluation-runtime-evidence-111bb9cf44944460527dca8a08faf3fb4be6875e4debdce212fbbcc5342744d5"
 }

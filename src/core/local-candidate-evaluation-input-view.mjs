@@ -9,6 +9,9 @@ import {
   copyLocalCandidateEvaluatorBundle,
 } from './local-candidate-evaluator-provenance.mjs';
 import {
+  createLocalCandidateEvaluationWorkspace,
+} from './local-candidate-evaluation-workspace-recovery.mjs';
+import {
   assertLocalTrainingCandidateArtifactVerification,
   buildLocalTrainingCandidateArtifactManifest,
   createLocalTrainingCandidateArtifactVerifier,
@@ -531,37 +534,18 @@ function lockTree(fileSystem, root) {
   }
 }
 
-function unlockTreeForRemoval(fileSystem, root) {
-  let stat;
-  try {
-    stat = fileSystem.lstatSync(root);
-  } catch {
-    return;
-  }
-  if (!stat.isDirectory() || stat.isSymbolicLink()) {
-    return;
-  }
-  fileSystem.chmodSync(root, 0o700);
-  for (const entry of fileSystem.readdirSync(root, {
-    withFileTypes: true,
-  })) {
-    if (entry.isDirectory() && !entry.isSymbolicLink()) {
-      unlockTreeForRemoval(
-        fileSystem,
-        path.join(root, entry.name),
-      );
-    }
-  }
-}
-
 export async function createLocalCandidateEvaluationInputView({
   candidateArtifactVerification,
   candidateVerificationInput,
+  createdAt,
   evaluationSuite,
   evaluatorDefinition,
   evaluatorProvenance,
   fileSystem,
+  isProcessAlive,
+  leaseExpiresAt,
   maximumDiskBytes,
+  processId,
   repoDir,
   suiteContent,
   temporaryDirectory,
@@ -598,11 +582,6 @@ export async function createLocalCandidateEvaluationInputView({
     repoDir,
     'repoDir',
   );
-  const temporaryRoot = requireDirectory(
-    fileSystem,
-    temporaryDirectory,
-    'temporaryDirectory',
-  );
   const sourceCandidateRoot = requireDirectory(
     fileSystem,
     path.join(
@@ -618,24 +597,16 @@ export async function createLocalCandidateEvaluationInputView({
     );
   }
 
-  const rootDir = fileSystem.mkdtempSync(
-    path.join(
-      temporaryRoot,
-      'personal-ai-agent-candidate-evaluation-',
-    ),
-  );
-  let cleaned = false;
-  const cleanup = () => {
-    if (cleaned) {
-      return;
-    }
-    unlockTreeForRemoval(fileSystem, rootDir);
-    fileSystem.rmSync(rootDir, {
-      force: true,
-      recursive: true,
+  const workspace =
+    createLocalCandidateEvaluationWorkspace({
+      createdAt,
+      fileSystem,
+      isProcessAlive,
+      leaseExpiresAt,
+      processId,
+      temporaryDirectory,
     });
-    cleaned = true;
-  };
+  const { cleanup, rootDir } = workspace;
 
   try {
     const candidateRoot = path.join(
@@ -702,8 +673,10 @@ export async function createLocalCandidateEvaluationInputView({
       cleanup,
       evaluatorEntryPath: evaluatorSnapshot.entryPath,
       evaluatorProvenance,
+      markSpawning: workspace.markSpawning,
       rootDir,
       suiteArtifact,
+      workspaceRecovery: workspace.recovery,
       async verifyInputs(observedAt) {
         const currentSuiteContent = fileSystem.readFileSync(
           suitePath,

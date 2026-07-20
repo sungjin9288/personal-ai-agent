@@ -179,6 +179,7 @@
 - Local candidate evaluation admission: verified with `npm run smoke:local-candidate-evaluation-admission`
 - Local candidate evaluation runtime: verified with `npm run smoke:local-candidate-evaluation-runtime`
 - Local candidate evaluation input view: verified with `npm run smoke:local-candidate-evaluation-input-view`
+- Local candidate evaluation pre-spawn workspace recovery: verified with `npm run smoke:local-candidate-evaluation-workspace-recovery`
 - Local candidate evaluator provenance: verified with `npm run smoke:local-candidate-evaluator-provenance`
 - Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
 - Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`

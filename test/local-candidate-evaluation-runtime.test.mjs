@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn as nodeSpawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -18,6 +19,10 @@ import {
   LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION,
   LOCAL_CANDIDATE_EVALUATION_RUN_SCHEMA_VERSION,
 } from '../src/core/local-candidate-evaluation-runtime.mjs';
+import {
+  createLocalCandidateEvaluationWorkspace,
+  LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE,
+} from '../src/core/local-candidate-evaluation-workspace-recovery.mjs';
 import {
   createLocalTrainingCandidateArtifactVerificationFixture,
 } from '../scripts/evaluate-local-training-candidate-artifact-verification.mjs';
@@ -94,6 +99,19 @@ function createTemporaryDirectory(t) {
   return temporaryDirectory;
 }
 
+function listManagedWorkspaces(temporaryDirectory) {
+  const namespacePath = path.join(
+    temporaryDirectory,
+    LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE,
+  );
+  if (!fs.existsSync(namespacePath)) {
+    return [];
+  }
+  return fs
+    .readdirSync(namespacePath)
+    .filter((name) => name.startsWith('workspace-'));
+}
+
 function createRuntime(
   fixture,
   mode = 'success',
@@ -141,6 +159,22 @@ function runInput(fixture, overrides = {}) {
   };
 }
 
+function rehashRun(run) {
+  const {
+    id: _id,
+    runHash: _runHash,
+    ...record
+  } = run;
+  const runHash = createHash('sha256')
+    .update(JSON.stringify(record))
+    .digest('hex');
+  return {
+    ...record,
+    id: `local-candidate-evaluation-run-${runHash}`,
+    runHash,
+  };
+}
+
 test('bounded runtime revalidates the candidate and produces an O1a-ready fixture result', async (t) => {
   const fixture = await buildFixture();
   t.after(fixture.cleanup);
@@ -182,7 +216,7 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
   assert.notEqual(spawnedEntryPath, commandPath);
   assert.match(
     spawnedEntryPath,
-    /personal-ai-agent-candidate-evaluation-[^/]+\/evaluator\/fixtures\/local-candidate-evaluation-command\.mjs$/u,
+    /personal-ai-agent-candidate-evaluation-v1\/workspace-[^/]+\/evaluator\/fixtures\/local-candidate-evaluation-command\.mjs$/u,
   );
   assert.deepEqual(runtime.security.environmentKeys.sort(), [
     'HOME',
@@ -227,7 +261,167 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
     ),
     false,
   );
-  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+  assert.deepEqual(
+    listManagedWorkspaces(temporaryDirectory),
+    [],
+  );
+});
+
+test('runtime recovers an expired dead preparing workspace after authority revalidation', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+  const staleWorkspace =
+    createLocalCandidateEvaluationWorkspace({
+      createdAt: '2026-07-17T08:00:00.000Z',
+      isProcessAlive: () => true,
+      leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+      processId: 41001,
+      temporaryDirectory,
+    });
+
+  const result = await createRuntime(fixture, 'success', {
+    isProcessAlive: (processId) =>
+      processId === 41001 ? false : true,
+    processId: 41002,
+    temporaryDirectory,
+  }).run(runInput(fixture));
+
+  assert.deepEqual(
+    result.run.workspaceRecovery.recoveredLeaseIds,
+    [staleWorkspace.lease.leaseId],
+  );
+  assert.equal(
+    result.run.workspaceRecovery.scannedWorkspaceCount,
+    1,
+  );
+  assert.equal(
+    result.run.workspaceRecovery.status,
+    'completed',
+  );
+  assert.equal(
+    fs.existsSync(staleWorkspace.rootDir),
+    false,
+  );
+  assert.deepEqual(
+    listManagedWorkspaces(temporaryDirectory),
+    [],
+  );
+});
+
+test('runtime leaves stale workspaces untouched when current authority fails', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
+  const staleWorkspace =
+    createLocalCandidateEvaluationWorkspace({
+      createdAt: '2026-07-17T08:00:00.000Z',
+      isProcessAlive: () => true,
+      leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+      processId: 41001,
+      temporaryDirectory,
+    });
+
+  await assert.rejects(
+    createRuntime(fixture, 'success', {
+      isProcessAlive: () => false,
+      processId: 41002,
+      temporaryDirectory,
+    }).run(runInput(fixture, {
+      currentPermission: {
+        ...fixture.permission,
+        id: 'local-training-permission-stale',
+      },
+    })),
+    /permission failed: integrity|current-permission-binding/,
+  );
+
+  assert.equal(fs.existsSync(staleWorkspace.rootDir), true);
+});
+
+test('runtime rechecks authority and candidate binding before workspace recovery', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+
+  const authorityTemporaryDirectory =
+    createTemporaryDirectory(t);
+  const authorityWorkspace =
+    createLocalCandidateEvaluationWorkspace({
+      createdAt: '2026-07-17T08:00:00.000Z',
+      isProcessAlive: () => true,
+      leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+      processId: 41001,
+      temporaryDirectory:
+        authorityTemporaryDirectory,
+    });
+  const currentPermission =
+    structuredClone(fixture.permission);
+  const authorityChangingVerifier = {
+    async verify(input) {
+      const verification =
+        await fixture.verifier.verify(input);
+      currentPermission.id =
+        'local-training-permission-stale';
+      return verification;
+    },
+  };
+
+  await assert.rejects(
+    createRuntime(fixture, 'success', {
+      candidateVerifier: authorityChangingVerifier,
+      isProcessAlive: () => false,
+      processId: 41002,
+      temporaryDirectory:
+        authorityTemporaryDirectory,
+    }).run(runInput(fixture, {
+      currentPermission,
+    })),
+    /permission failed: integrity|current-permission-binding/,
+  );
+  assert.equal(
+    fs.existsSync(authorityWorkspace.rootDir),
+    true,
+  );
+
+  const candidateTemporaryDirectory =
+    createTemporaryDirectory(t);
+  const candidateWorkspace =
+    createLocalCandidateEvaluationWorkspace({
+      createdAt: '2026-07-17T08:00:00.000Z',
+      isProcessAlive: () => true,
+      leaseExpiresAt: '2026-07-17T08:30:00.000Z',
+      processId: 41003,
+      temporaryDirectory:
+        candidateTemporaryDirectory,
+    });
+  const candidateChangingVerifier = {
+    async verify(input) {
+      const verification =
+        await fixture.verifier.verify(input);
+      return {
+        ...verification,
+        candidate: {
+          ...verification.candidate,
+          modelId: 'unbound-candidate',
+        },
+      };
+    },
+  };
+
+  await assert.rejects(
+    createRuntime(fixture, 'success', {
+      candidateVerifier: candidateChangingVerifier,
+      isProcessAlive: () => false,
+      processId: 41004,
+      temporaryDirectory:
+        candidateTemporaryDirectory,
+    }).run(runInput(fixture)),
+    /verification record failed: integrity/,
+  );
+  assert.equal(
+    fs.existsSync(candidateWorkspace.rootDir),
+    true,
+  );
 });
 
 test('runtime stops stale authority and evaluator drift before spawn', async (t) => {
@@ -328,7 +522,10 @@ test('runtime binds exact suite bytes before creating the execution view', async
     /integrity-or-current-binding/,
   );
   assert.equal(spawnCount, 0);
-  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+  assert.deepEqual(
+    listManagedWorkspaces(temporaryDirectory),
+    [],
+  );
 });
 
 test('runtime rechecks authority after post-run input verification', async (t) => {
@@ -339,6 +536,7 @@ test('runtime rechecks authority after post-run input verification', async (t) =
     '2026-07-17T08:45:00.000Z',
     '2026-07-17T08:46:00.000Z',
     '2026-07-17T08:47:00.000Z',
+    '2026-07-17T08:48:00.000Z',
     EXPIRES_AT,
   ];
 
@@ -349,7 +547,10 @@ test('runtime rechecks authority after post-run input verification', async (t) =
     }).run(runInput(fixture)),
     /integrity-or-current-binding/,
   );
-  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+  assert.deepEqual(
+    listManagedWorkspaces(temporaryDirectory),
+    [],
+  );
 });
 
 test('runtime executes the snapshot even when the source changes after preparation', async (t) => {
@@ -374,7 +575,10 @@ test('runtime executes the snapshot even when the source changes after preparati
 
   assert.equal(sourceChanged, true);
   assert.equal(result.run.status, 'completed');
-  assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+  assert.deepEqual(
+    listManagedWorkspaces(temporaryDirectory),
+    [],
+  );
 });
 
 test('runtime rejects candidate, suite, and evaluator mutation inside the execution view', async (t) => {
@@ -402,7 +606,10 @@ test('runtime rejects candidate, suite, and evaluator mutation inside the execut
       }).run(runInput(fixture)),
       pattern,
     );
-    assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
+    assert.deepEqual(
+      listManagedWorkspaces(temporaryDirectory),
+      [],
+    );
   }
 });
 
@@ -516,5 +723,24 @@ test('recorded local evaluation marks model evidence without authorizing rollout
         },
       }),
     /run failed: integrity/,
+  );
+  assert.throws(
+    () =>
+      assertLocalCandidateEvaluationRun({
+        admission: fixture.admission,
+        candidateArtifactVerification:
+          fixture.candidateArtifactVerification,
+        candidateEvaluation: result.candidateEvaluation,
+        currentPermission: fixture.permission,
+        request: fixture.request,
+        run: rehashRun({
+          ...result.run,
+          workspaceRecovery: {
+            ...result.run.workspaceRecovery,
+            skippedActiveWorkspaceCount: 1,
+          },
+        }),
+      }),
+    /workspace recovery failed: integrity/,
   );
 });

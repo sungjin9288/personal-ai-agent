@@ -8,10 +8,26 @@ import {
   describeLocalCandidateEvaluationSuite,
 } from '../src/core/local-candidate-evaluation-input-view.mjs';
 import {
+  LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE,
+} from '../src/core/local-candidate-evaluation-workspace-recovery.mjs';
+import {
   createLocalCandidateEvaluationRuntimeFixture,
 } from '../scripts/evaluate-local-candidate-evaluation-runtime.mjs';
 
 const OBSERVED_AT = '2026-07-17T08:45:00.000Z';
+
+function listManagedWorkspaces(temporaryDirectory) {
+  const namespacePath = path.join(
+    temporaryDirectory,
+    LOCAL_CANDIDATE_EVALUATION_WORKSPACE_NAMESPACE,
+  );
+  if (!fs.existsSync(namespacePath)) {
+    return [];
+  }
+  return fs
+    .readdirSync(namespacePath)
+    .filter((name) => name.startsWith('workspace-'));
+}
 
 test('evaluation suite descriptor binds the exact admitted bytes', async (t) => {
   const fixture =
@@ -47,11 +63,13 @@ test('input view copies only admitted files, verifies them, and cleans up', asyn
       candidateArtifactVerification:
         fixture.candidateArtifactVerification,
       candidateVerificationInput: fixture.input,
+      createdAt: OBSERVED_AT,
       evaluationSuite: fixture.request.evaluationSuite,
       evaluatorDefinition: fixture.evaluator.definition,
       evaluatorProvenance:
         fixture.request.evaluatorProvenance,
       fileSystem: fs,
+      leaseExpiresAt: fixture.admission.expiresAt,
       maximumDiskBytes:
         fixture.request.resourceLimits.maxDiskBytes,
       repoDir: fixture.candidateRepoRoot,
@@ -79,7 +97,7 @@ test('input view copies only admitted files, verifies them, and cleans up', asyn
   view.cleanup();
   view.cleanup();
   assert.deepEqual(
-    fs.readdirSync(fixture.temporaryDirectory),
+    listManagedWorkspaces(fixture.temporaryDirectory),
     [],
   );
 });
@@ -94,11 +112,13 @@ test('input view includes suite and evaluator bytes in the admitted disk envelop
       candidateArtifactVerification:
         fixture.candidateArtifactVerification,
       candidateVerificationInput: fixture.input,
+      createdAt: OBSERVED_AT,
       evaluationSuite: fixture.request.evaluationSuite,
       evaluatorDefinition: fixture.evaluator.definition,
       evaluatorProvenance:
         fixture.request.evaluatorProvenance,
       fileSystem: fs,
+      leaseExpiresAt: fixture.admission.expiresAt,
       maximumDiskBytes:
         fixture.candidateArtifactVerification.observedDiskBytes,
       repoDir: fixture.candidateRepoRoot,
@@ -108,7 +128,7 @@ test('input view includes suite and evaluator bytes in the admitted disk envelop
     /resource-envelope/,
   );
   assert.deepEqual(
-    fs.readdirSync(fixture.temporaryDirectory),
+    listManagedWorkspaces(fixture.temporaryDirectory),
     [],
   );
 });

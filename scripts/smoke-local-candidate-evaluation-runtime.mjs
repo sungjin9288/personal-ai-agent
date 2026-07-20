@@ -87,6 +87,22 @@ assert.equal(
   stored.security.temporaryInputViewCleanup,
   'completed',
 );
+assert.equal(
+  stored.security.workspaceRecovery,
+  'expired-dead-preparing-only',
+);
+assert.equal(
+  stored.failureGuards.stalePreparingWorkspaceRecovered,
+  true,
+);
+assert.equal(
+  stored.failureGuards.workspaceRecoveryContentFree,
+  true,
+);
+assert.equal(
+  stored.execution.workspaceRecoveryCount,
+  1,
+);
 assert.equal(stored.claimBoundary.actualModelEvaluated, false);
 assert.equal(
   stored.claimBoundary.externalProviderCalls,
