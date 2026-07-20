@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-20T01:20:24.658Z
+- generatedAt: 2026-07-20T02:16:25.794Z
 - localDate: 2026-07-20
-- branch: codex/f2c8-post-acquisition-readiness
-- commit: 76760df172562d0c3409696697035f8eeb5c3839
+- branch: codex/f2c9-training-admission
+- commit: 90bae574f97dacd8f0577450264ae45d16d1dbaa
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839](releases/execution-v1/76760df172562d0c3409696697035f8eeb5c3839)
-- visualArtifactSetSha256: b09d4da6c58f30e5feb5d6e8be40e8c2ad29fdd935f2d88af56d36ab985f5441
-- commitPushStatus: not pushed, origin/codex/f2c8-post-acquisition-readiness not found
+- immutableSnapshot: [releases/execution-v1/90bae574f97dacd8f0577450264ae45d16d1dbaa](releases/execution-v1/90bae574f97dacd8f0577450264ae45d16d1dbaa)
+- visualArtifactSetSha256: 424396af2cebee85a2d55e75499cb4a5155cb9f786cb2ab4a48c136330e0c459
+- commitPushStatus: not pushed, origin/codex/f2c9-training-admission not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=48.6s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=49.2s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: b09d4da6c58f30e5feb5d6e8be40e8c2ad29fdd935f2d88af56d36ab985f5441
+- visual artifact set: 424396af2cebee85a2d55e75499cb4a5155cb9f786cb2ab4a48c136330e0c459
 
 ## Live Provider Handoff
 

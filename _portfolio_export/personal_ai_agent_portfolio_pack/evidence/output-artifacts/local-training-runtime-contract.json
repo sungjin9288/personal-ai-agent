@@ -1,8 +1,8 @@
 {
   "approval": {
-    "approvalHash": "92a9e73ca3d00d0c4d688684872c589ae67f629ef63b563060c2ea7f12493fd9",
+    "approvalHash": "22aeb5f020642fc5f7f66e38a00186b3e6850cf02deab98b7e458856a5262ac6",
     "expiresAt": "2026-07-17T02:00:00.000Z",
-    "id": "local-training-approval-92a9e73ca3d00d0c4d688684872c589ae67f629ef63b563060c2ea7f12493fd9",
+    "id": "local-training-approval-22aeb5f020642fc5f7f66e38a00186b3e6850cf02deab98b7e458856a5262ac6",
     "localExecutionAuthorized": true,
     "rollbackOwner": "local-operator"
   },
@@ -11,24 +11,25 @@
     "externalProviderCalls": "none",
     "externalSubmissionAuthorized": false,
     "localTrainingRuntimeContractValidated": true,
+    "postAcquisitionAdmissionContractValidated": true,
     "productionReadyClaim": false,
     "rolloutAuthorized": false
   },
   "dataset": {
-    "datasetHash": "4c18e06f4d79ce7559b573cab91531c1e78379d5b545be0e16b6662b184de7bb",
-    "readinessHash": "de4a5bbfa228c6359541df10c7b76e96a32e2858277e1013118688d59834427b",
+    "datasetHash": "df17fbec40b9d35734436acba1b25d81baeef3502455a35e28ede83c65a8b351",
+    "readinessHash": "beb7c6c5efc5690d5f8d9438b245b6dc805e47959154e42f61595907f2d84510",
     "trainLineCount": 3,
-    "trainSha256": "d6dc71fdd1ca6a3640dd81c7e0e7d9ae9ed64f81d9cf4ed2a785b660660f8462",
+    "trainSha256": "299b55338aec519a0c303522f8c9dcfb3c9e96413217bec21c8a6aab8783400c",
     "validationLineCount": 1,
-    "validationSha256": "38d2318204189376b67b4929cc9c982d758708fcd07d67bbab509ab61edabab7"
+    "validationSha256": "0bc58b215ddc4095c8e499542a4cea54eba873e0a983efb3f7b6ec4f561b864b"
   },
   "execution": {
     "actualModelTrainingExecuted": false,
     "candidateArtifactFormat": "fixture-candidate-metadata/v1",
-    "candidateArtifactSha256": "69fcd36479943d8ab9bfa9ce9f9ada831cc0f04aa57fc08b8b22210db18a5ec0",
+    "candidateArtifactSha256": "b3bfa05d4816282a45b7cda98d0f975bf42820e3585ea7c8089ca918ace51e68",
     "candidateModelId": "fixture-local-candidate-v1",
     "protocolVersion": "personal-ai-agent-local-training/v1",
-    "runHash": "77d31ed395e02e4e3ed15dc855af5f1731bb853b3151752c9b1a728a02df8c0c",
+    "runHash": "97b6006a99702fcde9a05a7e405bbbe0912844106dc5ba9eb8caf64a5e6f4636",
     "status": "completed",
     "trainerReportedActualModelTrainingExecuted": false,
     "trainerId": "fixture-local-trainer-v1"
@@ -36,6 +37,9 @@
   "failureGuards": {
     "expiredApprovalBlocked": true,
     "trainerReportMismatchBlocked": true,
+    "postAcquisitionAdmissionRequired": true,
+    "permissionRevocationBlocked": true,
+    "staleCurrentPermissionBlocked": true,
     "inputLimitBlocked": true,
     "mismatchedResultBlocked": true,
     "outputLimitBlocked": true,
@@ -56,9 +60,11 @@
     "environmentPolicy": "allowlist",
     "networkIsolation": "caller-owned",
     "shell": false,
-    "transport": "local-process-stdio"
+    "transport": "local-process-stdio",
+    "currentPermissionState": "revalidated-before-spawn",
+    "postAcquisitionAdmission": "required-before-spawn"
   },
   "storeMutation": false,
-  "evidenceHash": "73e76903a0cd9c253dffeef3007dd3d2cb42f7f20db1290d146741de7b668109",
-  "id": "local-training-runtime-evidence-73e76903a0cd9c253dffeef3007dd3d2cb42f7f20db1290d146741de7b668109"
+  "evidenceHash": "40778e306f2ac7f2b58f47ba240265001548bb9f4b573b8e7f987c93f12b3333",
+  "id": "local-training-runtime-evidence-40778e306f2ac7f2b58f47ba240265001548bb9f4b573b8e7f987c93f12b3333"
 }

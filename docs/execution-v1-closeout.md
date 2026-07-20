@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-20T01:20:18.047Z
-- branch: codex/f2c8-post-acquisition-readiness
-- commit: 76760df172562d0c3409696697035f8eeb5c3839
+- generatedAt: 2026-07-20T02:16:18.529Z
+- branch: codex/f2c9-training-admission
+- commit: 90bae574f97dacd8f0577450264ae45d16d1dbaa
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist
