@@ -117,6 +117,16 @@ function hasOnlyKeys(value, allowedKeys) {
   );
 }
 
+function hasExactKeys(value, expectedKeys) {
+  return Boolean(
+    value &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    Object.keys(value).length === expectedKeys.length &&
+    Object.keys(value).every((key) => expectedKeys.includes(key))
+  );
+}
+
 function assertExecutionKind(value) {
   const normalized = normalizeText(value);
   if (!EXECUTION_KINDS.has(normalized)) {
@@ -191,7 +201,7 @@ export function buildLocalTrainingExecutionApproval({
   };
 }
 
-function assertLocalTrainingExecutionApproval({
+export function assertLocalTrainingExecutionApproval({
   approval,
   currentPermission,
   now,
@@ -524,6 +534,137 @@ function buildRunRecord({
     id: `local-training-run-${runHash}`,
     runHash,
   };
+}
+
+export function assertLocalTrainingRun({
+  approval,
+  currentPermission,
+  postAcquisitionReadiness,
+  readinessPackage,
+  run,
+} = {}) {
+  assertFineTuningReadinessPackage(readinessPackage);
+  const { id, runHash, ...record } = run || {};
+  const expectedHash = hashRecord(record);
+  const isLocalModelTraining = approval?.executionKind === 'local-model-training';
+  const expectedKeys = [
+    'actualModelTrainingExecuted',
+    ...(isLocalModelTraining ? ['admission'] : []),
+    'approval',
+    'candidate',
+    'completedAt',
+    'dataset',
+    'execution',
+    'externalProviderCalls',
+    'externalSubmissionAuthorized',
+    'localExecutionAuthorized',
+    'productionReadyClaim',
+    'rollback',
+    'rolloutAuthorized',
+    'schemaVersion',
+    'security',
+    'startedAt',
+    'status',
+    'trainerReportedActualModelTrainingExecuted',
+  ];
+  const startedAtMs = Date.parse(normalizeText(record.startedAt));
+  const completedAtMs = Date.parse(normalizeText(record.completedAt));
+  const approvedAtMs = Date.parse(normalizeText(approval?.approvedAt));
+  let candidateMetadataIsValid = true;
+  try {
+    requireMetadataText(record.candidate?.artifactFormat, 'candidate artifactFormat');
+    requireMetadataText(record.candidate?.modelId, 'candidate modelId');
+  } catch {
+    candidateMetadataIsValid = false;
+  }
+
+  const integrityPassed = (
+    hasExactKeys(record, expectedKeys) &&
+    hasExactKeys(record.approval, ['approvalHash', 'id']) &&
+    hasExactKeys(record.candidate, ['artifactFormat', 'artifactSha256', 'modelId']) &&
+    hasExactKeys(record.dataset, ['datasetHash', 'exportDigests', 'readinessHash']) &&
+    hasExactKeys(record.dataset?.exportDigests, ['train', 'validation']) &&
+    hasExactKeys(record.execution, ['kind', 'protocolVersion', 'trainerId']) &&
+    hasExactKeys(record.rollback, ['activationAuthorized', 'baseline', 'owner']) &&
+    hasExactKeys(record.security, [
+      'environmentKeys',
+      'environmentPolicy',
+      'networkIsolation',
+      'shell',
+      'transport',
+    ]) &&
+    runHash === expectedHash &&
+    id === `local-training-run-${expectedHash}`
+  );
+  const executionPassed = (
+    record.schemaVersion === LOCAL_TRAINING_RUN_SCHEMA_VERSION &&
+    record.status === 'completed' &&
+    record.approval?.id === approval?.id &&
+    record.approval?.approvalHash === approval?.approvalHash &&
+    record.dataset?.datasetHash === readinessPackage.dataset.datasetHash &&
+    record.dataset?.readinessHash === readinessPackage.readinessHash &&
+    record.dataset?.exportDigests?.train === readinessPackage.exportDigests.train &&
+    record.dataset?.exportDigests?.validation === readinessPackage.exportDigests.validation &&
+    record.execution?.kind === approval?.executionKind &&
+    record.execution?.protocolVersion === LOCAL_TRAINING_PROTOCOL_VERSION &&
+    record.execution?.trainerId === approval?.trainerId &&
+    candidateMetadataIsValid &&
+    isSha256(record.candidate?.artifactSha256) &&
+    Number.isFinite(startedAtMs) &&
+    Number.isFinite(completedAtMs) &&
+    Number.isFinite(approvedAtMs) &&
+    startedAtMs >= approvedAtMs &&
+    completedAtMs >= startedAtMs
+  );
+  const securityPassed = (
+    Array.isArray(record.security?.environmentKeys) &&
+    JSON.stringify(record.security.environmentKeys) ===
+      JSON.stringify([...new Set(record.security.environmentKeys)].sort()) &&
+    record.security.environmentKeys.every((key) => SAFE_ENV_KEYS.includes(key)) &&
+    record.security.environmentPolicy === 'allowlist' &&
+    record.security.networkIsolation === 'caller-owned' &&
+    record.security.shell === false &&
+    record.security.transport === 'local-process-stdio'
+  );
+  const authorityPassed = (
+    record.actualModelTrainingExecuted === false &&
+    record.externalSubmissionAuthorized === false &&
+    record.localExecutionAuthorized === true &&
+    record.productionReadyClaim === false &&
+    record.rollback?.activationAuthorized === false &&
+    record.rollback?.baseline === 'current-provider-model-prompt-and-rag-path' &&
+    record.rollback?.owner === approval?.rollbackOwner &&
+    record.rolloutAuthorized === false
+  );
+  const localAdmissionPassed = isLocalModelTraining
+    ? (
+        hasExactKeys(record.admission, ['postAcquisitionReadiness', 'productPermission']) &&
+        hasExactKeys(record.admission?.postAcquisitionReadiness, ['id', 'readinessHash']) &&
+        hasExactKeys(record.admission?.productPermission, ['id', 'permissionHash']) &&
+        record.admission.postAcquisitionReadiness.id === postAcquisitionReadiness?.id &&
+        record.admission.postAcquisitionReadiness.readinessHash ===
+          postAcquisitionReadiness?.readinessHash &&
+        record.admission.productPermission.id === currentPermission?.id &&
+        record.admission.productPermission.permissionHash === currentPermission?.permissionHash &&
+        record.externalProviderCalls === 'not-observed-by-runtime' &&
+        record.trainerReportedActualModelTrainingExecuted === true
+      )
+    : (
+        record.admission === undefined &&
+        record.externalProviderCalls === 'none' &&
+        record.trainerReportedActualModelTrainingExecuted === false
+      );
+
+  if (
+    !integrityPassed ||
+    !executionPassed ||
+    !securityPassed ||
+    !authorityPassed ||
+    !localAdmissionPassed
+  ) {
+    throw new Error('Local training run failed: integrity-or-binding.');
+  }
+  return run;
 }
 
 export function createLocalTrainingRuntime({

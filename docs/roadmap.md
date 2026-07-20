@@ -146,6 +146,7 @@
 - 완료: deterministic content·lineage·near-response deduplication, mission-scope train·validation split, leakage 검사와 content-free dataset manifest
 - 완료: provider-neutral train·validation JSONL, Q1 answer-quality baseline, content-free evaluation manifest와 reviewer-pending fine-tuning readiness packet
 - 완료: exact F1 dataset hash와 별도 local approval을 묶고 current permission·post-acquisition admission을 spawn 전에 재검증하며 shell·secret environment를 차단하는 bounded local training runtime contract
+- 완료: fixed repo-local candidate root의 complete inventory와 actual file hash를 admitted training run·current disk envelope에 묶는 local training candidate artifact verification
 - 완료: license·OS egress·resource evidence hash와 owner를 기존 approval inbox·RBAC·tenant·audit에 묶은 local training product permission surface, CLI·HTTP·Chromium 승인·철회 replay
 - 완료: same-suite fixture candidate의 품질·증적·권한 비교, regression keep-baseline과 rollout-blocked rollback gate
 - 승인 작업: 실제 base model license owner review, OS-level egress isolation, resource limit과 rollback owner 승인을 확보하고 현재 permission을 실행 직전에 다시 확인한 뒤 actual local model training 검토

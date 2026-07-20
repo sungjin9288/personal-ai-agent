@@ -88,6 +88,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/local-training-acquisition-runtime-contract.json',
   'evidence/output-artifacts/local-training-acquisition-artifact-verification.json',
   'evidence/output-artifacts/local-training-post-acquisition-readiness.json',
+  'evidence/output-artifacts/local-training-candidate-artifact-verification.json',
   'evidence/output-artifacts/local-answer-quality-baseline.json',
   'evidence/output-artifacts/local-answer-composition-candidate.json',
   'evidence/output-artifacts/local-answer-composition-robustness.json',

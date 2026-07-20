@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 
 const mode = readOption('--mode', 'success');
+const candidateArtifactSha256 = readOption('--candidate-artifact-sha256', '');
 const forbiddenEnvironmentKeys = [
   'ANTHROPIC_API_KEY',
   'AWS_SECRET_ACCESS_KEY',
@@ -42,7 +43,9 @@ if (mode === 'hang') {
     baseModelId: payload.baseModelId,
     candidate: {
       artifactFormat: 'fixture-candidate-metadata/v1',
-      artifactSha256,
+      artifactSha256: /^[a-f0-9]{64}$/.test(candidateArtifactSha256)
+        ? candidateArtifactSha256
+        : artifactSha256,
       modelId: 'fixture-local-candidate-v1',
     },
     datasetHash: mode === 'mismatch' ? '0'.repeat(64) : payload.dataset.datasetHash,
