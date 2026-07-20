@@ -49,6 +49,7 @@ assert.equal(
   true,
 );
 assert.equal(stored.security.resourceEnvelopeBound, true);
+assert.equal(stored.security.evaluatorProvenanceBound, true);
 assert.equal(
   stored.security.f1EvaluationSuiteBytesBound,
   true,
@@ -59,6 +60,14 @@ assert.equal(
 );
 assert.match(
   stored.request.evaluationSuiteArtifactSha256,
+  /^[a-f0-9]{64}$/u,
+);
+assert.match(
+  stored.request.evaluatorBundleArtifactSetSha256,
+  /^[a-f0-9]{64}$/u,
+);
+assert.match(
+  stored.request.evaluatorExecutableSha256,
   /^[a-f0-9]{64}$/u,
 );
 assert.equal(stored.admission.actualModelEvaluated, false);

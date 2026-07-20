@@ -17,7 +17,7 @@ const evidence = JSON.parse(
 
 assert.equal(
   evidence.schemaVersion,
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v2',
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v3',
 );
 assert.equal(
   evidence.failureGuards.evaluationSuiteBytesRequired,
@@ -39,12 +39,21 @@ assert.equal(
   true,
 );
 assert.equal(
+  evidence.failureGuards
+    .evaluatorSnapshotPostVerificationRequired,
+  true,
+);
+assert.equal(
   evidence.failureGuards.temporaryInputViewCleaned,
   true,
 );
 assert.equal(
   evidence.security.candidateSnapshot,
   'bounded-read-only-temporary-copy',
+);
+assert.equal(
+  evidence.security.evaluatorBundleSnapshot,
+  'hash-bound-read-only-temporary-copy',
 );
 assert.equal(
   evidence.security.postExecutionInputVerification,

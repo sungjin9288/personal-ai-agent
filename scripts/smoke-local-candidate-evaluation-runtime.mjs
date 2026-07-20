@@ -69,6 +69,15 @@ assert.equal(
   stored.security.evaluationSuiteBytesBound,
   true,
 );
+assert.equal(stored.security.evaluatorProvenanceBound, true);
+assert.equal(
+  stored.security.evaluatorBundleSnapshot,
+  'hash-bound-read-only-temporary-copy',
+);
+assert.equal(
+  stored.security.evaluatorExecutableVerification,
+  'sha256-before-and-after',
+);
 assert.equal(
   stored.security.postExecutionInputVerification,
   true,

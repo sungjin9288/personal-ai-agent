@@ -18,9 +18,12 @@ import {
 import {
   createLocalTrainingCandidateArtifactVerificationFixture,
 } from './evaluate-local-training-candidate-artifact-verification.mjs';
+import {
+  createLocalCandidateEvaluatorFixture,
+} from './local-candidate-evaluator-fixture.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_RUNTIME_EVIDENCE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v2';
+  'personal-ai-agent-local-candidate-evaluation-runtime-evidence/v3';
 
 const EVALUATOR_ID =
   'fixture-local-candidate-evaluator-v1';
@@ -47,11 +50,7 @@ function createRuntime(
   ];
   return createLocalCandidateEvaluationRuntime({
     args: [
-      path.join(
-        repoDir,
-        'fixtures',
-        'local-candidate-evaluation-command.mjs',
-      ),
+      fixture.evaluator.entryPath,
       '--mode',
       mode,
     ],
@@ -67,6 +66,7 @@ function createRuntime(
       TMPDIR: process.env.TMPDIR,
     },
     evaluatorId: EVALUATOR_ID,
+    evaluatorBundle: fixture.evaluator.definition,
     executionKind: fixture.request.evaluationKind,
     repoDir: fixture.candidateRepoRoot,
     temporaryDirectory: fixture.temporaryDirectory,
@@ -124,12 +124,17 @@ export async function createLocalCandidateEvaluationRuntimeFixture({
     ),
   );
   try {
+    const evaluator =
+      createLocalCandidateEvaluatorFixture({
+        repoDir,
+      });
     const request = buildLocalCandidateEvaluationRequest({
       candidateArtifactVerification,
       currentPermission: source.permission,
       evaluationKind: 'fixture-simulated',
       evaluationSuiteContent,
       evaluatorId: EVALUATOR_ID,
+      evaluatorProvenance: evaluator.provenance,
       expiresAt: EXPIRES_AT,
       permissionRevocation: null,
       readinessPackage: source.readinessPackage,
@@ -157,6 +162,7 @@ export async function createLocalCandidateEvaluationRuntimeFixture({
         });
       },
       evaluationSuiteContent,
+      evaluator,
       request,
       temporaryDirectory,
     };
@@ -242,6 +248,16 @@ export async function evaluateLocalCandidateEvaluationRuntime({
                 `${fixture.evaluationSuiteContent}\n`,
             })),
           /integrity-or-current-binding/,
+        ),
+      evaluatorSnapshotPostVerificationRequired:
+        await rejectionMatches(
+          () =>
+            createRuntime(
+              fixture,
+              repoDir,
+              'tamper-evaluator-view',
+            ).run(runInput(fixture)),
+          /provenance failed: current-binding/,
         ),
       inputBounded: await rejectionMatches(
         () =>
@@ -424,6 +440,10 @@ export async function evaluateLocalCandidateEvaluationRuntime({
           result.candidateEvidence.evaluationHash,
         evaluationSource:
           result.candidateEvidence.evaluationSource,
+        evaluatorBundleArtifactSetSha256:
+          result.run.evaluator.bundleArtifactSetSha256,
+        evaluatorExecutableSha256:
+          result.run.evaluator.executableSha256,
         gateDecision: gate.decision,
         gateStatus: gate.status,
         protocolVersion:
@@ -446,6 +466,11 @@ export async function evaluateLocalCandidateEvaluationRuntime({
         currentAdmissionRevalidated: true,
         environmentAllowlisted: true,
         evaluationSuiteBytesBound: true,
+        evaluatorBundleSnapshot:
+          result.run.security.evaluatorSnapshot,
+        evaluatorExecutableVerification:
+          result.run.security.executableVerification,
+        evaluatorProvenanceBound: true,
         localProcessStdio: true,
         networkIsolation: 'caller-owned',
         postExecutionInputVerification: true,

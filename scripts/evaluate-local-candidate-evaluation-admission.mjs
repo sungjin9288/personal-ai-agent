@@ -9,9 +9,12 @@ import {
 import {
   createLocalTrainingCandidateArtifactVerificationFixture,
 } from './evaluate-local-training-candidate-artifact-verification.mjs';
+import {
+  createLocalCandidateEvaluatorFixture,
+} from './local-candidate-evaluator-fixture.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_ADMISSION_EVIDENCE_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-admission-evidence/v3';
+  'personal-ai-agent-local-candidate-evaluation-admission-evidence/v4';
 
 const REQUESTED_AT = '2026-07-17T08:43:00.000Z';
 const ADMITTED_AT = '2026-07-17T08:44:00.000Z';
@@ -59,6 +62,7 @@ function buildRequest(fixture, verification, overrides = {}) {
     evaluationKind: 'fixture-simulated',
     evaluationSuiteContent: fixture.evaluationSuiteContent,
     evaluatorId: 'fixture-local-candidate-evaluator-v1',
+    evaluatorProvenance: fixture.evaluatorProvenance,
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
@@ -105,6 +109,12 @@ export async function evaluateLocalCandidateEvaluationAdmission({
     );
     fixtureOnly.evaluationSuiteContent =
       fixture.evaluationSuiteContent;
+    fixture.evaluatorProvenance =
+      createLocalCandidateEvaluatorFixture({
+        repoDir,
+      }).provenance;
+    fixtureOnly.evaluatorProvenance =
+      fixture.evaluatorProvenance;
     const verification = await fixture.verifier.verify(
       fixture.input,
     );
@@ -166,6 +176,25 @@ export async function evaluateLocalCandidateEvaluationAdmission({
       ),
       evaluationDoesNotExecute:
         admission.actualModelEvaluated === false,
+      evaluatorProvenanceIntegrityRequired:
+        rejectionMatches(
+          () =>
+            admit(
+              fixture,
+              verification,
+              {
+                ...request,
+                evaluatorProvenance: {
+                  ...request.evaluatorProvenance,
+                  executable: {
+                    ...request.evaluatorProvenance.executable,
+                    sha256: '0'.repeat(64),
+                  },
+                },
+              },
+            ),
+          /integrity-or-current-binding/,
+        ),
       explicitNoRevocationRequired: rejectionMatches(
         () => admit(
           fixture,
@@ -282,6 +311,13 @@ export async function evaluateLocalCandidateEvaluationAdmission({
         evaluationSuiteHash:
           hashRecord(request.evaluationSuite),
         evaluationKind: request.evaluationKind,
+        evaluatorBundleArtifactSetSha256:
+          request.evaluatorProvenance.bundle
+            .artifactSetSha256,
+        evaluatorBundleFileCount:
+          request.evaluatorProvenance.bundle.fileCount,
+        evaluatorExecutableSha256:
+          request.evaluatorProvenance.executable.sha256,
         evaluatorIdHash: hashValue(request.evaluatorId),
         modelIdHash: hashValue(request.candidate.modelId),
         status: request.status,
@@ -292,6 +328,7 @@ export async function evaluateLocalCandidateEvaluationAdmission({
         contentFreeEvidence: true,
         currentPermissionRevalidated: true,
         explicitNoRevocationRequired: true,
+        evaluatorProvenanceBound: true,
         f1EvaluationSuiteBound: true,
         f1EvaluationSuiteBytesBound: true,
         localEvaluationOnly: true,

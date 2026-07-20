@@ -63,6 +63,9 @@ if (mode === 'hang') {
   if (mode === 'tamper-suite-view') {
     tamperSuiteView(payload.evaluationSuite.artifact.path);
   }
+  if (mode === 'tamper-evaluator-view') {
+    tamperEvaluatorView();
+  }
   const result = {
     actualModelEvaluated:
       payload.executionKind === 'local-model-evaluation',
@@ -205,6 +208,15 @@ function findFirstRegularFile(directory) {
 
 function tamperSuiteView(relativePath) {
   const target = resolveWorkspaceFile(relativePath);
+  fs.chmodSync(target, 0o600);
+  fs.appendFileSync(target, '\n');
+}
+
+function tamperEvaluatorView() {
+  const target = new URL(
+    'candidate-model-evaluation-cases-v1.json',
+    import.meta.url,
+  );
   fs.chmodSync(target, 0o600);
   fs.appendFileSync(target, '\n');
 }

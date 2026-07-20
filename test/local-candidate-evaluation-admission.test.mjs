@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import { test } from 'node:test';
 
@@ -11,6 +12,9 @@ import {
 import {
   createLocalTrainingCandidateArtifactVerificationFixture,
 } from '../scripts/evaluate-local-training-candidate-artifact-verification.mjs';
+import {
+  createLocalCandidateEvaluatorFixture,
+} from '../scripts/local-candidate-evaluator-fixture.mjs';
 
 const REQUESTED_AT = '2026-07-17T08:43:00.000Z';
 const ADMITTED_AT = '2026-07-17T08:44:00.000Z';
@@ -19,6 +23,8 @@ const EVALUATION_SUITE_CONTENT = fs.readFileSync(
   'fixtures/answer-quality-cases-v1.json',
   'utf8',
 );
+const EVALUATOR =
+  createLocalCandidateEvaluatorFixture();
 
 async function buildFixture(mode = 'recorded-local-training') {
   const source =
@@ -41,6 +47,7 @@ function buildRequest(fixture, overrides = {}) {
     evaluationKind: 'fixture-simulated',
     evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     evaluatorId: 'fixture-local-candidate-evaluator-v1',
+    evaluatorProvenance: EVALUATOR.provenance,
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
     readinessPackage: fixture.readinessPackage,
@@ -48,6 +55,21 @@ function buildRequest(fixture, overrides = {}) {
     requestedBy: 'local-evaluation-operator',
     ...overrides,
   });
+}
+
+function rebindEvaluatorEntryAsResource() {
+  const provenance = structuredClone(EVALUATOR.provenance);
+  provenance.bundle.entryPath =
+    'fixtures/candidate-model-evaluation-cases-v1.json';
+  provenance.bundle.artifactSetSha256 = createHash('sha256')
+    .update(JSON.stringify({
+      byteLength: provenance.bundle.byteLength,
+      entryPath: provenance.bundle.entryPath,
+      fileCount: provenance.bundle.fileCount,
+      files: provenance.bundle.files,
+    }))
+    .digest('hex');
+  return provenance;
 }
 
 test('candidate evaluation request binds a recorded artifact and the F1 suite', async (t) => {
@@ -85,6 +107,15 @@ test('candidate evaluation request binds a recorded artifact and the F1 suite', 
     request.evaluatorId,
     'fixture-local-candidate-evaluator-v1',
   );
+  assert.equal(request.evaluatorProvenance.bundle.fileCount, 5);
+  assert.match(
+    request.evaluatorProvenance.bundle.artifactSetSha256,
+    /^[a-f0-9]{64}$/u,
+  );
+  assert.match(
+    request.evaluatorProvenance.executable.sha256,
+    /^[a-f0-9]{64}$/u,
+  );
   assert.equal(request.actualModelEvaluated, false);
   assert.equal(request.trainingAuthorized, false);
   assert.equal(request.rolloutAuthorized, false);
@@ -119,6 +150,10 @@ test('admission authorizes only bounded local candidate evaluation', async (t) =
   assert.equal(
     admission.evaluatorId,
     'fixture-local-candidate-evaluator-v1',
+  );
+  assert.deepEqual(
+    admission.evaluatorProvenance,
+    request.evaluatorProvenance,
   );
   assert.equal(admission.actualModelEvaluated, false);
   assert.equal(admission.trainingAuthorized, false);
@@ -166,6 +201,19 @@ test('fixture-only artifact verification cannot request candidate evaluation', a
   assert.throws(
     () => buildRequest(fixture),
     /recorded candidate artifact verification/,
+  );
+});
+
+test('candidate evaluation request rejects a resource rebound as evaluator entry', async (t) => {
+  const fixture = await buildFixture();
+  t.after(fixture.cleanup);
+
+  assert.throws(
+    () =>
+      buildRequest(fixture, {
+        evaluatorProvenance: rebindEvaluatorEntryAsResource(),
+      }),
+    /bundle-integrity/,
   );
 });
 
@@ -259,6 +307,19 @@ test('candidate evaluation admission rejects semantic tampering', async (t) => {
     () => assertLocalCandidateEvaluationAdmission({
       ...admission,
       evaluatorId: 'another-evaluator',
+    }),
+    /admission failed: integrity/,
+  );
+  assert.throws(
+    () => assertLocalCandidateEvaluationAdmission({
+      ...admission,
+      evaluatorProvenance: {
+        ...admission.evaluatorProvenance,
+        executable: {
+          ...admission.evaluatorProvenance.executable,
+          sha256: '0'.repeat(64),
+        },
+      },
     }),
     /admission failed: integrity/,
   );

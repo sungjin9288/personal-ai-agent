@@ -5,6 +5,9 @@ import {
   describeLocalCandidateEvaluationSuite,
 } from './local-candidate-evaluation-input-view.mjs';
 import {
+  assertLocalCandidateEvaluatorProvenance,
+} from './local-candidate-evaluator-provenance.mjs';
+import {
   assertLocalTrainingCandidateArtifactVerification,
 } from './local-training-candidate-artifact-verification.mjs';
 import {
@@ -16,9 +19,9 @@ import {
 } from './training-content-safety.mjs';
 
 export const LOCAL_CANDIDATE_EVALUATION_REQUEST_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-request/v3';
+  'personal-ai-agent-local-candidate-evaluation-request/v4';
 export const LOCAL_CANDIDATE_EVALUATION_ADMISSION_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-admission/v3';
+  'personal-ai-agent-local-candidate-evaluation-admission/v4';
 
 const REQUEST_STATUS = 'pending-local-candidate-evaluation-admission';
 const ADMISSION_STATUS = 'authorized-for-bounded-local-candidate-evaluation';
@@ -191,6 +194,7 @@ function buildRequestContent({
   evaluationKind,
   evaluationSuiteContent,
   evaluatorId,
+  evaluatorProvenance,
   expiresAt,
   readinessPackage,
   requestedAt,
@@ -221,6 +225,7 @@ function buildRequestContent({
     ),
     evaluationKind,
     evaluatorId,
+    evaluatorProvenance,
     expiresAt,
     externalProviderCalls: 'none',
     externalSubmissionAuthorized: false,
@@ -248,6 +253,7 @@ export function buildLocalCandidateEvaluationRequest({
   evaluationKind = 'local-model-evaluation',
   evaluationSuiteContent,
   evaluatorId,
+  evaluatorProvenance,
   expiresAt,
   permissionRevocation,
   readinessPackage,
@@ -292,6 +298,10 @@ export function buildLocalCandidateEvaluationRequest({
       requireEvaluationKind(evaluationKind),
     evaluationSuiteContent,
     evaluatorId: requireMetadata(evaluatorId, 'evaluatorId'),
+    evaluatorProvenance:
+      assertLocalCandidateEvaluatorProvenance(
+        evaluatorProvenance,
+      ),
     expiresAt: normalizedExpiresAt,
     readinessPackage,
     requestedAt: normalizedRequestedAt,
@@ -338,6 +348,10 @@ export function assertLocalCandidateEvaluationRequest({
     request?.evaluatorId,
     'evaluatorId',
   );
+  const evaluatorProvenance =
+    assertLocalCandidateEvaluatorProvenance(
+      request?.evaluatorProvenance,
+    );
   const evaluationKind = requireEvaluationKind(
     request?.evaluationKind,
   );
@@ -353,6 +367,7 @@ export function assertLocalCandidateEvaluationRequest({
     evaluationKind,
     evaluationSuiteContent,
     evaluatorId,
+    evaluatorProvenance,
     expiresAt,
     readinessPackage,
     requestedAt,
@@ -395,6 +410,7 @@ function buildAdmissionContent({
     evaluationKind: request.evaluationKind,
     evaluationSuite: request.evaluationSuite,
     evaluatorId: request.evaluatorId,
+    evaluatorProvenance: request.evaluatorProvenance,
     expiresAt: request.expiresAt,
     externalProviderCalls: 'none',
     externalSubmissionAuthorized: false,
@@ -466,6 +482,7 @@ function assertAdmissionShape(content) {
       'evaluationKind',
       'evaluationSuite',
       'evaluatorId',
+      'evaluatorProvenance',
       'expiresAt',
       'externalProviderCalls',
       'externalSubmissionAuthorized',
@@ -502,6 +519,11 @@ function assertAdmissionShape(content) {
       'schemaVersion',
       'sha256',
     ]) ||
+    !hasExactKeys(content.evaluatorProvenance, [
+      'bundle',
+      'executable',
+      'schemaVersion',
+    ]) ||
     !hasExactKeys(content.productPermission, [
       'id',
       'permissionHash',
@@ -535,6 +557,9 @@ function assertAdmissionReferences(content) {
   );
   requireEvaluationKind(content.evaluationKind);
   requireMetadata(content.evaluatorId, 'evaluatorId');
+  assertLocalCandidateEvaluatorProvenance(
+    content.evaluatorProvenance,
+  );
   requireMetadata(content.rollback.owner, 'rollback owner');
   for (const [fieldName, value] of Object.entries(
     content.resourceLimits,

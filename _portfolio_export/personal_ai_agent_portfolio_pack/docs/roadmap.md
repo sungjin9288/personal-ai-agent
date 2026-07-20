@@ -150,6 +150,7 @@
 - 완료: recorded candidate verification과 current permission·explicit no-revocation·F1 suite·resource envelope·bounded time window를 묶는 local candidate evaluation admission
 - 완료: current authority와 candidate file hash를 재검증하고 evaluator identity·bounded local stdio·canonical quality summary를 O1a run lineage에 묶는 local candidate evaluation runtime
 - 완료: exact F1 suite bytes와 manifest-listed candidate files를 temporary execution view에 고정하고 pre/post hash·cleanup을 run lineage에 묶는 immutable evaluation input view
+- 완료: evaluator executable SHA-256과 static ESM module·resource bundle을 request·admission·run에 묶고 temporary snapshot entry를 실행하는 evaluator provenance boundary
 - 완료: license·OS egress·resource evidence hash와 owner를 기존 approval inbox·RBAC·tenant·audit에 묶은 local training product permission surface, CLI·HTTP·Chromium 승인·철회 replay
 - 완료: same-suite fixture candidate의 품질·증적·권한 비교, regression keep-baseline과 rollout-blocked rollback gate
 - 승인 작업: 실제 base model license owner review, OS-level egress isolation, resource limit과 rollback owner 승인을 확보하고 현재 permission을 실행 직전에 다시 확인한 뒤 actual local model training 검토

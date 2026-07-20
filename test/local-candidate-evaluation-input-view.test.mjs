@@ -48,6 +48,9 @@ test('input view copies only admitted files, verifies them, and cleans up', asyn
         fixture.candidateArtifactVerification,
       candidateVerificationInput: fixture.input,
       evaluationSuite: fixture.request.evaluationSuite,
+      evaluatorDefinition: fixture.evaluator.definition,
+      evaluatorProvenance:
+        fixture.request.evaluatorProvenance,
       fileSystem: fs,
       maximumDiskBytes:
         fixture.request.resourceLimits.maxDiskBytes,
@@ -81,7 +84,7 @@ test('input view copies only admitted files, verifies them, and cleans up', asyn
   );
 });
 
-test('input view includes suite bytes in the admitted disk envelope', async (t) => {
+test('input view includes suite and evaluator bytes in the admitted disk envelope', async (t) => {
   const fixture =
     await createLocalCandidateEvaluationRuntimeFixture();
   t.after(fixture.cleanup);
@@ -92,6 +95,9 @@ test('input view includes suite bytes in the admitted disk envelope', async (t) 
         fixture.candidateArtifactVerification,
       candidateVerificationInput: fixture.input,
       evaluationSuite: fixture.request.evaluationSuite,
+      evaluatorDefinition: fixture.evaluator.definition,
+      evaluatorProvenance:
+        fixture.request.evaluatorProvenance,
       fileSystem: fs,
       maximumDiskBytes:
         fixture.candidateArtifactVerification.observedDiskBytes,

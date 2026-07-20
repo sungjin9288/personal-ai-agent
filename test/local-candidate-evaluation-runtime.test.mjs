@@ -21,6 +21,9 @@ import {
 import {
   createLocalTrainingCandidateArtifactVerificationFixture,
 } from '../scripts/evaluate-local-training-candidate-artifact-verification.mjs';
+import {
+  createLocalCandidateEvaluatorFixture,
+} from '../scripts/local-candidate-evaluator-fixture.mjs';
 
 const EVALUATOR_ID =
   'fixture-local-candidate-evaluator-v1';
@@ -31,9 +34,9 @@ const EVALUATION_SUITE_CONTENT = fs.readFileSync(
   'fixtures/answer-quality-cases-v1.json',
   'utf8',
 );
-const commandPath = path.resolve(
-  'fixtures/local-candidate-evaluation-command.mjs',
-);
+const EVALUATOR =
+  createLocalCandidateEvaluatorFixture();
+const commandPath = EVALUATOR.entryPath;
 
 async function buildFixture(
   evaluationKind = 'fixture-simulated',
@@ -50,6 +53,7 @@ async function buildFixture(
     evaluationKind,
     evaluationSuiteContent: EVALUATION_SUITE_CONTENT,
     evaluatorId: EVALUATOR_ID,
+    evaluatorProvenance: EVALUATOR.provenance,
     expiresAt: EXPIRES_AT,
     permissionRevocation: null,
     readinessPackage: source.readinessPackage,
@@ -114,6 +118,7 @@ function createRuntime(
       TMPDIR: process.env.TMPDIR,
     },
     evaluatorId: EVALUATOR_ID,
+    evaluatorBundle: EVALUATOR.definition,
     executionKind: fixture.request.evaluationKind,
     repoDir: fixture.candidateRepoRoot,
     ...options,
@@ -140,7 +145,12 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
   const fixture = await buildFixture();
   t.after(fixture.cleanup);
   const temporaryDirectory = createTemporaryDirectory(t);
+  let spawnedEntryPath;
   const runtime = createRuntime(fixture, 'success', {
+    spawnProcess(command, args, options) {
+      spawnedEntryPath = args[0];
+      return nodeSpawn(command, args, options);
+    },
     temporaryDirectory,
   });
 
@@ -169,6 +179,11 @@ test('bounded runtime revalidates the candidate and produces an O1a-ready fixtur
     true,
   );
   assert.equal(runtime.security.sourceWorkspaceAsCwd, false);
+  assert.notEqual(spawnedEntryPath, commandPath);
+  assert.match(
+    spawnedEntryPath,
+    /personal-ai-agent-candidate-evaluation-[^/]+\/evaluator\/fixtures\/local-candidate-evaluation-command\.mjs$/u,
+  );
   assert.deepEqual(runtime.security.environmentKeys.sort(), [
     'HOME',
     'PATH',
@@ -362,7 +377,7 @@ test('runtime executes the snapshot even when the source changes after preparati
   assert.deepEqual(fs.readdirSync(temporaryDirectory), []);
 });
 
-test('runtime rejects candidate and suite mutation inside the execution view', async (t) => {
+test('runtime rejects candidate, suite, and evaluator mutation inside the execution view', async (t) => {
   const fixture = await buildFixture();
   t.after(fixture.cleanup);
   const temporaryDirectory = createTemporaryDirectory(t);
@@ -375,6 +390,10 @@ test('runtime rejects candidate and suite mutation inside the execution view', a
     [
       'tamper-suite-view',
       /suite artifact failed: integrity-or-binding/,
+    ],
+    [
+      'tamper-evaluator-view',
+      /provenance failed: current-binding/,
     ],
   ]) {
     await assert.rejects(
@@ -429,6 +448,13 @@ test('runtime rejects unbound, raw, inconsistent, and unbounded child results', 
         args: ['password=process-secret'],
       }),
     /must not contain secret or customer data/,
+  );
+  assert.throws(
+    () =>
+      createRuntime(fixture, 'success', {
+        args: [commandPath, '/tmp/unbound-config.json'],
+      }),
+    /must not reference absolute files/,
   );
 });
 

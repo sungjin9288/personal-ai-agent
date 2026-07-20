@@ -4,6 +4,11 @@ import { pipeline } from 'node:stream/promises';
 import path from 'node:path';
 
 import {
+  assertCurrentLocalCandidateEvaluator,
+  assertLocalCandidateEvaluatorProvenance,
+  copyLocalCandidateEvaluatorBundle,
+} from './local-candidate-evaluator-provenance.mjs';
+import {
   assertLocalTrainingCandidateArtifactVerification,
   buildLocalTrainingCandidateArtifactManifest,
   createLocalTrainingCandidateArtifactVerifier,
@@ -553,6 +558,8 @@ export async function createLocalCandidateEvaluationInputView({
   candidateArtifactVerification,
   candidateVerificationInput,
   evaluationSuite,
+  evaluatorDefinition,
+  evaluatorProvenance,
   fileSystem,
   maximumDiskBytes,
   repoDir,
@@ -565,6 +572,9 @@ export async function createLocalCandidateEvaluationInputView({
   assertLocalTrainingCandidateArtifactVerification(
     candidateArtifactVerification,
   );
+  assertLocalCandidateEvaluatorProvenance(
+    evaluatorProvenance,
+  );
   const suiteArtifact =
     assertLocalCandidateEvaluationSuiteArtifact({
       artifact: evaluationSuite?.artifact,
@@ -575,7 +585,8 @@ export async function createLocalCandidateEvaluationInputView({
     !Number.isSafeInteger(maximumDiskBytes) ||
     maximumDiskBytes <= 0 ||
     candidateArtifactVerification.observedDiskBytes +
-      suiteArtifact.byteLength >
+      suiteArtifact.byteLength +
+      evaluatorProvenance.bundle.byteLength >
       maximumDiskBytes
   ) {
     throw new Error(
@@ -670,8 +681,17 @@ export async function createLocalCandidateEvaluationInputView({
       flag: 'wx',
       mode: 0o400,
     });
+    const evaluatorRoot = path.join(rootDir, 'evaluator');
+    const evaluatorSnapshot =
+      copyLocalCandidateEvaluatorBundle({
+        definition: evaluatorDefinition,
+        destinationRoot: evaluatorRoot,
+        expectedProvenance: evaluatorProvenance,
+        fileSystem,
+      });
     lockTree(fileSystem, candidateRoot);
     lockTree(fileSystem, path.dirname(suitePath));
+    lockTree(fileSystem, evaluatorRoot);
 
     return {
       candidateArtifactRoot: path.posix.join(
@@ -680,6 +700,8 @@ export async function createLocalCandidateEvaluationInputView({
         'artifact',
       ),
       cleanup,
+      evaluatorEntryPath: evaluatorSnapshot.entryPath,
+      evaluatorProvenance,
       rootDir,
       suiteArtifact,
       async verifyInputs(observedAt) {
@@ -692,6 +714,20 @@ export async function createLocalCandidateEvaluationInputView({
           content: currentSuiteContent,
           evaluationSuite,
         });
+        assertCurrentLocalCandidateEvaluator({
+          definition: {
+            ...evaluatorDefinition,
+            fileSystem,
+          },
+          expectedProvenance: evaluatorProvenance,
+        });
+        assertCurrentLocalCandidateEvaluator({
+          definition: {
+            ...evaluatorSnapshot.definition,
+            fileSystem,
+          },
+          expectedProvenance: evaluatorProvenance,
+        });
         const verifier = verifierFactory({
           clock: () => observedAt,
           fileSystem,
@@ -701,6 +737,7 @@ export async function createLocalCandidateEvaluationInputView({
           await verifier.verify(candidateVerificationInput);
         return {
           candidateVerification,
+          evaluatorProvenance,
           suiteArtifact,
         };
       },

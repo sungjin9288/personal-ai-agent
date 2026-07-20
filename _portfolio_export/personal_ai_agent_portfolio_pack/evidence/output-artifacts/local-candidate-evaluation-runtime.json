@@ -12,6 +12,8 @@
     "candidateEvaluationAuthorized": true,
     "evaluationHash": "a971c58a40e23080e21cd27ba5093dcdb9d06d93c90c3324a66a6be1384f24e1",
     "evaluationSource": "fixture-simulated",
+    "evaluatorBundleArtifactSetSha256": "da923396190839365905ca7a7e69b1c75acd3d4dc2502f9a4c59274c4805f3b3",
+    "evaluatorExecutableSha256": "d36b3d980963d44bd2c5e844fac4cfeee26a167b744287a4e74a9575af9d0559",
     "gateDecision": "hold-for-review",
     "gateStatus": "ready-for-review",
     "protocolVersion": "personal-ai-agent-local-candidate-evaluation/v2",
@@ -26,6 +28,7 @@
     "evaluatorBindingRequired": true,
     "executionKindBindingRequired": true,
     "evaluationSuiteBytesRequired": true,
+    "evaluatorSnapshotPostVerificationRequired": true,
     "inputBounded": true,
     "o1aComparisonPassed": true,
     "outputBounded": true,
@@ -46,7 +49,7 @@
     "artifactReverificationRequired": true
   },
   "mode": "local-candidate-evaluation-runtime",
-  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v2",
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-runtime-evidence/v3",
   "security": {
     "artifactReverifiedBeforeSpawn": true,
     "authorityRevalidatedAfterInputVerification": true,
@@ -55,6 +58,9 @@
     "currentAdmissionRevalidated": true,
     "environmentAllowlisted": true,
     "evaluationSuiteBytesBound": true,
+    "evaluatorBundleSnapshot": "hash-bound-read-only-temporary-copy",
+    "evaluatorExecutableVerification": "sha256-before-and-after",
+    "evaluatorProvenanceBound": true,
     "localProcessStdio": true,
     "networkIsolation": "caller-owned",
     "postExecutionInputVerification": true,
@@ -64,6 +70,6 @@
     "temporaryInputViewCleanup": "completed"
   },
   "storeMutation": false,
-  "evidenceHash": "f667f6f97ff665345635c708398af1030bc039a70f507c53371d19a93a0f2b48",
-  "id": "local-candidate-evaluation-runtime-evidence-f667f6f97ff665345635c708398af1030bc039a70f507c53371d19a93a0f2b48"
+  "evidenceHash": "033e0dc25a6a9a8b90c9b72dab20e5cf9f5c5d86f42bd74bb49a7403f555b940",
+  "id": "local-candidate-evaluation-runtime-evidence-033e0dc25a6a9a8b90c9b72dab20e5cf9f5c5d86f42bd74bb49a7403f555b940"
 }

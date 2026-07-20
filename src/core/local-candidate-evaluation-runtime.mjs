@@ -2,6 +2,7 @@ import { spawn as nodeSpawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
+import path from 'node:path';
 
 import {
   ANSWER_QUALITY_EVALUATION_SCHEMA_VERSION,
@@ -19,6 +20,9 @@ import {
   createLocalCandidateEvaluationInputView,
 } from './local-candidate-evaluation-input-view.mjs';
 import {
+  describeLocalCandidateEvaluator,
+} from './local-candidate-evaluator-provenance.mjs';
+import {
   assertLocalTrainingCandidateArtifactVerification,
   createLocalTrainingCandidateArtifactVerifier,
 } from './local-training-candidate-artifact-verification.mjs';
@@ -30,7 +34,7 @@ import {
 export const LOCAL_CANDIDATE_EVALUATION_PROTOCOL_VERSION =
   'personal-ai-agent-local-candidate-evaluation/v2';
 export const LOCAL_CANDIDATE_EVALUATION_RUN_SCHEMA_VERSION =
-  'personal-ai-agent-local-candidate-evaluation-run/v2';
+  'personal-ai-agent-local-candidate-evaluation-run/v3';
 
 const DEFAULT_MAX_INPUT_BYTES = 1024 * 1024;
 const DEFAULT_MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
@@ -204,6 +208,7 @@ function assertRuntimeAuthority({
   currentPermission,
   evaluationSuiteContent,
   evaluatorId,
+  evaluatorProvenance,
   now,
   permissionRevocation,
   readinessPackage,
@@ -223,6 +228,10 @@ function assertRuntimeAuthority({
   if (
     admission.evaluatorId !== evaluatorId ||
     request.evaluatorId !== evaluatorId ||
+    JSON.stringify(admission.evaluatorProvenance) !==
+      JSON.stringify(evaluatorProvenance) ||
+    JSON.stringify(request.evaluatorProvenance) !==
+      JSON.stringify(evaluatorProvenance) ||
     admission.evaluationKind !== request.evaluationKind
   ) {
     throw new Error(
@@ -853,6 +862,7 @@ function buildRunRecord({
   completedAt,
   currentPermission,
   evaluatorId,
+  evaluatorProvenance,
   executionKind,
   request,
   reverifiedCandidate,
@@ -892,6 +902,10 @@ function buildRunRecord({
         candidateEvaluation,
       ),
     evaluator: {
+      bundleArtifactSetSha256:
+        evaluatorProvenance.bundle.artifactSetSha256,
+      executableSha256:
+        evaluatorProvenance.executable.sha256,
       evaluatorId,
       evaluationSource: actualModelEvaluated
         ? 'recorded-model-evaluation'
@@ -1012,6 +1026,8 @@ export function assertLocalCandidateEvaluationRun({
       'readinessHash',
     ]) ||
     !hasExactKeys(record.evaluator, [
+      'bundleArtifactSetSha256',
+      'executableSha256',
       'evaluatorId',
       'evaluationSource',
       'executionKind',
@@ -1045,6 +1061,8 @@ export function assertLocalCandidateEvaluationRun({
       'candidateSnapshot',
       'environmentKeys',
       'environmentPolicy',
+      'evaluatorSnapshot',
+      'executableVerification',
       'networkIsolation',
       'postExecutionInputVerification',
       'resourceEnforcement',
@@ -1121,6 +1139,13 @@ export function assertLocalCandidateEvaluationRun({
       ) ||
     record.candidateEvaluationAuthorized !== true ||
     record.evaluator.evaluatorId !== admission?.evaluatorId ||
+    JSON.stringify(admission?.evaluatorProvenance) !==
+      JSON.stringify(request?.evaluatorProvenance) ||
+    record.evaluator.bundleArtifactSetSha256 !==
+      admission?.evaluatorProvenance?.bundle
+        ?.artifactSetSha256 ||
+    record.evaluator.executableSha256 !==
+      admission?.evaluatorProvenance?.executable?.sha256 ||
     !EXECUTION_KINDS.has(record.evaluator.executionKind) ||
     record.evaluator.executionKind !== request?.evaluationKind ||
     record.evaluator.protocolVersion !==
@@ -1176,6 +1201,10 @@ export function assertLocalCandidateEvaluationRun({
       (key) => !SAFE_ENV_KEYS.includes(key),
     ) ||
     record.security.environmentPolicy !== 'allowlist' ||
+    record.security.evaluatorSnapshot !==
+      'hash-bound-read-only-temporary-copy' ||
+    record.security.executableVerification !==
+      'sha256-before-and-after' ||
     record.security.networkIsolation !== 'caller-owned' ||
     record.security.postExecutionInputVerification !== true ||
     record.security.resourceEnforcement !==
@@ -1221,6 +1250,7 @@ export function createLocalCandidateEvaluationRuntime({
   clock = () => new Date().toISOString(),
   command,
   env = process.env,
+  evaluatorBundle,
   evaluatorId,
   executionKind = 'fixture-simulated',
   fileSystem = fs,
@@ -1253,6 +1283,36 @@ export function createLocalCandidateEvaluationRuntime({
   const normalizedArgs = Array.isArray(args)
     ? args.map(requireProcessArgument)
     : [];
+  const evaluatorDefinition = {
+    ...evaluatorBundle,
+    command: normalizedCommand,
+    fileSystem,
+  };
+  const sourceEntryPath = path.resolve(
+    evaluatorDefinition.rootDir,
+    evaluatorDefinition.entryPath,
+  );
+  if (
+    normalizedArgs.length === 0 ||
+    path.resolve(normalizedArgs[0]) !== sourceEntryPath
+  ) {
+    throw new Error(
+      'Local candidate evaluation runtime requires the evaluator entry as its first argument.',
+    );
+  }
+  if (
+    normalizedArgs
+      .slice(1)
+      .some(
+        (argument) =>
+          path.isAbsolute(argument) ||
+          argument.startsWith('file:'),
+      )
+  ) {
+    throw new Error(
+      'Local candidate evaluation runtime additional arguments must not reference absolute files.',
+    );
+  }
   const normalizedMaxInputBytes = requirePositiveInteger(
     maxInputBytes,
     DEFAULT_MAX_INPUT_BYTES,
@@ -1274,6 +1334,10 @@ export function createLocalCandidateEvaluationRuntime({
       'bounded-read-only-temporary-copy',
     environmentKeys: Object.keys(environment).sort(),
     environmentPolicy: 'allowlist',
+    evaluatorSnapshot:
+      'hash-bound-read-only-temporary-copy',
+    executableVerification:
+      'sha256-before-and-after',
     networkIsolation: 'caller-owned',
     postExecutionInputVerification: true,
     resourceEnforcement:
@@ -1309,12 +1373,28 @@ export function createLocalCandidateEvaluationRuntime({
         currentPermission,
         evaluationSuiteContent,
         evaluatorId: normalizedEvaluatorId,
+        evaluatorProvenance:
+          request?.evaluatorProvenance,
         now: preflightAt,
         permissionRevocation,
         readinessPackage,
         request,
         timeoutMs: normalizedTimeoutMs,
       });
+      const evaluatorProvenance =
+        describeLocalCandidateEvaluator(
+          evaluatorDefinition,
+        );
+      if (
+        JSON.stringify(evaluatorProvenance) !==
+          JSON.stringify(request.evaluatorProvenance) ||
+        JSON.stringify(evaluatorProvenance) !==
+          JSON.stringify(admission.evaluatorProvenance)
+      ) {
+        throw new Error(
+          'Local candidate evaluation runtime failed: evaluator-binding.',
+        );
+      }
       if (request.evaluationKind !== normalizedExecutionKind) {
         throw new Error(
           'Local candidate evaluation runtime failed: execution-kind-binding.',
@@ -1337,6 +1417,8 @@ export function createLocalCandidateEvaluationRuntime({
               reverifiedCandidate,
             candidateVerificationInput,
             evaluationSuite: request.evaluationSuite,
+            evaluatorDefinition,
+            evaluatorProvenance,
             fileSystem,
             maximumDiskBytes:
               request.resourceLimits.maxDiskBytes,
@@ -1352,6 +1434,7 @@ export function createLocalCandidateEvaluationRuntime({
           currentPermission,
           evaluationSuiteContent,
           evaluatorId: normalizedEvaluatorId,
+          evaluatorProvenance,
           now: startedAt,
           permissionRevocation,
           readinessPackage,
@@ -1395,7 +1478,10 @@ export function createLocalCandidateEvaluationRuntime({
           );
         }
         const result = await runLocalCommand({
-          args: normalizedArgs,
+          args: [
+            inputView.evaluatorEntryPath,
+            ...normalizedArgs.slice(1),
+          ],
           command: normalizedCommand,
           cwd: inputView.rootDir,
           environment,
@@ -1414,6 +1500,7 @@ export function createLocalCandidateEvaluationRuntime({
           currentPermission,
           evaluationSuiteContent,
           evaluatorId: normalizedEvaluatorId,
+          evaluatorProvenance,
           now: postVerificationAt,
           permissionRevocation,
           readinessPackage,
@@ -1457,6 +1544,7 @@ export function createLocalCandidateEvaluationRuntime({
           currentPermission,
           evaluationSuiteContent,
           evaluatorId: normalizedEvaluatorId,
+          evaluatorProvenance,
           now: completedAt,
           permissionRevocation,
           readinessPackage,
@@ -1486,6 +1574,7 @@ export function createLocalCandidateEvaluationRuntime({
         completedAt,
         currentPermission,
         evaluatorId: normalizedEvaluatorId,
+        evaluatorProvenance,
         executionKind: normalizedExecutionKind,
         request,
         reverifiedCandidate,
