@@ -102,6 +102,29 @@ assert.match(
   /^[a-f0-9]{64}$/u,
 );
 assert.equal(
+  stored.contract.fineTuningDataSufficiencyPolicyValidated,
+  true,
+);
+assert.equal(
+  stored.contract.fineTuningDataSufficiencyAssessmentBound,
+  false,
+);
+assert.equal(
+  stored.contract.fineTuningDataSufficiencyPolicy
+    .productionQualityThresholdClaim,
+  false,
+);
+assert.match(
+  stored.contract.fineTuningDataSufficiencyPolicy.policyHash,
+  /^[a-f0-9]{64}$/u,
+);
+assert.equal(
+  stored.contract.remainingGates.includes(
+    'fine-tuning-data-sufficiency-approved',
+  ),
+  true,
+);
+assert.equal(
   stored.contract.remainingGates.includes(
     'training-runtime-closure-provenance',
   ),

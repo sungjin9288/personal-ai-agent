@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 235/235 passed with `npm run smoke:all` on 2026-07-22
+- lastFullSweep: 236/236 passed with `npm run smoke:all` on 2026-07-22
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -68,6 +68,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
 | Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
 | Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
+| Fine-tuning data sufficiency | `npm run smoke:fine-tuning-data-sufficiency` | Verifies the F1-bound development stop condition, current insufficient-data decision, content-free evidence, and false candidate-review, training, submission, and production claims |
 | Local training runtime contract | `npm run smoke:local-training-runtime` | Verifies exact F1 and expiring approval binding, current permission and post-acquisition admission revalidation before spawn, shell-free local stdio, secret environment filtering, input/output/timeout bounds, strict content-free candidate output, store invariance, and actualModelTrainingExecuted=false boundary |
 | Local training product permission surface | `npm run smoke:local-training-permission-surface` | Verifies CLI request, action inbox aggregation, approver-only HTTP approval and revocation, tenant isolation, ordered gateway audit, private readiness storage, and actualModelTrainingExecuted=false boundary |
 | Local training permission evidence | `npm run smoke:local-training-permission-evidence` | Verifies the tracked content-free replay hash, actual Chromium screenshot hash, zero browser console errors, and productionReadyClaim=false boundary |
@@ -164,6 +165,7 @@ npm run smoke:user-learning-operator-surface
 npm run smoke:approved-training-record
 npm run smoke:training-dataset-quality
 npm run smoke:fine-tuning-readiness
+npm run smoke:fine-tuning-data-sufficiency
 npm run smoke:local-training-runtime
 npm run smoke:local-training-permission-surface
 npm run smoke:local-training-permission-evidence

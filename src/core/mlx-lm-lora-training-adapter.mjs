@@ -14,6 +14,10 @@ import {
 } from './local-training-candidate-artifact-verification.mjs';
 import { assertFineTuningReadinessPackage } from './fine-tuning-readiness.mjs';
 import {
+  assertFineTuningDataSufficiencyPolicy,
+  buildFineTuningDataSufficiencyPolicy,
+} from './fine-tuning-data-sufficiency.mjs';
+import {
   assertLocalTrainingExecutionApproval,
   LOCAL_TRAINING_PROTOCOL_VERSION,
 } from './local-training-runtime.mjs';
@@ -59,7 +63,7 @@ import {
 } from './local-training-failure-recovery.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION =
-  'personal-ai-agent-mlx-lm-lora-training-adapter/v8';
+  'personal-ai-agent-mlx-lm-lora-training-adapter/v9';
 
 const ADAPTER_STATES = new WeakMap();
 
@@ -85,6 +89,7 @@ const REMAINING_GATES = Object.freeze([
   'mlx-os-isolation-integration',
   'os-enforced-mlx-unified-memory-limit',
   'mlx-process-supervisor-integration',
+  'fine-tuning-data-sufficiency-approved',
   'explicit-actual-training-request',
 ]);
 
@@ -561,6 +566,7 @@ function buildContract(
   darwinSuspendedExec,
   osIsolation,
   processSupervisor,
+  dataSufficiencyPolicy,
 ) {
   const content = {
     actualMlxMemoryLimitEnforced: false,
@@ -575,6 +581,24 @@ function buildContract(
     },
     darwinSuspendedExecContractValidated: true,
     executionMode: 'fixture-simulated',
+    fineTuningDataSufficiencyAssessmentBound: false,
+    fineTuningDataSufficiencyPolicy: {
+      candidateReviewOnly:
+        dataSufficiencyPolicy.candidateReviewOnly,
+      candidateReviewRequiresApproval:
+        dataSufficiencyPolicy.candidateReviewRequiresApproval,
+      externalSubmissionAuthorized:
+        dataSufficiencyPolicy.externalSubmissionAuthorized,
+      id: dataSufficiencyPolicy.id,
+      policyBasis: dataSufficiencyPolicy.policyBasis,
+      policyHash: dataSufficiencyPolicy.policyHash,
+      productionQualityThresholdClaim:
+        dataSufficiencyPolicy.productionQualityThresholdClaim,
+      requirements: { ...dataSufficiencyPolicy.requirements },
+      schemaVersion: dataSufficiencyPolicy.schemaVersion,
+      trainingAuthorized: dataSufficiencyPolicy.trainingAuthorized,
+    },
+    fineTuningDataSufficiencyPolicyValidated: true,
     dynamicRuntimeClosureComplete: false,
     fixedInterpreterFlags: ['-E', '-S', '-B'],
     fixedArgumentOrder: [
@@ -823,6 +847,9 @@ export function createMlxLmLoraTrainingAdapter({
   const processSupervisor =
     buildLocalTrainingProcessSupervisorContract();
   assertLocalTrainingProcessSupervisorContract(processSupervisor);
+  const dataSufficiencyPolicy =
+    buildFineTuningDataSufficiencyPolicy();
+  assertFineTuningDataSufficiencyPolicy(dataSufficiencyPolicy);
   const contract = deepFreeze(
     buildContract(
       runtimeClosure,
@@ -831,6 +858,7 @@ export function createMlxLmLoraTrainingAdapter({
       darwinSuspendedExec,
       osIsolation,
       processSupervisor,
+      dataSufficiencyPolicy,
     ),
   );
   let lastObservation = null;

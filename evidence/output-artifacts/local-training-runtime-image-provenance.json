@@ -1,6 +1,6 @@
 {
   "adapterBinding": {
-    "adapterContractHash": "7b53090bd8d14394b4df0755f629d87c508e64b48068165cf3fc1042d41dd1f3",
+    "adapterContractHash": "e5f36187d04771106b5de155dcb57fafb94381307b603e7dfb8578f5e60e8b2f",
     "dynamicNativeGate": "mlx-dynamic-native-runtime-closure",
     "provenanceContractHash": "c0ee725637f0438c98ba33306a0a1c6b3882e4ff1e71f68aacf1463cb7cea65a",
     "verifyToExecGate": "mlx-verify-to-exec-closure"
@@ -65,6 +65,6 @@
   },
   "replayPlatform": "darwin",
   "schemaVersion": "personal-ai-agent-local-training-runtime-image-provenance-evidence/v1",
-  "evidenceHash": "602b2c7b38e7d86df51fce703c48b2e19167a5be4149c6795d20043f57c869d9",
-  "id": "local-training-runtime-image-provenance-evidence-602b2c7b38e7d86df51fce703c48b2e19167a5be4149c6795d20043f57c869d9"
+  "evidenceHash": "b8fe791eedbb77cdc6f2b592ca1a0a5fe70d086c3d95d5f325a5c72dd1759502",
+  "id": "local-training-runtime-image-provenance-evidence-b8fe791eedbb77cdc6f2b592ca1a0a5fe70d086c3d95d5f325a5c72dd1759502"
 }

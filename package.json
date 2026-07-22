@@ -147,6 +147,8 @@
     "smoke:approved-training-record": "node scripts/smoke-approved-training-record.mjs",
     "smoke:training-dataset-quality": "node scripts/smoke-training-dataset-quality.mjs",
     "smoke:fine-tuning-readiness": "node scripts/smoke-fine-tuning-readiness.mjs",
+    "build:fine-tuning-data-sufficiency-evidence": "node scripts/build-fine-tuning-data-sufficiency-evidence.mjs",
+    "smoke:fine-tuning-data-sufficiency": "node scripts/smoke-fine-tuning-data-sufficiency.mjs",
     "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
     "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:local-training-permission-surface": "node scripts/smoke-local-training-permission-surface.mjs",

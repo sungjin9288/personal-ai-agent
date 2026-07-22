@@ -154,6 +154,27 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
       /^[a-f0-9]{64}$/,
     );
     assert.equal(context.adapter.contract.trainingAuthorized, false);
+    assert.equal(
+      context.adapter.contract
+        .fineTuningDataSufficiencyAssessmentBound,
+      false,
+    );
+    assert.equal(
+      context.adapter.contract
+        .fineTuningDataSufficiencyPolicyValidated,
+      true,
+    );
+    assert.equal(
+      context.adapter.contract.fineTuningDataSufficiencyPolicy
+        .productionQualityThresholdClaim,
+      false,
+    );
+    assert.equal(
+      context.adapter.contract.remainingGates.includes(
+        'fine-tuning-data-sufficiency-approved',
+      ),
+      true,
+    );
     assert.equal(context.adapter.contract.verifyToExecClosed, false);
     assert.equal(
       context.adapter.contract.processSupervisorContractValidated,

@@ -1,6 +1,6 @@
 {
   "adapterBinding": {
-    "adapterContractHash": "7b53090bd8d14394b4df0755f629d87c508e64b48068165cf3fc1042d41dd1f3",
+    "adapterContractHash": "e5f36187d04771106b5de155dcb57fafb94381307b603e7dfb8578f5e60e8b2f",
     "dynamicNativeGate": "mlx-dynamic-native-runtime-closure",
     "observationContractHash": "b4a063e09cfa9a4b5aa01ed169c510e8a035eaa60ecbe9cddc72d2dffcaa20fb",
     "verifyToExecGate": "mlx-verify-to-exec-closure"
@@ -59,6 +59,6 @@
   },
   "replayPlatform": "darwin",
   "schemaVersion": "personal-ai-agent-local-training-runtime-exec-observation-evidence/v1",
-  "evidenceHash": "2d5a9dff6be1996fbcc69587890e44453953ca36055ac048f4036860eb0266de",
-  "id": "local-training-runtime-exec-observation-evidence-2d5a9dff6be1996fbcc69587890e44453953ca36055ac048f4036860eb0266de"
+  "evidenceHash": "64a61555968c68b46c4458e8ecf2ab0090cbd12f610aad8d5d6c0881215b4aa7",
+  "id": "local-training-runtime-exec-observation-evidence-64a61555968c68b46c4458e8ecf2ab0090cbd12f610aad8d5d6c0881215b4aa7"
 }

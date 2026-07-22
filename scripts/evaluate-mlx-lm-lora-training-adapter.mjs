@@ -419,6 +419,14 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         fixedArgumentOrder: adapter.contract.fixedArgumentOrder,
         fixedInterpreterFlags:
           adapter.contract.fixedInterpreterFlags,
+        fineTuningDataSufficiencyAssessmentBound:
+          adapter.contract
+            .fineTuningDataSufficiencyAssessmentBound,
+        fineTuningDataSufficiencyPolicy:
+          adapter.contract.fineTuningDataSufficiencyPolicy,
+        fineTuningDataSufficiencyPolicyValidated:
+          adapter.contract
+            .fineTuningDataSufficiencyPolicyValidated,
         nativeClosureComplete:
           adapter.contract.nativeClosureComplete,
         osIsolation: adapter.contract.osIsolation,

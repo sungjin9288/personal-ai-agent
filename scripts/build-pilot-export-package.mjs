@@ -57,6 +57,7 @@ const BASE_PACKAGE_FILES = [
   'evidence/output-artifacts/user-learning-conflict-revocation.json',
   'evidence/output-artifacts/user-learning-operator-override.json',
   'evidence/output-artifacts/user-learning-operator-surface.json',
+  'evidence/output-artifacts/fine-tuning-data-sufficiency.json',
   'evidence/output-artifacts/local-training-runtime-contract.json',
   'evidence/output-artifacts/local-training-permission-surface.json',
   'evidence/output-artifacts/local-training-environment-preflight.json',
