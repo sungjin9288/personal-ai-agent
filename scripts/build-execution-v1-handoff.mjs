@@ -42,6 +42,15 @@ const commit = extractBulletValue(closeoutMarkdown, 'commit') || extractBulletVa
 const generatedAt = new Date().toISOString();
 const localDate = formatLocalDate(new Date(), 'Asia/Seoul');
 const visualArtifactSetSha256 = extractBulletValue(evidenceMarkdown, 'artifactSetSha256') || 'not captured';
+const liveValidationMode = extractBulletValue(closeoutMarkdown, 'liveValidationMode')
+  || extractBulletValue(evidenceMarkdown, 'liveValidationMode')
+  || 'legacy-unqualified';
+const archivedLiveValidationSourceGeneratedAt = extractBulletValue(closeoutMarkdown, 'archivedLiveValidationSourceGeneratedAt')
+  || extractBulletValue(evidenceMarkdown, 'archivedLiveValidationSourceGeneratedAt');
+const archivedLiveValidationSourceCommit = extractBulletValue(closeoutMarkdown, 'archivedLiveValidationSourceCommit')
+  || extractBulletValue(evidenceMarkdown, 'archivedLiveValidationSourceCommit');
+const archivedLiveValidationProviders = extractBulletValue(closeoutMarkdown, 'archivedLiveValidationProviders')
+  || extractBulletValue(evidenceMarkdown, 'archivedLiveValidationProviders');
 const snapshotDir = path.join(snapshotsRoot, commit);
 const snapshotDisplayPath = fs.existsSync(snapshotDir)
   ? formatMarkdownLinkTarget(snapshotDir, outputPath)
@@ -113,9 +122,20 @@ const lines = [
   `- immutableSnapshot: [${snapshotDisplayPath}](${snapshotDisplayPath})`,
   `- visualArtifactSetSha256: ${visualArtifactSetSha256}`,
   `- commitPushStatus: ${commitPushStatus.summary}`,
+  `- liveValidationMode: ${liveValidationMode}`,
+  ...(archivedLiveValidationSourceGeneratedAt
+    ? [`- archivedLiveValidationSourceGeneratedAt: ${archivedLiveValidationSourceGeneratedAt}`]
+    : []),
+  ...(archivedLiveValidationSourceCommit
+    ? [`- archivedLiveValidationSourceCommit: ${archivedLiveValidationSourceCommit}`]
+    : []),
+  ...(archivedLiveValidationProviders
+    ? [`- archivedLiveValidationProviders: ${archivedLiveValidationProviders}`]
+    : []),
   '',
   '## Operational State',
   '',
+  `- live validation evidence: ${formatLiveValidationProvenance()}`,
   `- deterministic execution flow: ${statusMap.get('deterministic smoke') || 'not verified'}`,
   `- CLI execution contract: ${deterministicRows.includes('smoke:execution-cli: passed') ? 'ready' : 'not verified'}`,
   `- operator console execution contract: ${deterministicRows.includes('smoke:ui-execution-console: passed') ? 'ready' : 'not verified'}`,
@@ -131,7 +151,9 @@ for (const provider of liveProviderStates) {
 
 lines.push(
   '',
-  '## Live Failure Triage Summary',
+  liveValidationMode === 'archived-preserved-not-rerun'
+    ? '## Archived Live Failure Triage Summary (not rerun in this refresh)'
+    : '## Live Failure Triage Summary',
   '',
 );
 
@@ -279,7 +301,17 @@ function buildCompletionBoundary(providerStates) {
     blockers.push('local provider live validation still requires target runtime configuration');
   }
 
-  return `Execution v1 is provider-scoped pilot ready for a bounded local-first path validated by ${formatProviderLabels(passedProviders)}. It is not production-ready or live-provider-complete because ${formatSentenceList(blockers)}.`;
+  const validationSummary = liveValidationMode === 'archived-preserved-not-rerun'
+    ? `supported by archived ${formatProviderLabels(passedProviders)} live validation from ${archivedLiveValidationSourceCommit || 'an unknown source commit'} (${archivedLiveValidationSourceGeneratedAt || 'unknown generatedAt'}), not rerun in this refresh`
+    : `validated by ${formatProviderLabels(passedProviders)}`;
+  return `Execution v1 is provider-scoped pilot ready for a bounded local-first path ${validationSummary}. It is not production-ready or live-provider-complete because ${formatSentenceList(blockers)}.`;
+}
+
+function formatLiveValidationProvenance() {
+  if (liveValidationMode !== 'archived-preserved-not-rerun') {
+    return liveValidationMode;
+  }
+  return `${liveValidationMode}; providers=${archivedLiveValidationProviders || 'none'}; sourceCommit=${archivedLiveValidationSourceCommit || 'unknown'}; sourceGeneratedAt=${archivedLiveValidationSourceGeneratedAt || 'unknown'}`;
 }
 
 function buildMissingProviderEvidenceStep(missingProviders) {

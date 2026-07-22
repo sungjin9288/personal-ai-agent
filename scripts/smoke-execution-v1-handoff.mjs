@@ -21,6 +21,10 @@ fs.writeFileSync(evidencePath, [
   `- commit: ${commit}`,
   '- mode: execution-v1-verification',
   '- liveFlags: none',
+  '- liveValidationMode: archived-preserved-not-rerun',
+  '- archivedLiveValidationSourceGeneratedAt: 2026-04-01T00:00:00.000Z',
+  '- archivedLiveValidationSourceCommit: archived-source-commit',
+  '- archivedLiveValidationProviders: local',
   '',
   '## Deterministic Verification',
   '',
@@ -65,6 +69,10 @@ fs.writeFileSync(closeoutPath, [
   `- branch: ${branch}`,
   `- commit: ${commit}`,
   '- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)',
+  '- liveValidationMode: archived-preserved-not-rerun',
+  '- archivedLiveValidationSourceGeneratedAt: 2026-04-01T00:00:00.000Z',
+  '- archivedLiveValidationSourceCommit: archived-source-commit',
+  '- archivedLiveValidationProviders: local',
   '',
   '## Closeout Checklist',
   '',
@@ -119,10 +127,18 @@ const handoff = fs.readFileSync(handoffPath, 'utf8');
 assert.match(handoff, /^# Execution v1 Handoff/m);
 assert.match(handoff, new RegExp(`^- commit: ${escapeRegExp(commit)}$`, 'm'));
 assert.match(handoff, /^- commitPushStatus: .+$/m);
+assert.match(handoff, /^- liveValidationMode: archived-preserved-not-rerun$/m);
+assert.match(handoff, /^- archivedLiveValidationSourceCommit: archived-source-commit$/m);
+assert.match(
+  handoff,
+  /^- live validation evidence: archived-preserved-not-rerun; providers=local; sourceCommit=archived-source-commit; sourceGeneratedAt=2026-04-01T00:00:00.000Z$/m,
+);
 assert.match(handoff, /^- deterministic execution flow: ready$/m);
 assert.match(handoff, /^- reference adoption aggregate: ready, 15 scripts, ok=true, totalDuration=1.0s$/m);
 assert.match(handoff, /^- OpenAI live validation: blocked by missing `OPENAI_API_KEY`$/m);
 assert.match(handoff, /^- Hermes live validation: blocked by missing `HERMES_PROVIDER_MODEL`$/m);
+assert.match(handoff, /^## Archived Live Failure Triage Summary \(not rerun in this refresh\)$/m);
+assert.match(handoff, /supported by archived local provider live validation from archived-source-commit \(2026-04-01T00:00:00.000Z\), not rerun in this refresh/);
 assert.match(handoff, new RegExp(`^- visual artifact set: ${escapeRegExp(artifactSetSha256)}$`, 'm'));
 assert.equal(handoff.includes('npm run preflight:execution-v1:all'), true);
 assert.equal(handoff.includes('npm run refresh:execution-v1-artifacts'), true);

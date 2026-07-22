@@ -114,7 +114,12 @@ const internalAlphaSection = extractSection(releaseReadiness, '### Internal Alph
 const currentOpenBlockersSection = extractSection(releaseReadiness, '## Current Open Blockers');
 const currentStatus = extractStatusMap(closeout, 'Current Status');
 const operationalState = extractStatusMap(handoff, 'Operational State');
-const liveValidation = extractStatusMap(evidence, 'Live Validation');
+const liveValidation = extractStatusMap(evidence, 'Archived Live Validation (not rerun in this refresh)');
+if (liveValidation.size === 0) {
+  for (const [key, value] of extractStatusMap(evidence, 'Live Validation')) {
+    liveValidation.set(key, value);
+  }
+}
 const releaseArtifactHygiene = runReleaseArtifactHygiene({ repoDir });
 
 assert.equal(releaseLabel, 'provider-scoped pilot ready for OpenAI-backed local-first path');

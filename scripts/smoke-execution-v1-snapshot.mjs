@@ -72,6 +72,25 @@ assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'commit'), effectiveVer
 assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'generatedAt'), extractBulletValue(evidenceMarkdown, 'generatedAt'));
 assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'generatedAt'), extractBulletValue(closeoutMarkdown, 'generatedAt'));
 assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'visualArtifactSetSha256'), extractBulletValue(handoffMarkdown, 'visualArtifactSetSha256'));
+assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'liveValidationMode'), extractBulletValue(evidenceMarkdown, 'liveValidationMode'));
+assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'liveValidationMode'), extractBulletValue(closeoutMarkdown, 'liveValidationMode'));
+assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'liveValidationMode'), extractBulletValue(handoffMarkdown, 'liveValidationMode'));
+assert.equal(
+  extractBulletValue(snapshotEvidenceMarkdown, 'archivedLiveValidationSourceCommit'),
+  extractBulletValue(evidenceMarkdown, 'archivedLiveValidationSourceCommit'),
+);
+assert.equal(
+  extractBulletValue(snapshotCloseoutMarkdown, 'archivedLiveValidationSourceGeneratedAt'),
+  extractBulletValue(closeoutMarkdown, 'archivedLiveValidationSourceGeneratedAt'),
+);
+assert.equal(
+  extractBulletValue(snapshotHandoffMarkdown, 'archivedLiveValidationSourceCommit'),
+  extractBulletValue(handoffMarkdown, 'archivedLiveValidationSourceCommit'),
+);
+assert.equal(
+  extractBulletValue(snapshotHandoffMarkdown, 'archivedLiveValidationProviders'),
+  extractBulletValue(handoffMarkdown, 'archivedLiveValidationProviders'),
+);
 assert.equal(
   extractBulletValue(snapshotCloseoutMarkdown, 'evidence'),
   `[execution-v1-evidence.md](${snapshotEvidenceDisplayPath})`,

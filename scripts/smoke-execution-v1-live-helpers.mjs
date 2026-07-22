@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { buildLiveValidationEntries } from './execution-v1-live-evidence-utils.mjs';
+import {
+  buildLiveValidationEntries,
+  readArchivedLiveValidationProvenance,
+} from './execution-v1-live-evidence-utils.mjs';
 
 const repoDir = process.cwd();
 const liveHelperProviders = [
@@ -169,7 +172,15 @@ const preservedEntries = buildLiveValidationEntries(
     [
       '# Execution v1 Evidence',
       '',
-      '## Live Validation',
+      '- generatedAt: 2026-05-01T00:00:00.000Z',
+      '- commit: archived-source-commit',
+      '- liveValidationMode: archived-preserved-not-rerun',
+      '',
+      '## Archived Live Validation (not rerun in this refresh)',
+      '',
+      '- sourceGeneratedAt: 2026-05-01T00:00:00.000Z',
+      '- sourceCommit: archived-source-commit',
+      '- currentRefreshReranProviders: none',
       '',
       '- openai: passed (missionId=mission_old_openai, executionSessionId=execsession_old_openai, verification=passed)',
       '- anthropic: failed (anthropic live mission run failed | rootDir=<temp>/anthropic | missionId=mission_old_anthropic)',
@@ -194,6 +205,36 @@ assert.equal(preservedLines.some((line) => line.includes('mission_old_openai')),
 assert.equal(preservedLines.some((line) => line.includes('mission_old_anthropic')), true);
 assert.equal(preservedLines.some((line) => line.includes('mission_new_local')), true);
 assert.equal(preservedLines.some((line) => line.includes('mission_old_local')), false);
+
+const firstPreservedProvenance = readArchivedLiveValidationProvenance([
+  '# Execution v1 Evidence',
+  '',
+  '- generatedAt: 2026-05-01T00:00:00.000Z',
+  '- commit: original-live-source-commit',
+  '',
+  '## Live Validation',
+  '',
+  '- openai: passed (missionId=mission_original)',
+].join('\n'));
+assert.deepEqual(firstPreservedProvenance, {
+  sourceCommit: 'original-live-source-commit',
+  sourceGeneratedAt: '2026-05-01T00:00:00.000Z',
+});
+
+const secondPreservedProvenance = readArchivedLiveValidationProvenance([
+  '# Execution v1 Evidence',
+  '',
+  '- generatedAt: 2026-06-01T00:00:00.000Z',
+  '- commit: intermediate-evidence-commit',
+  '- liveValidationMode: archived-preserved-not-rerun',
+  '- archivedLiveValidationSourceGeneratedAt: 2026-05-01T00:00:00.000Z',
+  '- archivedLiveValidationSourceCommit: original-live-source-commit',
+  '',
+  '## Archived Live Validation (not rerun in this refresh)',
+  '',
+  '- openai: passed (missionId=mission_original)',
+].join('\n'));
+assert.deepEqual(secondPreservedProvenance, firstPreservedProvenance);
 
 console.log(
   JSON.stringify(

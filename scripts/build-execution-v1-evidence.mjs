@@ -1,7 +1,10 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { buildLiveValidationEntries } from './execution-v1-live-evidence-utils.mjs';
+import {
+  buildLiveValidationEntries,
+  readArchivedLiveValidationProvenance,
+} from './execution-v1-live-evidence-utils.mjs';
 import { sanitizePortableMarkdown } from './live-validation-utils.mjs';
 
 const repoDir = process.cwd();
@@ -14,7 +17,7 @@ const forwardedArgs = process.argv
   .slice(2)
   .filter((arg) => arg !== '--preserve-archived-live-validation' && arg !== '--reuse-existing-deterministic');
 const archivedEvidenceMarkdowns = preserveArchivedLiveValidation
-  ? [readOptionalFile(outputPath), readGitFileAtHead('docs/execution-v1-evidence.md')].filter(Boolean)
+  ? [readGitFileAtHead('docs/execution-v1-evidence.md'), readOptionalFile(outputPath)].filter(Boolean)
   : [];
 const existingRawSummary = parseRawSummary(readOptionalFile(outputPath));
 
@@ -54,6 +57,26 @@ const referenceAdoptionSummary = (verification.deterministic || []).find(
   (item) => item.script === 'smoke:reference-adoptions',
 )?.referenceAdoptionSummary || null;
 const liveValidationEntries = buildLiveValidationEntries(verification.liveValidation || [], archivedEvidenceMarkdowns);
+const archivedLiveValidationSource = archivedEvidenceMarkdowns.find(hasLiveValidationSection) || '';
+const archivedLiveValidationProvenance = readArchivedLiveValidationProvenance(archivedLiveValidationSource);
+const archivedLiveValidationSourceGeneratedAt = archivedLiveValidationProvenance?.sourceGeneratedAt || '';
+const archivedLiveValidationSourceCommit = archivedLiveValidationProvenance?.sourceCommit || '';
+const hasArchivedLiveValidation = liveValidationEntries.some((entry) => entry.summary.archived === true);
+const hasCurrentLiveValidation = liveValidationEntries.some((entry) => entry.summary.archived !== true);
+const archivedLiveValidationProviders = liveValidationEntries
+  .filter((entry) => entry.summary.archived === true)
+  .map((entry) => entry.summary.provider);
+const liveValidationMode = resolveLiveValidationMode({
+  hasArchivedLiveValidation,
+  hasCurrentLiveValidation,
+  hasEntries: liveValidationEntries.length > 0,
+});
+const currentRefreshReranProviders = liveValidationEntries
+  .filter((entry) => entry.summary.archived !== true)
+  .map((entry) => entry.summary.provider);
+const liveValidationHeading = liveValidationMode === 'archived-preserved-not-rerun'
+  ? 'Archived Live Validation (not rerun in this refresh)'
+  : 'Live Validation';
 
 const lines = [
   '# Execution v1 Evidence',
@@ -63,6 +86,14 @@ const lines = [
   `- commit: ${commit}`,
   `- mode: ${verification.mode}`,
   `- liveFlags: ${liveFlags.length ? liveFlags.join(', ') : 'none'}`,
+  `- liveValidationMode: ${liveValidationMode}`,
+  ...(hasArchivedLiveValidation
+    ? [
+        `- archivedLiveValidationSourceGeneratedAt: ${archivedLiveValidationSourceGeneratedAt || 'unknown'}`,
+        `- archivedLiveValidationSourceCommit: ${archivedLiveValidationSourceCommit || 'unknown'}`,
+        `- archivedLiveValidationProviders: ${archivedLiveValidationProviders.join(', ') || 'none'}`,
+      ]
+    : []),
   '',
   '## Deterministic Verification',
   '',
@@ -115,11 +146,19 @@ lines.push(
   `- artifactSetSha256: ${visualManifestResult.artifactSetSha256}`,
 );
 
-lines.push('', '## Live Validation', '');
+lines.push('', `## ${liveValidationHeading}`, '');
 
 if (liveValidationEntries.length === 0) {
   lines.push('- not requested');
 } else {
+  if (hasArchivedLiveValidation) {
+    lines.push(
+      `- sourceGeneratedAt: ${archivedLiveValidationSourceGeneratedAt || 'unknown'}`,
+      `- sourceCommit: ${archivedLiveValidationSourceCommit || 'unknown'}`,
+      `- currentRefreshReranProviders: ${currentRefreshReranProviders.length ? currentRefreshReranProviders.join(', ') : 'none'}`,
+      '',
+    );
+  }
   for (const entry of liveValidationEntries) {
     lines.push(...entry.lines);
   }
@@ -141,7 +180,9 @@ lines.push(
   '',
   `- browser interaction E2E: ${browserE2EPassed ? 'ready (Playwright CLI flow passed)' : 'not verified'}`,
   `- reference adoption gate: ${referenceAdoptionsPassed ? 'ready (aggregate smoke passed)' : 'not verified'}`,
-  '- live provider validation은 해당 provider env가 있을 때만 수행되며, 요청되지 않았거나 env가 없으면 skipped 상태로 남음',
+  hasArchivedLiveValidation
+    ? '- live provider 결과는 위 source commit에서 보존되었으며 이번 refresh에서 재실행되지 않음'
+    : '- live provider validation은 해당 provider env가 있을 때만 수행되며, 요청되지 않았거나 env가 없으면 skipped 상태로 남음',
   '',
   '## Raw Summary',
   '',
@@ -163,6 +204,10 @@ console.log(
       commit,
       branch,
       generatedAt,
+      liveValidationMode,
+      archivedLiveValidationSourceCommit: archivedLiveValidationSourceCommit || null,
+      archivedLiveValidationSourceGeneratedAt: archivedLiveValidationSourceGeneratedAt || null,
+      archivedLiveValidationProviders,
     },
     null,
     2,
@@ -180,6 +225,23 @@ function readGitFileAtHead(relativePath) {
     env: process.env,
   });
   return result.status === 0 ? String(result.stdout || '') : '';
+}
+
+function hasLiveValidationSection(markdown) {
+  return /(?:^|\n)## (?:Archived Live Validation \(not rerun in this refresh\)|Live Validation)\n/.test(String(markdown || ''));
+}
+
+function resolveLiveValidationMode({ hasArchivedLiveValidation, hasCurrentLiveValidation, hasEntries }) {
+  if (hasArchivedLiveValidation && hasCurrentLiveValidation) {
+    return 'mixed-current-and-archived';
+  }
+  if (hasArchivedLiveValidation) {
+    return 'archived-preserved-not-rerun';
+  }
+  if (hasEntries) {
+    return 'current-run';
+  }
+  return 'not-requested';
 }
 
 function buildVerificationSummary({ existingRawSummary, reuseExistingDeterministic, verifyOutput }) {

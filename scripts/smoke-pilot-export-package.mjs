@@ -77,7 +77,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 133$/m);
+assert.match(manifest, /^- fileCount: 134$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -136,6 +136,7 @@ const requiredPaths = [
   'evidence/output-artifacts/user-learning-operator-override.json',
   'evidence/output-artifacts/user-learning-operator-surface.json',
   'evidence/output-artifacts/fine-tuning-data-sufficiency.json',
+  'evidence/output-artifacts/fine-tuning-data-collection-plan.json',
   'evidence/output-artifacts/local-training-runtime-contract.json',
   'evidence/output-artifacts/local-training-permission-surface.json',
   'evidence/output-artifacts/local-training-environment-preflight.json',
@@ -357,6 +358,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:approved-training-record/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:training-dataset-quality/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-readiness/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-sufficiency/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-collection-plan/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-runtime/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-environment-preflight/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-toolchain-decision/);
