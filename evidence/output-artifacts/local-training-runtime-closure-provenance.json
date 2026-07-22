@@ -1,0 +1,56 @@
+{
+  "adapterBinding": {
+    "contractHash": "ee8fcecbbc18099a195639a26582ec2f6576030c5329997e40c13ccc1f2d290a",
+    "remainingGates": [
+      "os-bound-dynamic-native-and-exec-closure",
+      "os-enforced-network-isolation",
+      "os-enforced-resource-limits",
+      "process-group-lifecycle-and-revocation-monitoring",
+      "explicit-actual-training-request"
+    ],
+    "runtimeClosureProvenanceHash": "31fe7708c263e81f75eae349c55c237094c165cda41e57528b4f59bd1644b54e"
+  },
+  "claimBoundary": {
+    "actualDependencyInstallationPerformed": false,
+    "actualMlxProcessSpawned": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "dynamicRuntimeClosureComplete": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "nativeClosureComplete": false,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "staticRuntimeClosureValidated": true,
+    "trainingAuthorized": false,
+    "verifyToExecClosed": false
+  },
+  "closure": {
+    "artifactSetSha256": "c560471ce0c8f0272b952dcbe9e592b69f4bcde27bb318b93400beb9ecc6d670",
+    "entrypointSha256": "8e898e876d291febeb8c6b78c6d35cd9f5ea0e0dad377efd9d7d05226938b5cc",
+    "fileCount": 4,
+    "importGraphHash": "e17b28cbe6ba7d69fddb3629b9e35a7db7b45d0553c405d23e8e041391af9279",
+    "interpreterSha256": "8696638b9d90efaa60d992116e3bdd90d4a4d60558c00ecd344a2c8f35011b66",
+    "provenanceHash": "31fe7708c263e81f75eae349c55c237094c165cda41e57528b4f59bd1644b54e",
+    "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance/v1"
+  },
+  "costFree": true,
+  "failureGuards": {
+    "adapterActualProcessRemainsBlocked": true,
+    "adapterBoundToClosure": true,
+    "ambientImportHookBlocked": true,
+    "deterministicProvenance": true,
+    "knownDynamicImportConstructBlocked": true,
+    "invalidProvenanceHashBlocked": true,
+    "hardLinkBlocked": true,
+    "nativeExtensionBlocked": true,
+    "symlinkBlocked": true,
+    "tamperBlockedByCurrentBinding": true,
+    "unknownExecutableBlocked": true,
+    "writableRuntimeFileBlocked": true
+  },
+  "mode": "fixture-simulated-static-runtime-closure",
+  "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance-evidence/v1",
+  "evidenceHash": "2e660017710b643d353d6449130f6c275ac537da1648744d0202c01be1f1ac36",
+  "id": "local-training-runtime-closure-provenance-evidence-2e660017710b643d353d6449130f6c275ac537da1648744d0202c01be1f1ac36"
+}

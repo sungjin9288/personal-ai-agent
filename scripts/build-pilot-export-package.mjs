@@ -66,6 +66,7 @@ const BASE_PACKAGE_FILES = [
   'evidence/output-artifacts/local-training-acquisition-artifact-verification.json',
   'evidence/output-artifacts/local-training-post-acquisition-readiness.json',
   'evidence/output-artifacts/mlx-lm-lora-training-adapter.json',
+  'evidence/output-artifacts/local-training-runtime-closure-provenance.json',
   'evidence/output-artifacts/local-training-failure-recovery.json',
   'evidence/output-artifacts/local-training-candidate-artifact-verification.json',
   'evidence/output-artifacts/local-candidate-evaluation-admission.json',

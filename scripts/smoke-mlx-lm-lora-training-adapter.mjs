@@ -55,6 +55,23 @@ assert.equal(
 );
 assert.deepEqual(stored, expected);
 assert.equal(stored.claimBoundary.adapterContractValidated, true);
+assert.equal(stored.claimBoundary.staticRuntimeClosureValidated, true);
+assert.equal(stored.claimBoundary.verifyToExecClosed, false);
+assert.equal(stored.contract.nativeClosureComplete, false);
+assert.equal(stored.contract.dynamicRuntimeClosureComplete, false);
+assert.equal(stored.contract.verifyToExecClosed, false);
+assert.equal(
+  stored.contract.remainingGates.includes(
+    'training-runtime-closure-provenance',
+  ),
+  false,
+);
+assert.equal(
+  stored.contract.remainingGates.includes(
+    'os-bound-dynamic-native-and-exec-closure',
+  ),
+  true,
+);
 for (const field of [
   'actualDependencyInstallationPerformed',
   'actualModelDownloadPerformed',

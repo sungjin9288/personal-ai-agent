@@ -24,6 +24,10 @@ import {
   assertLocalTrainingToolchainDecision,
 } from './local-training-toolchain-decision.mjs';
 import {
+  assertCurrentLocalTrainingRuntimeClosure,
+  describeLocalTrainingRuntimeClosure,
+} from './local-training-runtime-closure-provenance.mjs';
+import {
   buildLocalTrainingFailureCleanupRequest,
   cleanupLocalTrainingFailureRecovery,
   commitLocalTrainingFailureRecovery,
@@ -35,7 +39,7 @@ import {
 } from './local-training-failure-recovery.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION =
-  'personal-ai-agent-mlx-lm-lora-training-adapter/v2';
+  'personal-ai-agent-mlx-lm-lora-training-adapter/v3';
 
 const ADAPTER_STATES = new WeakMap();
 
@@ -45,7 +49,8 @@ const CANDIDATE_ROOT = 'var/local-training/candidates';
 const WORKSPACE_ROOT = 'var/local-training/workspaces';
 const SOURCE_MODEL_ROOT = 'source-model';
 const TRAINER_ROOT = 'trainer';
-const TRAINER_ENTRY = 'bin/mlx_lm.lora';
+const TRAINER_ENTRY = 'mlx_lm_lora.py';
+const TRAINER_INTERPRETER = 'runtime/bin/python3';
 const SOURCE_MANIFEST_KIND = 'source-model';
 const TRAINER_MANIFEST_KIND = 'trainer-package';
 const MAX_ARTIFACT_FILES = 128;
@@ -55,7 +60,7 @@ const REQUIRED_OUTPUT_FILES = Object.freeze([
   'adapters.safetensors',
 ]);
 const REMAINING_GATES = Object.freeze([
-  'training-runtime-closure-provenance',
+  'os-bound-dynamic-native-and-exec-closure',
   'os-enforced-network-isolation',
   'os-enforced-resource-limits',
   'process-group-lifecycle-and-revocation-monitoring',
@@ -528,13 +533,15 @@ function assertSafeSourceModel(fileSystem, sourceRoot) {
   }
 }
 
-function buildContract() {
+function buildContract(runtimeClosure) {
   const content = {
     actualModelTrainingExecuted: false,
     actualMlxProcessSpawned: false,
     adapterFormat: 'mlx-lm-lora-adapter-safetensors',
     dataFiles: ['train.jsonl', 'valid.jsonl'],
     executionMode: 'fixture-simulated',
+    dynamicRuntimeClosureComplete: false,
+    fixedInterpreterFlags: ['-E', '-S', '-B'],
     fixedArgumentOrder: [
       '--model',
       '--train',
@@ -544,12 +551,21 @@ function buildContract() {
       '--adapter-path',
     ],
     networkPolicy: 'fixed-offline-environment-no-inherited-values',
+    nativeClosureComplete: false,
     productionReadyClaim: false,
     remainingGates: [...REMAINING_GATES],
     schemaVersion: MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION,
     sourceModel: { ...EXPECTED_TOOLCHAIN.sourceModel },
+    staticRuntimeClosureValidated: true,
     trainer: { ...EXPECTED_TOOLCHAIN.trainer },
     trainingAuthorized: false,
+    runtimeClosure: {
+      artifactSetSha256:
+        runtimeClosure.closure.artifactSetSha256,
+      provenanceHash: runtimeClosure.provenanceHash,
+      schemaVersion: runtimeClosure.schemaVersion,
+    },
+    verifyToExecClosed: false,
   };
   return {
     ...content,
@@ -560,19 +576,28 @@ function buildContract() {
 function buildEnvironment(workspace) {
   return {
     HF_DATASETS_OFFLINE: '1',
+    HF_DATASETS_CACHE: path.join(workspace, 'cache', 'datasets'),
+    HF_HOME: path.join(workspace, 'cache', 'huggingface'),
     HF_HUB_OFFLINE: '1',
     HOME: path.join(workspace, 'home'),
     LANG: 'C.UTF-8',
     LC_ALL: 'C.UTF-8',
     TOKENIZERS_PARALLELISM: 'false',
+    TRANSFORMERS_CACHE: path.join(
+      workspace,
+      'cache',
+      'transformers',
+    ),
     TRANSFORMERS_OFFLINE: '1',
     TMPDIR: path.join(workspace, 'tmp'),
+    XDG_CACHE_HOME: path.join(workspace, 'cache', 'xdg'),
   };
 }
 
 function runFixtureTrainingAdapter({
   args,
   command,
+  entrypoint,
   environment,
   expectedTrain,
   expectedValidation,
@@ -584,16 +609,21 @@ function runFixtureTrainingAdapter({
   const adapterIndex = args.indexOf('--adapter-path');
   if (
     !path.isAbsolute(command) ||
-    modelIndex !== 0 ||
+    !path.isAbsolute(entrypoint) ||
+    JSON.stringify(args.slice(0, 4)) !==
+      JSON.stringify(['-E', '-S', '-B', entrypoint]) ||
+    modelIndex !== 4 ||
     args[modelIndex + 1] === undefined ||
-    args[2] !== '--train' ||
-    dataIndex !== 3 ||
-    typeIndex !== 5 ||
+    args[6] !== '--train' ||
+    dataIndex !== 7 ||
+    typeIndex !== 9 ||
     args[typeIndex + 1] !== 'lora' ||
-    adapterIndex !== 7 ||
-    args.length !== 9 ||
+    adapterIndex !== 11 ||
+    args.length !== 13 ||
     environment.HF_HUB_OFFLINE !== '1' ||
-    environment.TRANSFORMERS_OFFLINE !== '1'
+    environment.TRANSFORMERS_OFFLINE !== '1' ||
+    Object.hasOwn(environment, 'PATH') ||
+    Object.keys(environment).some((key) => key.startsWith('PYTHON'))
   ) {
     throw new Error(
       'MLX-LM training adapter fixture invocation drifted.',
@@ -703,7 +733,22 @@ export function createMlxLmLoraTrainingAdapter({
     null,
     'repoDir',
   );
-  const contract = deepFreeze(buildContract());
+  const runtimeRoot = requireDirectory(
+    fileSystem,
+    path.join(repoRoot, ACQUISITION_ROOT, TRAINER_ROOT),
+    repoRoot,
+    'runtime closure root',
+  );
+  const runtimeDefinition = {
+    allowedImportRoots: ['mlx_lm'],
+    entryPath: TRAINER_ENTRY,
+    interpreterPath: TRAINER_INTERPRETER,
+    rootDir: runtimeRoot,
+  };
+  const runtimeClosure = describeLocalTrainingRuntimeClosure(
+    runtimeDefinition,
+  );
+  const contract = deepFreeze(buildContract(runtimeClosure));
   let lastObservation = null;
 
   function assertBoundTrainingInputs({
@@ -880,21 +925,30 @@ export function createMlxLmLoraTrainingAdapter({
       trainerRoot,
     });
 
+    assertCurrentLocalTrainingRuntimeClosure({
+      definition: runtimeDefinition,
+      expectedProvenance: runtimeClosure,
+    });
+
     const trainerEntry = requireRegularFile(
       fileSystem,
       trainerRoot,
       TRAINER_ENTRY,
       'trainer entry',
     );
-    const trainerEntryStat = fileSystem.lstatSync(trainerEntry.path);
-    if ((trainerEntryStat.mode & 0o111) === 0) {
-      throw new Error(
-        'MLX-LM training adapter trainer entry must be executable.',
-      );
-    }
+    const trainerInterpreter = requireRegularFile(
+      fileSystem,
+      trainerRoot,
+      TRAINER_INTERPRETER,
+      'trainer interpreter',
+    );
     const trainerEntrySha256 = await hashFile(
       fileSystem,
       trainerEntry.path,
+    );
+    const trainerInterpreterSha256 = await hashFile(
+      fileSystem,
+      trainerInterpreter.path,
     );
 
     const candidateParent = ensurePrivateDirectory(
@@ -939,6 +993,7 @@ export function createMlxLmLoraTrainingAdapter({
       const homeRoot = path.join(workspace, 'home');
       const tempRoot = path.join(workspace, 'tmp');
       for (const directory of [
+        path.join(workspace, 'cache'),
         dataRoot,
         stagedCandidate,
         artifactRoot,
@@ -961,6 +1016,10 @@ export function createMlxLmLoraTrainingAdapter({
 
       const environment = buildEnvironment(workspace);
       const args = [
+        '-E',
+        '-S',
+        '-B',
+        trainerEntry.path,
         '--model',
         sourceRoot,
         '--train',
@@ -971,9 +1030,14 @@ export function createMlxLmLoraTrainingAdapter({
         '--adapter-path',
         artifactRoot,
       ];
+      assertCurrentLocalTrainingRuntimeClosure({
+        definition: runtimeDefinition,
+        expectedProvenance: runtimeClosure,
+      });
       const fixtureResult = runFixtureTrainingAdapter({
         args,
-        command: trainerEntry.path,
+        command: trainerInterpreter.path,
+        entrypoint: trainerEntry.path,
         environment,
         expectedTrain: readinessPackage.exports.train.content,
         expectedValidation:
@@ -1028,7 +1092,9 @@ export function createMlxLmLoraTrainingAdapter({
       });
       if (
         await hashFile(fileSystem, trainerEntry.path) !==
-          trainerEntrySha256
+          trainerEntrySha256 ||
+        await hashFile(fileSystem, trainerInterpreter.path) !==
+          trainerInterpreterSha256
       ) {
         throw new Error(
           'MLX-LM training adapter trainer entry changed during preparation.',
@@ -1101,7 +1167,7 @@ export function createMlxLmLoraTrainingAdapter({
           candidateArtifactSha256: manifest.artifactSetSha256,
           candidateFileCount: files.length,
           candidatePublished: true,
-          commandSha256: trainerEntrySha256,
+          commandSha256: trainerInterpreterSha256,
           contractHash: contract.contractHash,
           dataDigests: {
             train: sha256(readinessPackage.exports.train.content),
@@ -1113,9 +1179,19 @@ export function createMlxLmLoraTrainingAdapter({
             (value) => value.startsWith('--') || value === 'lora',
           ),
           fixtureInvocationContractExercised: true,
+          entrypointSha256: trainerEntrySha256,
+          dynamicRuntimeClosureComplete: false,
+          interpreterSha256: trainerInterpreterSha256,
+          nativeClosureComplete: false,
           productionReadyClaim: false,
           remainingGates: [...REMAINING_GATES],
+          runtimeClosureArtifactSetSha256:
+            runtimeClosure.closure.artifactSetSha256,
+          runtimeClosureProvenanceHash:
+            runtimeClosure.provenanceHash,
+          staticRuntimeClosureValidated: true,
           trainingAuthorized: false,
+          verifyToExecClosed: false,
         },
         result: {
           baseModelId: approval.baseModelId,

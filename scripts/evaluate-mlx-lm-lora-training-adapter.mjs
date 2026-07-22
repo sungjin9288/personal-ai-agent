@@ -17,16 +17,16 @@ import {
 import {
   createLocalTrainingPostAcquisitionReadinessFixture,
 } from './evaluate-local-training-post-acquisition-readiness.mjs';
+import {
+  LOCAL_TRAINING_RUNTIME_CLOSURE_ENTRY_PATH,
+  LOCAL_TRAINING_RUNTIME_CLOSURE_TRAINER_FILES,
+} from './local-training-runtime-closure-fixture.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_EVIDENCE_SCHEMA_VERSION =
   'personal-ai-agent-mlx-lm-lora-training-adapter-evidence/v1';
 
 const STARTED_AT = '2026-07-17T08:41:00.000Z';
-const TRAINER_FILES = [{
-  content: '#!/usr/bin/env python3\n# fixture executable; never spawned\n',
-  mode: 0o700,
-  path: 'bin/mlx_lm.lora',
-}];
+const TRAINER_FILES = LOCAL_TRAINING_RUNTIME_CLOSURE_TRAINER_FILES;
 
 function hashRecord(value) {
   return createHash('sha256')
@@ -220,7 +220,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
       'trainer-entry-hardlink',
     );
     fs.linkSync(
-      path.join(fixture.trainerRoot, 'bin/mlx_lm.lora'),
+      path.join(
+        fixture.trainerRoot,
+        LOCAL_TRAINING_RUNTIME_CLOSURE_ENTRY_PATH,
+      ),
       trainerHardlink,
     );
     failureGuards.hardLinkedTrainerFileBlockedBeforeCandidate =
@@ -375,22 +378,33 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         actualMlxProcessSpawned: false,
         adapterContractValidated: true,
         candidateEvaluationAuthorized: false,
+        dynamicRuntimeClosureComplete: false,
         externalProviderCalls: 'none',
         externalSubmissionAuthorized: false,
         productionReadyClaim: false,
         readyForExplicitCandidateEvaluationRequest: false,
         recordedTrainingRunCreated: false,
         rolloutAuthorized: false,
+        staticRuntimeClosureValidated: true,
         trainingAuthorized: false,
+        verifyToExecClosed: false,
       },
       contract: {
         contractHash: adapter.contract.contractHash,
         dataFiles: adapter.contract.dataFiles,
+        dynamicRuntimeClosureComplete:
+          adapter.contract.dynamicRuntimeClosureComplete,
         fixedArgumentOrder: adapter.contract.fixedArgumentOrder,
+        fixedInterpreterFlags:
+          adapter.contract.fixedInterpreterFlags,
+        nativeClosureComplete:
+          adapter.contract.nativeClosureComplete,
         remainingGates: adapter.contract.remainingGates,
+        runtimeClosure: adapter.contract.runtimeClosure,
         schemaVersion: adapter.contract.schemaVersion,
         sourceModel: adapter.contract.sourceModel,
         trainer: adapter.contract.trainer,
+        verifyToExecClosed: adapter.contract.verifyToExecClosed,
       },
       dataset: {
         exactF1TrainBytesMaterialized: true,
@@ -413,10 +427,14 @@ export async function evaluateMlxLmLoraTrainingAdapter({
           observation.durableFailureRecoveryValidated,
         environmentKeys: observation.environmentKeys,
         inheritedEnvironmentValuesAccepted: false,
+        interpreterBoundByHash:
+          /^[a-f0-9]{64}$/u.test(observation.interpreterSha256),
         localAbsoluteModelPathRequired: true,
         moduleOwnedFixtureInvocationExercised:
           observation.fixtureInvocationContractExercised,
         ownerOnlyDatasetWorkspace: true,
+        runtimeClosureReinspectedBeforeFixtureInvocation:
+          observation.staticRuntimeClosureValidated,
       },
     };
     assert.equal(

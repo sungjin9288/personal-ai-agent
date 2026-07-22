@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-22 Static Local-training Runtime Closure Provenance
+
+- bound the fixture trainer's pinned interpreter, entrypoint, allowlisted static import graph, and exact bytes into the MLX adapter contract
+- revalidated current runtime bytes before workspace creation and immediately before fixture invocation while removing inherited `PATH`, `PYTHONPATH`, and `PYTHON*` values
+- rejected unlisted, linked, writable, native, archive, ambient-hook, and known dynamic-import surfaces before candidate creation
+- kept arbitrary dynamic Python, native dependency closure, verify-to-exec, actual process, installation, download, training, rollout, provider, and production claims false
+
 ## 2026-07-22 Durable Local-training Failure Recovery
 
 - bound each MLX adapter attempt to approval, readiness, acquisition verification, and adapter hashes before candidate publication

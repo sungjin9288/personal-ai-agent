@@ -16,15 +16,15 @@ import {
 import {
   createLocalTrainingPostAcquisitionReadinessFixture,
 } from '../scripts/evaluate-local-training-post-acquisition-readiness.mjs';
+import {
+  LOCAL_TRAINING_RUNTIME_CLOSURE_ENTRY_PATH,
+  LOCAL_TRAINING_RUNTIME_CLOSURE_TRAINER_FILES,
+} from '../scripts/local-training-runtime-closure-fixture.mjs';
 
 const STARTED_AT = '2026-07-17T08:41:00.000Z';
 
 const ADAPTER_ARTIFACT_FILES = {
-  trainerFiles: [{
-    content: '#!/usr/bin/env python3\n# fixture executable; never spawned\n',
-    mode: 0o700,
-    path: 'bin/mlx_lm.lora',
-  }],
+  trainerFiles: LOCAL_TRAINING_RUNTIME_CLOSURE_TRAINER_FILES,
 };
 
 function buildExecutionApproval(fixture) {
@@ -107,7 +107,13 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
       MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION,
     );
     assert.equal(context.adapter.contract.actualMlxProcessSpawned, false);
+    assert.equal(
+      context.adapter.contract.dynamicRuntimeClosureComplete,
+      false,
+    );
+    assert.equal(context.adapter.contract.nativeClosureComplete, false);
     assert.equal(context.adapter.contract.trainingAuthorized, false);
+    assert.equal(context.adapter.contract.verifyToExecClosed, false);
     assert.deepEqual(
       context.observation.fixedArgumentOrder,
       [
@@ -120,6 +126,20 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
       ],
     );
     assert.match(context.observation.commandSha256, /^[a-f0-9]{64}$/);
+    assert.match(
+      context.observation.runtimeClosureProvenanceHash,
+      /^[a-f0-9]{64}$/,
+    );
+    assert.equal(
+      context.observation.staticRuntimeClosureValidated,
+      true,
+    );
+    assert.equal(context.observation.nativeClosureComplete, false);
+    assert.equal(
+      context.observation.dynamicRuntimeClosureComplete,
+      false,
+    );
+    assert.equal(context.observation.verifyToExecClosed, false);
     assert.equal(result.executionKind, 'fixture-simulated');
     assert.equal(
       result.trainerReportedActualModelTrainingExecuted,
@@ -138,14 +158,18 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
     assert.deepEqual(
       context.observation.environmentKeys,
       [
+        'HF_DATASETS_CACHE',
         'HF_DATASETS_OFFLINE',
+        'HF_HOME',
         'HF_HUB_OFFLINE',
         'HOME',
         'LANG',
         'LC_ALL',
         'TMPDIR',
         'TOKENIZERS_PARALLELISM',
+        'TRANSFORMERS_CACHE',
         'TRANSFORMERS_OFFLINE',
+        'XDG_CACHE_HOME',
       ],
     );
   } finally {
@@ -268,6 +292,47 @@ test('MLX-LM adapter keeps actual process execution fail-closed', async () => {
   }
 });
 
+test('MLX-LM adapter refuses an unsafe runtime closure before workspace creation', async () => {
+  for (const trainerFiles of [
+    LOCAL_TRAINING_RUNTIME_CLOSURE_TRAINER_FILES.map((file) =>
+      file.path === LOCAL_TRAINING_RUNTIME_CLOSURE_ENTRY_PATH
+        ? {
+            ...file,
+            content:
+              'module = __import__("mlx_lm.lora")\nmodule.main()\n',
+          }
+        : file),
+    LOCAL_TRAINING_RUNTIME_CLOSURE_TRAINER_FILES.map((file) =>
+      file.path === 'runtime/bin/python3'
+        ? { ...file, mode: 0o600 }
+        : file),
+  ]) {
+    const fixture =
+      await createLocalTrainingPostAcquisitionReadinessFixture({
+        artifactFiles: { trainerFiles },
+        mode: 'recorded-local-acquisition',
+      });
+    try {
+      assert.throws(
+        () => createMlxLmLoraTrainingAdapter({
+          acquisition: acquisitionEvidence(fixture),
+          repoDir: fixture.fixtureRepoDir,
+        }),
+        /unsupported custom import hooks|must be executable/,
+      );
+      assert.equal(
+        fs.existsSync(path.join(
+          fixture.fixtureRepoDir,
+          'var/local-training/workspaces',
+        )),
+        false,
+      );
+    } finally {
+      fixture.cleanup();
+    }
+  }
+});
+
 test('MLX-LM adapter keeps completed acquisition valid after its approval expires', async () => {
   const context = await buildFixture({
     acquisitionApprovalExpiresAt: '2026-07-17T08:40:30.000Z',
@@ -291,7 +356,10 @@ test('MLX-LM adapter rejects hard-linked acquisition files before candidate crea
   try {
     const approval = buildExecutionApproval(context.fixture);
     fs.linkSync(
-      path.join(context.fixture.trainerRoot, 'bin/mlx_lm.lora'),
+      path.join(
+        context.fixture.trainerRoot,
+        LOCAL_TRAINING_RUNTIME_CLOSURE_ENTRY_PATH,
+      ),
       path.join(context.fixture.fixtureRepoDir, 'trainer-entry-hardlink'),
     );
     await assert.rejects(
