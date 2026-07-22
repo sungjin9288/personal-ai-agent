@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T19:05:41.603Z
-- branch: codex/f1-5-private-collection-plan
-- commit: ef8f386f7855478312c46db39d1502e5ee767979
+- generatedAt: 2026-07-22T19:48:04.034Z
+- branch: codex/f1-6-collection-execution-request
+- commit: 3d3b19d7b528aef627f3832b490f2bf8065324c4
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

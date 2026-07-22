@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-22
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning, owner-role attestation intake, private resolution and private collection plan protocols, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
-- Source code modified: yes, the F1.5 private collection plan protocol revalidates the current F1.1–F1.4 chain, binds exact targets and seven pending preparation steps, and writes one integrity-checked owner-only plan per resolution without creating a workspace, collecting data, or changing the public CLI, HTTP, store, audit, or training authority contracts
-- New feature development: yes, the content-free plan contract and synthetic replay are implemented, but no actual owner decision, private plan, workspace, or data is tracked; collection execution approval, candidate review, installation, model download, actual training, external submission, activation, and rollout remain unexecuted or unauthorized
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning, owner-role attestation intake, private resolution, private collection plan, and private collection execution request protocols, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, the F1.6 private collection execution request protocol revalidates the current F1.1–F1.5 chain, preserves the plan expiry, binds exact targets, seven ordered actions, and five pending owner reviews, and writes one integrity-checked owner-only request per plan without creating a workspace, collecting data, or changing the public CLI, HTTP, store, audit, or training authority contracts
+- New feature development: yes, the content-free request contract and synthetic replay are implemented, but no actual request, owner decision, private workspace, or data is tracked; collection execution approval, candidate review, installation, model download, actual training, external submission, activation, and rollout remain unexecuted or unauthorized
 
 ## Generated Evidence Files
 
@@ -183,6 +183,7 @@
 - Fine-tuning reviewed-data intake request: verified with `npm run smoke:fine-tuning-data-intake-request`
 - Fine-tuning reviewed-data intake resolution protocol: verified with `npm run smoke:fine-tuning-data-intake-resolution`
 - Fine-tuning private collection plan protocol: verified with `npm run smoke:fine-tuning-private-collection-plan`
+- Fine-tuning private collection execution request protocol: verified with `npm run smoke:fine-tuning-private-collection-execution-request`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`
