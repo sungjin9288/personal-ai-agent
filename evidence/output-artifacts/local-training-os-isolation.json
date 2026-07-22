@@ -1,0 +1,61 @@
+{
+  "adapterBinding": {
+    "adapterContractHash": "cdc7d8ec955effad7740c3fbf8290e59d4ea8559441a7832ba9a055994941d24",
+    "integrationGate": "mlx-os-isolation-integration",
+    "isolationContractHash": "5a2ee17ba7279503e395e4ee3529392c6b36eafe58ca25a43ed0c3994cd428a4",
+    "memoryGate": "os-enforced-mlx-unified-memory-limit"
+  },
+  "claimBoundary": {
+    "actualDependencyInstallationPerformed": false,
+    "actualDarwinFixtureCpuLimitEnforced": true,
+    "actualDarwinFixtureFileSizeLimitEnforced": true,
+    "actualDarwinFixtureNetworkDenyEnforced": true,
+    "actualDarwinFixtureOpenFilesLimitEnforced": true,
+    "actualMlxMemoryLimitEnforced": false,
+    "actualMlxOsIsolationIntegrated": false,
+    "actualMlxProcessSpawned": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "costFree": true,
+  "failureGuards": {
+    "adapterActualMlxProcessRemainsBlocked": true,
+    "adapterBoundToIsolationContract": true,
+    "controlProvesNetworkWasAvailable": true,
+    "contractTamperBlocked": true,
+    "cpuLimitActuallyTerminatesFixture": true,
+    "fileAndDescriptorLimitsActuallyEnforced": true,
+    "memoryBoundaryRemainsFailClosed": true,
+    "mlxIsolationIntegrationRemainsBlocked": true,
+    "networkDenyActuallyEnforced": true,
+    "wrapperLimitsAreExactAndContentFree": true
+  },
+  "hostObservation": {
+    "addressSpaceProbe": "unavailable",
+    "fixtureSetSha256": "95a52fcd5b4d911e9b2f7cc841a6562a4065faf64cbe0042e7ce018e2ca72bba",
+    "platform": "darwin",
+    "systemToolSetSha256": "cd3772cad840d997e3007c697443445626c449c90ca835fa09e7a15a8d55d32a"
+  },
+  "isolation": {
+    "contractHash": "5a2ee17ba7279503e395e4ee3529392c6b36eafe58ca25a43ed0c3994cd428a4",
+    "networkPolicy": "sandbox-exec-deny-network",
+    "resourceIsolation": "posix-setrlimit-before-exec",
+    "resourceLimits": {
+      "coreDumpBytes": 0,
+      "cpuSeconds": 1,
+      "fileSizeBytes": 65536,
+      "openFiles": 32
+    },
+    "schemaVersion": "personal-ai-agent-local-training-os-isolation/v1"
+  },
+  "mode": "actual-darwin-fixture-os-isolation",
+  "replayPlatform": "darwin",
+  "schemaVersion": "personal-ai-agent-local-training-os-isolation-evidence/v1",
+  "evidenceHash": "2bdd12bf7daf3cd0ddf6fa37837693ceebbe019cf203d3af837026b1c3f6dff9",
+  "id": "local-training-os-isolation-evidence-2bdd12bf7daf3cd0ddf6fa37837693ceebbe019cf203d3af837026b1c3f6dff9"
+}

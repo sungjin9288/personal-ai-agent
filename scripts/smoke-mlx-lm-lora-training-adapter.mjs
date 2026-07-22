@@ -60,6 +60,11 @@ assert.equal(stored.claimBoundary.verifyToExecClosed, false);
 assert.equal(stored.contract.nativeClosureComplete, false);
 assert.equal(stored.contract.dynamicRuntimeClosureComplete, false);
 assert.equal(stored.contract.verifyToExecClosed, false);
+assert.equal(stored.claimBoundary.actualMlxMemoryLimitEnforced, false);
+assert.equal(stored.claimBoundary.actualMlxOsIsolationIntegrated, false);
+assert.equal(stored.claimBoundary.osIsolationContractValidated, true);
+assert.equal(stored.contract.osIsolationContractValidated, true);
+assert.match(stored.contract.osIsolation.contractHash, /^[a-f0-9]{64}$/u);
 assert.equal(
   stored.contract.remainingGates.includes(
     'training-runtime-closure-provenance',
@@ -72,10 +77,24 @@ assert.equal(
   ),
   true,
 );
+assert.equal(
+  stored.contract.remainingGates.includes(
+    'mlx-os-isolation-integration',
+  ),
+  true,
+);
+assert.equal(
+  stored.contract.remainingGates.includes(
+    'os-enforced-mlx-unified-memory-limit',
+  ),
+  true,
+);
 for (const field of [
   'actualDependencyInstallationPerformed',
   'actualModelDownloadPerformed',
   'actualModelTrainingExecuted',
+  'actualMlxMemoryLimitEnforced',
+  'actualMlxOsIsolationIntegrated',
   'actualMlxProcessSpawned',
   'candidateEvaluationAuthorized',
   'externalSubmissionAuthorized',

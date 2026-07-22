@@ -82,6 +82,12 @@ assert.equal(
 );
 assert.equal(
   result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-os-isolation.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
     'evidence/output-artifacts/local-training-failure-recovery.json',
   ),
   true,
