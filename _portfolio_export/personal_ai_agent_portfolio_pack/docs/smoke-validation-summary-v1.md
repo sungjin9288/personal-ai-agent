@@ -74,6 +74,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Fine-tuning reviewed-data intake resolution | `npm run smoke:fine-tuning-data-intake-resolution` | Verifies the current F1.1–F1.3 binding, five exact ordered owner-role attestations, no-follow owner-only input, integrity-checked one-resolution history, hash-only reasons, explicit unverified identity/evidence boundaries, private-plan-only approval, and false collection, review, training, submission, and production claims |
 | Fine-tuning private collection plan | `npm run smoke:fine-tuning-private-collection-plan` | Verifies current F1.1–F1.4 hash, expiry, and target binding, seven pending steps, no-follow owner-only input, one-plan history, separate execution approval, and false workspace, collection, review, training, submission, and production claims |
 | Fine-tuning private collection execution request | `npm run smoke:fine-tuning-private-collection-execution-request` | Verifies current F1.1–F1.5 hash, inherited expiry, exact target, seven-action, and five-review binding, no-follow owner-only plan and resolution input, one-request-per-plan history, and false workspace, collection, review, training, submission, and production claims |
+| Fine-tuning private collection execution resolution | `npm run smoke:fine-tuning-private-collection-execution-resolution` | Verifies current F1.1–F1.6 thirteen-hash binding, inherited expiry, exact targets, seven actions, five ordered hash-only reviews, unanimous bounded-collection approval and rejection paths, no-follow owner-only four-input handling, one-resolution-per-request history, and false actual-data, candidate-review, training, submission, and production claims |
 | Local training runtime contract | `npm run smoke:local-training-runtime` | Verifies exact F1 and expiring approval binding, current permission and post-acquisition admission revalidation before spawn, shell-free local stdio, secret environment filtering, input/output/timeout bounds, strict content-free candidate output, store invariance, and actualModelTrainingExecuted=false boundary |
 | Local training product permission surface | `npm run smoke:local-training-permission-surface` | Verifies CLI request, action inbox aggregation, approver-only HTTP approval and revocation, tenant isolation, ordered gateway audit, private readiness storage, and actualModelTrainingExecuted=false boundary |
 | Local training permission evidence | `npm run smoke:local-training-permission-evidence` | Verifies the tracked content-free replay hash, actual Chromium screenshot hash, zero browser console errors, and productionReadyClaim=false boundary |
@@ -176,6 +177,7 @@ npm run smoke:fine-tuning-data-intake-request
 npm run smoke:fine-tuning-data-intake-resolution
 npm run smoke:fine-tuning-private-collection-plan
 npm run smoke:fine-tuning-private-collection-execution-request
+npm run smoke:fine-tuning-private-collection-execution-resolution
 npm run smoke:local-training-runtime
 npm run smoke:local-training-permission-surface
 npm run smoke:local-training-permission-evidence

@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T19:48:04.034Z
-- branch: codex/f1-6-collection-execution-request
-- commit: 3d3b19d7b528aef627f3832b490f2bf8065324c4
+- generatedAt: 2026-07-22T20:32:10.056Z
+- branch: codex/f1-7-collection-execution-resolution
+- commit: f003f37d9974805c68d3dd2eff153a1db905500c
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
