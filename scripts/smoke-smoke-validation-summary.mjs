@@ -60,6 +60,7 @@ const expectedCommands = [
   'npm run smoke:fine-tuning-data-collection-plan',
   'npm run smoke:fine-tuning-data-intake-request',
   'npm run smoke:fine-tuning-data-intake-resolution',
+  'npm run smoke:fine-tuning-private-collection-plan',
   'npm run smoke:local-training-runtime',
   'npm run smoke:local-training-permission-surface',
   'npm run smoke:local-training-permission-evidence',
