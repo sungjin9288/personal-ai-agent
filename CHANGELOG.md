@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a cost-free Darwin suspended verify-to-exec primitive for one signed fixture interpreter and descriptor-bound Python entrypoint. The broker starts the child with `POSIX_SPAWN_START_SUSPENDED`, compares the kernel-observed `csops` CDHash before `SIGCONT`, and kills a mismatch before user code can create its marker. Replacing the entrypoint path after `O_NOFOLLOW` open does not change the bytes read from inherited stdin. Actual MLX interpreter and entrypoint integration, post-resume dynamic/native closure, unified-memory enforcement, training, Provider calls, rollout, and deployment remain false.
 - Added cost-free Darwin runtime image provenance for one live sandboxed fixture child. Every child-reported image is cross-observed through `vmmap`; standalone files are independently byte-matched, and dyld shared-cache image UUIDs are bound to stable strictly signed cache-file identities. Evidence retains only counts and hashes. Exact VM-set equality, late-load closure, full shared-cache byte hashing, same-user resistance, MLX native closure, verify-to-exec, actual MLX execution, training, Provider calls, rollout, and deployment remain false.
 - Added a cost-free Darwin runtime exec observation for one sandboxed fixture child. Parent pre-launch and post-close inspection now matches the child-reported executable and entry hashes, while loaded runtime-image and module names are retained only as content-free set hashes and counts. This narrows the MLX runtime closure gap without claiming same-user TOCTOU prevention, late lazy-load closure, shared-cache image byte verification, MLX native closure, or MLX verify-to-exec. No dependency installation, model download, training, Provider call, rollout, or deployment was performed.
 - Added a cost-free Darwin fixture preflight for local training OS controls. An unsandboxed loopback control proves local network access before a fixed `sandbox-exec` profile denies connect and listen operations; a Python standard-library wrapper applies exact pre-exec CPU, file-size, open-file, and core-dump limits and the child demonstrates their observable enforcement. This does not claim portable containment, MLX unified-memory enforcement, or MLX OS-isolation integration. No MLX process, dependency installation, model download, training, provider call, rollout, or deployment was performed.
@@ -108,8 +109,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,263,274 bytes`
-- SHA-256: `73b2c2f7953cf1c78b75f9078512117b405233a0b98a379fd7a9ea1d5c54c5cc`
+- Size: `4,265,763 bytes`
+- SHA-256: `a9cd8e40ef6b0d194dbb851fc22ce59db2da2dd47ea8ae1e634c7a54d50aa373`
 
 Included public surfaces:
 

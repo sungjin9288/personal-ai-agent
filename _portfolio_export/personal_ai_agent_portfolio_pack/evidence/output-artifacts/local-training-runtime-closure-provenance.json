@@ -1,6 +1,6 @@
 {
   "adapterBinding": {
-    "contractHash": "0d68ac8d14c17ff587b72067904d9b7a8622769dbd281f98036aa620d0184c75",
+    "contractHash": "7b53090bd8d14394b4df0755f629d87c508e64b48068165cf3fc1042d41dd1f3",
     "remainingGates": [
       "mlx-dynamic-native-runtime-closure",
       "mlx-verify-to-exec-closure",
@@ -52,6 +52,6 @@
   },
   "mode": "fixture-simulated-static-runtime-closure",
   "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance-evidence/v1",
-  "evidenceHash": "df153a70d04a80056e569531d273af5c1103fecc1e9611f36257c9ed52a30a21",
-  "id": "local-training-runtime-closure-provenance-evidence-df153a70d04a80056e569531d273af5c1103fecc1e9611f36257c9ed52a30a21"
+  "evidenceHash": "8385654d7f364f2705acf4979ca710ce730eb151d1f7703519cde1c2d2467ce6",
+  "id": "local-training-runtime-closure-provenance-evidence-8385654d7f364f2705acf4979ca710ce730eb151d1f7703519cde1c2d2467ce6"
 }

@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T11:08:40.140Z
+- generatedAt: 2026-07-22T12:38:10.882Z
 - localDate: 2026-07-22
-- branch: codex/f2c26-runtime-image-provenance
-- commit: edc141c3615e63095dd0ea2273ea371445989905
+- branch: codex/f2c27-darwin-suspended-exec
+- commit: d37e0df71c4114b07141df5a634b59c3080ed81d
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/edc141c3615e63095dd0ea2273ea371445989905](releases/execution-v1/edc141c3615e63095dd0ea2273ea371445989905)
-- visualArtifactSetSha256: 059c88a46819dc98092d02dc517342feb1ff08ed388629095b051763d8db8573
-- commitPushStatus: not pushed, origin/codex/f2c26-runtime-image-provenance not found
+- immutableSnapshot: [releases/execution-v1/d37e0df71c4114b07141df5a634b59c3080ed81d](releases/execution-v1/d37e0df71c4114b07141df5a634b59c3080ed81d)
+- visualArtifactSetSha256: 22f1f6c7d06ee0ca556ef739b14ae86e9583b1d99f75b0e34f6c6284c08b572b
+- commitPushStatus: not pushed, origin/codex/f2c27-darwin-suspended-exec not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=49.8s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=47.6s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 059c88a46819dc98092d02dc517342feb1ff08ed388629095b051763d8db8573
+- visual artifact set: 22f1f6c7d06ee0ca556ef739b14ae86e9583b1d99f75b0e34f6c6284c08b572b
 
 ## Live Provider Handoff
 

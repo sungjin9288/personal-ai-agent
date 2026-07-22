@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T11:08:32.836Z
-- branch: codex/f2c26-runtime-image-provenance
-- commit: edc141c3615e63095dd0ea2273ea371445989905
+- generatedAt: 2026-07-22T12:38:04.163Z
+- branch: codex/f2c27-darwin-suspended-exec
+- commit: d37e0df71c4114b07141df5a634b59c3080ed81d
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist
