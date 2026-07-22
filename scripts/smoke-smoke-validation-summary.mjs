@@ -72,6 +72,7 @@ const expectedCommands = [
   'npm run smoke:local-training-process-supervisor',
   'npm run smoke:local-training-os-isolation',
   'npm run smoke:local-training-runtime-exec-observation',
+  'npm run smoke:local-training-runtime-image-provenance',
   'npm run smoke:local-training-candidate-artifact-verification',
   'npm run smoke:local-candidate-evaluation-admission',
   'npm run smoke:local-candidate-evaluation-runtime',

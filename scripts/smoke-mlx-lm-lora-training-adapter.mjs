@@ -78,6 +78,18 @@ assert.match(
   /^[a-f0-9]{64}$/u,
 );
 assert.equal(
+  stored.claimBoundary.runtimeImageProvenanceContractValidated,
+  true,
+);
+assert.equal(
+  stored.contract.runtimeImageProvenanceContractValidated,
+  true,
+);
+assert.match(
+  stored.contract.runtimeImageProvenance.contractHash,
+  /^[a-f0-9]{64}$/u,
+);
+assert.equal(
   stored.contract.remainingGates.includes(
     'training-runtime-closure-provenance',
   ),

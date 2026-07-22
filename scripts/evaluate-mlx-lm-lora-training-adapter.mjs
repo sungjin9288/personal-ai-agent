@@ -358,6 +358,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
       observation?.runtimeExecObservationContractValidated === true &&
       observation?.runtimeExecObservationContractHash ===
         adapter.contract.runtimeExecObservation.contractHash;
+    failureGuards.runtimeImageProvenanceContractBound =
+      observation?.runtimeImageProvenanceContractValidated === true &&
+      observation?.runtimeImageProvenanceContractHash ===
+        adapter.contract.runtimeImageProvenance.contractHash;
 
     assert.equal(
       Object.values(failureGuards).every(Boolean),
@@ -394,6 +398,7 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         recordedTrainingRunCreated: false,
         rolloutAuthorized: false,
         runtimeExecObservationContractValidated: true,
+        runtimeImageProvenanceContractValidated: true,
         staticRuntimeClosureValidated: true,
         trainingAuthorized: false,
         verifyToExecClosed: false,
@@ -419,6 +424,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
           adapter.contract.runtimeExecObservation,
         runtimeExecObservationContractValidated:
           adapter.contract.runtimeExecObservationContractValidated,
+        runtimeImageProvenance:
+          adapter.contract.runtimeImageProvenance,
+        runtimeImageProvenanceContractValidated:
+          adapter.contract.runtimeImageProvenanceContractValidated,
         runtimeClosure: adapter.contract.runtimeClosure,
         schemaVersion: adapter.contract.schemaVersion,
         sourceModel: adapter.contract.sourceModel,
@@ -464,6 +473,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
           observation.runtimeExecObservationContractValidated === true &&
           observation.runtimeExecObservationContractHash ===
             adapter.contract.runtimeExecObservation.contractHash,
+        runtimeImageProvenanceContractBound:
+          observation.runtimeImageProvenanceContractValidated === true &&
+          observation.runtimeImageProvenanceContractHash ===
+            adapter.contract.runtimeImageProvenance.contractHash,
         runtimeClosureReinspectedBeforeFixtureInvocation:
           observation.staticRuntimeClosureValidated,
       },

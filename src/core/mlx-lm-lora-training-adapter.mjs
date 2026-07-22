@@ -36,6 +36,10 @@ import {
   buildLocalTrainingRuntimeExecObservationContract,
 } from './local-training-runtime-exec-observation.mjs';
 import {
+  assertLocalTrainingRuntimeImageProvenanceContract,
+  buildLocalTrainingRuntimeImageProvenanceContract,
+} from './local-training-runtime-image-provenance.mjs';
+import {
   assertLocalTrainingProcessSupervisorContract,
   buildLocalTrainingProcessSupervisorContract,
 } from './local-training-process-supervisor.mjs';
@@ -51,7 +55,7 @@ import {
 } from './local-training-failure-recovery.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION =
-  'personal-ai-agent-mlx-lm-lora-training-adapter/v6';
+  'personal-ai-agent-mlx-lm-lora-training-adapter/v7';
 
 const ADAPTER_STATES = new WeakMap();
 
@@ -549,6 +553,7 @@ function assertSafeSourceModel(fileSystem, sourceRoot) {
 function buildContract(
   runtimeClosure,
   runtimeExecObservation,
+  runtimeImageProvenance,
   osIsolation,
   processSupervisor,
 ) {
@@ -589,6 +594,11 @@ function buildContract(
       schemaVersion: runtimeExecObservation.schemaVersion,
     },
     runtimeExecObservationContractValidated: true,
+    runtimeImageProvenance: {
+      contractHash: runtimeImageProvenance.contractHash,
+      schemaVersion: runtimeImageProvenance.schemaVersion,
+    },
+    runtimeImageProvenanceContractValidated: true,
     schemaVersion: MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION,
     sourceModel: { ...EXPECTED_TOOLCHAIN.sourceModel },
     staticRuntimeClosureValidated: true,
@@ -788,6 +798,11 @@ export function createMlxLmLoraTrainingAdapter({
   assertLocalTrainingRuntimeExecObservationContract(
     runtimeExecObservation,
   );
+  const runtimeImageProvenance =
+    buildLocalTrainingRuntimeImageProvenanceContract();
+  assertLocalTrainingRuntimeImageProvenanceContract(
+    runtimeImageProvenance,
+  );
   const osIsolation = buildLocalTrainingOsIsolationContract();
   assertLocalTrainingOsIsolationContract(osIsolation);
   const processSupervisor =
@@ -797,6 +812,7 @@ export function createMlxLmLoraTrainingAdapter({
     buildContract(
       runtimeClosure,
       runtimeExecObservation,
+      runtimeImageProvenance,
       osIsolation,
       processSupervisor,
     ),
@@ -1247,6 +1263,9 @@ export function createMlxLmLoraTrainingAdapter({
           runtimeExecObservationContractHash:
             runtimeExecObservation.contractHash,
           runtimeExecObservationContractValidated: true,
+          runtimeImageProvenanceContractHash:
+            runtimeImageProvenance.contractHash,
+          runtimeImageProvenanceContractValidated: true,
           runtimeClosureArtifactSetSha256:
             runtimeClosure.closure.artifactSetSha256,
           runtimeClosureProvenanceHash:

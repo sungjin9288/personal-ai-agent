@@ -1,0 +1,70 @@
+{
+  "adapterBinding": {
+    "adapterContractHash": "0d68ac8d14c17ff587b72067904d9b7a8622769dbd281f98036aa620d0184c75",
+    "dynamicNativeGate": "mlx-dynamic-native-runtime-closure",
+    "provenanceContractHash": "c0ee725637f0438c98ba33306a0a1c6b3882e4ff1e71f68aacf1463cb7cea65a",
+    "verifyToExecGate": "mlx-verify-to-exec-closure"
+  },
+  "claimBoundary": {
+    "actualDarwinFixtureRegularRuntimeImageBytesVerified": true,
+    "actualDarwinFixtureRuntimeImageProvenanceValidated": true,
+    "actualDarwinFixtureSharedCacheImageIdentityVerified": true,
+    "actualDependencyInstallationPerformed": false,
+    "actualMlxNativeRuntimeClosureValidated": false,
+    "actualMlxProcessSpawned": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "dynamicRuntimeClosureComplete": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "nativeClosureComplete": false,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false,
+    "verifyToExecClosed": false
+  },
+  "costFree": true,
+  "failureGuards": {
+    "adapterActualMlxProcessRemainsBlocked": true,
+    "adapterBoundToProvenanceContract": true,
+    "contractTamperBlocked": true,
+    "crossProcessMembershipValidated": true,
+    "dynamicAndNativeClosureRemainBlocked": true,
+    "mlxClosureGatesRemainExplicit": true,
+    "regularImageBytesIndependentlyMatched": true,
+    "sharedCacheIdentityIndependentlyMatched": true,
+    "toolAndWrapperBoundsPreserved": true,
+    "verifyToExecRemainsFailClosed": true
+  },
+  "limitations": {
+    "crossProcessImageSetEqualityValidated": false,
+    "lateLazyLoadClosureComplete": false,
+    "mlxRuntimeImageProvenanceValidated": false,
+    "sameUserMutationResistance": false,
+    "sharedCacheSubcacheBytesHashed": false
+  },
+  "mode": "actual-darwin-fixture-runtime-image-provenance",
+  "observation": {
+    "cacheArchitecture": "arm64e",
+    "cacheEntryCount": 3645,
+    "cacheFileCount": 13,
+    "cacheFileIdentitySetSha256": "674b461f087186e915b3f44c45a1210c505adfbd492a76216b05452cc405db42",
+    "childRuntimeImageCount": 347,
+    "childRuntimeImageSetSha256": "79b5bacb033ad0a7dae49468176f7586bfc50d42cad504ccac36ea278b1bf829",
+    "crossProcessMatchedImageCount": 347,
+    "regularRuntimeImageByteSetSha256": "a8bb9ff9df8393548fbbeab35198e112c2077e79aa61a72ac6dadb89162c7c0b",
+    "regularRuntimeImageCount": 4,
+    "sharedCacheImageCount": 343,
+    "sharedCacheImageIdentitySetSha256": "b4548f5b5ae4604c8f41de83f547f361533eff769115fe8103c84bc54aa57cf3",
+    "sharedCacheUuidCount": 342
+  },
+  "provenanceContract": {
+    "contractHash": "c0ee725637f0438c98ba33306a0a1c6b3882e4ff1e71f68aacf1463cb7cea65a",
+    "runtimeExecObservationContractHash": "b4a063e09cfa9a4b5aa01ed169c510e8a035eaa60ecbe9cddc72d2dffcaa20fb",
+    "schemaVersion": "personal-ai-agent-local-training-runtime-image-provenance/v1"
+  },
+  "replayPlatform": "darwin",
+  "schemaVersion": "personal-ai-agent-local-training-runtime-image-provenance-evidence/v1",
+  "evidenceHash": "d752b69eea46d015934eabeac3ac3edb193d210c78922e4af674ea90b7d438e7",
+  "id": "local-training-runtime-image-provenance-evidence-d752b69eea46d015934eabeac3ac3edb193d210c78922e4af674ea90b7d438e7"
+}
