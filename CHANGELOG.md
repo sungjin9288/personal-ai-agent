@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added content-free static training runtime closure provenance for the MLX-LM fixture adapter. The contract pins one interpreter, one entrypoint, the reachable allowlisted Python module graph, and exact file bytes, then revalidates them before workspace creation and fixture invocation. Dynamic and native dependency closure, verify-to-exec, actual process execution, installation, download, training, rollout, external provider calls, and production claims remain false.
 - Added owner-only durable recovery for the MLX-LM fixture adapter. Success and failure cleanup now resume from explicit states, verify exact candidate bytes, remove workspaces before rollback, and use an immutable claim-edge CAS so concurrent retriers have one winner. Actual process execution, dependency installation, model download, training, rollout, external provider calls, and production claims remain false.
 - Added a non-authorizing MLX-LM LoRA fixture adapter that binds the approved F1 packet to pinned local artifacts, exact train/valid bytes, fixed offline invocation, and atomic candidate publication. The adapter cannot create a recorded training run or candidate-evaluation readiness; actual installation, model download, process execution, training, rollout, and production claims remain false.
 - Exported one successful private host-restart rehearsal as a content-free F2c.19 receipt. The export path revalidated changed-boot recovery and idempotent result binding; the tracked projection records that operator result while excluding raw boot identity, private state hashes, and paths. Public smoke validates the projection contract, not the private restart independently. Evaluator relaunch, model evaluation, training, rollout, external provider calls, and production readiness remain false.
@@ -103,8 +104,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,247,791 bytes`
-- SHA-256: `8135e8e8a471e6d90b2da12c2121241899a27cf7d4d69d208023ca591795d24e`
+- Size: `4,250,545 bytes`
+- SHA-256: `d920bbcbd701c327cf129354759264733ec0369ae928621f8cd975bcac315207`
 
 Included public surfaces:
 

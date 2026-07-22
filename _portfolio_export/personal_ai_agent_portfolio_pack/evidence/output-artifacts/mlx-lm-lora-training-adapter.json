@@ -12,20 +12,24 @@
     "actualMlxProcessSpawned": false,
     "adapterContractValidated": true,
     "candidateEvaluationAuthorized": false,
+    "dynamicRuntimeClosureComplete": false,
     "externalProviderCalls": "none",
     "externalSubmissionAuthorized": false,
     "productionReadyClaim": false,
     "readyForExplicitCandidateEvaluationRequest": false,
     "recordedTrainingRunCreated": false,
     "rolloutAuthorized": false,
-    "trainingAuthorized": false
+    "staticRuntimeClosureValidated": true,
+    "trainingAuthorized": false,
+    "verifyToExecClosed": false
   },
   "contract": {
-    "contractHash": "e26696ce82d8950cd4758ab422ee3535a606fe10cfebaca74e966869fa61f691",
+    "contractHash": "ee8fcecbbc18099a195639a26582ec2f6576030c5329997e40c13ccc1f2d290a",
     "dataFiles": [
       "train.jsonl",
       "valid.jsonl"
     ],
+    "dynamicRuntimeClosureComplete": false,
     "fixedArgumentOrder": [
       "--model",
       "--train",
@@ -34,14 +38,25 @@
       "lora",
       "--adapter-path"
     ],
+    "fixedInterpreterFlags": [
+      "-E",
+      "-S",
+      "-B"
+    ],
+    "nativeClosureComplete": false,
     "remainingGates": [
-      "training-runtime-closure-provenance",
+      "os-bound-dynamic-native-and-exec-closure",
       "os-enforced-network-isolation",
       "os-enforced-resource-limits",
       "process-group-lifecycle-and-revocation-monitoring",
       "explicit-actual-training-request"
     ],
-    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v2",
+    "runtimeClosure": {
+      "artifactSetSha256": "c560471ce0c8f0272b952dcbe9e592b69f4bcde27bb318b93400beb9ecc6d670",
+      "provenanceHash": "31fe7708c263e81f75eae349c55c237094c165cda41e57528b4f59bd1644b54e",
+      "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance/v1"
+    },
+    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v3",
     "sourceModel": {
       "id": "Qwen/Qwen2.5-1.5B-Instruct",
       "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
@@ -51,7 +66,8 @@
       "id": "mlx-lm-lora",
       "releaseCommit": "ed1fca4cef15a824c5f1702c80f70b4cffc8e4dd",
       "version": "0.31.3"
-    }
+    },
+    "verifyToExecClosed": false
   },
   "dataset": {
     "exactF1TrainBytesMaterialized": true,
@@ -85,20 +101,26 @@
     "customSourceModelCodeRejected": true,
     "durableFailureRecoveryValidated": true,
     "environmentKeys": [
+      "HF_DATASETS_CACHE",
       "HF_DATASETS_OFFLINE",
+      "HF_HOME",
       "HF_HUB_OFFLINE",
       "HOME",
       "LANG",
       "LC_ALL",
       "TMPDIR",
       "TOKENIZERS_PARALLELISM",
-      "TRANSFORMERS_OFFLINE"
+      "TRANSFORMERS_CACHE",
+      "TRANSFORMERS_OFFLINE",
+      "XDG_CACHE_HOME"
     ],
     "inheritedEnvironmentValuesAccepted": false,
+    "interpreterBoundByHash": true,
     "localAbsoluteModelPathRequired": true,
     "moduleOwnedFixtureInvocationExercised": true,
-    "ownerOnlyDatasetWorkspace": true
+    "ownerOnlyDatasetWorkspace": true,
+    "runtimeClosureReinspectedBeforeFixtureInvocation": true
   },
-  "evidenceHash": "248bdf2398324fd1863ab4c089314a9139d1981d59fff902844055c9fb8bd908",
-  "id": "mlx-lm-lora-training-adapter-evidence-248bdf2398324fd1863ab4c089314a9139d1981d59fff902844055c9fb8bd908"
+  "evidenceHash": "80a3dee6d7e778095ade3105b893fc6560f01c0739b6c1e9b1a8b9ced6610579",
+  "id": "mlx-lm-lora-training-adapter-evidence-80a3dee6d7e778095ade3105b893fc6560f01c0739b6c1e9b1a8b9ced6610579"
 }

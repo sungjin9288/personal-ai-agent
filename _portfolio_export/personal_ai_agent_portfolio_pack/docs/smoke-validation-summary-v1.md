@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 228/228 passed with `npm run smoke:all` on 2026-07-22
+- lastFullSweep: 230/230 passed with `npm run smoke:all` on 2026-07-22
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -91,6 +91,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | F2c.19 Actual host restart receipt | `npm run smoke:local-candidate-evaluation-host-restart-receipt` | Validates the content-free tracked projection contract, integrity, privacy exclusions, private-source re-verification boundary, no external provider calls, and false evaluator relaunch, model evaluation, training, rollout, and production claims; it does not independently replay the private host restart |
 | F2c.20 MLX-LM LoRA adapter contract | `npm run smoke:mlx-lm-lora-training-adapter` | Verifies the fixture-only approved F1-to-MLX adapter seam, exact train·valid bytes, fixed local argv, offline environment, complete acquisition inventory, candidate manifest binding, atomic publish, and fail-closed actual execution boundary |
 | F2c.21 Durable training failure recovery | `npm run smoke:local-training-failure-recovery` | Verifies authority-bound owner-only recovery state, atomic publish and cleanup phases, workspace-first partial failure resume, exact rollback-owner request, idempotent receipt replay, privacy exclusions, unsafe-tree preservation, and the fail-closed actual execution boundary |
+| F2c.22 Static training runtime closure provenance | `npm run smoke:local-training-runtime-closure-provenance` | Verifies pinned interpreter·entrypoint·statically resolved allowlisted fixture byte inventory and graph, deterministic content-free binding, adapter reinspection, known dynamic construct·native·archive·ambient hook refusal, and explicit false dynamic/native-closure, verify-to-exec, process, training, and production claims |
 | Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
 | Actual local answer-quality baseline | `npm run smoke:local-answer-quality-baseline` | Verifies actual installed qwen2.5:3b Q1 evidence integrity, content-free observations, required-term regression, keep-current decision, and no training or activation authority |
 | Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |

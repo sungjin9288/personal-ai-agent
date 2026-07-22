@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T05:08:41.467Z
+- generatedAt: 2026-07-22T06:36:57.723Z
 - localDate: 2026-07-22
-- branch: codex/f2c21-training-recovery
-- commit: ed5878406eff1538a3ff9bf1dc716d85f764ca49
+- branch: codex/f2c22-training-runtime-closure
+- commit: 5038a1865e6fbbc3ece18109b12512736e3f4382
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ed5878406eff1538a3ff9bf1dc716d85f764ca49](releases/execution-v1/ed5878406eff1538a3ff9bf1dc716d85f764ca49)
-- visualArtifactSetSha256: 5b12638db03d8642f0e0f4d67d53e602bfc7506ac97ff656c61efbcd37752b09
-- commitPushStatus: not pushed, origin/codex/f2c21-training-recovery not found
+- immutableSnapshot: [releases/execution-v1/5038a1865e6fbbc3ece18109b12512736e3f4382](releases/execution-v1/5038a1865e6fbbc3ece18109b12512736e3f4382)
+- visualArtifactSetSha256: 263c3271251ec93ddf22080cddd43ae2b56f91f4ab31483668ab5091496cb986
+- commitPushStatus: not pushed, origin/codex/f2c22-training-runtime-closure not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=47.8s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=45.2s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 5b12638db03d8642f0e0f4d67d53e602bfc7506ac97ff656c61efbcd37752b09
+- visual artifact set: 263c3271251ec93ddf22080cddd43ae2b56f91f4ab31483668ab5091496cb986
 
 ## Live Provider Handoff
 

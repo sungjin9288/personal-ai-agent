@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T05:08:34.032Z
-- branch: codex/f2c21-training-recovery
-- commit: ed5878406eff1538a3ff9bf1dc716d85f764ca49
+- generatedAt: 2026-07-22T06:36:51.074Z
+- branch: codex/f2c22-training-runtime-closure
+- commit: 5038a1865e6fbbc3ece18109b12512736e3f4382
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist
