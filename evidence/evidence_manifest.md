@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-22
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness and data sufficiency, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
-- Source code modified: yes, a content-free F1.2 planner now turns the exact F1.1 deficits into non-overlapping reviewed-example, mission-scope, baseline-case, and governance-remediation targets without collecting records or changing the public runtime, CLI, HTTP, storage, audit, or training authority contracts
-- New feature development: yes, the current F1 packet is deterministically classified as insufficient before candidate training review; actual process execution stays fail-closed, and installation, model download, actual training, external submission, activation, and rollout remain unexecuted or unauthorized
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning and owner-review intake, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, a content-free F1.3 request binds the exact F1.2 plan and current 16-example, 6-scope, and 8-case targets to five pending data-handling owner reviews with bounded expiry, without collecting records or changing the public runtime, CLI, HTTP, storage, audit, or training authority contracts
+- New feature development: yes, the current F1 packet remains insufficient and the F1.3 request remains pending owner review; actual collection and process execution stay fail-closed, and installation, model download, actual training, external submission, activation, and rollout remain unexecuted or unauthorized
 
 ## Generated Evidence Files
 
@@ -78,6 +78,7 @@
 - `evidence/output-artifacts/user-learning-operator-surface.json`
 - `evidence/output-artifacts/fine-tuning-data-sufficiency.json`
 - `evidence/output-artifacts/fine-tuning-data-collection-plan.json`
+- `evidence/output-artifacts/fine-tuning-data-intake-request.json`
 - `evidence/output-artifacts/local-training-runtime-contract.json`
 - `evidence/output-artifacts/local-training-permission-surface.json`
 - `evidence/output-artifacts/local-training-environment-preflight.json`
@@ -179,6 +180,7 @@
 - Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`
 - Fine-tuning data sufficiency gate: verified with `npm run smoke:fine-tuning-data-sufficiency`
 - Fine-tuning reviewed-data collection plan: verified with `npm run smoke:fine-tuning-data-collection-plan`
+- Fine-tuning reviewed-data intake request: verified with `npm run smoke:fine-tuning-data-intake-request`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`
