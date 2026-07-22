@@ -1,9 +1,13 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T14:21:18.492Z
-- branch: codex/f1-1-training-data-sufficiency
-- commit: cc19deb60f3d6f948f5be7b1991df532298be922
+- generatedAt: 2026-07-22T16:20:03.811Z
+- branch: codex/f1-2-reviewed-data-collection-plan
+- commit: 3073267742e05b32c29b79f52e71d51a90aeec17
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- liveValidationMode: archived-preserved-not-rerun
+- archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
+- archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
+- archivedLiveValidationProviders: openai, anthropic, local
 
 ## Closeout Checklist
 
@@ -16,14 +20,15 @@
 - [x] execution lease approval → foreground execution session 연결
 - [x] operator console preflight/start/stop/log surface 반영
 - [x] CLI execution preflight/start/stop/status/logs 계약 반영
-- [x] OpenAI live validation
-- [ ] Anthropic live validation
-- [x] Local provider live validation
+- [x] OpenAI live validation (archived; not rerun in this refresh)
+- [ ] Anthropic live validation (archived; not rerun in this refresh)
+- [x] Local provider live validation (archived; not rerun in this refresh)
 - [ ] Hermes live validation
 - [x] browser interaction E2E 자동화
 
 ## Current Status
 
+- live validation evidence mode: archived-preserved-not-rerun; providers=openai, anthropic, local; sourceCommit=cc19deb60f3d6f948f5be7b1991df532298be922; sourceGeneratedAt=2026-07-22T14:21:18.412Z
 - deterministic smoke: ready
 - reference adoption gate: ready
 - deterministic runtime summary: ready
@@ -65,4 +70,4 @@
 - 이 문서는 `build-execution-v1-evidence.mjs` 결과를 기반으로 다시 생성된다.
 - deterministic smoke는 repo-local execution, CLI contract, operator console, browser interaction까지 포함한 local-first 경로를 닫는다.
 - reference adoption gate는 외부 reference 기반으로 이식한 compaction, provider guard, Hermes provider/profile, conversion, retrieval, fact graph, instruction-boundary, orchestration profile, UI blueprint, parallel specialist 흐름의 aggregate regression을 닫는다.
-- live validation은 provider credential과 runtime adapter가 준비된 환경에서만 추가 확인 대상으로 남는다.
+- provider별 pass/fail은 cc19deb60f3d6f948f5be7b1991df532298be922 (2026-07-22T14:21:18.412Z)에서 보존된 결과이며 이번 refresh에서 재실행되지 않았다.

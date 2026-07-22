@@ -69,6 +69,7 @@
 - evidence/output-artifacts/user-learning-operator-override.json
 - evidence/output-artifacts/user-learning-operator-surface.json
 - evidence/output-artifacts/fine-tuning-data-sufficiency.json
+- evidence/output-artifacts/fine-tuning-data-collection-plan.json
 - evidence/output-artifacts/local-training-runtime-contract.json
 - evidence/output-artifacts/local-training-permission-surface.json
 - evidence/output-artifacts/local-training-environment-preflight.json
@@ -130,6 +131,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,268,870 bytes
-- 압축 파일 SHA-256: `846ac2793079d08d0c8eb839d06e09d6af352e7fe6249c736f16dbffa856dcfc`
+- 압축 파일 크기: 4,271,962 bytes
+- 압축 파일 SHA-256: `4e7c23f451417982dd9bf198bcf999c2bee43530e1ef770287182ccc6a54e738`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

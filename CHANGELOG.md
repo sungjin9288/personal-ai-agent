@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a cost-free, content-free reviewed-data collection plan bound to the exact F1.1 assessment and export hashes. It converts the current deficits into one non-overlapping minimum of 16 reviewed examples containing 6 new mission scopes, plus 8 separate answer-quality cases; accepted-risk excess requires governance remediation instead of record padding. Release refresh now labels preserved provider results as archived and not rerun, with their source commit, generated time, and provider list. No records or user data were collected, and collection, candidate review, training, provider submission, rollout, and deployment remain unauthorized.
 - Added a cost-free fine-tuning data sufficiency gate that revalidates the F1 readiness packet and records only hash-bound counts, coverage, and accepted-risk ratio. The current 4 accepted examples, 3/1 split, 4 mission scopes, and 2 baseline cases fail the initial development stop condition. Those thresholds are not a production quality claim; candidate review, training, provider submission, rollout, and deployment remain unauthorized.
 - Added a cost-free Darwin suspended verify-to-exec primitive for one signed fixture interpreter and descriptor-bound Python entrypoint. The broker starts the child with `POSIX_SPAWN_START_SUSPENDED`, compares the kernel-observed `csops` CDHash before `SIGCONT`, and kills a mismatch before user code can create its marker. Replacing the entrypoint path after `O_NOFOLLOW` open does not change the bytes read from inherited stdin. Actual MLX interpreter and entrypoint integration, post-resume dynamic/native closure, unified-memory enforcement, training, Provider calls, rollout, and deployment remain false.
 - Added cost-free Darwin runtime image provenance for one live sandboxed fixture child. Every child-reported image is cross-observed through `vmmap`; standalone files are independently byte-matched, and dyld shared-cache image UUIDs are bound to stable strictly signed cache-file identities. Evidence retains only counts and hashes. Exact VM-set equality, late-load closure, full shared-cache byte hashing, same-user resistance, MLX native closure, verify-to-exec, actual MLX execution, training, Provider calls, rollout, and deployment remain false.
@@ -110,8 +111,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,268,870 bytes`
-- SHA-256: `846ac2793079d08d0c8eb839d06e09d6af352e7fe6249c736f16dbffa856dcfc`
+- Size: `4,271,962 bytes`
+- SHA-256: `4e7c23f451417982dd9bf198bcf999c2bee43530e1ef770287182ccc6a54e738`
 
 Included public surfaces:
 
