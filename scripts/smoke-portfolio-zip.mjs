@@ -92,6 +92,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-os-isolation.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-runtime-exec-observation.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-runtime-image-provenance.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-darwin-suspended-exec.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-failure-recovery.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-candidate-artifact-verification.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-candidate-evaluation-admission.json',

@@ -362,6 +362,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
       observation?.runtimeImageProvenanceContractValidated === true &&
       observation?.runtimeImageProvenanceContractHash ===
         adapter.contract.runtimeImageProvenance.contractHash;
+    failureGuards.darwinSuspendedExecContractBound =
+      observation?.darwinSuspendedExecContractValidated === true &&
+      observation?.darwinSuspendedExecContractHash ===
+        adapter.contract.darwinSuspendedExec.contractHash;
 
     assert.equal(
       Object.values(failureGuards).every(Boolean),
@@ -388,6 +392,7 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         actualMlxProcessSpawned: false,
         adapterContractValidated: true,
         candidateEvaluationAuthorized: false,
+        darwinSuspendedExecContractValidated: true,
         dynamicRuntimeClosureComplete: false,
         externalProviderCalls: 'none',
         externalSubmissionAuthorized: false,
@@ -406,6 +411,9 @@ export async function evaluateMlxLmLoraTrainingAdapter({
       contract: {
         contractHash: adapter.contract.contractHash,
         dataFiles: adapter.contract.dataFiles,
+        darwinSuspendedExec: adapter.contract.darwinSuspendedExec,
+        darwinSuspendedExecContractValidated:
+          adapter.contract.darwinSuspendedExecContractValidated,
         dynamicRuntimeClosureComplete:
           adapter.contract.dynamicRuntimeClosureComplete,
         fixedArgumentOrder: adapter.contract.fixedArgumentOrder,
@@ -453,6 +461,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         customSourceModelCodeRejected: true,
         durableFailureRecoveryValidated:
           observation.durableFailureRecoveryValidated,
+        darwinSuspendedExecContractBound:
+          observation.darwinSuspendedExecContractValidated === true &&
+          observation.darwinSuspendedExecContractHash ===
+            adapter.contract.darwinSuspendedExec.contractHash,
         environmentKeys: observation.environmentKeys,
         inheritedEnvironmentValuesAccepted: false,
         interpreterBoundByHash:

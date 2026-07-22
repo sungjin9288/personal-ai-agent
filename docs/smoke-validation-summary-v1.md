@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 234/234 passed with `npm run smoke:all` on 2026-07-22
+- lastFullSweep: 235/235 passed with `npm run smoke:all` on 2026-07-22
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -96,6 +96,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | F2c.24 Darwin training OS isolation preflight | `npm run smoke:local-training-os-isolation` | Verifies an unsandboxed loopback control, fixed `sandbox-exec` connect·listen denial, exact pre-exec POSIX core·CPU·file-size·open-files limits, content-free evidence, and false MLX memory, integration, training, provider, rollout, and production claims |
 | F2c.25 Darwin runtime exec observation | `npm run smoke:local-training-runtime-exec-observation` | Verifies parent pre/post and sandboxed child self-hash identity matching, content-free loaded-image and module-set observation, unresolved image accounting, and false MLX closure, verify-to-exec, training, provider, rollout, and production claims |
 | F2c.26 Darwin runtime image provenance | `npm run smoke:local-training-runtime-image-provenance` | Verifies live `vmmap` membership for every child-reported image, parent-child regular image byte identity, dyld shared-cache UUID and strict signed cache identity, content-free evidence, and false MLX native closure, verify-to-exec, training, provider, rollout, and production claims |
+| F2c.27 Darwin suspended verify-to-exec | `npm run smoke:local-training-darwin-suspended-exec` | Verifies root-owned strict code signature, descriptor-bound broker and child bytes, `POSIX_SPAWN_START_SUSPENDED`, kernel-observed CDHash comparison before resume, path-replacement resistance, mismatch termination before marker creation, content-free evidence, and false MLX integration, dynamic/native closure, training, provider, rollout, and production claims |
 | Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
 | Actual local answer-quality baseline | `npm run smoke:local-answer-quality-baseline` | Verifies actual installed qwen2.5:3b Q1 evidence integrity, content-free observations, required-term regression, keep-current decision, and no training or activation authority |
 | Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |

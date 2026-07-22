@@ -40,6 +40,10 @@ import {
   buildLocalTrainingRuntimeImageProvenanceContract,
 } from './local-training-runtime-image-provenance.mjs';
 import {
+  assertLocalTrainingDarwinSuspendedExecContract,
+  buildLocalTrainingDarwinSuspendedExecContract,
+} from './local-training-darwin-suspended-exec.mjs';
+import {
   assertLocalTrainingProcessSupervisorContract,
   buildLocalTrainingProcessSupervisorContract,
 } from './local-training-process-supervisor.mjs';
@@ -55,7 +59,7 @@ import {
 } from './local-training-failure-recovery.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION =
-  'personal-ai-agent-mlx-lm-lora-training-adapter/v7';
+  'personal-ai-agent-mlx-lm-lora-training-adapter/v8';
 
 const ADAPTER_STATES = new WeakMap();
 
@@ -554,6 +558,7 @@ function buildContract(
   runtimeClosure,
   runtimeExecObservation,
   runtimeImageProvenance,
+  darwinSuspendedExec,
   osIsolation,
   processSupervisor,
 ) {
@@ -564,6 +569,11 @@ function buildContract(
     actualMlxProcessSpawned: false,
     adapterFormat: 'mlx-lm-lora-adapter-safetensors',
     dataFiles: ['train.jsonl', 'valid.jsonl'],
+    darwinSuspendedExec: {
+      contractHash: darwinSuspendedExec.contractHash,
+      schemaVersion: darwinSuspendedExec.schemaVersion,
+    },
+    darwinSuspendedExecContractValidated: true,
     executionMode: 'fixture-simulated',
     dynamicRuntimeClosureComplete: false,
     fixedInterpreterFlags: ['-E', '-S', '-B'],
@@ -803,6 +813,11 @@ export function createMlxLmLoraTrainingAdapter({
   assertLocalTrainingRuntimeImageProvenanceContract(
     runtimeImageProvenance,
   );
+  const darwinSuspendedExec =
+    buildLocalTrainingDarwinSuspendedExecContract();
+  assertLocalTrainingDarwinSuspendedExecContract(
+    darwinSuspendedExec,
+  );
   const osIsolation = buildLocalTrainingOsIsolationContract();
   assertLocalTrainingOsIsolationContract(osIsolation);
   const processSupervisor =
@@ -813,6 +828,7 @@ export function createMlxLmLoraTrainingAdapter({
       runtimeClosure,
       runtimeExecObservation,
       runtimeImageProvenance,
+      darwinSuspendedExec,
       osIsolation,
       processSupervisor,
     ),
@@ -1241,6 +1257,9 @@ export function createMlxLmLoraTrainingAdapter({
             train: sha256(readinessPackage.exports.train.content),
             valid: sha256(readinessPackage.exports.validation.content),
           },
+          darwinSuspendedExecContractHash:
+            darwinSuspendedExec.contractHash,
+          darwinSuspendedExecContractValidated: true,
           environmentKeys: Object.keys(environment).sort(),
           externalProviderCalls: 'none',
           fixedArgumentOrder: args.filter(

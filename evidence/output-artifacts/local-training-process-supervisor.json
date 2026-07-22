@@ -1,6 +1,6 @@
 {
   "adapterBinding": {
-    "adapterContractHash": "0d68ac8d14c17ff587b72067904d9b7a8622769dbd281f98036aa620d0184c75",
+    "adapterContractHash": "7b53090bd8d14394b4df0755f629d87c508e64b48068165cf3fc1042d41dd1f3",
     "integrationGate": "mlx-process-supervisor-integration",
     "supervisorContractHash": "e01402e7f21ca14605d721b0b14b5bdad22dd9543c0aefe5c5d91e2f9d124945"
   },
@@ -43,6 +43,6 @@
     "schemaVersion": "personal-ai-agent-local-training-process-supervisor/v1",
     "signalPolicy": "live-leader-sigkill"
   },
-  "evidenceHash": "bee878634bf29bf1c69941184e4f7ee15433406be531421b486f7c804fa52c99",
-  "id": "local-training-process-supervisor-evidence-bee878634bf29bf1c69941184e4f7ee15433406be531421b486f7c804fa52c99"
+  "evidenceHash": "d04a9c127b87d3838724672b1271dfeeb7e18afe679c5c95bcfd25b37137dfeb",
+  "id": "local-training-process-supervisor-evidence-d04a9c127b87d3838724672b1271dfeeb7e18afe679c5c95bcfd25b37137dfeb"
 }

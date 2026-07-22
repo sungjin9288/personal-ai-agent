@@ -1,0 +1,60 @@
+{
+  "adapterBinding": {
+    "adapterContractHash": "7b53090bd8d14394b4df0755f629d87c508e64b48068165cf3fc1042d41dd1f3",
+    "suspendedExecContractHash": "138e107feef752fb6a9145c61d809e99c0fe395c4b861eb3374c883cb2ce6f5b",
+    "verifyToExecGate": "mlx-verify-to-exec-closure"
+  },
+  "claimBoundary": {
+    "actualDarwinFixtureEntrypointDescriptorExecutionValidated": true,
+    "actualDarwinFixtureExecutableVerifyToExecValidated": true,
+    "actualDependencyInstallationPerformed": false,
+    "actualMlxProcessSpawned": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "dynamicRuntimeClosureComplete": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "nativeClosureComplete": false,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false,
+    "verifyToExecClosed": false
+  },
+  "costFree": true,
+  "failureGuards": {
+    "adapterActualMlxProcessRemainsBlocked": true,
+    "adapterBoundToSuspendedExecContract": true,
+    "contractTamperBlocked": true,
+    "dynamicAndNativeClosureRemainBlocked": true,
+    "entrypointDescriptorMatched": true,
+    "entrypointPathReplacementResisted": true,
+    "executableCdHashMatchedBeforeResume": true,
+    "mismatchedExecutableBlockedBeforeResume": true,
+    "mlxVerifyToExecGateRemainsExplicit": true,
+    "signedBrokerInterpreterValidated": true,
+    "verifyToExecRemainsFailClosed": true
+  },
+  "limitations": {
+    "actualMlxEntrypointDescriptorIntegrated": false,
+    "actualMlxInterpreterCdHashValidated": false,
+    "dynamicPythonModuleClosureComplete": false,
+    "postResumeNativeLoadClosureComplete": false,
+    "unifiedMemoryLimitEnforced": false
+  },
+  "mode": "actual-darwin-suspended-signed-fixture-exec",
+  "observation": {
+    "childEntrypointSha256": "ae60e0986aa9830511cdeec2d208e48a119841da6ac6686c2fee12e289e6c408",
+    "executableCdHashSetSha256": "ced4dfe804aac2ab1c701acdcd424b0648e41ad291115fe979987694ec49e29c",
+    "outputBoundsPreserved": true,
+    "successfulChildExitCode": 0
+  },
+  "replayPlatform": "darwin",
+  "schemaVersion": "personal-ai-agent-local-training-darwin-suspended-exec-evidence/v1",
+  "suspendedExecContract": {
+    "contractHash": "138e107feef752fb6a9145c61d809e99c0fe395c4b861eb3374c883cb2ce6f5b",
+    "runtimeImageProvenanceContractHash": "c0ee725637f0438c98ba33306a0a1c6b3882e4ff1e71f68aacf1463cb7cea65a",
+    "schemaVersion": "personal-ai-agent-local-training-darwin-suspended-exec/v1"
+  },
+  "evidenceHash": "c1e548a169c808ad492c78bc3db96292cf42f3b7ba54d22c0bee1aa06c5a243c",
+  "id": "local-training-darwin-suspended-exec-evidence-c1e548a169c808ad492c78bc3db96292cf42f3b7ba54d22c0bee1aa06c5a243c"
+}

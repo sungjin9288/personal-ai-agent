@@ -60,6 +60,18 @@ assert.equal(stored.claimBoundary.verifyToExecClosed, false);
 assert.equal(stored.contract.nativeClosureComplete, false);
 assert.equal(stored.contract.dynamicRuntimeClosureComplete, false);
 assert.equal(stored.contract.verifyToExecClosed, false);
+assert.equal(
+  stored.claimBoundary.darwinSuspendedExecContractValidated,
+  true,
+);
+assert.equal(
+  stored.contract.darwinSuspendedExecContractValidated,
+  true,
+);
+assert.match(
+  stored.contract.darwinSuspendedExec.contractHash,
+  /^[a-f0-9]{64}$/u,
+);
 assert.equal(stored.claimBoundary.actualMlxMemoryLimitEnforced, false);
 assert.equal(stored.claimBoundary.actualMlxOsIsolationIntegrated, false);
 assert.equal(stored.claimBoundary.osIsolationContractValidated, true);

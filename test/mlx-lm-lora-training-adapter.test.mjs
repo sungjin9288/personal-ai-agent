@@ -113,6 +113,14 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
     );
     assert.equal(context.adapter.contract.nativeClosureComplete, false);
     assert.equal(
+      context.adapter.contract.darwinSuspendedExecContractValidated,
+      true,
+    );
+    assert.match(
+      context.adapter.contract.darwinSuspendedExec.contractHash,
+      /^[a-f0-9]{64}$/,
+    );
+    assert.equal(
       context.adapter.contract.actualMlxMemoryLimitEnforced,
       false,
     );
@@ -181,6 +189,14 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
       false,
     );
     assert.equal(context.observation.verifyToExecClosed, false);
+    assert.equal(
+      context.observation.darwinSuspendedExecContractValidated,
+      true,
+    );
+    assert.equal(
+      context.observation.darwinSuspendedExecContractHash,
+      context.adapter.contract.darwinSuspendedExec.contractHash,
+    );
     assert.equal(
       context.observation.osIsolationContractValidated,
       true,

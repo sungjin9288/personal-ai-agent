@@ -89,7 +89,18 @@ assert.equal(
 assert.equal(
   result.scannedFiles.includes(
     'evidence/output-artifacts/local-training-runtime-exec-observation.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
     'evidence/output-artifacts/local-training-runtime-image-provenance.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-darwin-suspended-exec.json',
   ),
   true,
 );

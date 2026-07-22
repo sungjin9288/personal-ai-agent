@@ -181,6 +181,8 @@
     "smoke:local-training-runtime-exec-observation": "node scripts/smoke-local-training-runtime-exec-observation.mjs",
     "build:local-training-runtime-image-provenance-evidence": "node scripts/build-local-training-runtime-image-provenance-evidence.mjs",
     "smoke:local-training-runtime-image-provenance": "node scripts/smoke-local-training-runtime-image-provenance.mjs",
+    "build:local-training-darwin-suspended-exec-evidence": "node scripts/build-local-training-darwin-suspended-exec-evidence.mjs",
+    "smoke:local-training-darwin-suspended-exec": "node scripts/smoke-local-training-darwin-suspended-exec.mjs",
     "build:local-training-failure-recovery-evidence": "node scripts/build-local-training-failure-recovery-evidence.mjs",
     "smoke:local-training-failure-recovery": "node scripts/smoke-local-training-failure-recovery.mjs",
     "build:local-training-candidate-artifact-verification-evidence": "node scripts/build-local-training-candidate-artifact-verification-evidence.mjs",

@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-22 Darwin Suspended Verify-to-exec
+
+- started one root-owned signed fixture interpreter with Darwin `POSIX_SPAWN_START_SUSPENDED` and compared its kernel-observed CDHash before resume
+- passed the broker and child entrypoint through verified inherited descriptors, then replaced the child path and confirmed that only the opened original bytes executed
+- killed a mismatched executable identity before `SIGCONT` and verified that user code created no marker
+- bound the primitive contract to the MLX adapter while keeping actual MLX integration, post-resume dynamic/native closure, unified-memory enforcement, training, rollout, provider, and production claims false
+
 ## 2026-07-22 Static Local-training Runtime Closure Provenance
 
 - bound the fixture trainer's pinned interpreter, entrypoint, allowlisted static import graph, and exact bytes into the MLX adapter contract
