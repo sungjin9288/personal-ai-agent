@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T18:15:44.151Z
-- branch: codex/f1-4-reviewed-data-intake-resolution
-- commit: 8015ec30cb7b4e6fa7af94e65b7bc27c87620f45
+- generatedAt: 2026-07-22T19:05:41.603Z
+- branch: codex/f1-5-private-collection-plan
+- commit: ef8f386f7855478312c46db39d1502e5ee767979
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
