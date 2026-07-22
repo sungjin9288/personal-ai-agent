@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 231/231 passed with `npm run smoke:all` on 2026-07-22
+- lastFullSweep: 232/232 passed with `npm run smoke:all` on 2026-07-22
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -93,6 +93,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | F2c.21 Durable training failure recovery | `npm run smoke:local-training-failure-recovery` | Verifies authority-bound owner-only recovery state, atomic publish and cleanup phases, workspace-first partial failure resume, exact rollback-owner request, idempotent receipt replay, privacy exclusions, unsafe-tree preservation, and the fail-closed actual execution boundary |
 | F2c.22 Static training runtime closure provenance | `npm run smoke:local-training-runtime-closure-provenance` | Verifies pinned interpreter·entrypoint·statically resolved allowlisted fixture byte inventory and graph, deterministic content-free binding, adapter reinspection, known dynamic construct·native·archive·ambient hook refusal, and explicit false dynamic/native-closure, verify-to-exec, process, training, and production claims |
 | F2c.23 Local training process supervisor | `npm run smoke:local-training-process-supervisor` | Verifies an actual local fixture child with exact authority checks before spawn, periodically while running, and before result acceptance; live-leader revocation·timeout group termination, no late signal policy, close plus group-absence cleanup gating, content-free evidence, and false MLX integration, training, rollout, provider, and production claims |
+| F2c.24 Darwin training OS isolation preflight | `npm run smoke:local-training-os-isolation` | Verifies an unsandboxed loopback control, fixed `sandbox-exec` connect·listen denial, exact pre-exec POSIX core·CPU·file-size·open-files limits, content-free evidence, and false MLX memory, integration, training, provider, rollout, and production claims |
 | Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
 | Actual local answer-quality baseline | `npm run smoke:local-answer-quality-baseline` | Verifies actual installed qwen2.5:3b Q1 evidence integrity, content-free observations, required-term regression, keep-current decision, and no training or activation authority |
 | Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |

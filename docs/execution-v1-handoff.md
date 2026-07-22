@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T07:21:10.253Z
+- generatedAt: 2026-07-22T08:07:22.093Z
 - localDate: 2026-07-22
-- branch: codex/f2c23-training-process-supervisor
-- commit: 12b2a02da070053fb5615c5759d03b551562b1bb
+- branch: codex/f2c24-training-os-isolation
+- commit: 2bdd5521f8c4992bcc5172f61db19c088bba7d65
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/12b2a02da070053fb5615c5759d03b551562b1bb](releases/execution-v1/12b2a02da070053fb5615c5759d03b551562b1bb)
-- visualArtifactSetSha256: e3e23b1e560c203476d8602d82b56a3f0f33abe2a39c378ed79340dc5097aa5b
-- commitPushStatus: not pushed, origin/codex/f2c23-training-process-supervisor not found
+- immutableSnapshot: [releases/execution-v1/2bdd5521f8c4992bcc5172f61db19c088bba7d65](releases/execution-v1/2bdd5521f8c4992bcc5172f61db19c088bba7d65)
+- visualArtifactSetSha256: 5c738de78a5dbba14624f7aef6db51089cdd32ed068754d7a35a32d9b52a08f2
+- commitPushStatus: not pushed, origin/codex/f2c24-training-os-isolation not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=45.4s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=47.6s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: e3e23b1e560c203476d8602d82b56a3f0f33abe2a39c378ed79340dc5097aa5b
+- visual artifact set: 5c738de78a5dbba14624f7aef6db51089cdd32ed068754d7a35a32d9b52a08f2
 
 ## Live Provider Handoff
 

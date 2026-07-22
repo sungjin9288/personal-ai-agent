@@ -1,8 +1,8 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-07-22T07:21:03.462Z
-- branch: codex/f2c23-training-process-supervisor
-- commit: 12b2a02da070053fb5615c5759d03b551562b1bb
+- generatedAt: 2026-07-22T08:07:14.563Z
+- branch: codex/f2c24-training-os-isolation
+- commit: 2bdd5521f8c4992bcc5172f61db19c088bba7d65
 - mode: execution-v1-verification
 - liveFlags: none
 
@@ -20,48 +20,48 @@
 ## Deterministic Runtime Summary
 
 - smoke:execution-flow: 1.1s elapsed, stdout 421B, stderr 0B, timeout 20.0m
-- smoke:execution-cli: 678ms elapsed, stdout 324B, stderr 0B, timeout 20.0m
-- smoke:ui-execution-console: 775ms elapsed, stdout 343B, stderr 0B, timeout 20.0m
-- smoke:ui-execution-browser-e2e: 5.4m elapsed, stdout 7.1KiB, stderr 8.7KiB, timeout 20.0m
-- smoke:reference-adoptions: 45.5s elapsed, stdout 5.4KiB, stderr 0B, timeout 20.0m
-- smoke:execution-v1-live-helpers: 10.9s elapsed, stdout 391B, stderr 0B, timeout 20.0m
-- smoke:execution-v1-handoff: 2.2s elapsed, stdout 419B, stderr 0B, timeout 20.0m
-- smoke:production-readiness-gate: 188ms elapsed, stdout 2.5KiB, stderr 0B, timeout 20.0m
+- smoke:execution-cli: 610ms elapsed, stdout 324B, stderr 0B, timeout 20.0m
+- smoke:ui-execution-console: 739ms elapsed, stdout 343B, stderr 0B, timeout 20.0m
+- smoke:ui-execution-browser-e2e: 5.3m elapsed, stdout 7.1KiB, stderr 8.7KiB, timeout 20.0m
+- smoke:reference-adoptions: 47.7s elapsed, stdout 5.4KiB, stderr 0B, timeout 20.0m
+- smoke:execution-v1-live-helpers: 13.0s elapsed, stdout 391B, stderr 0B, timeout 20.0m
+- smoke:execution-v1-handoff: 2.4s elapsed, stdout 413B, stderr 0B, timeout 20.0m
+- smoke:production-readiness-gate: 218ms elapsed, stdout 2.5KiB, stderr 0B, timeout 20.0m
 
 ## Reference Adoption Aggregate
 
 - scriptCount: 28
-- totalDuration: 45.4s
+- totalDuration: 47.6s
 - ok: true
 
-- scripts/smoke-output-compaction.mjs: passed (290ms, timeout 5.0m, timedOut false)
-- scripts/smoke-provider-capability-rate-guard.mjs: passed (96ms, timeout 5.0m, timedOut false)
-- scripts/smoke-hermes-provider.mjs: passed (223ms, timeout 5.0m, timedOut false)
-- scripts/smoke-mission-quality-gate.mjs: passed (414ms, timeout 5.0m, timedOut false)
-- scripts/smoke-document-conversion.mjs: passed (649ms, timeout 5.0m, timedOut false)
-- scripts/smoke-document-conversion-diagnostics.mjs: passed (627ms, timeout 5.0m, timedOut false)
+- scripts/smoke-output-compaction.mjs: passed (293ms, timeout 5.0m, timedOut false)
+- scripts/smoke-provider-capability-rate-guard.mjs: passed (117ms, timeout 5.0m, timedOut false)
+- scripts/smoke-hermes-provider.mjs: passed (228ms, timeout 5.0m, timedOut false)
+- scripts/smoke-mission-quality-gate.mjs: passed (440ms, timeout 5.0m, timedOut false)
+- scripts/smoke-document-conversion.mjs: passed (590ms, timeout 5.0m, timedOut false)
+- scripts/smoke-document-conversion-diagnostics.mjs: passed (609ms, timeout 5.0m, timedOut false)
 - scripts/smoke-runtime-discovery.mjs: passed (3.5s, timeout 5.0m, timedOut false)
-- scripts/smoke-visual-evidence-manifest.mjs: passed (92ms, timeout 5.0m, timedOut false)
-- scripts/smoke-retrieval-memory.mjs: passed (248ms, timeout 5.0m, timedOut false)
-- scripts/smoke-fact-graph-memory.mjs: passed (335ms, timeout 5.0m, timedOut false)
-- scripts/smoke-instruction-boundary-fixture.mjs: passed (183ms, timeout 5.0m, timedOut false)
-- scripts/smoke-openclaw-hermes-orchestration-docs.mjs: passed (42ms, timeout 5.0m, timedOut false)
-- scripts/smoke-channel-adapter-seam.mjs: passed (459ms, timeout 5.0m, timedOut false)
-- scripts/smoke-identity-session-context-records.mjs: passed (617ms, timeout 5.0m, timedOut false)
-- scripts/smoke-identity-session-audit-surface.mjs: passed (477ms, timeout 5.0m, timedOut false)
-- scripts/smoke-gateway-event-audit-surface.mjs: passed (519ms, timeout 5.0m, timedOut false)
+- scripts/smoke-visual-evidence-manifest.mjs: passed (66ms, timeout 5.0m, timedOut false)
+- scripts/smoke-retrieval-memory.mjs: passed (244ms, timeout 5.0m, timedOut false)
+- scripts/smoke-fact-graph-memory.mjs: passed (333ms, timeout 5.0m, timedOut false)
+- scripts/smoke-instruction-boundary-fixture.mjs: passed (178ms, timeout 5.0m, timedOut false)
+- scripts/smoke-openclaw-hermes-orchestration-docs.mjs: passed (41ms, timeout 5.0m, timedOut false)
+- scripts/smoke-channel-adapter-seam.mjs: passed (461ms, timeout 5.0m, timedOut false)
+- scripts/smoke-identity-session-context-records.mjs: passed (591ms, timeout 5.0m, timedOut false)
+- scripts/smoke-identity-session-audit-surface.mjs: passed (470ms, timeout 5.0m, timedOut false)
+- scripts/smoke-gateway-event-audit-surface.mjs: passed (507ms, timeout 5.0m, timedOut false)
 - scripts/smoke-permission-decision-records.mjs: passed (1.0s, timeout 5.0m, timedOut false)
-- scripts/smoke-sandbox-decision-timelines.mjs: passed (598ms, timeout 5.0m, timedOut false)
+- scripts/smoke-sandbox-decision-timelines.mjs: passed (588ms, timeout 5.0m, timedOut false)
 - scripts/smoke-gateway-event-learning-candidate.mjs: passed (603ms, timeout 5.0m, timedOut false)
-- scripts/smoke-provider-fallback-route-decision.mjs: passed (589ms, timeout 5.0m, timedOut false)
+- scripts/smoke-provider-fallback-route-decision.mjs: passed (582ms, timeout 5.0m, timedOut false)
 - scripts/smoke-learning-promotion-queue.mjs: passed (1.7s, timeout 5.0m, timedOut false)
-- scripts/smoke-learning-candidate-audit-surface.mjs: passed (970ms, timeout 5.0m, timedOut false)
-- scripts/smoke-learning-promotion-verification-gate.mjs: passed (792ms, timeout 5.0m, timedOut false)
-- scripts/smoke-learning-promotion-verification-stop-condition.mjs: passed (1.2s, timeout 5.0m, timedOut false)
+- scripts/smoke-learning-candidate-audit-surface.mjs: passed (958ms, timeout 5.0m, timedOut false)
+- scripts/smoke-learning-promotion-verification-gate.mjs: passed (788ms, timeout 5.0m, timedOut false)
+- scripts/smoke-learning-promotion-verification-stop-condition.mjs: passed (1.1s, timeout 5.0m, timedOut false)
 - scripts/smoke-orchestration-profiles.mjs: passed (1.2s, timeout 5.0m, timedOut false)
 - scripts/smoke-ui-agent-blueprints.mjs: passed (5.3s, timeout 5.0m, timedOut false)
-- scripts/smoke-parallel-specialists.mjs: passed (21.7s, timeout 5.0m, timedOut false)
-- scripts/smoke-process-timeout-utils.mjs: passed (928ms, timeout 5.0m, timedOut false)
+- scripts/smoke-parallel-specialists.mjs: passed (24.1s, timeout 5.0m, timedOut false)
+- scripts/smoke-process-timeout-utils.mjs: passed (931ms, timeout 5.0m, timedOut false)
 
 ## Visual Evidence Manifest
 
@@ -69,7 +69,7 @@
 - available: 2
 - missing: 0
 - visualArtifactCount: 1
-- artifactSetSha256: e3e23b1e560c203476d8602d82b56a3f0f33abe2a39c378ed79340dc5097aa5b
+- artifactSetSha256: 5c738de78a5dbba14624f7aef6db51089cdd32ed068754d7a35a32d9b52a08f2
 
 ## Live Validation
 
@@ -113,7 +113,7 @@
 {
   "deterministic": [
     {
-      "durationMs": 1146,
+      "durationMs": 1129,
       "script": "smoke:execution-flow",
       "status": "passed",
       "stderrBytes": 0,
@@ -121,7 +121,7 @@
       "timeoutMs": 1200000
     },
     {
-      "durationMs": 678,
+      "durationMs": 610,
       "script": "smoke:execution-cli",
       "status": "passed",
       "stderrBytes": 0,
@@ -129,7 +129,7 @@
       "timeoutMs": 1200000
     },
     {
-      "durationMs": 775,
+      "durationMs": 739,
       "script": "smoke:ui-execution-console",
       "status": "passed",
       "stderrBytes": 0,
@@ -137,7 +137,7 @@
       "timeoutMs": 1200000
     },
     {
-      "durationMs": 323206,
+      "durationMs": 318639,
       "script": "smoke:ui-execution-browser-e2e",
       "status": "passed",
       "stderrBytes": 8896,
@@ -145,11 +145,11 @@
       "timeoutMs": 1200000
     },
     {
-      "durationMs": 45524,
+      "durationMs": 47708,
       "script": "smoke:reference-adoptions",
       "status": "passed",
       "stderrBytes": 0,
-      "stdoutBytes": 5569,
+      "stdoutBytes": 5570,
       "timeoutMs": 1200000,
       "referenceAdoptionSummary": {
         "mode": "reference-adoptions-smoke",
@@ -157,126 +157,126 @@
         "scriptCount": 28,
         "scripts": [
           {
-            "durationMs": 290,
+            "durationMs": 293,
             "ok": true,
             "script": "scripts/smoke-output-compaction.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 96,
+            "durationMs": 117,
             "ok": true,
             "script": "scripts/smoke-provider-capability-rate-guard.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 223,
+            "durationMs": 228,
             "ok": true,
             "script": "scripts/smoke-hermes-provider.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 414,
+            "durationMs": 440,
             "ok": true,
             "script": "scripts/smoke-mission-quality-gate.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 649,
+            "durationMs": 590,
             "ok": true,
             "script": "scripts/smoke-document-conversion.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 627,
+            "durationMs": 609,
             "ok": true,
             "script": "scripts/smoke-document-conversion-diagnostics.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 3508,
+            "durationMs": 3484,
             "ok": true,
             "script": "scripts/smoke-runtime-discovery.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 92,
+            "durationMs": 66,
             "ok": true,
             "script": "scripts/smoke-visual-evidence-manifest.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 248,
+            "durationMs": 244,
             "ok": true,
             "script": "scripts/smoke-retrieval-memory.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 335,
+            "durationMs": 333,
             "ok": true,
             "script": "scripts/smoke-fact-graph-memory.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 183,
+            "durationMs": 178,
             "ok": true,
             "script": "scripts/smoke-instruction-boundary-fixture.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 42,
+            "durationMs": 41,
             "ok": true,
             "script": "scripts/smoke-openclaw-hermes-orchestration-docs.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 459,
+            "durationMs": 461,
             "ok": true,
             "script": "scripts/smoke-channel-adapter-seam.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 617,
+            "durationMs": 591,
             "ok": true,
             "script": "scripts/smoke-identity-session-context-records.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 477,
+            "durationMs": 470,
             "ok": true,
             "script": "scripts/smoke-identity-session-audit-surface.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 519,
+            "durationMs": 507,
             "ok": true,
             "script": "scripts/smoke-gateway-event-audit-surface.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 1029,
+            "durationMs": 1001,
             "ok": true,
             "script": "scripts/smoke-permission-decision-records.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 598,
+            "durationMs": 588,
             "ok": true,
             "script": "scripts/smoke-sandbox-decision-timelines.mjs",
             "timedOut": false,
@@ -290,74 +290,74 @@
             "timeoutMs": 300000
           },
           {
-            "durationMs": 589,
+            "durationMs": 582,
             "ok": true,
             "script": "scripts/smoke-provider-fallback-route-decision.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 1723,
+            "durationMs": 1663,
             "ok": true,
             "script": "scripts/smoke-learning-promotion-queue.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 970,
+            "durationMs": 958,
             "ok": true,
             "script": "scripts/smoke-learning-candidate-audit-surface.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 792,
+            "durationMs": 788,
             "ok": true,
             "script": "scripts/smoke-learning-promotion-verification-gate.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 1164,
+            "durationMs": 1125,
             "ok": true,
             "script": "scripts/smoke-learning-promotion-verification-stop-condition.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 1182,
+            "durationMs": 1189,
             "ok": true,
             "script": "scripts/smoke-orchestration-profiles.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 5320,
+            "durationMs": 5328,
             "ok": true,
             "script": "scripts/smoke-ui-agent-blueprints.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 21714,
+            "durationMs": 24150,
             "ok": true,
             "script": "scripts/smoke-parallel-specialists.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           },
           {
-            "durationMs": 928,
+            "durationMs": 931,
             "ok": true,
             "script": "scripts/smoke-process-timeout-utils.mjs",
             "timedOut": false,
             "timeoutMs": 300000
           }
         ],
-        "totalDurationMs": 45391
+        "totalDurationMs": 47558
       }
     },
     {
-      "durationMs": 10887,
+      "durationMs": 12957,
       "script": "smoke:execution-v1-live-helpers",
       "status": "passed",
       "stderrBytes": 0,
@@ -365,15 +365,15 @@
       "timeoutMs": 1200000
     },
     {
-      "durationMs": 2161,
+      "durationMs": 2355,
       "script": "smoke:execution-v1-handoff",
       "status": "passed",
       "stderrBytes": 0,
-      "stdoutBytes": 419,
+      "stdoutBytes": 413,
       "timeoutMs": 1200000
     },
     {
-      "durationMs": 188,
+      "durationMs": 218,
       "script": "smoke:production-readiness-gate",
       "status": "passed",
       "stderrBytes": 0,

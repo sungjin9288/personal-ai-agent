@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a cost-free Darwin fixture preflight for local training OS controls. An unsandboxed loopback control proves local network access before a fixed `sandbox-exec` profile denies connect and listen operations; a Python standard-library wrapper applies exact pre-exec CPU, file-size, open-file, and core-dump limits and the child demonstrates their observable enforcement. This does not claim portable containment, MLX unified-memory enforcement, or MLX OS-isolation integration. No MLX process, dependency installation, model download, training, provider call, rollout, or deployment was performed.
 - Added an independent local training process supervisor for an actual Node fixture child. It revalidates exact approval and permission state before spawn, periodically while running, and before result acceptance; revocation and timeout terminate the detached POSIX process group while its direct leader is live, late signals are withheld, and cleanup requires leader close plus confirmed group absence. The MLX adapter binds the supervisor contract but does not invoke it, so actual MLX execution, installation, download, training, rollout, external provider calls, and production claims remain false.
 - Added content-free static training runtime closure provenance for the MLX-LM fixture adapter. The contract pins one interpreter, one entrypoint, the reachable allowlisted Python module graph, and exact file bytes, then revalidates them before workspace creation and fixture invocation. Dynamic and native dependency closure, verify-to-exec, actual process execution, installation, download, training, rollout, external provider calls, and production claims remain false.
 - Added owner-only durable recovery for the MLX-LM fixture adapter. Success and failure cleanup now resume from explicit states, verify exact candidate bytes, remove workspaces before rollback, and use an immutable claim-edge CAS so concurrent retriers have one winner. Actual process execution, dependency installation, model download, training, rollout, external provider calls, and production claims remain false.
@@ -105,8 +106,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,253,386 bytes`
-- SHA-256: `938dc7de011b07e30c83d9c1c8214ffc92b4d2d85b21e764922670197a320a4b`
+- Size: `4,256,550 bytes`
+- SHA-256: `48a4a54ca99f4de1ba432f44c94384a7fa99adf174a26112af5cd82ea2ce241b`
 
 Included public surfaces:
 
