@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-22T00:16:07.097Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-22T00:15:57.794Z
 - branch: codex/f2c19-host-restart-receipt
 - commit: 32326ca64baa4fff0ac60072ebad37ad9b434df2

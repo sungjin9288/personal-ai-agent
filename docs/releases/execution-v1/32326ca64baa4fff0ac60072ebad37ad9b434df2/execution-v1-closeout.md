@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-22T00:16:07.097Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-22T00:15:57.863Z
 - branch: codex/f2c19-host-restart-receipt
 - commit: 32326ca64baa4fff0ac60072ebad37ad9b434df2
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/32326ca64baa4fff0ac60072ebad37ad9b434df2/execution-v1-evidence.md)
 
 ## Closeout Checklist
 
