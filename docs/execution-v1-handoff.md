@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T00:16:05.995Z
+- generatedAt: 2026-07-22T01:08:58.958Z
 - localDate: 2026-07-22
-- branch: codex/f2c19-host-restart-receipt
-- commit: 32326ca64baa4fff0ac60072ebad37ad9b434df2
+- branch: codex/q8-private-evaluation-hardening
+- commit: 91bfe757aad96beb2112beb32b1a9f1911bed563
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/32326ca64baa4fff0ac60072ebad37ad9b434df2](releases/execution-v1/32326ca64baa4fff0ac60072ebad37ad9b434df2)
-- visualArtifactSetSha256: 080621a5e8dff9474b6576d96f90d79ef8a7ace3fff8c46cc906cc0583659902
-- commitPushStatus: not pushed, origin/codex/f2c19-host-restart-receipt not found
+- immutableSnapshot: [releases/execution-v1/91bfe757aad96beb2112beb32b1a9f1911bed563](releases/execution-v1/91bfe757aad96beb2112beb32b1a9f1911bed563)
+- visualArtifactSetSha256: 861896319a29aed5af43ff87d4e5316dfb070fdea7db646028921fa0cec45bb3
+- commitPushStatus: not pushed, origin/codex/q8-private-evaluation-hardening not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=52.7s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=52.0s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 080621a5e8dff9474b6576d96f90d79ef8a7ace3fff8c46cc906cc0583659902
+- visual artifact set: 861896319a29aed5af43ff87d4e5316dfb070fdea7db646028921fa0cec45bb3
 
 ## Live Provider Handoff
 

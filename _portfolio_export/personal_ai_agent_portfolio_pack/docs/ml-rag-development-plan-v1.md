@@ -1092,6 +1092,8 @@ Actual intake가 확인되면 evaluator는 Q4 v4가 아니라 Q7 review-action g
 
 Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 intake 삭제 시 중단을 검증한다. 이 테스트는 사용자 질의가 아닌 test fixture로 실행되므로 실제 평가 증적이 아니다. 현재 `actualUserQueryData: false`, `actualEvaluationExecuted: false`, `actualUserQueryQualityValidated: false`, `currentAnswerPathChanged: false`, `productionReadyClaim: false`를 유지한다. 실제 실행 절차와 삭제 경계는 `docs/actual-user-query-evaluation-v1.md`에 고정했다.
 
+Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한다. Actual dataset·intake는 owner-only `0700/0600` 경계와 no-follow descriptor read를 통과해야 한다. Actual intake와 quality output은 승인한 canonical path를 commit 직전까지 다시 확인하고, `0600` temporary file을 동기화한 뒤 같은 directory에서 atomic rename한다. 이 강화는 actual-data path에만 적용해 synthetic CLI contract와 platform requirement를 유지한다. Q6·Q7 all-pass threshold는 core의 단일 frozen contract로 이동했으며 suite, evaluator result, Q7 baseline, 재해시된 evidence 중 하나라도 완화되면 실패한다. 공개 API와 저장 형식은 바꾸지 않았고 actual data, model call, activation, training은 추가하지 않았다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -1104,6 +1106,7 @@ Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 
 | Q6 Local user-query quality evaluation | stop condition 기록 | Q5 intake를 같은 model·runtime·v4 prompt와 결합한 content-free 12-case local replay | 11/12와 `invalid-review-action` 1건을 보존하고 current path 유지; candidate 교정 전 실제 사용자 평가 중단 |
 | Q7 Reviewer action generalization | 완료 | v5 prompt candidate를 Q4 10-case와 Q6 12-case에 같은 model·runtime·threshold로 재실행 | Q4 10/10 parity와 synthetic Q6 12/12, content-free evidence, current path·activation 불변 |
 | Q8 Actual user-query evaluation protocol | 프로토콜 완료 · 데이터 대기 | private intake, tracked-path refusal, Q7 v5 binding, per-case consent reload, withdrawal fail-closed | fake loopback protocol 검증 완료; actual user data·quality·activation·training 없음 |
+| Q8.1 Private evaluation I/O and threshold hardening | 완료 | owner-only input·output, no-follow descriptor read, atomic private write, frozen all-pass threshold | weak mode·symlink·hard link·threshold relaxation을 model 호출 또는 evidence 승인 전에 거부 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |

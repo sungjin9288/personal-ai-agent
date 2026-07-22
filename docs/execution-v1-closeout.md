@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T00:15:57.863Z
-- branch: codex/f2c19-host-restart-receipt
-- commit: 32326ca64baa4fff0ac60072ebad37ad9b434df2
+- generatedAt: 2026-07-22T01:08:51.865Z
+- branch: codex/q8-private-evaluation-hardening
+- commit: 91bfe757aad96beb2112beb32b1a9f1911bed563
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist
