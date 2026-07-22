@@ -78,6 +78,7 @@
 - evidence/output-artifacts/local-training-post-acquisition-readiness.json
 - evidence/output-artifacts/mlx-lm-lora-training-adapter.json
 - evidence/output-artifacts/local-training-runtime-closure-provenance.json
+- evidence/output-artifacts/local-training-process-supervisor.json
 - evidence/output-artifacts/local-training-failure-recovery.json
 - evidence/output-artifacts/local-training-candidate-artifact-verification.json
 - evidence/output-artifacts/local-candidate-evaluation-admission.json
@@ -124,6 +125,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,250,545 bytes
-- 압축 파일 SHA-256: `d920bbcbd701c327cf129354759264733ec0369ae928621f8cd975bcac315207`
+- 압축 파일 크기: 4,253,386 bytes
+- 압축 파일 SHA-256: `938dc7de011b07e30c83d9c1c8214ffc92b4d2d85b21e764922670197a320a4b`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

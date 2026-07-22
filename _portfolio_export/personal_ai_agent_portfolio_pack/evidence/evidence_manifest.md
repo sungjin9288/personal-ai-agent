@@ -86,6 +86,7 @@
 - `evidence/output-artifacts/local-training-post-acquisition-readiness.json`
 - `evidence/output-artifacts/mlx-lm-lora-training-adapter.json`
 - `evidence/output-artifacts/local-training-runtime-closure-provenance.json`
+- `evidence/output-artifacts/local-training-process-supervisor.json`
 - `evidence/output-artifacts/local-training-failure-recovery.json`
 - `evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json`
 - `evidence/output-artifacts/local-candidate-evaluation-host-restart-receipt.json`
@@ -123,7 +124,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 230/230 passed with `npm run smoke:all` on 2026-07-22; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 231/231 passed with `npm run smoke:all` on 2026-07-22; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -182,6 +183,7 @@
 - Local training post-acquisition readiness: verified with `npm run smoke:local-training-post-acquisition-readiness`
 - MLX-LM LoRA training adapter contract: verified with `npm run smoke:mlx-lm-lora-training-adapter`
 - Static training runtime closure provenance: verified with `npm run smoke:local-training-runtime-closure-provenance`
+- Local training process supervisor: verified with `npm run smoke:local-training-process-supervisor`
 - Local training failure recovery: verified with `npm run smoke:local-training-failure-recovery`
 - Local training candidate artifact verification: verified with `npm run smoke:local-training-candidate-artifact-verification`
 - Local candidate evaluation admission: verified with `npm run smoke:local-candidate-evaluation-admission`

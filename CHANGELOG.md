@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added an independent local training process supervisor for an actual Node fixture child. It revalidates exact approval and permission state before spawn, periodically while running, and before result acceptance; revocation and timeout terminate the detached POSIX process group while its direct leader is live, late signals are withheld, and cleanup requires leader close plus confirmed group absence. The MLX adapter binds the supervisor contract but does not invoke it, so actual MLX execution, installation, download, training, rollout, external provider calls, and production claims remain false.
 - Added content-free static training runtime closure provenance for the MLX-LM fixture adapter. The contract pins one interpreter, one entrypoint, the reachable allowlisted Python module graph, and exact file bytes, then revalidates them before workspace creation and fixture invocation. Dynamic and native dependency closure, verify-to-exec, actual process execution, installation, download, training, rollout, external provider calls, and production claims remain false.
 - Added owner-only durable recovery for the MLX-LM fixture adapter. Success and failure cleanup now resume from explicit states, verify exact candidate bytes, remove workspaces before rollback, and use an immutable claim-edge CAS so concurrent retriers have one winner. Actual process execution, dependency installation, model download, training, rollout, external provider calls, and production claims remain false.
 - Added a non-authorizing MLX-LM LoRA fixture adapter that binds the approved F1 packet to pinned local artifacts, exact train/valid bytes, fixed offline invocation, and atomic candidate publication. The adapter cannot create a recorded training run or candidate-evaluation readiness; actual installation, model download, process execution, training, rollout, and production claims remain false.
@@ -104,8 +105,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,250,545 bytes`
-- SHA-256: `d920bbcbd701c327cf129354759264733ec0369ae928621f8cd975bcac315207`
+- Size: `4,253,386 bytes`
+- SHA-256: `938dc7de011b07e30c83d9c1c8214ffc92b4d2d85b21e764922670197a320a4b`
 
 Included public surfaces:
 

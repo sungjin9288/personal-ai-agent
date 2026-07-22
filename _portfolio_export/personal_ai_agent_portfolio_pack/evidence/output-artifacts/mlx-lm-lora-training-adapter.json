@@ -16,6 +16,7 @@
     "externalProviderCalls": "none",
     "externalSubmissionAuthorized": false,
     "productionReadyClaim": false,
+    "processSupervisorContractValidated": true,
     "readyForExplicitCandidateEvaluationRequest": false,
     "recordedTrainingRunCreated": false,
     "rolloutAuthorized": false,
@@ -24,7 +25,7 @@
     "verifyToExecClosed": false
   },
   "contract": {
-    "contractHash": "ee8fcecbbc18099a195639a26582ec2f6576030c5329997e40c13ccc1f2d290a",
+    "contractHash": "db31bd1732952ad899965fb5d103b6a5dc98236d31dd1b29cfe9bbec94ceb226",
     "dataFiles": [
       "train.jsonl",
       "valid.jsonl"
@@ -44,11 +45,16 @@
       "-B"
     ],
     "nativeClosureComplete": false,
+    "processSupervisor": {
+      "contractHash": "e01402e7f21ca14605d721b0b14b5bdad22dd9543c0aefe5c5d91e2f9d124945",
+      "schemaVersion": "personal-ai-agent-local-training-process-supervisor/v1"
+    },
+    "processSupervisorContractValidated": true,
     "remainingGates": [
       "os-bound-dynamic-native-and-exec-closure",
       "os-enforced-network-isolation",
       "os-enforced-resource-limits",
-      "process-group-lifecycle-and-revocation-monitoring",
+      "mlx-process-supervisor-integration",
       "explicit-actual-training-request"
     ],
     "runtimeClosure": {
@@ -56,7 +62,7 @@
       "provenanceHash": "31fe7708c263e81f75eae349c55c237094c165cda41e57528b4f59bd1644b54e",
       "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance/v1"
     },
-    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v3",
+    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v4",
     "sourceModel": {
       "id": "Qwen/Qwen2.5-1.5B-Instruct",
       "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
@@ -119,8 +125,9 @@
     "localAbsoluteModelPathRequired": true,
     "moduleOwnedFixtureInvocationExercised": true,
     "ownerOnlyDatasetWorkspace": true,
+    "processSupervisorContractBound": true,
     "runtimeClosureReinspectedBeforeFixtureInvocation": true
   },
-  "evidenceHash": "80a3dee6d7e778095ade3105b893fc6560f01c0739b6c1e9b1a8b9ced6610579",
-  "id": "mlx-lm-lora-training-adapter-evidence-80a3dee6d7e778095ade3105b893fc6560f01c0739b6c1e9b1a8b9ced6610579"
+  "evidenceHash": "053cafbdeb812206b82d6fdbfa393cd7ec28c83fdbefa009433f609262a440fb",
+  "id": "mlx-lm-lora-training-adapter-evidence-053cafbdeb812206b82d6fdbfa393cd7ec28c83fdbefa009433f609262a440fb"
 }
