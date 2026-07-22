@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-22
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning and owner-review intake, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
-- Source code modified: yes, a content-free F1.3 request binds the exact F1.2 plan and current 16-example, 6-scope, and 8-case targets to five pending data-handling owner reviews with bounded expiry, without collecting records or changing the public runtime, CLI, HTTP, storage, audit, or training authority contracts
-- New feature development: yes, the current F1 packet remains insufficient and the F1.3 request remains pending owner review; actual collection and process execution stay fail-closed, and installation, model download, actual training, external submission, activation, and rollout remain unexecuted or unauthorized
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning, owner-role attestation intake and private resolution protocol, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, the F1.4 private resolution protocol revalidates the current F1.1–F1.3 chain, accepts five exact ordered owner-role attestations from an owner-only file, hashes reason metadata, retains evidence SHA-256 values as unverified references, and writes one integrity-checked private resolution per request without authenticating owner identity or changing the public CLI, HTTP, store, audit, or training authority contracts
+- New feature development: yes, the resolution contract and synthetic approve/reject replay are implemented, but no actual owner decision is tracked; private collection planning, actual collection, candidate review, installation, model download, actual training, external submission, activation, and rollout remain unexecuted or unauthorized
 
 ## Generated Evidence Files
 
@@ -181,6 +181,7 @@
 - Fine-tuning data sufficiency gate: verified with `npm run smoke:fine-tuning-data-sufficiency`
 - Fine-tuning reviewed-data collection plan: verified with `npm run smoke:fine-tuning-data-collection-plan`
 - Fine-tuning reviewed-data intake request: verified with `npm run smoke:fine-tuning-data-intake-request`
+- Fine-tuning reviewed-data intake resolution protocol: verified with `npm run smoke:fine-tuning-data-intake-resolution`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`
