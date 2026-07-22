@@ -5,6 +5,7 @@ import {
   assertFineTuningDataIntakeRequest,
   buildFineTuningDataIntakeRequest,
   FINE_TUNING_DATA_INTAKE_OWNER_ROLES,
+  FINE_TUNING_DATA_INTAKE_REQUIRED_REVIEWS,
 } from '../src/core/fine-tuning-data-intake-request.mjs';
 import { buildFineTuningDataCollectionPlan } from '../src/core/fine-tuning-data-collection-plan.mjs';
 import { assessFineTuningDataSufficiency } from '../src/core/fine-tuning-data-sufficiency.mjs';
@@ -115,6 +116,20 @@ test('request keeps every owner review pending and grants no authority', () => {
   assert.equal(request.sourceDataIncluded, false);
   assert.equal(request.syntheticTrainingRecordsCreated, false);
   assert.equal(request.trainingAuthorized, false);
+});
+
+test('required review identities are immutable shared contract values', () => {
+  assert.equal(Object.isFrozen(FINE_TUNING_DATA_INTAKE_REQUIRED_REVIEWS), true);
+  for (const review of FINE_TUNING_DATA_INTAKE_REQUIRED_REVIEWS) {
+    assert.equal(Object.isFrozen(review), true);
+  }
+  assert.throws(() => {
+    FINE_TUNING_DATA_INTAKE_REQUIRED_REVIEWS[0].id = 'mutated-review-id';
+  }, TypeError);
+  assert.equal(
+    FINE_TUNING_DATA_INTAKE_REQUIRED_REVIEWS[0].id,
+    'private-owner-only-intake',
+  );
 });
 
 test('same source and request metadata produce the same request hash', () => {

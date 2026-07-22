@@ -21,7 +21,7 @@ export const FINE_TUNING_DATA_INTAKE_OWNER_ROLES = Object.freeze([
   'retention-deletion-owner',
 ]);
 
-const REQUIRED_REVIEWS = Object.freeze([
+export const FINE_TUNING_DATA_INTAKE_REQUIRED_REVIEWS = Object.freeze([
   {
     id: 'private-owner-only-intake',
     ownerRole: 'collection-approval-owner',
@@ -42,7 +42,7 @@ const REQUIRED_REVIEWS = Object.freeze([
     id: 'retention-and-deletion-evidence',
     ownerRole: 'retention-deletion-owner',
   },
-]);
+].map((review) => Object.freeze(review)));
 
 const REQUESTED_ACTIONS = Object.freeze([
   'record-private-owner-decision-and-data-handling-evidence',
@@ -181,7 +181,7 @@ function buildRequestContent({
     requestedAt: normalizedRequestedAt,
     requestedBy: requireRequesterRole(requestedBy),
     requiredOwnerRoles: [...FINE_TUNING_DATA_INTAKE_OWNER_ROLES],
-    requiredReviews: REQUIRED_REVIEWS.map((review) => ({
+    requiredReviews: FINE_TUNING_DATA_INTAKE_REQUIRED_REVIEWS.map((review) => ({
       ...review,
       status: 'pending-owner-review',
     })),

@@ -361,6 +361,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-readiness/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-sufficiency/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-collection-plan/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-intake-request/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-intake-resolution/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-runtime/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-environment-preflight/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-toolchain-decision/);

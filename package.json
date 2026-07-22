@@ -153,6 +153,8 @@
     "smoke:fine-tuning-data-collection-plan": "node scripts/smoke-fine-tuning-data-collection-plan.mjs",
     "build:fine-tuning-data-intake-request-evidence": "node scripts/build-fine-tuning-data-intake-request-evidence.mjs",
     "smoke:fine-tuning-data-intake-request": "node scripts/smoke-fine-tuning-data-intake-request.mjs",
+    "resolve:fine-tuning-data-intake": "node scripts/resolve-fine-tuning-data-intake.mjs",
+    "smoke:fine-tuning-data-intake-resolution": "node scripts/smoke-fine-tuning-data-intake-resolution.mjs",
     "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
     "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:local-training-permission-surface": "node scripts/smoke-local-training-permission-surface.mjs",
