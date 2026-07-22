@@ -23,9 +23,19 @@ import {
 import {
   assertLocalTrainingToolchainDecision,
 } from './local-training-toolchain-decision.mjs';
+import {
+  buildLocalTrainingFailureCleanupRequest,
+  cleanupLocalTrainingFailureRecovery,
+  commitLocalTrainingFailureRecovery,
+  deriveLocalTrainingFailureRecoveryOperationId,
+  markLocalTrainingFailureRecoveryPublished,
+  markLocalTrainingFailureRecoveryPublishIntent,
+  openLocalTrainingFailureRecovery,
+  recoverLocalTrainingFailure,
+} from './local-training-failure-recovery.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION =
-  'personal-ai-agent-mlx-lm-lora-training-adapter/v1';
+  'personal-ai-agent-mlx-lm-lora-training-adapter/v2';
 
 const ADAPTER_STATES = new WeakMap();
 
@@ -49,7 +59,6 @@ const REMAINING_GATES = Object.freeze([
   'os-enforced-network-isolation',
   'os-enforced-resource-limits',
   'process-group-lifecycle-and-revocation-monitoring',
-  'durable-failure-recovery-and-explicit-cleanup',
   'explicit-actual-training-request',
 ]);
 
@@ -422,6 +431,72 @@ function buildPayload(approval, readinessPackage) {
   };
 }
 
+function buildRecoveryBindings({
+  acquisitionVerification,
+  approval,
+  contract,
+  currentPermission,
+  postAcquisitionReadiness,
+  readinessPackage,
+}) {
+  return {
+    acquisitionVerification: {
+      hash: acquisitionVerification.verificationHash,
+      id: acquisitionVerification.id,
+    },
+    approval: {
+      hash: approval.approvalHash,
+      id: approval.id,
+    },
+    contractHash: contract.contractHash,
+    dataset: {
+      datasetHash: readinessPackage.dataset.datasetHash,
+      readinessHash: readinessPackage.readinessHash,
+      trainSha256: readinessPackage.exportDigests.train,
+      validationSha256:
+        readinessPackage.exportDigests.validation,
+    },
+    maxDiskBytes:
+      currentPermission.evidence.resource.limits.maxDiskBytes,
+    permission: {
+      hash: currentPermission.permissionHash,
+      id: currentPermission.id,
+    },
+    postAcquisitionReadiness: {
+      hash: postAcquisitionReadiness.readinessHash,
+      id: postAcquisitionReadiness.id,
+    },
+    rollbackOwner: approval.rollbackOwner,
+  };
+}
+
+function buildRecoveryLeaseExpiration({
+  approval,
+  currentPermission,
+  startedAt,
+}) {
+  const startedAtMs = Date.parse(startedAt);
+  const runtimeLimitMs = Number(
+    currentPermission.evidence.resource.limits.maxRuntimeMs,
+  );
+  const leaseExpiresAtMs = Math.min(
+    Date.parse(approval.expiresAt),
+    startedAtMs + runtimeLimitMs,
+  );
+  if (
+    !Number.isFinite(startedAtMs) ||
+    !Number.isFinite(runtimeLimitMs) ||
+    runtimeLimitMs <= 0 ||
+    !Number.isFinite(leaseExpiresAtMs) ||
+    leaseExpiresAtMs <= startedAtMs
+  ) {
+    throw new Error(
+      'MLX-LM training adapter recovery lease is invalid.',
+    );
+  }
+  return new Date(leaseExpiresAtMs).toISOString();
+}
+
 function assertSafeSourceModel(fileSystem, sourceRoot) {
   const files = listRegularFiles(fileSystem, sourceRoot);
   if (files.some((filename) => filename.endsWith('.py'))) {
@@ -631,6 +706,84 @@ export function createMlxLmLoraTrainingAdapter({
   const contract = deepFreeze(buildContract());
   let lastObservation = null;
 
+  function assertBoundTrainingInputs({
+    approval,
+    currentPermission,
+    now,
+    permissionRevocation,
+    postAcquisitionReadiness,
+    readinessPackage,
+  }) {
+    assertFineTuningReadinessPackage(readinessPackage);
+    assertLocalTrainingExecutionApproval({
+      approval,
+      currentPermission,
+      now,
+      permissionRevocation,
+      postAcquisitionReadiness,
+      readinessPackage,
+      timeoutMs: 1,
+      trainerId: EXPECTED_TOOLCHAIN.trainer.id,
+    });
+    assertLocalTrainingPostAcquisitionAdmission({
+      now,
+      permission: currentPermission,
+      permissionRevocation,
+      readiness: postAcquisitionReadiness,
+      readinessPackage,
+    });
+    const trainingTarget = postAcquisitionReadiness.trainingTarget;
+    if (
+      approval.baseModelId !== trainingTarget.baseModelId ||
+      approval.baseModelId !==
+        acquisition.plan.toolchainDecision.sourceModel.id ||
+      approval.trainerId !== trainingTarget.trainerId ||
+      approval.trainerId !== EXPECTED_TOOLCHAIN.trainer.id ||
+      approval.rollbackOwner !== trainingTarget.rollbackOwner
+    ) {
+      throw new Error(
+        'MLX-LM training adapter approval target is unbound.',
+      );
+    }
+    const payload = buildPayload(approval, readinessPackage);
+    assertPayload(payload, approval, readinessPackage);
+    assertLocalTrainingAcquisitionArtifactVerification(
+      acquisition.verification,
+    );
+    assertPinnedToolchain(
+      acquisition.toolchainDecision,
+      acquisition.plan,
+    );
+    const currentPlan = buildLocalTrainingAcquisitionPlan({
+      approval: acquisition.approval,
+      decision: acquisition.toolchainDecision,
+      now: acquisition.verification.observedAt,
+    });
+    if (
+      JSON.stringify(currentPlan) !== JSON.stringify(acquisition.plan) ||
+      acquisition.verification.mode !== 'recorded-local-acquisition' ||
+      acquisition.verification.approval.id !== acquisition.approval.id ||
+      acquisition.verification.approval.approvalHash !==
+        acquisition.approval.approvalHash ||
+      postAcquisitionReadiness.artifactVerification.id !==
+        acquisition.verification.id ||
+      postAcquisitionReadiness.artifactVerification.verificationHash !==
+        acquisition.verification.verificationHash
+    ) {
+      throw new Error(
+        'MLX-LM training adapter acquisition evidence is stale or unbound.',
+      );
+    }
+    return buildRecoveryBindings({
+      acquisitionVerification: acquisition.verification,
+      approval,
+      contract,
+      currentPermission,
+      postAcquisitionReadiness,
+      readinessPackage,
+    });
+  }
+
   async function verifyAcquisitionArtifacts({
     sourceManifest,
     sourceRoot,
@@ -681,66 +834,14 @@ export function createMlxLmLoraTrainingAdapter({
     startedAt,
   } = {}) {
     lastObservation = null;
-    assertFineTuningReadinessPackage(readinessPackage);
-    assertLocalTrainingExecutionApproval({
+    const recoveryBindings = assertBoundTrainingInputs({
       approval,
       currentPermission,
       now: startedAt,
       permissionRevocation,
       postAcquisitionReadiness,
       readinessPackage,
-      timeoutMs: 1,
-      trainerId: EXPECTED_TOOLCHAIN.trainer.id,
     });
-    assertLocalTrainingPostAcquisitionAdmission({
-      now: startedAt,
-      permission: currentPermission,
-      permissionRevocation,
-      readiness: postAcquisitionReadiness,
-      readinessPackage,
-    });
-    const trainingTarget = postAcquisitionReadiness.trainingTarget;
-    if (
-      approval.baseModelId !== trainingTarget.baseModelId ||
-      approval.baseModelId !==
-        acquisition.plan.toolchainDecision.sourceModel.id ||
-      approval.trainerId !== trainingTarget.trainerId ||
-      approval.trainerId !== EXPECTED_TOOLCHAIN.trainer.id ||
-      approval.rollbackOwner !== trainingTarget.rollbackOwner
-    ) {
-      throw new Error(
-        'MLX-LM training adapter approval target is unbound.',
-      );
-    }
-    const payload = buildPayload(approval, readinessPackage);
-    assertPayload(payload, approval, readinessPackage);
-    assertLocalTrainingAcquisitionArtifactVerification(
-      acquisition.verification,
-    );
-    assertPinnedToolchain(
-      acquisition.toolchainDecision,
-      acquisition.plan,
-    );
-    const currentPlan = buildLocalTrainingAcquisitionPlan({
-      approval: acquisition.approval,
-      decision: acquisition.toolchainDecision,
-      now: acquisition.verification.observedAt,
-    });
-    if (
-      JSON.stringify(currentPlan) !== JSON.stringify(acquisition.plan) ||
-      acquisition.verification.mode !== 'recorded-local-acquisition' ||
-      acquisition.verification.approval.id !== acquisition.approval.id ||
-      acquisition.verification.approval.approvalHash !==
-        acquisition.approval.approvalHash ||
-      postAcquisitionReadiness.artifactVerification.id !==
-        acquisition.verification.id ||
-      postAcquisitionReadiness.artifactVerification.verificationHash !==
-        acquisition.verification.verificationHash
-    ) {
-      throw new Error(
-        'MLX-LM training adapter acquisition evidence is stale or unbound.',
-      );
-    }
 
     const acquisitionRoot = requireDirectory(
       fileSystem,
@@ -816,10 +917,22 @@ export function createMlxLmLoraTrainingAdapter({
       path.join(workspaceParent, 'mlx-lm-lora-'),
     );
     fileSystem.chmodSync(workspace, 0o700);
-    let published = false;
+    let recoveryOperation;
     let completion;
 
     try {
+      recoveryOperation = openLocalTrainingFailureRecovery({
+        bindings: recoveryBindings,
+        candidateRoot,
+        leaseExpiresAt: buildRecoveryLeaseExpiration({
+          approval,
+          currentPermission,
+          startedAt,
+        }),
+        repoDir: repoRoot,
+        startedAt,
+        workspaceRoot: workspace,
+      });
       const dataRoot = path.join(workspace, 'data');
       const stagedCandidate = path.join(workspace, 'candidate');
       const artifactRoot = path.join(stagedCandidate, 'artifact');
@@ -899,10 +1012,12 @@ export function createMlxLmLoraTrainingAdapter({
         modelId,
         readinessPackage,
       });
+      const candidateManifestContent =
+        `${JSON.stringify(manifest, null, 2)}\n`;
       writePrivateFile(
         fileSystem,
         path.join(stagedCandidate, 'candidate-manifest.json'),
-        `${JSON.stringify(manifest, null, 2)}\n`,
+        candidateManifestContent,
       );
 
       await verifyAcquisitionArtifacts({
@@ -931,8 +1046,22 @@ export function createMlxLmLoraTrainingAdapter({
           'MLX-LM training adapter refuses to overwrite an existing candidate.',
         );
       }
+      markLocalTrainingFailureRecoveryPublishIntent(
+        recoveryOperation,
+        {
+          candidateManifestHash: sha256(candidateManifestContent),
+          stagedCandidateRoot: stagedCandidate,
+          updatedAt: startedAt,
+        },
+      );
       fileSystem.renameSync(stagedCandidate, candidateRoot);
-      published = true;
+      markLocalTrainingFailureRecoveryPublished(
+        recoveryOperation,
+        {
+          candidateRoot,
+          updatedAt: startedAt,
+        },
+      );
 
       const publishedRoot = requireDirectory(
         fileSystem,
@@ -1006,62 +1135,95 @@ export function createMlxLmLoraTrainingAdapter({
           validationSha256: readinessPackage.exportDigests.validation,
         },
       };
+      const recoveryReceipt = commitLocalTrainingFailureRecovery(
+        recoveryOperation,
+        { completedAt: startedAt },
+      );
+      completion.observation.durableFailureRecoveryValidated = true;
+      completion.observation.recoveryOperationId =
+        recoveryOperation.operationId;
+      completion.observation.recoveryReceiptHash =
+        recoveryReceipt.receiptHash;
+      completion.observation.workspaceRemovedBeforeObservation =
+        recoveryReceipt.workspaceRemoved;
     } catch (error) {
       lastObservation = null;
-      const cleanupErrors = [];
-      if (published) {
+      if (!recoveryOperation) {
         try {
-          fileSystem.rmSync(candidateRoot, {
+          fileSystem.rmSync(workspace, {
             force: true,
             recursive: true,
           });
         } catch (cleanupError) {
-          cleanupErrors.push(cleanupError);
+          throw new AggregateError(
+            [error, cleanupError],
+            'MLX-LM training adapter failed and could not clean every staged artifact.',
+          );
         }
+        throw error;
       }
       try {
-        fileSystem.rmSync(workspace, {
-          force: true,
-          recursive: true,
+        cleanupLocalTrainingFailureRecovery(recoveryOperation, {
+          completedAt: startedAt,
+          failureCode: completion
+            ? 'successful-run-cleanup-failed'
+            : 'adapter-execution-failed',
         });
       } catch (cleanupError) {
-        cleanupErrors.push(cleanupError);
-      }
-      if (cleanupErrors.length > 0) {
         throw new AggregateError(
-          [error, ...cleanupErrors],
-          'MLX-LM training adapter failed and could not clean every staged artifact.',
+          [error, cleanupError],
+          completion
+            ? 'MLX-LM training adapter workspace cleanup and candidate rollback failed.'
+            : 'MLX-LM training adapter failed and could not clean every staged artifact.',
+        );
+      }
+      if (completion) {
+        throw new Error(
+          'MLX-LM training adapter workspace cleanup failed; published candidate was removed.',
+          { cause: error },
         );
       }
       throw error;
     }
 
-    try {
-      fileSystem.rmSync(workspace, {
-        force: true,
-        recursive: true,
-      });
-    } catch (cleanupError) {
-      lastObservation = null;
-      try {
-        fileSystem.rmSync(candidateRoot, {
-          force: true,
-          recursive: true,
-        });
-      } catch (rollbackError) {
-        throw new AggregateError(
-          [cleanupError, rollbackError],
-          'MLX-LM training adapter workspace cleanup and candidate rollback failed.',
-        );
-      }
-      throw new Error(
-        'MLX-LM training adapter workspace cleanup failed; published candidate was removed.',
-        { cause: cleanupError },
-      );
-    }
-
     lastObservation = completion.observation;
     return completion.result;
+  }
+
+  function buildCleanupRequest({
+    approval,
+    currentPermission,
+    expiresAt,
+    postAcquisitionReadiness,
+    readinessPackage,
+    requestedAt,
+    requestedBy,
+  } = {}) {
+    const bindings = assertBoundTrainingInputs({
+      approval,
+      currentPermission,
+      now: postAcquisitionReadiness?.observedAt,
+      permissionRevocation: null,
+      postAcquisitionReadiness,
+      readinessPackage,
+    });
+    return buildLocalTrainingFailureCleanupRequest({
+      expiresAt,
+      operationId:
+        deriveLocalTrainingFailureRecoveryOperationId(bindings),
+      repoDir: repoRoot,
+      requestedAt,
+      requestedBy,
+    });
+  }
+
+  function recoverFailure({ cleanupRequest, recoveredAt } = {}) {
+    lastObservation = null;
+    return recoverLocalTrainingFailure({
+      cleanupRequest,
+      recoveredAt,
+      repoDir: repoRoot,
+    });
   }
 
   const adapter = Object.freeze({
@@ -1073,7 +1235,11 @@ export function createMlxLmLoraTrainingAdapter({
     },
     trainerId: EXPECTED_TOOLCHAIN.trainer.id,
   });
-  ADAPTER_STATES.set(adapter, { executeTraining });
+  ADAPTER_STATES.set(adapter, {
+    buildCleanupRequest,
+    executeTraining,
+    recoverFailure,
+  });
   return adapter;
 }
 
@@ -1088,4 +1254,30 @@ export function executeMlxLmLoraTrainingAdapter({
     );
   }
   return state.executeTraining(input);
+}
+
+export function buildMlxLmLoraTrainingCleanupRequest({
+  adapter,
+  ...input
+} = {}) {
+  const state = ADAPTER_STATES.get(adapter);
+  if (!state) {
+    throw new Error(
+      'Local training recovery requires a module-issued MLX-LM adapter.',
+    );
+  }
+  return state.buildCleanupRequest(input);
+}
+
+export function recoverMlxLmLoraTrainingAdapter({
+  adapter,
+  ...input
+} = {}) {
+  const state = ADAPTER_STATES.get(adapter);
+  if (!state) {
+    throw new Error(
+      'Local training recovery requires a module-issued MLX-LM adapter.',
+    );
+  }
+  return state.recoverFailure(input);
 }

@@ -7,9 +7,11 @@ import {
   buildLocalTrainingExecutionApproval,
 } from '../src/core/local-training-runtime.mjs';
 import {
+  buildMlxLmLoraTrainingCleanupRequest,
   createMlxLmLoraTrainingAdapter,
   executeMlxLmLoraTrainingAdapter,
   MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION,
+  recoverMlxLmLoraTrainingAdapter,
 } from '../src/core/mlx-lm-lora-training-adapter.mjs';
 import {
   createLocalTrainingPostAcquisitionReadinessFixture,
@@ -345,9 +347,9 @@ test('MLX-LM adapter contract is deeply immutable', async () => {
 test('MLX-LM adapter removes a published candidate when workspace cleanup fails', async () => {
   const context = await buildFixture();
   const approval = buildExecutionApproval(context.fixture);
-  const originalRmSync = fs.rmSync;
+  const originalRmdirSync = fs.rmdirSync;
   let cleanupFailureInjected = false;
-  fs.rmSync = (target, options) => {
+  fs.rmdirSync = (target, options) => {
     if (
       !cleanupFailureInjected &&
       String(target).includes('/var/local-training/workspaces/mlx-lm-lora-')
@@ -355,7 +357,7 @@ test('MLX-LM adapter removes a published candidate when workspace cleanup fails'
       cleanupFailureInjected = true;
       throw new Error('injected workspace cleanup failure');
     }
-    return originalRmSync(target, options);
+    return originalRmdirSync(target, options);
   };
   try {
     await assert.rejects(
@@ -363,7 +365,7 @@ test('MLX-LM adapter removes a published candidate when workspace cleanup fails'
       /workspace cleanup failed; published candidate was removed/,
     );
   } finally {
-    fs.rmSync = originalRmSync;
+    fs.rmdirSync = originalRmdirSync;
   }
   try {
     assert.equal(cleanupFailureInjected, true);
@@ -375,6 +377,91 @@ test('MLX-LM adapter removes a published candidate when workspace cleanup fails'
         approval.id,
       )),
       false,
+    );
+  } finally {
+    context.cleanup();
+  }
+});
+
+test('MLX-LM adapter resumes durable cleanup after workspace and rollback both fail', async () => {
+  const context = await buildFixture();
+  const approval = buildExecutionApproval(context.fixture);
+  const originalRmdirSync = fs.rmdirSync;
+  fs.rmdirSync = (target, options) => {
+    if (
+      String(target).includes(
+        '/var/local-training/workspaces/mlx-lm-lora-',
+      )
+    ) {
+      throw new Error('injected durable cleanup failure');
+    }
+    return originalRmdirSync(target, options);
+  };
+  try {
+    await assert.rejects(
+      context.execute(runtimeInput(context, { approval })),
+      /workspace cleanup and candidate rollback failed/,
+    );
+  } finally {
+    fs.rmdirSync = originalRmdirSync;
+  }
+  try {
+    const candidateRoot = path.join(
+      context.fixture.fixtureRepoDir,
+      'var/local-training/candidates',
+      approval.id,
+    );
+    const workspaceParent = path.join(
+      context.fixture.fixtureRepoDir,
+      'var/local-training/workspaces',
+    );
+    assert.equal(fs.existsSync(candidateRoot), true);
+    assert.equal(
+      fs.readdirSync(workspaceParent).some(
+        (name) => name.startsWith('mlx-lm-lora-'),
+      ),
+      true,
+    );
+
+    const recoveryAdapter = createMlxLmLoraTrainingAdapter({
+      acquisition: acquisitionEvidence(context.fixture),
+      repoDir: context.fixture.fixtureRepoDir,
+    });
+    const cleanupRequest = buildMlxLmLoraTrainingCleanupRequest({
+      adapter: recoveryAdapter,
+      approval,
+      currentPermission: context.fixture.permission,
+      expiresAt: '2026-07-17T10:05:00.000Z',
+      postAcquisitionReadiness:
+        context.fixture.postAcquisitionReadiness,
+      readinessPackage: context.fixture.readinessPackage,
+      requestedAt: '2026-07-17T10:00:00.000Z',
+      requestedBy: approval.rollbackOwner,
+    });
+    const receipt = recoverMlxLmLoraTrainingAdapter({
+      adapter: recoveryAdapter,
+      cleanupRequest,
+      recoveredAt: '2026-07-17T10:01:00.000Z',
+    });
+
+    assert.equal(receipt.status, 'failed-cleaned');
+    assert.equal(receipt.actualModelTrainingExecuted, false);
+    assert.equal(receipt.trainingAuthorized, false);
+    assert.equal(fs.existsSync(candidateRoot), false);
+    assert.equal(
+      fs.readdirSync(workspaceParent).some(
+        (name) => name.startsWith('mlx-lm-lora-'),
+      ),
+      false,
+    );
+    assert.equal(recoveryAdapter.getLastObservation(), null);
+    assert.deepEqual(
+      recoverMlxLmLoraTrainingAdapter({
+        adapter: recoveryAdapter,
+        cleanupRequest,
+        recoveredAt: '2026-07-17T10:02:00.000Z',
+      }),
+      receipt,
     );
   } finally {
     context.cleanup();

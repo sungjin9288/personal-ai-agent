@@ -21,7 +21,7 @@
     "trainingAuthorized": false
   },
   "contract": {
-    "contractHash": "9d80a3b0ff5be0a59da8fe5a1a885a5593f1246cd717db202d1948263a712b04",
+    "contractHash": "e26696ce82d8950cd4758ab422ee3535a606fe10cfebaca74e966869fa61f691",
     "dataFiles": [
       "train.jsonl",
       "valid.jsonl"
@@ -39,10 +39,9 @@
       "os-enforced-network-isolation",
       "os-enforced-resource-limits",
       "process-group-lifecycle-and-revocation-monitoring",
-      "durable-failure-recovery-and-explicit-cleanup",
       "explicit-actual-training-request"
     ],
-    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v1",
+    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v2",
     "sourceModel": {
       "id": "Qwen/Qwen2.5-1.5B-Instruct",
       "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
@@ -74,7 +73,8 @@
     "workspaceCleanupFailureRemovedCandidate": true,
     "workspaceCleanupFailureProducedNoObservation": true,
     "existingCandidateOverwriteBlocked": true,
-    "candidatePublishedOnlyAfterAllPreconditions": true
+    "candidatePublishedOnlyAfterAllPreconditions": true,
+    "durableRecoveryReceiptBoundToSuccess": true
   },
   "mode": "mlx-lm-lora-training-adapter-contract",
   "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter-evidence/v1",
@@ -83,6 +83,7 @@
     "arbitraryArgumentsAccepted": false,
     "candidatePublishedAtomically": true,
     "customSourceModelCodeRejected": true,
+    "durableFailureRecoveryValidated": true,
     "environmentKeys": [
       "HF_DATASETS_OFFLINE",
       "HF_HUB_OFFLINE",
@@ -98,6 +99,6 @@
     "moduleOwnedFixtureInvocationExercised": true,
     "ownerOnlyDatasetWorkspace": true
   },
-  "evidenceHash": "1a6af4bf92e588fefa99fbd8c20993dd8561b06de760996502b519955d587726",
-  "id": "mlx-lm-lora-training-adapter-evidence-1a6af4bf92e588fefa99fbd8c20993dd8561b06de760996502b519955d587726"
+  "evidenceHash": "248bdf2398324fd1863ab4c089314a9139d1981d59fff902844055c9fb8bd908",
+  "id": "mlx-lm-lora-training-adapter-evidence-248bdf2398324fd1863ab4c089314a9139d1981d59fff902844055c9fb8bd908"
 }

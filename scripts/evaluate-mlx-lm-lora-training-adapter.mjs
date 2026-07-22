@@ -287,9 +287,9 @@ export async function evaluateMlxLmLoraTrainingAdapter({
       repoDir: cleanupFixture.fixtureRepoDir,
     });
     const cleanupApproval = buildExecutionApproval(cleanupFixture);
-    const originalRmSync = fs.rmSync;
+    const originalRmdirSync = fs.rmdirSync;
     let cleanupFailureInjected = false;
-    fs.rmSync = (target, options) => {
+    fs.rmdirSync = (target, options) => {
       const normalizedTarget = String(target)
         .split(path.sep)
         .join('/');
@@ -302,7 +302,7 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         cleanupFailureInjected = true;
         throw new Error('injected workspace cleanup failure');
       }
-      return originalRmSync(target, options);
+      return originalRmdirSync(target, options);
     };
     try {
       failureGuards.workspaceCleanupFailureRejected =
@@ -315,7 +315,7 @@ export async function evaluateMlxLmLoraTrainingAdapter({
           /workspace cleanup failed; published candidate was removed/,
         );
     } finally {
-      fs.rmSync = originalRmSync;
+      fs.rmdirSync = originalRmdirSync;
     }
     failureGuards.workspaceCleanupFailureRemovedCandidate =
       cleanupFailureInjected &&
@@ -341,6 +341,16 @@ export async function evaluateMlxLmLoraTrainingAdapter({
       );
     failureGuards.candidatePublishedOnlyAfterAllPreconditions =
       observation?.candidatePublished === true;
+    failureGuards.durableRecoveryReceiptBoundToSuccess = Boolean(
+      observation?.durableFailureRecoveryValidated === true &&
+      /^local-training-recovery-[a-f0-9]{64}$/u.test(
+        observation?.recoveryOperationId || '',
+      ) &&
+      /^[a-f0-9]{64}$/u.test(
+        observation?.recoveryReceiptHash || '',
+      ) &&
+      observation?.workspaceRemovedBeforeObservation === true,
+    );
 
     assert.equal(
       Object.values(failureGuards).every(Boolean),
@@ -399,6 +409,8 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         arbitraryArgumentsAccepted: false,
         candidatePublishedAtomically: true,
         customSourceModelCodeRejected: true,
+        durableFailureRecoveryValidated:
+          observation.durableFailureRecoveryValidated,
         environmentKeys: observation.environmentKeys,
         inheritedEnvironmentValuesAccepted: false,
         localAbsoluteModelPathRequired: true,

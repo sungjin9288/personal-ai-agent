@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-22 Durable Local-training Failure Recovery
+
+- bound each MLX adapter attempt to approval, readiness, acquisition verification, and adapter hashes before candidate publication
+- added owner-only atomic recovery phases that remove the workspace before rolling back a candidate and resume safely after partial failure
+- required an exact rollback-owner cleanup request that cannot authorize training, and kept raw paths, training data, and failure messages out of the ledger and tracked evidence
+- preserved actual process, installation, model download, training, rollout, and production claims as false while same-user TOCTOU and OS isolation remain open
+
 ## 2026-07-17 Local User-query Quality Stop Condition
 
 - bound the Q5 intake to the exact Q4 model digest, Ollama runtime, v4 prompt, and unchanged answer-quality thresholds before allowing loopback local inference
