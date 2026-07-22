@@ -1,6 +1,6 @@
 {
   "adapterBinding": {
-    "adapterContractHash": "7b53090bd8d14394b4df0755f629d87c508e64b48068165cf3fc1042d41dd1f3",
+    "adapterContractHash": "e5f36187d04771106b5de155dcb57fafb94381307b603e7dfb8578f5e60e8b2f",
     "suspendedExecContractHash": "138e107feef752fb6a9145c61d809e99c0fe395c4b861eb3374c883cb2ce6f5b",
     "verifyToExecGate": "mlx-verify-to-exec-closure"
   },
@@ -55,6 +55,6 @@
     "runtimeImageProvenanceContractHash": "c0ee725637f0438c98ba33306a0a1c6b3882e4ff1e71f68aacf1463cb7cea65a",
     "schemaVersion": "personal-ai-agent-local-training-darwin-suspended-exec/v1"
   },
-  "evidenceHash": "c1e548a169c808ad492c78bc3db96292cf42f3b7ba54d22c0bee1aa06c5a243c",
-  "id": "local-training-darwin-suspended-exec-evidence-c1e548a169c808ad492c78bc3db96292cf42f3b7ba54d22c0bee1aa06c5a243c"
+  "evidenceHash": "344a76bc5a3e9500f7996b1c9066fc8b694ba09f0b0d365aaeb152ee86602399",
+  "id": "local-training-darwin-suspended-exec-evidence-344a76bc5a3e9500f7996b1c9066fc8b694ba09f0b0d365aaeb152ee86602399"
 }
