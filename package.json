@@ -173,6 +173,8 @@
     "smoke:mlx-lm-lora-training-adapter": "node scripts/smoke-mlx-lm-lora-training-adapter.mjs",
     "build:local-training-runtime-closure-provenance-evidence": "node scripts/build-local-training-runtime-closure-provenance-evidence.mjs",
     "smoke:local-training-runtime-closure-provenance": "node scripts/smoke-local-training-runtime-closure-provenance.mjs",
+    "build:local-training-process-supervisor-evidence": "node scripts/build-local-training-process-supervisor-evidence.mjs",
+    "smoke:local-training-process-supervisor": "node scripts/smoke-local-training-process-supervisor.mjs",
     "build:local-training-failure-recovery-evidence": "node scripts/build-local-training-failure-recovery-evidence.mjs",
     "smoke:local-training-failure-recovery": "node scripts/smoke-local-training-failure-recovery.mjs",
     "build:local-training-candidate-artifact-verification-evidence": "node scripts/build-local-training-candidate-artifact-verification-evidence.mjs",

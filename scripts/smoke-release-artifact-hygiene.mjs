@@ -76,6 +76,12 @@ assert.equal(
 );
 assert.equal(
   result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-process-supervisor.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
     'evidence/output-artifacts/local-training-failure-recovery.json',
   ),
   true,

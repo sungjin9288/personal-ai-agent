@@ -114,6 +114,14 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
     assert.equal(context.adapter.contract.nativeClosureComplete, false);
     assert.equal(context.adapter.contract.trainingAuthorized, false);
     assert.equal(context.adapter.contract.verifyToExecClosed, false);
+    assert.equal(
+      context.adapter.contract.processSupervisorContractValidated,
+      true,
+    );
+    assert.match(
+      context.adapter.contract.processSupervisor.contractHash,
+      /^[a-f0-9]{64}$/,
+    );
     assert.deepEqual(
       context.observation.fixedArgumentOrder,
       [
@@ -140,6 +148,14 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
       false,
     );
     assert.equal(context.observation.verifyToExecClosed, false);
+    assert.equal(
+      context.observation.processSupervisorContractValidated,
+      true,
+    );
+    assert.equal(
+      context.observation.processSupervisorContractHash,
+      context.adapter.contract.processSupervisor.contractHash,
+    );
     assert.equal(result.executionKind, 'fixture-simulated');
     assert.equal(
       result.trainerReportedActualModelTrainingExecuted,

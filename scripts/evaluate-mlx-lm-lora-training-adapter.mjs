@@ -382,6 +382,7 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         externalProviderCalls: 'none',
         externalSubmissionAuthorized: false,
         productionReadyClaim: false,
+        processSupervisorContractValidated: true,
         readyForExplicitCandidateEvaluationRequest: false,
         recordedTrainingRunCreated: false,
         rolloutAuthorized: false,
@@ -399,6 +400,9 @@ export async function evaluateMlxLmLoraTrainingAdapter({
           adapter.contract.fixedInterpreterFlags,
         nativeClosureComplete:
           adapter.contract.nativeClosureComplete,
+        processSupervisor: adapter.contract.processSupervisor,
+        processSupervisorContractValidated:
+          adapter.contract.processSupervisorContractValidated,
         remainingGates: adapter.contract.remainingGates,
         runtimeClosure: adapter.contract.runtimeClosure,
         schemaVersion: adapter.contract.schemaVersion,
@@ -433,6 +437,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         moduleOwnedFixtureInvocationExercised:
           observation.fixtureInvocationContractExercised,
         ownerOnlyDatasetWorkspace: true,
+        processSupervisorContractBound:
+          observation.processSupervisorContractValidated === true &&
+          observation.processSupervisorContractHash ===
+            adapter.contract.processSupervisor.contractHash,
         runtimeClosureReinspectedBeforeFixtureInvocation:
           observation.staticRuntimeClosureValidated,
       },

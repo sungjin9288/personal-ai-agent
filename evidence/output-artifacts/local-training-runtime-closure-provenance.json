@@ -1,11 +1,11 @@
 {
   "adapterBinding": {
-    "contractHash": "ee8fcecbbc18099a195639a26582ec2f6576030c5329997e40c13ccc1f2d290a",
+    "contractHash": "db31bd1732952ad899965fb5d103b6a5dc98236d31dd1b29cfe9bbec94ceb226",
     "remainingGates": [
       "os-bound-dynamic-native-and-exec-closure",
       "os-enforced-network-isolation",
       "os-enforced-resource-limits",
-      "process-group-lifecycle-and-revocation-monitoring",
+      "mlx-process-supervisor-integration",
       "explicit-actual-training-request"
     ],
     "runtimeClosureProvenanceHash": "31fe7708c263e81f75eae349c55c237094c165cda41e57528b4f59bd1644b54e"
@@ -51,6 +51,6 @@
   },
   "mode": "fixture-simulated-static-runtime-closure",
   "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance-evidence/v1",
-  "evidenceHash": "2e660017710b643d353d6449130f6c275ac537da1648744d0202c01be1f1ac36",
-  "id": "local-training-runtime-closure-provenance-evidence-2e660017710b643d353d6449130f6c275ac537da1648744d0202c01be1f1ac36"
+  "evidenceHash": "0316847ffd7919542c48c0d14a55fccf9602202df297821d8aedc0438260209f",
+  "id": "local-training-runtime-closure-provenance-evidence-0316847ffd7919542c48c0d14a55fccf9602202df297821d8aedc0438260209f"
 }

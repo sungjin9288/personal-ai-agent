@@ -28,6 +28,10 @@ import {
   describeLocalTrainingRuntimeClosure,
 } from './local-training-runtime-closure-provenance.mjs';
 import {
+  assertLocalTrainingProcessSupervisorContract,
+  buildLocalTrainingProcessSupervisorContract,
+} from './local-training-process-supervisor.mjs';
+import {
   buildLocalTrainingFailureCleanupRequest,
   cleanupLocalTrainingFailureRecovery,
   commitLocalTrainingFailureRecovery,
@@ -39,7 +43,7 @@ import {
 } from './local-training-failure-recovery.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION =
-  'personal-ai-agent-mlx-lm-lora-training-adapter/v3';
+  'personal-ai-agent-mlx-lm-lora-training-adapter/v4';
 
 const ADAPTER_STATES = new WeakMap();
 
@@ -63,7 +67,7 @@ const REMAINING_GATES = Object.freeze([
   'os-bound-dynamic-native-and-exec-closure',
   'os-enforced-network-isolation',
   'os-enforced-resource-limits',
-  'process-group-lifecycle-and-revocation-monitoring',
+  'mlx-process-supervisor-integration',
   'explicit-actual-training-request',
 ]);
 
@@ -533,7 +537,7 @@ function assertSafeSourceModel(fileSystem, sourceRoot) {
   }
 }
 
-function buildContract(runtimeClosure) {
+function buildContract(runtimeClosure, processSupervisor) {
   const content = {
     actualModelTrainingExecuted: false,
     actualMlxProcessSpawned: false,
@@ -553,6 +557,11 @@ function buildContract(runtimeClosure) {
     networkPolicy: 'fixed-offline-environment-no-inherited-values',
     nativeClosureComplete: false,
     productionReadyClaim: false,
+    processSupervisor: {
+      contractHash: processSupervisor.contractHash,
+      schemaVersion: processSupervisor.schemaVersion,
+    },
+    processSupervisorContractValidated: true,
     remainingGates: [...REMAINING_GATES],
     schemaVersion: MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION,
     sourceModel: { ...EXPECTED_TOOLCHAIN.sourceModel },
@@ -748,7 +757,12 @@ export function createMlxLmLoraTrainingAdapter({
   const runtimeClosure = describeLocalTrainingRuntimeClosure(
     runtimeDefinition,
   );
-  const contract = deepFreeze(buildContract(runtimeClosure));
+  const processSupervisor =
+    buildLocalTrainingProcessSupervisorContract();
+  assertLocalTrainingProcessSupervisorContract(processSupervisor);
+  const contract = deepFreeze(
+    buildContract(runtimeClosure, processSupervisor),
+  );
   let lastObservation = null;
 
   function assertBoundTrainingInputs({
@@ -1184,6 +1198,9 @@ export function createMlxLmLoraTrainingAdapter({
           interpreterSha256: trainerInterpreterSha256,
           nativeClosureComplete: false,
           productionReadyClaim: false,
+          processSupervisorContractHash:
+            processSupervisor.contractHash,
+          processSupervisorContractValidated: true,
           remainingGates: [...REMAINING_GATES],
           runtimeClosureArtifactSetSha256:
             runtimeClosure.closure.artifactSetSha256,

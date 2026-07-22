@@ -1,0 +1,48 @@
+{
+  "adapterBinding": {
+    "adapterContractHash": "db31bd1732952ad899965fb5d103b6a5dc98236d31dd1b29cfe9bbec94ceb226",
+    "integrationGate": "mlx-process-supervisor-integration",
+    "supervisorContractHash": "e01402e7f21ca14605d721b0b14b5bdad22dd9543c0aefe5c5d91e2f9d124945"
+  },
+  "claimBoundary": {
+    "actualDependencyInstallationPerformed": false,
+    "actualFixtureProcessSpawned": true,
+    "actualMlxProcessSpawned": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "mlxProcessSupervisorIntegrated": false,
+    "permissionRevocationMonitoringValidated": true,
+    "processGroupLifecycleValidated": true,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "costFree": true,
+  "failureGuards": {
+    "adapterActualMlxProcessRemainsBlocked": true,
+    "adapterBoundToSupervisorContract": true,
+    "authorityDriftBlockedBeforeSpawn": true,
+    "authorityReaderFailureBlockedBeforeSpawn": true,
+    "contractTamperBlocked": true,
+    "invalidResultBlockedAfterQuiescence": true,
+    "midRunRevocationTerminatesGroup": true,
+    "signalPolicyIsLiveLeaderOnly": true,
+    "successfulFixtureChecksAuthorityAndQuiescence": true,
+    "timeoutTerminatesGroup": true
+  },
+  "mode": "local-fixture-process-supervisor",
+  "schemaVersion": "personal-ai-agent-local-training-process-supervisor-evidence/v1",
+  "supervisor": {
+    "authorityMonitoring": "before-spawn-periodic-before-result",
+    "cleanupGate": "leader-close-and-process-group-absence",
+    "contractHash": "e01402e7f21ca14605d721b0b14b5bdad22dd9543c0aefe5c5d91e2f9d124945",
+    "failureCodeCount": 12,
+    "processGroupIsolation": "detached-posix-process-group",
+    "schemaVersion": "personal-ai-agent-local-training-process-supervisor/v1",
+    "signalPolicy": "live-leader-sigkill"
+  },
+  "evidenceHash": "958d1beaebccbc50ac45b834d824d50fd6e72c1e8c3b273376e5689a2fb3d12b",
+  "id": "local-training-process-supervisor-evidence-958d1beaebccbc50ac45b834d824d50fd6e72c1e8c3b273376e5689a2fb3d12b"
+}

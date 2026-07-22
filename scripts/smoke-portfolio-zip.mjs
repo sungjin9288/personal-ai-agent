@@ -88,6 +88,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-post-acquisition-readiness.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/mlx-lm-lora-training-adapter.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-runtime-closure-provenance.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-process-supervisor.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-failure-recovery.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-training-candidate-artifact-verification.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-candidate-evaluation-admission.json',
