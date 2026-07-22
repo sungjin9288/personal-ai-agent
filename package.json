@@ -182,6 +182,8 @@
     "resume:local-candidate-evaluation-host-restart-rehearsal": "node scripts/resume-local-candidate-evaluation-host-restart-rehearsal.mjs",
     "build:local-candidate-evaluation-host-restart-rehearsal-evidence": "node scripts/build-local-candidate-evaluation-host-restart-rehearsal-evidence.mjs",
     "smoke:local-candidate-evaluation-host-restart-rehearsal": "node scripts/smoke-local-candidate-evaluation-host-restart-rehearsal.mjs",
+    "export:local-candidate-evaluation-host-restart-receipt": "node scripts/export-local-candidate-evaluation-host-restart-receipt.mjs",
+    "smoke:local-candidate-evaluation-host-restart-receipt": "node scripts/smoke-local-candidate-evaluation-host-restart-receipt.mjs",
     "smoke:local-candidate-evaluation-workspace-recovery": "node scripts/smoke-local-candidate-evaluation-workspace-recovery.mjs",
     "smoke:local-candidate-evaluator-provenance": "node scripts/smoke-local-candidate-evaluator-provenance.mjs",
     "smoke:candidate-model-evaluation": "node scripts/smoke-candidate-model-evaluation.mjs",

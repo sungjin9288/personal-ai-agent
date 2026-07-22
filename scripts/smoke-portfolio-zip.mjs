@@ -90,6 +90,7 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-candidate-evaluation-admission.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-candidate-evaluation-runtime.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json',
+  'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-candidate-evaluation-host-restart-receipt.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-quality-baseline.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-composition-candidate.json',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-answer-composition-robustness.json',

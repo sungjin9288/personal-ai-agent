@@ -75,6 +75,7 @@ const expectedCommands = [
   'npm run smoke:local-candidate-evaluation-process-lifecycle',
   'npm run smoke:local-candidate-evaluation-host-boot-recovery',
   'npm run smoke:local-candidate-evaluation-host-restart-rehearsal',
+  'npm run smoke:local-candidate-evaluation-host-restart-receipt',
   'npm run smoke:local-candidate-evaluator-provenance',
   'npm run smoke:candidate-model-evaluation',
   'npm run smoke:local-answer-quality-baseline',

@@ -14,7 +14,7 @@
     "evaluationHash": "a971c58a40e23080e21cd27ba5093dcdb9d06d93c90c3324a66a6be1384f24e1",
     "evaluationSource": "fixture-simulated",
     "evaluatorBundleArtifactSetSha256": "da923396190839365905ca7a7e69b1c75acd3d4dc2502f9a4c59274c4805f3b3",
-    "evaluatorExecutableSha256": "d36b3d980963d44bd2c5e844fac4cfeee26a167b744287a4e74a9575af9d0559",
+    "evaluatorExecutableSha256": "ee6fb0e015284d83a91e8ec5213f43a157f8a392b58555301682892ba928c04a",
     "gateDecision": "hold-for-review",
     "gateStatus": "ready-for-review",
     "protocolVersion": "personal-ai-agent-local-candidate-evaluation/v2",
@@ -85,6 +85,6 @@
     "workspaceRecovery": "expired-dead-preparing-or-expired-prior-boot-spawning"
   },
   "storeMutation": false,
-  "evidenceHash": "6faa2fcda402342cda0ec97ec002c3a481152877f95af9ef3173834ebbb7273a",
-  "id": "local-candidate-evaluation-runtime-evidence-6faa2fcda402342cda0ec97ec002c3a481152877f95af9ef3173834ebbb7273a"
+  "evidenceHash": "debd5ad3840ee6cdfbf0bec14c1cf116916015314c0ef4b899eb05111802f777",
+  "id": "local-candidate-evaluation-runtime-evidence-debd5ad3840ee6cdfbf0bec14c1cf116916015314c0ef4b899eb05111802f777"
 }
