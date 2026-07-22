@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T09:10:53.872Z
+- generatedAt: 2026-07-22T11:08:40.140Z
 - localDate: 2026-07-22
-- branch: codex/f2c25-runtime-exec-observation
-- commit: d7f6b832d94247f3aba4d7dc68ec134f35d661b3
+- branch: codex/f2c26-runtime-image-provenance
+- commit: edc141c3615e63095dd0ea2273ea371445989905
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d7f6b832d94247f3aba4d7dc68ec134f35d661b3](releases/execution-v1/d7f6b832d94247f3aba4d7dc68ec134f35d661b3)
-- visualArtifactSetSha256: f9213cf75386c281c6a2d7d2ecd584eabaacc971c7afa7788617b147ea1caf78
-- commitPushStatus: not pushed, origin/codex/f2c25-runtime-exec-observation not found
+- immutableSnapshot: [releases/execution-v1/edc141c3615e63095dd0ea2273ea371445989905](releases/execution-v1/edc141c3615e63095dd0ea2273ea371445989905)
+- visualArtifactSetSha256: 059c88a46819dc98092d02dc517342feb1ff08ed388629095b051763d8db8573
+- commitPushStatus: not pushed, origin/codex/f2c26-runtime-image-provenance not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=5.3m
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=49.8s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: f9213cf75386c281c6a2d7d2ecd584eabaacc971c7afa7788617b147ea1caf78
+- visual artifact set: 059c88a46819dc98092d02dc517342feb1ff08ed388629095b051763d8db8573
 
 ## Live Provider Handoff
 

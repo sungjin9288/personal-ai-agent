@@ -81,6 +81,7 @@
 - evidence/output-artifacts/local-training-process-supervisor.json
 - evidence/output-artifacts/local-training-os-isolation.json
 - evidence/output-artifacts/local-training-runtime-exec-observation.json
+- evidence/output-artifacts/local-training-runtime-image-provenance.json
 - evidence/output-artifacts/local-training-failure-recovery.json
 - evidence/output-artifacts/local-training-candidate-artifact-verification.json
 - evidence/output-artifacts/local-candidate-evaluation-admission.json
@@ -127,6 +128,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,259,426 bytes
-- 압축 파일 SHA-256: `4af8e6895d36f5875b04b900153480abec62be4779b63601bf3d6aff59afb8a7`
+- 압축 파일 크기: 4,263,274 bytes
+- 압축 파일 SHA-256: `73b2c2f7953cf1c78b75f9078512117b405233a0b98a379fd7a9ea1d5c54c5cc`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

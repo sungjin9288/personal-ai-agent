@@ -24,12 +24,13 @@
     "recordedTrainingRunCreated": false,
     "rolloutAuthorized": false,
     "runtimeExecObservationContractValidated": true,
+    "runtimeImageProvenanceContractValidated": true,
     "staticRuntimeClosureValidated": true,
     "trainingAuthorized": false,
     "verifyToExecClosed": false
   },
   "contract": {
-    "contractHash": "b0dc66f8d3f736360e1bbdaebc9614e3569ab4f3c3837a1e72abf8d0616da73f",
+    "contractHash": "0d68ac8d14c17ff587b72067904d9b7a8622769dbd281f98036aa620d0184c75",
     "dataFiles": [
       "train.jsonl",
       "valid.jsonl"
@@ -72,12 +73,17 @@
       "schemaVersion": "personal-ai-agent-local-training-runtime-exec-observation/v1"
     },
     "runtimeExecObservationContractValidated": true,
+    "runtimeImageProvenance": {
+      "contractHash": "c0ee725637f0438c98ba33306a0a1c6b3882e4ff1e71f68aacf1463cb7cea65a",
+      "schemaVersion": "personal-ai-agent-local-training-runtime-image-provenance/v1"
+    },
+    "runtimeImageProvenanceContractValidated": true,
     "runtimeClosure": {
       "artifactSetSha256": "c560471ce0c8f0272b952dcbe9e592b69f4bcde27bb318b93400beb9ecc6d670",
       "provenanceHash": "31fe7708c263e81f75eae349c55c237094c165cda41e57528b4f59bd1644b54e",
       "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance/v1"
     },
-    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v6",
+    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v7",
     "sourceModel": {
       "id": "Qwen/Qwen2.5-1.5B-Instruct",
       "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
@@ -112,7 +118,8 @@
     "existingCandidateOverwriteBlocked": true,
     "candidatePublishedOnlyAfterAllPreconditions": true,
     "durableRecoveryReceiptBoundToSuccess": true,
-    "runtimeExecObservationContractBound": true
+    "runtimeExecObservationContractBound": true,
+    "runtimeImageProvenanceContractBound": true
   },
   "mode": "mlx-lm-lora-training-adapter-contract",
   "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter-evidence/v1",
@@ -144,8 +151,9 @@
     "osIsolationContractBound": true,
     "processSupervisorContractBound": true,
     "runtimeExecObservationContractBound": true,
+    "runtimeImageProvenanceContractBound": true,
     "runtimeClosureReinspectedBeforeFixtureInvocation": true
   },
-  "evidenceHash": "001fc1f0a9e5849e50839a3e144f5711b564d5f12550586831e025e62f716dd9",
-  "id": "mlx-lm-lora-training-adapter-evidence-001fc1f0a9e5849e50839a3e144f5711b564d5f12550586831e025e62f716dd9"
+  "evidenceHash": "45768e58951b08b28cf0ef81d9728d537f46948152ca42788fcffa2de529b7a6",
+  "id": "mlx-lm-lora-training-adapter-evidence-45768e58951b08b28cf0ef81d9728d537f46948152ca42788fcffa2de529b7a6"
 }
