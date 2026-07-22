@@ -24,6 +24,8 @@
 
 실제 dataset을 `fixtures/`, `docs/`, `evidence/` 또는 다른 tracked 경로에 두면 intake 생성 명령이 중단된다. Symbolic link와 2 MiB를 넘는 입력도 거부한다.
 
+Actual dataset과 intake는 owner-only directory `0700`, regular file `0600`이어야 한다. CLI는 no-follow descriptor로 inode를 고정해 읽고, output은 승인한 canonical path를 commit 직전까지 다시 확인한 뒤 `0700` directory 안의 `0600` temporary file을 `fsync`하고 atomic rename한다. Group 또는 other 권한이 열린 입력, hard link, symbolic link, owner가 다른 파일은 model 호출 전에 거부한다. Synthetic fixture 경로는 기존 file contract와 platform requirement를 유지한다.
+
 ## Dataset 계약
 
 Dataset은 `personal-ai-agent-user-query-evaluation-dataset/v1` 형식의 JSON 파일이다. 최소 12개의 서로 다른 질의가 필요하고 다음 여섯 domain과 네 language가 모두 포함되어야 한다.
@@ -118,6 +120,8 @@ npm run evaluate:local-user-query-quality -- \
 
 Actual intake가 확인되면 evaluator는 Q4 v4가 아니라 Q7 v5 reviewer-action baseline을 사용한다. Model에는 질의와 reviewed evidence만 전달하고 expected answer term과 threshold는 evaluator에만 남긴다.
 
+평가 threshold는 Q6·Q7과 같은 all-pass contract로 고정된다. CLI argument, suite, 재해시된 evidence에서 하나라도 완화되면 평가 전에 거부한다.
+
 각 model 호출 직전에 dataset과 intake를 다시 읽어 consent, retention, local-model authorization과 dataset hash를 확인한다. 평가 중 intake가 삭제되거나 바뀌면 다음 model 호출 전에 중단한다.
 
 ## 철회와 보존
@@ -148,6 +152,7 @@ Actual intake가 확인되면 evaluator는 Q4 v4가 아니라 Q7 v5 reviewer-act
 - [ ] 비식별 reviewer와 method version이 기록되어 있다.
 - [ ] retention과 consent 만료 시각이 현재 시각 이후다.
 - [ ] dataset과 intake가 private 또는 `var/` 경로에 있다.
+- [ ] private directory는 `0700`, dataset과 intake file은 `0600`이다.
 - [ ] `trainingAuthorized`, `externalTransferAuthorized`, `providerInputAuthorized`가 false다.
 - [ ] 설치 model digest가 Q7 evidence와 일치한다.
 - [ ] 결과를 활성화 결정과 분리해 검토할 reviewer가 정해져 있다.

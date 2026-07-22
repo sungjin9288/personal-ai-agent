@@ -1,24 +1,21 @@
 import { createHash } from 'node:crypto';
-import fs from 'node:fs';
-import path from 'node:path';
 
 import { evaluateAnswerQualitySuite } from '../src/core/answer-quality-evaluation.mjs';
+import {
+  assertLocalUserQueryQualityThresholds,
+  LOCAL_USER_QUERY_QUALITY_THRESHOLDS,
+} from '../src/core/local-user-query-quality.mjs';
 import {
   assertUserQueryEvaluationIntake,
   buildUserQueryEvaluationIntake,
 } from '../src/core/user-query-evaluation-intake.mjs';
+import {
+  assertOwnerOnlyActualEvaluationInputs,
+  assertPrivateActualEvaluationPaths,
+  readBoundedEvaluationJson,
+} from './private-user-query-evaluation-paths.mjs';
 
-export const LOCAL_USER_QUERY_QUALITY_THRESHOLDS = Object.freeze({
-  maximumForbiddenRetrievedSourceCount: 0,
-  maximumForbiddenTermMatches: 0,
-  maximumUnsupportedCitationRate: 0,
-  minimumCasePassRate: 1,
-  minimumCitationGroundingRate: 1,
-  minimumExpectedSourceCitationRate: 1,
-  minimumRequiredTermCoverage: 1,
-  minimumRetrievalHitRate: 1,
-  requireReviewerPass: false,
-});
+export { LOCAL_USER_QUERY_QUALITY_THRESHOLDS };
 
 const MAX_INPUT_BYTES = 2 * 1024 * 1024;
 
@@ -26,9 +23,37 @@ export function loadLocalUserQueryEvaluationSuite({
   datasetPath,
   intakePath,
 } = {}) {
-  const dataset = readBoundedJson(datasetPath, 'dataset');
-  const intake = readBoundedJson(intakePath, 'intake');
-  assertUserQueryEvaluationIntake(intake);
+  const datasetInput = readBoundedEvaluationJson({
+    filename: datasetPath,
+    label: 'dataset',
+    maxBytes: MAX_INPUT_BYTES,
+  });
+  const intakeInput = readBoundedEvaluationJson({
+    filename: intakePath,
+    label: 'intake',
+    maxBytes: MAX_INPUT_BYTES,
+  });
+  const initialDataset = datasetInput.value;
+  const initialIntake = intakeInput.value;
+  assertUserQueryEvaluationIntake(initialIntake);
+
+  const actualUserQueryData =
+    initialDataset.actualUserQueryData === true ||
+    initialIntake.actualUserQueryData === true;
+  assertPrivateActualEvaluationPaths({
+    actualUserQueryData,
+    errorMessage:
+      'Actual user query evaluation requires distinct private dataset, intake, and output paths outside tracked repository content.',
+    paths: [datasetInput.filename, intakeInput.filename],
+    repoDir: process.cwd(),
+  });
+  const [authorizedDataset, authorizedIntake] =
+    assertOwnerOnlyActualEvaluationInputs({
+      actualUserQueryData,
+      inputs: [datasetInput, intakeInput],
+    });
+  const dataset = authorizedDataset.value;
+  const intake = authorizedIntake.value;
 
   const rebuiltIntake = buildUserQueryEvaluationIntake({
     dataset,
@@ -137,6 +162,7 @@ export async function evaluateLocalUserQuerySuite({
   if (typeof authorizeCase !== 'function') {
     throw new Error('Local user query evaluation requires per-case authorization.');
   }
+  assertLocalUserQueryQualityThresholds(thresholds);
   const cases = [];
   const observations = [];
   for (const item of caseInputs || []) {
@@ -231,15 +257,6 @@ function classifyGenerationFailure(error) {
     return 'generation-timeout';
   }
   return 'generation-contract-error';
-}
-
-function readBoundedJson(filename, label) {
-  const resolved = path.resolve(String(filename || ''));
-  const stat = fs.lstatSync(resolved);
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size <= 0 || stat.size > MAX_INPUT_BYTES) {
-    throw new Error(`Local user query evaluation ${label} must be a bounded regular file.`);
-  }
-  return JSON.parse(fs.readFileSync(resolved, 'utf8'));
 }
 
 function sha256(value) {

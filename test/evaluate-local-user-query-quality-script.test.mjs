@@ -34,6 +34,7 @@ test('actual user-query CLI selects the Q7 v5 baseline and writes content-free e
     dataset,
     evidenceText,
     generationCount,
+    outputMode,
     result,
   } = await runActualEvaluation();
 
@@ -54,6 +55,7 @@ test('actual user-query CLI selects the Q7 v5 baseline and writes content-free e
   assert.equal(evidence.productionReadyClaim, false);
   assert.equal(evidence.activation.authorized, false);
   assert.equal(evidence.rolloutAuthorized, false);
+  assert.equal(outputMode, 0o600);
   for (const record of dataset.records) {
     assert.equal(evidenceText.includes(record.query), false);
     for (const value of [
@@ -137,8 +139,14 @@ async function runActualEvaluation({
   const datasetPath = path.join(privateDirectory, 'dataset.json');
   const intakePath = path.join(privateDirectory, 'intake.json');
   const outputPath = path.join(outputDirectory, 'quality.json');
-  fs.writeFileSync(datasetPath, JSON.stringify(dataset), 'utf8');
-  fs.writeFileSync(intakePath, JSON.stringify(intake), 'utf8');
+  fs.writeFileSync(datasetPath, JSON.stringify(dataset), {
+    encoding: 'utf8',
+    mode: 0o600,
+  });
+  fs.writeFileSync(intakePath, JSON.stringify(intake), {
+    encoding: 'utf8',
+    mode: 0o600,
+  });
 
   const orderedRecords = [...dataset.records].sort(
     (left, right) => sha256(left.id).localeCompare(sha256(right.id)),
@@ -209,6 +217,9 @@ async function runActualEvaluation({
         ? fs.readFileSync(outputPath, 'utf8')
         : null,
       generationCount: generationIndex,
+      outputMode: fs.existsSync(outputPath)
+        ? fs.statSync(outputPath).mode & 0o777
+        : null,
       result,
     };
   } finally {

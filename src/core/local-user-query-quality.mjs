@@ -10,6 +10,17 @@ import { assertUserQueryEvaluationIntake } from './user-query-evaluation-intake.
 
 export const LOCAL_USER_QUERY_QUALITY_SCHEMA_VERSION =
   'personal-ai-agent-local-user-query-quality/v1';
+export const LOCAL_USER_QUERY_QUALITY_THRESHOLDS = Object.freeze({
+  maximumForbiddenRetrievedSourceCount: 0,
+  maximumForbiddenTermMatches: 0,
+  maximumUnsupportedCitationRate: 0,
+  minimumCasePassRate: 1,
+  minimumCitationGroundingRate: 1,
+  minimumExpectedSourceCitationRate: 1,
+  minimumRequiredTermCoverage: 1,
+  minimumRetrievalHitRate: 1,
+  requireReviewerPass: false,
+});
 
 const REQUIRED_DOMAINS = Object.freeze([
   'accessibility',
@@ -64,6 +75,24 @@ function isSha256(value) {
 
 function recordsEqual(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function thresholdsEqual(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+  const expectedKeys = Object.keys(LOCAL_USER_QUERY_QUALITY_THRESHOLDS).sort();
+  const actualKeys = Object.keys(value).sort();
+  return recordsEqual(actualKeys, expectedKeys) && expectedKeys.every(
+    (key) => value[key] === LOCAL_USER_QUERY_QUALITY_THRESHOLDS[key],
+  );
+}
+
+export function assertLocalUserQueryQualityThresholds(value) {
+  if (!thresholdsEqual(value)) {
+    throw new Error('Local user query quality thresholds must remain frozen.');
+  }
+  return value;
 }
 
 function requireTimestamp(value) {
@@ -137,8 +166,7 @@ function normalizeSuite(suite = {}) {
     typeof suite.actualUserQueryData !== 'boolean' ||
     !isSha256(suite.datasetIdHash) ||
     !isSha256(suite.intakeEvidenceHash) ||
-    !suite.thresholds ||
-    typeof suite.thresholds !== 'object' ||
+    !thresholdsEqual(suite.thresholds) ||
     cases.length < 12 ||
     new Set(cases.map((item) => item.idHash)).size !== cases.length ||
     cases.some((item) =>
@@ -158,7 +186,7 @@ function normalizeSuite(suite = {}) {
     cases,
     datasetIdHash: normalizeText(suite.datasetIdHash),
     intakeEvidenceHash: normalizeText(suite.intakeEvidenceHash),
-    thresholds: suite.thresholds,
+    thresholds: { ...LOCAL_USER_QUERY_QUALITY_THRESHOLDS },
   };
 }
 
@@ -413,6 +441,7 @@ export function summarizeLocalUserQueryEvaluation({ evaluation, suite } = {}) {
     throw new Error('Local user query quality requires answer-quality evaluation evidence.');
   }
   const normalizedSuite = normalizeSuite(suite);
+  assertLocalUserQueryQualityThresholds(evaluation.thresholds);
   const suiteIds = normalizedSuite.cases.map((item) => item.idHash);
   const caseResults = evaluation.cases.map((result) => ({
     failureCheckIds: result.failures.map((failure) => normalizeText(failure.check)),
@@ -492,7 +521,9 @@ function resolveBaseline(baseline, actualUserQueryData) {
     q4?.evaluation?.metrics?.casePassRate !== 1 ||
     q6?.caseCount !== 12 ||
     q6?.evaluation?.status !== 'passed' ||
-    q6?.evaluation?.metrics?.casePassRate !== 1
+    q6?.evaluation?.metrics?.casePassRate !== 1 ||
+    q6?.evaluation?.thresholdsHash !==
+      hashRecord(LOCAL_USER_QUERY_QUALITY_THRESHOLDS)
   ) {
     throw new Error(
       'Actual user query quality requires the validated Q7 review-action baseline.',

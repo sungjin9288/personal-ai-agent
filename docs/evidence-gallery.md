@@ -50,7 +50,7 @@
 | Provider failure recovery demo | `docs/provider-failure-recovery-demo-v1.md` | provider execution failure, attention remediation, fallback policy, timeline/event audit, and claim boundary |
 | Memory retrieval quality fixture | `docs/memory-retrieval-quality-fixture-v1.md` | retrieval ranking signals, source diversity, fact graph provenance, revision lifecycle, and instruction-boundary fixture |
 | Answer quality evaluation foundation | `docs/ml-rag-development-plan-v1.md` | credential-free retrieval hit, citation grounding, required-content, and reviewer regression gate |
-| Actual user-query evaluation protocol | `docs/actual-user-query-evaluation-v1.md` | private dataset boundary, Q7 v5 binding, per-case consent reload, withdrawal fail-closed, and no actual-data claim |
+| Actual user-query evaluation protocol | `docs/actual-user-query-evaluation-v1.md` | owner-only no-follow input, atomic private output, frozen all-pass threshold, Q7 v5 binding, per-case consent reload, withdrawal fail-closed, and no actual-data claim |
 | RAG corpus contract | `src/core/retrieval-corpus.mjs` | deterministic memory, attachment, and fact source revision, chunk identity, content hash, scope, and provenance |
 | Retrieval quality evaluation | `docs/ml-rag-development-plan-v1.md` | controlled precision, recall, noise, source diversity, frozen baseline replay, and ranking regression gate |
 | Semantic retrieval experiment | `docs/ml-rag-development-plan-v1.md` | bounded local embedding command protocol, scope-locked cosine experiment, controlled synonym comparison, and inactive runtime boundary |

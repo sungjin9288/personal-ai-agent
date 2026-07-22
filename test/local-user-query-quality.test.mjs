@@ -83,6 +83,29 @@ test('suite, intake, model, and observation drift are rejected', () => {
     () => buildEvidence({ ...context, observations: driftedObservations }),
     /bind the Q4 baseline, Q5 intake/,
   );
+
+  const weakenedSuite = structuredClone(context.suite);
+  weakenedSuite.thresholds.minimumCasePassRate = 0.5;
+  assert.throws(
+    () => buildEvidence({ ...context, suite: weakenedSuite }),
+    /suite is incomplete/,
+  );
+});
+
+test('rehashing cannot hide a weakened quality threshold', () => {
+  const evidence = buildEvidence(buildContext());
+  evidence.suite.thresholds.minimumCasePassRate = 0.5;
+  evidence.suiteHash = hashRecord(evidence.suite);
+  const content = structuredClone(evidence);
+  delete content.evidenceHash;
+  delete content.id;
+  evidence.evidenceHash = hashRecord(content);
+  evidence.id = `local-user-query-quality-${evidence.evidenceHash}`;
+
+  assert.throws(
+    () => assertLocalUserQueryQuality(evidence),
+    /suite is incomplete/,
+  );
 });
 
 test('dataset and intake loaders reject symlink inputs', () => {
@@ -141,6 +164,24 @@ test('local model input is authorized immediately before every case', async () =
     /authorization revoked/,
   );
   assert.equal(generationCount, 0);
+
+  await assert.rejects(
+    () => evaluateLocalUserQuerySuite({
+      authorizeCase: () => intake,
+      caseInputs,
+      generator: {
+        async generate() {
+          generationCount += 1;
+        },
+      },
+      thresholds: {
+        ...LOCAL_USER_QUERY_QUALITY_THRESHOLDS,
+        minimumCasePassRate: 0.5,
+      },
+    }),
+    /thresholds must remain frozen/,
+  );
+  assert.equal(generationCount, 0);
 });
 
 test('consented deidentified records can validate local quality without authorizing rollout', () => {
@@ -166,8 +207,14 @@ test('consented deidentified records can validate local quality without authoriz
     });
     const datasetPath = path.join(directory, 'dataset.json');
     const actualIntakePath = path.join(directory, 'intake.json');
-    fs.writeFileSync(datasetPath, JSON.stringify(dataset), 'utf8');
-    fs.writeFileSync(actualIntakePath, JSON.stringify(intake), 'utf8');
+    fs.writeFileSync(datasetPath, JSON.stringify(dataset), {
+      encoding: 'utf8',
+      mode: 0o600,
+    });
+    fs.writeFileSync(actualIntakePath, JSON.stringify(intake), {
+      encoding: 'utf8',
+      mode: 0o600,
+    });
 
     const context = buildContext({ datasetPath, intakePath: actualIntakePath });
     const evidence = buildEvidence(context);
@@ -305,4 +352,8 @@ function readJson(filename) {
 
 function sha256(value) {
   return createHash('sha256').update(String(value)).digest('hex');
+}
+
+function hashRecord(value) {
+  return sha256(JSON.stringify(value));
 }

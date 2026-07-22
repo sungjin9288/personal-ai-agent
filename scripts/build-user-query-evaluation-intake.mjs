@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import {
@@ -7,14 +6,31 @@ import {
 } from '../src/core/user-query-evaluation-intake.mjs';
 import {
   assertPrivateActualEvaluationPaths,
+  assertOwnerOnlyActualEvaluationInputs,
   isPathWithin,
+  readBoundedEvaluationJson,
+  writeEvaluationJson,
 } from './private-user-query-evaluation-paths.mjs';
 
 const MAX_INPUT_BYTES = 2 * 1024 * 1024;
 const repoDir = process.cwd();
 const options = parseOptions(process.argv.slice(2));
-const dataset = readBoundedJson(options.datasetPath);
-assertPrivateActualDataPaths({ dataset, options });
+const datasetInput = readBoundedEvaluationJson({
+  errorMessage:
+    'User query evaluation intake dataset must be a bounded regular file.',
+  filename: options.datasetPath,
+  label: 'intake dataset',
+  maxBytes: MAX_INPUT_BYTES,
+});
+const authorizedPaths = assertPrivateActualDataPaths({
+  dataset: datasetInput.value,
+  options,
+});
+const [authorizedDatasetInput] = assertOwnerOnlyActualEvaluationInputs({
+  actualUserQueryData: datasetInput.value.actualUserQueryData,
+  inputs: [datasetInput],
+});
+const dataset = authorizedDatasetInput.value;
 const evidence = buildUserQueryEvaluationIntake({
   dataset,
   observedAt: new Date().toISOString(),
@@ -22,18 +38,14 @@ const evidence = buildUserQueryEvaluationIntake({
 assertUserQueryEvaluationIntake(evidence);
 
 if (options.outputPath) {
-  fs.mkdirSync(path.dirname(options.outputPath), { recursive: true });
-  const existing = fs.existsSync(options.outputPath)
-    ? fs.lstatSync(options.outputPath)
-    : null;
-  if (existing?.isSymbolicLink() || (existing && !existing.isFile())) {
-    throw new Error('User query evaluation intake output must be a regular file.');
-  }
-  fs.writeFileSync(
-    options.outputPath,
-    `${JSON.stringify(evidence, null, 2)}\n`,
-    'utf8',
-  );
+  writeEvaluationJson({
+    actualUserQueryData: evidence.actualUserQueryData,
+    authorizedPath: authorizedPaths[1],
+    filename: options.outputPath,
+    outputErrorMessage:
+      'User query evaluation intake output must be a regular file.',
+    value: evidence,
+  });
 }
 
 console.log(JSON.stringify({
@@ -106,23 +118,8 @@ function parseLegacyOptions(args) {
   };
 }
 
-function readBoundedJson(filename) {
-  const stat = fs.lstatSync(filename);
-  if (
-    !stat.isFile() ||
-    stat.isSymbolicLink() ||
-    stat.size <= 0 ||
-    stat.size > MAX_INPUT_BYTES
-  ) {
-    throw new Error(
-      'User query evaluation intake dataset must be a bounded regular file.',
-    );
-  }
-  return JSON.parse(fs.readFileSync(filename, 'utf8'));
-}
-
 function assertPrivateActualDataPaths({ dataset, options }) {
-  assertPrivateActualEvaluationPaths({
+  return assertPrivateActualEvaluationPaths({
     actualUserQueryData: dataset.actualUserQueryData,
     errorMessage:
       'Actual user query intake requires distinct private dataset and output paths outside tracked repository content.',

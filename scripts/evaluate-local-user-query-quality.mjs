@@ -22,6 +22,7 @@ import {
 } from './local-user-query-evaluation-suite.mjs';
 import {
   assertPrivateActualEvaluationPaths,
+  writeEvaluationJson,
 } from './private-user-query-evaluation-paths.mjs';
 
 const repoDir = process.cwd();
@@ -31,7 +32,7 @@ const { caseInputs, intake, suite } = loadLocalUserQueryEvaluationSuite({
   datasetPath: options.datasetPath,
   intakePath: options.intakePath,
 });
-assertPrivateActualEvaluationPaths({
+const authorizedPaths = assertPrivateActualEvaluationPaths({
   actualUserQueryData: intake.actualUserQueryData,
   errorMessage:
     'Actual user query evaluation requires distinct private dataset, intake, and output paths outside tracked repository content.',
@@ -39,7 +40,7 @@ assertPrivateActualEvaluationPaths({
     options.datasetPath,
     options.intakePath,
     options.outputPath,
-  ].filter(Boolean),
+  ],
   repoDir,
 });
 const baseline = intake.actualUserQueryData
@@ -125,14 +126,14 @@ const evidence = buildLocalUserQueryQuality({
 assertLocalUserQueryQuality(evidence);
 
 if (options.outputPath) {
-  fs.mkdirSync(path.dirname(options.outputPath), { recursive: true });
-  const existing = fs.existsSync(options.outputPath)
-    ? fs.lstatSync(options.outputPath)
-    : null;
-  if (existing?.isSymbolicLink() || (existing && !existing.isFile())) {
-    throw new Error('Local user query quality output must be a regular file.');
-  }
-  fs.writeFileSync(options.outputPath, `${JSON.stringify(evidence, null, 2)}\n`, 'utf8');
+  writeEvaluationJson({
+    actualUserQueryData: evidence.actualUserQueryData,
+    authorizedPath: authorizedPaths[2],
+    filename: options.outputPath,
+    outputErrorMessage:
+      'Local user query quality output must be a regular file.',
+    value: evidence,
+  });
 }
 
 console.log(JSON.stringify({

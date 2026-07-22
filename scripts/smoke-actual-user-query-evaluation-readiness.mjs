@@ -15,6 +15,14 @@ const evaluationSource = fs.readFileSync(
   'scripts/evaluate-local-user-query-quality.mjs',
   'utf8',
 );
+const privatePathSource = fs.readFileSync(
+  'scripts/private-user-query-evaluation-paths.mjs',
+  'utf8',
+);
+const suiteSource = fs.readFileSync(
+  'scripts/local-user-query-evaluation-suite.mjs',
+  'utf8',
+);
 
 assert.equal(
   packageJson.scripts['build:user-query-evaluation-intake'],
@@ -36,6 +44,8 @@ assert.match(runbook, /review-action-generalization-v5/u);
 assert.match(runbook, /npm run build:user-query-evaluation-intake/u);
 assert.match(runbook, /npm run evaluate:local-user-query-quality/u);
 assert.match(runbook, /철회/u);
+assert.match(runbook, /owner-only directory `0700`, regular file `0600`/u);
+assert.match(runbook, /all-pass contract로 고정/u);
 assert.match(
   qualitySource,
   /q7-review-action-generalization-baseline-passed/u,
@@ -49,6 +59,11 @@ assert.match(
   /createReviewActionGeneralizedOllamaAnswerGenerator/u,
 );
 assert.match(evaluationSource, /readCurrentAuthorizedIntake/u);
+assert.match(privatePathSource, /O_NOFOLLOW/u);
+assert.match(privatePathSource, /PRIVATE_DIRECTORY_MODE = 0o700/u);
+assert.match(privatePathSource, /PRIVATE_FILE_MODE = 0o600/u);
+assert.match(privatePathSource, /fs\.renameSync\(temporaryPath, filename\)/u);
+assert.match(suiteSource, /assertLocalUserQueryQualityThresholds\(thresholds\)/u);
 assert.equal(
   fs.existsSync(
     'evidence/output-artifacts/local-actual-user-query-quality.json',
