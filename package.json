@@ -169,6 +169,8 @@
     "smoke:local-training-acquisition-artifact-verification": "node scripts/smoke-local-training-acquisition-artifact-verification.mjs",
     "build:local-training-post-acquisition-readiness-evidence": "node scripts/build-local-training-post-acquisition-readiness-evidence.mjs",
     "smoke:local-training-post-acquisition-readiness": "node scripts/smoke-local-training-post-acquisition-readiness.mjs",
+    "build:mlx-lm-lora-training-adapter-evidence": "node scripts/build-mlx-lm-lora-training-adapter-evidence.mjs",
+    "smoke:mlx-lm-lora-training-adapter": "node scripts/smoke-mlx-lm-lora-training-adapter.mjs",
     "build:local-training-candidate-artifact-verification-evidence": "node scripts/build-local-training-candidate-artifact-verification-evidence.mjs",
     "smoke:local-training-candidate-artifact-verification": "node scripts/smoke-local-training-candidate-artifact-verification.mjs",
     "build:local-candidate-evaluation-admission-evidence": "node scripts/build-local-candidate-evaluation-admission-evidence.mjs",

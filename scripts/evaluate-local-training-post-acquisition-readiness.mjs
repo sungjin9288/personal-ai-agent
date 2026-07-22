@@ -44,6 +44,7 @@ function buildPermission({
   fixture,
   permissionResolved = TIMESTAMPS.permissionResolved,
   permissionRequested = TIMESTAMPS.permissionRequested,
+  permissionExpiresAt = '2026-07-17T09:30:00.000Z',
   maxDiskBytes =
     fixture.approval.resourceEnvelope.maxDiskBytes,
   maxRuntimeMs =
@@ -76,7 +77,7 @@ function buildPermission({
         owner: fixture.approval.owners.resourceOwner,
       },
     },
-    expiresAt: '2026-07-17T09:30:00.000Z',
+    expiresAt: permissionExpiresAt,
     readinessPackage,
     requestedAt: permissionRequested,
     rollbackOwner: fixture.approval.owners.rollbackOwner,
@@ -91,7 +92,11 @@ function buildPermission({
   });
 }
 
-function buildScenario(fixture, mode = MODE) {
+function buildScenario(
+  fixture,
+  mode = MODE,
+  { permissionExpiresAt } = {},
+) {
   const readinessPackage = buildLocalTrainingReadinessFixture();
   const provenanceReview =
     buildLocalTrainingAcquisitionProvenanceReview({
@@ -123,6 +128,7 @@ function buildScenario(fixture, mode = MODE) {
   const permission = buildPermission({
     egressEvidenceSha256: egressReview.evidenceSha256,
     fixture,
+    permissionExpiresAt,
     provenanceEvidenceSha256:
       provenanceReview.evidenceSha256,
     readinessPackage,
@@ -157,16 +163,23 @@ function evaluate(fixture, scenario, overrides = {}) {
 }
 
 export async function createLocalTrainingPostAcquisitionReadinessFixture({
+  acquisitionApprovalExpiresAt,
+  artifactFiles,
   mode = MODE,
+  permissionExpiresAt,
   repoDir = process.cwd(),
 } = {}) {
   const fixture =
-    await createLocalTrainingAcquisitionArtifactVerificationFixture({
-      mode,
-      repoDir,
-    });
+      await createLocalTrainingAcquisitionArtifactVerificationFixture({
+        approvalExpiresAt: acquisitionApprovalExpiresAt,
+        artifactFiles,
+        mode,
+        repoDir,
+      });
   try {
-    const scenario = buildScenario(fixture, mode);
+    const scenario = buildScenario(fixture, mode, {
+      permissionExpiresAt,
+    });
     return {
       ...fixture,
       ...scenario,

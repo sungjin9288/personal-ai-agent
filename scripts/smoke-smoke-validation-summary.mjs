@@ -67,6 +67,7 @@ const expectedCommands = [
   'npm run smoke:local-training-acquisition-runtime',
   'npm run smoke:local-training-acquisition-artifact-verification',
   'npm run smoke:local-training-post-acquisition-readiness',
+  'npm run smoke:mlx-lm-lora-training-adapter',
   'npm run smoke:local-training-candidate-artifact-verification',
   'npm run smoke:local-candidate-evaluation-admission',
   'npm run smoke:local-candidate-evaluation-runtime',

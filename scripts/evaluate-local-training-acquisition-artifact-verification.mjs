@@ -48,10 +48,14 @@ function writeJson(filename, value) {
   fs.writeFileSync(filename, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function buildAuthority(toolchainDecision, resourceEnvelope) {
+function buildAuthority(
+  toolchainDecision,
+  resourceEnvelope,
+  { approvalExpiresAt = '2026-07-17T10:00:00.000Z' } = {},
+) {
   const request = buildLocalTrainingAcquisitionRequest({
     decision: toolchainDecision,
-    expiresAt: '2026-07-17T10:00:00.000Z',
+    expiresAt: approvalExpiresAt,
     proposedResourceEnvelope: resourceEnvelope,
     requestedAt: '2026-07-17T08:00:00.000Z',
     requestedBy: 'fixture-operator',
@@ -84,7 +88,7 @@ function buildAuthority(toolchainDecision, resourceEnvelope) {
   };
 }
 
-function writeArtifactFiles(artifactRoot) {
+function writeArtifactFiles(artifactRoot, artifactFiles = {}) {
   const sourceRoot = path.join(artifactRoot, 'source-model');
   const trainerRoot = path.join(artifactRoot, 'trainer');
   fs.mkdirSync(path.join(artifactRoot, 'manifests'), {
@@ -93,7 +97,7 @@ function writeArtifactFiles(artifactRoot) {
   fs.mkdirSync(sourceRoot, { recursive: true });
   fs.mkdirSync(trainerRoot, { recursive: true });
 
-  const sourceFiles = [
+  const sourceFiles = artifactFiles.sourceFiles || [
     {
       content: '{"model_type":"qwen2"}\n',
       path: 'config.json',
@@ -103,17 +107,31 @@ function writeArtifactFiles(artifactRoot) {
       path: 'model.safetensors',
     },
   ];
-  const trainerFiles = [
+  const trainerFiles = artifactFiles.trainerFiles || [
     {
       content: 'fixture-trainer-package',
       path: 'package.whl',
     },
   ];
   for (const file of sourceFiles) {
-    fs.writeFileSync(path.join(sourceRoot, file.path), file.content);
+    const filename = path.join(sourceRoot, file.path);
+    fs.mkdirSync(path.dirname(filename), { recursive: true });
+    fs.writeFileSync(filename, file.content, {
+      mode: file.mode || 0o600,
+    });
+    if (file.mode) {
+      fs.chmodSync(filename, file.mode);
+    }
   }
   for (const file of trainerFiles) {
-    fs.writeFileSync(path.join(trainerRoot, file.path), file.content);
+    const filename = path.join(trainerRoot, file.path);
+    fs.mkdirSync(path.dirname(filename), { recursive: true });
+    fs.writeFileSync(filename, file.content, {
+      mode: file.mode || 0o600,
+    });
+    if (file.mode) {
+      fs.chmodSync(filename, file.mode);
+    }
   }
   return {
     sourceFiles,
@@ -189,11 +207,14 @@ async function runFixtureAcquisition(authority, manifests, {
 }
 
 async function createFixture(toolchainDecision, {
+  approvalExpiresAt,
+  artifactFiles,
   resourceEnvelope = RESOURCE_ENVELOPE,
 } = {}) {
   const authority = buildAuthority(
     toolchainDecision,
     resourceEnvelope,
+    { approvalExpiresAt },
   );
   const fixtureRepoDir = fs.mkdtempSync(path.join(
     os.tmpdir(),
@@ -203,7 +224,7 @@ async function createFixture(toolchainDecision, {
     fixtureRepoDir,
     authority.plan.mutableRoot,
   );
-  const files = writeArtifactFiles(artifactRoot);
+  const files = writeArtifactFiles(artifactRoot, artifactFiles);
   const manifests = buildManifests(authority.plan, files);
   const sourceModelManifestPath = 'manifests/source-model.json';
   const trainerPackageManifestPath =
@@ -253,6 +274,8 @@ function verificationInput(fixture, overrides = {}) {
 }
 
 export async function createLocalTrainingAcquisitionArtifactVerificationFixture({
+  approvalExpiresAt,
+  artifactFiles,
   mode = 'fixture-simulated',
   repoDir = process.cwd(),
 } = {}) {
@@ -260,7 +283,10 @@ export async function createLocalTrainingAcquisitionArtifactVerificationFixture(
     repoDir,
     'evidence/output-artifacts/local-training-toolchain-decision.json',
   );
-  const fixture = await createFixture(toolchainDecision);
+  const fixture = await createFixture(toolchainDecision, {
+    approvalExpiresAt,
+    artifactFiles,
+  });
   const verifier = createVerifier(fixture);
   try {
     const verification = await verifier.verify(

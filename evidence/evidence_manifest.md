@@ -3,11 +3,11 @@
 ## Summary
 
 - Project: Personal AI Agent
-- Generated at: 2026-07-17
+- Generated at: 2026-07-22
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, cost-free local training environment preflight, toolchain decision, acquisition request, private acquisition resolution, and acquisition execution-plan protocols, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
-- Source code modified: yes, the acquisition execution-plan CLI accepts only an approved private resolution, revalidates exact fields, integrity, expiration, current F2c.2 and F2c.3 bindings, and writes seven pending actions to a content-free 0600 private plan without changing public answer, permission, or runtime contracts
-- New feature development: yes, an approved acquisition decision can now be converted into a fail-closed review plan without executing it; no actual owner decision is tracked, and installation, model download, resource canary, product permission, actual model training, external submission, activation, and rollout remain unexecuted or unauthorized
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, a separate non-authorizing MLX fixture adapter reuses the existing approval and readiness validators, revalidates pinned acquisition artifacts, materializes private F1 JSONL, fixes local-only invocation, and publishes a manifest-bound candidate without changing the public runtime, CLI, HTTP, storage, or audit contracts
+- New feature development: yes, the approved F1 packet can now traverse the fixture-only MLX adapter and independent candidate verification path; actual process execution stays fail-closed, and installation, model download, actual training, external submission, activation, and rollout remain unexecuted or unauthorized
 
 ## Generated Evidence Files
 
@@ -120,7 +120,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 216/216 passed with `npm run smoke:all` on 2026-07-17; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 228/228 passed with `npm run smoke:all` on 2026-07-22; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -177,6 +177,7 @@
 - Local training acquisition runtime contract: verified with `npm run smoke:local-training-acquisition-runtime`
 - Local training acquisition artifact verification: verified with `npm run smoke:local-training-acquisition-artifact-verification`
 - Local training post-acquisition readiness: verified with `npm run smoke:local-training-post-acquisition-readiness`
+- MLX-LM LoRA training adapter contract: verified with `npm run smoke:mlx-lm-lora-training-adapter`
 - Local training candidate artifact verification: verified with `npm run smoke:local-training-candidate-artifact-verification`
 - Local candidate evaluation admission: verified with `npm run smoke:local-candidate-evaluation-admission`
 - Local candidate evaluation runtime: verified with `npm run smoke:local-candidate-evaluation-runtime`
