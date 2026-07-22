@@ -1,8 +1,8 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-07-22T03:10:57.391Z
-- branch: codex/f2c20-mlx-launch-contract
-- commit: 3b77191e08ade5b82615406e64994611581dc72c
+- generatedAt: 2026-07-22T05:08:33.879Z
+- branch: codex/f2c21-training-recovery
+- commit: ed5878406eff1538a3ff9bf1dc716d85f764ca49
 - mode: execution-v1-verification
 - liveFlags: none
 
@@ -69,7 +69,7 @@
 - available: 2
 - missing: 0
 - visualArtifactCount: 1
-- artifactSetSha256: bd5366589842094c1803423fe073d685e84bfb1667635b1778e59b7ce7971aaa
+- artifactSetSha256: 5b12638db03d8642f0e0f4d67d53e602bfc7506ac97ff656c61efbcd37752b09
 
 ## Live Validation
 

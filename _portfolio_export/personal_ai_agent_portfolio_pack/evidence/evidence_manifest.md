@@ -84,6 +84,8 @@
 - `evidence/output-artifacts/local-training-acquisition-runtime-contract.json`
 - `evidence/output-artifacts/local-training-acquisition-artifact-verification.json`
 - `evidence/output-artifacts/local-training-post-acquisition-readiness.json`
+- `evidence/output-artifacts/mlx-lm-lora-training-adapter.json`
+- `evidence/output-artifacts/local-training-failure-recovery.json`
 - `evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json`
 - `evidence/output-artifacts/local-candidate-evaluation-host-restart-receipt.json`
 - `evidence/output-artifacts/local-answer-quality-baseline.json`
@@ -178,6 +180,7 @@
 - Local training acquisition artifact verification: verified with `npm run smoke:local-training-acquisition-artifact-verification`
 - Local training post-acquisition readiness: verified with `npm run smoke:local-training-post-acquisition-readiness`
 - MLX-LM LoRA training adapter contract: verified with `npm run smoke:mlx-lm-lora-training-adapter`
+- Local training failure recovery: verified with `npm run smoke:local-training-failure-recovery`
 - Local training candidate artifact verification: verified with `npm run smoke:local-training-candidate-artifact-verification`
 - Local candidate evaluation admission: verified with `npm run smoke:local-candidate-evaluation-admission`
 - Local candidate evaluation runtime: verified with `npm run smoke:local-candidate-evaluation-runtime`

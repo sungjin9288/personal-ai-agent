@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T03:10:58.430Z
+- generatedAt: 2026-07-22T05:08:41.467Z
 - localDate: 2026-07-22
-- branch: codex/f2c20-mlx-launch-contract
-- commit: 3b77191e08ade5b82615406e64994611581dc72c
+- branch: codex/f2c21-training-recovery
+- commit: ed5878406eff1538a3ff9bf1dc716d85f764ca49
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3b77191e08ade5b82615406e64994611581dc72c](releases/execution-v1/3b77191e08ade5b82615406e64994611581dc72c)
-- visualArtifactSetSha256: bd5366589842094c1803423fe073d685e84bfb1667635b1778e59b7ce7971aaa
-- commitPushStatus: not pushed, origin/codex/f2c20-mlx-launch-contract not found
+- immutableSnapshot: [releases/execution-v1/ed5878406eff1538a3ff9bf1dc716d85f764ca49](releases/execution-v1/ed5878406eff1538a3ff9bf1dc716d85f764ca49)
+- visualArtifactSetSha256: 5b12638db03d8642f0e0f4d67d53e602bfc7506ac97ff656c61efbcd37752b09
+- commitPushStatus: not pushed, origin/codex/f2c21-training-recovery not found
 
 ## Operational State
 
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: bd5366589842094c1803423fe073d685e84bfb1667635b1778e59b7ce7971aaa
+- visual artifact set: 5b12638db03d8642f0e0f4d67d53e602bfc7506ac97ff656c61efbcd37752b09
 
 ## Live Provider Handoff
 

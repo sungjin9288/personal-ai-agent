@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added owner-only durable recovery for the MLX-LM fixture adapter. Success and failure cleanup now resume from explicit states, verify exact candidate bytes, remove workspaces before rollback, and use an immutable claim-edge CAS so concurrent retriers have one winner. Actual process execution, dependency installation, model download, training, rollout, external provider calls, and production claims remain false.
 - Added a non-authorizing MLX-LM LoRA fixture adapter that binds the approved F1 packet to pinned local artifacts, exact train/valid bytes, fixed offline invocation, and atomic candidate publication. The adapter cannot create a recorded training run or candidate-evaluation readiness; actual installation, model download, process execution, training, rollout, and production claims remain false.
 - Exported one successful private host-restart rehearsal as a content-free F2c.19 receipt. The export path revalidated changed-boot recovery and idempotent result binding; the tracked projection records that operator result while excluding raw boot identity, private state hashes, and paths. Public smoke validates the projection contract, not the private restart independently. Evaluator relaunch, model evaluation, training, rollout, external provider calls, and production readiness remain false.
 - Added a private manual host-restart rehearsal for the F2c.17 workspace recovery primitive. Prepare creates one owner-only synthetic `spawning` lease without rebooting or launching an evaluator; resume requires a changed reliable boot identity, expiry, and one exact prior-boot recovery. Tracked evidence injects the boot transition and keeps `actualHostRestartObserved: false`; same-user TOCTOU, OS isolation, actual model evaluation, training, rollout, and production readiness remain unverified.
@@ -102,8 +103,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,244,831 bytes`
-- SHA-256: `25cc4fdb7ce5087b903d81c4fe7816c6a453166c4345aca2b46830d6607abd10`
+- Size: `4,247,791 bytes`
+- SHA-256: `8135e8e8a471e6d90b2da12c2121241899a27cf7d4d69d208023ca591795d24e`
 
 Included public surfaces:
 

@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T03:10:57.424Z
-- branch: codex/f2c20-mlx-launch-contract
-- commit: 3b77191e08ade5b82615406e64994611581dc72c
+- generatedAt: 2026-07-22T05:08:34.032Z
+- branch: codex/f2c21-training-recovery
+- commit: ed5878406eff1538a3ff9bf1dc716d85f764ca49
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist
