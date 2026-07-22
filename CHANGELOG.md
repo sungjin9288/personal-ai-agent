@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a cost-free Darwin runtime exec observation for one sandboxed fixture child. Parent pre-launch and post-close inspection now matches the child-reported executable and entry hashes, while loaded runtime-image and module names are retained only as content-free set hashes and counts. This narrows the MLX runtime closure gap without claiming same-user TOCTOU prevention, late lazy-load closure, shared-cache image byte verification, MLX native closure, or MLX verify-to-exec. No dependency installation, model download, training, Provider call, rollout, or deployment was performed.
 - Added a cost-free Darwin fixture preflight for local training OS controls. An unsandboxed loopback control proves local network access before a fixed `sandbox-exec` profile denies connect and listen operations; a Python standard-library wrapper applies exact pre-exec CPU, file-size, open-file, and core-dump limits and the child demonstrates their observable enforcement. This does not claim portable containment, MLX unified-memory enforcement, or MLX OS-isolation integration. No MLX process, dependency installation, model download, training, provider call, rollout, or deployment was performed.
 - Added an independent local training process supervisor for an actual Node fixture child. It revalidates exact approval and permission state before spawn, periodically while running, and before result acceptance; revocation and timeout terminate the detached POSIX process group while its direct leader is live, late signals are withheld, and cleanup requires leader close plus confirmed group absence. The MLX adapter binds the supervisor contract but does not invoke it, so actual MLX execution, installation, download, training, rollout, external provider calls, and production claims remain false.
 - Added content-free static training runtime closure provenance for the MLX-LM fixture adapter. The contract pins one interpreter, one entrypoint, the reachable allowlisted Python module graph, and exact file bytes, then revalidates them before workspace creation and fixture invocation. Dynamic and native dependency closure, verify-to-exec, actual process execution, installation, download, training, rollout, external provider calls, and production claims remain false.
@@ -106,8 +107,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,256,550 bytes`
-- SHA-256: `48a4a54ca99f4de1ba432f44c94384a7fa99adf174a26112af5cd82ea2ce241b`
+- Size: `4,259,426 bytes`
+- SHA-256: `4af8e6895d36f5875b04b900153480abec62be4779b63601bf3d6aff59afb8a7`
 
 Included public surfaces:
 

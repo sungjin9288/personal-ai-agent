@@ -23,12 +23,13 @@
     "readyForExplicitCandidateEvaluationRequest": false,
     "recordedTrainingRunCreated": false,
     "rolloutAuthorized": false,
+    "runtimeExecObservationContractValidated": true,
     "staticRuntimeClosureValidated": true,
     "trainingAuthorized": false,
     "verifyToExecClosed": false
   },
   "contract": {
-    "contractHash": "cdc7d8ec955effad7740c3fbf8290e59d4ea8559441a7832ba9a055994941d24",
+    "contractHash": "b0dc66f8d3f736360e1bbdaebc9614e3569ab4f3c3837a1e72abf8d0616da73f",
     "dataFiles": [
       "train.jsonl",
       "valid.jsonl"
@@ -59,18 +60,24 @@
     },
     "processSupervisorContractValidated": true,
     "remainingGates": [
-      "os-bound-dynamic-native-and-exec-closure",
+      "mlx-dynamic-native-runtime-closure",
+      "mlx-verify-to-exec-closure",
       "mlx-os-isolation-integration",
       "os-enforced-mlx-unified-memory-limit",
       "mlx-process-supervisor-integration",
       "explicit-actual-training-request"
     ],
+    "runtimeExecObservation": {
+      "contractHash": "b4a063e09cfa9a4b5aa01ed169c510e8a035eaa60ecbe9cddc72d2dffcaa20fb",
+      "schemaVersion": "personal-ai-agent-local-training-runtime-exec-observation/v1"
+    },
+    "runtimeExecObservationContractValidated": true,
     "runtimeClosure": {
       "artifactSetSha256": "c560471ce0c8f0272b952dcbe9e592b69f4bcde27bb318b93400beb9ecc6d670",
       "provenanceHash": "31fe7708c263e81f75eae349c55c237094c165cda41e57528b4f59bd1644b54e",
       "schemaVersion": "personal-ai-agent-local-training-runtime-closure-provenance/v1"
     },
-    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v5",
+    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v6",
     "sourceModel": {
       "id": "Qwen/Qwen2.5-1.5B-Instruct",
       "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
@@ -104,7 +111,8 @@
     "workspaceCleanupFailureProducedNoObservation": true,
     "existingCandidateOverwriteBlocked": true,
     "candidatePublishedOnlyAfterAllPreconditions": true,
-    "durableRecoveryReceiptBoundToSuccess": true
+    "durableRecoveryReceiptBoundToSuccess": true,
+    "runtimeExecObservationContractBound": true
   },
   "mode": "mlx-lm-lora-training-adapter-contract",
   "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter-evidence/v1",
@@ -135,8 +143,9 @@
     "ownerOnlyDatasetWorkspace": true,
     "osIsolationContractBound": true,
     "processSupervisorContractBound": true,
+    "runtimeExecObservationContractBound": true,
     "runtimeClosureReinspectedBeforeFixtureInvocation": true
   },
-  "evidenceHash": "6e406f187205020084ebc2151405748b967372af59e0f601d7c04d5f603652d7",
-  "id": "mlx-lm-lora-training-adapter-evidence-6e406f187205020084ebc2151405748b967372af59e0f601d7c04d5f603652d7"
+  "evidenceHash": "001fc1f0a9e5849e50839a3e144f5711b564d5f12550586831e025e62f716dd9",
+  "id": "mlx-lm-lora-training-adapter-evidence-001fc1f0a9e5849e50839a3e144f5711b564d5f12550586831e025e62f716dd9"
 }

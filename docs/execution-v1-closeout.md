@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-22T08:07:14.627Z
-- branch: codex/f2c24-training-os-isolation
-- commit: 2bdd5521f8c4992bcc5172f61db19c088bba7d65
+- generatedAt: 2026-07-22T09:10:47.005Z
+- branch: codex/f2c25-runtime-exec-observation
+- commit: d7f6b832d94247f3aba4d7dc68ec134f35d661b3
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 
 ## Closeout Checklist
