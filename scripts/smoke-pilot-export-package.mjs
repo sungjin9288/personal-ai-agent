@@ -363,6 +363,7 @@ assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-collection-pl
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-intake-request/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-intake-resolution/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-private-collection-plan/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-private-collection-execution-request/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-runtime/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-environment-preflight/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-toolchain-decision/);
