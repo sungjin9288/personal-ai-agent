@@ -32,6 +32,10 @@ import {
   buildLocalTrainingOsIsolationContract,
 } from './local-training-os-isolation.mjs';
 import {
+  assertLocalTrainingRuntimeExecObservationContract,
+  buildLocalTrainingRuntimeExecObservationContract,
+} from './local-training-runtime-exec-observation.mjs';
+import {
   assertLocalTrainingProcessSupervisorContract,
   buildLocalTrainingProcessSupervisorContract,
 } from './local-training-process-supervisor.mjs';
@@ -47,7 +51,7 @@ import {
 } from './local-training-failure-recovery.mjs';
 
 export const MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION =
-  'personal-ai-agent-mlx-lm-lora-training-adapter/v5';
+  'personal-ai-agent-mlx-lm-lora-training-adapter/v6';
 
 const ADAPTER_STATES = new WeakMap();
 
@@ -68,7 +72,8 @@ const REQUIRED_OUTPUT_FILES = Object.freeze([
   'adapters.safetensors',
 ]);
 const REMAINING_GATES = Object.freeze([
-  'os-bound-dynamic-native-and-exec-closure',
+  'mlx-dynamic-native-runtime-closure',
+  'mlx-verify-to-exec-closure',
   'mlx-os-isolation-integration',
   'os-enforced-mlx-unified-memory-limit',
   'mlx-process-supervisor-integration',
@@ -543,6 +548,7 @@ function assertSafeSourceModel(fileSystem, sourceRoot) {
 
 function buildContract(
   runtimeClosure,
+  runtimeExecObservation,
   osIsolation,
   processSupervisor,
 ) {
@@ -578,6 +584,11 @@ function buildContract(
     },
     processSupervisorContractValidated: true,
     remainingGates: [...REMAINING_GATES],
+    runtimeExecObservation: {
+      contractHash: runtimeExecObservation.contractHash,
+      schemaVersion: runtimeExecObservation.schemaVersion,
+    },
+    runtimeExecObservationContractValidated: true,
     schemaVersion: MLX_LM_LORA_TRAINING_ADAPTER_SCHEMA_VERSION,
     sourceModel: { ...EXPECTED_TOOLCHAIN.sourceModel },
     staticRuntimeClosureValidated: true,
@@ -772,13 +783,23 @@ export function createMlxLmLoraTrainingAdapter({
   const runtimeClosure = describeLocalTrainingRuntimeClosure(
     runtimeDefinition,
   );
+  const runtimeExecObservation =
+    buildLocalTrainingRuntimeExecObservationContract();
+  assertLocalTrainingRuntimeExecObservationContract(
+    runtimeExecObservation,
+  );
   const osIsolation = buildLocalTrainingOsIsolationContract();
   assertLocalTrainingOsIsolationContract(osIsolation);
   const processSupervisor =
     buildLocalTrainingProcessSupervisorContract();
   assertLocalTrainingProcessSupervisorContract(processSupervisor);
   const contract = deepFreeze(
-    buildContract(runtimeClosure, osIsolation, processSupervisor),
+    buildContract(
+      runtimeClosure,
+      runtimeExecObservation,
+      osIsolation,
+      processSupervisor,
+    ),
   );
   let lastObservation = null;
 
@@ -1223,6 +1244,9 @@ export function createMlxLmLoraTrainingAdapter({
             processSupervisor.contractHash,
           processSupervisorContractValidated: true,
           remainingGates: [...REMAINING_GATES],
+          runtimeExecObservationContractHash:
+            runtimeExecObservation.contractHash,
+          runtimeExecObservationContractValidated: true,
           runtimeClosureArtifactSetSha256:
             runtimeClosure.closure.artifactSetSha256,
           runtimeClosureProvenanceHash:

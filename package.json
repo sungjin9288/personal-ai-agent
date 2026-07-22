@@ -177,6 +177,8 @@
     "smoke:local-training-process-supervisor": "node scripts/smoke-local-training-process-supervisor.mjs",
     "build:local-training-os-isolation-evidence": "node scripts/build-local-training-os-isolation-evidence.mjs",
     "smoke:local-training-os-isolation": "node scripts/smoke-local-training-os-isolation.mjs",
+    "build:local-training-runtime-exec-observation-evidence": "node scripts/build-local-training-runtime-exec-observation-evidence.mjs",
+    "smoke:local-training-runtime-exec-observation": "node scripts/smoke-local-training-runtime-exec-observation.mjs",
     "build:local-training-failure-recovery-evidence": "node scripts/build-local-training-failure-recovery-evidence.mjs",
     "smoke:local-training-failure-recovery": "node scripts/smoke-local-training-failure-recovery.mjs",
     "build:local-training-candidate-artifact-verification-evidence": "node scripts/build-local-training-candidate-artifact-verification-evidence.mjs",

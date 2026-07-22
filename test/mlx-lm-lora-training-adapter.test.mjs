@@ -128,6 +128,14 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
       context.adapter.contract.osIsolation.contractHash,
       /^[a-f0-9]{64}$/,
     );
+    assert.equal(
+      context.adapter.contract.runtimeExecObservationContractValidated,
+      true,
+    );
+    assert.match(
+      context.adapter.contract.runtimeExecObservation.contractHash,
+      /^[a-f0-9]{64}$/,
+    );
     assert.equal(context.adapter.contract.trainingAuthorized, false);
     assert.equal(context.adapter.contract.verifyToExecClosed, false);
     assert.equal(
@@ -171,6 +179,14 @@ test('MLX-LM adapter replays the approved F1 packet into a fixed offline candida
     assert.equal(
       context.observation.osIsolationContractHash,
       context.adapter.contract.osIsolation.contractHash,
+    );
+    assert.equal(
+      context.observation.runtimeExecObservationContractValidated,
+      true,
+    );
+    assert.equal(
+      context.observation.runtimeExecObservationContractHash,
+      context.adapter.contract.runtimeExecObservation.contractHash,
     );
     assert.equal(
       context.observation.processSupervisorContractValidated,

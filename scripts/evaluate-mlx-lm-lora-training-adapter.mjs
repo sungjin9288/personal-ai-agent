@@ -354,6 +354,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
       ) &&
       observation?.workspaceRemovedBeforeObservation === true,
     );
+    failureGuards.runtimeExecObservationContractBound =
+      observation?.runtimeExecObservationContractValidated === true &&
+      observation?.runtimeExecObservationContractHash ===
+        adapter.contract.runtimeExecObservation.contractHash;
 
     assert.equal(
       Object.values(failureGuards).every(Boolean),
@@ -389,6 +393,7 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         readyForExplicitCandidateEvaluationRequest: false,
         recordedTrainingRunCreated: false,
         rolloutAuthorized: false,
+        runtimeExecObservationContractValidated: true,
         staticRuntimeClosureValidated: true,
         trainingAuthorized: false,
         verifyToExecClosed: false,
@@ -410,6 +415,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
         processSupervisorContractValidated:
           adapter.contract.processSupervisorContractValidated,
         remainingGates: adapter.contract.remainingGates,
+        runtimeExecObservation:
+          adapter.contract.runtimeExecObservation,
+        runtimeExecObservationContractValidated:
+          adapter.contract.runtimeExecObservationContractValidated,
         runtimeClosure: adapter.contract.runtimeClosure,
         schemaVersion: adapter.contract.schemaVersion,
         sourceModel: adapter.contract.sourceModel,
@@ -451,6 +460,10 @@ export async function evaluateMlxLmLoraTrainingAdapter({
           observation.processSupervisorContractValidated === true &&
           observation.processSupervisorContractHash ===
             adapter.contract.processSupervisor.contractHash,
+        runtimeExecObservationContractBound:
+          observation.runtimeExecObservationContractValidated === true &&
+          observation.runtimeExecObservationContractHash ===
+            adapter.contract.runtimeExecObservation.contractHash,
         runtimeClosureReinspectedBeforeFixtureInvocation:
           observation.staticRuntimeClosureValidated,
       },

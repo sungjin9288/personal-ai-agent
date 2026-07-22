@@ -92,6 +92,7 @@ const CURRENT_RELEASE_ARTIFACTS = [
   'evidence/output-artifacts/local-training-runtime-closure-provenance.json',
   'evidence/output-artifacts/local-training-process-supervisor.json',
   'evidence/output-artifacts/local-training-os-isolation.json',
+  'evidence/output-artifacts/local-training-runtime-exec-observation.json',
   'evidence/output-artifacts/local-training-failure-recovery.json',
   'evidence/output-artifacts/local-training-candidate-artifact-verification.json',
   'evidence/output-artifacts/local-candidate-evaluation-admission.json',

@@ -1,6 +1,6 @@
 {
   "adapterBinding": {
-    "adapterContractHash": "cdc7d8ec955effad7740c3fbf8290e59d4ea8559441a7832ba9a055994941d24",
+    "adapterContractHash": "b0dc66f8d3f736360e1bbdaebc9614e3569ab4f3c3837a1e72abf8d0616da73f",
     "integrationGate": "mlx-os-isolation-integration",
     "isolationContractHash": "5a2ee17ba7279503e395e4ee3529392c6b36eafe58ca25a43ed0c3994cd428a4",
     "memoryGate": "os-enforced-mlx-unified-memory-limit"
@@ -56,6 +56,6 @@
   "mode": "actual-darwin-fixture-os-isolation",
   "replayPlatform": "darwin",
   "schemaVersion": "personal-ai-agent-local-training-os-isolation-evidence/v1",
-  "evidenceHash": "2bdd12bf7daf3cd0ddf6fa37837693ceebbe019cf203d3af837026b1c3f6dff9",
-  "id": "local-training-os-isolation-evidence-2bdd12bf7daf3cd0ddf6fa37837693ceebbe019cf203d3af837026b1c3f6dff9"
+  "evidenceHash": "4aeddf2948eaee24d40ac5dbe6bd952761aaf69db43fa11d07764e9101549621",
+  "id": "local-training-os-isolation-evidence-4aeddf2948eaee24d40ac5dbe6bd952761aaf69db43fa11d07764e9101549621"
 }

@@ -66,6 +66,18 @@ assert.equal(stored.claimBoundary.osIsolationContractValidated, true);
 assert.equal(stored.contract.osIsolationContractValidated, true);
 assert.match(stored.contract.osIsolation.contractHash, /^[a-f0-9]{64}$/u);
 assert.equal(
+  stored.claimBoundary.runtimeExecObservationContractValidated,
+  true,
+);
+assert.equal(
+  stored.contract.runtimeExecObservationContractValidated,
+  true,
+);
+assert.match(
+  stored.contract.runtimeExecObservation.contractHash,
+  /^[a-f0-9]{64}$/u,
+);
+assert.equal(
   stored.contract.remainingGates.includes(
     'training-runtime-closure-provenance',
   ),
@@ -74,6 +86,18 @@ assert.equal(
 assert.equal(
   stored.contract.remainingGates.includes(
     'os-bound-dynamic-native-and-exec-closure',
+  ),
+  false,
+);
+assert.equal(
+  stored.contract.remainingGates.includes(
+    'mlx-dynamic-native-runtime-closure',
+  ),
+  true,
+);
+assert.equal(
+  stored.contract.remainingGates.includes(
+    'mlx-verify-to-exec-closure',
   ),
   true,
 );
