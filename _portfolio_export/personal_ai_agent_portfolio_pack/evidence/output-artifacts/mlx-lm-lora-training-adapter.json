@@ -1,0 +1,103 @@
+{
+  "candidate": {
+    "artifactFileCount": 2,
+    "independentVerificationPassed": true,
+    "manifestBoundToAdapterResult": true,
+    "status": "fixture-adapter-candidate-reinspected-no-training"
+  },
+  "claimBoundary": {
+    "actualDependencyInstallationPerformed": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "actualMlxProcessSpawned": false,
+    "adapterContractValidated": true,
+    "candidateEvaluationAuthorized": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "productionReadyClaim": false,
+    "readyForExplicitCandidateEvaluationRequest": false,
+    "recordedTrainingRunCreated": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "contract": {
+    "contractHash": "9d80a3b0ff5be0a59da8fe5a1a885a5593f1246cd717db202d1948263a712b04",
+    "dataFiles": [
+      "train.jsonl",
+      "valid.jsonl"
+    ],
+    "fixedArgumentOrder": [
+      "--model",
+      "--train",
+      "--data",
+      "--fine-tune-type",
+      "lora",
+      "--adapter-path"
+    ],
+    "remainingGates": [
+      "training-runtime-closure-provenance",
+      "os-enforced-network-isolation",
+      "os-enforced-resource-limits",
+      "process-group-lifecycle-and-revocation-monitoring",
+      "durable-failure-recovery-and-explicit-cleanup",
+      "explicit-actual-training-request"
+    ],
+    "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter/v1",
+    "sourceModel": {
+      "id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+    },
+    "trainer": {
+      "command": "mlx_lm.lora",
+      "id": "mlx-lm-lora",
+      "releaseCommit": "ed1fca4cef15a824c5f1702c80f70b4cffc8e4dd",
+      "version": "0.31.3"
+    }
+  },
+  "dataset": {
+    "exactF1TrainBytesMaterialized": true,
+    "exactF1ValidationBytesMaterializedAsValidJsonl": true,
+    "trainLineCount": 3,
+    "validationLineCount": 1
+  },
+  "failureGuards": {
+    "actualExecutionModeBlocked": true,
+    "approvalTargetDriftBlocked": true,
+    "permissionRevocationBlockedBeforeCandidate": true,
+    "stalePermissionBlockedBeforeCandidate": true,
+    "unlistedTrainerFileBlockedBeforeCandidate": true,
+    "hardLinkedTrainerFileBlockedBeforeCandidate": true,
+    "customSourceModelCodeBlockedBeforeCandidate": true,
+    "customSourceModelProducedNoObservation": true,
+    "forgedAdapterBlocked": true,
+    "workspaceCleanupFailureRejected": true,
+    "workspaceCleanupFailureRemovedCandidate": true,
+    "workspaceCleanupFailureProducedNoObservation": true,
+    "existingCandidateOverwriteBlocked": true,
+    "candidatePublishedOnlyAfterAllPreconditions": true
+  },
+  "mode": "mlx-lm-lora-training-adapter-contract",
+  "schemaVersion": "personal-ai-agent-mlx-lm-lora-training-adapter-evidence/v1",
+  "security": {
+    "acquisitionCompleteInventoryRevalidated": true,
+    "arbitraryArgumentsAccepted": false,
+    "candidatePublishedAtomically": true,
+    "customSourceModelCodeRejected": true,
+    "environmentKeys": [
+      "HF_DATASETS_OFFLINE",
+      "HF_HUB_OFFLINE",
+      "HOME",
+      "LANG",
+      "LC_ALL",
+      "TMPDIR",
+      "TOKENIZERS_PARALLELISM",
+      "TRANSFORMERS_OFFLINE"
+    ],
+    "inheritedEnvironmentValuesAccepted": false,
+    "localAbsoluteModelPathRequired": true,
+    "moduleOwnedFixtureInvocationExercised": true,
+    "ownerOnlyDatasetWorkspace": true
+  },
+  "evidenceHash": "1a6af4bf92e588fefa99fbd8c20993dd8561b06de760996502b519955d587726",
+  "id": "mlx-lm-lora-training-adapter-evidence-1a6af4bf92e588fefa99fbd8c20993dd8561b06de760996502b519955d587726"
+}

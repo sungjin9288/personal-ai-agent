@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T01:08:58.958Z
+- generatedAt: 2026-07-22T03:10:58.430Z
 - localDate: 2026-07-22
-- branch: codex/q8-private-evaluation-hardening
-- commit: 91bfe757aad96beb2112beb32b1a9f1911bed563
+- branch: codex/f2c20-mlx-launch-contract
+- commit: 3b77191e08ade5b82615406e64994611581dc72c
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/91bfe757aad96beb2112beb32b1a9f1911bed563](releases/execution-v1/91bfe757aad96beb2112beb32b1a9f1911bed563)
-- visualArtifactSetSha256: 861896319a29aed5af43ff87d4e5316dfb070fdea7db646028921fa0cec45bb3
-- commitPushStatus: not pushed, origin/codex/q8-private-evaluation-hardening not found
+- immutableSnapshot: [releases/execution-v1/3b77191e08ade5b82615406e64994611581dc72c](releases/execution-v1/3b77191e08ade5b82615406e64994611581dc72c)
+- visualArtifactSetSha256: bd5366589842094c1803423fe073d685e84bfb1667635b1778e59b7ce7971aaa
+- commitPushStatus: not pushed, origin/codex/f2c20-mlx-launch-contract not found
 
 ## Operational State
 
@@ -16,7 +16,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=52.0s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=47.8s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -51,7 +51,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 861896319a29aed5af43ff87d4e5316dfb070fdea7db646028921fa0cec45bb3
+- visual artifact set: bd5366589842094c1803423fe073d685e84bfb1667635b1778e59b7ce7971aaa
 
 ## Live Provider Handoff
 
