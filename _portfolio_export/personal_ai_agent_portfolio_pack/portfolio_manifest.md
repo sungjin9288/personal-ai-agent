@@ -70,6 +70,7 @@
 - evidence/output-artifacts/user-learning-operator-surface.json
 - evidence/output-artifacts/fine-tuning-data-sufficiency.json
 - evidence/output-artifacts/fine-tuning-data-collection-plan.json
+- evidence/output-artifacts/fine-tuning-data-intake-request.json
 - evidence/output-artifacts/local-training-runtime-contract.json
 - evidence/output-artifacts/local-training-permission-surface.json
 - evidence/output-artifacts/local-training-environment-preflight.json
