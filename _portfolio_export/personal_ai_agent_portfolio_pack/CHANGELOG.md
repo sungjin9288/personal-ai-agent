@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added F1.16 private answer-quality case enrichment candidate preparation for one exact approved and live F1.15 answer-quality resolution and curated-synthetic item. The owner-only candidate history retains only lineage references and hashes, lifecycle timestamps, counts, and deterministic precheck metrics; it excludes raw objective, answer, sources, terms, paths, and input filename. `q1ContractSatisfied: false` remains until separate reviewer review, and no case, training, provider, submission, deployment, or production authority is created.
+
 - Added F1.15 private collection item artifact preparation resolution protocol for one exact F1.14 final request. It persists only a token-hash quality-reviewer decision and a content-free lane-specific approval state under the shared workspace lock. Approval does not copy content or paths, create an approved record or case, or authorize candidate review, training, provider calls, submission, deployment, or production readiness.
 
 - Added F1.14 private collection item artifact request protocol for one exact approved F1.13 final resolution. It writes only a content-free lane-specific preparation request with input and lineage hashes under the shared workspace lock. It does not copy content or paths, create approved records or cases, evaluate eligibility or Q1 content, or authorize candidate review, training, provider calls, submission, deployment, or production readiness.
