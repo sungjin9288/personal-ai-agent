@@ -11,6 +11,13 @@ import {
   assertFineTuningPrivateCollectionWorkspace,
   assertFineTuningPrivateCollectionWorkspaceRecord,
 } from '../src/core/fine-tuning-private-collection-workspace.mjs';
+import {
+  assertFineTuningPrivateCollectionItem,
+  assertFineTuningPrivateCollectionItemRecord,
+} from '../src/core/fine-tuning-private-collection-item.mjs';
+import {
+  acquireFineTuningPrivateCollectionWorkspaceLock,
+} from './helpers/fine-tuning-private-collection-workspace-lock.mjs';
 
 const MAX_JSON_BYTES = 64 * 1024;
 const repoDir = fs.realpathSync(process.cwd());
@@ -53,19 +60,22 @@ assertFineTuningPrivateCollectionWorkspace(workspaceInput.workspace, {
   ...currentSources,
   now: admittedAt,
 });
-assertWorkspaceContents(workspaceInput.workspaceDirectory);
+assertWorkspaceContents(workspaceInput.workspaceDirectory, currentSources);
 const admission = buildFineTuningPrivateCollectionItemAdmission({
   ...currentSources,
   admittedAt,
   envelope,
 });
 const outputRoot = prepareOutputRoot();
-const admissionLock = acquireAdmissionLock(admission.workspace.workspaceHash);
+const admissionLock = acquireFineTuningPrivateCollectionWorkspaceLock({
+  repoDir,
+  workspaceHash: admission.workspace.workspaceHash,
+});
 try {
   assertAdmissionHistory(outputRoot, currentSources, admission);
   publishAdmission(outputRoot, admission, currentSources, workspaceInput);
 } finally {
-  releaseAdmissionLock(admissionLock);
+  admissionLock.release();
 }
 
 console.log(JSON.stringify({
@@ -419,10 +429,6 @@ function prepareOutputRoot() {
   return preparePrivateRoot('private-collection-item-admissions');
 }
 
-function prepareAdmissionLockRoot() {
-  return preparePrivateRoot('private-collection-item-admission-locks');
-}
-
 function preparePrivateRoot(leafDirectory) {
   try {
     let current = repoDir;
@@ -450,112 +456,6 @@ function preparePrivateRoot(leafDirectory) {
     return canonicalPath;
   } catch {
     throw new Error('Fine-tuning private collection item admission directory must be owner-only and contain no symbolic links.');
-  }
-}
-
-function acquireAdmissionLock(workspaceHash) {
-  if (!isSha256(workspaceHash)) {
-    throw new Error('Fine-tuning private collection item admission lock is invalid.');
-  }
-  const lockRoot = prepareAdmissionLockRoot();
-  assertAdmissionLockHistory(lockRoot);
-  const filename = path.join(lockRoot, `${workspaceHash}.lock`);
-  let descriptor;
-  try {
-    descriptor = fs.openSync(
-      filename,
-      fs.constants.O_WRONLY |
-        fs.constants.O_CREAT |
-        fs.constants.O_EXCL |
-        (fs.constants.O_NOFOLLOW || 0),
-      0o600,
-    );
-  } catch {
-    throw new Error('Fine-tuning private collection item admission lock is already held.');
-  }
-  try {
-    fs.writeFileSync(
-      descriptor,
-      'fine-tuning-private-collection-item-admission-lock/v1\n',
-      'utf8',
-    );
-    fs.fsyncSync(descriptor);
-    const stat = fs.fstatSync(descriptor);
-    assertAdmissionLockFile(stat);
-    const lock = {
-      filename,
-      initialFile: {
-        dev: stat.dev,
-        ino: stat.ino,
-        mode: stat.mode & 0o777,
-        size: stat.size,
-      },
-      lockRoot,
-    };
-    fsyncDirectory(lockRoot);
-    return lock;
-  } catch {
-    throw new Error('Fine-tuning private collection item admission lock is invalid.');
-  } finally {
-    fs.closeSync(descriptor);
-  }
-}
-
-function assertAdmissionLockHistory(lockRoot) {
-  let names;
-  try {
-    names = fs.readdirSync(lockRoot);
-  } catch {
-    throw new Error('Fine-tuning private collection item admission lock history is invalid.');
-  }
-  for (const name of names) {
-    if (!/^[a-f0-9]{64}\.lock$/u.test(name)) {
-      throw new Error('Fine-tuning private collection item admission lock history is invalid.');
-    }
-    try {
-      assertAdmissionLockFile(fs.lstatSync(path.join(lockRoot, name)));
-    } catch {
-      throw new Error('Fine-tuning private collection item admission lock history is invalid.');
-    }
-  }
-}
-
-function assertAdmissionLockFile(stat) {
-  if (
-    !stat.isFile() ||
-    stat.isSymbolicLink() ||
-    stat.nlink !== 1 ||
-    stat.size <= 0 ||
-    stat.size > 256 ||
-    (stat.mode & 0o077) !== 0 ||
-    !isCurrentUserOwned(stat)
-  ) {
-    throw new Error('Fine-tuning private collection item admission lock is invalid.');
-  }
-}
-
-function releaseAdmissionLock(lock) {
-  let current;
-  try {
-    current = fs.lstatSync(lock.filename);
-    assertAdmissionLockFile(current);
-  } catch {
-    throw new Error('Fine-tuning private collection item admission lock release failed.');
-  }
-  const initial = lock.initialFile;
-  if (
-    current.dev !== initial.dev ||
-    current.ino !== initial.ino ||
-    (current.mode & 0o777) !== initial.mode ||
-    current.size !== initial.size
-  ) {
-    throw new Error('Fine-tuning private collection item admission lock release failed.');
-  }
-  try {
-    fs.unlinkSync(lock.filename);
-    fsyncDirectory(lock.lockRoot);
-  } catch {
-    throw new Error('Fine-tuning private collection item admission lock release failed.');
   }
 }
 
@@ -639,7 +539,7 @@ function assertNoDuplicateReference(existing, candidate) {
   }
 }
 
-function assertWorkspaceContents(directory) {
+function assertWorkspaceContents(directory, currentSources) {
   try {
     assertOwnerOnlyDirectory(directory, {
       errorMessage: 'Fine-tuning private collection workspace is invalid.',
@@ -653,13 +553,77 @@ function assertWorkspaceContents(directory) {
       assertOwnerOnlyDirectory(laneDirectory, {
         errorMessage: 'Fine-tuning private collection workspace is invalid.',
       });
-      if (fs.readdirSync(laneDirectory).length !== 0) {
-        throw new Error();
+      for (const name of fs.readdirSync(laneDirectory)) {
+        if (!/^fine-tuning-private-collection-item-[a-f0-9]{64}$/u.test(name)) {
+          throw new Error();
+        }
+        const itemDirectory = path.join(laneDirectory, name);
+        assertOwnerOnlyDirectory(itemDirectory, {
+          errorMessage: 'Fine-tuning private collection workspace is invalid.',
+        });
+        if (JSON.stringify(fs.readdirSync(itemDirectory).sort()) !== JSON.stringify(['item.json'])) {
+          throw new Error();
+        }
+        const item = readOwnerOnlyJson(
+          validatePrivateFilename(
+            path.join(itemDirectory, 'item.json'),
+            'Fine-tuning private collection workspace',
+          ),
+          'Fine-tuning private collection workspace',
+        );
+        assertFineTuningPrivateCollectionItemRecord(item);
+        if (
+          item.lane !== lane ||
+          name !== `fine-tuning-private-collection-item-${item.admission.admissionHash}` ||
+          (currentSources && (
+            item.workspace.id !== currentSources.workspace.id ||
+            item.workspace.workspaceHash !== currentSources.workspace.workspaceHash
+          ))
+        ) {
+          throw new Error();
+        }
+        if (currentSources) {
+          const admission = readStoredAdmission(item.admission);
+          assertFineTuningPrivateCollectionItem(item, {
+            ...currentSources,
+            admission,
+            now: new Date().toISOString(),
+          });
+        }
       }
     }
-  } catch {
+  } catch (error) {
+    if (error?.message?.includes('expired')) {
+      throw error;
+    }
     throw new Error('Fine-tuning private collection workspace is invalid.');
   }
+}
+
+function readStoredAdmission(reference) {
+  const filename = path.join(
+    repoDir,
+    'var',
+    'fine-tuning',
+    'private-collection-item-admissions',
+    reference.id,
+    'admission.json',
+  );
+  const admission = readOwnerOnlyJson(
+    validatePrivateFilename(
+      filename,
+      'Fine-tuning private collection workspace',
+    ),
+    'Fine-tuning private collection workspace',
+  );
+  assertFineTuningPrivateCollectionItemAdmissionRecord(admission);
+  if (
+    admission.id !== reference.id ||
+    admission.admissionHash !== reference.admissionHash
+  ) {
+    throw new Error('Fine-tuning private collection workspace is invalid.');
+  }
+  return admission;
 }
 
 function publishAdmission(outputRoot, admission, currentSources, workspaceInput) {
@@ -673,7 +637,7 @@ function publishAdmission(outputRoot, admission, currentSources, workspaceInput)
     assertAdmissionHistory(outputRoot, currentSources, admission, {
       knownStagingDirectory: stagingDirectory,
     });
-    assertWorkspaceUnchanged(workspaceInput);
+    assertWorkspaceUnchanged(workspaceInput, currentSources);
     assertAdmissionDirectory(stagingDirectory, admission);
     assertFineTuningPrivateCollectionItemAdmission(admission, {
       ...currentSources,
@@ -699,9 +663,9 @@ function publishAdmission(outputRoot, admission, currentSources, workspaceInput)
   }
 }
 
-function assertWorkspaceUnchanged(workspaceInput) {
+function assertWorkspaceUnchanged(workspaceInput, currentSources) {
   assertPreparedWorkspaceAncestorsUnchanged(workspaceInput.ancestors);
-  assertWorkspaceContents(workspaceInput.workspaceDirectory);
+  assertWorkspaceContents(workspaceInput.workspaceDirectory, currentSources);
   let currentInput;
   try {
     currentInput = validatePrivateFilename(

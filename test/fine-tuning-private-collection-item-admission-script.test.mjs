@@ -457,6 +457,27 @@ test('an existing workspace lock stays fail-closed for manual recovery', () => {
   });
 });
 
+test('a durable releasing marker stays fail-closed for manual recovery', () => {
+  withRoot((rootDir, sources) => {
+    const workspaceFile = writeWorkspace(rootDir, sources);
+    prepareAdmissionRoots(rootDir);
+    const marker = path.join(
+      admissionLockRoot(rootDir),
+      `${sources.workspace.workspaceHash}.releasing`,
+    );
+    fs.writeFileSync(
+      marker,
+      'fine-tuning-private-collection-item-admission-lock/v1\n',
+      { mode: 0o600 },
+    );
+    fs.chmodSync(marker, 0o600);
+    const result = run(rootDir, writePrivateInputs(rootDir, sources, workspaceFile, 1));
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /lock history is invalid/);
+    assert.equal(fs.existsSync(marker), true);
+  });
+});
+
 function withRoot(callback) {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fine-tuning-item-admission-'));
   try {
