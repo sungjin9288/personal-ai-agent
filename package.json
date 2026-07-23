@@ -173,6 +173,8 @@
     "smoke:fine-tuning-private-collection-item-review-projection": "node scripts/smoke-fine-tuning-private-collection-item-review-projection.mjs",
     "resolve:fine-tuning-private-collection-item-review": "node scripts/resolve-fine-tuning-private-collection-item-review.mjs",
     "smoke:fine-tuning-private-collection-item-review-resolution": "node scripts/smoke-fine-tuning-private-collection-item-review-resolution.mjs",
+    "request:fine-tuning-private-collection-item-artifact": "node scripts/request-fine-tuning-private-collection-item-artifact.mjs",
+    "smoke:fine-tuning-private-collection-item-artifact-request": "node scripts/smoke-fine-tuning-private-collection-item-artifact-request.mjs",
     "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
     "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:local-training-permission-surface": "node scripts/smoke-local-training-permission-surface.mjs",

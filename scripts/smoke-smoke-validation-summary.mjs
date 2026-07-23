@@ -69,6 +69,7 @@ const expectedCommands = [
   'npm run smoke:fine-tuning-private-collection-item-lifecycle',
   'npm run smoke:fine-tuning-private-collection-item-review-projection',
   'npm run smoke:fine-tuning-private-collection-item-review-resolution',
+  'npm run smoke:fine-tuning-private-collection-item-artifact-request',
   'npm run smoke:local-training-runtime',
   'npm run smoke:local-training-permission-surface',
   'npm run smoke:local-training-permission-evidence',

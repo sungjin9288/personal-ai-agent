@@ -1,7 +1,7 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
 - status: local-answer-input-boundary-current
-- currentCostFreeMilestone: fine-tuning-private-collection-item-review-resolution-protocol
+- currentCostFreeMilestone: fine-tuning-private-collection-item-artifact-request-protocol
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -42,6 +42,8 @@
 - fineTuningPrivateCollectionItemReviewProjectionStatus: protocol-ready-private-item-review-projection-required
 - currentFineTuningPrivateCollectionItemReviewResolutionSurface: `scripts/resolve-fine-tuning-private-collection-item-review.mjs`
 - fineTuningPrivateCollectionItemReviewResolutionStatus: protocol-ready-private-owner-resolution-required
+- currentFineTuningPrivateCollectionItemArtifactRequestSurface: `scripts/request-fine-tuning-private-collection-item-artifact.mjs`
+- fineTuningPrivateCollectionItemArtifactRequestStatus: protocol-ready-private-artifact-preparation-request-required
 - minimumAdditionalReviewedExamples: 16
 - reviewedExampleCollectionAuthorized: false
 - operatorAttestationRecorded: false
@@ -973,6 +975,29 @@ productionReadyClaim: false
 
 Tracked fixture and evidence assertions remain synthetic and content-free. This protocol records no actual owner identity or independent evidence verification, approved training record, answer-quality case, candidate review, training, provider use, submission, deployment, actual user data, or production claim.
 
+## 현재 private collection item artifact request protocol
+
+F1.14는 exact approved F1.13 resolution 하나를 content-free artifact preparation request로만 바꾼다. `reviewed-examples`는 `approved-training-record-v1` canonicalization preparation을, `answer-quality-cases`는 unsatisfied Q1 field 목록을 가진 case-enrichment preparation만 요청한다. request는 approved record·case·candidate review·training·provider·submission·deploy authority를 만들지 않는다.
+
+`scripts/request-fine-tuning-private-collection-item-artifact.mjs`는 canonical F1.10 item, F1.12 projection, F1.13 final resolution과 owner-only request input을 shared workspace lock에서 다시 읽는다. expiry, deleteBy, malformed or ambiguous history, replay conflict는 fail closed한다. History는 workspace와 item hash에 결속된 final `<itemHash>.json` 하나와 known-valid pending `request.json` 하나만 허용한다.
+
+```bash
+npm run request:fine-tuning-private-collection-item-artifact -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --projection <f1-12-final-projection-json> --review-resolution <f1-13-final-resolution-json> --request <private-artifact-request-json> --execution-resolution <private-execution-resolution-json> --execution-request <private-execution-request-json> --plan <private-plan-json> --intake-resolution <private-intake-resolution-json>
+npm run smoke:fine-tuning-private-collection-item-artifact-request
+```
+
+```text
+fineTuningPrivateCollectionItemArtifactRequestStatus: protocol-ready-private-artifact-preparation-request-required
+artifactPreparationRequestCreated: false
+artifactPreparationAuthorized: false
+approvedTrainingRecordCreated: false
+answerQualityCaseCreated: false
+trainingAuthorized: false
+productionReadyClaim: false
+```
+
+Tracked repository에는 실제 private request나 collected content가 없다. 이 protocol은 synthetic fixture로 request 형식과 owner-only history를 검증할 뿐이며, 실제 artifact preparation에는 별도 owner approval이 필요하다.
+
 ## 현재 local training runtime contract
 
 `src/core/local-training-runtime.mjs`는 F1 readiness package를 operator-owned local executable에 전달하는 최소 실행 경계를 제공한다. Readiness package는 여전히 `fineTuningExecutionAuthorized: false`이며 스스로 실행 권한을 만들지 않는다. Runtime을 호출하려면 dataset hash, readiness hash, train·validation digest, trainer id, base model id, 승인자, 만료 시각과 rollback owner를 묶은 별도 local execution approval이 필요하다.
@@ -1552,6 +1577,7 @@ Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한�
 | F1.11 Private collection item withdrawal and retention-deletion lifecycle | 완료 · 실제 owner decision 대기 | exact stored item·admission·workspace binding, owner-attested decision, same-lane atomic removal, terminal tombstone v2와 absence receipt | synthetic fixture에서 local absence만 관측; owner identity·independent deletion proof·training·provider·deploy·production claim 없음 |
 | F1.12 Private collection item review projection protocol | 완료 · 실제 owner review 대기 | live exact F1.10 item을 lane-specific content-free pending projection으로 결속하고 shared lock·terminal/removal refusal·one-final item history를 적용 | approved record·answer-quality case 생성, eligibility/Q1 content 평가, training·provider·submission·deploy·production claim 없음 |
 | F1.13 Private collection item review resolution protocol | 완료 · 실제 owner resolution 대기 | exact F1.12 final projection과 quality-reviewer approve/reject를 content-free decision·resolution history, shared lock·current-chain revalidation·pending resume에 결속 | canonicalization/enrichment request만 lane별로 표시하고 approved record/case·candidate review·training·provider·submission·deploy·production claim 없음 |
+| F1.14 Private collection item artifact request protocol | 완료 · 실제 private artifact preparation 대기 | exact approved F1.13 resolution을 lane-specific content-free canonicalization 또는 enrichment preparation request와 input hash에 결속 | approved record/case·candidate review·training·provider·submission·deploy·production claim 없음 |
 | F2a Local training runtime contract | 완료 | exact F1 packet과 별도 local approval을 bounded child process protocol로 연결하고 content-free run record 생성 | 변조·만료·trainer drift·timeout·output 폭주·stderr 노출·unsafe metadata·허위 actual-training 표시 차단, store 불변과 fixture replay 검증 |
 | F2b Local training product permission surface | 완료 | license·OS egress·resource evidence hash와 각 owner, approval·rollback owner를 기존 action inbox·RBAC·tenant·audit에 연결 | CLI·HTTP·Chromium 승인과 철회, private readiness file, content-free evidence, actual training 미실행 검증 |
 | F2c.1 Local training environment preflight | 완료 · 실행 차단 | 실제 local model artifact·manifest·license hash와 system capacity를 content-free snapshot으로 확인하고 trainable source·trainer·permission·독립 review·rollback owner gate 평가 | 7개 blocker를 고정해 `stop-before-local-training`; dependency 설치·실제 학습·외부 호출·rollout 없음 |
