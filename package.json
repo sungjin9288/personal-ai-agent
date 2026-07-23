@@ -179,6 +179,8 @@
     "smoke:fine-tuning-private-collection-item-artifact-preparation-resolution": "node scripts/smoke-fine-tuning-private-collection-item-artifact-preparation-resolution.mjs",
     "prepare:fine-tuning-private-answer-quality-enrichment-candidate": "node scripts/prepare-fine-tuning-private-answer-quality-enrichment-candidate.mjs",
     "smoke:fine-tuning-private-answer-quality-enrichment-candidate": "node scripts/smoke-fine-tuning-private-answer-quality-enrichment-candidate.mjs",
+    "resolve:fine-tuning-private-answer-quality-enrichment-candidate-review": "node scripts/resolve-fine-tuning-private-answer-quality-enrichment-candidate-review.mjs",
+    "smoke:fine-tuning-private-answer-quality-enrichment-candidate-review-resolution": "node scripts/smoke-fine-tuning-private-answer-quality-enrichment-candidate-review-resolution.mjs",
     "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
     "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:local-training-permission-surface": "node scripts/smoke-local-training-permission-surface.mjs",

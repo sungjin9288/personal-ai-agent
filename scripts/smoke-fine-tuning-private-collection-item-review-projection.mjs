@@ -27,7 +27,7 @@ assert.equal(
 );
 for (const term of [
   'F1.12 Private collection item review projection protocol',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-enrichment-candidate-protocol',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-enrichment-candidate-review-resolution-protocol',
   'currentFineTuningPrivateCollectionItemReviewProjectionSurface: `scripts/project-fine-tuning-private-collection-item-review.mjs`',
   'fineTuningPrivateCollectionItemReviewProjectionStatus: protocol-ready-private-item-review-projection-required',
   'Private collection item review projection protocol',
