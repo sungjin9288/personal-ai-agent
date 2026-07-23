@@ -163,6 +163,8 @@
     "smoke:fine-tuning-private-collection-execution-resolution": "node scripts/smoke-fine-tuning-private-collection-execution-resolution.mjs",
     "prepare:fine-tuning-private-collection-workspace": "node scripts/prepare-fine-tuning-private-collection-workspace.mjs",
     "smoke:fine-tuning-private-collection-workspace": "node scripts/smoke-fine-tuning-private-collection-workspace.mjs",
+    "admit:fine-tuning-private-collection-item": "node scripts/admit-fine-tuning-private-collection-item.mjs",
+    "smoke:fine-tuning-private-collection-item-admission": "node scripts/smoke-fine-tuning-private-collection-item-admission.mjs",
     "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
     "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:local-training-permission-surface": "node scripts/smoke-local-training-permission-surface.mjs",
