@@ -1,7 +1,7 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
 - status: local-answer-input-boundary-current
-- currentCostFreeMilestone: fine-tuning-private-collection-item-artifact-request-protocol
+- currentCostFreeMilestone: fine-tuning-private-collection-item-artifact-preparation-resolution-protocol
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -998,6 +998,26 @@ productionReadyClaim: false
 
 Tracked repository에는 실제 private request나 collected content가 없다. 이 protocol은 synthetic fixture로 request 형식과 owner-only history를 검증할 뿐이며, 실제 artifact preparation에는 별도 owner approval이 필요하다.
 
+## 현재 private collection item artifact preparation resolution protocol
+
+F1.15는 exact F1.14 artifact preparation request 하나에 quality-reviewer의 `approve` 또는 `reject`를 content-free decision/resolution bundle로만 결속한다. approve는 reviewed-example canonicalization preparation 또는 answer-quality case-enrichment preparation 중 해당 lane 하나만 허용한다. 승인도 approved training record·answer-quality case·candidate review·training·provider·submission·deployment authority를 만들지 않는다.
+
+`scripts/resolve-fine-tuning-private-collection-item-artifact-preparation.mjs`는 canonical F1.10 item, F1.12 projection, F1.13 final resolution, F1.14 final request와 owner-only decision input을 shared workspace lock 아래에서 재검증한다. token은 SHA-256만 history에 남기며, decision-only pending 또는 complete pending bundle만 resume하고 item별 atomic final directory로 publish한다.
+
+```bash
+npm run resolve:fine-tuning-private-collection-item-artifact-preparation -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --projection <f1-12-final-projection-json> --review-resolution <f1-13-final-resolution-json> --artifact-request <f1-14-final-request-json> --decision <private-artifact-preparation-decision-json> --execution-resolution <private-execution-resolution-json> --execution-request <private-execution-request-json> --plan <private-plan-json> --intake-resolution <private-intake-resolution-json>
+npm run smoke:fine-tuning-private-collection-item-artifact-preparation-resolution
+```
+
+```text
+currentFineTuningPrivateCollectionItemArtifactPreparationResolutionSurface: `scripts/resolve-fine-tuning-private-collection-item-artifact-preparation.mjs`
+fineTuningPrivateCollectionItemArtifactPreparationResolutionStatus: protocol-ready-private-quality-reviewer-resolution-required
+artifactPreparationAuthorized: true only after approve
+productionReadyClaim: false
+```
+
+Tracked repository에는 실제 preparation decision, content, artifact, record, case, training run 또는 provider evidence가 없다. 이 protocol은 synthetic fixture에서 private quality-reviewer boundary와 history integrity만 검증한다.
+
 ## 현재 local training runtime contract
 
 `src/core/local-training-runtime.mjs`는 F1 readiness package를 operator-owned local executable에 전달하는 최소 실행 경계를 제공한다. Readiness package는 여전히 `fineTuningExecutionAuthorized: false`이며 스스로 실행 권한을 만들지 않는다. Runtime을 호출하려면 dataset hash, readiness hash, train·validation digest, trainer id, base model id, 승인자, 만료 시각과 rollback owner를 묶은 별도 local execution approval이 필요하다.
@@ -1578,6 +1598,7 @@ Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한�
 | F1.12 Private collection item review projection protocol | 완료 · 실제 owner review 대기 | live exact F1.10 item을 lane-specific content-free pending projection으로 결속하고 shared lock·terminal/removal refusal·one-final item history를 적용 | approved record·answer-quality case 생성, eligibility/Q1 content 평가, training·provider·submission·deploy·production claim 없음 |
 | F1.13 Private collection item review resolution protocol | 완료 · 실제 owner resolution 대기 | exact F1.12 final projection과 quality-reviewer approve/reject를 content-free decision·resolution history, shared lock·current-chain revalidation·pending resume에 결속 | canonicalization/enrichment request만 lane별로 표시하고 approved record/case·candidate review·training·provider·submission·deploy·production claim 없음 |
 | F1.14 Private collection item artifact request protocol | 완료 · 실제 private artifact preparation 대기 | exact approved F1.13 resolution을 lane-specific content-free canonicalization 또는 enrichment preparation request와 input hash에 결속 | approved record/case·candidate review·training·provider·submission·deploy·production claim 없음 |
+| F1.15 Private collection item artifact preparation resolution protocol | 완료 · 실제 quality-reviewer resolution 대기 | exact F1.14 request와 token-hash decision을 owner-only decision/resolution history, shared lock·current-chain revalidation·pending resume·atomic final directory에 결속 | approve도 lane-specific preparation만 표시하며 content·approved record/case·candidate review·training·provider·submission·deploy·production claim 없음 |
 | F2a Local training runtime contract | 완료 | exact F1 packet과 별도 local approval을 bounded child process protocol로 연결하고 content-free run record 생성 | 변조·만료·trainer drift·timeout·output 폭주·stderr 노출·unsafe metadata·허위 actual-training 표시 차단, store 불변과 fixture replay 검증 |
 | F2b Local training product permission surface | 완료 | license·OS egress·resource evidence hash와 각 owner, approval·rollback owner를 기존 action inbox·RBAC·tenant·audit에 연결 | CLI·HTTP·Chromium 승인과 철회, private readiness file, content-free evidence, actual training 미실행 검증 |
 | F2c.1 Local training environment preflight | 완료 · 실행 차단 | 실제 local model artifact·manifest·license hash와 system capacity를 content-free snapshot으로 확인하고 trainable source·trainer·permission·독립 review·rollback owner gate 평가 | 7개 blocker를 고정해 `stop-before-local-training`; dependency 설치·실제 학습·외부 호출·rollout 없음 |
