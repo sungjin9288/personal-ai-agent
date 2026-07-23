@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added F1.11 private collection item withdrawal and retention-deletion lifecycle with one exact owner-attested decision, shared-lock same-lane removal, tombstone v2, and content-free post-delete absence receipt. The protocol records only local synthetic fixture observations; owner identity verification, independent deletion proof, training, provider calls, deployment, and production claims remain false or absent.
+
 - Added F1.10 private collection item write protocol with bounded sanitized input, exact F1.9 admission binding, owner-only atomic lane storage, shared workspace locking, and content-free tombstone read gates. No provider call, training, deletion execution, or production claim is introduced.
 
 - Added a private fine-tuning collection item admission protocol that revalidates the current F1.1–F1.8 chain, binds sixteen hashes including the exact workspace and content-free envelope, and records one immutable owner-only admission per envelope. Source, consent, redaction, and retention fields accept only opaque SHA-256 references; duplicate references, capacity, path, history, expiry, retention, and workspace mutation fail closed. The protocol stores no content, does not create a record or case, and leaves identity, evidence, consent, redaction, retention, candidate review, training, provider submission, rollout, and deployment unverified or unauthorized.

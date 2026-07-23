@@ -11,6 +11,11 @@ import { buildFineTuningDataIntakeRequest } from '../src/core/fine-tuning-data-i
 import { resolveFineTuningDataIntakeRequest } from '../src/core/fine-tuning-data-intake-resolution.mjs';
 import { assessFineTuningDataSufficiency } from '../src/core/fine-tuning-data-sufficiency.mjs';
 import { buildFineTuningPrivateCollectionItemTombstone } from '../src/core/fine-tuning-private-collection-item-tombstone.mjs';
+import {
+  buildFineTuningPrivateCollectionItemAbsenceReceipt,
+  buildFineTuningPrivateCollectionItemLifecycleDecision,
+  buildFineTuningPrivateCollectionItemTombstoneV2,
+} from '../src/core/fine-tuning-private-collection-item-lifecycle.mjs';
 import { buildFineTuningPrivateCollectionItemAdmission } from '../src/core/fine-tuning-private-collection-item-admission.mjs';
 import { buildFineTuningPrivateCollectionExecutionRequest } from '../src/core/fine-tuning-private-collection-execution-request.mjs';
 import { resolveFineTuningPrivateCollectionExecutionRequest } from '../src/core/fine-tuning-private-collection-execution-resolution.mjs';
@@ -20,6 +25,7 @@ import { buildDeterministicFineTuningReadinessFixture } from '../scripts/local-t
 
 const repoDir = process.cwd();
 const admissionScript = path.join(repoDir, 'scripts', 'admit-fine-tuning-private-collection-item.mjs');
+const lifecycleScript = path.join(repoDir, 'scripts', 'lifecycle-fine-tuning-private-collection-item.mjs');
 const writerScript = path.join(repoDir, 'scripts', 'write-fine-tuning-private-collection-item.mjs');
 const replaceInputPreload = path.join(repoDir, 'test', 'helpers', 'replace-fine-tuning-input-preload.mjs');
 const datePreload = path.join(repoDir, 'test', 'helpers', 'two-step-date-preload.mjs');
@@ -127,6 +133,103 @@ test('a tombstone conflicts with every same-workspace finalized item before anot
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /tombstone conflict/);
     assert.equal(itemFiles(path.dirname(workspace)).length, 1);
+  });
+});
+
+test('writer accepts an exact F1.11 terminal bundle and preserves its item conflict for manual recovery', () => {
+  withRoot((rootDir, sources) => {
+    const workspace = writeWorkspace(rootDir, sources);
+    const first = admitOne(rootDir, sources, workspace, 1);
+    assert.equal(runWriter(rootDir, writeItemInputs(rootDir, sources, workspace, first, 1)).status, 0);
+    const item = readJson(itemFiles(path.dirname(workspace))[0]);
+    const decisionInput = {
+      schemaVersion: 'personal-ai-agent-fine-tuning-private-collection-item-lifecycle-decision-input/v1',
+      action: 'withdraw',
+      item: { id: item.id, itemHash: item.itemHash },
+      admission: { id: first.id, admissionHash: first.admissionHash },
+      workspace: { id: sources.workspace.id, workspaceHash: sources.workspace.workspaceHash },
+      withdrawalReferenceSha256: first.envelope.retention.withdrawalReferenceSha256,
+      evidenceSha256: createHash('sha256').update('terminal v2').digest('hex'),
+      decidedAt: new Date().toISOString(),
+      decidedBy: 'retention-deletion-owner-role',
+      confirmationToken: `withdraw-private-collection-item:${item.itemHash}`,
+    };
+    const decision = buildFineTuningPrivateCollectionItemLifecycleDecision({
+      admission: first,
+      executionAt: new Date().toISOString(),
+      input: decisionInput,
+      item,
+      workspace: sources.workspace,
+    });
+    const recordedAt = new Date().toISOString();
+    const tombstone = buildFineTuningPrivateCollectionItemTombstoneV2({ decision, recordedAt });
+    const receipt = buildFineTuningPrivateCollectionItemAbsenceReceipt({
+      absence: {
+        itemPathAbsent: true,
+        matchingAdmissionItemCount: 0,
+        matchingItemHashCount: 0,
+        postDeleteAbsenceObserved: true,
+        removalDirectoryEmpty: true,
+        workspaceRecordUnchanged: true,
+      },
+      decision,
+      observedAt: recordedAt,
+      tombstone,
+    });
+    const directory = path.join(
+      rootDir,
+      'var',
+      'fine-tuning',
+      'private-collection-item-tombstones',
+      sources.workspace.workspaceHash,
+      first.envelope.retention.withdrawalReferenceSha256,
+    );
+    fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+    fs.chmodSync(directory, 0o700);
+    writeJson(path.join(directory, 'decision.json'), decision, 0o600);
+    writeJson(path.join(directory, 'tombstone.json'), tombstone, 0o600);
+    writeJson(path.join(directory, 'absence-receipt.json'), receipt, 0o600);
+    const second = admitOne(rootDir, sources, workspace, 2);
+    const result = runWriter(rootDir, writeItemInputs(rootDir, sources, workspace, second, 2));
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /tombstone conflict/);
+    assert.equal(itemFiles(path.dirname(workspace)).length, 1);
+  });
+});
+
+test('a completed F1.11 lifecycle terminal bundle permanently blocks rewriting its removed admission', () => {
+  withRoot((rootDir, sources) => {
+    const workspace = writeWorkspace(rootDir, sources);
+    const admitted = admitOne(rootDir, sources, workspace, 1);
+    const inputs = writeItemInputs(rootDir, sources, workspace, admitted, 1);
+    assert.equal(runWriter(rootDir, inputs).status, 0);
+    const itemFilename = itemFiles(path.dirname(workspace))[0];
+    const item = readJson(itemFilename);
+    const decisionFilename = path.join(rootDir, 'var', 'inputs', 'lifecycle-decision.json');
+    writeJson(decisionFilename, {
+      schemaVersion: 'personal-ai-agent-fine-tuning-private-collection-item-lifecycle-decision-input/v1',
+      action: 'withdraw',
+      item: { id: item.id, itemHash: item.itemHash },
+      admission: { id: admitted.id, admissionHash: admitted.admissionHash },
+      workspace: { id: sources.workspace.id, workspaceHash: sources.workspace.workspaceHash },
+      withdrawalReferenceSha256: admitted.envelope.retention.withdrawalReferenceSha256,
+      evidenceSha256: createHash('sha256').update('completed lifecycle terminal').digest('hex'),
+      decidedAt: new Date().toISOString(),
+      decidedBy: 'retention-deletion-owner-role',
+      confirmationToken: `withdraw-private-collection-item:${item.itemHash}`,
+    }, 0o600);
+    const lifecycle = spawnSync(process.execPath, [
+      lifecycleScript,
+      '--workspace', workspace,
+      '--admission', inputs.admission,
+      '--item', itemFilename,
+      '--decision', decisionFilename,
+    ], { cwd: rootDir, encoding: 'utf8' });
+    assert.equal(lifecycle.status, 0, lifecycle.stderr);
+    assert.equal(fs.existsSync(itemFilename), false);
+    const blocked = runWriter(rootDir, inputs);
+    assert.notEqual(blocked.status, 0);
+    assert.match(blocked.stderr, /permanently blocked/);
   });
 });
 

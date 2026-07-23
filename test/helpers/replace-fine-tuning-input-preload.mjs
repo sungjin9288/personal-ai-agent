@@ -24,11 +24,17 @@ fs.renameSync = function replaceDuringItemPublish(source, destination, ...args) 
   const itemPublish =
     path.basename(String(source)).startsWith('.fine-tuning-private-collection-item-staging-') &&
     path.basename(String(destination)).startsWith('fine-tuning-private-collection-item-');
+  const lifecycleRemoval =
+    path.basename(String(source)).startsWith('fine-tuning-private-collection-item-') &&
+    path.basename(String(destination)).startsWith('.fine-tuning-private-collection-item-removal-');
   if (itemPublish && replacePhase === 'before-item-rename') {
     replaceConfiguredInput();
   }
   const result = originalRenameSync.call(this, source, destination, ...args);
   if (itemPublish && replacePhase === 'after-item-rename') {
+    replaceConfiguredInput();
+  }
+  if (lifecycleRemoval && replacePhase === 'after-removal-rename') {
     replaceConfiguredInput();
   }
   return result;

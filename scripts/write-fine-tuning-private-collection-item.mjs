@@ -15,6 +15,9 @@ import {
   assertFineTuningPrivateCollectionItemTombstone,
 } from '../src/core/fine-tuning-private-collection-item-tombstone.mjs';
 import {
+  assertFineTuningPrivateCollectionItemLifecycleTerminalBundle,
+} from '../src/core/fine-tuning-private-collection-item-lifecycle.mjs';
+import {
   assertFineTuningPrivateCollectionWorkspace,
   assertFineTuningPrivateCollectionWorkspaceRecord,
 } from '../src/core/fine-tuning-private-collection-workspace.mjs';
@@ -605,14 +608,34 @@ function assertNoTerminalTombstone(workspace, admission, workspaceDirectory, cur
         }
         const directory = path.join(workspaceRoot, withdrawalHash);
         assertOwnerOnlyDirectory(directory, 'Fine-tuning private collection item tombstone history is invalid.');
-        if (JSON.stringify(fs.readdirSync(directory).sort()) !== JSON.stringify(['tombstone.json'])) {
+        const names = fs.readdirSync(directory).sort();
+        let tombstone;
+        if (JSON.stringify(names) === JSON.stringify(['tombstone.json'])) {
+          tombstone = readOwnerOnlyJson(
+            validatePrivateFilename(path.join(directory, 'tombstone.json'), 'Fine-tuning private collection item tombstone history'),
+            'Fine-tuning private collection item tombstone history',
+          ).value;
+          assertFineTuningPrivateCollectionItemTombstone(tombstone);
+        } else if (JSON.stringify(names) === JSON.stringify(['absence-receipt.json', 'decision.json', 'tombstone.json'])) {
+          const bundle = {
+            decision: readOwnerOnlyJson(
+              validatePrivateFilename(path.join(directory, 'decision.json'), 'Fine-tuning private collection item terminal decision'),
+              'Fine-tuning private collection item terminal decision',
+            ).value,
+            receipt: readOwnerOnlyJson(
+              validatePrivateFilename(path.join(directory, 'absence-receipt.json'), 'Fine-tuning private collection item absence receipt'),
+              'Fine-tuning private collection item absence receipt',
+            ).value,
+            tombstone: readOwnerOnlyJson(
+              validatePrivateFilename(path.join(directory, 'tombstone.json'), 'Fine-tuning private collection item tombstone history'),
+              'Fine-tuning private collection item tombstone history',
+            ).value,
+          };
+          assertFineTuningPrivateCollectionItemLifecycleTerminalBundle(bundle);
+          tombstone = bundle.tombstone;
+        } else {
           throw new Error();
         }
-        const tombstone = readOwnerOnlyJson(
-          validatePrivateFilename(path.join(directory, 'tombstone.json'), 'Fine-tuning private collection item tombstone history'),
-          'Fine-tuning private collection item tombstone history',
-        ).value;
-        assertFineTuningPrivateCollectionItemTombstone(tombstone);
         if (
           tombstone.workspace.workspaceHash !== workspaceHash ||
           tombstone.withdrawalReferenceSha256 !== withdrawalHash
@@ -637,10 +660,6 @@ function assertNoTerminalTombstone(workspace, admission, workspaceDirectory, cur
           if (Date.parse(tombstone.recordedAt) < Date.parse(tombstoneAdmission.admittedAt)) {
             throw new Error();
           }
-          assertFineTuningPrivateCollectionItemAdmission(tombstoneAdmission, {
-            ...currentSources,
-            admission: tombstoneAdmission,
-          });
           assertWorkspaceTombstoneHasNoItem(workspaceDirectory, tombstone);
           if (
             withdrawalHash === admission.envelope.retention.withdrawalReferenceSha256 ||

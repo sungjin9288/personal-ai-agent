@@ -188,6 +188,7 @@
 - Fine-tuning private collection workspace protocol: verified with `npm run smoke:fine-tuning-private-collection-workspace`
 - Fine-tuning private collection item admission protocol: verified with `npm run smoke:fine-tuning-private-collection-item-admission`
 - Fine-tuning private collection item write protocol: verified with `npm run smoke:fine-tuning-private-collection-item`
+- Fine-tuning private collection item lifecycle protocol: verified with `npm run smoke:fine-tuning-private-collection-item-lifecycle`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`

@@ -167,6 +167,8 @@
     "smoke:fine-tuning-private-collection-item-admission": "node scripts/smoke-fine-tuning-private-collection-item-admission.mjs",
     "write:fine-tuning-private-collection-item": "node scripts/write-fine-tuning-private-collection-item.mjs",
     "smoke:fine-tuning-private-collection-item": "node scripts/smoke-fine-tuning-private-collection-item.mjs",
+    "lifecycle:fine-tuning-private-collection-item": "node scripts/lifecycle-fine-tuning-private-collection-item.mjs",
+    "smoke:fine-tuning-private-collection-item-lifecycle": "node scripts/smoke-fine-tuning-private-collection-item-lifecycle.mjs",
     "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
     "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:local-training-permission-surface": "node scripts/smoke-local-training-permission-surface.mjs",
