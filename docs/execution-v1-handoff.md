@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-22T23:57:59.069Z
+- generatedAt: 2026-07-23T01:23:31.453Z
 - localDate: 2026-07-23
-- branch: codex/f1-8-private-collection-workspace
-- commit: 30d8022d013dfe38094c2c3292c05fd5bc4bfb18
+- branch: codex/f1-9-private-collection-item-admission
+- commit: 2cad513257270b0d6000f744ab10e41e686f662f
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/30d8022d013dfe38094c2c3292c05fd5bc4bfb18](releases/execution-v1/30d8022d013dfe38094c2c3292c05fd5bc4bfb18)
-- visualArtifactSetSha256: d91f4f05aaa6bb99aaa13c2e7d154d5ae5feb27c38654eafdaa3a1fdb440f0d3
-- commitPushStatus: not pushed, origin/codex/f1-8-private-collection-workspace not found
+- immutableSnapshot: [releases/execution-v1/2cad513257270b0d6000f744ab10e41e686f662f](releases/execution-v1/2cad513257270b0d6000f744ab10e41e686f662f)
+- visualArtifactSetSha256: 97aee569863a44a381398d801a09b0680dc3d1b060f75a6445b7c5ff25298f23
+- commitPushStatus: not pushed, origin/codex/f1-9-private-collection-item-admission not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=1.0m
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=2.5m
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: d91f4f05aaa6bb99aaa13c2e7d154d5ae5feb27c38654eafdaa3a1fdb440f0d3
+- visual artifact set: 97aee569863a44a381398d801a09b0680dc3d1b060f75a6445b7c5ff25298f23
 
 ## Live Provider Handoff
 
