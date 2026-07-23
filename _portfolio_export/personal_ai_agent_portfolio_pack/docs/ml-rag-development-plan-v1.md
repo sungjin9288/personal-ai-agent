@@ -1,7 +1,7 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
 - status: local-answer-input-boundary-current
-- currentCostFreeMilestone: fine-tuning-private-collection-item-review-projection-protocol
+- currentCostFreeMilestone: fine-tuning-private-collection-item-review-resolution-protocol
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -40,6 +40,8 @@
 - fineTuningPrivateCollectionItemLifecycleStatus: protocol-ready-private-withdrawal-or-retention-delete-required
 - currentFineTuningPrivateCollectionItemReviewProjectionSurface: `scripts/project-fine-tuning-private-collection-item-review.mjs`
 - fineTuningPrivateCollectionItemReviewProjectionStatus: protocol-ready-private-item-review-projection-required
+- currentFineTuningPrivateCollectionItemReviewResolutionSurface: `scripts/resolve-fine-tuning-private-collection-item-review.mjs`
+- fineTuningPrivateCollectionItemReviewResolutionStatus: protocol-ready-private-owner-resolution-required
 - minimumAdditionalReviewedExamples: 16
 - reviewedExampleCollectionAuthorized: false
 - operatorAttestationRecorded: false
@@ -949,6 +951,28 @@ productionReadyClaim: false
 
 Tracked fixture and evidence assertions remain synthetic and content-free. This protocol does not create an approved training record or answer-quality case, does not evaluate eligibility or Q1 content, and does not authorize training, provider use, submission, deployment, actual user data, or production claims.
 
+## 현재 private collection item review resolution protocol
+
+F1.13 Private collection item review resolution protocol은 exact F1.12 final projection 하나에 quality-reviewer의 `approve` 또는 `reject` 결정을 content-free resolution으로만 결속한다. `src/core/fine-tuning-private-collection-item-review-resolution.mjs`는 workspace·admission·item·projection reference, projection의 nineteen binding, projection hash, decision hash와 token hash를 고정한다. Raw token, reason, item content와 path는 record에 남기지 않는다. `reviewed-examples` approve는 canonical approved-training-record 생성 없이 다음 canonicalization request만 허용하고, `answer-quality-cases` approve는 answer-quality case 생성 없이 다음 enrichment request만 허용한다. Reject는 두 request를 모두 차단한다.
+
+`scripts/resolve-fine-tuning-private-collection-item-review.mjs`는 canonical F1.12 final projection path와 F1.1~F1.7 chain, exact F1.10 item을 no-follow owner-only file로 읽고 lock 전·shared workspace lock 안·publish 직전에 다시 확인한다. expiry 또는 deleteBy, lifecycle tombstone·pending·removal, F1.12 pending·ambiguous·drift, malformed history, 다른 decision은 fail closed한다. History는 workspace hash 아래 item별 final directory에 content-free `decision.json`과 `resolution.json`만 두며, decision-only pending은 resume하고 empty pending은 exact request에 한해서만 restart한다. Final directory rename과 fsync 뒤 exact replay만 idempotent하다.
+
+```bash
+npm run resolve:fine-tuning-private-collection-item-review -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --projection <f1-12-final-projection-json> --decision <private-decision-json> --execution-resolution <private-execution-resolution-json> --execution-request <private-execution-request-json> --plan <private-plan-json> --intake-resolution <private-intake-resolution-json>
+npm run smoke:fine-tuning-private-collection-item-review-resolution
+```
+
+```text
+fineTuningPrivateCollectionItemReviewResolutionStatus: protocol-ready-private-owner-resolution-required
+ownerAttestationRecorded: true
+ownerIdentityVerified: false
+evidenceIndependentlyVerified: false
+trainingAuthorized: false
+productionReadyClaim: false
+```
+
+Tracked fixture and evidence assertions remain synthetic and content-free. This protocol records no actual owner identity or independent evidence verification, approved training record, answer-quality case, candidate review, training, provider use, submission, deployment, actual user data, or production claim.
+
 ## 현재 local training runtime contract
 
 `src/core/local-training-runtime.mjs`는 F1 readiness package를 operator-owned local executable에 전달하는 최소 실행 경계를 제공한다. Readiness package는 여전히 `fineTuningExecutionAuthorized: false`이며 스스로 실행 권한을 만들지 않는다. Runtime을 호출하려면 dataset hash, readiness hash, train·validation digest, trainer id, base model id, 승인자, 만료 시각과 rollback owner를 묶은 별도 local execution approval이 필요하다.
@@ -1527,6 +1551,7 @@ Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한�
 | F1.10 Private collection item write protocol | 완료 · sanitized synthetic item write 대기 | Current F1.1~F1.9 chain, admission·content·sanitization 19 hash와 origin-consent matrix를 lane item record에 결속 | private owner-only atomic write, tombstone read gate, deterministic safety scan만 수행하며 independent deidentification·approved record/case·candidate review·학습·외부 제출·production claim은 차단 |
 | F1.11 Private collection item withdrawal and retention-deletion lifecycle | 완료 · 실제 owner decision 대기 | exact stored item·admission·workspace binding, owner-attested decision, same-lane atomic removal, terminal tombstone v2와 absence receipt | synthetic fixture에서 local absence만 관측; owner identity·independent deletion proof·training·provider·deploy·production claim 없음 |
 | F1.12 Private collection item review projection protocol | 완료 · 실제 owner review 대기 | live exact F1.10 item을 lane-specific content-free pending projection으로 결속하고 shared lock·terminal/removal refusal·one-final item history를 적용 | approved record·answer-quality case 생성, eligibility/Q1 content 평가, training·provider·submission·deploy·production claim 없음 |
+| F1.13 Private collection item review resolution protocol | 완료 · 실제 owner resolution 대기 | exact F1.12 final projection과 quality-reviewer approve/reject를 content-free decision·resolution history, shared lock·current-chain revalidation·pending resume에 결속 | canonicalization/enrichment request만 lane별로 표시하고 approved record/case·candidate review·training·provider·submission·deploy·production claim 없음 |
 | F2a Local training runtime contract | 완료 | exact F1 packet과 별도 local approval을 bounded child process protocol로 연결하고 content-free run record 생성 | 변조·만료·trainer drift·timeout·output 폭주·stderr 노출·unsafe metadata·허위 actual-training 표시 차단, store 불변과 fixture replay 검증 |
 | F2b Local training product permission surface | 완료 | license·OS egress·resource evidence hash와 각 owner, approval·rollback owner를 기존 action inbox·RBAC·tenant·audit에 연결 | CLI·HTTP·Chromium 승인과 철회, private readiness file, content-free evidence, actual training 미실행 검증 |
 | F2c.1 Local training environment preflight | 완료 · 실행 차단 | 실제 local model artifact·manifest·license hash와 system capacity를 content-free snapshot으로 확인하고 trainable source·trainer·permission·독립 review·rollback owner gate 평가 | 7개 blocker를 고정해 `stop-before-local-training`; dependency 설치·실제 학습·외부 호출·rollout 없음 |

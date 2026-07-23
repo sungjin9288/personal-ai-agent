@@ -5,9 +5,9 @@
 - Project: Personal AI Agent
 - Generated at: 2026-07-23
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning, owner-role attestation intake, private collection execution through item lifecycle, content-free F1.12 review projection, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
-- Source code modified: yes, the F1.12 review projection protocol revalidates the current F1 chain and one live exact F1.10 item, serializes with F1.11 lifecycle through the shared workspace lock, and writes one owner-only content-free pending projection without changing public HTTP, store, audit, provider, or training authority contracts
-- New feature development: yes, both private lanes have synthetic pending-projection replay, terminal and removal refusal, idempotent history, and crash resume; no actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, activation, or rollout is tracked or authorized
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning, owner-role attestation intake, private collection execution through item lifecycle, content-free F1.12 review projection and F1.13 review resolution, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Source code modified: yes, the F1.13 review resolution protocol revalidates the current F1 chain, one live exact F1.10 item, and one canonical F1.12 projection, serializes with F1.11 lifecycle through the shared workspace lock, and writes one owner-only content-free decision/resolution bundle without changing public HTTP, store, audit, provider, or training authority contracts
+- New feature development: yes, both private lanes have synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; no actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, activation, or rollout is tracked or authorized
 
 ## Generated Evidence Files
 
@@ -190,6 +190,7 @@
 - Fine-tuning private collection item write protocol: verified with `npm run smoke:fine-tuning-private-collection-item`
 - Fine-tuning private collection item lifecycle protocol: verified with `npm run smoke:fine-tuning-private-collection-item-lifecycle`
 - Fine-tuning private collection item review projection protocol: verified with `npm run smoke:fine-tuning-private-collection-item-review-projection`
+- Fine-tuning private collection item review resolution protocol: verified with `npm run smoke:fine-tuning-private-collection-item-review-resolution`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`

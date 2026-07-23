@@ -4,6 +4,8 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added F1.13 private collection item review resolution protocol for one exact F1.12 final projection. It writes a content-free owner-only decision/resolution bundle with token hash only, shared-lock F1.1–F1.12 revalidation, expiry and lifecycle refusal, idempotent final replay, and crash-safe decision-only resume. Approval exposes only a lane-specific later canonicalization or enrichment request; it creates no approved training record or answer-quality case and leaves candidate review, training, provider calls, submission, deployment, and production claims false.
+
 - Added F1.12 private collection item review projection protocol for one live exact F1.10 item. It writes a content-free owner-only pending review projection with lane-specific approved-training-record or answer-quality enrichment gates, shared-lock current-chain revalidation, terminal/removal refusal, idempotent one-final history, and crash-safe pending resume. It creates no approved training record or answer-quality case and leaves eligibility, Q1 content, training, provider calls, submission, deployment, and production claims false or unevaluated.
 
 - Added F1.11 private collection item withdrawal and retention-deletion lifecycle with one exact owner-attested decision, shared-lock same-lane removal, tombstone v2, and content-free post-delete absence receipt. The protocol records only local synthetic fixture observations; owner identity verification, independent deletion proof, training, provider calls, deployment, and production claims remain false or absent.
