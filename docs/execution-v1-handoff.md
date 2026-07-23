@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-23T08:52:53.335Z
+- generatedAt: 2026-07-23T11:00:00.866Z
 - localDate: 2026-07-23
-- branch: codex/f1-14-private-item-artifact-request
-- commit: d538aff4da5ea9250b1a7c761f3318c88bd32ce3
+- branch: codex/f1-15-private-item-artifact-preparation-resolution
+- commit: f41df850e9cf24497ca8c6e3f6647df1272a2ba7
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d538aff4da5ea9250b1a7c761f3318c88bd32ce3](releases/execution-v1/d538aff4da5ea9250b1a7c761f3318c88bd32ce3)
-- visualArtifactSetSha256: 91515c9beaf6c4ce12e97b4f18f8b945e02160311b38e35a23472fc446fd842f
-- commitPushStatus: not pushed, origin/codex/f1-14-private-item-artifact-request not found
+- immutableSnapshot: [releases/execution-v1/f41df850e9cf24497ca8c6e3f6647df1272a2ba7](releases/execution-v1/f41df850e9cf24497ca8c6e3f6647df1272a2ba7)
+- visualArtifactSetSha256: bf7f971363e1d5ac7b9931f36c084ca630d01a54651a1f386c7a4ef24a36c3b7
+- commitPushStatus: not pushed, origin/codex/f1-15-private-item-artifact-preparation-resolution not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=58.8s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=47.2s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 91515c9beaf6c4ce12e97b4f18f8b945e02160311b38e35a23472fc446fd842f
+- visual artifact set: bf7f971363e1d5ac7b9931f36c084ca630d01a54651a1f386c7a4ef24a36c3b7
 
 ## Live Provider Handoff
 

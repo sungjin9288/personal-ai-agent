@@ -132,6 +132,5 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 루트 `portfolio_manifest.md` 기준
-- 압축 파일 SHA-256: 루트 `portfolio_manifest.md` 기준
+- 압축 파일 크기 및 SHA-256: 루트 `portfolio_manifest.md` 기준
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료
