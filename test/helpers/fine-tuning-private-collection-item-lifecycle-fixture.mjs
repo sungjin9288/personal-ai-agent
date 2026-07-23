@@ -15,17 +15,29 @@ import { buildFineTuningPrivateCollectionPlan } from '../../src/core/fine-tuning
 import { buildFineTuningPrivateCollectionWorkspace } from '../../src/core/fine-tuning-private-collection-workspace.mjs';
 import { buildDeterministicFineTuningReadinessFixture } from '../../scripts/local-training-permission-fixture.mjs';
 
-export function withSyntheticLifecycleFixture(callback, { deleteByOffset = 30 * 60 * 1000 } = {}) {
+export function withSyntheticLifecycleFixture(callback, {
+  deleteByOffset = 30 * 60 * 1000,
+  expiresAtOffset = 60 * 60 * 1000,
+  lane = 'reviewed-examples',
+} = {}) {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fine-tuning-item-lifecycle-'));
   try {
-    const fixture = createSyntheticLifecycleFixture(rootDir, { deleteByOffset });
+    const fixture = createSyntheticLifecycleFixture(rootDir, {
+      deleteByOffset,
+      expiresAtOffset,
+      lane,
+    });
     return callback(fixture);
   } finally {
     fs.rmSync(rootDir, { force: true, recursive: true });
   }
 }
 
-export function createSyntheticLifecycleFixture(rootDir, { deleteByOffset = 30 * 60 * 1000 } = {}) {
+export function createSyntheticLifecycleFixture(rootDir, {
+  deleteByOffset = 30 * 60 * 1000,
+  expiresAtOffset = 60 * 60 * 1000,
+  lane = 'reviewed-examples',
+} = {}) {
   const now = Date.now();
   const time = (offset) => new Date(now + offset).toISOString();
   const assessment = assessFineTuningDataSufficiency({ readinessPackage: buildDeterministicFineTuningReadinessFixture() });
@@ -33,7 +45,7 @@ export function createSyntheticLifecycleFixture(rootDir, { deleteByOffset = 30 *
   const intakeRequest = buildFineTuningDataIntakeRequest({
     assessment,
     collectionPlan,
-    expiresAt: time(60 * 60 * 1000),
+    expiresAt: time(expiresAtOffset),
     requestedAt: time(-10 * 60 * 1000),
     requestedBy: 'local-operator-role',
   });
@@ -78,7 +90,7 @@ export function createSyntheticLifecycleFixture(rootDir, { deleteByOffset = 30 *
     admittedAt: time(-4 * 60 * 1000),
     workspace,
     envelope: {
-      lane: 'reviewed-examples',
+      lane,
       privacy: { consentStatus: 'not-required-owner-authored', evidenceSha256: digest(marker, 1), purpose: 'private-answer-quality-improvement-and-readiness-review' },
       redaction: { evidenceSha256: digest(marker, 2), policyId: 'deidentify-before-content-admission-v1' },
       retention: { deleteBy: time(deleteByOffset), evidenceSha256: digest(marker, 3), policyId: 'delete-by-expiry-or-withdrawal-v1', withdrawalReferenceSha256: digest(marker, 4) },
@@ -134,6 +146,7 @@ export function createSyntheticLifecycleFixture(rootDir, { deleteByOffset = 30 *
     item,
     itemFilename,
     rootDir,
+    sources,
     workspace,
     workspaceDirectory,
     workspaceFilename,
