@@ -70,7 +70,7 @@ export function ensurePrivateDirectoryChain(directory, label, { repoDir }) {
     throw new Error(`${label} must stay under the repository private state root.`);
   }
 
-  if (!fs.existsSync(varDirectory)) {
+  if (!fs.lstatSync(varDirectory, { throwIfNoEntry: false })) {
     fs.mkdirSync(varDirectory, { mode: 0o700 });
     fs.chmodSync(varDirectory, 0o700);
     fsyncDirectory(path.dirname(varDirectory));
@@ -80,7 +80,7 @@ export function ensurePrivateDirectoryChain(directory, label, { repoDir }) {
   let current = varDirectory;
   for (const part of path.relative(varDirectory, directory).split(path.sep).filter(Boolean)) {
     current = path.join(current, part);
-    if (!fs.existsSync(current)) {
+    if (!fs.lstatSync(current, { throwIfNoEntry: false })) {
       fs.mkdirSync(current, { mode: 0o700 });
       fs.chmodSync(current, 0o700);
       fsyncDirectory(path.dirname(current));

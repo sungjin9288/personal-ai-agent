@@ -18,7 +18,7 @@ export function prepareAnswerQualityEnrichmentCandidateFixture(
     admission: fixture.admission,
     artifactPreparationResolution: lineage.artifactPreparationResolution,
     artifactRequest: lineage.artifactRequest,
-    input: enrichmentInput(fixture, lineage.artifactPreparationResolution),
+    input: buildAnswerQualityEnrichmentInput(fixture, lineage.artifactPreparationResolution),
     item: fixture.item,
     observedAt: after(lineage.artifactPreparationResolution.resolvedAt),
     projection: lineage.projection,
@@ -168,7 +168,7 @@ function buildApprovedLineage(fixture) {
   };
 }
 
-function enrichmentInput(fixture, artifactPreparationResolution) {
+export function buildAnswerQualityEnrichmentInput(fixture, artifactPreparationResolution) {
   return {
     answer: { citedSourceKeys: ['memory:workspace/fact'] },
     artifactPreparationResolution: reference(
