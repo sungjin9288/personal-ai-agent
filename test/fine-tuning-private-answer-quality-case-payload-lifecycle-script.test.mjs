@@ -13,8 +13,11 @@ import {
   f1_18FinalDirectory,
   f1_19FinalDirectory,
   f1_19HistoryRoot,
+  f1_20FinalDirectory,
   runPayload,
+  runReplay,
   withReadyPrivateAnswerQualityPayload,
+  writeReplayRequest,
 } from './helpers/fine-tuning-private-answer-quality-case-payload-fixture.mjs';
 import { writeLifecycleDecision } from './helpers/fine-tuning-private-collection-item-lifecycle-fixture.mjs';
 
@@ -89,6 +92,33 @@ test('F1.11 withdraw removes F1.19 through F1.16 before publishing its terminal 
     ]);
     assert.equal(output.externalProviderCalls, 'none');
     assert.equal(output.productionReadyClaim, false);
+  });
+});
+
+test('F1.11 removes the F1.19 raw payload before the F1.20 replay receipt', () => {
+  withReadyPrivateAnswerQualityPayload((values) => {
+    assert.equal(runPayload(values).status, 0);
+    values.replayRequestFilename = writeReplayRequest(values.fixture, values.answerQualityCase);
+    assert.equal(runReplay(values).status, 0);
+    const replayFinal = f1_20FinalDirectory(values.fixture);
+    const replayRequest = readJson(path.join(replayFinal, 'request.json'));
+    const replayPending = path.join(
+      path.dirname(replayFinal),
+      `.fine-tuning-private-answer-quality-case-replay-pending-${values.fixture.item.itemHash}-${replayRequest.replayRequestHash}`,
+    );
+    fs.renameSync(replayFinal, replayPending);
+    fs.unlinkSync(path.join(replayPending, 'receipt.json'));
+    writeLifecycleDecision(values.fixture, 'withdraw');
+
+    const result = runLifecycle(values.fixture);
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(fs.existsSync(f1_19FinalDirectory(values.fixture)), false);
+    assert.equal(fs.existsSync(f1_20FinalDirectory(values.fixture)), false);
+    assert.equal(fs.existsSync(replayPending), false);
+    const inventory = readJson(path.join(cascadeFinalDirectory(values.fixture), 'inventory.json'));
+    assert.deepEqual(inventory.components.map((component) => component.kind), [
+      'payload', 'replay', 'case', 'resolution', 'candidate',
+    ]);
   });
 });
 
@@ -446,6 +476,28 @@ test('F1.11 rejects rehashed payload content and predecessor lineage drift', () 
     const result = runLifecycle(values.fixture);
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /resolution decision lineage/);
+    assert.equal(fs.existsSync(values.fixture.itemFilename), true);
+  });
+});
+
+test('F1.11 rejects a rehashed F1.20 receipt payloadContentHash drift and preserves state', () => {
+  withReadyPrivateAnswerQualityPayload((values) => {
+    assert.equal(runPayload(values).status, 0);
+    values.replayRequestFilename = writeReplayRequest(values.fixture, values.answerQualityCase);
+    assert.equal(runReplay(values).status, 0);
+    const replayDirectory = f1_20FinalDirectory(values.fixture);
+    const receiptFilename = path.join(replayDirectory, 'receipt.json');
+    const receipt = readJson(receiptFilename);
+    receipt.bindings.payloadContentHash = 'f'.repeat(64);
+    rehashReplayReceipt(receipt);
+    writePrivateJson(receiptFilename, receipt);
+    writeLifecycleDecision(values.fixture, 'withdraw');
+
+    const result = runLifecycle(values.fixture);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /F1\.20 derivative replay definition lineage conflict/);
+    assert.equal(fs.existsSync(path.join(f1_19FinalDirectory(values.fixture), 'payload.json')), true);
+    assert.equal(fs.existsSync(replayDirectory), true);
     assert.equal(fs.existsSync(values.fixture.itemFilename), true);
   });
 });
@@ -961,6 +1013,14 @@ function rehashPayloadRecord(payload) {
   payload.id =
     `fine-tuning-private-answer-quality-case-payload-` +
     payload.answerQualityCasePayloadHash;
+}
+
+function rehashReplayReceipt(receipt) {
+  const { id: _id, privateAnswerQualityCaseReplayHash: _hash, ...content } = receipt;
+  receipt.privateAnswerQualityCaseReplayHash = hash(content);
+  receipt.id =
+    `fine-tuning-private-answer-quality-case-replay-` +
+    receipt.privateAnswerQualityCaseReplayHash;
 }
 
 function rehashCandidateRecord(candidate) {

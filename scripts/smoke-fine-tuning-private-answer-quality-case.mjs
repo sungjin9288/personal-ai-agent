@@ -17,7 +17,7 @@ assert.equal(packageJson.scripts['materialize:fine-tuning-private-answer-quality
 assert.equal(packageJson.scripts['smoke:fine-tuning-private-answer-quality-case'], 'node scripts/smoke-fine-tuning-private-answer-quality-case.mjs');
 for (const marker of [
   'F1.18 Private answer-quality case materialization protocol',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-replay',
   'npm run materialize:fine-tuning-private-answer-quality-case',
   'q1ContractSatisfied: true only after fixed local evaluation passes',
   'F1.19',

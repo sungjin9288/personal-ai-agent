@@ -349,7 +349,7 @@ assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-qual
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
 assert.match(
   mlRagDevelopmentPlan,
-  /status: local-synthetic-answer-quality-payload-lifecycle-current/,
+  /status: local-synthetic-answer-quality-payload-replay-current/,
 );
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
@@ -451,11 +451,19 @@ assert.match(
 );
 assert.match(
   mlRagDevelopmentPlan,
+  /\| F1\.20 Private answer-quality payload replay \| 완료 · 실제 local operator request 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
   /npm run smoke:fine-tuning-private-answer-quality-case-payload/,
 );
 assert.match(
   mlRagDevelopmentPlan,
   /npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-answer-quality-case-replay/,
 );
 assert.match(mlRagDevelopmentPlan, /\| P1 Approved learning RAG feedback \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| L1 승인된 학습 데이터 \| 완료 \|/);

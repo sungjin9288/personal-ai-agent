@@ -28,6 +28,11 @@ const payloadScript = path.join(
   'scripts',
   'materialize-fine-tuning-private-answer-quality-case-payload.mjs',
 );
+const replayScript = path.join(
+  sourceRepo,
+  'scripts',
+  'replay-fine-tuning-private-answer-quality-case-payload.mjs',
+);
 
 export function withReadyPrivateAnswerQualityPayload(
   callback,
@@ -72,6 +77,44 @@ export function withReadyPrivateAnswerQualityPayload(
       prepared,
     });
   }, { lane: 'answer-quality-cases' });
+}
+
+export function runReplay(values, overrides = {}) {
+  return spawnSync(
+    process.execPath,
+    [
+      replayScript,
+      '--workspace', fixturePath(values.fixture, overrides.workspace || values.fixture.workspaceFilename),
+      '--admission', fixturePath(values.fixture, overrides.admission || values.fixture.admissionFilename),
+      '--item', fixturePath(values.fixture, overrides.item || values.fixture.itemFilename),
+      '--candidate', fixturePath(values.fixture, overrides.candidate || values.prepared.candidateFilename),
+      '--candidate-review-resolution', fixturePath(values.fixture, overrides.candidateReviewResolution || values.candidateReviewResolutionFilename),
+      '--case', fixturePath(values.fixture, overrides.answerQualityCase || values.answerQualityCaseFilename),
+      '--payload', fixturePath(values.fixture, overrides.payload || path.join(f1_19FinalDirectory(values.fixture), 'payload.json')),
+      '--request', fixturePath(values.fixture, overrides.request || values.replayRequestFilename),
+    ],
+    { cwd: canonical(values.fixture.rootDir), encoding: 'utf8', env: overrides.env || process.env },
+  );
+}
+
+export function writeReplayRequest(fixture, answerQualityCase) {
+  const payload = readJson(path.join(f1_19FinalDirectory(fixture), 'payload.json'));
+  const filename = path.join(fixture.rootDir, 'var', 'inputs', 'answer-quality-case-replay-request.json');
+  writeJson(filename, {
+    answerQualityCase: reference(answerQualityCase, 'answerQualityCaseHash'),
+    confirmationToken: `replay-private-answer-quality-case-payload:${fixture.item.itemHash}:${payload.answerQualityCasePayloadHash}`,
+    evidenceSha256: digest('f1-20-replay'),
+    expiresAt: fixture.item.retention.deleteBy,
+    item: reference(fixture.item, 'itemHash'),
+    payload: reference(payload, 'answerQualityCasePayloadHash'),
+    purpose: 'local-frozen-q1-payload-replay-only',
+    requestedAt: payload.storedAt,
+    requestedByRole: 'local-operator-role',
+    schemaVersion: 'personal-ai-agent-fine-tuning-private-answer-quality-case-replay-request/v1',
+    target: 'private-answer-quality-case-payload-replay',
+    workspace: reference(fixture.workspace, 'workspaceHash'),
+  });
+  return filename;
 }
 
 export function runPayload(values, overrides = {}) {
@@ -195,6 +238,14 @@ export function f1_19HistoryRoot(fixture) {
 
 export function f1_19FinalDirectory(fixture) {
   return path.join(f1_19HistoryRoot(fixture), fixture.item.itemHash);
+}
+
+export function f1_20HistoryRoot(fixture) {
+  return path.join(fixture.rootDir, 'var', 'fine-tuning', 'private-answer-quality-case-replays', fixture.workspace.workspaceHash);
+}
+
+export function f1_20FinalDirectory(fixture) {
+  return path.join(f1_20HistoryRoot(fixture), fixture.item.itemHash);
 }
 
 function runResolution(fixture, prepared) {

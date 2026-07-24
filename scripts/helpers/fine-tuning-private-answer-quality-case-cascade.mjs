@@ -6,6 +6,11 @@ import {
   assertFineTuningPrivateAnswerQualityCasePayloadDecisionRecord,
   assertFineTuningPrivateAnswerQualityCasePayloadRecord,
 } from '../../src/core/fine-tuning-private-answer-quality-case-payload.mjs';
+import {
+  assertFineTuningPrivateAnswerQualityCaseReplayRecord,
+  assertFineTuningPrivateAnswerQualityCaseReplayRequestRecord,
+  assertFineTuningPrivateAnswerQualityCaseReplayRelation,
+} from '../../src/core/fine-tuning-private-answer-quality-case-replay.mjs';
 import { assertFineTuningPrivateAnswerQualityCaseRecord } from '../../src/core/fine-tuning-private-answer-quality-case.mjs';
 import { assertFineTuningPrivateAnswerQualityEnrichmentCandidateRecord } from '../../src/core/fine-tuning-private-answer-quality-enrichment-candidate.mjs';
 import { assertFineTuningPrivateAnswerQualityEnrichmentCandidateReviewResolutionRecord } from '../../src/core/fine-tuning-private-answer-quality-enrichment-candidate-review-resolution.mjs';
@@ -34,6 +39,13 @@ const COMPONENTS = Object.freeze([
     kind: 'payload',
     pendingPattern:
       /^\.fine-tuning-private-answer-quality-case-payload-pending-([a-f0-9]{64})-([a-f0-9]{64})$/u,
+  },
+  {
+    finalPattern: /^[a-f0-9]{64}$/u,
+    historyName: 'private-answer-quality-case-replays',
+    kind: 'replay',
+    pendingPattern:
+      /^\.fine-tuning-private-answer-quality-case-replay-pending-([a-f0-9]{64})-([a-f0-9]{64})$/u,
   },
   {
     finalPattern: /^[a-f0-9]{64}$/u,
@@ -408,6 +420,7 @@ function deletionOrder(component) {
     candidate: ['candidate'],
     case: ['case'],
     payload: ['payload', 'payload-decision'],
+    replay: ['replay-receipt', 'replay-request'],
     resolution: ['resolution', 'resolution-decision'],
   };
   const ordered = priorities[component.kind]
@@ -826,10 +839,12 @@ function inspectDerivativeState({ current, itemHash, repoDir }) {
 function assertDerivativeChain(entries) {
   const byKind = new Map(entries.map((entry) => [entry.kind, entry]));
   const payload = byKind.get('payload');
+  const replay = byKind.get('replay');
   const answerQualityCase = byKind.get('case');
   const resolution = byKind.get('resolution');
   const candidate = byKind.get('candidate');
   if (
+    (replay && !payload) ||
     (payload && (!answerQualityCase || !resolution || !candidate)) ||
     (answerQualityCase && (!resolution || !candidate)) ||
     (resolution && !candidate)
@@ -837,6 +852,23 @@ function assertDerivativeChain(entries) {
     throw new Error(
       'F1.19 derivative history predecessor chain is incomplete.',
     );
+  }
+  if (
+    replay?.lineage.answerQualityCasePayloadHash &&
+    replay.lineage.answerQualityCasePayloadHash !== payload?.lineage.answerQualityCasePayloadHash
+  ) {
+    throw new Error('F1.20 derivative replay and payload lineage conflict.');
+  }
+  for (const field of [
+    'answerQualityCaseHash',
+    'answerQualityCaseDefinitionHash',
+    'answerQualityCaseEvaluationHash',
+    'payloadContentHash',
+    'storedAt',
+  ]) {
+    if (replay?.lineage[field] && replay.lineage[field] !== payload?.lineage[field]) {
+      throw new Error('F1.20 derivative replay definition lineage conflict.');
+    }
   }
   if (
     payload?.lineage.answerQualityCaseHash &&
@@ -1000,6 +1032,38 @@ function validateComponentValues({
   values,
   workspaceHash,
 }) {
+  if (component.kind === 'replay') {
+    const request = values['request.json']
+      ? assertFineTuningPrivateAnswerQualityCaseReplayRequestRecord(values['request.json'])
+      : null;
+    const receipt = values['receipt.json']
+      ? assertFineTuningPrivateAnswerQualityCaseReplayRecord(values['receipt.json'])
+      : null;
+    if (!request ||
+      request.workspace.workspaceHash !== workspaceHash ||
+      (sourceState === 'final' && entryName !== request.item.itemHash) ||
+      (sourceState === 'pending' && entryName !== `${'.fine-tuning-private-answer-quality-case-replay-pending-'}${request.item.itemHash}-${request.replayRequestHash}`)) {
+      throw new Error('F1.20 derivative replay history is invalid.');
+    }
+    if (sourceState === 'final' && !receipt) {
+      throw new Error('F1.20 derivative replay final history is incomplete.');
+    }
+    if (receipt) assertFineTuningPrivateAnswerQualityCaseReplayRelation({ receipt, request });
+    return assertCurrentComponentLineage(current, {
+      answerQualityCaseDefinitionHash: receipt?.bindings.answerQualityCaseDefinitionHash || null,
+      answerQualityCaseEvaluationHash: receipt?.bindings.answerQualityCaseEvaluationHash || null,
+      answerQualityCaseHash: request.answerQualityCase.answerQualityCaseHash,
+      answerQualityCasePayloadHash: request.payload.answerQualityCasePayloadHash,
+      payloadContentHash: receipt?.bindings.payloadContentHash || null,
+      deleteBy: receipt?.sourceObservation.deleteBy || null,
+      expiresAt: receipt?.sourceObservation.expiresAt || null,
+      itemHash: request.item.itemHash,
+      replayCompletedAt: receipt?.replayCompletedAt || null,
+      replayRequestedAt: request.requestRecord.requestedAt,
+      storedAt: receipt?.sourceObservation.payloadStoredAt || null,
+      workspaceHash: request.workspace.workspaceHash,
+    });
+  }
   if (component.kind === 'payload') {
     if (!values['decision.json']) {
       return { itemHash: null, workspaceHash };
@@ -1043,6 +1107,9 @@ function validateComponentValues({
       answerQualityCaseHash:
         payload?.answerQualityCase.answerQualityCaseHash ||
         decision.answerQualityCase.answerQualityCaseHash,
+      answerQualityCasePayloadHash:
+        payload?.answerQualityCasePayloadHash || null,
+      payloadContentHash: payload?.bindings.payloadContentHash || null,
       candidateHash: payload?.candidate.candidateHash || null,
       candidateReviewResolutionHash:
         payload?.candidateReviewResolution.candidateReviewResolutionHash || null,
@@ -1299,6 +1366,11 @@ function assertDerivativeTimeline({
 }
 
 function allowedFileSets(kind, sourceState) {
+  if (kind === 'replay') {
+    return sourceState === 'final'
+      ? [['receipt.json', 'request.json']]
+      : [[], ['request.json'], ['receipt.json', 'request.json']];
+  }
   if (kind === 'payload') {
     return sourceState === 'final'
       ? [['decision.json'], ['decision.json', 'payload.json']]
@@ -1491,6 +1563,12 @@ function assertGlobalStagedDeletionOrder(stagedComponents) {
 }
 
 function stagedEntryName(component, values) {
+  if (component.kind === 'replay') {
+    const request = values['request.json'];
+    return component.sourceState === 'final'
+      ? String(request?.item?.itemHash)
+      : `.fine-tuning-private-answer-quality-case-replay-pending-${request?.item?.itemHash}-${request?.replayRequestHash}`;
+  }
   if (component.kind === 'payload') {
     const decision = values['decision.json'];
     return component.sourceState === 'final'
@@ -1877,6 +1955,10 @@ function filenameRole(kind, filename) {
       'decision.json': 'payload-decision',
       'payload.json': 'payload',
     },
+    replay: {
+      'receipt.json': 'replay-receipt',
+      'request.json': 'replay-request',
+    },
     resolution: {
       'decision.json': 'resolution-decision',
       'resolution.json': 'resolution',
@@ -1896,6 +1978,10 @@ function roleFilename(kind, role) {
     payload: {
       'payload-decision': 'decision.json',
       payload: 'payload.json',
+    },
+    replay: {
+      'replay-receipt': 'receipt.json',
+      'replay-request': 'request.json',
     },
     resolution: {
       'resolution-decision': 'decision.json',

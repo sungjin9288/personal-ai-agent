@@ -30,7 +30,7 @@ assert.equal(
 );
 for (const marker of [
   'payload-first deletion cascade',
-  'F1.19 → F1.18 → F1.17 → F1.16 → F1.10',
+  'F1.19→F1.20→F1.18→F1.17→F1.16→F1.10',
   'managed namespace',
 ]) {
   assert.ok(plan.includes(marker), `ML/RAG plan missing ${marker}`);

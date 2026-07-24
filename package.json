@@ -186,6 +186,8 @@
     "materialize:fine-tuning-private-answer-quality-case-payload": "node scripts/materialize-fine-tuning-private-answer-quality-case-payload.mjs",
     "smoke:fine-tuning-private-answer-quality-case-payload": "node scripts/smoke-fine-tuning-private-answer-quality-case-payload.mjs",
     "smoke:fine-tuning-private-answer-quality-case-payload-lifecycle": "node scripts/smoke-fine-tuning-private-answer-quality-case-payload-lifecycle.mjs",
+    "replay:fine-tuning-private-answer-quality-case-payload": "node scripts/replay-fine-tuning-private-answer-quality-case-payload.mjs",
+    "smoke:fine-tuning-private-answer-quality-case-replay": "node scripts/smoke-fine-tuning-private-answer-quality-case-replay.mjs",
     "build:local-training-runtime-evidence": "node scripts/build-local-training-runtime-evidence.mjs",
     "smoke:local-training-runtime": "node scripts/smoke-local-training-runtime.mjs",
     "smoke:local-training-permission-surface": "node scripts/smoke-local-training-permission-surface.mjs",

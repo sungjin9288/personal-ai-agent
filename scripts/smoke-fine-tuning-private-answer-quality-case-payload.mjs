@@ -36,7 +36,7 @@ assert.equal(
 );
 for (const marker of [
   'F1.19 Private answer-quality case payload lifecycle',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-replay',
   'npm run materialize:fine-tuning-private-answer-quality-case-payload',
   'local-answer-quality-evaluation-replay-only',
   'productionReadyClaim: false',

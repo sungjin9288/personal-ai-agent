@@ -32,7 +32,7 @@ assert.equal(
 
 for (const term of [
   'F1.14 Private collection item artifact request protocol',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-replay',
   'currentFineTuningPrivateCollectionItemArtifactRequestSurface: `scripts/request-fine-tuning-private-collection-item-artifact.mjs`',
   'fineTuningPrivateCollectionItemArtifactRequestStatus: protocol-ready-private-artifact-preparation-request-required',
   'npm run request:fine-tuning-private-collection-item-artifact',

@@ -26,7 +26,7 @@ assert.equal(
 );
 for (const term of [
   'F1.15 Private collection item artifact preparation resolution protocol',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-replay',
   'currentFineTuningPrivateCollectionItemArtifactPreparationResolutionSurface: `scripts/resolve-fine-tuning-private-collection-item-artifact-preparation.mjs`',
   'fineTuningPrivateCollectionItemArtifactPreparationResolutionStatus: protocol-ready-private-quality-reviewer-resolution-required',
   'npm run resolve:fine-tuning-private-collection-item-artifact-preparation',
