@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-24T14:44:19.331Z
-- localDate: 2026-07-24
-- branch: codex/f1-24-private-combined-readiness-impact
-- commit: ecfc2276b179d0671e9a50af78ac036d055abf75
+- generatedAt: 2026-07-24T16:02:23.284Z
+- localDate: 2026-07-25
+- branch: codex/f1-25-private-collection-gap-replan
+- commit: 832e7d8f33e4707d86b06b244af2a8ed2c62a392
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ecfc2276b179d0671e9a50af78ac036d055abf75](releases/execution-v1/ecfc2276b179d0671e9a50af78ac036d055abf75)
-- visualArtifactSetSha256: 192fe220236787c910b25376d94a3a476e1d73d11220de47640a63053556d51e
-- commitPushStatus: not pushed, origin/codex/f1-24-private-combined-readiness-impact not found
+- immutableSnapshot: [releases/execution-v1/832e7d8f33e4707d86b06b244af2a8ed2c62a392](releases/execution-v1/832e7d8f33e4707d86b06b244af2a8ed2c62a392)
+- visualArtifactSetSha256: 46c70bcec922ed6d3fe3ef974c9122d41cd97a9a38c42f5d65fc225c77e3a196
+- commitPushStatus: not pushed, origin/codex/f1-25-private-collection-gap-replan not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=45.8s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=45.1s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 192fe220236787c910b25376d94a3a476e1d73d11220de47640a63053556d51e
+- visual artifact set: 46c70bcec922ed6d3fe3ef974c9122d41cd97a9a38c42f5d65fc225c77e3a196
 
 ## Live Provider Handoff
 

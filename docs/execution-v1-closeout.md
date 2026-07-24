@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-24T14:44:12.685Z
-- branch: codex/f1-24-private-combined-readiness-impact
-- commit: ecfc2276b179d0671e9a50af78ac036d055abf75
+- generatedAt: 2026-07-24T16:02:16.624Z
+- branch: codex/f1-25-private-collection-gap-replan
+- commit: 832e7d8f33e4707d86b06b244af2a8ed2c62a392
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

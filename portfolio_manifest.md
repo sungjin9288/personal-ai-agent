@@ -132,6 +132,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,294,759 bytes
-- 압축 파일 SHA-256: `45d88701ee67618586bb1cd1a303256f7d14e91d4decd0399311b93d934d941d`
+- 압축 파일 크기: 4,295,859 bytes
+- 압축 파일 SHA-256: `f912328fe34f9ad3105c3409c17c66ff4a2112ccea630894cea20f8883c2e5df`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료
