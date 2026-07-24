@@ -92,13 +92,24 @@ function withProjectionFixture(callback) {
 
 test('F1.22 projects one eligible record without changing actual sufficiency', () => {
   withProjectionFixture(({ baselineContext, receipt, record }) => {
+    const trustedContext = {
+      baselineContext,
+      receipt,
+      record,
+      trackedAssessment: baselineContext.sufficiencyAssessment,
+    };
     const result = buildFineTuningPrivateReviewedExampleDatasetImpactShadow({
       baselineContext,
       receipt,
       record,
     });
 
-    assertFineTuningPrivateReviewedExampleDatasetImpactShadow(result);
+    assertFineTuningPrivateReviewedExampleDatasetImpactShadow(result, {
+      baselineContext,
+      receipt,
+      record,
+      trackedAssessment: baselineContext.sufficiencyAssessment,
+    });
     assert.equal(result.projection.disposition, 'accepted-in-shadow');
     assert.deepEqual(result.baseline.measurements, {
       acceptedExamples: 4,
@@ -273,6 +284,12 @@ test('F1.22 preserves a valid accepted-risk gate regression in the projection', 
 
 test('F1.22 fails closed on baseline drift and projection tampering', () => {
   withProjectionFixture(({ baselineContext, receipt, record }) => {
+    const trustedContext = {
+      baselineContext,
+      receipt,
+      record,
+      trackedAssessment: baselineContext.sufficiencyAssessment,
+    };
     const trackedAssessment = structuredClone(
       buildFineTuningPrivateReviewedExampleDatasetImpactShadow({
         baselineContext,
@@ -298,8 +315,8 @@ test('F1.22 fails closed on baseline drift and projection tampering', () => {
     });
     result.actualPrivateDatasetRebuilt = true;
     assert.throws(
-      () => assertFineTuningPrivateReviewedExampleDatasetImpactShadow(result),
-      /shadow is invalid/,
+      () => assertFineTuningPrivateReviewedExampleDatasetImpactShadow(result, trustedContext),
+      /integrity failed/,
     );
 
     const extraBinding = buildFineTuningPrivateReviewedExampleDatasetImpactShadow({
@@ -312,8 +329,9 @@ test('F1.22 fails closed on baseline drift and projection tampering', () => {
       () =>
         assertFineTuningPrivateReviewedExampleDatasetImpactShadow(
           rehashProjection(extraBinding),
+          trustedContext,
         ),
-      /shadow is invalid/,
+      /integrity failed/,
     );
 
     const fakeFailures =
@@ -333,8 +351,9 @@ test('F1.22 fails closed on baseline drift and projection tampering', () => {
       () =>
         assertFineTuningPrivateReviewedExampleDatasetImpactShadow(
           rehashProjection(fakeFailures),
+          trustedContext,
         ),
-      /shadow is invalid/,
+      /integrity failed/,
     );
 
     const impossibleMeasurements =
@@ -351,8 +370,9 @@ test('F1.22 fails closed on baseline drift and projection tampering', () => {
       () =>
         assertFineTuningPrivateReviewedExampleDatasetImpactShadow(
           rehashProjection(impossibleMeasurements),
+          trustedContext,
         ),
-      /measurements are invalid/,
+      /integrity failed/,
     );
   });
 });

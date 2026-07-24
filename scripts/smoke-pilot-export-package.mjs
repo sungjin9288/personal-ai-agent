@@ -349,7 +349,7 @@ assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-qual
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
 assert.match(
   mlRagDevelopmentPlan,
-  /status: private-answer-quality-readiness-impact-shadow-current/,
+  /status: private-combined-readiness-impact-shadow-current/,
 );
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);

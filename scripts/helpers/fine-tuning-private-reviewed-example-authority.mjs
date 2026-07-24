@@ -315,33 +315,17 @@ function readTrackedF1Chain({ label, repoDir }) {
   };
   return Object.fromEntries(
     Object.entries(filenames).map(([key, filename]) => {
-      const before = fs.lstatSync(filename);
-      if (
-        !before.isFile() ||
-        before.isSymbolicLink() ||
-        before.nlink !== 1
-      ) {
+      try {
+        const state = readPrivateJsonState(filename, `${label} tracked ${key}`, {
+          allowedRoot: path.join(repoDir, 'evidence', 'output-artifacts'),
+          expectedMode: 0o644,
+          repoDir,
+        });
+        assertCanonicalPrivateJsonState(state, filename, `${label} tracked ${key}`);
+        return [key, { ...state, file: state.initialFile }];
+      } catch {
         throw new Error(`${label} tracked ${key} is invalid.`);
       }
-      const bytes = fs.readFileSync(filename);
-      const after = fs.lstatSync(filename);
-      if (
-        before.dev !== after.dev ||
-        before.ino !== after.ino ||
-        before.size !== after.size ||
-        bytes.length === 0
-      ) {
-        throw new Error(`${label} tracked ${key} changed while reading.`);
-      }
-      return [
-        key,
-        {
-          bytes,
-          file: after,
-          filename,
-          value: JSON.parse(bytes.toString('utf8')),
-        },
-      ];
     }),
   );
 }

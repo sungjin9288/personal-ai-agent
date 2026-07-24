@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
@@ -9,6 +10,11 @@ import {
   withReviewedExampleCanonicalizationFixture,
 } from './helpers/fine-tuning-private-reviewed-example-canonicalization-fixture.mjs';
 import { writeLifecycleDecision } from './helpers/fine-tuning-private-collection-item-lifecycle-fixture.mjs';
+import {
+  assertSameFineTuningPrivateReviewedExampleAuthority,
+  loadFineTuningPrivateReviewedExampleAuthority,
+  loadFineTuningPrivateReviewedExampleSource,
+} from '../scripts/helpers/fine-tuning-private-reviewed-example-authority.mjs';
 
 const repoDir = process.cwd();
 const materializeScript = path.join(repoDir, 'scripts', 'materialize-fine-tuning-private-reviewed-example.mjs');
@@ -141,7 +147,7 @@ test('F1.22 requires one untampered final F1.21 bundle without pending history',
   }
 });
 
-test('F1.22 does not open a sibling final record outside the current item authority', () => {
+test('F1.22 rejects malformed sibling final history before reading the current item', () => {
   withReadyFixture((fixture, prepared) => {
     const root = path.dirname(finalDirectory(fixture));
     const siblingHash =
@@ -162,9 +168,78 @@ test('F1.22 does not open a sibling final record outside the current item author
     );
 
     const result = project(fixture, prepared);
-    assert.equal(result.status, 0, result.stderr);
+    assert.notEqual(result.status, 0);
     assert.equal(result.stderr.includes('PRIVATE-SIBLING'), false);
     assert.equal(result.stdout.includes('PRIVATE-SIBLING'), false);
+  });
+});
+
+test('F1.22 accepts valid unrelated canonical history and rejects a foreign copy of the current item', () => {
+  withReadyFixture((fixture, prepared) => {
+    writeForeignCanonicalEntry(fixture, {
+      itemHash: 'd'.repeat(64),
+      workspaceHash: 'e'.repeat(64),
+    });
+    const result = project(fixture, prepared);
+    assert.equal(result.status, 0, result.stderr);
+  });
+
+  withReadyFixture((fixture, prepared) => {
+    const foreignWorkspaceHash =
+      fixture.workspace.workspaceHash === 'e'.repeat(64)
+        ? 'd'.repeat(64)
+        : 'e'.repeat(64);
+    writeForeignCanonicalEntry(fixture, {
+      itemHash: fixture.item.itemHash,
+      workspaceHash: foreignWorkspaceHash,
+    });
+    const result = project(fixture, prepared);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /foreign workspace copy/);
+    assert.equal(result.stderr.includes(fixture.item.example.response), false);
+  });
+});
+
+test('F1.22 detects same-byte source replacement through file identity', () => {
+  withReadyFixture((fixture, prepared) => {
+    const filenames = filenamesFor(fixture, prepared);
+    const fixtureRepoDir = fs.realpathSync(fixture.rootDir);
+    const authority = loadFineTuningPrivateReviewedExampleAuthority({
+      filenames,
+      label: 'F1.22 source replacement',
+      repoDir: fixtureRepoDir,
+    });
+    const before = loadFineTuningPrivateReviewedExampleSource({
+      authority,
+      filename: filenames.sourceBundle,
+      label: 'F1.22 source replacement',
+      repoDir: fixtureRepoDir,
+    });
+    const replacement = `${filenames.sourceBundle}.replacement`;
+    fs.writeFileSync(
+      replacement,
+      fs.readFileSync(filenames.sourceBundle),
+      { mode: 0o600 },
+    );
+    fs.renameSync(replacement, filenames.sourceBundle);
+    const after = loadFineTuningPrivateReviewedExampleSource({
+      authority,
+      filename: filenames.sourceBundle,
+      label: 'F1.22 source replacement',
+      repoDir: fixtureRepoDir,
+    });
+
+    assert.throws(
+      () => assertSameFineTuningPrivateReviewedExampleAuthority(
+        before,
+        after,
+        {
+          compareTrackedFileIdentity: true,
+          label: 'F1.22 source replacement',
+        },
+      ),
+      /changed/,
+    );
   });
 });
 
@@ -217,6 +292,22 @@ function argsFor(fixture, prepared, { source, sourceArgument } = {}) {
   ];
 }
 
+function filenamesFor(fixture, prepared) {
+  return {
+    admission: fs.realpathSync(fixture.admissionFilename),
+    artifactPreparationResolution:
+      fs.realpathSync(prepared.resolutionFilename),
+    executionRequest: fs.realpathSync(prepared.executionRequestFilename),
+    executionResolution: fs.realpathSync(prepared.executionResolutionFilename),
+    intakeResolution: fs.realpathSync(prepared.intakeResolutionFilename),
+    item: fs.realpathSync(fixture.itemFilename),
+    privateCollectionPlan:
+      fs.realpathSync(prepared.privateCollectionPlanFilename),
+    sourceBundle: fs.realpathSync(prepared.sourceBundleFilename),
+    workspace: fs.realpathSync(fixture.workspaceFilename),
+  };
+}
+
 function run(script, cwd, args) {
   return spawnSync(process.execPath, [script, ...args], { cwd, encoding: 'utf8' });
 }
@@ -229,6 +320,54 @@ function finalDirectory(fixture) {
     'private-reviewed-example-canonical-records',
     fixture.workspace.workspaceHash,
     fixture.item.itemHash,
+  );
+}
+
+function writeForeignCanonicalEntry(
+  fixture,
+  { itemHash, workspaceHash },
+) {
+  const currentDirectory = finalDirectory(fixture);
+  const record = JSON.parse(
+    fs.readFileSync(path.join(currentDirectory, 'record.json'), 'utf8'),
+  );
+  const receipt = JSON.parse(
+    fs.readFileSync(path.join(currentDirectory, 'receipt.json'), 'utf8'),
+  );
+  receipt.item = {
+    id: `fine-tuning-private-collection-item-${itemHash}`,
+    itemHash,
+  };
+  receipt.workspace = {
+    id: `fine-tuning-private-collection-workspace-${workspaceHash}`,
+    workspaceHash,
+  };
+  const receiptHash = createHash('sha256')
+    .update(JSON.stringify({ itemHash, recordId: record.id }))
+    .digest('hex');
+  receipt.id =
+    `private-reviewed-example-canonicalization-receipt-${receiptHash}`;
+
+  const directory = path.join(
+    fixture.rootDir,
+    'var',
+    'fine-tuning',
+    'private-reviewed-example-canonical-records',
+    workspaceHash,
+    itemHash,
+  );
+  fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  fs.chmodSync(path.dirname(directory), 0o700);
+  fs.chmodSync(directory, 0o700);
+  fs.writeFileSync(
+    path.join(directory, 'record.json'),
+    `${JSON.stringify(record, null, 2)}\n`,
+    { mode: 0o600 },
+  );
+  fs.writeFileSync(
+    path.join(directory, 'receipt.json'),
+    `${JSON.stringify(receipt, null, 2)}\n`,
+    { mode: 0o600 },
   );
 }
 

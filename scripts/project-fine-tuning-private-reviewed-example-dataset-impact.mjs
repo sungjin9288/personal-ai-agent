@@ -3,14 +3,8 @@ import path from 'node:path';
 
 import { buildDeterministicFineTuningBaselineContext } from './local-training-permission-fixture.mjs';
 import {
-  assertFineTuningPrivateReviewedExampleCanonicalizationReceipt,
-  buildFineTuningPrivateReviewedExampleCanonicalRecord,
-  buildFineTuningPrivateReviewedExampleCanonicalizationReceipt,
-} from '../src/core/fine-tuning-private-reviewed-example-canonicalization.mjs';
-import {
   buildFineTuningPrivateReviewedExampleDatasetImpactShadow,
 } from '../src/core/fine-tuning-private-reviewed-example-dataset-impact.mjs';
-import { assertApprovedTrainingRecordForDataset } from '../src/core/training-dataset-quality.mjs';
 import {
   acquireFineTuningPrivateCollectionWorkspaceLock,
 } from './helpers/fine-tuning-private-collection-workspace-lock.mjs';
@@ -19,12 +13,30 @@ import {
   loadFineTuningPrivateReviewedExampleAuthority,
   loadFineTuningPrivateReviewedExampleSource,
 } from './helpers/fine-tuning-private-reviewed-example-authority.mjs';
-import { assertSamePrivateJsonState, readPrivateDirectory, readPrivateJsonState } from './helpers/private-json-state.mjs';
+import {
+  assertSameFineTuningPrivateReviewedExampleHistory,
+  readFineTuningPrivateReviewedExampleHistory,
+  selectFineTuningPrivateReviewedExampleHistory,
+} from './helpers/fine-tuning-private-reviewed-example-history.mjs';
+import {
+  assertSamePrivateJsonState,
+  readPrivateJsonState,
+} from './helpers/private-json-state.mjs';
 
-const PENDING_PREFIX = '.private-reviewed-example-canonical-record-pending-';
 const repoDir = fs.realpathSync(process.cwd());
 const filenames = parseArguments(process.argv.slice(2));
 const initial = loadFineTuningPrivateReviewedExampleAuthority({ filenames, repoDir, label: 'F1.22' });
+const initialCurrent = loadFineTuningPrivateReviewedExampleSource({
+  authority: initial,
+  filename: filenames.sourceBundle,
+  label: 'F1.22',
+  repoDir,
+});
+const initialBaselineFixtures = readBaselineFixtures();
+const initialHistory = readFineTuningPrivateReviewedExampleHistory({
+  label: 'F1.22 canonical record history',
+  repoDir,
+});
 const lock = acquireFineTuningPrivateCollectionWorkspaceLock({
   repoDir,
   workspaceHash: initial.workspace.workspaceHash,
@@ -42,14 +54,36 @@ try {
     compareTrackedFileIdentity: true,
     label: 'F1.22',
   });
+  const currentBaselineFixtures = readBaselineFixtures();
+  assertSameBaselineFixtures(initialBaselineFixtures, currentBaselineFixtures);
   const current = loadFineTuningPrivateReviewedExampleSource({
     authority,
     filename: filenames.sourceBundle,
     label: 'F1.22',
     repoDir,
   });
-  const stored = readFinalCanonicalBundle(current);
-  const baselineContext = buildDeterministicFineTuningBaselineContext({ repoDir });
+  assertSameFineTuningPrivateReviewedExampleAuthority(initialCurrent, current, {
+    compareTrackedFileIdentity: true,
+    label: 'F1.22',
+  });
+  const currentHistory = readFineTuningPrivateReviewedExampleHistory({
+    label: 'F1.22 canonical record history',
+    repoDir,
+  });
+  assertSameFineTuningPrivateReviewedExampleHistory(
+    initialHistory,
+    currentHistory,
+    'F1.22 canonical record history',
+  );
+  const stored = selectFineTuningPrivateReviewedExampleHistory(
+    currentHistory,
+    current,
+    { label: 'F1.22 canonical record history' },
+  );
+  const baselineContext = buildDeterministicFineTuningBaselineContext({
+    fixtureValues: currentBaselineFixtures.values,
+    repoDir,
+  });
   projection = buildFineTuningPrivateReviewedExampleDatasetImpactShadow({
     baselineContext,
     record: stored.record.value,
@@ -65,85 +99,76 @@ try {
     compareTrackedFileIdentity: true,
     label: 'F1.22',
   });
+  const finalBaselineFixtures = readBaselineFixtures();
+  assertSameBaselineFixtures(initialBaselineFixtures, finalBaselineFixtures);
   const finalCurrent = loadFineTuningPrivateReviewedExampleSource({
     authority: finalAuthority,
     filename: filenames.sourceBundle,
     label: 'F1.22',
     repoDir,
   });
-  assertSameFineTuningPrivateReviewedExampleAuthority(current, finalCurrent, {
+  assertSameFineTuningPrivateReviewedExampleAuthority(initialCurrent, finalCurrent, {
     compareTrackedFileIdentity: true,
     label: 'F1.22',
   });
-  const finalStored = readFinalCanonicalBundle(finalCurrent);
-  for (const key of Object.keys(stored.states)) {
-    assertSamePrivateJsonState(stored.states[key], finalStored.states[key], `F1.22 ${key}`);
-  }
+  const finalHistory = readFineTuningPrivateReviewedExampleHistory({
+    label: 'F1.22 canonical record history',
+    repoDir,
+  });
+  assertSameFineTuningPrivateReviewedExampleHistory(
+    initialHistory,
+    finalHistory,
+    'F1.22 canonical record history',
+  );
+  selectFineTuningPrivateReviewedExampleHistory(
+    finalHistory,
+    finalCurrent,
+    { label: 'F1.22 canonical record history' },
+  );
   console.log(JSON.stringify(projection, null, 2));
 } finally {
   lock.release();
 }
 
-function readFinalCanonicalBundle(current) {
-  const root = path.join(repoDir, 'var', 'fine-tuning', 'private-reviewed-example-canonical-records', current.workspace.workspaceHash);
-  let final = null;
-  for (const name of readPrivateDirectory(root, 'F1.22 canonical record history', { repoDir })) {
-    const directory = path.join(root, name);
-    const isFinal = /^[a-f0-9]{64}$/u.test(name);
-    const isPending = new RegExp(`^\\${PENDING_PREFIX}[a-f0-9]{64}-[a-f0-9]{64}$`, 'u').test(name);
-    if (!isFinal || isPending) {
-      throw new Error('F1.22 requires one final F1.21 canonical record without pending history.');
-    }
-    if (name !== current.item.itemHash) {
-      continue;
-    }
-    const names = readPrivateDirectory(directory, 'F1.22 canonical record history entry', { repoDir });
-    if (
-      JSON.stringify(names) !==
-      JSON.stringify(['receipt.json', 'record.json'])
-    ) {
-      throw new Error('F1.22 requires one final F1.21 canonical record.');
-    }
-    const record = readPrivateJsonState(path.join(directory, 'record.json'), 'F1.22 record', { repoDir });
-    const receipt = readPrivateJsonState(path.join(directory, 'receipt.json'), 'F1.22 receipt', { repoDir });
-    assertApprovedTrainingRecordForDataset(record.value);
-    assertFineTuningPrivateReviewedExampleCanonicalizationReceipt(
-      receipt.value,
-      { record: record.value },
+function readBaselineFixtures() {
+  const root = path.join(repoDir, 'fixtures');
+  const readiness = readFixtureState('fine-tuning-readiness-cases-v1.json', root);
+  const dataset = readFixtureState(readiness.value.datasetFixture, root);
+  const answerQuality = readFixtureState(
+    readiness.value.answerQualityFixture,
+    root,
+  );
+  const states = { answerQuality, dataset, readiness };
+  return {
+    states,
+    values: Object.fromEntries(
+      Object.values(states).map((state) => [
+        path.relative(repoDir, state.canonicalFilename),
+        state.value,
+      ]),
+    ),
+  };
+}
+
+function readFixtureState(relativePath, root) {
+  const filename = relativePath.startsWith('fixtures/')
+    ? relativePath
+    : path.join('fixtures', relativePath);
+  return readPrivateJsonState(
+    path.join(repoDir, filename),
+    'F1.22 baseline fixture',
+    { allowedRoot: root, expectedMode: 0o644, repoDir },
+  );
+}
+
+function assertSameBaselineFixtures(left, right) {
+  for (const key of Object.keys(left.states)) {
+    assertSamePrivateJsonState(
+      left.states[key],
+      right.states[key],
+      `F1.22 baseline fixture ${key}`,
     );
-    if (receipt.value.workspace.workspaceHash !== current.workspace.workspaceHash) {
-      throw new Error('F1.22 F1.21 record lineage is invalid.');
-    }
-    if (receipt.value.item.itemHash !== current.item.itemHash) {
-      throw new Error('F1.22 F1.21 record lineage is invalid.');
-    }
-    if (final) throw new Error('F1.22 F1.21 final canonical record history is ambiguous.');
-    final = { receipt, record };
   }
-  if (!final) throw new Error('F1.22 requires one final F1.21 canonical record.');
-  const expectedRecord = buildFineTuningPrivateReviewedExampleCanonicalRecord({
-    admission: current.admission,
-    artifactPreparationResolution: current.artifactPreparationResolution,
-    item: current.item,
-    materializedAt: final.record.value.createdAt,
-    sourceBundle: current.sourceBundle,
-    workspace: current.workspace,
-  });
-  const expectedReceipt = buildFineTuningPrivateReviewedExampleCanonicalizationReceipt({
-    admission: current.admission,
-    artifactPreparationResolution: current.artifactPreparationResolution,
-    item: current.item,
-    record: expectedRecord,
-    sourceBundle: current.sourceBundle,
-    workspace: current.workspace,
-  });
-  if (
-    JSON.stringify(expectedRecord) !== JSON.stringify(final.record.value) ||
-    JSON.stringify(expectedReceipt) !== JSON.stringify(final.receipt.value)
-  ) {
-    throw new Error('F1.22 F1.21 source reconstruction drifted.');
-  }
-  return { ...final, states: final };
 }
 
 function parseArguments(args) {

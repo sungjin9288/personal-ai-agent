@@ -9,12 +9,6 @@ import {
   assertFineTuningPrivateAnswerQualityCasePayloadRecord,
 } from '../src/core/fine-tuning-private-answer-quality-case-payload.mjs';
 import {
-  assertFineTuningPrivateAnswerQualityCaseReplay,
-  assertFineTuningPrivateAnswerQualityCaseReplayRelation,
-  assertFineTuningPrivateAnswerQualityCaseReplayRequest,
-  assertFineTuningPrivateAnswerQualityCaseReplayRequestRecord,
-} from '../src/core/fine-tuning-private-answer-quality-case-replay.mjs';
-import {
   assertFineTuningPrivateAnswerQualityEnrichmentCandidateRecord,
 } from '../src/core/fine-tuning-private-answer-quality-enrichment-candidate.mjs';
 import {
@@ -41,6 +35,11 @@ import {
   assertCanonicalPrivateAnswerQualityPayloadEntry,
 } from './helpers/fine-tuning-private-answer-quality-case-history.mjs';
 import {
+  assertSameFineTuningPrivateAnswerQualityReplayHistory,
+  readFineTuningPrivateAnswerQualityReplayHistory,
+  selectFineTuningPrivateAnswerQualityReplayHistory,
+} from './helpers/fine-tuning-private-answer-quality-replay-history.mjs';
+import {
   assertFineTuningPrivateAnswerQualityReviewInputs,
   assertFineTuningPrivateAnswerQualityReviewState,
 } from './helpers/fine-tuning-private-answer-quality-review-guard.mjs';
@@ -50,16 +49,17 @@ import {
 import {
   assertCanonicalPrivateJsonState,
   assertSamePrivateJsonState,
-  readPrivateDirectory,
   readPrivateJsonState,
 } from './helpers/private-json-state.mjs';
 
-const HISTORY_NAME = 'private-answer-quality-case-replays';
-const PENDING_PREFIX = '.fine-tuning-private-answer-quality-case-replay-pending-';
 const repoDir = fs.realpathSync(process.cwd());
 const filenames = parseArguments(process.argv.slice(2));
 const initial = loadCommon(filenames);
 const initialBaselineFixtures = readBaselineFixtures();
+const initialReplayHistory = readFineTuningPrivateAnswerQualityReplayHistory({
+  label: 'F1.23 replay history',
+  repoDir,
+});
 const lock = acquireFineTuningPrivateCollectionWorkspaceLock({
   repoDir,
   workspaceHash: initial.workspace.workspaceHash,
@@ -72,7 +72,20 @@ try {
   assertSameCommon(initial, current);
   assertSameBaselineFixtures(initialBaselineFixtures, currentBaselineFixtures);
   assertWindow(current);
-  const replay = readFinalReplay(current);
+  const currentReplayHistory = readFineTuningPrivateAnswerQualityReplayHistory({
+    label: 'F1.23 replay history',
+    repoDir,
+  });
+  assertSameFineTuningPrivateAnswerQualityReplayHistory(
+    initialReplayHistory,
+    currentReplayHistory,
+    'F1.23 replay history',
+  );
+  const replay = selectFineTuningPrivateAnswerQualityReplayHistory(
+    currentReplayHistory,
+    current,
+    { label: 'F1.23 replay history' },
+  );
   const baselineContext = buildDeterministicFineTuningBaselineContext({
     fixtureValues: currentBaselineFixtures.values,
     repoDir,
@@ -98,7 +111,20 @@ try {
   assertSameCommon(initial, final);
   assertSameBaselineFixtures(initialBaselineFixtures, finalBaselineFixtures);
   assertWindow(final);
-  const finalReplay = readFinalReplay(final);
+  const finalReplayHistory = readFineTuningPrivateAnswerQualityReplayHistory({
+    label: 'F1.23 replay history',
+    repoDir,
+  });
+  assertSameFineTuningPrivateAnswerQualityReplayHistory(
+    initialReplayHistory,
+    finalReplayHistory,
+    'F1.23 replay history',
+  );
+  const finalReplay = selectFineTuningPrivateAnswerQualityReplayHistory(
+    finalReplayHistory,
+    final,
+    { label: 'F1.23 replay history' },
+  );
   assertSamePrivateJsonState(replay.request, finalReplay.request, 'F1.23 final replay request');
   assertSamePrivateJsonState(replay.receipt, finalReplay.receipt, 'F1.23 final replay receipt');
   console.log(JSON.stringify(projection, null, 2));
@@ -179,130 +205,9 @@ function loadCommon(names) {
     payload: current.payload,
     repoDir,
   });
-  assertNoForeignReplayHistory(current);
   current.trackedAssessment = readTrackedAssessment();
   assertFineTuningDataSufficiencyAssessment(current.trackedAssessment.value);
   return current;
-}
-
-function readFinalReplay(current) {
-  const root = path.join(
-    repoDir,
-    'var',
-    'fine-tuning',
-    HISTORY_NAME,
-    current.workspace.workspaceHash,
-  );
-  let final = null;
-  let pending = false;
-  for (const name of readPrivateDirectory(root, 'F1.23 replay history', { repoDir })) {
-    const entry = readReplayHistoryEntry({ current, name, root });
-    if (entry.pending && entry.request.value.item.itemHash === current.item.itemHash) {
-      pending = true;
-      continue;
-    }
-    if (!entry.final || entry.request.value.item.itemHash !== current.item.itemHash) {
-      continue;
-    }
-    if (name !== current.item.itemHash || !entry.receipt) {
-      throw new Error('F1.23 final F1.20 replay history is invalid.');
-    }
-    assertFineTuningPrivateAnswerQualityCaseReplayRequest(entry.request.value, {
-      answerQualityCase: current.answerQualityCase,
-      item: current.item,
-      payload: current.payload,
-      request: current.requestInput,
-      workspace: current.workspace,
-    });
-    assertFineTuningPrivateAnswerQualityCaseReplay(entry.receipt.value, {
-      answerQualityCase: current.answerQualityCase,
-      item: current.item,
-      payload: current.payload,
-      request: entry.request.value,
-      workspace: current.workspace,
-    });
-    assertFineTuningPrivateAnswerQualityCaseReplayRelation({
-      receipt: entry.receipt.value,
-      request: entry.request.value,
-    });
-    if (final) {
-      throw new Error('F1.23 final F1.20 replay history is ambiguous.');
-    }
-    final = { receipt: entry.receipt, request: entry.request };
-  }
-  if (pending || !final) {
-    throw new Error('F1.23 requires one final F1.20 replay without pending history.');
-  }
-  return final;
-}
-
-function assertNoForeignReplayHistory(current) {
-  const root = path.join(repoDir, 'var', 'fine-tuning', HISTORY_NAME);
-  for (const workspaceHash of readPrivateDirectory(root, 'F1.23 replay workspaces', { repoDir })) {
-    if (!/^[a-f0-9]{64}$/u.test(workspaceHash)) {
-      throw new Error('F1.23 replay workspace history is invalid.');
-    }
-    if (workspaceHash === current.workspace.workspaceHash) continue;
-    const workspaceRoot = path.join(root, workspaceHash);
-    for (const name of readPrivateDirectory(workspaceRoot, 'F1.23 foreign replay history', { repoDir })) {
-      const entry = readReplayHistoryEntry({
-        current,
-        name,
-        root: workspaceRoot,
-      });
-      if (entry.request.value.workspace.workspaceHash !== workspaceHash) {
-        throw new Error('F1.23 foreign replay history lineage is invalid.');
-      }
-      if (entry.request.value.item.itemHash === current.item.itemHash) {
-        throw new Error('F1.23 replay history contains a foreign workspace copy.');
-      }
-    }
-  }
-}
-
-function readReplayHistoryEntry({ current, name, root }) {
-  const final = /^[a-f0-9]{64}$/u.test(name);
-  const pendingMatch = name.match(
-    /^\.fine-tuning-private-answer-quality-case-replay-pending-([a-f0-9]{64})-([a-f0-9]{64})$/u,
-  );
-  if (!final && !pendingMatch) {
-    throw new Error('F1.23 replay history is invalid.');
-  }
-  const directory = path.join(root, name);
-  const names = readPrivateDirectory(directory, 'F1.23 replay history entry', { repoDir });
-  const pending = Boolean(pendingMatch);
-  const validNames =
-    JSON.stringify(names) === JSON.stringify(['receipt.json', 'request.json']) ||
-    (pending && JSON.stringify(names) === JSON.stringify(['request.json']));
-  if (!validNames) {
-    throw new Error('F1.23 replay history bundle is invalid.');
-  }
-  const request = readPrivateJsonState(
-    path.join(directory, 'request.json'),
-    'F1.23 replay request history',
-    { repoDir },
-  );
-  assertFineTuningPrivateAnswerQualityCaseReplayRequestRecord(request.value);
-  const receipt = names.includes('receipt.json')
-    ? readPrivateJsonState(
-        path.join(directory, 'receipt.json'),
-        'F1.23 replay receipt history',
-        { repoDir },
-      )
-    : null;
-  if (receipt) {
-    assertFineTuningPrivateAnswerQualityCaseReplayRelation({
-      receipt: receipt.value,
-      request: request.value,
-    });
-  }
-  const expectedName = final
-    ? request.value.item.itemHash
-    : `${PENDING_PREFIX}${request.value.item.itemHash}-${request.value.replayRequestHash}`;
-  if (name !== expectedName) {
-    throw new Error('F1.23 replay history lineage is invalid.');
-  }
-  return { final, pending, receipt, request };
 }
 
 function assertSameCommon(left, right) {
