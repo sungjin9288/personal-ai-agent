@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-24T05:58:49.726Z
+- generatedAt: 2026-07-24T07:13:31.318Z
 - localDate: 2026-07-24
-- branch: codex/f1-21-private-reviewed-example-canonicalization
-- commit: 77f39a136111567bd0708a49ba75c58e7dbe6eec
+- branch: codex/f1-22-private-dataset-reassessment-shadow
+- commit: d9e5836bca236ba12c03ee39d658fbfb6a17c4ff
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/77f39a136111567bd0708a49ba75c58e7dbe6eec](releases/execution-v1/77f39a136111567bd0708a49ba75c58e7dbe6eec)
-- visualArtifactSetSha256: 773240d90cd6fa478adfbdf10aa354df5d94eca5eff596f56eafd7703d7eeaf3
-- commitPushStatus: not pushed, origin/codex/f1-21-private-reviewed-example-canonicalization not found
+- immutableSnapshot: [releases/execution-v1/d9e5836bca236ba12c03ee39d658fbfb6a17c4ff](releases/execution-v1/d9e5836bca236ba12c03ee39d658fbfb6a17c4ff)
+- visualArtifactSetSha256: bdd23e380617c6a022045a799a6c60b6cfa97309dbbb2765562685af25a07c09
+- commitPushStatus: not pushed, origin/codex/f1-22-private-dataset-reassessment-shadow not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=48.5s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=46.3s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 773240d90cd6fa478adfbdf10aa354df5d94eca5eff596f56eafd7703d7eeaf3
+- visual artifact set: bdd23e380617c6a022045a799a6c60b6cfa97309dbbb2765562685af25a07c09
 
 ## Live Provider Handoff
 
