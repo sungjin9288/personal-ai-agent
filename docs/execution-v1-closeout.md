@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-23T14:02:50.015Z
-- branch: codex/f1-17-private-answer-quality-review-resolution
-- commit: 2cbc6cbd5f80c2e8279558faefba55519c2f67e0
+- generatedAt: 2026-07-24T00:14:18.257Z
+- branch: codex/f1-18-private-answer-quality-case-materialization
+- commit: 878d12eb33f265493817d123f273cf3db040fea6
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

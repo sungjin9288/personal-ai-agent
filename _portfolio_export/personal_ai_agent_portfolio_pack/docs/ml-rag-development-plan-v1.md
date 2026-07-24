@@ -1,7 +1,7 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
 - status: local-answer-input-boundary-current
-- currentCostFreeMilestone: fine-tuning-private-answer-quality-enrichment-candidate-review-resolution-protocol
+- currentCostFreeMilestone: fine-tuning-private-answer-quality-case-materialization-protocol
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -1068,6 +1068,17 @@ productionReadyClaim: false
 ```
 
 실 reviewer identity와 evidence 내용은 독립 검증되지 않았고 tracked repository에는 실제 private decision, payload 또는 resolution이 없다. F1.18만 approved resolution을 answer-quality case materialization과 Q1 evaluation으로 이어갈 수 있다.
+
+## F1.18 Private answer-quality case materialization protocol
+
+F1.18은 canonical approved F1.17 final resolution, live F1.16 candidate, owner-only enrichment input을 다시 읽는다. retrieval과 answer-quality definition은 memory 안에서만 재구성하고 fixed default thresholds 및 `requireReviewerPass: true` 평가가 통과할 때만 owner-only logical case를 atomic publish한다. case는 `answerQualityCaseDefinitionHash`와 fixed threshold semantics를 포함한 `answerQualityCaseEvaluationHash`로 평가 대상을 명확히 결속한다. history에는 answer, source, term, retrieval input, evaluator evidence, path, filename을 남기지 않고 hash, count, metric만 남긴다.
+
+```bash
+npm run materialize:fine-tuning-private-answer-quality-case -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --candidate <f1-16-final-candidate-json> --candidate-review-resolution <f1-17-final-resolution-json> --enrichment-input <private-enrichment-input-json>
+npm run smoke:fine-tuning-private-answer-quality-case
+```
+
+`q1ContractSatisfied: true only after fixed local evaluation passes`. F1.18은 payload, training, provider, submission, deployment authority를 만들지 않는다. F1.19는 payload lifecycle과 deletion cascade를 별도로 다루며, 그 전까지 raw payload는 prohibited다.
 
 ## 현재 local training runtime contract
 
