@@ -5,6 +5,7 @@ import path from 'node:path';
 import { evaluateAnswerQualitySuite } from '../src/core/answer-quality-evaluation.mjs';
 import { buildApprovedTrainingRecord } from '../src/core/approved-training-record.mjs';
 import { buildFineTuningReadinessPackage } from '../src/core/fine-tuning-readiness.mjs';
+import { assessFineTuningDataSufficiency } from '../src/core/fine-tuning-data-sufficiency.mjs';
 import { buildRetrievalContext } from '../src/core/retrieval-service.mjs';
 import { buildTrainingDatasetManifest } from '../src/core/training-dataset-quality.mjs';
 import { createApprovedTrainingRecordFixtureSet } from './training-record-fixture-runtime.mjs';
@@ -134,4 +135,37 @@ export function buildDeterministicFineTuningReadinessFixture({
     datasetManifest,
     records,
   });
+}
+
+export function buildDeterministicFineTuningBaselineContext({ repoDir = process.cwd() } = {}) {
+  const readinessFixture = readJson(repoDir, 'fixtures/fine-tuning-readiness-cases-v1.json');
+  const datasetFixture = readJson(repoDir, readinessFixture.datasetFixture);
+  const answerQualityFixture = readJson(repoDir, readinessFixture.answerQualityFixture);
+  const records = datasetFixture.cases.map((testCase) => buildApprovedTrainingRecord(buildApprovedTrainingRecordFixture({
+    example: { instruction: testCase.instruction, response: testCase.response },
+    missionId: `mission-${testCase.id}`,
+    suffix: testCase.id,
+  })));
+  const datasetManifest = buildTrainingDatasetManifest({ records, seed: datasetFixture.seed });
+  const baselineEvaluation = evaluateAnswerQualitySuite({
+    cases: answerQualityFixture.cases.map(
+      ({ retrievalInput, ...definition }) => ({
+        ...definition,
+        retrievedItems: buildRetrievalContext(retrievalInput),
+      }),
+    ),
+    thresholds: answerQualityFixture.thresholds,
+  });
+  const readinessPackage = buildFineTuningReadinessPackage({
+    baselineEvaluation,
+    datasetManifest,
+    records,
+  });
+  return {
+    baselineEvaluation,
+    datasetManifest,
+    readinessPackage,
+    records,
+    sufficiencyAssessment: assessFineTuningDataSufficiency({ readinessPackage }),
+  };
 }

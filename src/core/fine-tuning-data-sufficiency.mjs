@@ -184,18 +184,66 @@ function buildChecks(authority, bindings, measurements, requirements) {
   ];
 }
 
+export function evaluateFineTuningDataSufficiencyChecks({
+  authority,
+  bindings,
+  measurements,
+  policy = buildFineTuningDataSufficiencyPolicy(),
+} = {}) {
+  assertFineTuningDataSufficiencyPolicy(policy);
+  assertFineTuningDataSufficiencyMeasurements(measurements);
+  return buildChecks(
+    authority,
+    bindings,
+    measurements,
+    policy.requirements,
+  );
+}
+
+export function assertFineTuningDataSufficiencyMeasurements(measurements) {
+  if (
+    ![
+      measurements?.acceptedExamples,
+      measurements?.acceptedRiskExamples,
+      measurements?.answerQualityCases,
+      measurements?.missionScopes,
+      measurements?.trainExamples,
+      measurements?.validationExamples,
+    ].every(isNonNegativeInteger) ||
+    !Number.isFinite(measurements?.acceptedRiskRate) ||
+    measurements.acceptedRiskRate < 0 ||
+    measurements.acceptedRiskRate > 1 ||
+    measurements.acceptedExamples !==
+      measurements.trainExamples + measurements.validationExamples ||
+    measurements.acceptedRiskExamples > measurements.acceptedExamples ||
+    measurements.missionScopes > measurements.acceptedExamples ||
+    measurements.acceptedRiskRate !==
+      (measurements.acceptedExamples === 0
+        ? 0
+        : Number(
+            (
+              measurements.acceptedRiskExamples /
+              measurements.acceptedExamples
+            ).toFixed(6),
+          ))
+  ) {
+    throw new Error('Fine-tuning data sufficiency measurements are invalid.');
+  }
+  return measurements;
+}
+
 function buildAssessmentContent({
   authority,
   bindings,
   measurements,
   policy,
 }) {
-  const checks = buildChecks(
+  const checks = evaluateFineTuningDataSufficiencyChecks({
     authority,
     bindings,
     measurements,
-    policy.requirements,
-  );
+    policy,
+  });
   const failedCheckIds = checks
     .filter((item) => !item.passed)
     .map((item) => item.id);
@@ -347,35 +395,9 @@ export function assertFineTuningDataSufficiencyAssessment(assessment) {
     throw new Error('Fine-tuning data sufficiency bindings are invalid.');
   }
 
-  const measurements = content.measurements || {};
-  if (
-    ![
-      measurements.acceptedExamples,
-      measurements.acceptedRiskExamples,
-      measurements.answerQualityCases,
-      measurements.missionScopes,
-      measurements.trainExamples,
-      measurements.validationExamples,
-    ].every(isNonNegativeInteger) ||
-    !Number.isFinite(measurements.acceptedRiskRate) ||
-    measurements.acceptedRiskRate < 0 ||
-    measurements.acceptedRiskRate > 1 ||
-    measurements.acceptedExamples !==
-      measurements.trainExamples + measurements.validationExamples ||
-    measurements.acceptedRiskExamples > measurements.acceptedExamples ||
-    measurements.missionScopes > measurements.acceptedExamples ||
-    measurements.acceptedRiskRate !==
-      (measurements.acceptedExamples === 0
-        ? 0
-        : Number(
-            (
-              measurements.acceptedRiskExamples /
-              measurements.acceptedExamples
-            ).toFixed(6),
-          ))
-  ) {
-    throw new Error('Fine-tuning data sufficiency measurements are invalid.');
-  }
+  const measurements = assertFineTuningDataSufficiencyMeasurements(
+    content.measurements,
+  );
 
   const expected = buildAssessmentContent({
     authority,
