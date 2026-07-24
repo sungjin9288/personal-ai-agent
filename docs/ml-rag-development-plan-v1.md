@@ -1,7 +1,9 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: local-answer-input-boundary-current
-- currentCostFreeMilestone: fine-tuning-private-answer-quality-case-materialization-protocol
+- status: local-synthetic-answer-quality-payload-lifecycle-current
+- currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle
+- completedMilestones:
+  - status: local-answer-input-boundary-current
 - productionReadyClaim: false
 - costFreeDefault: true
 - externalProviderCalls: none
@@ -48,6 +50,10 @@
 - fineTuningPrivateAnswerQualityEnrichmentCandidateStatus: protocol-ready-private-review-required
 - currentFineTuningPrivateAnswerQualityEnrichmentCandidateReviewResolutionSurface: `scripts/resolve-fine-tuning-private-answer-quality-enrichment-candidate-review.mjs`
 - fineTuningPrivateAnswerQualityEnrichmentCandidateReviewResolutionStatus: protocol-ready-private-reviewer-decision-required
+- currentFineTuningPrivateAnswerQualityCaseSurface: `scripts/materialize-fine-tuning-private-answer-quality-case.mjs`
+- fineTuningPrivateAnswerQualityCaseStatus: protocol-ready-private-q1-materialization-required
+- currentFineTuningPrivateAnswerQualityCasePayloadSurface: `scripts/materialize-fine-tuning-private-answer-quality-case-payload.mjs`
+- fineTuningPrivateAnswerQualityCasePayloadStatus: protocol-ready-owner-payload-decision-required
 - minimumAdditionalReviewedExamples: 16
 - reviewedExampleCollectionAuthorized: false
 - operatorAttestationRecorded: false
@@ -917,7 +923,7 @@ Admission record는 F1.8에서 승인된 bounded workspace creation·prepared, r
 
 F1.11은 F1.10의 저장 item을 다시 학습 권한으로 해석하지 않고, content-free owner decision과 post-delete absence receipt로 terminal lifecycle만 만든다. `withdraw`는 `storedAt <= decidedAt < deleteBy`, `retention-delete`는 `decidedAt >= deleteBy`만 허용한다. 현재 F1 approval이나 source chain은 재검증하지 않으므로 만료된 item도 exact workspace·admission·item record, path·mode·inode·bytes와 historical hash가 일치할 때 제거할 수 있다.
 
-`scripts/lifecycle-fine-tuning-private-collection-item.mjs`는 네 owner-only no-follow input과 shared workspace lock을 사용한다. 먼저 private pending decision을 fsync한 뒤 item directory를 같은 lane의 removal directory로 atomic rename하고, item bytes를 다시 확인한 다음 `item.json`을 unlink한다. 두 lane을 다시 스캔해 admission과 item hash가 모두 사라졌음을 확인한 후에만 tombstone v2와 absence receipt를 terminal directory로 publish한다. pending item, renamed item, empty removal, final bundle과 empty removal은 정해진 조합만 resume한다. malformed history, link·mode·path·identity drift, item+terminal conflict, duplicate residual item은 evidence를 보존한 채 fail closed한다.
+`scripts/lifecycle-fine-tuning-private-collection-item.mjs`는 네 owner-only no-follow input과 shared workspace lock을 사용한다. 먼저 private pending decision을 fsync한다. F1.19 계열이 존재하면 internal coordinator가 payload-first deletion cascade로 `F1.19 → F1.18 → F1.17 → F1.16 → F1.10` 순서를 강제한다. 파생 history는 fixed staging으로 atomic rename한 뒤 exact inode·bytes·single-link 상태를 다시 확인하고, F1.19 raw payload를 가장 먼저 unlink한다. 모든 파생 경로의 managed namespace 부재와 item 부재가 확인된 뒤 cascade receipt를 먼저 publish하고, 마지막에 기존 tombstone v2와 absence receipt를 terminal directory로 publish한다. 파생 상태가 없는 기존 item은 이전과 같은 same-lane removal 경로를 사용한다. 정해진 pending·staging·final 조합만 resume하며 malformed history, source+staging conflict, link·mode·path·identity drift, foreign copy, residual derivative는 evidence를 보존한 채 fail closed한다.
 
 ```bash
 npm run lifecycle:fine-tuning-private-collection-item -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --decision <private-lifecycle-decision-json>
@@ -933,7 +939,7 @@ trainingAuthorized: false
 productionReadyClaim: false
 ```
 
-이 receipt는 local scan이 item path 부재와 matching count 0을 관측했다는 기록일 뿐, 모든 deletion step의 독립 실행 증명이나 owner identity 검증은 아니다. Tracked evidence는 synthetic fixture만 사용하며 실제 user data, approved record/case, training, provider call, external submission, deployment와 production claim은 계속 없다.
+기존 F1.11 receipt는 local scan이 item path 부재와 matching count 0을 관측했다는 기록이다. F1.19 cascade receipt도 repository가 관리하는 파생 namespace의 부재만 주장하며 backup, snapshot, 다른 process의 open descriptor 또는 외부 복사본까지 삭제했다고 주장하지 않는다. 두 receipt 모두 모든 deletion step의 독립 실행 증명이나 owner identity 검증은 아니다. Tracked evidence는 synthetic fixture만 사용하며 실제 user data, training, provider call, external submission, deployment와 production claim은 계속 없다.
 
 ## 현재 private collection item review projection protocol
 
@@ -1078,7 +1084,32 @@ npm run materialize:fine-tuning-private-answer-quality-case -- --workspace <priv
 npm run smoke:fine-tuning-private-answer-quality-case
 ```
 
-`q1ContractSatisfied: true only after fixed local evaluation passes`. F1.18은 payload, training, provider, submission, deployment authority를 만들지 않는다. F1.19는 payload lifecycle과 deletion cascade를 별도로 다루며, 그 전까지 raw payload는 prohibited다.
+`q1ContractSatisfied: true only after fixed local evaluation passes`. F1.18 자체는 payload, training, provider, submission, deployment authority를 만들지 않는다. Raw payload 저장은 아래 F1.19의 별도 owner decision을 통과해야 한다.
+
+## F1.19 Private answer-quality case payload lifecycle
+
+F1.19는 `curated-synthetic` item의 F1.18 logical case만 local answer-quality replay payload로 materialize한다. F1.17 quality-reviewer 승인을 저장 권한으로 확대하지 않는다. 별도 `retention-deletion-owner-role` decision이 exact item과 F1.18 case hash, `local-answer-quality-evaluation-replay-only` 목적, confirmation token과 retention window를 결속해야 한다. Reject는 content-free `decision.json`만 publish하고 enrichment input을 읽지 않는다.
+
+Approve는 권한 검증 뒤에만 owner-only enrichment input을 읽는다. F1.18과 동일한 case definition과 fixed thresholds evaluation을 다시 만들고 definition·evaluation hash, counts와 metrics가 모두 일치할 때만 `objective`와 `caseDefinition` 두 필드의 최소 payload를 `0700/0600` history에 atomic publish한다. 전체 enrichment input, mission title, constraints, pack, input path와 filename은 저장하지 않는다. Output은 content-free status만 반환한다. Record-only validator는 strict schema와 self-consistency를 확인할 뿐 독립적인 tamper authenticity를 증명하지 않는다. Canonical F1.10 item과 F1.18 case에 대한 의미 결속은 live materializer와 F1.11 cascade가 다시 확인한다.
+
+```bash
+npm run materialize:fine-tuning-private-answer-quality-case-payload -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --candidate <f1-16-final-candidate-json> --candidate-review-resolution <f1-17-final-resolution-json> --case <f1-18-final-case-json> --decision <private-payload-decision-json> --enrichment-input <private-enrichment-input-json>
+npm run smoke:fine-tuning-private-answer-quality-case-payload
+npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle
+```
+
+```text
+payloadPurpose: local-answer-quality-evaluation-replay-only
+contentCopied: true only after owner approve and exact F1.18 parity
+payloadStored: true only after atomic publish
+replayRequiresLivePrivateInput: false
+actualUserDataCollected: false
+trainingAuthorized: false
+externalProviderCalls: none
+productionReadyClaim: false
+```
+
+F1.11은 이 payload의 유일한 public 삭제 진입점이다. 동일 owner lifecycle decision과 workspace lock 아래 payload-first deletion cascade가 F1.19 payload, F1.18 case, F1.17 resolution, F1.16 candidate, F1.10 item을 순서대로 제거한다. Content-free inventory와 absence receipt는 managed namespace만 결속하며 exact replay와 bounded crash recovery를 허용한다. 실제 user data, model evaluation 실행, training, provider submission, deployment는 이 단계의 범위가 아니다.
 
 ## 현재 local training runtime contract
 
@@ -1663,6 +1694,8 @@ Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한�
 | F1.15 Private collection item artifact preparation resolution protocol | 완료 · 실제 quality-reviewer resolution 대기 | exact F1.14 request와 token-hash decision을 owner-only decision/resolution history, shared lock·current-chain revalidation·pending resume·atomic final directory에 결속 | approve도 lane-specific preparation만 표시하며 content·approved record/case·candidate review·training·provider·submission·deploy·production claim 없음 |
 | F1.16 Private answer-quality case enrichment candidate protocol | 완료 · 실제 reviewer Q1 resolution 대기 | exact approved live F1.15 answer-quality resolution과 curated-synthetic item의 objective/answer linkage를 content-free lineage reference·hash·lifecycle timestamp·count·deterministic precheck와 owner-only candidate history에 결속 | `q1ContractSatisfied: false`; case 생성·candidate review 완료·training·provider·submission·deploy·production claim 없음 |
 | F1.17 Private answer-quality enrichment candidate review resolution protocol | 완료 · 실제 reviewer decision 대기 | canonical F1.16 final candidate와 quality-reviewer approve/reject를 content-free decision/resolution bundle, strict expiry·terminal·history·inode gate와 owner-only atomic publish에 결속 | approve도 reviewer gate와 F1.18 materialization allowance만 열며 `q1ContractSatisfied: false`; case materialization·evaluation·training·provider·submission·deploy·production claim 없음 |
+| F1.18 Private answer-quality case materialization protocol | 완료 · 실제 private materialization 대기 | canonical approved F1.17 resolution과 live F1.16 candidate, owner-only enrichment input을 재검증하고 fixed reviewer-pass Q1 evaluation이 통과할 때 content-free logical case를 atomic publish | definition·evaluation hash, counts와 metrics만 기록; payload·training·provider·submission·deploy·production authority 없음 |
+| F1.19 Private answer-quality case payload lifecycle | 완료 · 실제 owner decision 대기 | 별도 retention owner decision 뒤 curated-synthetic F1.18 case와 byte-equivalent한 최소 replay payload만 owner-only atomic publish하고 F1.11 payload-first deletion cascade에 결속 | reject는 raw input 미접근; managed namespace absence만 증명하며 actual user data·training·provider·submission·deploy·production claim 없음 |
 | F2a Local training runtime contract | 완료 | exact F1 packet과 별도 local approval을 bounded child process protocol로 연결하고 content-free run record 생성 | 변조·만료·trainer drift·timeout·output 폭주·stderr 노출·unsafe metadata·허위 actual-training 표시 차단, store 불변과 fixture replay 검증 |
 | F2b Local training product permission surface | 완료 | license·OS egress·resource evidence hash와 각 owner, approval·rollback owner를 기존 action inbox·RBAC·tenant·audit에 연결 | CLI·HTTP·Chromium 승인과 철회, private readiness file, content-free evidence, actual training 미실행 검증 |
 | F2c.1 Local training environment preflight | 완료 · 실행 차단 | 실제 local model artifact·manifest·license hash와 system capacity를 content-free snapshot으로 확인하고 trainable source·trainer·permission·독립 review·rollback owner gate 평가 | 7개 blocker를 고정해 `stop-before-local-training`; dependency 설치·실제 학습·외부 호출·rollout 없음 |

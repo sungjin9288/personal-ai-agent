@@ -196,6 +196,8 @@
 - Private answer-quality case enrichment candidate protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate`
 - Private answer-quality enrichment candidate review resolution protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate-review-resolution`
 - Private answer-quality case materialization protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-case`
+- Private answer-quality case payload protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-case-payload`
+- Private answer-quality case payload lifecycle: verified with `npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle`
 - Local training runtime contract: verified with `npm run smoke:local-training-runtime`
 - Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
 - Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`

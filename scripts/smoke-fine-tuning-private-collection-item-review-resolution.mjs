@@ -27,7 +27,7 @@ assert.equal(
 );
 for (const term of [
   'F1.13 Private collection item review resolution protocol',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-materialization-protocol',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
   'currentFineTuningPrivateCollectionItemReviewResolutionSurface: `scripts/resolve-fine-tuning-private-collection-item-review.mjs`',
   'fineTuningPrivateCollectionItemReviewResolutionStatus: protocol-ready-private-owner-resolution-required',
   'Private collection item review resolution protocol',

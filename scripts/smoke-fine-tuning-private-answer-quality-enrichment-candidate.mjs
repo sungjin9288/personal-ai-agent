@@ -26,7 +26,7 @@ assert.equal(
 );
 for (const term of [
   'F1.16 Private answer-quality case enrichment candidate protocol',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-materialization-protocol',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
   'currentFineTuningPrivateAnswerQualityEnrichmentCandidateSurface: `scripts/prepare-fine-tuning-private-answer-quality-enrichment-candidate.mjs`',
   'fineTuningPrivateAnswerQualityEnrichmentCandidateStatus: protocol-ready-private-review-required',
   'npm run prepare:fine-tuning-private-answer-quality-enrichment-candidate',

@@ -19,6 +19,11 @@ import { assertFineTuningPrivateCollectionWorkspaceRecord } from '../src/core/fi
 import {
   acquireFineTuningPrivateCollectionWorkspaceLock,
 } from './helpers/fine-tuning-private-collection-workspace-lock.mjs';
+import {
+  assertFineTuningPrivateAnswerQualityDeletionCascadeFinal,
+  finalizeFineTuningPrivateAnswerQualityDeletionCascade,
+  prepareFineTuningPrivateAnswerQualityDeletionCascade,
+} from './helpers/fine-tuning-private-answer-quality-case-cascade.mjs';
 
 const MAX_JSON_BYTES = 64 * 1024;
 const LANES = ['reviewed-examples', 'answer-quality-cases'];
@@ -69,6 +74,12 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
       throw new Error('Fine-tuning private collection item lifecycle item and terminal bundle conflict requires manual recovery.');
     }
     assertFinalAbsence({ current, paths, terminal });
+    assertFineTuningPrivateAnswerQualityDeletionCascadeFinal({
+      current: { ...current, item: null },
+      decision: terminal.decision,
+      repoDir,
+      terminalBundle: terminal.bundle,
+    });
     cleanupEmptyRemoval(paths);
     return terminal.bundle.receipt;
   }
@@ -94,7 +105,6 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
       workspace: current.workspace,
     });
     Object.assign(paths, withDecisionPaths(basePaths, decision));
-    createPendingDecision(paths.pendingDirectory, decision);
   }
 
   if (terminal.kind === 'pending' && terminal.hasBundle) {
@@ -102,7 +112,27 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
       throw new Error('Fine-tuning private collection item lifecycle terminal publish state requires manual recovery.');
     }
     assertPendingBundleAbsence({ current, paths, terminal });
-    publishPendingBundle(paths, terminal.bundle);
+    const cascadeCurrent = { ...current, item: null };
+    const cascade = prepareFineTuningPrivateAnswerQualityDeletionCascade({
+      current: cascadeCurrent,
+      decision,
+      repoDir,
+    });
+    finalizeFineTuningPrivateAnswerQualityDeletionCascade({
+      cascade,
+      current: cascadeCurrent,
+      decision,
+      itemFilename: paths.itemFilename,
+      removalDirectory: paths.removalDirectory,
+      repoDir,
+      terminalBundle: terminal.bundle,
+    });
+    publishTerminalBundle({
+      bundle: terminal.bundle,
+      current: cascadeCurrent,
+      decision,
+      paths,
+    });
     return terminal.bundle.receipt;
   }
 
@@ -111,6 +141,12 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
       throw new Error('Fine-tuning private collection item lifecycle tombstone and item conflict requires manual recovery.');
     }
     const absence = assertAbsentAcrossLanes({ current, paths, decision });
+    const cascadeCurrent = { ...current, item: null };
+    const cascade = prepareFineTuningPrivateAnswerQualityDeletionCascade({
+      current: cascadeCurrent,
+      decision,
+      repoDir,
+    });
     const receipt = buildFineTuningPrivateCollectionItemAbsenceReceipt({
       absence,
       decision,
@@ -119,7 +155,21 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
     });
     writePendingReceipt(paths.pendingDirectory, receipt);
     const bundle = { decision, receipt, tombstone: terminal.tombstone };
-    publishPendingBundle(paths, bundle);
+    finalizeFineTuningPrivateAnswerQualityDeletionCascade({
+      cascade,
+      current: cascadeCurrent,
+      decision,
+      itemFilename: paths.itemFilename,
+      removalDirectory: paths.removalDirectory,
+      repoDir,
+      terminalBundle: bundle,
+    });
+    publishTerminalBundle({
+      bundle,
+      current: cascadeCurrent,
+      decision,
+      paths,
+    });
     return receipt;
   }
 
@@ -130,8 +180,20 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
   if (!itemState && !removalState) {
     throw new Error('Fine-tuning private collection item lifecycle pending state requires manual recovery.');
   }
+  assertNoUnexpectedWorkspaceContent(current, paths);
+  const cascadeCurrent = {
+    ...current,
+    item: itemState?.item || removalState?.item?.item || null,
+  };
+  if (terminal.kind !== 'pending') {
+    createPendingDecision(paths.pendingDirectory, decision);
+  }
+  const cascade = prepareFineTuningPrivateAnswerQualityDeletionCascade({
+    current: cascadeCurrent,
+    decision,
+    repoDir,
+  });
   if (itemState) {
-    assertNoUnexpectedWorkspaceContent(current, paths);
     moveItemToRemoval({ current, itemState, paths });
   }
   unlinkRemovalItem({ current, paths, decision });
@@ -144,11 +206,30 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
     observedAt: recordedAt,
     tombstone,
   });
-  writePendingBundle(paths.pendingDirectory, { decision, receipt: generatedReceipt, tombstone });
+  const bundle = {
+    decision,
+    receipt: generatedReceipt,
+    tombstone,
+  };
+  writePendingBundle(paths.pendingDirectory, bundle);
   if (!absence.removalDirectoryEmpty) {
     throw new Error('Fine-tuning private collection item lifecycle removal directory is not empty.');
   }
-  publishPendingBundle(paths, { decision, receipt: generatedReceipt, tombstone });
+  finalizeFineTuningPrivateAnswerQualityDeletionCascade({
+    cascade,
+    current: cascadeCurrent,
+    decision,
+    itemFilename: paths.itemFilename,
+    removalDirectory: paths.removalDirectory,
+    repoDir,
+    terminalBundle: bundle,
+  });
+  publishTerminalBundle({
+    bundle,
+    current: cascadeCurrent,
+    decision,
+    paths,
+  });
   return generatedReceipt;
 }
 
@@ -529,6 +610,10 @@ function assertNoUnexpectedWorkspaceContent(current, paths) {
     const laneDirectory = current.layout.lanes[lane].directory;
     for (const name of fs.readdirSync(laneDirectory)) {
       const directory = path.join(laneDirectory, name);
+      if (directory === paths.removalDirectory) {
+        inspectRemoval(paths);
+        continue;
+      }
       if (directory === paths.itemDirectory) {
         const item = readStoredItem(path.join(directory, 'item.json'), { allowMissing: false }).item;
         assertFineTuningPrivateCollectionItemRecord(item);
@@ -574,6 +659,16 @@ function publishPendingBundle(paths, bundle) {
   fs.renameSync(paths.pendingDirectory, paths.finalDirectory);
   fsyncDirectory(paths.terminalRoot);
   cleanupEmptyRemoval(paths);
+}
+
+function publishTerminalBundle({ bundle, current, decision, paths }) {
+  assertFineTuningPrivateAnswerQualityDeletionCascadeFinal({
+    current,
+    decision,
+    repoDir,
+    terminalBundle: bundle,
+  });
+  publishPendingBundle(paths, bundle);
 }
 
 function cleanupEmptyRemoval(paths) {

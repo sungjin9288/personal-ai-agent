@@ -41,7 +41,7 @@ assert.equal(
 );
 for (const term of [
   'F1.17 Private answer-quality enrichment candidate review resolution protocol',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-materialization-protocol',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
   'currentFineTuningPrivateAnswerQualityEnrichmentCandidateReviewResolutionSurface: `scripts/resolve-fine-tuning-private-answer-quality-enrichment-candidate-review.mjs`',
   'fineTuningPrivateAnswerQualityEnrichmentCandidateReviewResolutionStatus: protocol-ready-private-reviewer-decision-required',
   'npm run resolve:fine-tuning-private-answer-quality-enrichment-candidate-review',

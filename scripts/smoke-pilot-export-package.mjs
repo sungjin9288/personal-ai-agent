@@ -347,7 +347,10 @@ assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
-assert.match(mlRagDevelopmentPlan, /status: local-answer-input-boundary-current/);
+assert.match(
+  mlRagDevelopmentPlan,
+  /status: local-synthetic-answer-quality-payload-lifecycle-current/,
+);
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
 assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
@@ -441,6 +444,18 @@ assert.match(
 assert.match(
   mlRagDevelopmentPlan,
   /\| F2c\.5 Local training acquisition execution plan \| 완료 · 실제 승인 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F1\.19 Private answer-quality case payload lifecycle \| 완료 · 실제 owner decision 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-answer-quality-case-payload/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle/,
 );
 assert.match(mlRagDevelopmentPlan, /\| P1 Approved learning RAG feedback \| 완료 \|/);
 assert.match(mlRagDevelopmentPlan, /\| L1 승인된 학습 데이터 \| 완료 \|/);

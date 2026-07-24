@@ -27,7 +27,7 @@ assert.equal(
 );
 for (const term of [
   'F1.11 Private collection item withdrawal and retention-deletion lifecycle',
-  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-materialization-protocol',
+  'currentCostFreeMilestone: fine-tuning-private-answer-quality-case-payload-lifecycle',
   'currentFineTuningPrivateCollectionItemLifecycleSurface: `scripts/lifecycle-fine-tuning-private-collection-item.mjs`',
   'fineTuningPrivateCollectionItemLifecycleStatus: protocol-ready-private-withdrawal-or-retention-delete-required',
   'npm run lifecycle:fine-tuning-private-collection-item',
