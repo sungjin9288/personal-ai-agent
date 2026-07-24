@@ -81,6 +81,7 @@ const expectedCommands = [
   'npm run smoke:fine-tuning-private-reviewed-example-dataset-impact',
   'npm run smoke:fine-tuning-private-answer-quality-readiness-impact',
   'npm run smoke:fine-tuning-private-combined-readiness-impact',
+  'npm run smoke:fine-tuning-private-collection-gap-replan',
   'npm run smoke:local-training-runtime',
   'npm run smoke:local-training-permission-surface',
   'npm run smoke:local-training-permission-evidence',

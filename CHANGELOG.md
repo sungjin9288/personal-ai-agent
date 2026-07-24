@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a cost-free F1.25 private collection-gap replan shadow that independently reconstructs the F1.24 projection from live authority and recalculates the F1.2 collection plan in memory only. Tracked F1.2 evidence, intake, collection completion, audit, training, provider, submission, deployment, and production state remain unchanged or false.
 - Added a cost-free F1.24 combined readiness impact shadow that composes one trusted F1.21 reviewed record and one trusted F1.20 replay case in memory only.
 - Added F1.23 private answer-quality readiness impact shadow. The read-only projection revalidates one exact final F1.20 replay and adds its frozen F1.18 Q1 case definition to the tracked deterministic suite only in memory. It projects 2→3 answer-quality cases while dataset records, split and export digests, sufficiency stop-condition failures, collection-action completion, training, provider, submission, deployment, and production state remain unchanged or false.
 - Added F1.22 private dataset rebuild and sufficiency reassessment shadow. The read-only projection combines one final F1.21 record with the tracked deterministic baseline only in memory and keeps actual dataset, sufficiency, collection-action, training, provider, and deployment state unchanged.

@@ -1,7 +1,7 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: private-combined-readiness-impact-shadow-current
-- currentCostFreeMilestone: private-combined-readiness-impact-shadow
+- status: private-collection-gap-replan-shadow-current
+- currentCostFreeMilestone: private-collection-gap-replan-shadow
 - completedMilestones:
   - status: local-answer-input-boundary-current
 - productionReadyClaim: false
@@ -58,6 +58,8 @@
 - fineTuningPrivateAnswerQualityCaseReplayStatus: protocol-ready-local-operator-replay-request-required
 - currentFineTuningPrivateCombinedReadinessImpactSurface: `scripts/project-fine-tuning-private-combined-readiness-impact.mjs`
 - fineTuningPrivateCombinedReadinessImpactStatus: deterministic-shadow-current
+- currentFineTuningPrivateCollectionGapReplanSurface: `scripts/project-fine-tuning-private-collection-gap-replan.mjs`
+- fineTuningPrivateCollectionGapReplanStatus: deterministic-shadow-current
 - minimumAdditionalReviewedExamples: 16
 - reviewedExampleCollectionAuthorized: false
 - operatorAttestationRecorded: false
@@ -1195,6 +1197,24 @@ externalProviderCalls: none
 productionReadyClaim: false
 ```
 
+## F1.25 Private collection-gap replan shadow
+
+F1.25는 F1.24 stdout을 입력으로 쓰지 않는다. 동일한 live F1.1–F1.15·F1.16–F1.21 authority, global history, fixture, expiry와 lock guard를 다시 읽어 combined projection을 새로 만든다. 이어 canonical tracked F1.2 collection plan의 path·mode·single-link·inode·bytes를 전·중·후에 확인하고 baseline assessment에서 exact plan을 재생성해 같음을 확인한다.
+
+검증된 projection `5/4/1/5/3`을 기존 collection-plan builder에 memory-only로 넣으면 reviewed-example gap은 `15/12/3`, mission-scope gap은 `5`, answer-quality case gap은 `7`이다. 다음 action은 `collect-distinct-reviewed-mission-examples` → `expand-answer-quality-baseline` → `rebuild-readiness-and-reassess` 순서이며 accepted-risk remediation은 false다. tracked F1.2 `16/6/8`, intake request, dataset/readiness/sufficiency evidence, collection completion, audit/timeline, collection·training·provider·submission·deployment authority는 모두 바꾸지 않는다.
+
+```bash
+npm run project:fine-tuning-private-collection-gap-replan -- --record-workspace <private-workspace-json> --record-admission <private-admission-json> --record-item <private-item-json> --record-intake-resolution <private-intake-resolution-json> --record-private-collection-plan <private-plan-json> --record-execution-request <private-execution-request-json> --record-execution-resolution <private-execution-resolution-json> --record-artifact-preparation-resolution <f1-15-final-resolution-json> --record-source-bundle <owner-only-source-bundle-json> --answer-workspace <private-workspace-json> --answer-admission <private-admission-json> --answer-item <private-item-json> --answer-candidate <f1-16-candidate-json> --answer-candidate-review-resolution <f1-17-final-resolution-json> --answer-case <f1-18-final-case-json> --answer-payload <f1-19-final-payload-json> --answer-request <f1-20-request-json>
+npm run smoke:fine-tuning-private-collection-gap-replan
+```
+
+```text
+currentCostFreeMilestone: private-collection-gap-replan-shadow
+executionMode: shadow-only
+externalProviderCalls: none
+productionReadyClaim: false
+```
+
 ## 현재 local training runtime contract
 
 `src/core/local-training-runtime.mjs`는 F1 readiness package를 operator-owned local executable에 전달하는 최소 실행 경계를 제공한다. Readiness package는 여전히 `fineTuningExecutionAuthorized: false`이며 스스로 실행 권한을 만들지 않는다. Runtime을 호출하려면 dataset hash, readiness hash, train·validation digest, trainer id, base model id, 승인자, 만료 시각과 rollback owner를 묶은 별도 local execution approval이 필요하다.
@@ -1784,6 +1804,8 @@ Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한�
 | F1.21 Private reviewed-example canonical record | 완료 · synthetic fixture 증적 | exact approved F1.1–F1.15 reviewed-example chain과 source bundle을 다시 검증하고 기존 approved-record builder로 owner-only canonical record를 atomic publish | tracked dataset·readiness·sufficiency에는 연결하지 않으며 actual user data·training·provider·submission·deploy·production claim 없음 |
 | F1.22 Private dataset impact shadow | 완료 · synthetic fixture projection | F1.21 final record를 deterministic baseline에 memory-only로 합쳐 기존 dataset·readiness·sufficiency builder를 재실행하고 tracked F1.1과 exact parity 확인 | `4/3/1/4/2`→`5/4/1/5/2` projection과 failed gate 5개를 관측했지만 실제 rebuild·sufficiency 변경·collection action 완료·training authority 없음 |
 | F1.23 Private answer-quality readiness impact shadow | 완료 · synthetic fixture projection | final F1.20 replay case를 deterministic baseline suite에 memory-only로 추가하고 Q1 parity와 existing readiness·sufficiency builder를 재실행 | answer-quality case `2→3`, dataset/split/export digest unchanged, failed gate 5개 유지; 실제 readiness·sufficiency·collection action·training·provider·submission·deployment·production claim 없음 |
+| F1.24 Private combined readiness impact shadow | 완료 · synthetic fixture projection | final F1.21 record와 final F1.20 replay를 same trusted authority에서 memory-only로 합쳐 기존 dataset·readiness·sufficiency builder를 재실행 | `4/3/1/4/2`→`5/4/1/5/3`, failed gate 5개 유지; 실제 state·audit·training·provider·submission·deployment·production claim 없음 |
+| F1.25 Private collection-gap replan shadow | 완료 · synthetic fixture projection | F1.24 stdout을 신뢰하지 않고 same trusted authority에서 combined projection과 canonical tracked F1.2 plan을 재도출한 뒤 collection-plan builder를 memory-only로 실행 | projected gap `15/12/3`, scope `5`, case `7`; tracked F1.2 `16/6/8`, intake request, state·audit·collection·training·provider·submission·deployment·production authority 없음 |
 | F2a Local training runtime contract | 완료 | exact F1 packet과 별도 local approval을 bounded child process protocol로 연결하고 content-free run record 생성 | 변조·만료·trainer drift·timeout·output 폭주·stderr 노출·unsafe metadata·허위 actual-training 표시 차단, store 불변과 fixture replay 검증 |
 | F2b Local training product permission surface | 완료 | license·OS egress·resource evidence hash와 각 owner, approval·rollback owner를 기존 action inbox·RBAC·tenant·audit에 연결 | CLI·HTTP·Chromium 승인과 철회, private readiness file, content-free evidence, actual training 미실행 검증 |
 | F2c.1 Local training environment preflight | 완료 · 실행 차단 | 실제 local model artifact·manifest·license hash와 system capacity를 content-free snapshot으로 확인하고 trainable source·trainer·permission·독립 review·rollback owner gate 평가 | 7개 blocker를 고정해 `stop-before-local-training`; dependency 설치·실제 학습·외부 호출·rollout 없음 |

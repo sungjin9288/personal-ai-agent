@@ -118,7 +118,7 @@ function canonicalize(value) {
   return value;
 }
 
-function derive(context) {
+function rebuildFineTuningPrivateCombinedReadinessImpactDetails(context = {}) {
   assertTrustedContext(context);
   const {
     answerQualityCase,
@@ -182,8 +182,6 @@ function derive(context) {
     records,
   });
   const assessment = assessFineTuningDataSufficiency({ readinessPackage: readiness });
-  const baselineSummary = summarize(baseline);
-  const projectionSummary = summarize({ assessment, evaluation, manifest, readiness });
   const delta = measurementDelta(baseline.assessment.measurements, assessment.measurements);
   if (
     JSON.stringify(delta) !== JSON.stringify({
@@ -201,6 +199,30 @@ function derive(context) {
   ) {
     throw new Error('Private combined readiness impact projection did not match the frozen synthetic expectation.');
   }
+  return {
+    baseline,
+    projection: { assessment, evaluation, manifest, readiness },
+  };
+}
+
+export function rebuildFineTuningPrivateCombinedReadinessImpact(context = {}) {
+  const { baseline, projection } =
+    rebuildFineTuningPrivateCombinedReadinessImpactDetails(context);
+  return {
+    baseline: { assessment: baseline.assessment },
+    projection: { assessment: projection.assessment },
+  };
+}
+
+function derive(context) {
+  const { baseline, projection } =
+    rebuildFineTuningPrivateCombinedReadinessImpactDetails(context);
+  const baselineSummary = summarize(baseline);
+  const projectionSummary = summarize(projection);
+  const delta = measurementDelta(
+    baseline.assessment.measurements,
+    projection.assessment.measurements,
+  );
   return {
     actualDatasetRebuilt: false,
     actualDeploymentPerformed: false,
@@ -221,12 +243,12 @@ function derive(context) {
     providerAuthorized: false,
     projection: { ...projectionSummary, delta, disposition: 'accepted-in-memory-only' },
     receiptDigests: {
-      answerQualityCaseSha256: hash(answerQualityCase),
-      payloadSha256: hash(payload),
-      recordReceiptSha256: hash(recordReceipt),
-      recordSha256: hash(record),
-      replayReceiptSha256: hash(replayReceipt),
-      replayRequestSha256: hash(replayRequest),
+      answerQualityCaseSha256: hash(context.answerQualityCase),
+      payloadSha256: hash(context.payload),
+      recordReceiptSha256: hash(context.recordReceipt),
+      recordSha256: hash(context.record),
+      replayReceiptSha256: hash(context.replayReceipt),
+      replayRequestSha256: hash(context.replayRequest),
     },
     schemaVersion: FINE_TUNING_PRIVATE_COMBINED_READINESS_IMPACT_SCHEMA_VERSION,
     shadowOnly: true,

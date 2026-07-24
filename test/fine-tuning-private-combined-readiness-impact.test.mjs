@@ -23,6 +23,7 @@ import {
 import {
   assertFineTuningPrivateCombinedReadinessImpactShadow,
   buildFineTuningPrivateCombinedReadinessImpactShadow,
+  rebuildFineTuningPrivateCombinedReadinessImpact,
 } from '../src/core/fine-tuning-private-combined-readiness-impact.mjs';
 import {
   buildTrainingDatasetManifest,
@@ -112,6 +113,25 @@ test('F1.24 rejects self-rehashed output and missing trusted context', () => {
       () => assertFineTuningPrivateCombinedReadinessImpactShadow(result),
       /trusted verification context/,
     );
+  });
+});
+
+test('F1.24 exposes only rebuilt assessments, never trusted private inputs', () => {
+  withCombinedInputs((inputs) => {
+    const rebuilt = rebuildFineTuningPrivateCombinedReadinessImpact(inputs);
+
+    assert.deepEqual(Object.keys(rebuilt).sort(), ['baseline', 'projection']);
+    assert.deepEqual(Object.keys(rebuilt.baseline), ['assessment']);
+    assert.deepEqual(Object.keys(rebuilt.projection), ['assessment']);
+    assert.equal('receipts' in rebuilt, false);
+    for (const sentinel of [
+      inputs.record.example.response,
+      inputs.payload.payload.caseDefinition.answer.text,
+      inputs.replayRequest.id,
+      inputs.recordReceipt.id,
+    ]) {
+      assert.equal(JSON.stringify(rebuilt).includes(sentinel), false);
+    }
   });
 });
 
