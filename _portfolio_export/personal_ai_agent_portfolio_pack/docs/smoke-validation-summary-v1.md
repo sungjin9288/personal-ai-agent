@@ -91,6 +91,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Private answer-quality payload replay | `npm run smoke:fine-tuning-private-answer-quality-case-replay` | Verifies separate local-operator replay authority, exact stored F1.19 payload identity, frozen F1.18 Q1 parity, content-free receipt, pending recovery, and no enrichment input or model call |
 | Private reviewed-example canonical record materialization | `npm run smoke:fine-tuning-private-reviewed-example-canonicalization` | Verifies exact approved F1.15 reviewed-example lineage, source projection hash binding, existing approved-record dataset validation, private atomic publish, pending recovery, and delete-before-item lifecycle without training or provider authority |
 | Private reviewed-example dataset impact shadow | `npm run smoke:fine-tuning-private-reviewed-example-dataset-impact` | Verifies a deterministic in-memory baseline-plus-F1.21 projection, five remaining stop-condition failures, and no dataset, authority, audit, or evidence mutation |
+| Private answer-quality readiness impact shadow | `npm run smoke:fine-tuning-private-answer-quality-readiness-impact` | Verifies one exact final F1.20 replay case added to the deterministic suite only in memory, Q1 parity, `2→3` case count, unchanged dataset/export digests, five remaining stop-condition failures, and no readiness, authority, audit, or evidence mutation |
 | Local training runtime contract | `npm run smoke:local-training-runtime` | Verifies exact F1 and expiring approval binding, current permission and post-acquisition admission revalidation before spawn, shell-free local stdio, secret environment filtering, input/output/timeout bounds, strict content-free candidate output, store invariance, and actualModelTrainingExecuted=false boundary |
 | Local training product permission surface | `npm run smoke:local-training-permission-surface` | Verifies CLI request, action inbox aggregation, approver-only HTTP approval and revocation, tenant isolation, ordered gateway audit, private readiness storage, and actualModelTrainingExecuted=false boundary |
 | Local training permission evidence | `npm run smoke:local-training-permission-evidence` | Verifies the tracked content-free replay hash, actual Chromium screenshot hash, zero browser console errors, and productionReadyClaim=false boundary |
@@ -210,6 +211,7 @@ npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle
 npm run smoke:fine-tuning-private-answer-quality-case-replay
 npm run smoke:fine-tuning-private-reviewed-example-canonicalization
 npm run smoke:fine-tuning-private-reviewed-example-dataset-impact
+npm run smoke:fine-tuning-private-answer-quality-readiness-impact
 npm run smoke:local-training-runtime
 npm run smoke:local-training-permission-surface
 npm run smoke:local-training-permission-evidence
