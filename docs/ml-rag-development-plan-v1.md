@@ -1,7 +1,7 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
 - status: local-synthetic-answer-quality-payload-replay-current
-- currentCostFreeMilestone: fine-tuning-private-answer-quality-case-replay
+- currentCostFreeMilestone: private-reviewed-example-canonical-record-materialization
 - completedMilestones:
   - status: local-answer-input-boundary-current
 - productionReadyClaim: false
@@ -1131,6 +1131,23 @@ actualUserDataCollected: false
 actualModelEvaluated: false
 trainingAuthorized: false
 externalProviderCalls: none
+productionReadyClaim: false
+```
+
+## F1.21 Private reviewed-example canonical record materialization protocol
+
+F1.21은 F1.1–F1.15의 exact approved live `reviewed-examples`와 `curated-synthetic` lineage만 owner-only source bundle로 다시 확인한 뒤, 기존 `buildApprovedTrainingRecord(...)`과 dataset validator가 만드는 동일 record schema를 local private history에 atomic publish한다. source bundle의 candidate·mission·session·training workspace·선택 artifact projection에서 lineage/reference/scope hash를 재계산하고, bundle 선언과 F1.10 admission envelope가 모두 같은 hash여야 한다. bundle의 example은 admitted `item.example`와 byte-for-byte semantic content가 같아야 하며 다른 content 주입은 거부한다.
+
+```bash
+npm run materialize:fine-tuning-private-reviewed-example -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --intake-resolution <private-intake-resolution-json> --private-collection-plan <private-plan-json> --execution-request <private-execution-request-json> --execution-resolution <private-execution-resolution-json> --artifact-preparation-resolution <f1-15-final-resolution-json> --source-bundle <owner-only-source-bundle-json>
+npm run smoke:fine-tuning-private-reviewed-example-canonicalization
+```
+
+`private-reviewed-example-canonical-records`는 `0700/0600`, no-follow, single-link, bounded bytes, pre/post inode·bytes 검증과 exact empty, record-only, complete pending recovery만 허용한다. F1.11 lifecycle은 reviewed lane에서 raw F1.21 record를 item보다 먼저 stage·remove하고, staged directory 제거와 content-free absence receipt 작성 뒤 terminal publish를 재개한다. 이 record는 tracked dataset/readiness 또는 F1.1 sufficiency count에 연결하지 않으며 `actualUserDataCollected: false`, `fineTuningExecutionAuthorized: false`, `externalSubmissionAuthorized: false`, `productionReadyClaim: false`를 유지한다.
+
+```text
+currentCostFreeMilestone: private-reviewed-example-canonical-record-materialization
+fineTuningExecutionAuthorized: false
 productionReadyClaim: false
 ```
 

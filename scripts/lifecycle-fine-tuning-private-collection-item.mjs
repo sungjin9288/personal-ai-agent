@@ -24,6 +24,11 @@ import {
   finalizeFineTuningPrivateAnswerQualityDeletionCascade,
   prepareFineTuningPrivateAnswerQualityDeletionCascade,
 } from './helpers/fine-tuning-private-answer-quality-case-cascade.mjs';
+import {
+  assertFineTuningPrivateReviewedExampleCanonicalizationDeletionCascadeFinal,
+  finalizeFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade,
+  prepareFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade,
+} from './helpers/fine-tuning-private-reviewed-example-canonicalization-cascade.mjs';
 
 const MAX_JSON_BYTES = 64 * 1024;
 const LANES = ['reviewed-examples', 'answer-quality-cases'];
@@ -80,6 +85,11 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
       repoDir,
       terminalBundle: terminal.bundle,
     });
+    assertFineTuningPrivateReviewedExampleCanonicalizationDeletionCascadeFinal({
+      current: { ...current, item: null },
+      decision: terminal.decision,
+      repoDir,
+    });
     cleanupEmptyRemoval(paths);
     return terminal.bundle.receipt;
   }
@@ -113,6 +123,11 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
     }
     assertPendingBundleAbsence({ current, paths, terminal });
     const cascadeCurrent = { ...current, item: null };
+    const reviewedExampleCascade = prepareFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade({
+      current: cascadeCurrent,
+      decision,
+      repoDir,
+    });
     const cascade = prepareFineTuningPrivateAnswerQualityDeletionCascade({
       current: cascadeCurrent,
       decision,
@@ -126,6 +141,12 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
       removalDirectory: paths.removalDirectory,
       repoDir,
       terminalBundle: terminal.bundle,
+    });
+    finalizeFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade({
+      cascade: reviewedExampleCascade,
+      current: cascadeCurrent,
+      decision,
+      repoDir,
     });
     publishTerminalBundle({
       bundle: terminal.bundle,
@@ -142,6 +163,11 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
     }
     const absence = assertAbsentAcrossLanes({ current, paths, decision });
     const cascadeCurrent = { ...current, item: null };
+    const reviewedExampleCascade = prepareFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade({
+      current: cascadeCurrent,
+      decision,
+      repoDir,
+    });
     const cascade = prepareFineTuningPrivateAnswerQualityDeletionCascade({
       current: cascadeCurrent,
       decision,
@@ -163,6 +189,12 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
       removalDirectory: paths.removalDirectory,
       repoDir,
       terminalBundle: bundle,
+    });
+    finalizeFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade({
+      cascade: reviewedExampleCascade,
+      current: cascadeCurrent,
+      decision,
+      repoDir,
     });
     publishTerminalBundle({
       bundle,
@@ -188,6 +220,11 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
   if (terminal.kind !== 'pending') {
     createPendingDecision(paths.pendingDirectory, decision);
   }
+  const reviewedExampleCascade = prepareFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade({
+    current: cascadeCurrent,
+    decision,
+    repoDir,
+  });
   const cascade = prepareFineTuningPrivateAnswerQualityDeletionCascade({
     current: cascadeCurrent,
     decision,
@@ -223,6 +260,12 @@ function executeLifecycle({ initial, inputs: privateInputs, terminalRoot: root }
     removalDirectory: paths.removalDirectory,
     repoDir,
     terminalBundle: bundle,
+  });
+  finalizeFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade({
+    cascade: reviewedExampleCascade,
+    current: cascadeCurrent,
+    decision,
+    repoDir,
   });
   publishTerminalBundle({
     bundle,

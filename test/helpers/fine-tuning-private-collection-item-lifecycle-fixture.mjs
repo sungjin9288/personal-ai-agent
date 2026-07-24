@@ -19,6 +19,7 @@ export function withSyntheticLifecycleFixture(callback, {
   deleteByOffset = 30 * 60 * 1000,
   expiresAtOffset = 60 * 60 * 1000,
   lane = 'reviewed-examples',
+  sourceHashes,
 } = {}) {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fine-tuning-item-lifecycle-'));
   try {
@@ -26,6 +27,7 @@ export function withSyntheticLifecycleFixture(callback, {
       deleteByOffset,
       expiresAtOffset,
       lane,
+      sourceHashes,
     });
     return callback(fixture);
   } finally {
@@ -37,6 +39,7 @@ export function createSyntheticLifecycleFixture(rootDir, {
   deleteByOffset = 30 * 60 * 1000,
   expiresAtOffset = 60 * 60 * 1000,
   lane = 'reviewed-examples',
+  sourceHashes,
 } = {}) {
   const now = Date.now();
   const time = (offset) => new Date(now + offset).toISOString();
@@ -95,7 +98,7 @@ export function createSyntheticLifecycleFixture(rootDir, {
       redaction: { evidenceSha256: digest(marker, 2), policyId: 'deidentify-before-content-admission-v1' },
       retention: { deleteBy: time(deleteByOffset), evidenceSha256: digest(marker, 3), policyId: 'delete-by-expiry-or-withdrawal-v1', withdrawalReferenceSha256: digest(marker, 4) },
       schemaVersion: 'personal-ai-agent-fine-tuning-private-collection-item-envelope/v1',
-      source: { lineageSha256: digest(marker, 5), referenceSha256: digest(marker, 6), scopeReferenceSha256: digest(marker, 7), usageBasis: 'owner-attested-private-quality-improvement', usageBasisEvidenceSha256: digest(marker, 8) },
+      source: { lineageSha256: sourceHashes?.lineageSha256 || digest(marker, 5), referenceSha256: sourceHashes?.referenceSha256 || digest(marker, 6), scopeReferenceSha256: sourceHashes?.scopeReferenceSha256 || digest(marker, 7), usageBasis: 'owner-attested-private-quality-improvement', usageBasisEvidenceSha256: digest(marker, 8) },
       submittedBy: 'local-operator-role',
       workspace: { id: workspace.id, workspaceHash: workspace.workspaceHash },
     },
