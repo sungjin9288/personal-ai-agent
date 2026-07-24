@@ -3,8 +3,20 @@ import path from 'node:path';
 
 const MAX_JSON_BYTES = 64 * 1024;
 
-export function readPrivateJsonState(filename, label, { repoDir }) {
-  const input = validatePrivateFilename(filename, label, { repoDir });
+export function readPrivateJsonState(
+  filename,
+  label,
+  {
+    allowedRoot,
+    expectedMode = 0o600,
+    repoDir,
+  } = {},
+) {
+  const input = validatePrivateFilename(filename, label, {
+    allowedRoot: allowedRoot || path.join(repoDir, 'var'),
+    expectedMode,
+    repoDir,
+  });
   let descriptor;
   try {
     descriptor = fs.openSync(
@@ -12,7 +24,7 @@ export function readPrivateJsonState(filename, label, { repoDir }) {
       fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW || 0),
     );
     const before = fs.fstatSync(descriptor);
-    assertPrivateFile(before, label);
+    assertPrivateFile(before, label, { expectedMode });
     if (
       !sameFile(before, input.initialFile) ||
       fs.realpathSync(input.filename) !== input.canonicalFilename
@@ -194,12 +206,20 @@ export function fsyncPrivateDirectory(directory, label, { repoDir }) {
   fsyncDirectory(directory);
 }
 
-function validatePrivateFilename(filename, label, { repoDir }) {
+function validatePrivateFilename(filename, label, {
+  allowedRoot,
+  expectedMode,
+  repoDir,
+}) {
   const resolvedFilename = path.resolve(repoDir, filename);
-  const varDirectory = path.join(repoDir, 'var');
+  const root = path.resolve(repoDir, allowedRoot);
   try {
+    if (!isPathWithin(repoDir, root) || !isPathWithin(root, resolvedFilename)) {
+      throw new Error();
+    }
+    assertNoSymlinkAncestors(root, repoDir);
     const initialFile = fs.lstatSync(resolvedFilename);
-    assertPrivateFile(initialFile, label);
+    assertPrivateFile(initialFile, label, { expectedMode });
     assertNoSymlinkAncestors(resolvedFilename, repoDir);
     const canonicalFilename = fs.realpathSync(resolvedFilename);
     if (
@@ -208,13 +228,7 @@ function validatePrivateFilename(filename, label, { repoDir }) {
     ) {
       throw new Error();
     }
-    if (isPathWithin(repoDir, resolvedFilename) && !isPathWithin(varDirectory, resolvedFilename)) {
-      throw new Error();
-    }
-    if (
-      isPathWithin(repoDir, canonicalFilename) &&
-      !isPathWithin(varDirectory, canonicalFilename)
-    ) {
+    if (!isPathWithin(root, canonicalFilename)) {
       throw new Error();
     }
     assertNoSymlinkAncestors(canonicalFilename, repoDir);
@@ -243,7 +257,7 @@ function assertNoSymlinkAncestors(filename, repoDir) {
   }
 }
 
-function assertPrivateFile(stat, label) {
+function assertPrivateFile(stat, label, { expectedMode = 0o600 } = {}) {
   if (
     !stat.isFile() ||
     stat.isSymbolicLink() ||
@@ -251,7 +265,7 @@ function assertPrivateFile(stat, label) {
     stat.size <= 0 ||
     stat.size > MAX_JSON_BYTES ||
     !isCurrentOwner(stat) ||
-    (stat.mode & 0o777) !== 0o600
+    (stat.mode & 0o777) !== expectedMode
   ) {
     throw new Error(`${label} must be a current-owner 0600 bounded regular JSON file.`);
   }

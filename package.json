@@ -181,6 +181,8 @@
     "smoke:fine-tuning-private-reviewed-example-canonicalization": "node scripts/smoke-fine-tuning-private-reviewed-example-canonicalization.mjs",
     "project:fine-tuning-private-reviewed-example-dataset-impact": "node scripts/project-fine-tuning-private-reviewed-example-dataset-impact.mjs",
     "smoke:fine-tuning-private-reviewed-example-dataset-impact": "node scripts/smoke-fine-tuning-private-reviewed-example-dataset-impact.mjs",
+    "project:fine-tuning-private-answer-quality-readiness-impact": "node scripts/project-fine-tuning-private-answer-quality-readiness-impact.mjs",
+    "smoke:fine-tuning-private-answer-quality-readiness-impact": "node scripts/smoke-fine-tuning-private-answer-quality-readiness-impact.mjs",
     "prepare:fine-tuning-private-answer-quality-enrichment-candidate": "node scripts/prepare-fine-tuning-private-answer-quality-enrichment-candidate.mjs",
     "smoke:fine-tuning-private-answer-quality-enrichment-candidate": "node scripts/smoke-fine-tuning-private-answer-quality-enrichment-candidate.mjs",
     "resolve:fine-tuning-private-answer-quality-enrichment-candidate-review": "node scripts/resolve-fine-tuning-private-answer-quality-enrichment-candidate-review.mjs",

@@ -137,23 +137,29 @@ export function buildDeterministicFineTuningReadinessFixture({
   });
 }
 
-export function buildDeterministicFineTuningBaselineContext({ repoDir = process.cwd() } = {}) {
-  const readinessFixture = readJson(repoDir, 'fixtures/fine-tuning-readiness-cases-v1.json');
-  const datasetFixture = readJson(repoDir, readinessFixture.datasetFixture);
-  const answerQualityFixture = readJson(repoDir, readinessFixture.answerQualityFixture);
+export function buildDeterministicFineTuningBaselineContext({
+  fixtureValues,
+  repoDir = process.cwd(),
+} = {}) {
+  const readFixture = (relativePath) =>
+    fixtureValues?.[relativePath] || readJson(repoDir, relativePath);
+  const readinessFixture = readFixture('fixtures/fine-tuning-readiness-cases-v1.json');
+  const datasetFixture = readFixture(readinessFixture.datasetFixture);
+  const answerQualityFixture = readFixture(readinessFixture.answerQualityFixture);
   const records = datasetFixture.cases.map((testCase) => buildApprovedTrainingRecord(buildApprovedTrainingRecordFixture({
     example: { instruction: testCase.instruction, response: testCase.response },
     missionId: `mission-${testCase.id}`,
     suffix: testCase.id,
   })));
   const datasetManifest = buildTrainingDatasetManifest({ records, seed: datasetFixture.seed });
+  const answerQualityCases = answerQualityFixture.cases.map(
+    ({ retrievalInput, ...definition }) => ({
+      ...definition,
+      retrievedItems: buildRetrievalContext(retrievalInput),
+    }),
+  );
   const baselineEvaluation = evaluateAnswerQualitySuite({
-    cases: answerQualityFixture.cases.map(
-      ({ retrievalInput, ...definition }) => ({
-        ...definition,
-        retrievedItems: buildRetrievalContext(retrievalInput),
-      }),
-    ),
+    cases: answerQualityCases,
     thresholds: answerQualityFixture.thresholds,
   });
   const readinessPackage = buildFineTuningReadinessPackage({
@@ -162,6 +168,7 @@ export function buildDeterministicFineTuningBaselineContext({ repoDir = process.
     records,
   });
   return {
+    answerQualityCases,
     baselineEvaluation,
     datasetManifest,
     readinessPackage,
