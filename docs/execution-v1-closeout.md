@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-24T08:32:49.740Z
-- branch: codex/f1-23-private-answer-quality-readiness-impact
-- commit: 4bc89b572b40f2af0c30ed4671baf9f0b37a334c
+- generatedAt: 2026-07-24T14:44:12.685Z
+- branch: codex/f1-24-private-combined-readiness-impact
+- commit: ecfc2276b179d0671e9a50af78ac036d055abf75
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

@@ -1,7 +1,7 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: private-answer-quality-readiness-impact-shadow-current
-- currentCostFreeMilestone: private-answer-quality-readiness-impact-shadow
+- status: private-combined-readiness-impact-shadow-current
+- currentCostFreeMilestone: private-combined-readiness-impact-shadow
 - completedMilestones:
   - status: local-answer-input-boundary-current
 - productionReadyClaim: false
@@ -56,6 +56,8 @@
 - fineTuningPrivateAnswerQualityCasePayloadStatus: protocol-ready-owner-payload-decision-required
 - currentFineTuningPrivateAnswerQualityCaseReplaySurface: `scripts/replay-fine-tuning-private-answer-quality-case-payload.mjs`
 - fineTuningPrivateAnswerQualityCaseReplayStatus: protocol-ready-local-operator-replay-request-required
+- currentFineTuningPrivateCombinedReadinessImpactSurface: `scripts/project-fine-tuning-private-combined-readiness-impact.mjs`
+- fineTuningPrivateCombinedReadinessImpactStatus: deterministic-shadow-current
 - minimumAdditionalReviewedExamples: 16
 - reviewedExampleCollectionAuthorized: false
 - operatorAttestationRecorded: false
@@ -1171,6 +1173,26 @@ Dataset record, manifest, train/validation split, export digest는 그대로 유
 ```bash
 npm run project:fine-tuning-private-answer-quality-readiness-impact -- --workspace <private-workspace-json> --admission <private-admission-json> --item <private-item-json> --candidate <f1-16-candidate-json> --candidate-review-resolution <f1-17-final-resolution-json> --case <f1-18-final-case-json> --payload <f1-19-final-payload-json> --request <f1-20-request-json>
 npm run smoke:fine-tuning-private-answer-quality-readiness-impact
+```
+
+## F1.24 Private combined readiness impact shadow
+
+F1.24는 F1.22와 F1.23의 결과를 단순히 더하지 않는다. 현재 live F1.1–F1.15 authority와 owner-only source bundle로 final F1.21 record·receipt를 exact reconstruction하고, 현재 F1.16–F1.20 chain으로 final replay request·receipt relation을 다시 검증한다. 같은 item이 다른 workspace history에 복제되었거나 pending·malformed history가 하나라도 있으면 projection 전에 중단한다.
+
+두 workspace는 hash lexical order로 잠그고 일부 lock 획득 실패 때 이미 잡은 lock도 해제한다. Canonical record와 replay의 전체 global history, tracked baseline, fixture, source bundle은 lock 전·중·출력 직전에 구조와 각 JSON file state가 같아야 한다. Item이 F1.11 terminal/deletion history에 들어갔거나 authority window가 만료되면 복원된 입력 파일이 있어도 거부한다.
+
+검증된 synthetic fixture에서는 baseline `4/3/1/4/2`를 메모리에서만 `5/4/1/5/3`으로 projection하고 stop-condition failure 5개를 그대로 남긴다. 실제 dataset, readiness, sufficiency evidence, audit, timeline, training, provider, submission, deployment는 변경하거나 승인하지 않는다. 수치는 아래 smoke가 실행하는 deterministic unit·CLI fixture에서 확인한다.
+
+```bash
+npm run project:fine-tuning-private-combined-readiness-impact -- --record-workspace <private-workspace-json> --record-admission <private-admission-json> --record-item <private-item-json> --record-intake-resolution <private-intake-resolution-json> --record-private-collection-plan <private-plan-json> --record-execution-request <private-execution-request-json> --record-execution-resolution <private-execution-resolution-json> --record-artifact-preparation-resolution <f1-15-final-resolution-json> --record-source-bundle <owner-only-source-bundle-json> --answer-workspace <private-workspace-json> --answer-admission <private-admission-json> --answer-item <private-item-json> --answer-candidate <f1-16-candidate-json> --answer-candidate-review-resolution <f1-17-final-resolution-json> --answer-case <f1-18-final-case-json> --answer-payload <f1-19-final-payload-json> --answer-request <f1-20-request-json>
+npm run smoke:fine-tuning-private-combined-readiness-impact
+```
+
+```text
+currentCostFreeMilestone: private-combined-readiness-impact-shadow
+executionMode: shadow-only
+externalProviderCalls: none
+productionReadyClaim: false
 ```
 
 ## 현재 local training runtime contract

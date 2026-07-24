@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-24T08:32:56.548Z
+- generatedAt: 2026-07-24T14:44:19.331Z
 - localDate: 2026-07-24
-- branch: codex/f1-23-private-answer-quality-readiness-impact
-- commit: 4bc89b572b40f2af0c30ed4671baf9f0b37a334c
+- branch: codex/f1-24-private-combined-readiness-impact
+- commit: ecfc2276b179d0671e9a50af78ac036d055abf75
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4bc89b572b40f2af0c30ed4671baf9f0b37a334c](releases/execution-v1/4bc89b572b40f2af0c30ed4671baf9f0b37a334c)
-- visualArtifactSetSha256: 0d6734108238fb1bd96fb7176c1561a91e39c3de2a6b9637dda1b60286ed4067
-- commitPushStatus: not pushed, origin/codex/f1-23-private-answer-quality-readiness-impact not found
+- immutableSnapshot: [releases/execution-v1/ecfc2276b179d0671e9a50af78ac036d055abf75](releases/execution-v1/ecfc2276b179d0671e9a50af78ac036d055abf75)
+- visualArtifactSetSha256: 192fe220236787c910b25376d94a3a476e1d73d11220de47640a63053556d51e
+- commitPushStatus: not pushed, origin/codex/f1-24-private-combined-readiness-impact not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=46.4s
+- reference adoption aggregate: ready, 28 scripts, ok=true, totalDuration=45.8s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 28 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 0d6734108238fb1bd96fb7176c1561a91e39c3de2a6b9637dda1b60286ed4067
+- visual artifact set: 192fe220236787c910b25376d94a3a476e1d73d11220de47640a63053556d51e
 
 ## Live Provider Handoff
 
