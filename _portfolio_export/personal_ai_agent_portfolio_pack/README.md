@@ -356,6 +356,7 @@ npm run smoke:fine-tuning-private-answer-quality-case
 npm run smoke:fine-tuning-private-answer-quality-case-payload
 npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle
 npm run smoke:fine-tuning-private-answer-quality-case-replay
+npm run smoke:fine-tuning-private-reviewed-example-canonicalization
 npm run smoke:local-training-runtime
 npm run smoke:local-training-permission-surface
 npm run smoke:local-training-permission-evidence

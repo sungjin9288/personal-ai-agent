@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-24T04:35:15.866Z
-- branch: codex/f1-20-private-answer-quality-replay
-- commit: 6d63e1709f1a72040de96a93e0d2c21f2288a284
+- generatedAt: 2026-07-24T05:58:42.593Z
+- branch: codex/f1-21-private-reviewed-example-canonicalization
+- commit: 77f39a136111567bd0708a49ba75c58e7dbe6eec
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
