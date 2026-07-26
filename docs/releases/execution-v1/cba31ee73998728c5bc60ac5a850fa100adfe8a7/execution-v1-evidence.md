@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-26T06:48:20.539Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-26T06:48:09.416Z
 - branch: codex/no-cost-core-acceptance-stabilization
 - commit: cba31ee73998728c5bc60ac5a850fa100adfe8a7

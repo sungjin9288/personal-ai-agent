@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-26T06:48:20.539Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-26T06:48:17.818Z
 - localDate: 2026-07-26
 - branch: codex/no-cost-core-acceptance-stabilization
 - commit: cba31ee73998728c5bc60ac5a850fa100adfe8a7
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7](releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7](docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7)
 - visualArtifactSetSha256: c739fa6a67646e764dbc4c25a31c6ca0696507061edd7983bb35a63448c3ff69
 - commitPushStatus: not pushed, origin/codex/no-cost-core-acceptance-stabilization not found
 - liveValidationMode: archived-preserved-not-rerun
