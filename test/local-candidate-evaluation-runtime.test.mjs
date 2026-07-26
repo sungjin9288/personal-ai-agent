@@ -719,6 +719,7 @@ test('runtime rejects candidate, suite, and evaluator mutation inside the execut
 test('runtime rejects unbound, raw, inconsistent, and unbounded child results', async (t) => {
   const fixture = await buildFixture();
   t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
   for (const [mode, pattern] of [
     ['mismatch', /does not match the authorized execution/],
     ['actual-mismatch', /does not match the authorized execution/],
@@ -730,25 +731,30 @@ test('runtime rejects unbound, raw, inconsistent, and unbounded child results', 
     ['fail', /command exited with code 9/],
   ]) {
     await assert.rejects(
-      createRuntime(fixture, mode).run(runInput(fixture)),
+      createRuntime(fixture, mode, {
+        temporaryDirectory,
+      }).run(runInput(fixture)),
       pattern,
     );
   }
   await assert.rejects(
     createRuntime(fixture, 'large-output', {
       maxOutputBytes: 512,
+      temporaryDirectory,
     }).run(runInput(fixture)),
     /stdout exceeds 512 bytes/,
   );
   await assert.rejects(
     createRuntime(fixture, 'hang', {
       timeoutMs: 50,
+      temporaryDirectory,
     }).run(runInput(fixture)),
     /timed out after 50ms/,
   );
   await assert.rejects(
     createRuntime(fixture, 'success', {
       maxInputBytes: 128,
+      temporaryDirectory,
     }).run(runInput(fixture)),
     /input exceeds 128 bytes/,
   );
@@ -806,10 +812,11 @@ test('recorded local evaluation marks model evidence without authorizing rollout
     'local-model-evaluation',
   );
   t.after(fixture.cleanup);
+  const temporaryDirectory = createTemporaryDirectory(t);
 
-  const result = await createRuntime(fixture).run(
-    runInput(fixture),
-  );
+  const result = await createRuntime(fixture, 'success', {
+    temporaryDirectory,
+  }).run(runInput(fixture));
   const gate = evaluateCandidateModelGate({
     candidateEvaluation: result.candidateEvaluation,
     candidateEvidence: result.candidateEvidence,
