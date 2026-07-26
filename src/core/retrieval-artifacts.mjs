@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 
+import { hashRetrievalContent } from './retrieval-corpus.mjs';
+
 function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
@@ -115,7 +117,13 @@ export function compareRetrievalPreviewWithLatestArtifact(previewItems = [], lat
   };
 }
 
-export function formatRetrievalArtifactContent({ providerRole, retrievalContext = [], role, specialistKind = '' }) {
+export function formatRetrievalArtifactContent({
+  providerRole,
+  retrievalContext = [],
+  retrievalCorpusRecords = [],
+  role,
+  specialistKind = '',
+}) {
   const specialistLine = specialistKind ? `- specialist kind: ${specialistKind}\n` : '';
   return `# Retrieved Context
 
@@ -128,8 +136,13 @@ ${specialistLine}
 ${retrievalContext.length
   ? retrievalContext
       .map(
-        (item) =>
-          `- [${item.sourceType}] ${item.sourceLabel}${item.chunkIndex ? ` chunk ${item.chunkIndex}` : ''}\n  - score: ${item.score}\n  - lexicalScore: ${item.lexicalScore ?? item.score}\n  - bm25Score: ${item.bm25Score ?? 0}\n  - phraseBoostScore: ${item.phraseBoostScore ?? 0}\n  - matchTermCount: ${item.matchTermCount ?? 0}\n  - matchedTerms: ${Array.isArray(item.matchedTerms) ? item.matchedTerms.join(', ') : ''}\n  - retrievalReason: ${item.retrievalReason || 'not recorded'}\n  - snippet: ${item.snippet}`,
+        (item, index) => {
+          const corpusRecord = retrievalCorpusRecords[index] || null;
+          const corpusLines = corpusRecord
+            ? `\n  - corpusSchema: ${corpusRecord.schemaVersion}\n  - corpusId: ${corpusRecord.corpusId}\n  - chunkId: ${corpusRecord.chunkId}\n  - contentHash: ${corpusRecord.contentHash}\n  - snippetHash: ${hashRetrievalContent(item.snippet)}\n  - scope: ${corpusRecord.scope.type}/${corpusRecord.scope.id || '-'}\n  - revision: ${corpusRecord.revision.id}\n  - provenance: ${JSON.stringify(corpusRecord.provenance)}`
+            : '';
+          return `- [${item.sourceType}] ${item.sourceLabel}${item.chunkIndex ? ` chunk ${item.chunkIndex}` : ''}\n  - score: ${item.score}\n  - lexicalScore: ${item.lexicalScore ?? item.score}\n  - bm25Score: ${item.bm25Score ?? 0}\n  - phraseBoostScore: ${item.phraseBoostScore ?? 0}\n  - matchTermCount: ${item.matchTermCount ?? 0}\n  - matchedTerms: ${Array.isArray(item.matchedTerms) ? item.matchedTerms.join(', ') : ''}\n  - retrievalReason: ${item.retrievalReason || 'not recorded'}${corpusLines}\n  - snippet: ${item.snippet}`;
+        },
       )
       .join('\n')
   : '- no retrieval snippets selected'}

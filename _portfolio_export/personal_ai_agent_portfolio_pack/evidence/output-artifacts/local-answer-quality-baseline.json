@@ -1,0 +1,447 @@
+{
+  "activation": {
+    "authorized": false,
+    "blockerCheckIds": [
+      "candidate-quality-passed",
+      "license-review-approved",
+      "os-egress-isolation-approved",
+      "resource-envelope-approved",
+      "rollback-owner-assigned"
+    ]
+  },
+  "actualLocalAnswerModelQualified": false,
+  "actualLocalAnswerModelQualityValidated": false,
+  "actualModelEvaluated": true,
+  "actualModelTrainingExecuted": false,
+  "candidateGate": {
+    "baseline": {
+      "caseResults": [
+        {
+          "id": "provider-drift-recovery",
+          "metrics": {
+            "citationGroundingRate": 1,
+            "expectedSourceCitationRate": 1,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 1,
+            "unsupportedCitationRate": 0
+          },
+          "status": "passed"
+        },
+        {
+          "id": "fact-revision-provenance",
+          "metrics": {
+            "citationGroundingRate": 1,
+            "expectedSourceCitationRate": 1,
+            "forbiddenRetrievedSourceCount": 0,
+            "forbiddenTermMatchCount": 0,
+            "requiredTermCoverage": 1,
+            "retrievalHitRate": 1,
+            "unsupportedCitationRate": 0
+          },
+          "status": "passed"
+        }
+      ],
+      "metrics": {
+        "casePassRate": 1,
+        "citationGroundingRate": 1,
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "schemaVersion": "personal-ai-agent-answer-quality-evaluation/v1",
+      "status": "passed",
+      "thresholds": {
+        "maximumForbiddenRetrievedSourceCount": 0,
+        "maximumForbiddenTermMatches": 0,
+        "maximumUnsupportedCitationRate": 0,
+        "minimumCasePassRate": 1,
+        "minimumCitationGroundingRate": 1,
+        "minimumExpectedSourceCitationRate": 1,
+        "minimumRequiredTermCoverage": 1,
+        "minimumRetrievalHitRate": 1,
+        "requireReviewerPass": true
+      },
+      "totals": {
+        "citedExpectedSourceCount": 4,
+        "citedSourceCount": 4,
+        "expectedSourceCount": 4,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "groundedCitationCount": 4,
+        "passedCaseCount": 2,
+        "requiredTermCount": 6,
+        "requiredTermMatchCount": 6,
+        "retrievedExpectedSourceCount": 4,
+        "retrievedSourceCount": 4,
+        "unsupportedCitationCount": 0
+      },
+      "evaluationHash": "a971c58a40e23080e21cd27ba5093dcdb9d06d93c90c3324a66a6be1384f24e1"
+    },
+    "candidate": {
+      "actualModelEvaluated": true,
+      "candidateId": "local-base-model-qwen2.5:3b",
+      "evaluation": {
+        "caseResults": [
+          {
+            "id": "provider-drift-recovery",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0,
+              "requiredTermCoverage": 0.6667,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0
+            },
+            "status": "failed"
+          },
+          {
+            "id": "fact-revision-provenance",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0,
+              "requiredTermCoverage": 0.6667,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0
+            },
+            "status": "failed"
+          }
+        ],
+        "metrics": {
+          "casePassRate": 0,
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 0.6667,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "schemaVersion": "personal-ai-agent-answer-quality-evaluation/v1",
+        "status": "failed",
+        "thresholds": {
+          "maximumForbiddenRetrievedSourceCount": 0,
+          "maximumForbiddenTermMatches": 0,
+          "maximumUnsupportedCitationRate": 0,
+          "minimumCasePassRate": 1,
+          "minimumCitationGroundingRate": 1,
+          "minimumExpectedSourceCitationRate": 1,
+          "minimumRequiredTermCoverage": 1,
+          "minimumRetrievalHitRate": 1,
+          "requireReviewerPass": true
+        },
+        "totals": {
+          "citedExpectedSourceCount": 4,
+          "citedSourceCount": 4,
+          "expectedSourceCount": 4,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "groundedCitationCount": 4,
+          "passedCaseCount": 0,
+          "requiredTermCount": 6,
+          "requiredTermMatchCount": 4,
+          "retrievedExpectedSourceCount": 4,
+          "retrievedSourceCount": 4,
+          "unsupportedCitationCount": 0
+        },
+        "evaluationHash": "3e7ca95bd0e2f140b3e4568f64c5b71af6721913b36244fbed469f3c0a122843"
+      },
+      "evaluationRunId": "local-answer-quality-22e8a6df47fefefe35293a6c",
+      "evaluationSource": "recorded-model-evaluation",
+      "evidenceHash": "b877b469ced77a7585864e07125ef235c9178e3e3b1c8ffd0d4536056a880adb",
+      "evidenceId": "candidate-model-evidence-b877b469ced77a7585864e07125ef235c9178e3e3b1c8ffd0d4536056a880adb",
+      "evidenceRefs": [
+        "fixture:bdcdeaa8e394e3eba04b6026e0d11674d6a64f625cb9cefa42823cc23eec1e09",
+        "ollama-model:357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b"
+      ],
+      "modelId": "qwen2.5:3b",
+      "provider": "local-ollama"
+    },
+    "comparison": {
+      "checkCounts": {
+        "failed": 4,
+        "passed": 4
+      },
+      "checks": [
+        {
+          "readinessHash": "2be749202c60d7ffe39b8d13cd80c54b470c3bbb7462a4614b0594a99198a691",
+          "id": "readiness-package-current",
+          "passed": true,
+          "status": "passed"
+        },
+        {
+          "evaluationHash": "3e7ca95bd0e2f140b3e4568f64c5b71af6721913b36244fbed469f3c0a122843",
+          "id": "candidate-evidence-bound",
+          "passed": true,
+          "status": "passed"
+        },
+        {
+          "baselineCaseIds": [
+            "fact-revision-provenance",
+            "provider-drift-recovery"
+          ],
+          "candidateCaseIds": [
+            "fact-revision-provenance",
+            "provider-drift-recovery"
+          ],
+          "id": "case-set-matched",
+          "passed": true,
+          "status": "passed"
+        },
+        {
+          "id": "thresholds-matched",
+          "passed": true,
+          "status": "passed"
+        },
+        {
+          "id": "candidate-gate-passed",
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "id": "candidate-reviewer-passed",
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "regressions": [
+            {
+              "baseline": 1,
+              "candidate": 0,
+              "direction": "higher-or-equal",
+              "metric": "casePassRate",
+              "scope": "suite"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0.6667,
+              "direction": "higher-or-equal",
+              "metric": "requiredTermCoverage",
+              "scope": "suite"
+            }
+          ],
+          "id": "suite-metrics-no-regression",
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "regressions": [
+            {
+              "baseline": 1,
+              "candidate": 0.6667,
+              "direction": "higher-or-equal",
+              "metric": "requiredTermCoverage",
+              "scope": "case:provider-drift-recovery"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0.6667,
+              "direction": "higher-or-equal",
+              "metric": "requiredTermCoverage",
+              "scope": "case:fact-revision-provenance"
+            }
+          ],
+          "id": "case-metrics-no-regression",
+          "passed": false,
+          "status": "failed"
+        }
+      ],
+      "status": "failed"
+    },
+    "decision": "keep-baseline",
+    "externalSubmissionAuthorized": false,
+    "productionReadyClaim": false,
+    "rollback": {
+      "action": "keep-baseline",
+      "baseline": "current-provider-model-prompt-and-rag-path",
+      "owner": null,
+      "ownerRequired": true,
+      "required": true,
+      "triggerCheckIds": [
+        "candidate-gate-passed",
+        "candidate-reviewer-passed",
+        "suite-metrics-no-regression",
+        "case-metrics-no-regression"
+      ]
+    },
+    "rollout": {
+      "activationAuthorized": false,
+      "checkCounts": {
+        "failed": 3,
+        "passed": 1
+      },
+      "checks": [
+        {
+          "id": "actual-model-evaluated",
+          "passed": true,
+          "status": "passed"
+        },
+        {
+          "id": "reviewer-approved-rollout",
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "id": "rollout-authorized",
+          "passed": false,
+          "status": "failed"
+        },
+        {
+          "id": "rollback-owner-assigned",
+          "passed": false,
+          "status": "failed"
+        }
+      ],
+      "reviewerDecision": "pending",
+      "status": "blocked"
+    },
+    "schemaVersion": "personal-ai-agent-candidate-model-gate/v1",
+    "status": "rollback-required",
+    "gateHash": "040f0de9985ba228d6952b28203c31a81cf89a6de8f9d02f3be6f1dbd88bf746",
+    "id": "candidate-model-gate-040f0de9985ba228d6952b28203c31a81cf89a6de8f9d02f3be6f1dbd88bf746"
+  },
+  "checks": [
+    {
+      "id": "actual-model-evaluated",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "recorded-model-evaluation",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "suite-cases-observed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "response-hashes-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "candidate-quality-passed",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "loopback-transport",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "ollama-cloud-features-disabled",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "license-evidence-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "license-review-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "os-egress-isolation-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "resource-envelope-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "rollback-owner-assigned",
+      "passed": false,
+      "status": "failed"
+    }
+  ],
+  "costFree": true,
+  "decision": "keep-current-answer-path",
+  "externalProviderCalls": "none",
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "license": {
+      "textHash": "b5c0e5cf74cf51af1ecbc4af597cfcd13fd9925611838884a681070838a14a50",
+      "title": "Qwen RESEARCH LICENSE AGREEMENT"
+    },
+    "modifiedAt": "2026-05-12T01:31:28.67457518+09:00",
+    "sizeBytes": 1929912432
+  },
+  "observations": [
+    {
+      "caseId": "fact-revision-provenance",
+      "citedSourceKeys": [
+        "attachment:fact-history.md",
+        "memory:mission/decision"
+      ],
+      "durationMs": 1228.316,
+      "inputHash": "529ff8ad109fefe3d3cf068984642b44ea8e6e2e1e3c72e3175ac0d67f9edb4f",
+      "outputBytes": 174,
+      "promptHash": "f829a8bf19d329b84f2f5df849a1b050090b36773a58c288bb6107db3694fc75",
+      "promptVersion": "personal-ai-agent-local-answer-quality-prompt/v1",
+      "responseHash": "4e6d01bbcf68e32a61d2248c1aa4f936edea780d023a71e45b58935020ad087c"
+    },
+    {
+      "caseId": "provider-drift-recovery",
+      "citedSourceKeys": [
+        "attachment:incident-notes.md",
+        "memory:workspace/fact"
+      ],
+      "durationMs": 3380.028,
+      "inputHash": "2c8e0bd073b73ef5e4c3ad251b96db6a8e5841bb52ea52f9a9eac7726e9b0ad7",
+      "outputBytes": 326,
+      "promptHash": "f829a8bf19d329b84f2f5df849a1b050090b36773a58c288bb6107db3694fc75",
+      "promptVersion": "personal-ai-agent-local-answer-quality-prompt/v1",
+      "responseHash": "6dca675f830ed16479c8b6c71d3f2185eb526be66fa2a6a5d92df18af311acc9"
+    }
+  ],
+  "observedAt": "2026-07-17T02:24:13.333Z",
+  "productionReadyClaim": false,
+  "rolloutAuthorized": false,
+  "runtime": {
+    "cloudFeaturesDisabled": true,
+    "endpointAlias": "loopback-ollama",
+    "externalProviderCalls": "none",
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "schemaVersion": "personal-ai-agent-local-answer-quality-baseline/v1",
+  "status": "quality-regressed-keep-current",
+  "suite": {
+    "caseIds": [
+      "fact-revision-provenance",
+      "provider-drift-recovery"
+    ],
+    "fixtureHash": "bdcdeaa8e394e3eba04b6026e0d11674d6a64f625cb9cefa42823cc23eec1e09",
+    "id": "personal-ai-agent-answer-quality-fixture/v1",
+    "thresholds": {
+      "maximumForbiddenRetrievedSourceCount": 0,
+      "maximumForbiddenTermMatches": 0,
+      "maximumUnsupportedCitationRate": 0,
+      "minimumCasePassRate": 1,
+      "minimumCitationGroundingRate": 1,
+      "minimumExpectedSourceCitationRate": 1,
+      "minimumRequiredTermCoverage": 1,
+      "minimumRetrievalHitRate": 1,
+      "requireReviewerPass": true
+    }
+  },
+  "evidenceHash": "39b5f4f31fc15804c4a6e9bffa3ed23c1c69b5203bf684ace81a3ec09b4800dd",
+  "id": "local-answer-quality-baseline-39b5f4f31fc15804c4a6e9bffa3ed23c1c69b5203bf684ace81a3ec09b4800dd"
+}

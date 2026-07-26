@@ -1,5 +1,6 @@
 export function createActionHandlerFactory({
   decodePathSegment,
+  evaluateLearningCandidateTenantAccess,
   evaluateWorkspaceTenantAccess,
   parseOptionalBooleanQueryParam,
   readJsonBody,
@@ -8,6 +9,40 @@ export function createActionHandlerFactory({
   service,
 } = {}) {
   return function createActionHandlers({ auth, request, response, url } = {}) {
+    function buildLearningSelectionOverrideResponse(result) {
+      const {
+        clearNote: _clearNote,
+        note: _note,
+        ...selectionOverride
+      } = result.selectionOverride || {};
+      return {
+        learningCandidateId: result.learningCandidate?.id || selectionOverride.candidateId || null,
+        selectionOverride,
+      };
+    }
+
+    function authorizeLearningCandidate(candidateId) {
+      const tenant = evaluateLearningCandidateTenantAccess(candidateId, auth);
+      if (!tenant.allowed) {
+        sendTenantDenied(response, tenant);
+        return false;
+      }
+      return true;
+    }
+
+    async function authorizeLearningPromotionScope(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
+      const body = await readJsonBody(request);
+      const result = service.authorizeLearningPromotionScope(candidateId, {
+        note: String(body.note || '').trim(),
+        scope: String(body.scope || '').trim(),
+      });
+      sendJson(response, 200, result);
+    }
+
     async function getInbox() {
       const workspaceId = String(url.searchParams.get('workspaceId') || '').trim();
       if (workspaceId) {
@@ -57,6 +92,9 @@ export function createActionHandlerFactory({
 
     async function remindLearningPromotion(params) {
       const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
       const body = await readJsonBody(request);
       const result = service.remindLearningPromotionStopConditions(
         {
@@ -73,6 +111,9 @@ export function createActionHandlerFactory({
 
     async function resolveLearningPromotion(params) {
       const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
       const body = await readJsonBody(request);
       const result = service.resolveLearningPromotion(candidateId, {
         decision: String(body.decision || '').trim(),
@@ -85,11 +126,64 @@ export function createActionHandlerFactory({
 
     async function rollbackLearningPromotion(params) {
       const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
       const body = await readJsonBody(request);
       const result = service.rollbackLearningPromotion(candidateId, {
         note: String(body.note || '').trim(),
       });
       sendJson(response, 200, result);
+    }
+
+    async function setWorkspaceLearningSelectionOverride(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
+      const body = await readJsonBody(request);
+      const result = service.setWorkspaceLearningSelectionOverride(candidateId, {
+        expiresAt: String(body.expiresAt || '').trim(),
+        note: String(body.note || '').trim(),
+      });
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
+    }
+
+    async function clearWorkspaceLearningSelectionOverride(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
+      const body = await readJsonBody(request);
+      const result = service.clearWorkspaceLearningSelectionOverride(candidateId, {
+        note: String(body.note || '').trim(),
+      });
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
+    }
+
+    async function setUserLearningSelectionOverride(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
+      const body = await readJsonBody(request);
+      const result = service.setUserLearningSelectionOverride(candidateId, {
+        expiresAt: String(body.expiresAt || '').trim(),
+        note: String(body.note || '').trim(),
+      });
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
+    }
+
+    async function clearUserLearningSelectionOverride(params) {
+      const candidateId = decodePathSegment(params.candidateId);
+      if (!authorizeLearningCandidate(candidateId)) {
+        return;
+      }
+      const body = await readJsonBody(request);
+      const result = service.clearUserLearningSelectionOverride(candidateId, {
+        note: String(body.note || '').trim(),
+      });
+      sendJson(response, 200, buildLearningSelectionOverrideResponse(result));
     }
 
     async function remediateProviderAttention(params) {
@@ -119,6 +213,9 @@ export function createActionHandlerFactory({
     }
 
     return {
+      authorizeLearningPromotionScope,
+      clearUserLearningSelectionOverride,
+      clearWorkspaceLearningSelectionOverride,
       expireLearningPromotions,
       getInbox,
       remediateProviderAttention,
@@ -127,6 +224,8 @@ export function createActionHandlerFactory({
       resolveLearningPromotion,
       resolveReviewerFollowUp,
       rollbackLearningPromotion,
+      setUserLearningSelectionOverride,
+      setWorkspaceLearningSelectionOverride,
     };
   };
 }

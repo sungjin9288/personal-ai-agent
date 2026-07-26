@@ -72,6 +72,25 @@ assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'commit'), effectiveVer
 assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'generatedAt'), extractBulletValue(evidenceMarkdown, 'generatedAt'));
 assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'generatedAt'), extractBulletValue(closeoutMarkdown, 'generatedAt'));
 assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'visualArtifactSetSha256'), extractBulletValue(handoffMarkdown, 'visualArtifactSetSha256'));
+assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'liveValidationMode'), extractBulletValue(evidenceMarkdown, 'liveValidationMode'));
+assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'liveValidationMode'), extractBulletValue(closeoutMarkdown, 'liveValidationMode'));
+assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'liveValidationMode'), extractBulletValue(handoffMarkdown, 'liveValidationMode'));
+assert.equal(
+  extractBulletValue(snapshotEvidenceMarkdown, 'archivedLiveValidationSourceCommit'),
+  extractBulletValue(evidenceMarkdown, 'archivedLiveValidationSourceCommit'),
+);
+assert.equal(
+  extractBulletValue(snapshotCloseoutMarkdown, 'archivedLiveValidationSourceGeneratedAt'),
+  extractBulletValue(closeoutMarkdown, 'archivedLiveValidationSourceGeneratedAt'),
+);
+assert.equal(
+  extractBulletValue(snapshotHandoffMarkdown, 'archivedLiveValidationSourceCommit'),
+  extractBulletValue(handoffMarkdown, 'archivedLiveValidationSourceCommit'),
+);
+assert.equal(
+  extractBulletValue(snapshotHandoffMarkdown, 'archivedLiveValidationProviders'),
+  extractBulletValue(handoffMarkdown, 'archivedLiveValidationProviders'),
+);
 assert.equal(
   extractBulletValue(snapshotCloseoutMarkdown, 'evidence'),
   `[execution-v1-evidence.md](${snapshotEvidenceDisplayPath})`,
@@ -252,11 +271,14 @@ function buildArtifactSyncCommit(currentCommitValue = '', verifiedCommitValue = 
 function isReleaseArtifactSyncPath(filePath) {
   const relativePath = String(filePath || '').replace(/\\/g, '/').replace(/^\.\//, '');
   return [
+    'CHANGELOG.md',
+    '_portfolio_export/personal_ai_agent_portfolio_pack.zip',
     'docs/execution-v1-closeout.md',
     'docs/execution-v1-evidence.md',
     'docs/execution-v1-handoff.md',
     'docs/clean-deployment-release-v1.md',
     'docs/demo-evidence-index-v1.md',
+    'docs/evidence-checklist.md',
     'docs/pilot-export-package-v1.md',
     'docs/production-like-release-drill-v1.md',
     'docs/production-slo-operating-v1.md',
@@ -271,7 +293,10 @@ function isReleaseArtifactSyncPath(filePath) {
     'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
     'evidence/output-artifacts/representative-release-demo-summary.json',
     'evidence/screenshots/representative-release-demo-release-status.png',
-  ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
+    'portfolio_manifest.md',
+  ].includes(relativePath)
+    || relativePath.startsWith('_portfolio_export/personal_ai_agent_portfolio_pack/')
+    || relativePath.startsWith('docs/releases/execution-v1/');
 }
 
 function formatDisplayPath(filePath) {

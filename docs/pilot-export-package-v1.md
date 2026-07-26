@@ -1,13 +1,13 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-15T12:48:12.794Z
-- verifiedCommit: e9fafce7a3073765b5902e5bed9f6e2a2db41510
+- generatedAt: 2026-07-26T06:48:20.591Z
+- verifiedCommit: cba31ee73998728c5bc60ac5a850fa100adfe8a7
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: d56c85b89885ad0da66fe5031d4c144beeb45645a3f47f77840fc83e7cb07f18
-- fileCount: 75
+- bundleSha256: 392058cc45b7cc738410882860349403c8883c296b56226c6359063e9d8ab73b
+- fileCount: 135
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
 - relatedProductionLikeDrill: [production-like-release-drill-v1.md](production-like-release-drill-v1.md)
@@ -63,8 +63,8 @@ The package can be shared only after release artifact hygiene passes with zero c
 
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
-| `README.md` | 29859 | `f08fcf7aaa79341afb4299ce775322f84fc05d9fa31d76185567f796b0dd1a89` |
-| `CHANGELOG.md` | 4188 | `c51baa4c2aec614a83e548fc82643ed37c39ab39fd0ff6e59104bfd53a3aec0a` |
+| `README.md` | 80099 | `68c998a96b7b40e29666e769c0ea61c30b77a185789e78057ace2698d26f9a16` |
+| `CHANGELOG.md` | 40848 | `f6a43a0e387ef509d13f23b10644c211d1926998d665c1988a301771bb110305` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -80,13 +80,73 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/demo-scenarios-v1.md` | 20536 | `5e01fa6f993b6ef7790f19bc945e9b3c774fa3ce6c2da374e81b09c87a06fe9e` |
 | `docs/demo-evidence-index-v1.md` | 4010 | `0244e4b23fba823f168e339cc08bafaffb4811cf05e0762201e6a4651be553b1` |
 | `docs/recorded-walkthrough-v1.md` | 5378 | `cc3fe2615d81a6af5bcaad7b3489aebd294a941dcbb192d81e4772447dd43ea5` |
-| `docs/architecture-code-walkthrough-v1.md` | 5756 | `fb82a8b47503bb5556101e39de2156da5248d7a5692df03c8c292f942dce0fb0` |
+| `docs/architecture-code-walkthrough-v1.md` | 7477 | `4df605052f493c20b129527dcc188db562ecd298558a44386c904272f2d91e9c` |
 | `docs/provider-readiness-matrix-v1.md` | 5822 | `21b096fb61633be89f1fc2197a36eb2ca8ed15734fa453a54c2949b12b4062f6` |
 | `docs/provider-failure-recovery-demo-v1.md` | 5483 | `181a3813c6144c64774eee96198a2dca61e06247aa7ef7d39b10f0408370518d` |
-| `docs/memory-retrieval-quality-fixture-v1.md` | 4867 | `681fb5b3c41929787b951b80fdb61c62e08683724290eebbe2f107e329248709` |
-| `docs/smoke-validation-summary-v1.md` | 6113 | `fa19fa137e0136376569074845ad215e2e2fb9d88c8360177ca3505038418e21` |
+| `docs/memory-retrieval-quality-fixture-v1.md` | 16894 | `6efd3afdeb52bfc563dc5cb1ce66c310813fbde3187cd1f559e7bf6d561eaeaf` |
+| `docs/ml-rag-development-plan-v1.md` | 279668 | `33b322b46b85258a88f4f86a3a3fe45fbbbe0de96fce5479e1570fa57f0b2f3b` |
+| `docs/actual-user-query-evaluation-v1.md` | 7573 | `bc4c9cb12b524004b693dd7b91412b2c9750121a4ce8ef96774cc5e5d6a70d40` |
+| `docs/smoke-validation-summary-v1.md` | 44138 | `b37b9e3521d47dd3b46063a466e788996b90450f306636bb8d83bf9ab88ccee9` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
+| `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
+| `evidence/output-artifacts/local-retrieval-robustness.json` | 30382 | `37307acf03ee242fc7a4b7ee16691608c10fecda370a8df8bc1db8f768dd5a46` |
+| `evidence/output-artifacts/local-relevance-reranker-evaluation.json` | 70503 | `0192e188a225d54c706dc6b5a9be72cd97fb6362abc64eb83f3e361c540b6b99` |
+| `evidence/output-artifacts/local-reranker-resource-envelope.json` | 118773 | `1aff6609f3b4867a14f8e6991ce8d346ca4f37e101a360b8d835f55d6297488c` |
+| `evidence/output-artifacts/local-reranker-runtime-stability.json` | 183035 | `56cc51ab85176c9c49e580a7c98eadd5e841bbae0452aa30047ffd73e461e06b` |
+| `evidence/output-artifacts/local-relevance-shadow-integration.json` | 13657 | `a2b634da22f1b60ce200f6c574ac520202b1a8948351cee30f1ea3c536660e0e` |
+| `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json` | 220475 | `2be7367108670aaf05ba047eed9e6596d57076783bb2d75f8d37398ef7a36295` |
+| `evidence/output-artifacts/local-relevance-shadow-replay.json` | 220401 | `57c844e31e0097c21ffee8fac3e080ad0b428224cf7d4a3f6a3f93b083d73b30` |
+| `evidence/output-artifacts/local-relevance-shadow-cache.json` | 234856 | `24f311998f98ca6838ba04db51a382b4325d61aa8a73c8b1674bc1ed56b26cf3` |
+| `evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json` | 250227 | `b3f84b829daa3d13e5f3a3a5513a2371893abea49758ca6fe5a79f56621e2f7d` |
+| `evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json` | 17953 | `e61329c5efb39ff08e923e59f2f496b668354a6f989695205ac69ae960d712f6` |
+| `evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json` | 14691 | `46e19f84743b09ba1f230a52c99ead3f39558e7eb34704a2dc6f1e4e57749a27` |
+| `evidence/output-artifacts/approved-learning-rag-feedback.json` | 5004 | `dd80ccff7473dce89df6fab37ae02f18f4eee9e3cd1400fcbaae997211fdb3c0` |
+| `evidence/output-artifacts/approved-learning-feedback-quality.json` | 26606 | `147c1d4ffc10d4de7626db7814a122b520c75f748a7c816811f058eba50542be` |
+| `evidence/output-artifacts/workspace-learning-personalization.json` | 15652 | `f5fd4bde18e9f6771c9190ab30cd5311dad46f4ac0db137402059ac46e07d389` |
+| `evidence/output-artifacts/workspace-learning-conflict-revocation.json` | 21391 | `939ee1834cfcf0e999203cd8c1f1565b32399d5d18b43310f240d0cdbf381e32` |
+| `evidence/output-artifacts/workspace-learning-operator-override.json` | 25237 | `c1ebc16645ec9a1905f177ff8d9c276c741d21cf17063631c906b7b9c2d868fe` |
+| `evidence/output-artifacts/workspace-learning-operator-surface.json` | 1334 | `17eadaeb0920b8a99b5061b7c74a8aacf53eddcc983c2763d0183751f8cddb77` |
+| `evidence/output-artifacts/local-user-learning-personalization.json` | 15656 | `93cef0bf36a5a9bd192b9b09480635bbcd618e198da54a1600eba2cd6ad7830b` |
+| `evidence/output-artifacts/user-learning-conflict-revocation.json` | 22516 | `465c1dcaa6b81072e7ca70f789ad678e4a2087f94023e7fe672add0118c1f011` |
+| `evidence/output-artifacts/user-learning-operator-override.json` | 26640 | `0bea7e33ce36599abfff1d0e73b09dd71580c4a073fe0d15e9ec0471654d4427` |
+| `evidence/output-artifacts/user-learning-operator-surface.json` | 1411 | `eb39a23b569a984d1569d5fdc21ac85397a1b2d327eb31af107966b79ef429b7` |
+| `evidence/output-artifacts/fine-tuning-data-sufficiency.json` | 3455 | `f1fc78138b4ca6d6dea8065d2a5ce01b061abec92076a41e44b478950e4c0e1f` |
+| `evidence/output-artifacts/fine-tuning-data-collection-plan.json` | 3334 | `f60ea83826b3ddf034d998bd21be6d362eeea66a651b78c9aa45a4a1566f61af` |
+| `evidence/output-artifacts/fine-tuning-data-intake-request.json` | 3502 | `d6bf832a904e5c1f71c18428300190a958b261fa89fadada1bb5bcada0d0a228` |
+| `evidence/output-artifacts/local-training-runtime-contract.json` | 2826 | `26440c443c31226dd6efb2479399a13aa36f5466068c889045c13b3af1a9bf68` |
+| `evidence/output-artifacts/local-training-permission-surface.json` | 1401 | `e2c0acf8053c02054bec15615b3bff68ac9b291c9f36b5a58ea22f34d2962905` |
+| `evidence/output-artifacts/local-training-environment-preflight.json` | 4379 | `1d961f011145230f82b158f286b3b24424f21c94a324b4270560cac09cd47c3c` |
+| `evidence/output-artifacts/local-training-toolchain-decision.json` | 4061 | `e571fc960d5b4dbdb66a0eddc41a1ebf93e7289ac6b31fb2140240978c274bee` |
+| `evidence/output-artifacts/local-training-acquisition-request.json` | 2244 | `58476a9aba687d1e97466172c12799a8572f1e882e3eb2e7d9c06127db2147e5` |
+| `evidence/output-artifacts/local-training-acquisition-runtime-contract.json` | 2036 | `8bbf18191ff62e7e0ca7acc44d89db20e8e429cc7f64795f604f34146fd6249c` |
+| `evidence/output-artifacts/local-training-acquisition-artifact-verification.json` | 2220 | `fd904fec00f52606dae155c5b730ca2d44f63ee190c1d2e61d5c4e395d0d460e` |
+| `evidence/output-artifacts/local-training-post-acquisition-readiness.json` | 2714 | `768058529b39638e82f920cc58fbffbf751337349066d1a804c33c98006a0ff1` |
+| `evidence/output-artifacts/mlx-lm-lora-training-adapter.json` | 7502 | `254d8f7aa3a8b5710cf31d0ca3cfdcc98861cb4f2e1abbaff2c857860ec3618b` |
+| `evidence/output-artifacts/local-training-runtime-closure-provenance.json` | 2537 | `de17affb566435e95f91faff77370d41bfbc7678ae9164731a6bc8646348c06a` |
+| `evidence/output-artifacts/local-training-process-supervisor.json` | 2139 | `2bf853d0342b864e69f1515458dd00f14ade94514d858f34a24de6e4c7e4a858` |
+| `evidence/output-artifacts/local-training-os-isolation.json` | 2577 | `075e663e746dc3e70ed2022b272dde6f6b07105355bab61f3eba73067f4019c2` |
+| `evidence/output-artifacts/local-training-runtime-exec-observation.json` | 2937 | `7fd8a03192e9e05e4ee38da855b64dcd3af72847dab2c51aecddef4044b662db` |
+| `evidence/output-artifacts/local-training-runtime-image-provenance.json` | 3255 | `db78e761ae94d001bfa54db44e99c8d9fd87ca68327409113eed56645ab2ced6` |
+| `evidence/output-artifacts/local-training-darwin-suspended-exec.json` | 2718 | `478ed2743445a1231ea7c84158207c417b8a575dece3af5f37b6e1eded97e6c6` |
+| `evidence/output-artifacts/local-training-failure-recovery.json` | 2048 | `70e8e9aba53d30e96537b2f492ce38a1241ee6a12fbe529a11d7104c0612e8c6` |
+| `evidence/output-artifacts/local-training-candidate-artifact-verification.json` | 2254 | `aa86aaa074332fd6fa09dbbb8c35046f935b8ef8828a82ff397f4301b7344498` |
+| `evidence/output-artifacts/local-candidate-evaluation-admission.json` | 2955 | `25b08f43f901a1ef5c2b94f8ffde9016706f2085595c284e39fb5625521b14f3` |
+| `evidence/output-artifacts/local-candidate-evaluation-runtime.json` | 3959 | `5cf3d5bf52805496e373fea46cb2dbad0a493caa074d76864bf253901d394b75` |
+| `evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json` | 1421 | `4cbb68d20eb1cf70bf333f293871b97401e03b0bf505157e1790ee7f101b3cbe` |
+| `evidence/output-artifacts/local-candidate-evaluation-host-restart-receipt.json` | 1392 | `a3325570b1b47b2fe8329534acb584b25c76b020c968e4ee3b0e7eb8fe212025` |
+| `evidence/output-artifacts/local-answer-quality-baseline.json` | 13952 | `34da61aa5715e235883aa6c10dff48c54acb905beb2d8704425e5dd091e23d2e` |
+| `evidence/output-artifacts/local-answer-composition-candidate.json` | 28268 | `1cb388d694e7a96bc2993a04a59903dd32cf15fe0e31cc2383fbb3b517927e1c` |
+| `evidence/output-artifacts/local-answer-composition-robustness.json` | 49779 | `1324d8267b75e40ccb950b458845929e1a55e40edc24ce9f5bf96c53faf662a8` |
+| `evidence/output-artifacts/local-answer-composition-hardening.json` | 76500 | `d83ac9eb399d4ed16f3596e77fe1b26e7091bb3639580049deffb7119c65278e` |
+| `evidence/output-artifacts/answer-input-boundary-evaluation.json` | 7098 | `45218019d186e4dcf3cd03a018355bf6c7f0430712e4374dafccd7f88f5bffa5` |
+| `evidence/output-artifacts/local-answer-composition-boundary-regression.json` | 20173 | `88599f43061b18c2aba2670fcbf47499d189fbf4447ea13a348f61901a625e39` |
+| `evidence/output-artifacts/user-query-evaluation-intake.json` | 9225 | `fad444e01c76ec11eadd636b1861bd6fce80ce4ac8f084587720a5f81ff51e4b` |
+| `evidence/output-artifacts/local-user-query-quality.json` | 35540 | `a8270b51925d61161eb917b812bab5b603df43abe035339b39ab9e3046434186` |
+| `evidence/output-artifacts/local-answer-review-action-generalization.json` | 54068 | `7a71e2c24ec751903fb2b971b0f776381dce4dcc9f553f466730e08ad31a974f` |
+| `evidence/screenshots/workspace-learning-operator-surface.png` | 617352 | `a2632b7a8cfd46943df39b978cd3c82bdbb0aa05c350dc5f42b7b105869228fe` |
+| `evidence/screenshots/user-learning-operator-surface.png` | 612712 | `2d6cf19a60308ce7c0a7a10f1d97ea1df0b726c77a8566c858a8781271d5400d` |
+| `evidence/screenshots/local-training-permission-surface.png` | 549515 | `e6748c2c82c9cb91d854e2c0b05e70d13cd28c226f390717a95f714509e27670` |
 | `docs/fork-onboarding-v1.md` | 3407 | `c7d02e8281a439e515117f2fa4878bc0259a1c355b335da1129e66186dd93dc8` |
 | `docs/incident-slo-v1.md` | 6052 | `8e28ef80a072eed5e731b4db1ce7953d2a660689844a4566eec8d7b09d57f95d` |
 | `docs/customer-support-operations-v1.md` | 6200 | `8ed125281443fce70deb133eecfd9108744320ad1d977c5061e349f6fb1ab873` |
@@ -110,10 +170,10 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-backup-operations-v1.md` | 9763 | `2f30be20f210cf3b2a52c2fc19fb2cdee223a4e07105c0d53826cd528952b9e0` |
 | `docs/identity-session-admin-v1.md` | 5290 | `ffed2867d7d61f9e0241c65c056de0109f6b03ea466c9f8c452b5b17e9a88cc4` |
 | `docs/tenant-storage-admin-v1.md` | 5265 | `196643ffccc0778c211d82e063e5c6067444a53f550e1b134eecdfad9b6d7186` |
-| `docs/clean-deployment-release-v1.md` | 11837 | `82f78c63cab66e4eeabc4f3b1ea9bc0480d99993c8dfe07086945125389eeb66` |
+| `docs/clean-deployment-release-v1.md` | 11851 | `eb53d43eac71613c468341d5fcab8a9ee3e1d0d18003ddfd48660e8a05abbe14` |
 | `docs/production-slo-operating-v1.md` | 9996 | `7c6732ff3de75775f9530b5f53524b7919aef52ab19143209c67a4b9fc65935f` |
 | `docs/production-retention-operating-v1.md` | 7732 | `d7c5c7d83dc30968bbf5393cee279a5bc7f9c346eea333c3474e07d4d2854b2d` |
-| `docs/production-provider-readiness-v1.md` | 22089 | `0102860168b683415032f29c0924f67fb6023ed32fe215a3381f73c5f7181836` |
+| `docs/production-provider-readiness-v1.md` | 22128 | `1553ae4abed98e0c2aa008c2349e7f27f005eb731e0ba94a1b1a8f067e2a8e1e` |
 | `docs/target-provider-evidence-intake-v1.md` | 13617 | `17f4750fe722f151743181f94a7d58f149f47976e7175c2772bbac1f8732b4c1` |
 | `docs/target-provider-operations-v1.md` | 22263 | `2cbf909fd2cad9803048f801066d1fd46d2dc00b985a9aea746eda87c2fa0ef7` |
 | `docs/target-openai-provider-account-v1.md` | 14039 | `15f7eb72f44b2fd93d1dfbe8eea2c7fca708afd3d7c8061644863b3bbe1b7b0b` |
@@ -130,14 +190,14 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/target-secret-manager-architecture-v1.md` | 9085 | `805cf311fb11c26b7ec03f35241d40c41546d835cf0109809a2bddcfc099de1d` |
 | `docs/target-environment-evidence-intake-v1.md` | 48284 | `e619d472a8b17ecccf5eb793aac1fa828fe04c987e38422f98050cc4c100db05` |
 | `docs/release-readiness-v1.md` | 92579 | `5c65024e30def571fe6d43b96c271c1ccc7c07e156695c8418da7526022bc4f0` |
-| `docs/production-like-release-drill-v1.md` | 56084 | `a127737e94d0d51d3f755f0d3677a3de77ae16c40ceab18e0debd016572aa62d` |
-| `docs/execution-v1-evidence.md` | 14104 | `5785fbe848092788722c4002bca9c077d89354143b1eb061c649b9070eedc744` |
-| `docs/execution-v1-closeout.md` | 3211 | `38344d833586fdefe0ded7bfb4eeabf5e1b2772953ab2973a9e2465b4298bf33` |
-| `docs/execution-v1-handoff.md` | 8824 | `c805546e1324e49c62ebef68f4b5407ffeb065a87a9190843d367cafeaaacb91` |
-| `docs/releases/execution-v1/e9fafce7a3073765b5902e5bed9f6e2a2db41510/execution-v1-evidence.md` | 14188 | `af4dbcbda892f9e3c78048080853cbd11bd4a5bb9d24d080074d398772f53433` |
-| `docs/releases/execution-v1/e9fafce7a3073765b5902e5bed9f6e2a2db41510/execution-v1-closeout.md` | 3363 | `b4929646f3db799e7a44e354a9b366d9a4ef66b78150ee01eed68992d303c669` |
-| `docs/releases/execution-v1/e9fafce7a3073765b5902e5bed9f6e2a2db41510/execution-v1-handoff.md` | 9053 | `7c3bfc69e7b5150195bd2fa6166f26039c4e2569af4f4f86ee319960812270be` |
-| `docs/releases/execution-v1/e9fafce7a3073765b5902e5bed9f6e2a2db41510/snapshot.json` | 487 | `bcb8bbb25f62864e070c51c4cd9813f4b29b4e8cbcfbd208bab7476dcc0769b1` |
+| `docs/production-like-release-drill-v1.md` | 56128 | `259babcce8cb114e386a247339f73433d846a08f2ce0e50b99df2d1ac1f59d62` |
+| `docs/execution-v1-evidence.md` | 14546 | `6a7319fb573135113dbf2a12859f5a4d46a9c41d4bdd2fe5df6d098eecf3dbfe` |
+| `docs/execution-v1-closeout.md` | 3864 | `9ff66c9868a0d3fdac8e5178736c91084984064a3f6a313c077de69b0058900d` |
+| `docs/execution-v1-handoff.md` | 9521 | `89bc778107b5e8d922fca2951483f63124aa5c8a414632513745441a8017c91b` |
+| `docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7/execution-v1-evidence.md` | 14630 | `358e60374ba01f0124604a8533bee5ddcde15f6b0da7a864f0096231bd51ef20` |
+| `docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7/execution-v1-closeout.md` | 4016 | `d6de763a5e5d347f454d6c40a4667cca1e5cc482caf7304cc1a449cf02d706a9` |
+| `docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7/execution-v1-handoff.md` | 9750 | `b57f801ad48f85e0f4b15e2420e2421d0abe9b5eb0ded56d217b2f8a251770e2` |
+| `docs/releases/execution-v1/cba31ee73998728c5bc60ac5a850fa100adfe8a7/snapshot.json` | 487 | `1606dd163ace9154764536772b62d503d62784efaac3d60220966a637ae37e7a` |
 
 ## Operator Re-Run
 

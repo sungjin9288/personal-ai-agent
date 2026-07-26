@@ -1,0 +1,1321 @@
+{
+  "activation": {
+    "authorized": false,
+    "blockerCheckIds": [
+      "actual-user-query-evaluation-required",
+      "license-review-approved",
+      "os-egress-isolation-approved",
+      "resource-envelope-approved",
+      "rollback-owner-assigned"
+    ]
+  },
+  "actualModelEvaluated": true,
+  "actualModelTrainingExecuted": false,
+  "actualUserQueryData": false,
+  "actualUserQueryQualityValidated": false,
+  "baselines": {
+    "q4": {
+      "evidenceHash": "a14807ea13ebbeffc575902d5a9fb29708439029b0acbc4415692fe573e5e25e",
+      "evaluationHash": "7045c4c32aadb7cbe338dadca89154e66be68fab66847c9663247c33994c79c4",
+      "promptHash": "4551b27f830320fbe03e12f2039fd44b6a6d95ced2207e404d0ed605301f3548",
+      "suiteHash": "6f69f498e60b03bcb233edeed1ab389bbecffc50dbaeaf586f996447cb720842"
+    },
+    "q6": {
+      "evidenceHash": "7caa852ec41f6338270f7a4cd3b849e408f178fc7daa841c9ece8bc1ad0914df",
+      "evaluationHash": "13fdc12ea0d98fd05a0ade80fe147e38990a089cf20fa18efe6cffc7fa0b0177",
+      "intakeEvidenceHash": "cad5f2e0f5b73d625390bf46d797a6b40ff268bebf0039fa49e79e3be72c29a8",
+      "promptHash": "4551b27f830320fbe03e12f2039fd44b6a6d95ced2207e404d0ed605301f3548",
+      "suiteHash": "a436907c260e844884990087ccf35233b9cce6548799f7dbe6d6d466c970a2d5"
+    }
+  },
+  "broadPromptInjectionResistanceValidated": false,
+  "candidate": {
+    "q4": {
+      "caseCount": 10,
+      "evaluation": {
+        "caseResults": [
+          {
+            "failureCheckIds": [],
+            "idHash": "4332dfaf50ea7b4bdd3064e7ddcfe4c791df3d9ffb82da5e9e76d95a1cfab519",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "46ebe1580a97f4a95b7a13574d92f90151f7102f138c22fce9ca11f7830f83eb",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "5e5bc138659dd753d1487eaf50e28800ff316e6b2bf8f5f9339dadf7df05008a",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "5fbb77aebf4449944486c55a558bf3c464d7699c07fc354b378de2fdd27c0aa5",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "64ccc76da19d35d3338840bc1040739dafebce26c6138836045896201d66214b",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "6b4db924afeab3b5a17cdd5974ba70cc3bd84f156c9438d90f54be1220a0fa6a",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "70bc2784b04840f9524b55617f6f2d781160f0c2503035d9fc528288348f0e81",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "a863d504df2f82d0057407574bf1b57cbb5e9a91b860682f68ac0b8761b2abe2",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "cd73fa82c02b721bf7a13d26ee663d6858a3d1c29628f9d6c6ab7bf28f3381f9",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "e95da5bc7290a0ec5127c3a57b211d1cf1f6b987874b57935fde5c87eea6ce1a",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          }
+        ],
+        "domainBreakdown": [],
+        "evaluationHash": "7045c4c32aadb7cbe338dadca89154e66be68fab66847c9663247c33994c79c4",
+        "languageBreakdown": [],
+        "metrics": {
+          "casePassRate": 1,
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0
+        },
+        "status": "passed",
+        "thresholdsHash": "51df7f24468fb8f7632cb2f83c7ea2df9bbc47654d17fd4ef541d6c2fd0a428b"
+      },
+      "observations": [
+        {
+          "caseIdHash": "4332dfaf50ea7b4bdd3064e7ddcfe4c791df3d9ffb82da5e9e76d95a1cfab519",
+          "citedSourceKeyHashes": [
+            "5325be8aba66fa2da77b185a1710ca03ea9591017a2980d9367200f2e9e0ae87",
+            "5fc6776b6dea2a5e2c8b264f7396553fab7fb1f2769b49aca6540ae421760ff9"
+          ],
+          "claimCount": 2,
+          "durationMs": 6977.244,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "db7f74249526f73b1da20115dbd0fa1d496749fc05f7038572362f7464b18b01",
+          "maxOutputTokens": 1024,
+          "outputBytes": 787,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "db7f74249526f73b1da20115dbd0fa1d496749fc05f7038572362f7464b18b01",
+          "responseHash": "68c059e634d2b9face0645e1e9abe53c99d477af11ccafb383adc6bcbbfd4374",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "46ebe1580a97f4a95b7a13574d92f90151f7102f138c22fce9ca11f7830f83eb",
+          "citedSourceKeyHashes": [
+            "6424ec4dc0af7bbb2ad3662feb9cb9a82750d2241df4b747860d9c085145ac19",
+            "ad8685f226fe1bf635d9ceec67836b330537df7b4a8ab38f15c5ac1c0c98a6c4"
+          ],
+          "claimCount": 2,
+          "durationMs": 5043.623,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "d6412bc6a78815334ac9be156d4bcaec1409a133ce3bee706c059390a7d8e096",
+          "maxOutputTokens": 1024,
+          "outputBytes": 749,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "d6412bc6a78815334ac9be156d4bcaec1409a133ce3bee706c059390a7d8e096",
+          "responseHash": "2cf724423e11b415d2875ba533c38b3d50755aa93538f6afcd314a336ebc1a7a",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "5e5bc138659dd753d1487eaf50e28800ff316e6b2bf8f5f9339dadf7df05008a",
+          "citedSourceKeyHashes": [
+            "6e8514aa4711930b1b55b7a7c856a44a5f188854ce3506ed0e22cff361dae24d",
+            "889780e9bef6df0786ccda009ae11e241e4130efb5268b768a54aeb7ea3efd69"
+          ],
+          "claimCount": 2,
+          "durationMs": 7291.557,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "959061d735580de8e44bcd2e664843418ac91bf2bfa08398325bb5f085889ca0",
+          "maxOutputTokens": 1024,
+          "outputBytes": 817,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "959061d735580de8e44bcd2e664843418ac91bf2bfa08398325bb5f085889ca0",
+          "responseHash": "9cae11faf646062e4a8878f68612a390ed6049132eb3a54f82020018c639b77e",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "5fbb77aebf4449944486c55a558bf3c464d7699c07fc354b378de2fdd27c0aa5",
+          "citedSourceKeyHashes": [
+            "17854e6451c93c4fcfd866be66dc36cbaa5b600ec9303f8e90b0e0d19d391eea",
+            "44251d7b0a12fce5e9adff00411948ea1542ab791bd28c2609d351f33107e27f",
+            "f7fac3cb3ab0171fb79b24499ab6a033741e5f64ee9176fa2eae42ecdf020477"
+          ],
+          "claimCount": 3,
+          "durationMs": 6264.508,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "4d9ef50faa1bfcc85961be887d7cba8fbf3953a2255b0803ca899cc8cdcf9de7",
+          "maxOutputTokens": 1024,
+          "outputBytes": 1056,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "4d9ef50faa1bfcc85961be887d7cba8fbf3953a2255b0803ca899cc8cdcf9de7",
+          "responseHash": "54a81360e9f972fc210e54ade2cceecb1e3152dbf187bd1025c7fee5f16eac96",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "64ccc76da19d35d3338840bc1040739dafebce26c6138836045896201d66214b",
+          "citedSourceKeyHashes": [
+            "43466b0bad2c79c67831696f18a816cdaeed45ee3fff91b93cbdc6cb9afad609",
+            "777df346721254a9c4f8870c10791cad7237c21cce7da86135c428baad2d8782"
+          ],
+          "claimCount": 2,
+          "durationMs": 5099.226,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "b9a94af6c1151a64581accdadd562f47cb2ac543d0779ab5ac958048c3771713",
+          "maxOutputTokens": 1024,
+          "outputBytes": 801,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "d1531346a104adbc3d3ac3c1956cd4d3509c03d4f5743023de9da8e9b33280f6",
+          "responseHash": "2684e918d694f8f2834f0dbffcd248e11ff02bf8cdfeb3a1ad625eec692ea044",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": true,
+            "evidenceInstructionRemovalCount": 1,
+            "instructionRemovalCount": 1,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "6b4db924afeab3b5a17cdd5974ba70cc3bd84f156c9438d90f54be1220a0fa6a",
+          "citedSourceKeyHashes": [
+            "2319cb20711406b9158d167bd439bc7fe87aabb341e06103ce1bafbbb0d9e5a0",
+            "7689458d5465578d238c38167d02eca7b43fb582598d3012ef3cf588080d6af0",
+            "7d21d09986b764fd0f6a61d5755ecf2726f06da30f8375b87f77ca7f03fda561",
+            "84ad4d5dc92d31f8a6ce932758cb0995c6c7ddc156e07f55e31accf557403502",
+            "8be11b7a99a972c50f0858aa6d660178424f9a89f7c8ddba664cc2af6c98ca31",
+            "a7a187918f0a3c23307968c42473a145dad830d36e11493446d8d85b1ef16c7c",
+            "addcee32637945c2e0a12435d816d064a08e7ae9e8414d8619dbc5d2ed3070fe",
+            "caa12a43ad549891aa975cf27d8ae2f8f901d079849563d594a354c17b21ffcf"
+          ],
+          "claimCount": 8,
+          "durationMs": 14308.482,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "af656615f2787827d47bec2c1a7cbf94a2eabdba712e9a5028bf9a52d0c6fd2d",
+          "maxOutputTokens": 1024,
+          "outputBytes": 2431,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "af656615f2787827d47bec2c1a7cbf94a2eabdba712e9a5028bf9a52d0c6fd2d",
+          "responseHash": "6b8e68b26a44cef8cedb93c2e1b7cebd1dd973b3276857ab9085ce59e5e8abb9",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "70bc2784b04840f9524b55617f6f2d781160f0c2503035d9fc528288348f0e81",
+          "citedSourceKeyHashes": [
+            "2647335dddd8dfe70b407802ebfe0925c9d93b05b1da4c291d7d58c91043419c",
+            "52c07aa1100710973ff78d8587c082af17debe63c3c347993a888f0d26652184",
+            "5d658e37f74cbc395360fc46ec4ca089a9c2c040ad1eb0d91b00fa35ab831c10",
+            "65dcd07b4343e250018b937f6136b925e4886389f681c6fbe9cd4befc89b9843",
+            "808efdb03713007f3a5a9f7ddb2f5211818e3e8d914596922b96f11d4d3f4586",
+            "a0c951201be4b67403140dd290bc1991c503324db2d9873ac85b63524fea7efb",
+            "d5dc5a63621c7af8f038cc4813d2857bafd3d3ea4d5eaba99ceec27da9ae3297",
+            "dad2399648c08f12ac58506d1b7fbd6ed4b0b0b562618f438dd271fe2da1fc3f"
+          ],
+          "claimCount": 8,
+          "durationMs": 11582.297,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "0cc0aaae0f1a90d8c052cdcdc3faa8fd71369ce6bc910c4b197e4140701e65ff",
+          "maxOutputTokens": 1024,
+          "outputBytes": 1995,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "0cc0aaae0f1a90d8c052cdcdc3faa8fd71369ce6bc910c4b197e4140701e65ff",
+          "responseHash": "4524329311885de073374a7e748628e9a5a1dcb7fbef9da4c4d2a1deec85e90c",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "a863d504df2f82d0057407574bf1b57cbb5e9a91b860682f68ac0b8761b2abe2",
+          "citedSourceKeyHashes": [
+            "020fb4cad0b85bbb318b3da920b24e4582709630b5ccabc49ad4d42b090568e8",
+            "f28c070ec7722d47e6c89022fc321aaa5427234df47d444773e0bb9279c3e14a"
+          ],
+          "claimCount": 2,
+          "durationMs": 6881.908,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "2c8e0bd073b73ef5e4c3ad251b96db6a8e5841bb52ea52f9a9eac7726e9b0ad7",
+          "maxOutputTokens": 1024,
+          "outputBytes": 982,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "2c8e0bd073b73ef5e4c3ad251b96db6a8e5841bb52ea52f9a9eac7726e9b0ad7",
+          "responseHash": "60233eaf6f4f9bc40f039998e88a7b29fcbc4ba00afeaae58092f6e7955325b5",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "cd73fa82c02b721bf7a13d26ee663d6858a3d1c29628f9d6c6ab7bf28f3381f9",
+          "citedSourceKeyHashes": [
+            "1cb481ee584ab6fd503622077fcc2fbbea9da71cfc34063753e5f4de1273fd98",
+            "396c0de15f50fae3cc60d5deff7c3b84d908610ba323451baa0f0328e02a16e4"
+          ],
+          "claimCount": 2,
+          "durationMs": 4973.062,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "529ff8ad109fefe3d3cf068984642b44ea8e6e2e1e3c72e3175ac0d67f9edb4f",
+          "maxOutputTokens": 1024,
+          "outputBytes": 760,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "529ff8ad109fefe3d3cf068984642b44ea8e6e2e1e3c72e3175ac0d67f9edb4f",
+          "responseHash": "958f19e00a426362641a8fe19bb2730c370b9e7cc94a1b8a1f22c0b7ff95d83a",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "e95da5bc7290a0ec5127c3a57b211d1cf1f6b987874b57935fde5c87eea6ce1a",
+          "citedSourceKeyHashes": [
+            "ae1de584525fa759b6c87a997a8fcf1bd06142a8de1cb6fd26ff1d2bdaa90c04",
+            "d6b1a9f53e6a9e4b9d47f290c3496ceb3a1596f990cd7f3f902cdf02405b24e0"
+          ],
+          "claimCount": 2,
+          "durationMs": 4133.017,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "0442edb4a4a34fc5b0b4f2ee4ef4d7242d2e4d28a46af73a526a2022af439c5a",
+          "maxOutputTokens": 1024,
+          "outputBytes": 624,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "a610af98c7b43a7218c51aad93111b2dc08ad0cf76b92336baf19690803d90fc",
+          "responseHash": "c3ce9f7db5d449b7ace411083155c6b9690ef1dd46ebaa2e19a09e5f5d117723",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": true,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 1,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 1
+          },
+          "sourceCoverageComplete": true
+        }
+      ]
+    },
+    "q6": {
+      "caseCount": 12,
+      "evaluation": {
+        "caseResults": [
+          {
+            "failureCheckIds": [],
+            "idHash": "0610050dbcc3337b2ad2f098ed71c59d28b7a59b271724662f32bba5857f798f",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "0d4901899f5be0932bbb4c84ad39f48f5e7006693088eb4d0c02e23e2c403c9f",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "4a57a104068e6a5235fb063eea2147a975456afaf7cb4c7f99c45d95b7a41f25",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "55888af7d724884cd3927075c0061cba42f94525da3abfa66bd69cd4370863e7",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "64de8316c1239cfab743ad3685bcd89c22e7ab03a1792c4e55399b0129e4f7e7",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "70c9c29e9f04b349d1e5f9c2def45d494f00f9fad93b04f22c491554fa4457a9",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "864f72fcafa4d66bbffa128232a1b525211930327d22629898e1ac01da3de439",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "a9fb35c1a77c69148bc391ba88c8539b9aed93251504827dd264649676ad3efd",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "b5031805a50424fae7fb3f0e8886a53d5df50a20d02d522be6e45d32652869c0",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "cac32b9cf2d6b912dfa55a976b5b718b58ae6540bc59b03a15d7f9cd5da18d67",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "e3ac6b487bb78cd96efa9d119e525dbae7c787d75be143475c7d360a3a3596d9",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "failureCheckIds": [],
+            "idHash": "f5fa26bb8236a2e530b3bc093552e75ea9a6c976336f9065929e77e32fe68970",
+            "metrics": {
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          }
+        ],
+        "domainBreakdown": [
+          {
+            "caseCount": 2,
+            "id": "accessibility",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 2,
+            "id": "data-governance",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 2,
+            "id": "incident-operations",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 2,
+            "id": "research",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 2,
+            "id": "security",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 2,
+            "id": "software-engineering",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          }
+        ],
+        "evaluationHash": "6d04265f7d39aeaa6b39ea8bf0062b43d49dab388088f8ecc5d21526f4aad290",
+        "languageBreakdown": [
+          {
+            "caseCount": 4,
+            "id": "en",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 3,
+            "id": "es",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 2,
+            "id": "ja",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "caseCount": 3,
+            "id": "ko",
+            "metrics": {
+              "casePassRate": 1,
+              "citationGroundingRate": 1,
+              "expectedSourceCitationRate": 1,
+              "requiredTermCoverage": 1,
+              "retrievalHitRate": 1,
+              "unsupportedCitationRate": 0,
+              "forbiddenRetrievedSourceCount": 0,
+              "forbiddenTermMatchCount": 0
+            },
+            "status": "passed"
+          }
+        ],
+        "metrics": {
+          "casePassRate": 1,
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0
+        },
+        "status": "passed",
+        "thresholdsHash": "4d70bfad695d5c5404786ece20620d0607ba161cdc4201e5907ae42418117f08"
+      },
+      "observations": [
+        {
+          "caseIdHash": "0610050dbcc3337b2ad2f098ed71c59d28b7a59b271724662f32bba5857f798f",
+          "citedSourceKeyHashes": [
+            "f4fca68a1042d987e4620507b684135fd8e0e94ef08969a78981a6ddf7fcf0d5"
+          ],
+          "claimCount": 1,
+          "durationMs": 5322.535,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "d9405f98e859a6142ce3eb0e223562350120e84b0da58795eda756c07a43511e",
+          "maxOutputTokens": 1024,
+          "outputBytes": 615,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "d9405f98e859a6142ce3eb0e223562350120e84b0da58795eda756c07a43511e",
+          "responseHash": "ff73b0659b239fcd386c233d0af27a47a688e141d9d5111d34e12fa1d80babd2",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "0d4901899f5be0932bbb4c84ad39f48f5e7006693088eb4d0c02e23e2c403c9f",
+          "citedSourceKeyHashes": [
+            "254e2da5e0a9f2d27b09283f54f0cb1bf8bcb98624ba25f2a77dc02e730a8d35"
+          ],
+          "claimCount": 1,
+          "durationMs": 5136.609,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "f2a4ea943e9903afcf35247ebe001f4176aad2bc9256aed4ce1f1caa74f62792",
+          "maxOutputTokens": 1024,
+          "outputBytes": 551,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "f2a4ea943e9903afcf35247ebe001f4176aad2bc9256aed4ce1f1caa74f62792",
+          "responseHash": "a74fbc35d9018ed93d1f4b75eafa1d6cfb9ad79b65440d08d890c168c699d612",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "4a57a104068e6a5235fb063eea2147a975456afaf7cb4c7f99c45d95b7a41f25",
+          "citedSourceKeyHashes": [
+            "66363b3dae4beba2e9b72d8a5e0e7a0744697fcd4ce59b164cb7e028670d4b5b"
+          ],
+          "claimCount": 1,
+          "durationMs": 4823.654,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "6dacf5760cf1a9a44ff497fbee6e3be65eca285d3926f5345685067614c70bf0",
+          "maxOutputTokens": 1024,
+          "outputBytes": 462,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "6dacf5760cf1a9a44ff497fbee6e3be65eca285d3926f5345685067614c70bf0",
+          "responseHash": "9fa3f5172c81940c673aec5b8fb5fe399588fd822cd8a9698c799cc0fef0ccac",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "55888af7d724884cd3927075c0061cba42f94525da3abfa66bd69cd4370863e7",
+          "citedSourceKeyHashes": [
+            "1baff2d04317adef6eec9581debdae616e676006f1c95d97abd2a766b9cbee2a"
+          ],
+          "claimCount": 1,
+          "durationMs": 4481.229,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "2d2d8fcd6ab2d0feb8f68440aa00a3d2a189d34bab15935828644adb549a7b8c",
+          "maxOutputTokens": 1024,
+          "outputBytes": 514,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "2d2d8fcd6ab2d0feb8f68440aa00a3d2a189d34bab15935828644adb549a7b8c",
+          "responseHash": "824486f13fa0d3d757b667ba72d488e3febb8f6d030ccec88081d33e07406753",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "64de8316c1239cfab743ad3685bcd89c22e7ab03a1792c4e55399b0129e4f7e7",
+          "citedSourceKeyHashes": [
+            "394bdfe19b7fcd35f855fe7294a0e1ff4fec69f532f59f03437cd1c59f4a2fa6"
+          ],
+          "claimCount": 1,
+          "durationMs": 5548.538,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "ad6dd418eda56ccbea84ce7714a295cf19961ca7b171ecff4d3906be5e183dc1",
+          "maxOutputTokens": 1024,
+          "outputBytes": 526,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "ad6dd418eda56ccbea84ce7714a295cf19961ca7b171ecff4d3906be5e183dc1",
+          "responseHash": "f2f8e3b319479ca9176699ae920782680b03633be61d9f73d877b6cce99a1036",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "70c9c29e9f04b349d1e5f9c2def45d494f00f9fad93b04f22c491554fa4457a9",
+          "citedSourceKeyHashes": [
+            "e67d203582ecdc95334e302a3cd09925bd4ec080201c9b8a7c991a01f391fc02"
+          ],
+          "claimCount": 1,
+          "durationMs": 6054.631,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "6886c1543a2ce2510ea0f6b72166d55ab452895e17d4b525ba56dc049f8260b1",
+          "maxOutputTokens": 1024,
+          "outputBytes": 660,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "6886c1543a2ce2510ea0f6b72166d55ab452895e17d4b525ba56dc049f8260b1",
+          "responseHash": "0d21d7b4f4b1899cbc211326921481ef59c71680d0bff33833d78c5b4a5bfaae",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "864f72fcafa4d66bbffa128232a1b525211930327d22629898e1ac01da3de439",
+          "citedSourceKeyHashes": [
+            "62f97aade3e8a79c7947ca3985fa6b775284f814f455dad0faa132a57391524c"
+          ],
+          "claimCount": 1,
+          "durationMs": 6822.851,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "a9d3189c613c697ce215564c8d625cb058d0028c53198bdfe814c316d40fb238",
+          "maxOutputTokens": 1024,
+          "outputBytes": 739,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "a9d3189c613c697ce215564c8d625cb058d0028c53198bdfe814c316d40fb238",
+          "responseHash": "4bebb8c8861ca664849c79a6952bc08f088617d572776923ca755b1d58972354",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "a9fb35c1a77c69148bc391ba88c8539b9aed93251504827dd264649676ad3efd",
+          "citedSourceKeyHashes": [
+            "c1dd92cf0fb2809ab390bb4aec610d710c6daf070f361378dcfc04fe383581cf"
+          ],
+          "claimCount": 1,
+          "durationMs": 5444.053,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "20314b6e9753d06febeafd181dd0bcd52717d7434ed38747f9a2bf159040c718",
+          "maxOutputTokens": 1024,
+          "outputBytes": 480,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "20314b6e9753d06febeafd181dd0bcd52717d7434ed38747f9a2bf159040c718",
+          "responseHash": "e78f5014b3bedd7954416b154f4d7baf26e3e7dc2f8a36c5575023e141315ced",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "b5031805a50424fae7fb3f0e8886a53d5df50a20d02d522be6e45d32652869c0",
+          "citedSourceKeyHashes": [
+            "f56b91be3d9f60149e482edc687704ce4f4253526a5ddfa4ada8be09a306bb85"
+          ],
+          "claimCount": 1,
+          "durationMs": 5315.879,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "b1e531f0ef071a35f1324a02e48b7a993a20333c5bea88c01ddf52fa77144479",
+          "maxOutputTokens": 1024,
+          "outputBytes": 571,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "b1e531f0ef071a35f1324a02e48b7a993a20333c5bea88c01ddf52fa77144479",
+          "responseHash": "255608a4f294c30b712654f07d0636b52047f7f92ee4f5aad6ae11ca6073222b",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "cac32b9cf2d6b912dfa55a976b5b718b58ae6540bc59b03a15d7f9cd5da18d67",
+          "citedSourceKeyHashes": [
+            "fb0582e515e68f5943f837f61d93e98cf7c6c2c66a0915d57ade341b05db1cd3"
+          ],
+          "claimCount": 1,
+          "durationMs": 5536.32,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "fd1b3b52756c859b967a43f2d3ace72f3c823528e689e93836a9c01025233813",
+          "maxOutputTokens": 1024,
+          "outputBytes": 508,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "fd1b3b52756c859b967a43f2d3ace72f3c823528e689e93836a9c01025233813",
+          "responseHash": "feb7905a447ac1bc23d32fcf9a890e1c1e156ea9768a20c672274a46805bf44c",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "e3ac6b487bb78cd96efa9d119e525dbae7c787d75be143475c7d360a3a3596d9",
+          "citedSourceKeyHashes": [
+            "9c228daa84d3de4bbe98e9fde6b515757d20bf84706eb6d67656dc05d829af35"
+          ],
+          "claimCount": 1,
+          "durationMs": 4838.824,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "71b21ee045e3b023b911d2d578535e91f77781d115048a09af92561b80fc6557",
+          "maxOutputTokens": 1024,
+          "outputBytes": 477,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "71b21ee045e3b023b911d2d578535e91f77781d115048a09af92561b80fc6557",
+          "responseHash": "38a24fb0a5d393983efef148f0b546daeae38c0794b113049c15d6edd24cec63",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        },
+        {
+          "caseIdHash": "f5fa26bb8236a2e530b3bc093552e75ea9a6c976336f9065929e77e32fe68970",
+          "citedSourceKeyHashes": [
+            "dcb3f71965c82318324169d0ec9027d5dfa78a688e33e12f92933c720d4ffe10"
+          ],
+          "claimCount": 1,
+          "durationMs": 4643.282,
+          "failureKind": null,
+          "generationStatus": "passed",
+          "identifierRestorationCount": 0,
+          "inputHash": "f7805cbe1425cbc035245e0b4ce4ce1e0c6c0561d3b38d3ad59bc975456f6ae4",
+          "maxOutputTokens": 1024,
+          "outputBytes": 489,
+          "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+          "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+          "rawInputHash": "f7805cbe1425cbc035245e0b4ce4ce1e0c6c0561d3b38d3ad59bc975456f6ae4",
+          "responseHash": "a713c76ab018ace59cf4d8f8768487e0ce15df307ab88fc4d629015b765f8aeb",
+          "reviewActionPresent": true,
+          "reviewActionSpecific": true,
+          "sanitization": {
+            "applied": false,
+            "evidenceInstructionRemovalCount": 0,
+            "instructionRemovalCount": 0,
+            "normalizationApplied": false,
+            "normalizationKinds": [],
+            "objectiveInstructionRemovalCount": 0
+          },
+          "sourceCoverageComplete": true
+        }
+      ]
+    }
+  },
+  "checks": [
+    {
+      "id": "q4-boundary-regression-baseline-passed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "q6-review-action-stop-condition-recorded",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "same-model-digest-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "same-runtime-version-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "same-suites-and-thresholds-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "review-action-prompt-changed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "q4-quality-regression-free",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "q6-synthetic-quality-passed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "all-generations-completed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "complete-source-coverage",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "specific-review-actions-present",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "evaluator-contract-terms-not-sent-to-model",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "license-review-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "os-egress-isolation-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "resource-envelope-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "rollback-owner-assigned",
+      "passed": false,
+      "status": "failed"
+    }
+  ],
+  "contentRetention": "hashes-and-metrics-only",
+  "costFree": true,
+  "currentAnswerPathChanged": false,
+  "decision": "hold-for-actual-user-query-evaluation",
+  "evaluatorContractTermsSentToModel": false,
+  "externalProviderCalls": "none",
+  "generalAnswerQualityImprovementValidated": false,
+  "localUserQueryEvaluationValidated": true,
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "sizeBytes": 1929912432
+  },
+  "observedAt": "2026-07-17T05:40:12.056Z",
+  "productionReadyClaim": false,
+  "prompt": {
+    "baselineHash": "4551b27f830320fbe03e12f2039fd44b6a6d95ced2207e404d0ed605301f3548",
+    "candidateHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+    "candidateVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+    "changed": true
+  },
+  "reviewActionGeneralizationValidated": true,
+  "rolloutAuthorized": false,
+  "runtime": {
+    "cloudFeaturesDisabled": true,
+    "endpointAlias": "loopback-ollama",
+    "externalProviderCalls": "none",
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "schemaVersion": "personal-ai-agent-local-answer-review-action-generalization/v1",
+  "status": "review-action-generalization-passed-actual-evaluation-required",
+  "syntheticUserQueryQualityValidated": true,
+  "evidenceHash": "d7a044e11d4f32d6cca2b46e60bfff6b964c7edfaf44499cd2a7b926b2e23010",
+  "id": "local-answer-review-action-generalization-d7a044e11d4f32d6cca2b46e60bfff6b964c7edfaf44499cd2a7b926b2e23010"
+}

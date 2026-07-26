@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "personal-ai-agent-answer-quality-fixture/v1",
+  "productionReadyClaim": false,
+  "thresholds": {
+    "maximumForbiddenRetrievedSourceCount": 0,
+    "maximumForbiddenTermMatches": 0,
+    "maximumUnsupportedCitationRate": 0,
+    "minimumCasePassRate": 1,
+    "minimumCitationGroundingRate": 1,
+    "minimumExpectedSourceCitationRate": 1,
+    "minimumRequiredTermCoverage": 1,
+    "minimumRetrievalHitRate": 1,
+    "requireReviewerPass": true
+  },
+  "cases": [
+    {
+      "id": "provider-drift-recovery",
+      "retrievalInput": {
+        "attachments": [
+          {
+            "fileName": "incident-notes.md",
+            "promptContent": "Prompt normalization resolved provider drift during the execution validation rehearsal. The verification bundle preserves the remediation decision for review.\n\nWeekend hiking routes and sandwich notes are unrelated."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "content": "Provider drift was resolved after prompt normalization narrowed the verification path.",
+            "kind": "fact",
+            "scope": "workspace"
+          },
+          {
+            "content": "Banjo paprika nebula quartz xylophone.",
+            "kind": "preference",
+            "scope": "mission"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Explain how prompt normalization resolved provider drift with reviewable verification evidence.",
+          "title": "Provider drift recovery"
+        },
+        "pack": {
+          "requiredSections": ["Findings", "Evidence Gaps", "Next Action"],
+          "reviewRules": []
+        },
+        "previousOutputs": {},
+        "providerRole": "manager",
+        "role": "manager"
+      },
+      "answer": {
+        "text": "Prompt normalization resolved provider drift. The incident note and workspace fact preserve the verification path for reviewer confirmation.",
+        "citedSourceKeys": [
+          "memory:workspace/fact",
+          "attachment:incident-notes.md"
+        ]
+      },
+      "expectedSourceKeys": [
+        "memory:workspace/fact",
+        "attachment:incident-notes.md"
+      ],
+      "requiredAnswerTerms": [
+        "prompt normalization",
+        "provider drift",
+        "reviewer"
+      ],
+      "forbiddenAnswerTerms": [
+        "production validated",
+        "accuracy benchmarked"
+      ],
+      "forbiddenSourceKeys": [
+        "memory:mission/preference"
+      ],
+      "reviewerVerdict": "pass"
+    },
+    {
+      "id": "fact-revision-provenance",
+      "retrievalInput": {
+        "attachments": [
+          {
+            "fileName": "fact-history.md",
+            "promptContent": "The fact history records revision provenance, active state, retirement reason, and the audit owner."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "content": "Temporal fact graph provenance keeps each revision and retires superseded facts without deleting audit history.",
+            "kind": "decision",
+            "scope": "mission"
+          },
+          {
+            "content": "The preferred console accent color is blue.",
+            "kind": "preference",
+            "scope": "workspace"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "research-brief",
+          "mode": "knowledge",
+          "objective": "Verify temporal fact graph provenance, revision, retirement, and audit history behavior.",
+          "title": "Fact revision provenance"
+        },
+        "pack": {
+          "requiredSections": ["Findings", "Evidence Gaps", "Next Action"],
+          "reviewRules": []
+        },
+        "previousOutputs": {},
+        "providerRole": "reviewer",
+        "role": "reviewer"
+      },
+      "answer": {
+        "text": "Revision provenance remains attached to the temporal fact graph, while retirement preserves the audit history for the owner.",
+        "citedSourceKeys": [
+          "memory:mission/decision",
+          "attachment:fact-history.md"
+        ]
+      },
+      "expectedSourceKeys": [
+        "memory:mission/decision",
+        "attachment:fact-history.md"
+      ],
+      "requiredAnswerTerms": [
+        "revision provenance",
+        "retirement",
+        "audit history"
+      ],
+      "forbiddenAnswerTerms": [
+        "arbitrary corpora are supported",
+        "production search quality is proven"
+      ],
+      "forbiddenSourceKeys": [
+        "memory:workspace/preference"
+      ],
+      "reviewerVerdict": "pass"
+    }
+  ]
+}

@@ -1,3 +1,8 @@
+import {
+  buildAttachmentCorpusRecord,
+  buildMemoryCorpusRecord,
+} from './retrieval-corpus.mjs';
+
 const RETRIEVAL_MAX_ITEMS = 6;
 const RETRIEVAL_MAX_TOTAL_CHARS = 2_400;
 const RETRIEVAL_SNIPPET_MAX_CHARS = 420;
@@ -338,8 +343,8 @@ export function scoreRetrievalSnippet(snippet, queryTokenSet) {
   return score;
 }
 
-export function buildRetrievalContext({ attachments, memoryEntries, mission, pack, previousOutputs, providerRole, role }) {
-  const queryText = [
+export function buildRetrievalQueryText({ mission, pack, previousOutputs, providerRole, role } = {}) {
+  return [
     mission.title,
     mission.objective,
     mission.deliverableType,
@@ -355,6 +360,10 @@ export function buildRetrievalContext({ attachments, memoryEntries, mission, pac
   ]
     .filter(Boolean)
     .join(' ');
+}
+
+function collectRetrievalContext({ attachments, memoryEntries, mission, pack, previousOutputs, providerRole, role }) {
+  const queryText = buildRetrievalQueryText({ mission, pack, previousOutputs, providerRole, role });
   const queryTokens = tokenizeRetrievalText(queryText);
   const queryTokenSet = new Set(queryTokens);
   const candidates = [];
@@ -366,13 +375,15 @@ export function buildRetrievalContext({ attachments, memoryEntries, mission, pac
       continue;
     }
 
+    const sourceLabel = `${normalizeText(entry.scope, 'memory')}/${normalizeText(entry.kind, 'note')}`;
     candidates.push({
+      corpusRecord: buildMemoryCorpusRecord(entry, { content: snippet, sourceLabel }),
       fileName: null,
       lexicalScore: scoreRetrievalSnippet(snippet, queryTokenSet),
       matchText: snippet,
       sequence: sequence += 1,
       snippet,
-      sourceLabel: `${normalizeText(entry.scope, 'memory')}/${normalizeText(entry.kind, 'note')}`,
+      sourceLabel,
       sourceType: 'memory',
     });
   }
@@ -384,6 +395,12 @@ export function buildRetrievalContext({ attachments, memoryEntries, mission, pac
 
     chunks.forEach((chunk, index) => {
       candidates.push({
+        corpusRecord: buildAttachmentCorpusRecord(attachment, {
+          chunkCount: chunks.length,
+          chunkIndex: index + 1,
+          content: chunk,
+          sourceLabel: fileName,
+        }),
         chunkIndex: index + 1,
         chunks,
         fileName,
@@ -409,6 +426,7 @@ export function buildRetrievalContext({ attachments, memoryEntries, mission, pac
   );
 
   const selected = [];
+  const selectedCorpusRecords = [];
   const seenSnippets = new Set();
   const sourceCounts = new Map();
   const sourceOverflowCandidates = [];
@@ -434,7 +452,7 @@ export function buildRetrievalContext({ attachments, memoryEntries, mission, pac
     const matchedTerms = getMatchedRetrievalTerms(expandedSnippet, queryTokens);
     seenSnippets.add(snippet);
     sourceCounts.set(sourceKey, Number(sourceCounts.get(sourceKey) || 0) + 1);
-    selected.push({
+    const selectedItem = {
       chunkIndex: candidate.chunkIndex || null,
       fileName: candidate.fileName || null,
       bm25Score: candidate.bm25Score,
@@ -452,7 +470,9 @@ export function buildRetrievalContext({ attachments, memoryEntries, mission, pac
       snippet,
       sourceLabel: candidate.sourceLabel,
       sourceType: candidate.sourceType,
-    });
+    };
+    selected.push(selectedItem);
+    selectedCorpusRecords.push(candidate.corpusRecord);
     remainingChars = Math.max(remainingChars - snippet.length, 0);
     return true;
   }
@@ -473,7 +493,18 @@ export function buildRetrievalContext({ attachments, memoryEntries, mission, pac
     selectCandidate(candidate, { enforceSourceCap: false });
   }
 
-  return selected;
+  return {
+    corpusRecords: selectedCorpusRecords,
+    items: selected,
+  };
+}
+
+export function buildRetrievalContext(input) {
+  return collectRetrievalContext(input).items;
+}
+
+export function buildRetrievalContextWithCorpus(input) {
+  return collectRetrievalContext(input);
 }
 
 function getRetrievalPreviewRoles(specialistKinds = []) {

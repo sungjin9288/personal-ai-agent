@@ -78,9 +78,14 @@ function classifyApiRoute({ method, pathname }) {
     };
   }
 
-  if (/^\/api\/approvals\/[^/]+\/resolve$/.test(normalizedPathname)) {
+  if (
+    /^\/api\/approvals\/[^/]+\/resolve$/.test(normalizedPathname) ||
+    /^\/api\/approvals\/[^/]+\/local-training\/revoke$/.test(normalizedPathname)
+  ) {
     return {
-      action: 'resolve-approval',
+      action: normalizedPathname.endsWith('/revoke')
+        ? 'revoke-local-training-permission'
+        : 'resolve-approval',
       requiredRole: 'approver',
     };
   }

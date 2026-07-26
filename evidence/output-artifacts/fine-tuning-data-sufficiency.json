@@ -1,0 +1,107 @@
+{
+  "actualModelTrainingExecuted": false,
+  "bindings": {
+    "datasetHash": "94e030d0e3a78e74badbff84f477dc7876507e31b5263262968efc75e7608617",
+    "datasetManifestHash": "decfca4044a82264100e5e416a67ea0f714f31060e0ee5bc028fde860aa60e8d",
+    "evaluationManifestHash": "58fb97fd3a1d38535aa18d5c831a6c72887cf2765f1b29e4ab22da4e219f0c0f",
+    "readinessHash": "c07443a427a3cc39ae3d59a0032b2cc80a5b3289547edfbab52b01c60605542f",
+    "trainSha256": "522f71178537f46f3c8a14f5b539b074d9f6247b0b6b3e2cd92e1cd643e803b8",
+    "validationSha256": "7d5e2c0a73ee721e991995ecfb8110403e29308a59fa77b2d2cdbc4db151b7a6"
+  },
+  "candidateTrainingReviewAllowed": false,
+  "candidateTrainingReviewReady": false,
+  "checks": [
+    {
+      "id": "readiness-package-validated",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "dataset-integrity-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "execution-authority-closed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "accepted-example-minimum",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "train-example-minimum",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "validation-example-minimum",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "mission-scope-minimum",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "answer-quality-case-minimum",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "accepted-risk-rate-within-limit",
+      "passed": true,
+      "status": "passed"
+    }
+  ],
+  "decision": "collect-more-reviewed-data",
+  "developmentGatePassed": false,
+  "externalSubmissionAuthorized": false,
+  "failedCheckIds": [
+    "accepted-example-minimum",
+    "train-example-minimum",
+    "validation-example-minimum",
+    "mission-scope-minimum",
+    "answer-quality-case-minimum"
+  ],
+  "fineTuningExecutionAuthorized": false,
+  "measurements": {
+    "acceptedExamples": 4,
+    "acceptedRiskExamples": 0,
+    "acceptedRiskRate": 0,
+    "answerQualityCases": 2,
+    "missionScopes": 4,
+    "trainExamples": 3,
+    "validationExamples": 1
+  },
+  "policy": {
+    "candidateReviewOnly": true,
+    "candidateReviewRequiresApproval": true,
+    "externalSubmissionAuthorized": false,
+    "id": "fine-tuning-data-sufficiency-policy-28feee50615084ca9820f8f01152875d1d20532a9a23aed41f2c0696189adefa",
+    "policyBasis": "development-stop-condition-not-production-quality-claim",
+    "policyHash": "28feee50615084ca9820f8f01152875d1d20532a9a23aed41f2c0696189adefa",
+    "productionQualityThresholdClaim": false,
+    "requirements": {
+      "maximumAcceptedRiskRate": 0.1,
+      "minimumAcceptedExamples": 20,
+      "minimumAnswerQualityCases": 10,
+      "minimumMissionScopes": 10,
+      "minimumTrainExamples": 16,
+      "minimumValidationExamples": 4
+    },
+    "schemaVersion": "personal-ai-agent-fine-tuning-data-sufficiency-policy/v1",
+    "trainingAuthorized": false
+  },
+  "productionReadyClaim": false,
+  "reviewerApprovalRequired": true,
+  "schemaVersion": "personal-ai-agent-fine-tuning-data-sufficiency/v1",
+  "status": "insufficient-data",
+  "trustedReadinessAdmissionBound": false,
+  "trainingAuthorized": false,
+  "assessmentHash": "c39d4d075a2d355c3563cb730f29d33e441a607958b953e03c3e8ff1172c4e27",
+  "id": "fine-tuning-data-sufficiency-c39d4d075a2d355c3563cb730f29d33e441a607958b953e03c3e8ff1172c4e27"
+}

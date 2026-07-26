@@ -1,24 +1,18 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import { runCommandWithHardTimeout } from './process-timeout-utils.mjs';
 
 const repoDir = process.cwd();
-const evidencePath = path.join(repoDir, 'docs', 'execution-v1-evidence.md');
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const skipEvidence = args.includes('--skip-evidence');
 const preserveArchivedLiveValidation = !args.includes('--no-preserve-archived-live-validation');
 const explicitLiveFlags = args.filter((arg) => /^--live-(openai|anthropic|local|hermes)$/.test(arg));
-const archivedLiveFlags = explicitLiveFlags.length
-  ? explicitLiveFlags
-  : detectArchivedLiveFlags(readOptionalFile(evidencePath));
 const refreshStepTimeoutMs = parsePositiveIntegerEnv(
   'PERSONAL_AI_AGENT_REFRESH_STEP_TIMEOUT_MS',
   30 * 60 * 1000,
 );
 
 const steps = buildSteps({
-  archivedLiveFlags,
+  liveFlags: explicitLiveFlags,
   preserveArchivedLiveValidation,
   skipEvidence,
 });
@@ -30,7 +24,7 @@ if (dryRun) {
     preserveArchivedLiveValidation,
     skippedEvidenceRefresh: skipEvidence,
     stepTimeoutMs: refreshStepTimeoutMs,
-    liveFlags: archivedLiveFlags,
+    liveFlags: explicitLiveFlags,
     steps: steps.map((step) => ({
       name: step.name,
       command: formatCommand(step.args),
@@ -51,11 +45,11 @@ printSummary({
   preserveArchivedLiveValidation,
   skippedEvidenceRefresh: skipEvidence,
   stepTimeoutMs: refreshStepTimeoutMs,
-  liveFlags: archivedLiveFlags,
+  liveFlags: explicitLiveFlags,
   steps: results,
 });
 
-function buildSteps({ archivedLiveFlags, preserveArchivedLiveValidation, skipEvidence }) {
+function buildSteps({ liveFlags, preserveArchivedLiveValidation, skipEvidence }) {
   const output = [];
 
   if (!skipEvidence) {
@@ -63,7 +57,7 @@ function buildSteps({ archivedLiveFlags, preserveArchivedLiveValidation, skipEvi
       args: [
         'scripts/build-execution-v1-evidence.mjs',
         preserveArchivedLiveValidation ? '--preserve-archived-live-validation' : null,
-        ...archivedLiveFlags,
+        ...liveFlags,
       ].filter(Boolean),
       name: 'evidence',
     });
@@ -101,23 +95,6 @@ function buildSteps({ archivedLiveFlags, preserveArchivedLiveValidation, skipEvi
   );
 
   return output;
-}
-
-function detectArchivedLiveFlags(markdown) {
-  const section = extractMarkdownSection(markdown, 'Live Validation');
-  const providers = [];
-  for (const line of section.split('\n')) {
-    const match = line.match(/^- (openai|anthropic|local|hermes): (passed|failed)(?: |\(|$)/);
-    if (match && !providers.includes(match[1])) {
-      providers.push(match[1]);
-    }
-  }
-  return providers.map((provider) => `--live-${provider}`);
-}
-
-function extractMarkdownSection(markdown, heading) {
-  const match = String(markdown || '').match(new RegExp(`(?:^|\\n)## ${escapeRegExp(heading)}\\n\\n([\\s\\S]*?)(?:\\n## |$)`));
-  return match?.[1]?.trim() || '';
 }
 
 function runStep(step) {
@@ -175,12 +152,4 @@ function parsePositiveIntegerEnv(envKey, fallbackValue) {
   }
   const parsedValue = Number.parseInt(rawValue, 10);
   return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallbackValue;
-}
-
-function readOptionalFile(filePath) {
-  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
-}
-
-function escapeRegExp(value) {
-  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

@@ -1,0 +1,33 @@
+{
+  "actualHostRestartReceiptRecorded": true,
+  "claimBoundary": {
+    "actualEvaluatorRelaunchPerformed": false,
+    "actualModelEvaluationExecuted": false,
+    "actualModelTrainingExecuted": false,
+    "candidateEvaluationAuthorized": false,
+    "independentlyReproducibleFromTrackedFiles": false,
+    "privateReceiptTracked": false,
+    "privateSourceRequiredForReverification": true,
+    "productionReadyClaim": false,
+    "rawBootIdentityTracked": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "costFree": true,
+  "exportedAt": "2026-07-22T00:05:02.120Z",
+  "externalProviderCalls": "none",
+  "receipt": {
+    "actualHostRestartObserved": true,
+    "bootIdentityChangedObserved": true,
+    "priorBootSpawningLeaseRecovered": true,
+    "rehearsalId": "1aa3cf9d757f64c027ee1c4a",
+    "resultHash": "befa14cb698577f847314ecdc928f0bc7cbf5f15eccd735a3e7c78657e52d0ff",
+    "status": "recovered"
+  },
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-host-restart-receipt-evidence/v1",
+  "source": "private-owner-only-rehearsal-result",
+  "status": "actual-host-restart-receipt-recorded",
+  "trackedProjectionContractValidated": true,
+  "evidenceHash": "b1280a5ae72eb35bef52d8099f243da843aa93422c5a01843647510fb0e6a80c",
+  "id": "local-candidate-evaluation-host-restart-receipt-b1280a5ae72eb35bef52d8099f243da843aa93422c5a01843647510fb0e6a80c"
+}

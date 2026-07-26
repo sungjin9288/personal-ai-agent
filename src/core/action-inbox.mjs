@@ -4,6 +4,36 @@ function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function createLearningSelectionOverrideCounts() {
+  return {
+    active: 0,
+    cleared: 0,
+    eligible: 0,
+    expired: 0,
+    invalid: 0,
+    notSet: 0,
+  };
+}
+
+function countLearningSelectionOverride(counts, selectionOverride) {
+  if (!selectionOverride) {
+    return;
+  }
+
+  counts.eligible += 1;
+  if (selectionOverride.status === 'active') {
+    counts.active += 1;
+  } else if (selectionOverride.status === 'cleared') {
+    counts.cleared += 1;
+  } else if (selectionOverride.status === 'expired') {
+    counts.expired += 1;
+  } else if (selectionOverride.status === 'invalid') {
+    counts.invalid += 1;
+  } else {
+    counts.notSet += 1;
+  }
+}
+
 /**
  * Action inbox summarize/read domain.
  *
@@ -12,9 +42,9 @@ function ensureArray(value) {
  * derivation, the provider-health-drift summarizer, and the top-level
  * `summarizeActionInbox` roll-up.
  *
- * Mission-service retains validation, escalation sync, store access, and the
- * action item builders. This module receives those collected items and owns
- * the filtering, ordering, summary, and response payload.
+ * The action-inbox service validates scope, synchronizes escalation state,
+ * and collects source items. This module then owns filtering, ordering,
+ * summary calculation, and the response payload.
  *
  * `summarizeSpecialistFollowUpItems` is a pure module-scope helper in
  * mission-service that the roll-up needs; it is INJECTED rather than moved so
@@ -126,6 +156,8 @@ export function createActionInbox({ summarizeSpecialistFollowUpItems }) {
       onTime: 0,
       total: items.length,
     };
+    const userLearningSelectionOverrideCounts = createLearningSelectionOverrideCounts();
+    const workspaceLearningSelectionOverrideCounts = createLearningSelectionOverrideCounts();
     let latestReminderAt = null;
     let nextReminderAt = null;
 
@@ -257,6 +289,15 @@ export function createActionInbox({ summarizeSpecialistFollowUpItems }) {
       } else {
         overdueCounts.onTime += 1;
       }
+
+      countLearningSelectionOverride(
+        userLearningSelectionOverrideCounts,
+        item.userLearningSelectionOverride,
+      );
+      countLearningSelectionOverride(
+        workspaceLearningSelectionOverrideCounts,
+        item.workspaceLearningSelectionOverride,
+      );
     }
 
     return {
@@ -284,6 +325,8 @@ export function createActionInbox({ summarizeSpecialistFollowUpItems }) {
       specialistFollowUpReminderCountTotal: specialistFollowUpSummary.reminderCountTotal,
       specialistFollowUpRetryPolicyCounts: specialistFollowUpSummary.retryPolicyCounts,
       specialistFollowUpStatusCounts: specialistFollowUpSummary.statusCounts,
+      userLearningSelectionOverrideCounts,
+      workspaceLearningSelectionOverrideCounts,
       workspaceCounts,
     };
   }

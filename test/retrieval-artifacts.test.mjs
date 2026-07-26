@@ -9,6 +9,7 @@ import {
   compareRetrievalPreviewWithLatestArtifact,
   formatRetrievalArtifactContent,
 } from '../src/core/retrieval-artifacts.mjs';
+import { buildMemoryCorpusRecord } from '../src/core/retrieval-corpus.mjs';
 
 function makeTmpDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'retrieval-artifacts-test-'));
@@ -296,6 +297,39 @@ test('formatRetrievalArtifactContent', async (t) => {
     assert.match(output, /- matchedTerms: foo, bar/);
     assert.match(output, /- retrievalReason: keyword match/);
     assert.match(output, /- snippet: some snippet text/);
+  });
+
+  await t.test('renders internal corpus lineage without requiring it from legacy callers', () => {
+    const item = {
+      sourceType: 'memory',
+      sourceLabel: 'workspace/fact',
+      score: 1,
+      snippet: 'Provider drift evidence.',
+    };
+    const corpusRecord = buildMemoryCorpusRecord({
+      content: item.snippet,
+      createdAt: '2026-07-16T00:00:00.000Z',
+      id: 'memory-1',
+      kind: 'fact',
+      scope: 'workspace',
+      scopeId: 'workspace-1',
+    });
+
+    const output = formatRetrievalArtifactContent({
+      providerRole: 'manager',
+      role: 'manager',
+      retrievalContext: [item],
+      retrievalCorpusRecords: [corpusRecord],
+    });
+
+    assert.match(output, /- corpusSchema: personal-ai-agent-retrieval-corpus\/v1/);
+    assert.match(output, /- corpusId: corpus-[a-f0-9]{64}/);
+    assert.match(output, /- chunkId: chunk-[a-f0-9]{64}/);
+    assert.match(output, /- contentHash: [a-f0-9]{64}/);
+    assert.match(output, /- snippetHash: [a-f0-9]{64}/);
+    assert.match(output, /- scope: workspace\/workspace-1/);
+    assert.match(output, /- revision: revision-[a-f0-9]{64}/);
+    assert.match(output, /- provenance: \{"kind":"fact"/);
   });
 
   await t.test('omits " chunk N" suffix when chunkIndex is falsy (0, undefined)', () => {

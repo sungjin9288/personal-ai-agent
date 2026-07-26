@@ -5,16 +5,24 @@ import { createLearningPromotion } from '../src/core/learning-promotion.mjs';
 
 const FIXED_NOW = '2026-07-03T00:00:00.000Z';
 
-// Mutable fake store faithful to the write/read surface the mutation half touches:
+// Mutable fake store faithful to the write/read surface the promotion domain touches:
 //   store.getLearningCandidate(id)
 //   store.listLearningCandidates(filter)
 //   store.updateLearningCandidate(id, updater)  <- WRITE: records every write
 function createFakeStore(candidateList = []) {
   const candidates = new Map(candidateList.map((candidate) => [candidate.id, candidate]));
+  const effects = [];
+  const memoryEntries = [];
   const writes = [];
   return {
+    effects,
+    memoryEntries,
     writes,
+    getMission: (id) => (id ? { id, mode: 'auto', status: 'completed', title: 'Mission', workspaceId: 'ws-1' } : null),
+    getWorkspace: (id) => (id ? { id, name: 'Workspace' } : null),
     getLearningCandidate: (id) => candidates.get(id) || null,
+    listMemoryEntries: ({ scope, scopeId } = {}) =>
+      memoryEntries.filter((entry) => (!scope || entry.scope === scope) && (!scopeId || entry.scopeId === scopeId)),
     listLearningCandidates: (filter = {}) =>
       [...candidates.values()].filter((candidate) => {
         if (filter.missionId && candidate.missionId !== filter.missionId) return false;
@@ -31,68 +39,42 @@ function createFakeStore(candidateList = []) {
       const next = updater(current);
       candidates.set(id, next);
       writes.push({ id, next });
+      effects.push(`store:${id}`);
       return next;
     },
   };
 }
 
-// Injected pure helpers mirroring mission-service definitions (deterministic).
-const scopeIdFor = (candidate, scope) =>
-  scope === 'mission' ? candidate.missionId : scope === 'workspace' ? candidate.workspaceId : 'user';
-
 function makePromotion(store, overrides = {}) {
-  const memoryEntries = [];
+  const memoryEntries = store.memoryEntries;
   const deletedMemory = [];
   const artifactWrites = [];
-  const queueItems = [];
 
   const promotion = createLearningPromotion({
     store,
     addMemoryEntry: (entry) => {
       const saved = { id: `memory-${memoryEntries.length + 1}`, ...entry };
       memoryEntries.push(saved);
+      store.effects.push(`memory-add:${saved.id}`);
       return saved;
     },
     deleteMemory: (args) => {
       deletedMemory.push(args);
-      return { id: args.memoryId, deleted: true };
+      store.effects.push(`memory-delete:${args.memoryId}`);
+      const index = memoryEntries.findIndex((entry) => entry.id === args.memoryId);
+      const [removed] = index >= 0 ? memoryEntries.splice(index, 1) : [];
+      return removed || { id: args.memoryId, deleted: true };
     },
     getMission: (id) => ({ id, workspaceId: 'ws-1', status: 'completed', title: 'Mission', mode: 'auto' }),
     getWorkspace: (id) => ({ id, name: 'Workspace' }),
-    buildLearningPromotionQueueItem: (candidate) => {
-      const item = { learningCandidateId: candidate.id, promotionStatus: candidate.promotionStatus };
-      queueItems.push(item);
-      return item;
-    },
     writeUpdatedLearningCandidateArtifact: (candidate) => {
       artifactWrites.push(candidate.id);
-    },
-    resolveLearningPromotionScopeId: scopeIdFor,
-    getLearningPromotionExpiresAt: (candidate) =>
-      candidate?.retention?.expiresAt || candidate?.proposal?.expiresAt || null,
-    getLearningPromotionExpirationPolicy: (candidate) => ({
-      policyId: candidate?.retention?.policy || 'pending-review-expires-unpromoted',
-      reviewTtlHours: candidate?.retention?.reviewTtlHours || 168,
-    }),
-    defaultLearningPromotionTarget: (candidate) => candidate?.proposal?.target || 'memory',
-    normalizeLearningPromotionTarget: (value, fallback = 'memory') => {
-      const normalized = String(value || fallback).trim().replaceAll('_', '-');
-      if (!['memory', 'skill', 'template', 'provider-policy', 'automation'].includes(normalized)) {
-        throw new Error(`Unsupported learning promotion target: ${normalized}`);
-      }
-      return normalized;
-    },
-    normalizeLearningPromotionScope: (value, fallback = 'mission') => {
-      const normalized = String(value || fallback).trim();
-      if (!['user', 'workspace', 'mission'].includes(normalized)) {
-        throw new Error(`Unsupported learning promotion scope: ${normalized}`);
-      }
-      return normalized;
+      store.effects.push(`artifact:${candidate.id}`);
     },
     ...overrides,
   });
 
-  return { promotion, memoryEntries, deletedMemory, artifactWrites, queueItems };
+  return { promotion, memoryEntries, deletedMemory, artifactWrites };
 }
 
 // A candidate that passes ALL verification checks (used for the happy path).
@@ -151,6 +133,195 @@ test('resolveLearningPromotion: approve+memory writes a memory entry and marks p
 
   assert.equal(result.memoryEntry.id, memoryEntries[0].id);
   assert.deepEqual(artifactWrites, ['lc-1']);
+  assert.deepEqual(store.effects, ['memory-add:memory-1', 'store:lc-1', 'artifact:lc-1']);
+});
+
+test('workspace promotion remains default-deny without a separate scope authorization', () => {
+  const store = createFakeStore([validCandidate()]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  assert.throws(
+    () => promotion.resolveLearningPromotion('lc-1', {
+      decision: 'approve',
+      note: 'promote across the workspace',
+      scope: 'workspace',
+      target: 'memory',
+    }),
+    /cross-scope promotion is not enabled/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
+test('scope authorization records operator intent before workspace promotion', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion, memoryEntries } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const authorization = promotion.authorizeLearningPromotionScope('lc-1', {
+    note: 'Reuse this reviewed decision for sibling missions.',
+    scope: 'workspace',
+  });
+  const result = promotion.resolveLearningPromotion('lc-1', {
+    decision: 'approve',
+    note: 'Apply the reviewed workspace decision.',
+    scope: 'workspace',
+    target: 'memory',
+  });
+
+  assert.equal(authorization.scopeAuthorization.status, 'authorized');
+  assert.equal(authorization.scopeAuthorization.fromScope, 'mission');
+  assert.equal(authorization.scopeAuthorization.toScope, 'workspace');
+  assert.equal(authorization.scopeAuthorization.toScopeId, 'ws-1');
+  assert.equal(authorization.learningCandidate.safety.crossScopePromotionAllowed, true);
+  assert.equal(memoryEntries.length, 1);
+  assert.equal(memoryEntries[0].scope, 'workspace');
+  assert.equal(memoryEntries[0].scopeId, 'ws-1');
+  assert.equal(result.learningCandidate.promotionStatus, 'promoted');
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.status, 'consumed');
+  assert.equal(
+    result.learningCandidate.promotionDecision.scopeAuthorizationId,
+    authorization.scopeAuthorization.id,
+  );
+  assert.equal(
+    result.learningCandidate.promotionVerification.evidence.scopeAuthorizationId,
+    authorization.scopeAuthorization.id,
+  );
+  assert.deepEqual(store.effects, [
+    'store:lc-1',
+    'artifact:lc-1',
+    'memory-add:memory-1',
+    'store:lc-1',
+    'artifact:lc-1',
+  ]);
+});
+
+test('scope authorization supports local single-user promotion across workspaces', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion, memoryEntries } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const authorization = promotion.authorizeLearningPromotionScope('lc-1', {
+    note: 'Reuse this reviewed decision for the local user.',
+    scope: 'user',
+  });
+  const result = promotion.resolveLearningPromotion('lc-1', {
+    decision: 'approve',
+    note: 'Apply the reviewed local user decision.',
+    scope: 'user',
+    target: 'memory',
+  });
+
+  assert.equal(authorization.scopeAuthorization.toScope, 'user');
+  assert.equal(authorization.scopeAuthorization.toScopeId, 'user');
+  assert.equal(memoryEntries[0].scope, 'user');
+  assert.equal(memoryEntries[0].scopeId, 'user');
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.status, 'consumed');
+});
+
+test('scope authorization blocks global user promotion from a tenant-bound workspace', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion } = makePromotion(store, {
+    getWorkspace: (id) => ({ id, name: 'Tenant workspace', tenantId: 'tenant-1' }),
+    now: () => FIXED_NOW,
+  });
+
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', {
+      note: 'This must not become a global user decision.',
+      scope: 'user',
+    }),
+    /limited to local workspaces without a tenant binding/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
+test('mission-scoped resolution does not consume an unused workspace authorization', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const authorization = promotion.authorizeLearningPromotionScope('lc-1', {
+    note: 'Authorize workspace reuse if the operator selects that scope.',
+    scope: 'workspace',
+  });
+  const result = promotion.resolveLearningPromotion('lc-1', {
+    decision: 'approve',
+    note: 'Keep this promotion inside the source mission.',
+    scope: 'mission',
+    target: 'memory',
+  });
+
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.status, 'authorized');
+  assert.equal(result.learningCandidate.promotionScopeAuthorization.consumedAt, undefined);
+  assert.equal(result.learningCandidate.promotionDecision.scopeAuthorizationId, undefined);
+  assert.equal(result.learningCandidate.promotionVerification.evidence.scopeAuthorizationId, undefined);
+  assert.equal(
+    authorization.scopeAuthorization.id,
+    result.learningCandidate.promotionScopeAuthorization.id,
+  );
+});
+
+test('scope authorization rejects missing note or incomplete reviewer evidence before writing', () => {
+  const store = createFakeStore([validCandidate()]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', { scope: 'workspace' }),
+    /requires an explicit note/,
+  );
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', {
+      note: 'missing reviewer proof',
+      scope: 'workspace',
+    }),
+    /authorization evidence is incomplete/,
+  );
+  assert.deepEqual(store.effects, []);
 });
 
 test('resolveLearningPromotion: reject writes decision without touching memory', () => {
@@ -165,6 +336,7 @@ test('resolveLearningPromotion: reject writes decision without touching memory',
   assert.equal(written.promotionStatus, 'rejected');
   assert.equal(written.promotionDecision.decision, 'reject');
   assert.equal(result.memoryEntry, null);
+  assert.deepEqual(store.effects, ['store:lc-1', 'artifact:lc-1']);
 });
 
 test('resolveLearningPromotion: verification failure blocks and never persists memory (edge: missing safety)', () => {
@@ -181,6 +353,7 @@ test('resolveLearningPromotion: verification failure blocks and never persists m
   assert.equal(written.promotionDecision.decision, 'blocked');
   assert.ok(written.promotionStopCondition.reason.startsWith('learning-promotion-verification-'));
   assert.equal(result.memoryEntry, null);
+  assert.deepEqual(store.effects, ['store:lc-1', 'artifact:lc-1']);
 });
 
 test('resolveLearningPromotion: verification-blocked candidate only accepts reject', () => {
@@ -247,6 +420,7 @@ test('expireLearningPromotions: expires only candidates past the cutoff (expirat
   assert.equal(store.writes[0].next.promotionExpiration.cutoffAt, '2026-06-15T00:00:00.000Z');
   assert.equal(store.writes[0].next.updatedAt, FIXED_NOW);
   assert.deepEqual(artifactWrites, ['lc-past']);
+  assert.deepEqual(store.effects, ['store:lc-past', 'artifact:lc-past']);
 });
 
 test('expireLearningPromotions: empty candidate list yields zero expirations, no writes', () => {
@@ -283,4 +457,150 @@ test('expireLearningPromotions: invalid target throws (edge: bad input)', () => 
     () => promotion.expireLearningPromotions({ before: FIXED_NOW, target: 'nonsense' }),
     /Unsupported learning promotion target/,
   );
+});
+
+// ---------------------------------------------------------------------------
+// queue, reminder, and rollback lifecycle
+// ---------------------------------------------------------------------------
+
+test('getLearningPromotionQueue: filters candidates and preserves the operator payload', () => {
+  const store = createFakeStore([
+    validCandidate({ id: 'lc-pending' }),
+    validCandidate({ id: 'lc-rejected', promotionStatus: 'rejected' }),
+  ]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const result = promotion.getLearningPromotionQueue({ missionId: 'm-1', status: 'pending-review' });
+
+  assert.equal(result.filters.missionId, 'm-1');
+  assert.equal(result.filters.status, 'pending-review');
+  assert.equal(result.summary.total, 1);
+  assert.equal(result.summary.pendingCount, 1);
+  assert.equal(result.items[0].actionId, 'learning-promotion:lc-pending');
+  assert.equal(result.items[0].recommendedOwner, 'human-approver');
+  assert.match(result.items[0].resolveCommand, /resolve-learning-promotion lc-pending/);
+});
+
+test('getLearningPromotionQueue: exposes content-free user override state and commands', () => {
+  const store = createFakeStore([
+    validCandidate({ id: 'lc-promoted', promotionStatus: 'promoted' }),
+  ]);
+  const readModel = {
+    candidateId: 'lc-promoted',
+    current: {
+      expiresAt: '2026-07-20T00:00:00.000Z',
+      id: 'override-1',
+      memoryId: 'memory-1',
+      noteHash: 'a'.repeat(64),
+      setAt: FIXED_NOW,
+      status: 'active',
+    },
+    historyCount: 1,
+    memoryId: 'memory-1',
+    observedAt: FIXED_NOW,
+    scope: 'user',
+    scopeId: 'user',
+    sourceWorkspaceId: 'ws-1',
+    status: 'active',
+  };
+  const { promotion } = makePromotion(store, {
+    getUserLearningSelectionOverrideReadModel: () => readModel,
+    now: () => FIXED_NOW,
+  });
+
+  const result = promotion.getLearningPromotionQueue({ status: 'operator-active' });
+
+  assert.equal(result.items[0].userLearningSelectionOverride, readModel);
+  assert.match(
+    result.items[0].userLearningSelectionOverrideSetCommand,
+    /set-user-learning-selection-override lc-promoted/,
+  );
+  assert.match(
+    result.items[0].userLearningSelectionOverrideClearCommand,
+    /clear-user-learning-selection-override lc-promoted/,
+  );
+  assert.equal(JSON.stringify(result.items[0]).includes('raw note'), false);
+});
+
+test('getLearningPromotionQueue: rejects an unsupported status after scope validation', () => {
+  const store = createFakeStore([validCandidate()]);
+  const calls = [];
+  const { promotion } = makePromotion(store, {
+    getWorkspace: (id) => {
+      calls.push(`workspace:${id}`);
+      return { id };
+    },
+  });
+
+  assert.throws(
+    () => promotion.getLearningPromotionQueue({ status: 'unknown', workspaceId: 'ws-1' }),
+    /Unsupported learning promotion status/,
+  );
+  assert.deepEqual(calls, ['workspace:ws-1']);
+});
+
+test('remindLearningPromotionStopConditions: writes the candidate before its artifact and returns reminder detail', () => {
+  const store = createFakeStore([
+    validCandidate({
+      promotionStatus: 'verification-blocked',
+      promotionStopCondition: {
+        blockedAt: '2026-06-01T00:00:00.000Z',
+        reason: 'learning-promotion-verification-no-raw-secrets',
+        reminders: [],
+        status: 'blocked',
+      },
+    }),
+  ]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const result = promotion.remindLearningPromotionStopConditions({ dueOnly: true, missionId: 'm-1' }, 'review');
+
+  assert.equal(result.summary.remindedCount, 1);
+  assert.equal(result.items[0].reminderCount, 1);
+  assert.equal(result.items[0].latestReminder.remindedAt, FIXED_NOW);
+  assert.match(result.items[0].reminderDetail, /review/);
+  assert.deepEqual(store.effects, ['store:lc-1', 'artifact:lc-1']);
+});
+
+test('remindLearningPromotionStopConditions: rejects an unsupported owner before writing', () => {
+  const store = createFakeStore([validCandidate({ promotionStatus: 'verification-blocked' })]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  assert.throws(
+    () => promotion.remindLearningPromotionStopConditions({ owner: 'unknown' }),
+    /Unsupported action owner/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
+test('rollbackLearningPromotion: deletes promoted memory before updating the candidate and artifact', () => {
+  const store = createFakeStore([
+    validCandidate({
+      promotionStatus: 'promoted',
+      promotionDecision: {
+        decision: 'approve',
+        memoryId: 'memory-1',
+        scope: 'mission',
+        scopeId: 'm-1',
+        target: 'memory',
+      },
+    }),
+  ]);
+  store.memoryEntries.push({ id: 'memory-1', scope: 'mission', scopeId: 'm-1' });
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  const result = promotion.rollbackLearningPromotion('lc-1', { note: 'regression' });
+
+  assert.equal(result.learningCandidate.promotionStatus, 'rolled-back');
+  assert.equal(result.learningCandidate.promotionRollback.memoryRollbackStatus, 'memory-deleted');
+  assert.equal(result.removedMemoryEntry.id, 'memory-1');
+  assert.deepEqual(store.effects, ['memory-delete:memory-1', 'store:lc-1', 'artifact:lc-1']);
+});
+
+test('rollbackLearningPromotion: rejects candidates that are not rollback eligible', () => {
+  const store = createFakeStore([validCandidate()]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  assert.throws(() => promotion.rollbackLearningPromotion('lc-1'), /is not rollback eligible/);
+  assert.deepEqual(store.effects, []);
 });

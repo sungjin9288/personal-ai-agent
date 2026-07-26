@@ -1,0 +1,59 @@
+{
+  "candidate": {
+    "artifactFormat": "fixture-candidate-metadata/v1",
+    "fileCount": 2,
+    "fileSetSha256": "552dced5f22a4951fedb111126162edde115364b194028b44db0bcb8d9e51720",
+    "modelIdHash": "516fe655ec266b6a0a6646f031f0fe8fe84985569e2d0384d7631eb6ffcce03c",
+    "totalBytes": 64
+  },
+  "claimBoundary": {
+    "actualCandidateArtifactsObserved": false,
+    "actualModelTrainingExecuted": false,
+    "candidateEvaluationAuthorized": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false
+  },
+  "failureGuards": {
+    "completeInventoryRequired": true,
+    "currentPermissionRequired": true,
+    "fileIntegrityRequired": true,
+    "fixtureDoesNotClaimTraining": true,
+    "manifestRunBindingRequired": true,
+    "recordedArtifactCanRequestEvaluation": true,
+    "resourceEnvelopeRequired": true,
+    "revocationStateRequired": true,
+    "runIntegrityRequired": true,
+    "symbolicLinkRejected": true
+  },
+  "mode": "local-training-candidate-artifact-verification",
+  "schemaVersion": "personal-ai-agent-local-training-candidate-artifact-evidence/v1",
+  "security": {
+    "completeInventoryRequired": true,
+    "fileContentStored": false,
+    "fixedCandidateRoot": true,
+    "pathContainment": true,
+    "symbolicLinksAllowed": false
+  },
+  "verification": {
+    "actualCandidateArtifactsObserved": false,
+    "actualModelTrainingExecuted": false,
+    "candidateEvaluationAuthorized": false,
+    "candidateEvaluationRequired": true,
+    "independentCandidateArtifactVerificationPassed": true,
+    "observedDiskBytes": 1083,
+    "readyForExplicitCandidateEvaluationRequest": false,
+    "remainingGates": [
+      "training-process-provenance-review",
+      "explicit-candidate-evaluation-request",
+      "candidate-quality-non-regression",
+      "rollout-review"
+    ],
+    "status": "fixture-candidate-artifact-verified-no-training",
+    "trainerReportedActualModelTrainingExecuted": true,
+    "trainingProcessProvenanceVerified": false
+  },
+  "evidenceHash": "5032cfc519997b787868dfb7dbf16c638f999a914361412199d306a8f6273209",
+  "id": "local-training-candidate-artifact-evidence-5032cfc519997b787868dfb7dbf16c638f999a914361412199d306a8f6273209"
+}

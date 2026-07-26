@@ -1,0 +1,47 @@
+{
+  "claimBoundary": {
+    "actualDependencyInstallationPerformed": false,
+    "actualModelDownloadPerformed": false,
+    "actualModelTrainingExecuted": false,
+    "actualMlxProcessSpawned": false,
+    "externalProviderCalls": "none",
+    "externalSubmissionAuthorized": false,
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "contract": {
+    "cleanupRequestSchemaVersion": "personal-ai-agent-local-training-failure-cleanup-request/v1",
+    "intentSchemaVersion": "personal-ai-agent-local-training-failure-recovery-intent/v1",
+    "receiptSchemaVersion": "personal-ai-agent-local-training-failure-recovery-receipt/v1",
+    "stateSchemaVersion": "personal-ai-agent-local-training-failure-recovery-state/v1"
+  },
+  "failureGuards": {
+    "actualProcessExecutionStillBlocked": true,
+    "adapterDurableRecoveryReceiptBound": true,
+    "candidateRollbackResumed": true,
+    "cleanupRequestBoundToRollbackOwner": true,
+    "cleanupRequestBoundToLocalUser": true,
+    "cleanupRequestDoesNotAuthorizeTraining": true,
+    "candidateManifestHashVerified": true,
+    "partialCandidateCleanupFailureObserved": true,
+    "rawFailureNotPersisted": true,
+    "rawPathNotPersisted": true,
+    "rawTrainingDataNotPersisted": true,
+    "successCleanupPendingResumed": true,
+    "terminalReceiptReplayIdempotent": true,
+    "workspaceRemovedBeforeCandidateRecovery": true
+  },
+  "mode": "local-training-failure-recovery-contract",
+  "recovery": {
+    "candidatePreserved": false,
+    "cleanupRequestBound": true,
+    "operationId": "local-training-recovery-5283176e6e5401f4e0f3d6b841b170dfc40d6286b8079362825746234b9136f2",
+    "receiptReplayed": true,
+    "status": "failed-cleaned",
+    "workspaceRemoved": true
+  },
+  "schemaVersion": "personal-ai-agent-local-training-failure-recovery-evidence/v1",
+  "evidenceHash": "de97addff356031498fb8ed82013fa08c7f530b9bdc459c332b24d7de32073a5",
+  "id": "local-training-failure-recovery-evidence-de97addff356031498fb8ed82013fa08c7f530b9bdc459c332b24d7de32073a5"
+}

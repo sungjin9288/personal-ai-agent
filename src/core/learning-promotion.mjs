@@ -1,9 +1,19 @@
 import {
+  ACTION_OWNERS,
   GLOBAL_USER_SCOPE_ID,
   LEARNING_PROMOTION_DECISIONS,
+  LEARNING_PROMOTION_REVIEW_TTL_HOURS,
+  LEARNING_PROMOTION_STATUSES,
   LEARNING_PROMOTION_TARGETS,
   MEMORY_SCOPES,
 } from './constants.mjs';
+import { addDispatchMetadata, addOperationalMetadata } from './action-item-builders.mjs';
+import { createId } from './id.mjs';
+import {
+  buildLearningPromotionStopConditionReminderNote,
+  deriveLearningPromotionStopConditionReminderCadenceHours,
+  formatLearningPromotionStopConditionReminderDetail,
+} from './reminder-formatters.mjs';
 
 function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
@@ -21,37 +31,512 @@ function countByNormalizedField(items, fieldName) {
   }, {});
 }
 
+function getLatestItem(items, fieldName = 'createdAt') {
+  if (!items.length) {
+    return null;
+  }
+
+  return [...items]
+    .sort((left, right) => String(left[fieldName] || '').localeCompare(String(right[fieldName] || '')))
+    .at(-1);
+}
+
+export function normalizeLearningPromotionTarget(value, fallback = 'memory') {
+  const normalized = normalizeText(value, fallback).replaceAll('_', '-');
+  if (!LEARNING_PROMOTION_TARGETS.includes(normalized)) {
+    throw new Error(`Unsupported learning promotion target: ${normalized}`);
+  }
+
+  return normalized;
+}
+
+export function normalizeLearningPromotionScope(value, fallback = 'mission') {
+  const normalized = normalizeText(value, fallback);
+  if (!MEMORY_SCOPES.includes(normalized)) {
+    throw new Error(`Unsupported learning promotion scope: ${normalized}`);
+  }
+
+  return normalized;
+}
+
+export function getLearningPromotionExpiresAt(candidate) {
+  return candidate?.retention?.expiresAt || candidate?.proposal?.expiresAt || null;
+}
+
+export function getLearningPromotionExpirationPolicy(candidate) {
+  const expiresAt = getLearningPromotionExpiresAt(candidate);
+  const ttlHours =
+    Number(candidate?.retention?.reviewTtlHours || candidate?.proposal?.reviewTtlHours) ||
+    LEARNING_PROMOTION_REVIEW_TTL_HOURS;
+  const expiresAtMs = Date.parse(String(expiresAt || ''));
+  const expiredAt = candidate?.promotionExpiration?.expiredAt || null;
+  const expiredByStatus = candidate?.promotionStatus === 'expired';
+  const expiredByClock =
+    candidate?.promotionStatus === 'pending-review' && Number.isFinite(expiresAtMs) && Date.now() >= expiresAtMs;
+
+  return {
+    expired: Boolean(expiredByStatus || expiredByClock),
+    expiredAt,
+    expiresAt,
+    policyId: candidate?.retention?.policy || 'pending-review-expires-unpromoted',
+    reviewTtlHours: ttlHours,
+    status: expiredByStatus ? 'expired' : expiredByClock ? 'overdue-for-expiration' : 'active',
+  };
+}
+
+export function defaultLearningPromotionTarget(candidate) {
+  const target = normalizeText(candidate?.proposal?.target, 'memory');
+  if (LEARNING_PROMOTION_TARGETS.includes(target)) {
+    return target;
+  }
+
+  if (target === 'skill-or-template') {
+    return 'skill';
+  }
+  if (target === 'template-or-memory') {
+    return 'template';
+  }
+
+  return 'memory';
+}
+
+export function learningPromotionPriority(candidate) {
+  if (candidate.recordType === 'provider-lesson' || candidate.recordType === 'quality-regression') {
+    return 'high';
+  }
+  if (candidate.recordType === 'failure-pattern') {
+    return 'medium';
+  }
+  return 'low';
+}
+
+function resolveLearningPromotionScopeId(candidate, scope) {
+  if (scope === 'mission') {
+    return candidate.missionId;
+  }
+  if (scope === 'workspace') {
+    return candidate.workspaceId;
+  }
+  return GLOBAL_USER_SCOPE_ID;
+}
+
+function matchesScopeAuthorization(candidate, scope, scopeId) {
+  const authorization = candidate?.promotionScopeAuthorization;
+  return (
+    candidate?.safety?.scopeLocked === true &&
+    candidate?.safety?.crossScopePromotionAllowed === true &&
+    authorization?.status === 'authorized' &&
+    authorization?.fromScope === normalizeText(candidate?.scope, 'mission') &&
+    authorization?.fromScopeId === candidate?.scopeId &&
+    authorization?.toScope === scope &&
+    authorization?.toScopeId === scopeId
+  );
+}
+
 function formatLearningPromotionMemory({ candidate, note, target }) {
   const noteSuffix = note ? ` note=${note}` : '';
   return `Learning candidate promoted [${target}] for mission ${candidate.missionId}: ${candidate.summary}${noteSuffix}`;
 }
 
 /**
- * Learning promotion domain (mutation half of learning promotion).
+ * Learning promotion domain.
  *
- * Instantiated once inside createMissionService near the sibling store-factory
- * blocks. Owns the promotion resolution/expiration writes plus the exclusive
- * verification/cutoff helpers, and injects the high-fan-in queue-item builder
- * (`buildLearningPromotionQueueItem`), the memory writers, and the shared
- * learning-promotion pure helpers (which stay defined in mission-service
- * because the read/audit half and other closure functions also depend on them).
+ * Owns the queue, reminders, decisions, expiration, and rollback lifecycle.
+ * The mission service supplies only stateful ports and delegates the public
+ * methods without rebuilding promotion state outside this boundary.
  */
 export function createLearningPromotion({
   store,
   now,
   addMemoryEntry,
   deleteMemory,
+  getUserLearningSelectionOverrideReadModel = () => null,
+  getWorkspaceLearningSelectionOverrideReadModel = () => null,
   getMission,
   getWorkspace,
-  buildLearningPromotionQueueItem,
   writeUpdatedLearningCandidateArtifact,
-  resolveLearningPromotionScopeId,
-  getLearningPromotionExpiresAt,
-  getLearningPromotionExpirationPolicy,
-  defaultLearningPromotionTarget,
-  normalizeLearningPromotionTarget,
-  normalizeLearningPromotionScope,
 }) {
+  function buildLearningPromotionQueueItem(candidate) {
+    const mission = store.getMission(candidate.missionId);
+    const workspace = mission ? store.getWorkspace(mission.workspaceId) : store.getWorkspace(candidate.workspaceId);
+
+    if (!mission || !workspace) {
+      return null;
+    }
+
+    const providerFallbackSummary = candidate.evidence?.providerFallbackSummary || null;
+    const providerFailure = candidate.evidence?.providerFailure || null;
+    const providerFallbackFailureAttempt = ensureArray(providerFallbackSummary?.attempts).find((attempt) =>
+      Boolean(attempt?.providerFailureKind),
+    );
+    const target = defaultLearningPromotionTarget(candidate);
+    const scope = normalizeText(candidate.scope, 'mission');
+    const promotionStatus = normalizeText(candidate.promotionStatus, 'pending-review');
+    const expirationPolicy = getLearningPromotionExpirationPolicy(candidate);
+    const resolveCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision <approve|reject> --target ${target} --scope ${scope} --note "<note>"`;
+    const stopConditionRejectCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision reject --target ${target} --scope ${scope} --note "<note>"`;
+    const rollbackCommand = `node src/cli.mjs action rollback-learning-promotion ${candidate.id} --note "<note>"`;
+    const expireCommand = `node src/cli.mjs action expire-learning-promotions --mission ${mission.id} --before ${expirationPolicy.expiresAt || '<iso-timestamp>'} --note "<note>"`;
+    const isPending = promotionStatus === 'pending-review';
+    const isVerificationBlocked = promotionStatus === 'verification-blocked';
+    const isRollbackEligible = ['approved', 'promoted'].includes(promotionStatus);
+    const actionClass = isVerificationBlocked ? 'blocked' : isPending ? 'awaiting-human-decision' : 'monitoring-required';
+    const recommendedCommand = isPending
+      ? resolveCommand
+      : isVerificationBlocked
+        ? stopConditionRejectCommand
+        : isRollbackEligible
+          ? rollbackCommand
+          : null;
+    const recommendedOwner = isPending || isVerificationBlocked ? 'human-approver' : 'mission-owner';
+    const promotionStopReason =
+      candidate.promotionStopCondition?.reason || candidate.promotionVerification?.stopReason || null;
+    const userLearningSelectionOverride =
+      getUserLearningSelectionOverrideReadModel(candidate.id);
+    const userLearningSelectionOverrideSetCommand = userLearningSelectionOverride
+      ? `node src/cli.mjs action set-user-learning-selection-override ${candidate.id} --expires-at <iso-timestamp> --note "<note>"`
+      : null;
+    const userLearningSelectionOverrideClearCommand =
+      userLearningSelectionOverride?.current &&
+      userLearningSelectionOverride.current.status !== 'cleared'
+        ? `node src/cli.mjs action clear-user-learning-selection-override ${candidate.id} --note "<note>"`
+        : null;
+    const workspaceLearningSelectionOverride =
+      getWorkspaceLearningSelectionOverrideReadModel(candidate.id);
+    const workspaceLearningSelectionOverrideSetCommand = workspaceLearningSelectionOverride
+      ? `node src/cli.mjs action set-workspace-learning-selection-override ${candidate.id} --expires-at <iso-timestamp> --note "<note>"`
+      : null;
+    const workspaceLearningSelectionOverrideClearCommand =
+      workspaceLearningSelectionOverride?.current &&
+      workspaceLearningSelectionOverride.current.status !== 'cleared'
+        ? `node src/cli.mjs action clear-workspace-learning-selection-override ${candidate.id} --note "<note>"`
+        : null;
+    const stopConditionReminders = ensureArray(candidate.promotionStopCondition?.reminders);
+    const latestStopConditionReminder = getLatestItem(stopConditionReminders, 'remindedAt');
+    const reminderCadenceHours = isVerificationBlocked ? deriveLearningPromotionStopConditionReminderCadenceHours() : null;
+    const reminderBaseAt =
+      latestStopConditionReminder?.remindedAt ||
+      candidate.promotionStopCondition?.blockedAt ||
+      candidate.promotionDecision?.decidedAt ||
+      candidate.updatedAt ||
+      candidate.createdAt ||
+      '';
+    const reminderBaseMs = Date.parse(String(reminderBaseAt || ''));
+    const nextReminderAt =
+      isVerificationBlocked && reminderCadenceHours && Number.isFinite(reminderBaseMs)
+        ? new Date(reminderBaseMs + reminderCadenceHours * 60 * 60 * 1000).toISOString()
+        : null;
+    const nextReminderMs = Date.parse(String(nextReminderAt || ''));
+    const needsReminder =
+      isVerificationBlocked && Number.isFinite(nextReminderMs) ? Date.now() >= nextReminderMs : false;
+
+    return addOperationalMetadata(
+      addDispatchMetadata(
+        {
+          actionClass,
+          actionId: `learning-promotion:${candidate.id}`,
+          actionType: 'learning-promotion',
+          approvalRequired: candidate.proposal?.approvalRequired === true,
+          artifactCount: ensureArray(candidate.evidence?.artifactIds).length,
+          artifactKinds: candidate.evidence?.artifactKinds || {},
+          autoPromotion: candidate.autoPromotion === true,
+          autoPromotionAllowed: candidate.autoPromotion === true,
+          createdAt: candidate.createdAt,
+          evidencePolicy: {
+            crossScopePromotionAllowed: candidate.safety?.crossScopePromotionAllowed === true,
+            noRawCustomerPayloads: candidate.safety?.noRawCustomerPayloads === true,
+            noRawSecrets: candidate.safety?.noRawSecrets === true,
+            promotionRequiresApproval: candidate.safety?.promotionRequiresApproval === true,
+            rawPayloadIncluded: false,
+            scopeLocked: candidate.safety?.scopeLocked === true,
+          },
+          expirationPolicy,
+          expireCommand,
+          gatewayEventId: candidate.evidence?.gatewayEventId || null,
+          gatewayEventRoute: candidate.evidence?.gatewayEventRoute || null,
+          gatewayEventSchemaVersion: candidate.evidence?.gatewayEventSchemaVersion || null,
+          gatewayEventType: candidate.evidence?.gatewayEventType || null,
+          learningCandidateId: candidate.id,
+          missionId: mission.id,
+          missionStatus: mission.status,
+          missionTitle: mission.title,
+          mode: mission.mode,
+          lastReminderAt: latestStopConditionReminder?.remindedAt || null,
+          needsReminder,
+          nextReminderAt,
+          promotionStatus,
+          promotionStopCondition: candidate.promotionStopCondition || null,
+          promotionStopReason,
+          promotionVerificationId: candidate.promotionVerification?.id || null,
+          promotionVerificationStatus: candidate.promotionVerification?.status || null,
+          promotionVerificationStopReason: candidate.promotionVerification?.stopReason || null,
+          proposalTarget: target,
+          providerFallbackPolicy: candidate.evidence?.providerFallbackPolicy || providerFallbackSummary?.policyId || null,
+          providerFallbackPrimaryProviderId: providerFallbackSummary?.primaryProviderId || null,
+          providerFallbackSelectedProviderId: providerFallbackSummary?.selectedProviderId || null,
+          providerFallbackStopReasonCounts: candidate.evidence?.providerFallbackStopReasonCounts || {},
+          providerFallbackUsed: providerFallbackSummary?.fallbackUsed === true,
+          providerFailureKind: providerFailure?.failureKind || providerFallbackFailureAttempt?.providerFailureKind || null,
+          providerFailureRecoverable:
+            typeof providerFailure?.recoverable === 'boolean'
+              ? providerFailure.recoverable
+              : typeof providerFallbackFailureAttempt?.providerFailureRecoverable === 'boolean'
+                ? providerFallbackFailureAttempt.providerFailureRecoverable
+                : null,
+          providerId: candidate.evidence?.providerId || null,
+          reason:
+            isVerificationBlocked && promotionStopReason
+              ? `${candidate.summary} Stop-condition reason: ${promotionStopReason}.`
+              : candidate.summary,
+          recordType: candidate.recordType,
+          remindCommand: `node src/cli.mjs action remind-learning-promotion-stop-conditions --mission ${mission.id} --due --note "<note>"`,
+          reminderCadenceHours,
+          reminderCount: stopConditionReminders.length,
+          reminderHistory: stopConditionReminders,
+          resolveCommand,
+          reviewerRequired: candidate.proposal?.reviewerRequired === true,
+          reviewerVerdict: candidate.evidence?.reviewerVerdict || null,
+          rollbackCommand,
+          rollbackEligible: isRollbackEligible,
+          runCount: ensureArray(candidate.evidence?.runIds).length,
+          runStatusCounts: candidate.evidence?.runStatusCounts || {},
+          scope,
+          scopeId: candidate.scopeId,
+          sessionId: candidate.sessionId,
+          status: candidate.status,
+          stopConditionRejectCommand,
+          title: candidate.title,
+          userLearningSelectionOverride,
+          userLearningSelectionOverrideClearCommand,
+          userLearningSelectionOverrideSetCommand,
+          workspaceId: workspace.id,
+          workspaceLearningSelectionOverride,
+          workspaceLearningSelectionOverrideClearCommand,
+          workspaceLearningSelectionOverrideSetCommand,
+          workspaceName: workspace.name,
+        },
+        {
+          priority: isVerificationBlocked ? 'high' : learningPromotionPriority(candidate),
+          recommendedCommand,
+          recommendedOwner,
+        },
+      ),
+      {
+        escalationRule: isVerificationBlocked
+          ? 'Reject the blocked promotion or create a corrected candidate; do not retry approval until verification evidence is fixed.'
+          : isPending
+            ? 'If overdue, expire the candidate or request an explicit approve or reject decision.'
+            : 'If promoted behavior regresses, rollback the promotion before broader reuse.',
+        slaHours: isVerificationBlocked ? 24 : 72,
+      },
+    );
+  }
+
+  function listLearningPromotionItems(filter = {}) {
+    const promotionStatus = normalizeText(filter.promotionStatus || filter.status, 'pending-review');
+    const providerFallbackStopReason = normalizeText(filter.providerFallbackStopReason || filter.fallbackStopReason);
+    const includeAllStatuses = promotionStatus === 'all';
+    const includeOperatorActiveStatuses = promotionStatus === 'operator-active';
+    const candidates = store.listLearningCandidates({
+      missionId: filter.missionId,
+      recordType: filter.recordType,
+      workspaceId: filter.workspaceId,
+      ...(includeAllStatuses || includeOperatorActiveStatuses ? {} : { promotionStatus }),
+    });
+
+    return candidates
+      .map((candidate) => buildLearningPromotionQueueItem(candidate))
+      .filter(Boolean)
+      .filter((item) => {
+        if (
+          includeOperatorActiveStatuses &&
+          !['pending-review', 'approved', 'promoted', 'verification-blocked'].includes(item.promotionStatus)
+        ) {
+          return false;
+        }
+        if (filter.target && item.proposalTarget !== filter.target) {
+          return false;
+        }
+        if (filter.scope && item.scope !== filter.scope) {
+          return false;
+        }
+        if (
+          providerFallbackStopReason &&
+          Number(item.providerFallbackStopReasonCounts?.[providerFallbackStopReason] || 0) <= 0
+        ) {
+          return false;
+        }
+        return true;
+      })
+      .sort((left, right) => String(left.createdAt || '').localeCompare(String(right.createdAt || '')));
+  }
+
+  function summarizeLearningPromotionQueue(items) {
+    const expirationCounts = {
+      active: items.filter((item) => item.expirationPolicy?.status === 'active').length,
+      expired: items.filter((item) => item.expirationPolicy?.status === 'expired').length,
+      notConfigured: items.filter((item) => !item.expirationPolicy?.expiresAt).length,
+      overdueForExpiration: items.filter((item) => item.expirationPolicy?.status === 'overdue-for-expiration').length,
+      total: items.length,
+    };
+
+    return {
+      expirationCounts,
+      pendingCount: items.filter((item) => item.promotionStatus === 'pending-review').length,
+      priorityCounts: countByNormalizedField(items, 'priority'),
+      recordTypeCounts: countByNormalizedField(items, 'recordType'),
+      scopeCounts: countByNormalizedField(items, 'scope'),
+      statusCounts: countByNormalizedField(items, 'promotionStatus'),
+      targetCounts: countByNormalizedField(items, 'proposalTarget'),
+      total: items.length,
+      workspaceCounts: countByNormalizedField(items, 'workspaceId'),
+    };
+  }
+
+  function getLearningPromotionQueue(filter = {}) {
+    const normalizedFilter = {
+      ...filter,
+      scope: filter.scope ? normalizeLearningPromotionScope(filter.scope) : '',
+      target: filter.target ? normalizeLearningPromotionTarget(filter.target) : '',
+    };
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (
+      filter.status &&
+      !['all', 'operator-active'].includes(filter.status) &&
+      !LEARNING_PROMOTION_STATUSES.includes(filter.status)
+    ) {
+      throw new Error(`Unsupported learning promotion status: ${filter.status}`);
+    }
+
+    const items = listLearningPromotionItems(normalizedFilter);
+
+    return {
+      filters: {
+        missionId: filter.missionId || null,
+        providerFallbackStopReason: normalizedFilter.providerFallbackStopReason || normalizedFilter.fallbackStopReason || null,
+        recordType: filter.recordType || null,
+        scope: normalizedFilter.scope || null,
+        status: filter.status || filter.promotionStatus || 'pending-review',
+        target: normalizedFilter.target || null,
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: summarizeLearningPromotionQueue(items),
+    };
+  }
+
+  function remindLearningPromotionStopConditions(filter = {}, note = '') {
+    const learningCandidateId = normalizeText(filter.learningCandidateId);
+    if (filter.workspaceId) {
+      getWorkspace(filter.workspaceId);
+    }
+    if (filter.missionId) {
+      getMission(filter.missionId);
+    }
+    if (learningCandidateId && !store.getLearningCandidate(learningCandidateId)) {
+      throw new Error(`Learning candidate not found: ${learningCandidateId}`);
+    }
+    if (filter.owner && !ACTION_OWNERS.includes(filter.owner)) {
+      throw new Error(`Unsupported action owner: ${filter.owner}`);
+    }
+
+    const reminderTimestamp = now();
+    const normalizedNote = normalizeText(note);
+    const candidates = listLearningPromotionItems({
+      missionId: filter.missionId,
+      promotionStatus: 'verification-blocked',
+      workspaceId: filter.workspaceId,
+    })
+      .filter((item) => !learningCandidateId || item.learningCandidateId === learningCandidateId)
+      .filter((item) => !filter.owner || item.recommendedOwner === filter.owner)
+      .filter((item) => !filter.dueOnly || item.needsReminder)
+      .filter((item) => !filter.overdueOnly || item.isOverdue);
+
+    const items = candidates
+      .map((item) => {
+        const updatedCandidate = store.updateLearningCandidate(item.learningCandidateId, (current) => {
+          const promotionStopCondition = current.promotionStopCondition || {};
+          const reminders = ensureArray(promotionStopCondition.reminders);
+          const reminderEntry = {
+            actionId: item.actionId,
+            createdAt: reminderTimestamp,
+            dueAt: item.dueAt,
+            id: createId('learning-promotion-stop-condition-reminder'),
+            learningCandidateId: item.learningCandidateId,
+            missionId: item.missionId,
+            nextReminderAt: item.nextReminderAt || null,
+            note: buildLearningPromotionStopConditionReminderNote(item, normalizedNote),
+            overdue: item.isOverdue,
+            priority: item.priority,
+            promotionStopReason: item.promotionStopReason || null,
+            recommendedCommand: item.recommendedCommand || null,
+            recommendedOwner: item.recommendedOwner || null,
+            remindedAt: reminderTimestamp,
+            reminderCadenceHours: item.reminderCadenceHours,
+            slaHours: item.slaHours,
+            target: item.proposalTarget || null,
+            title: item.title,
+            workspaceId: item.workspaceId || null,
+            workspaceName: item.workspaceName || null,
+          };
+
+          return {
+            ...current,
+            promotionStopCondition: {
+              ...promotionStopCondition,
+              latestReminderAt: reminderTimestamp,
+              reminderCount: reminders.length + 1,
+              reminders: [...reminders, reminderEntry],
+            },
+            updatedAt: reminderTimestamp,
+          };
+        });
+
+        writeUpdatedLearningCandidateArtifact(updatedCandidate);
+        const queueItem = buildLearningPromotionQueueItem(updatedCandidate);
+        const latestReminder = getLatestItem(queueItem?.reminderHistory || [], 'remindedAt');
+        return {
+          ...queueItem,
+          latestReminder,
+          reminderDetail: latestReminder ? formatLearningPromotionStopConditionReminderDetail(latestReminder) : null,
+        };
+      })
+      .filter(Boolean)
+      .sort((left, right) => String(left.lastReminderAt || '').localeCompare(String(right.lastReminderAt || '')));
+
+    return {
+      filters: {
+        dueOnly: Boolean(filter.dueOnly),
+        learningCandidateId: learningCandidateId || null,
+        missionId: filter.missionId || null,
+        note: normalizedNote || null,
+        owner: filter.owner || null,
+        overdueOnly: Boolean(filter.overdueOnly),
+        workspaceId: filter.workspaceId || null,
+      },
+      items,
+      summary: {
+        dueCandidateCount: candidates.filter((item) => item.needsReminder).length,
+        latestReminderAt:
+          [...items]
+            .map((item) => item.lastReminderAt)
+            .filter(Boolean)
+            .sort((left, right) => String(left).localeCompare(String(right)))
+            .at(-1) || null,
+        overdueReminderCount: items.filter((item) => item.isOverdue).length,
+        reminderCountTotal: items.reduce((count, item) => count + Number(item.reminderCount || 0), 0),
+        remindedCount: items.length,
+        stopReasonCounts: countByNormalizedField(items, 'promotionStopReason'),
+        workspaceCounts: countByNormalizedField(items, 'workspaceId'),
+      },
+    };
+  }
+
   function normalizeLearningPromotionExpirationCutoff(value) {
     const normalized = normalizeText(value);
     if (!normalized) {
@@ -87,6 +572,9 @@ export function createLearningPromotion({
     const hasEvidence = Boolean(candidate.evidence?.gatewayEventId || artifactCount || runCount);
     const isPreMutation = mutationPhase === 'pre-mutation';
     const rollbackAction = memoryEntry ? 'delete-memory-entry' : 'ignore-learning-candidate-decision';
+    const scopeAuthorizationId = matchesScopeAuthorization(candidate, normalizedScope, scopeId)
+      ? candidate.promotionScopeAuthorization?.id || null
+      : null;
     const checks = [
       {
         id: 'manual-approval-recorded',
@@ -101,10 +589,10 @@ export function createLearningPromotion({
       {
         id: 'scope-locked',
         passed:
-          normalizedScope === expectedScope &&
-          scopeId === expectedScopeId &&
-          candidate.safety?.scopeLocked === true &&
-          candidate.safety?.crossScopePromotionAllowed !== true,
+          (normalizedScope === expectedScope &&
+            scopeId === expectedScopeId &&
+            candidate.safety?.scopeLocked === true) ||
+          matchesScopeAuthorization(candidate, normalizedScope, scopeId),
         reason: 'Promotion must stay inside the candidate scope unless cross-scope promotion is explicitly enabled.',
       },
       {
@@ -174,6 +662,7 @@ export function createLearningPromotion({
           candidate.evidence?.providerFallbackPolicy || candidate.evidence?.providerFallbackSummary?.policyId || null,
         providerFallbackStopReasonCounts: candidate.evidence?.providerFallbackStopReasonCounts || {},
         runCount,
+        ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
       },
       id: `${candidate.id}:promotion-verification:${normalizedDecision}`,
       note,
@@ -193,6 +682,94 @@ export function createLearningPromotion({
       verifiedAt: decidedAt,
       verificationPhase: mutationPhase,
       verificationType: 'local-deterministic-promotion-gate',
+    };
+  }
+
+  function authorizeLearningPromotionScope(candidateId, { note = '', scope = '' } = {}) {
+    const candidate = store.getLearningCandidate(candidateId);
+    if (!candidate) {
+      throw new Error(`Learning candidate not found: ${candidateId}`);
+    }
+    if (candidate.promotionStatus !== 'pending-review') {
+      throw new Error(`Learning candidate ${candidateId} is not pending review.`);
+    }
+
+    const authorizationNote = normalizeText(note);
+    if (!authorizationNote) {
+      throw new Error('Learning promotion scope authorization requires an explicit note.');
+    }
+    const targetScope = normalizeLearningPromotionScope(scope);
+    if (candidate.scope !== 'mission' || !['user', 'workspace'].includes(targetScope)) {
+      throw new Error('Only mission-to-workspace or mission-to-user learning scope authorization is supported.');
+    }
+
+    const mission = getMission(candidate.missionId);
+    const workspace = getWorkspace(candidate.workspaceId);
+    if (
+      !mission ||
+      !workspace ||
+      mission.workspaceId !== workspace.id ||
+      candidate.scopeId !== mission.id ||
+      candidate.evidence?.reviewerVerdict !== 'pass' ||
+      candidate.safety?.scopeLocked !== true ||
+      candidate.safety?.noRawSecrets !== true ||
+      candidate.safety?.noRawCustomerPayloads !== true ||
+      candidate.proposal?.approvalRequired !== true ||
+      candidate.proposal?.reviewerRequired !== true
+    ) {
+      throw new Error('Learning promotion scope authorization evidence is incomplete.');
+    }
+    if (targetScope === 'user' && normalizeText(workspace.tenantId)) {
+      throw new Error(
+        'User-scoped learning promotion is limited to local workspaces without a tenant binding.',
+      );
+    }
+    if (getLearningPromotionExpirationPolicy(candidate).expired) {
+      throw new Error(`Learning candidate ${candidateId} is expired.`);
+    }
+
+    const targetScopeId = targetScope === 'workspace' ? workspace.id : GLOBAL_USER_SCOPE_ID;
+    const existing = candidate.promotionScopeAuthorization;
+    if (
+      existing?.status === 'authorized' &&
+      existing.toScope === targetScope &&
+      existing.toScopeId === targetScopeId
+    ) {
+      return {
+        learningCandidate: candidate,
+        queueItem: buildLearningPromotionQueueItem(candidate),
+        scopeAuthorization: existing,
+      };
+    }
+
+    const authorizedAt = now();
+    const scopeAuthorization = {
+      authorizedAt,
+      authorizedBy: 'local-operator',
+      fromScope: candidate.scope,
+      fromScopeId: candidate.scopeId,
+      id: `${candidate.id}:scope-authorization:${targetScope}`,
+      note: authorizationNote,
+      schemaVersion: 'personal-ai-agent-learning-promotion-scope-authorization/v1',
+      status: 'authorized',
+      toScope: targetScope,
+      toScopeId: targetScopeId,
+    };
+    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+      ...current,
+      promotionScopeAuthorization: scopeAuthorization,
+      safety: {
+        ...current.safety,
+        crossScopePromotionAllowed: true,
+      },
+      updatedAt: authorizedAt,
+    }));
+
+    writeUpdatedLearningCandidateArtifact(updatedCandidate);
+    return {
+      learningCandidate: updatedCandidate,
+      queueItem: buildLearningPromotionQueueItem(updatedCandidate),
+      scopeAuthorization,
     };
   }
 
@@ -289,7 +866,15 @@ export function createLearningPromotion({
 
     const normalizedTarget = normalizeLearningPromotionTarget(target, defaultLearningPromotionTarget(candidate));
     const normalizedScope = normalizeLearningPromotionScope(scope, candidate.scope || 'mission');
-    if (normalizedScope !== normalizeText(candidate.scope, 'mission')) {
+    const scopeId = resolveLearningPromotionScopeId(candidate, normalizedScope);
+    const usesScopeAuthorization = matchesScopeAuthorization(candidate, normalizedScope, scopeId);
+    const scopeAuthorizationId = usesScopeAuthorization
+      ? candidate.promotionScopeAuthorization?.id || null
+      : null;
+    if (
+      normalizedScope !== normalizeText(candidate.scope, 'mission') &&
+      !usesScopeAuthorization
+    ) {
       throw new Error(
         `Learning candidate ${candidateId} is scope-locked to ${candidate.scope || 'mission'}; cross-scope promotion is not enabled.`,
       );
@@ -297,7 +882,6 @@ export function createLearningPromotion({
 
     const decidedAt = now();
     const resolutionNote = normalizeText(note, 'Resolved without additional note.');
-    const scopeId = resolveLearningPromotionScopeId(candidate, normalizedScope);
     const preMutationVerification = buildLearningPromotionVerification({
       candidate,
       decidedAt,
@@ -324,6 +908,7 @@ export function createLearningPromotion({
             memoryId: null,
           },
           scope: normalizedScope,
+          ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
           scopeId,
           target: normalizedTarget,
           verificationId: preMutationVerification.id,
@@ -337,6 +922,7 @@ export function createLearningPromotion({
           reason: preMutationVerification.stopReason || 'learning-promotion-verification-failed',
           requestedDecision: normalizedDecision,
           scope: normalizedScope,
+          ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
           scopeId,
           status: 'blocked',
           target: normalizedTarget,
@@ -389,6 +975,10 @@ export function createLearningPromotion({
     let finalMemoryEntry = memoryEntry;
     let finalPromotionStatus = nextPromotionStatus;
     let promotionStopCondition = null;
+    const shouldConsumeScopeAuthorization =
+      usesScopeAuthorization &&
+      normalizedDecision === 'approve' &&
+      promotionVerification.status === 'passed';
 
     if (promotionVerification.status !== 'passed') {
       if (memoryEntry?.id) {
@@ -404,6 +994,7 @@ export function createLearningPromotion({
         reason: promotionVerification.stopReason || 'learning-promotion-verification-failed',
         requestedDecision: normalizedDecision,
         scope: normalizedScope,
+        ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
         scopeId,
         status: 'blocked',
         target: normalizedTarget,
@@ -425,11 +1016,22 @@ export function createLearningPromotion({
           memoryId: finalMemoryEntry?.id || null,
         },
         scope: normalizedScope,
+        ...(scopeAuthorizationId ? { scopeAuthorizationId } : {}),
         scopeId,
         target: normalizedTarget,
         verificationId: promotionVerification.id,
       },
       promotionStatus: finalPromotionStatus,
+      ...(candidate.promotionScopeAuthorization
+        ? {
+            promotionScopeAuthorization: {
+              ...candidate.promotionScopeAuthorization,
+              ...(shouldConsumeScopeAuthorization
+                ? { consumedAt: decidedAt, status: 'consumed' }
+                : {}),
+            },
+          }
+        : {}),
       ...(promotionStopCondition ? { promotionStopCondition } : {}),
       promotionVerification,
       updatedAt: decidedAt,
@@ -526,9 +1128,79 @@ export function createLearningPromotion({
     };
   }
 
+  function rollbackLearningPromotion(candidateId, { note = '' } = {}) {
+    const candidate = store.getLearningCandidate(candidateId);
+    if (!candidate) {
+      throw new Error(`Learning candidate not found: ${candidateId}`);
+    }
+    if (!['approved', 'promoted'].includes(candidate.promotionStatus)) {
+      throw new Error(`Learning candidate ${candidateId} is not rollback eligible.`);
+    }
+    if (!candidate.promotionDecision) {
+      throw new Error(`Learning candidate ${candidateId} has no promotion decision to rollback.`);
+    }
+
+    const rolledBackAt = now();
+    const rollbackNote = normalizeText(note, 'Rolled back learning promotion by local operator.');
+    const decision = candidate.promotionDecision;
+    const memoryId = decision.memoryId || null;
+    const scope = normalizeLearningPromotionScope(decision.scope, candidate.scope || 'mission');
+    const scopeId = decision.scopeId || resolveLearningPromotionScopeId(candidate, scope);
+    let memoryRollbackStatus = memoryId ? 'memory-not-found' : 'not-applicable';
+    let removedMemoryEntry = null;
+
+    if (memoryId) {
+      const existingMemory = store.listMemoryEntries({ scope, scopeId }).find((entry) => entry.id === memoryId);
+      if (existingMemory) {
+        removedMemoryEntry = deleteMemory({ memoryId, scope, scopeId });
+        memoryRollbackStatus = 'memory-deleted';
+      }
+    }
+
+    const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
+      ...current,
+      promotionDecision: {
+        ...current.promotionDecision,
+        rollback: {
+          ...(current.promotionDecision?.rollback || {}),
+          completedAt: rolledBackAt,
+          memoryId,
+          memoryRollbackStatus,
+          note: rollbackNote,
+          status: 'completed',
+        },
+      },
+      promotionRollback: {
+        memoryId,
+        memoryRollbackStatus,
+        note: rollbackNote,
+        previousPromotionStatus: current.promotionStatus,
+        rolledBackAt,
+        rolledBackBy: 'local-operator',
+        scope,
+        scopeId,
+        target: decision.target || defaultLearningPromotionTarget(candidate),
+      },
+      promotionStatus: 'rolled-back',
+      updatedAt: rolledBackAt,
+    }));
+
+    writeUpdatedLearningCandidateArtifact(updatedCandidate);
+
+    return {
+      learningCandidate: updatedCandidate,
+      queueItem: buildLearningPromotionQueueItem(updatedCandidate),
+      removedMemoryEntry,
+    };
+  }
+
   return {
-    buildLearningPromotionVerification,
-    resolveLearningPromotion,
+    authorizeLearningPromotionScope,
     expireLearningPromotions,
+    getLearningPromotionQueue,
+    listLearningPromotionItems,
+    remindLearningPromotionStopConditions,
+    resolveLearningPromotion,
+    rollbackLearningPromotion,
   };
 }

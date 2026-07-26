@@ -1,4 +1,5 @@
 import { loadAgentTemplate } from '../agents/loader.mjs';
+import { GLOBAL_USER_SCOPE_ID } from '../core/constants.mjs';
 import { buildWorkspaceInspectStep, buildWorkspaceVerificationStep } from '../core/execution-utils.mjs';
 import { buildMissionQualityGate, renderMissionQualityGate } from '../core/mission-quality-gate.mjs';
 
@@ -60,8 +61,29 @@ function formatRetrievedContext(retrievalContext, fallback = 'No retrieval snipp
     .join('\n');
 }
 
-function deriveMemoryAdaptation(memoryEntries) {
-  const relevantEntries = memoryEntries.filter((entry) => entry.scope === 'mission');
+function deriveMemoryAdaptation(
+  memoryEntries,
+  { missionId, userLearningSelection, workspaceId, workspaceLearningSelection } = {},
+) {
+  const selectedUserMemoryId = String(
+    userLearningSelection?.selectedMemoryId || '',
+  ).trim();
+  const selectedWorkspaceMemoryId = String(
+    workspaceLearningSelection?.selectedMemoryId || '',
+  ).trim();
+  const relevantEntries = memoryEntries.filter(
+    (entry) =>
+      (entry.scope === 'mission' && entry.scopeId === missionId) ||
+      (entry.scope === 'user' &&
+        entry.scopeId === GLOBAL_USER_SCOPE_ID &&
+        (entry.kind === 'preference' ||
+          (entry.kind === 'decision' &&
+            (!selectedUserMemoryId || entry.id === selectedUserMemoryId)))) ||
+      (entry.scope === 'workspace' &&
+        entry.scopeId === workspaceId &&
+        entry.kind === 'decision' &&
+        (!selectedWorkspaceMemoryId || entry.id === selectedWorkspaceMemoryId)),
+  );
   const adaptationNotes = uniqueTexts(relevantEntries.map((entry) => entry.content));
   const adaptivePlanSteps = [];
 
@@ -294,8 +316,20 @@ ${formatContextBoundary()}
   };
 }
 
-function buildPlannerOutput({ mission, workspace, pack, memoryEntries }) {
-  const adaptation = deriveMemoryAdaptation(memoryEntries);
+function buildPlannerOutput({
+  mission,
+  workspace,
+  pack,
+  memoryEntries,
+  userLearningSelection,
+  workspaceLearningSelection,
+}) {
+  const adaptation = deriveMemoryAdaptation(memoryEntries, {
+    missionId: mission.id,
+    userLearningSelection,
+    workspaceId: workspace.id,
+    workspaceLearningSelection,
+  });
   const uniquePlanSteps = uniqueTexts([...pack.plannerGuidance, ...adaptation.adaptivePlanSteps]);
   const planSteps = uniquePlanSteps.map((item, index) => `${index + 1}. ${item}`);
 
@@ -329,13 +363,27 @@ ${renderMissionQualityGateSection({ mission, workspace, pack, planSteps: uniqueP
   };
 }
 
-function buildExecutorOutput({ mission, workspace, pack, previousOutputs, memoryEntries, attachments = [] }) {
+function buildExecutorOutput({
+  mission,
+  workspace,
+  pack,
+  previousOutputs,
+  memoryEntries,
+  attachments = [],
+  userLearningSelection,
+  workspaceLearningSelection,
+}) {
   const forceReviewerFail = mission.constraints.includes('force-reviewer-fail');
   const forceRubricFail = mission.constraints.includes('force-rubric-fail');
   const planSteps = previousOutputs.planner ? previousOutputs.planner.planSteps : pack.plannerGuidance;
   const adaptationNotes = previousOutputs.planner
     ? previousOutputs.planner.adaptationNotes
-    : deriveMemoryAdaptation(memoryEntries).adaptationNotes;
+      : deriveMemoryAdaptation(memoryEntries, {
+          missionId: mission.id,
+          userLearningSelection,
+          workspaceId: workspace.id,
+          workspaceLearningSelection,
+        }).adaptationNotes;
   let artifactContent = pack.renderDraft({
     planSteps,
     forceReviewerFail,

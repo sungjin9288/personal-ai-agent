@@ -1,0 +1,49 @@
+{
+  "actualBrowserInteractionValidated": true,
+  "actualModelTrainingExecuted": false,
+  "browser": {
+    "approved": true,
+    "consoleErrorCount": 0,
+    "evidenceVisible": true,
+    "localExecutionAuthorized": true,
+    "screenshot": "evidence/screenshots/local-training-permission-surface.png",
+    "screenshotSha256": "e6748c2c82c9cb91d854e2c0b05e70d13cd28c226f390717a95f714509e27670"
+  },
+  "costFree": true,
+  "externalProviderCalls": "none",
+  "flow": [
+    "pending-review",
+    "approved",
+    "revoked"
+  ],
+  "permission": {
+    "approvalKind": "local_training_execution",
+    "eventCount": 3,
+    "evidenceGates": [
+      "base-model-license",
+      "os-egress-isolation",
+      "resource-envelope"
+    ],
+    "ownerBindings": [
+      "approval-owner",
+      "license-owner",
+      "security-owner",
+      "resource-owner",
+      "rollback-owner"
+    ],
+    "resourceEnforcement": "caller-owned-with-runtime-timeout-bound"
+  },
+  "productionReadyClaim": false,
+  "rbac": {
+    "approve": "approver",
+    "revoke": "approver",
+    "validated": true
+  },
+  "schemaVersion": "personal-ai-agent-local-training-permission-surface-evidence/v1",
+  "status": "local-training-permission-surface-passed-local-only",
+  "tenantIsolation": {
+    "crossTenantReadAndRevokeBlocked": true,
+    "validated": true
+  },
+  "evidenceHash": "c2a8da998e31bf8d9584c401bf536bad3dc5784c0b04a345a082e1642fd6678a"
+}

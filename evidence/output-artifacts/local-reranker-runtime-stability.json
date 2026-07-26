@@ -1,0 +1,5648 @@
+{
+  "activation": {
+    "authorized": false,
+    "status": "blocked"
+  },
+  "actualLocalRerankerRuntimeStabilityQualified": false,
+  "actualLocalRerankerRuntimeStabilityValidated": true,
+  "concurrency": {
+    "batchWallDurationMs": 45247.26,
+    "clientWorkerCount": 2,
+    "p95WarmMultiplier": 1.5622,
+    "productionServerParallelism": "not-proven",
+    "validated": true
+  },
+  "costFree": true,
+  "decision": "hold-r9-shortlist-for-governance",
+  "governance": {
+    "approvedColdStartSlo": false,
+    "approvedConcurrencyLimit": false,
+    "licenseApproved": false,
+    "longDurationSoakValidated": false,
+    "networkIsolationProven": false,
+    "productionSustainedConcurrencyValidated": false,
+    "rollbackOwnerApproved": false,
+    "thermalTelemetryAvailable": false,
+    "thermalEnvelopeValidated": false
+  },
+  "latency": {
+    "all": {
+      "maximumMs": 2674.905,
+      "modelInferenceCount": 360,
+      "p50Ms": 997.995,
+      "p95Ms": 1553.049,
+      "rerankPassCount": 180,
+      "totalMs": 209098.964,
+      "summedRunWallDurationMs": 209115.679
+    },
+    "cold": {
+      "maximumMs": 2674.905,
+      "modelInferenceCount": 60,
+      "p50Ms": 992.903,
+      "p95Ms": 1109.477,
+      "rerankPassCount": 30,
+      "totalMs": 31619.743,
+      "summedRunWallDurationMs": 31625.968,
+      "firstPassMs": 2674.905,
+      "firstPassOverWarmP50Ms": 1709.554
+    },
+    "concurrent": {
+      "maximumMs": 1619.656,
+      "modelInferenceCount": 120,
+      "p50Ms": 1496.894,
+      "p95Ms": 1580.944,
+      "rerankPassCount": 60,
+      "totalMs": 90156.263,
+      "summedRunWallDurationMs": 90160.413
+    },
+    "warm": {
+      "maximumMs": 1063.229,
+      "modelInferenceCount": 180,
+      "p50Ms": 965.351,
+      "p95Ms": 1012.01,
+      "rerankPassCount": 90,
+      "totalMs": 87322.958,
+      "summedRunWallDurationMs": 87329.298,
+      "p95ByRunMs": [
+        1009.883,
+        1026.377,
+        1003.22
+      ],
+      "p95DriftRate": -0.0066,
+      "p95R9Multiplier": 1.0947
+    }
+  },
+  "lifecycle": {
+    "elapsedMs": 1.234,
+    "initiallyLoaded": false,
+    "modelAbsentBeforeCold": true,
+    "modelId": "qwen2.5:3b",
+    "pollCount": 1,
+    "source": "ollama-api-ps-and-conditional-generate-unload",
+    "unloadRequested": false
+  },
+  "observedAt": "2026-07-16T14:48:01.007Z",
+  "priorEnvelope": {
+    "activation": {
+      "authorized": false,
+      "status": "blocked"
+    },
+    "actualLocalRerankerResourceEnvelopeQualified": false,
+    "actualLocalRerankerResourceEnvelopeValidated": true,
+    "candidatePolicy": {
+      "evaluationOnly": true,
+      "maxCandidates": 2,
+      "minimumExpectedSourceRecall": 1,
+      "runtimeActivation": false
+    },
+    "caseScores": [
+      {
+        "firstDurationMs": 1643.582,
+        "id": "authentication-recovery:canonical",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 829.374,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-auth-style"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-auth-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 864.884,
+        "id": "authentication-recovery:hard-negative",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 835.456,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-auth-style"
+          },
+          {
+            "score": 30,
+            "sourceKey": "memory:memory-robust-auth-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 863.717,
+        "id": "authentication-recovery:korean",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 871.073,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-auth-style"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-auth-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 835.267,
+        "id": "authentication-recovery:noisy",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 835.215,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-auth-style"
+          },
+          {
+            "score": 70,
+            "sourceKey": "memory:memory-robust-auth-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 877.531,
+        "id": "authentication-recovery:paraphrase",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 861.985,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-auth-style"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-auth-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 870.327,
+        "id": "overdue-owner-handoff:canonical",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 858.81,
+        "sourceScores": [
+          {
+            "score": 10,
+            "sourceKey": "attachment:attachment-robust-handoff-calendar"
+          },
+          {
+            "score": 80,
+            "sourceKey": "memory:memory-robust-handoff-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 870.132,
+        "id": "overdue-owner-handoff:hard-negative",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 846.894,
+        "sourceScores": [
+          {
+            "score": 10,
+            "sourceKey": "attachment:attachment-robust-handoff-calendar"
+          },
+          {
+            "score": 30,
+            "sourceKey": "memory:memory-robust-handoff-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 924.449,
+        "id": "overdue-owner-handoff:korean",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 872.638,
+        "sourceScores": [
+          {
+            "score": 10,
+            "sourceKey": "attachment:attachment-robust-handoff-calendar"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-handoff-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 839.592,
+        "id": "overdue-owner-handoff:noisy",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 895.448,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-handoff-calendar"
+          },
+          {
+            "score": 70,
+            "sourceKey": "memory:memory-robust-handoff-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 806.658,
+        "id": "overdue-owner-handoff:paraphrase",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 826.03,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-handoff-calendar"
+          },
+          {
+            "score": 70,
+            "sourceKey": "memory:memory-robust-handoff-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 828.663,
+        "id": "payment-refund:canonical",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 830.977,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-refund-dashboard"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-refund-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 803.263,
+        "id": "payment-refund:hard-negative",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 816.58,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-refund-dashboard"
+          },
+          {
+            "score": 30,
+            "sourceKey": "memory:memory-robust-refund-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 818.848,
+        "id": "payment-refund:korean",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 835.155,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-refund-dashboard"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-refund-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 834.62,
+        "id": "payment-refund:noisy",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 851.93,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-refund-dashboard"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-refund-procedure"
+          }
+        ]
+      },
+      {
+        "firstDurationMs": 808.527,
+        "id": "payment-refund:paraphrase",
+        "repeatedScoreMatch": true,
+        "secondDurationMs": 831.722,
+        "sourceScores": [
+          {
+            "score": 0,
+            "sourceKey": "attachment:attachment-robust-refund-dashboard"
+          },
+          {
+            "score": 90,
+            "sourceKey": "memory:memory-robust-refund-procedure"
+          }
+        ]
+      }
+    ],
+    "comparison": {
+      "inferenceReductionRate": 0.3333,
+      "p50ReductionRate": 0.3863,
+      "p95ReductionRate": 0.3514,
+      "priorModelInferenceCount": 90,
+      "priorP50Ms": 1361.242,
+      "priorP95Ms": 1425.321,
+      "priorTotalMs": 40519.109,
+      "totalReductionRate": 0.3537
+    },
+    "costFree": true,
+    "decision": "hold-shortlist-for-governance",
+    "governance": {
+      "approvedResourceLimit": false,
+      "licenseApproved": false,
+      "networkIsolationProven": false,
+      "rollbackOwnerApproved": false,
+      "sustainedConcurrencyValidated": false,
+      "thermalEnvelopeValidated": false
+    },
+    "latency": {
+      "maximumMs": 1643.582,
+      "modelInferenceCount": 60,
+      "p50Ms": 835.456,
+      "p95Ms": 924.449,
+      "rerankPassCount": 30,
+      "totalMs": 26189.347
+    },
+    "observedAt": "2026-07-16T14:13:50.640Z",
+    "optimizedEvaluation": {
+      "activation": {
+        "authorized": false,
+        "status": "blocked"
+      },
+      "actualLocalRetrievalRobustnessValidated": true,
+      "baseline": {
+        "algorithmId": "local-relevance:ollama-independent-score:qwen2.5:3b",
+        "cases": [
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:canonical",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:hard-negative",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:korean",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:noisy",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:paraphrase",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:canonical",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:hard-negative",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:korean",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:noisy",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:paraphrase",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:canonical",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:hard-negative",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:korean",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:noisy",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:paraphrase",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          }
+        ],
+        "failures": [],
+        "metrics": {
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+        "status": "passed",
+        "thresholds": {
+          "maximumNoiseRateAtK": 0,
+          "maximumUnlabeledRetrievedSourceCount": 0,
+          "minimumCasePassRate": 1,
+          "minimumPrecisionAtK": 1,
+          "minimumRecallAtK": 1,
+          "minimumSourceDiversityRate": 1
+        },
+        "evaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e"
+      },
+      "candidate": {
+        "algorithmId": "local-relevance:ollama-independent-score:qwen2.5:3b",
+        "cases": [
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:canonical",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:hard-negative",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:korean",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:noisy",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-auth-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "authentication-recovery:paraphrase",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:canonical",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:hard-negative",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:korean",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:noisy",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-handoff-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "overdue-owner-handoff:paraphrase",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:canonical",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:hard-negative",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:korean",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:noisy",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          },
+          {
+            "evidence": {
+              "missingExpectedSourceKeys": [],
+              "retrievedIrrelevantSourceKeys": [],
+              "selectedSourceKeys": [
+                "memory:memory-robust-refund-procedure"
+              ],
+              "unlabeledRetrievedSourceKeys": []
+            },
+            "id": "payment-refund:paraphrase",
+            "k": 1,
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "status": "passed"
+          }
+        ],
+        "failures": [],
+        "metrics": {
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+        "status": "passed",
+        "thresholds": {
+          "maximumNoiseRateAtK": 0,
+          "maximumUnlabeledRetrievedSourceCount": 0,
+          "minimumCasePassRate": 1,
+          "minimumPrecisionAtK": 1,
+          "minimumRecallAtK": 1,
+          "minimumSourceDiversityRate": 1
+        },
+        "evaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e"
+      },
+      "cases": [
+        {
+          "durationMs": 1643.582,
+          "id": "authentication-recovery:canonical",
+          "scenarioId": "authentication-recovery",
+          "variationType": "canonical"
+        },
+        {
+          "durationMs": 864.884,
+          "id": "authentication-recovery:hard-negative",
+          "scenarioId": "authentication-recovery",
+          "variationType": "hard-negative"
+        },
+        {
+          "durationMs": 863.717,
+          "id": "authentication-recovery:korean",
+          "scenarioId": "authentication-recovery",
+          "variationType": "cross-language"
+        },
+        {
+          "durationMs": 835.267,
+          "id": "authentication-recovery:noisy",
+          "scenarioId": "authentication-recovery",
+          "variationType": "noisy-query"
+        },
+        {
+          "durationMs": 877.531,
+          "id": "authentication-recovery:paraphrase",
+          "scenarioId": "authentication-recovery",
+          "variationType": "paraphrase"
+        },
+        {
+          "durationMs": 870.327,
+          "id": "overdue-owner-handoff:canonical",
+          "scenarioId": "overdue-owner-handoff",
+          "variationType": "canonical"
+        },
+        {
+          "durationMs": 870.132,
+          "id": "overdue-owner-handoff:hard-negative",
+          "scenarioId": "overdue-owner-handoff",
+          "variationType": "hard-negative"
+        },
+        {
+          "durationMs": 924.449,
+          "id": "overdue-owner-handoff:korean",
+          "scenarioId": "overdue-owner-handoff",
+          "variationType": "cross-language"
+        },
+        {
+          "durationMs": 839.592,
+          "id": "overdue-owner-handoff:noisy",
+          "scenarioId": "overdue-owner-handoff",
+          "variationType": "noisy-query"
+        },
+        {
+          "durationMs": 806.658,
+          "id": "overdue-owner-handoff:paraphrase",
+          "scenarioId": "overdue-owner-handoff",
+          "variationType": "paraphrase"
+        },
+        {
+          "durationMs": 828.663,
+          "id": "payment-refund:canonical",
+          "scenarioId": "payment-refund",
+          "variationType": "canonical"
+        },
+        {
+          "durationMs": 803.263,
+          "id": "payment-refund:hard-negative",
+          "scenarioId": "payment-refund",
+          "variationType": "hard-negative"
+        },
+        {
+          "durationMs": 818.848,
+          "id": "payment-refund:korean",
+          "scenarioId": "payment-refund",
+          "variationType": "cross-language"
+        },
+        {
+          "durationMs": 834.62,
+          "id": "payment-refund:noisy",
+          "scenarioId": "payment-refund",
+          "variationType": "noisy-query"
+        },
+        {
+          "durationMs": 808.527,
+          "id": "payment-refund:paraphrase",
+          "scenarioId": "payment-refund",
+          "variationType": "paraphrase"
+        }
+      ],
+      "comparison": {
+        "baselineAlgorithmId": "local-relevance:ollama-independent-score:qwen2.5:3b",
+        "candidateAlgorithmId": "local-relevance:ollama-independent-score:qwen2.5:3b",
+        "failures": [],
+        "status": "passed"
+      },
+      "costFree": true,
+      "coverage": {
+        "minimumCasesPerVariation": 3,
+        "minimumScenarioCount": 3,
+        "requiredVariationTypes": [
+          "canonical",
+          "paraphrase",
+          "noisy-query",
+          "cross-language",
+          "hard-negative"
+        ],
+        "matrixComplete": true,
+        "passed": true,
+        "scenarioCount": 3,
+        "variationCounts": {
+          "canonical": 3,
+          "paraphrase": 3,
+          "noisy-query": 3,
+          "cross-language": 3,
+          "hard-negative": 3
+        }
+      },
+      "decision": "hold-for-governance",
+      "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+      "latency": {
+        "caseCount": 15,
+        "maximumMs": 1643.582,
+        "p50Ms": 839.592,
+        "p95Ms": 1643.582,
+        "totalMs": 13490.06
+      },
+      "model": {
+        "actualModelEvaluated": true,
+        "candidateEvidenceHash": "4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6",
+        "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "id": "qwen2.5:3b",
+        "qualificationHash": "c8261d343d20dcd4e69b7b77af7e257beef1518421bbb61b107a534fb514538c",
+        "qualificationStatus": "governance-blocked",
+        "qualified": false,
+        "source": "local-embedding-model-qualification"
+      },
+      "observedAt": "2026-07-16T14:13:50.640Z",
+      "productionReadyClaim": false,
+      "rollback": {
+        "mode": "lexical",
+        "stateMigrationRequired": false
+      },
+      "runtime": {
+        "cloudFeaturesDisabled": true,
+        "externalProviderCalls": "none",
+        "kind": "ollama",
+        "networkIsolation": "not-proven",
+        "transportLoopback": true,
+        "version": "0.23.0"
+      },
+      "scenarioMetrics": {
+        "authentication-recovery": {
+          "caseCount": 5,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "overdue-owner-handoff": {
+          "caseCount": 5,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "payment-refund": {
+          "caseCount": 5,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        }
+      },
+      "schemaVersion": "personal-ai-agent-retrieval-robustness-evaluation/v1",
+      "status": "passed-governance-blocked",
+      "variationMetrics": {
+        "canonical": {
+          "caseCount": 3,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "paraphrase": {
+          "caseCount": 3,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "noisy-query": {
+          "caseCount": 3,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "cross-language": {
+          "caseCount": 3,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "hard-negative": {
+          "caseCount": 3,
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        }
+      },
+      "evaluationHash": "64b946f0734fbc45c991855f9a5304c54489770dddf21d053352468a2166d4a2",
+      "id": "local-retrieval-robustness-64b946f0734fbc45c991855f9a5304c54489770dddf21d053352468a2166d4a2"
+    },
+    "priorEvaluation": {
+      "activation": {
+        "authorized": false,
+        "status": "blocked"
+      },
+      "actualLocalRelevanceRerankerQualified": false,
+      "actualLocalRelevanceRerankerQualityValidated": true,
+      "candidateEvaluation": {
+        "activation": {
+          "authorized": false,
+          "status": "blocked"
+        },
+        "actualLocalRetrievalRobustnessValidated": true,
+        "baseline": {
+          "algorithmId": "hybrid-lexical-bm25-phrase-v1",
+          "cases": [
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-auth-style"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-auth-style"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            }
+          ],
+          "failures": [
+            {
+              "actual": 0.6667,
+              "check": "case-pass-rate",
+              "required": 1
+            },
+            {
+              "actual": 0.6667,
+              "check": "precision-at-k",
+              "required": 1
+            },
+            {
+              "actual": 0.6667,
+              "check": "recall-at-k",
+              "required": 1
+            },
+            {
+              "actual": 0.6667,
+              "check": "source-diversity-rate",
+              "required": 1
+            },
+            {
+              "actual": 0.3333,
+              "check": "noise-rate-at-k",
+              "maximum": 0
+            }
+          ],
+          "metrics": {
+            "casePassRate": 0.6667,
+            "noiseRateAtK": 0.3333,
+            "precisionAtK": 0.6667,
+            "recallAtK": 0.6667,
+            "sourceDiversityRate": 0.6667,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "productionReadyClaim": false,
+          "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+          "status": "failed",
+          "thresholds": {
+            "maximumNoiseRateAtK": 0,
+            "maximumUnlabeledRetrievedSourceCount": 0,
+            "minimumCasePassRate": 1,
+            "minimumPrecisionAtK": 1,
+            "minimumRecallAtK": 1,
+            "minimumSourceDiversityRate": 1
+          },
+          "evaluationHash": "ce043d3fa20488115c6af2c13ada81614d47a3bf2c6a439aa80691e539c25cb3"
+        },
+        "candidate": {
+          "algorithmId": "local-relevance:ollama-independent-score:qwen2.5:3b",
+          "cases": [
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            }
+          ],
+          "failures": [],
+          "metrics": {
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "productionReadyClaim": false,
+          "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+          "status": "passed",
+          "thresholds": {
+            "maximumNoiseRateAtK": 0,
+            "maximumUnlabeledRetrievedSourceCount": 0,
+            "minimumCasePassRate": 1,
+            "minimumPrecisionAtK": 1,
+            "minimumRecallAtK": 1,
+            "minimumSourceDiversityRate": 1
+          },
+          "evaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e"
+        },
+        "cases": [
+          {
+            "durationMs": 1291.987,
+            "id": "authentication-recovery:canonical",
+            "scenarioId": "authentication-recovery",
+            "variationType": "canonical"
+          },
+          {
+            "durationMs": 1373.946,
+            "id": "authentication-recovery:hard-negative",
+            "scenarioId": "authentication-recovery",
+            "variationType": "hard-negative"
+          },
+          {
+            "durationMs": 1375.465,
+            "id": "authentication-recovery:korean",
+            "scenarioId": "authentication-recovery",
+            "variationType": "cross-language"
+          },
+          {
+            "durationMs": 1297.457,
+            "id": "authentication-recovery:noisy",
+            "scenarioId": "authentication-recovery",
+            "variationType": "noisy-query"
+          },
+          {
+            "durationMs": 1312.558,
+            "id": "authentication-recovery:paraphrase",
+            "scenarioId": "authentication-recovery",
+            "variationType": "paraphrase"
+          },
+          {
+            "durationMs": 1462.735,
+            "id": "overdue-owner-handoff:canonical",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "canonical"
+          },
+          {
+            "durationMs": 1368.541,
+            "id": "overdue-owner-handoff:hard-negative",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "hard-negative"
+          },
+          {
+            "durationMs": 1404.309,
+            "id": "overdue-owner-handoff:korean",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "cross-language"
+          },
+          {
+            "durationMs": 1388.881,
+            "id": "overdue-owner-handoff:noisy",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "noisy-query"
+          },
+          {
+            "durationMs": 1378.411,
+            "id": "overdue-owner-handoff:paraphrase",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "paraphrase"
+          },
+          {
+            "durationMs": 1298.864,
+            "id": "payment-refund:canonical",
+            "scenarioId": "payment-refund",
+            "variationType": "canonical"
+          },
+          {
+            "durationMs": 1380.962,
+            "id": "payment-refund:hard-negative",
+            "scenarioId": "payment-refund",
+            "variationType": "hard-negative"
+          },
+          {
+            "durationMs": 1354.593,
+            "id": "payment-refund:korean",
+            "scenarioId": "payment-refund",
+            "variationType": "cross-language"
+          },
+          {
+            "durationMs": 1226.873,
+            "id": "payment-refund:noisy",
+            "scenarioId": "payment-refund",
+            "variationType": "noisy-query"
+          },
+          {
+            "durationMs": 1351.52,
+            "id": "payment-refund:paraphrase",
+            "scenarioId": "payment-refund",
+            "variationType": "paraphrase"
+          }
+        ],
+        "comparison": {
+          "baselineAlgorithmId": "hybrid-lexical-bm25-phrase-v1",
+          "candidateAlgorithmId": "local-relevance:ollama-independent-score:qwen2.5:3b",
+          "failures": [],
+          "status": "passed"
+        },
+        "costFree": true,
+        "coverage": {
+          "minimumCasesPerVariation": 3,
+          "minimumScenarioCount": 3,
+          "requiredVariationTypes": [
+            "canonical",
+            "paraphrase",
+            "noisy-query",
+            "cross-language",
+            "hard-negative"
+          ],
+          "matrixComplete": true,
+          "passed": true,
+          "scenarioCount": 3,
+          "variationCounts": {
+            "canonical": 3,
+            "paraphrase": 3,
+            "noisy-query": 3,
+            "cross-language": 3,
+            "hard-negative": 3
+          }
+        },
+        "decision": "hold-for-governance",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "latency": {
+          "caseCount": 15,
+          "maximumMs": 1462.735,
+          "p50Ms": 1368.541,
+          "p95Ms": 1462.735,
+          "totalMs": 20267.102
+        },
+        "model": {
+          "actualModelEvaluated": true,
+          "candidateEvidenceHash": "4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6",
+          "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "id": "qwen2.5:3b",
+          "qualificationHash": "c8261d343d20dcd4e69b7b77af7e257beef1518421bbb61b107a534fb514538c",
+          "qualificationStatus": "governance-blocked",
+          "qualified": false,
+          "source": "local-embedding-model-qualification"
+        },
+        "observedAt": "2026-07-16T13:43:02.644Z",
+        "productionReadyClaim": false,
+        "rollback": {
+          "mode": "lexical",
+          "stateMigrationRequired": false
+        },
+        "runtime": {
+          "cloudFeaturesDisabled": true,
+          "externalProviderCalls": "none",
+          "kind": "ollama",
+          "networkIsolation": "not-proven",
+          "transportLoopback": true,
+          "version": "0.23.0"
+        },
+        "scenarioMetrics": {
+          "authentication-recovery": {
+            "caseCount": 5,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "overdue-owner-handoff": {
+            "caseCount": 5,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "payment-refund": {
+            "caseCount": 5,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          }
+        },
+        "schemaVersion": "personal-ai-agent-retrieval-robustness-evaluation/v1",
+        "status": "passed-governance-blocked",
+        "variationMetrics": {
+          "canonical": {
+            "caseCount": 3,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "paraphrase": {
+            "caseCount": 3,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "noisy-query": {
+            "caseCount": 3,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "cross-language": {
+            "caseCount": 3,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "hard-negative": {
+            "caseCount": 3,
+            "casePassRate": 1,
+            "noiseRateAtK": 0,
+            "precisionAtK": 1,
+            "recallAtK": 1,
+            "sourceDiversityRate": 1,
+            "unlabeledRetrievedSourceCount": 0
+          }
+        },
+        "evaluationHash": "c80efb36cd4a7057135c43db0d6b181bd04a59ecefc02f1a265c87a100cdfd54",
+        "id": "local-retrieval-robustness-c80efb36cd4a7057135c43db0d6b181bd04a59ecefc02f1a265c87a100cdfd54"
+      },
+      "caseScores": [
+        {
+          "firstDurationMs": 1291.987,
+          "id": "authentication-recovery:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1297.236,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-office"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1373.946,
+          "id": "authentication-recovery:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1326.329,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-office"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1375.465,
+          "id": "authentication-recovery:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1390.035,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-office"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1297.457,
+          "id": "authentication-recovery:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1264.963,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-office"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1312.558,
+          "id": "authentication-recovery:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1306.691,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-office"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1462.735,
+          "id": "overdue-owner-handoff:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1400.056,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-travel"
+            },
+            {
+              "score": 80,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1368.541,
+          "id": "overdue-owner-handoff:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1418.775,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-travel"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1404.309,
+          "id": "overdue-owner-handoff:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1338.25,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-travel"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1388.881,
+          "id": "overdue-owner-handoff:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1372.737,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-travel"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1378.411,
+          "id": "overdue-owner-handoff:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1381.49,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-travel"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1298.864,
+          "id": "payment-refund:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1286.636,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-catering"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1380.962,
+          "id": "payment-refund:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1408.668,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-catering"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1354.593,
+          "id": "payment-refund:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1361.242,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-catering"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1226.873,
+          "id": "payment-refund:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1273.578,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-catering"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1351.52,
+          "id": "payment-refund:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1425.321,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-catering"
+            },
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        }
+      ],
+      "costFree": true,
+      "decision": "hold-for-governance",
+      "improvement": {
+        "overLexicalCasePassRate": 0.3333,
+        "overPriorCandidateCasePassRate": 0.4667
+      },
+      "latency": {
+        "modelInferenceCount": 90,
+        "maximumMs": 1462.735,
+        "p50Ms": 1361.242,
+        "p95Ms": 1425.321,
+        "rerankPassCount": 30,
+        "totalMs": 40519.109
+      },
+      "observedAt": "2026-07-16T13:43:02.644Z",
+      "priorEvaluation": {
+        "activation": {
+          "authorized": false,
+          "status": "blocked"
+        },
+        "actualLocalRetrievalRobustnessValidated": false,
+        "baseline": {
+          "algorithmId": "hybrid-lexical-bm25-phrase-v1",
+          "cases": [
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-auth-style"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-auth-style"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            }
+          ],
+          "failures": [
+            {
+              "actual": 0.6667,
+              "check": "case-pass-rate",
+              "required": 1
+            },
+            {
+              "actual": 0.6667,
+              "check": "precision-at-k",
+              "required": 1
+            },
+            {
+              "actual": 0.6667,
+              "check": "recall-at-k",
+              "required": 1
+            },
+            {
+              "actual": 0.6667,
+              "check": "source-diversity-rate",
+              "required": 1
+            },
+            {
+              "actual": 0.3333,
+              "check": "noise-rate-at-k",
+              "maximum": 0
+            }
+          ],
+          "metrics": {
+            "casePassRate": 0.6667,
+            "noiseRateAtK": 0.3333,
+            "precisionAtK": 0.6667,
+            "recallAtK": 0.6667,
+            "sourceDiversityRate": 0.6667,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "productionReadyClaim": false,
+          "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+          "status": "failed",
+          "thresholds": {
+            "maximumNoiseRateAtK": 0,
+            "maximumUnlabeledRetrievedSourceCount": 0,
+            "minimumCasePassRate": 1,
+            "minimumPrecisionAtK": 1,
+            "minimumRecallAtK": 1,
+            "minimumSourceDiversityRate": 1
+          },
+          "evaluationHash": "ce043d3fa20488115c6af2c13ada81614d47a3bf2c6a439aa80691e539c25cb3"
+        },
+        "candidate": {
+          "algorithmId": "semantic-lexical-weighted:ollama-local:qwen2.5:3b",
+          "cases": [
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-auth-style"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-auth-style"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-auth-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "authentication-recovery:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-handoff-calendar"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-handoff-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "overdue-owner-handoff:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [],
+                "retrievedIrrelevantSourceKeys": [],
+                "selectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:canonical",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 0,
+                "precisionAtK": 1,
+                "recallAtK": 1,
+                "sourceDiversityRate": 1,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "passed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:hard-negative",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:korean",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:noisy",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            },
+            {
+              "evidence": {
+                "missingExpectedSourceKeys": [
+                  "memory:memory-robust-refund-procedure"
+                ],
+                "retrievedIrrelevantSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "selectedSourceKeys": [
+                  "attachment:attachment-robust-refund-dashboard"
+                ],
+                "unlabeledRetrievedSourceKeys": []
+              },
+              "id": "payment-refund:paraphrase",
+              "k": 1,
+              "metrics": {
+                "noiseRateAtK": 1,
+                "precisionAtK": 0,
+                "recallAtK": 0,
+                "sourceDiversityRate": 0,
+                "unlabeledRetrievedSourceCount": 0
+              },
+              "status": "failed"
+            }
+          ],
+          "failures": [
+            {
+              "actual": 0.5333,
+              "check": "case-pass-rate",
+              "required": 1
+            },
+            {
+              "actual": 0.5333,
+              "check": "precision-at-k",
+              "required": 1
+            },
+            {
+              "actual": 0.5333,
+              "check": "recall-at-k",
+              "required": 1
+            },
+            {
+              "actual": 0.5333,
+              "check": "source-diversity-rate",
+              "required": 1
+            },
+            {
+              "actual": 0.4667,
+              "check": "noise-rate-at-k",
+              "maximum": 0
+            }
+          ],
+          "metrics": {
+            "casePassRate": 0.5333,
+            "noiseRateAtK": 0.4667,
+            "precisionAtK": 0.5333,
+            "recallAtK": 0.5333,
+            "sourceDiversityRate": 0.5333,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "productionReadyClaim": false,
+          "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+          "status": "failed",
+          "thresholds": {
+            "maximumNoiseRateAtK": 0,
+            "maximumUnlabeledRetrievedSourceCount": 0,
+            "minimumCasePassRate": 1,
+            "minimumPrecisionAtK": 1,
+            "minimumRecallAtK": 1,
+            "minimumSourceDiversityRate": 1
+          },
+          "evaluationHash": "f8748894de3184cc3d234cca86e9d3bb946af1d51564f9c57f8c19aaad908bcd"
+        },
+        "cases": [
+          {
+            "durationMs": 2237.239,
+            "id": "authentication-recovery:canonical",
+            "scenarioId": "authentication-recovery",
+            "variationType": "canonical"
+          },
+          {
+            "durationMs": 722.624,
+            "id": "authentication-recovery:hard-negative",
+            "scenarioId": "authentication-recovery",
+            "variationType": "hard-negative"
+          },
+          {
+            "durationMs": 732.836,
+            "id": "authentication-recovery:korean",
+            "scenarioId": "authentication-recovery",
+            "variationType": "cross-language"
+          },
+          {
+            "durationMs": 768.203,
+            "id": "authentication-recovery:noisy",
+            "scenarioId": "authentication-recovery",
+            "variationType": "noisy-query"
+          },
+          {
+            "durationMs": 742.687,
+            "id": "authentication-recovery:paraphrase",
+            "scenarioId": "authentication-recovery",
+            "variationType": "paraphrase"
+          },
+          {
+            "durationMs": 659.566,
+            "id": "overdue-owner-handoff:canonical",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "canonical"
+          },
+          {
+            "durationMs": 648.662,
+            "id": "overdue-owner-handoff:hard-negative",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "hard-negative"
+          },
+          {
+            "durationMs": 691.776,
+            "id": "overdue-owner-handoff:korean",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "cross-language"
+          },
+          {
+            "durationMs": 693.584,
+            "id": "overdue-owner-handoff:noisy",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "noisy-query"
+          },
+          {
+            "durationMs": 664.241,
+            "id": "overdue-owner-handoff:paraphrase",
+            "scenarioId": "overdue-owner-handoff",
+            "variationType": "paraphrase"
+          },
+          {
+            "durationMs": 734.169,
+            "id": "payment-refund:canonical",
+            "scenarioId": "payment-refund",
+            "variationType": "canonical"
+          },
+          {
+            "durationMs": 644.907,
+            "id": "payment-refund:hard-negative",
+            "scenarioId": "payment-refund",
+            "variationType": "hard-negative"
+          },
+          {
+            "durationMs": 703.063,
+            "id": "payment-refund:korean",
+            "scenarioId": "payment-refund",
+            "variationType": "cross-language"
+          },
+          {
+            "durationMs": 684.857,
+            "id": "payment-refund:noisy",
+            "scenarioId": "payment-refund",
+            "variationType": "noisy-query"
+          },
+          {
+            "durationMs": 715.89,
+            "id": "payment-refund:paraphrase",
+            "scenarioId": "payment-refund",
+            "variationType": "paraphrase"
+          }
+        ],
+        "comparison": {
+          "baselineAlgorithmId": "hybrid-lexical-bm25-phrase-v1",
+          "candidateAlgorithmId": "semantic-lexical-weighted:ollama-local:qwen2.5:3b",
+          "failures": [
+            {
+              "baseline": 0.6667,
+              "candidate": 0.5333,
+              "caseId": null,
+              "check": "regression:precisionAtK",
+              "direction": "higher"
+            },
+            {
+              "baseline": 0.6667,
+              "candidate": 0.5333,
+              "caseId": null,
+              "check": "regression:recallAtK",
+              "direction": "higher"
+            },
+            {
+              "baseline": 0.6667,
+              "candidate": 0.5333,
+              "caseId": null,
+              "check": "regression:sourceDiversityRate",
+              "direction": "higher"
+            },
+            {
+              "baseline": 0.3333,
+              "candidate": 0.4667,
+              "caseId": null,
+              "check": "regression:noiseRateAtK",
+              "direction": "lower"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0,
+              "caseId": "payment-refund:korean",
+              "check": "regression:precisionAtK",
+              "direction": "higher"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0,
+              "caseId": "payment-refund:korean",
+              "check": "regression:recallAtK",
+              "direction": "higher"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0,
+              "caseId": "payment-refund:korean",
+              "check": "regression:sourceDiversityRate",
+              "direction": "higher"
+            },
+            {
+              "baseline": 0,
+              "candidate": 1,
+              "caseId": "payment-refund:korean",
+              "check": "regression:noiseRateAtK",
+              "direction": "lower"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0,
+              "caseId": "payment-refund:noisy",
+              "check": "regression:precisionAtK",
+              "direction": "higher"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0,
+              "caseId": "payment-refund:noisy",
+              "check": "regression:recallAtK",
+              "direction": "higher"
+            },
+            {
+              "baseline": 1,
+              "candidate": 0,
+              "caseId": "payment-refund:noisy",
+              "check": "regression:sourceDiversityRate",
+              "direction": "higher"
+            },
+            {
+              "baseline": 0,
+              "candidate": 1,
+              "caseId": "payment-refund:noisy",
+              "check": "regression:noiseRateAtK",
+              "direction": "lower"
+            },
+            {
+              "actual": "failed",
+              "check": "candidate-gate",
+              "required": "passed"
+            }
+          ],
+          "status": "failed"
+        },
+        "costFree": true,
+        "coverage": {
+          "minimumCasesPerVariation": 3,
+          "minimumScenarioCount": 3,
+          "requiredVariationTypes": [
+            "canonical",
+            "paraphrase",
+            "noisy-query",
+            "cross-language",
+            "hard-negative"
+          ],
+          "matrixComplete": true,
+          "passed": true,
+          "scenarioCount": 3,
+          "variationCounts": {
+            "canonical": 3,
+            "paraphrase": 3,
+            "noisy-query": 3,
+            "cross-language": 3,
+            "hard-negative": 3
+          }
+        },
+        "decision": "keep-lexical",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "latency": {
+          "caseCount": 15,
+          "maximumMs": 2237.239,
+          "p50Ms": 703.063,
+          "p95Ms": 2237.239,
+          "totalMs": 12044.304
+        },
+        "model": {
+          "actualModelEvaluated": true,
+          "candidateEvidenceHash": "4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6",
+          "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+          "id": "qwen2.5:3b",
+          "qualificationHash": "c8261d343d20dcd4e69b7b77af7e257beef1518421bbb61b107a534fb514538c",
+          "qualificationStatus": "governance-blocked",
+          "qualified": false,
+          "source": "local-embedding-model-qualification"
+        },
+        "observedAt": "2026-07-16T13:03:00.231Z",
+        "productionReadyClaim": false,
+        "rollback": {
+          "mode": "lexical",
+          "stateMigrationRequired": false
+        },
+        "runtime": {
+          "cloudFeaturesDisabled": true,
+          "externalProviderCalls": "none",
+          "kind": "ollama",
+          "networkIsolation": "not-proven",
+          "transportLoopback": true,
+          "version": "0.23.0"
+        },
+        "scenarioMetrics": {
+          "authentication-recovery": {
+            "caseCount": 5,
+            "casePassRate": 0.8,
+            "noiseRateAtK": 0.2,
+            "precisionAtK": 0.8,
+            "recallAtK": 0.8,
+            "sourceDiversityRate": 0.8,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "overdue-owner-handoff": {
+            "caseCount": 5,
+            "casePassRate": 0.6,
+            "noiseRateAtK": 0.4,
+            "precisionAtK": 0.6,
+            "recallAtK": 0.6,
+            "sourceDiversityRate": 0.6,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "payment-refund": {
+            "caseCount": 5,
+            "casePassRate": 0.2,
+            "noiseRateAtK": 0.8,
+            "precisionAtK": 0.2,
+            "recallAtK": 0.2,
+            "sourceDiversityRate": 0.2,
+            "unlabeledRetrievedSourceCount": 0
+          }
+        },
+        "schemaVersion": "personal-ai-agent-retrieval-robustness-evaluation/v1",
+        "status": "failed-keep-lexical",
+        "variationMetrics": {
+          "canonical": {
+            "caseCount": 3,
+            "casePassRate": 0.6667,
+            "noiseRateAtK": 0.3333,
+            "precisionAtK": 0.6667,
+            "recallAtK": 0.6667,
+            "sourceDiversityRate": 0.6667,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "paraphrase": {
+            "caseCount": 3,
+            "casePassRate": 0.6667,
+            "noiseRateAtK": 0.3333,
+            "precisionAtK": 0.6667,
+            "recallAtK": 0.6667,
+            "sourceDiversityRate": 0.6667,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "noisy-query": {
+            "caseCount": 3,
+            "casePassRate": 0.6667,
+            "noiseRateAtK": 0.3333,
+            "precisionAtK": 0.6667,
+            "recallAtK": 0.6667,
+            "sourceDiversityRate": 0.6667,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "cross-language": {
+            "caseCount": 3,
+            "casePassRate": 0.6667,
+            "noiseRateAtK": 0.3333,
+            "precisionAtK": 0.6667,
+            "recallAtK": 0.6667,
+            "sourceDiversityRate": 0.6667,
+            "unlabeledRetrievedSourceCount": 0
+          },
+          "hard-negative": {
+            "caseCount": 3,
+            "casePassRate": 0,
+            "noiseRateAtK": 1,
+            "precisionAtK": 0,
+            "recallAtK": 0,
+            "sourceDiversityRate": 0,
+            "unlabeledRetrievedSourceCount": 0
+          }
+        },
+        "evaluationHash": "4e17af990fea096551c2f272f8193744e9806e74b21a08da7effb0b543cb2c3e",
+        "id": "local-retrieval-robustness-4e17af990fea096551c2f272f8193744e9806e74b21a08da7effb0b543cb2c3e"
+      },
+      "productionReadyClaim": false,
+      "rollback": {
+        "mode": "lexical",
+        "stateMigrationRequired": false
+      },
+      "runtime": {
+        "cloudFeaturesDisabled": true,
+        "externalProviderCalls": "none",
+        "kind": "ollama",
+        "networkIsolation": "not-proven",
+        "transportLoopback": true,
+        "version": "0.23.0"
+      },
+      "runtimeActivation": false,
+      "schemaVersion": "personal-ai-agent-local-relevance-reranker-evaluation/v1",
+      "scorer": {
+        "id": "ollama-independent-score:qwen2.5:3b",
+        "independentPairScoring": true,
+        "modelId": "qwen2.5:3b",
+        "outputSchema": "integer-score-0-100",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "repeatedPairScoring": true,
+        "untrustedInputBoundary": true
+      },
+      "status": "quality-passed-governance-blocked",
+      "evaluationHash": "1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a",
+      "id": "local-relevance-reranker-evaluation-1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a"
+    },
+    "productionReadyClaim": false,
+    "qualityParity": true,
+    "repeatStable": true,
+    "resourceSnapshot": {
+      "contextLength": 4096,
+      "loadedModelBytes": 2390300672,
+      "loadedModelVramBytes": 2390300672,
+      "modelArtifactBytes": 1929912432,
+      "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+      "modelId": "qwen2.5:3b",
+      "source": "ollama-api-ps"
+    },
+    "rollback": {
+      "primary": "r8-full-scan",
+      "secondary": "lexical",
+      "stateMigrationRequired": false
+    },
+    "runtime": {
+      "cloudFeaturesDisabled": true,
+      "externalProviderCalls": "none",
+      "kind": "ollama",
+      "networkIsolation": "not-proven",
+      "transportLoopback": true,
+      "version": "0.23.0"
+    },
+    "runtimeActivation": false,
+    "schemaVersion": "personal-ai-agent-local-reranker-resource-envelope/v1",
+    "scorer": {
+      "id": "ollama-independent-score:qwen2.5:3b",
+      "modelId": "qwen2.5:3b",
+      "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+      "promptVersion": "personal-ai-agent-local-relevance-prompt/v1"
+    },
+    "selectionRecords": [
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-auth-office"
+        ],
+        "expectedSourceRetained": true,
+        "id": "authentication-recovery:canonical",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-auth-procedure",
+          "attachment:attachment-robust-auth-style"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-auth-office"
+        ],
+        "expectedSourceRetained": true,
+        "id": "authentication-recovery:hard-negative",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "attachment:attachment-robust-auth-style",
+          "memory:memory-robust-auth-procedure"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-auth-office"
+        ],
+        "expectedSourceRetained": true,
+        "id": "authentication-recovery:korean",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-auth-procedure",
+          "attachment:attachment-robust-auth-style"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-auth-office"
+        ],
+        "expectedSourceRetained": true,
+        "id": "authentication-recovery:noisy",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-auth-procedure",
+          "attachment:attachment-robust-auth-style"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-auth-office"
+        ],
+        "expectedSourceRetained": true,
+        "id": "authentication-recovery:paraphrase",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-auth-procedure",
+          "attachment:attachment-robust-auth-style"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-handoff-travel"
+        ],
+        "expectedSourceRetained": true,
+        "id": "overdue-owner-handoff:canonical",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "attachment:attachment-robust-handoff-calendar",
+          "memory:memory-robust-handoff-procedure"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-handoff-travel"
+        ],
+        "expectedSourceRetained": true,
+        "id": "overdue-owner-handoff:hard-negative",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "attachment:attachment-robust-handoff-calendar",
+          "memory:memory-robust-handoff-procedure"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-handoff-travel"
+        ],
+        "expectedSourceRetained": true,
+        "id": "overdue-owner-handoff:korean",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-handoff-procedure",
+          "attachment:attachment-robust-handoff-calendar"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-handoff-travel"
+        ],
+        "expectedSourceRetained": true,
+        "id": "overdue-owner-handoff:noisy",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-handoff-procedure",
+          "attachment:attachment-robust-handoff-calendar"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-handoff-travel"
+        ],
+        "expectedSourceRetained": true,
+        "id": "overdue-owner-handoff:paraphrase",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-handoff-procedure",
+          "attachment:attachment-robust-handoff-calendar"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-refund-catering"
+        ],
+        "expectedSourceRetained": true,
+        "id": "payment-refund:canonical",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-refund-procedure",
+          "attachment:attachment-robust-refund-dashboard"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-refund-catering"
+        ],
+        "expectedSourceRetained": true,
+        "id": "payment-refund:hard-negative",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "attachment:attachment-robust-refund-dashboard",
+          "memory:memory-robust-refund-procedure"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-refund-catering"
+        ],
+        "expectedSourceRetained": true,
+        "id": "payment-refund:korean",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-refund-procedure",
+          "attachment:attachment-robust-refund-dashboard"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-refund-catering"
+        ],
+        "expectedSourceRetained": true,
+        "id": "payment-refund:noisy",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "memory:memory-robust-refund-procedure",
+          "attachment:attachment-robust-refund-dashboard"
+        ],
+        "stateMigrationRequired": false
+      },
+      {
+        "algorithmId": "lexical-baseline-prefix-v1",
+        "droppedSourceKeys": [
+          "attachment:attachment-robust-refund-catering"
+        ],
+        "expectedSourceRetained": true,
+        "id": "payment-refund:paraphrase",
+        "inputCandidateCount": 3,
+        "maxCandidates": 2,
+        "selectedCandidateCount": 2,
+        "selectedSourceKeys": [
+          "attachment:attachment-robust-refund-dashboard",
+          "memory:memory-robust-refund-procedure"
+        ],
+        "stateMigrationRequired": false
+      }
+    ],
+    "shortlistCoveragePassed": true,
+    "status": "resource-envelope-passed-governance-blocked",
+    "envelopeHash": "17491e6acf458d599697306945c5ee944a8a2ffca40eaf18ffb45fa072618e03",
+    "id": "local-reranker-resource-envelope-17491e6acf458d599697306945c5ee944a8a2ffca40eaf18ffb45fa072618e03"
+  },
+  "productionReadyClaim": false,
+  "qualityParity": true,
+  "resourceStable": true,
+  "rollback": {
+    "primary": "r9-shortlist",
+    "secondary": "r8-full-scan",
+    "stateMigrationRequired": false,
+    "tertiary": "lexical"
+  },
+  "runContract": {
+    "coldRunCount": 1,
+    "concurrentRunCount": 2,
+    "expectedModelInferenceCount": 360,
+    "totalRunCount": 6,
+    "warmRunCount": 3
+  },
+  "runs": [
+    {
+      "binding": {
+        "candidateEvaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "priorEvaluationHash": "1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "caseScores": [
+        {
+          "firstDurationMs": 2674.905,
+          "id": "authentication-recovery:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 957.604,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1109.477,
+          "id": "authentication-recovery:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1005.753,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1065.547,
+          "id": "authentication-recovery:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1066.206,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 976.672,
+          "id": "authentication-recovery:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1027.553,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 956.534,
+          "id": "authentication-recovery:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 953.963,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1014.039,
+          "id": "overdue-owner-handoff:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1007.276,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 80,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 996.808,
+          "id": "overdue-owner-handoff:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 990.783,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 986.705,
+          "id": "overdue-owner-handoff:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 986.265,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 970.038,
+          "id": "overdue-owner-handoff:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 963.955,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 961.722,
+          "id": "overdue-owner-handoff:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 953.755,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1057.735,
+          "id": "payment-refund:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1002.359,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1017.681,
+          "id": "payment-refund:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 994.7,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 981.589,
+          "id": "payment-refund:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1009.285,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 996.733,
+          "id": "payment-refund:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 966.299,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 992.903,
+          "id": "payment-refund:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 974.899,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        }
+      ],
+      "id": "cold-1",
+      "lane": "cold",
+      "latency": {
+        "maximumMs": 2674.905,
+        "modelInferenceCount": 60,
+        "p50Ms": 992.903,
+        "p95Ms": 1109.477,
+        "rerankPassCount": 30,
+        "totalMs": 31619.743
+      },
+      "observedAt": "2026-07-16T14:45:16.794Z",
+      "quality": {
+        "candidateStatus": "passed",
+        "qualityParity": true,
+        "repeatStable": true,
+        "shortlistCoveragePassed": true
+      },
+      "resourceEnvelopeHash": "7beaf1c96faad8c0666e040b4431ec90a9ed0ac8993c6e4c83f8da73526736b0",
+      "resourceEnvelopeStatus": "resource-envelope-passed-governance-blocked",
+      "resourceSnapshot": {
+        "contextLength": 4096,
+        "loadedModelBytes": 2390300672,
+        "loadedModelVramBytes": 2390300672,
+        "modelArtifactBytes": 1929912432,
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "source": "ollama-api-ps"
+      },
+      "wallDurationMs": 31625.968,
+      "workerIndex": null
+    },
+    {
+      "binding": {
+        "candidateEvaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "priorEvaluationHash": "1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "caseScores": [
+        {
+          "firstDurationMs": 982.949,
+          "id": "authentication-recovery:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 977.92,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 951.012,
+          "id": "authentication-recovery:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 950.92,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1009.883,
+          "id": "authentication-recovery:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1006.433,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 969.231,
+          "id": "authentication-recovery:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1001.55,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 969.367,
+          "id": "authentication-recovery:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 958.488,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1063.229,
+          "id": "overdue-owner-handoff:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1000.816,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 80,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1001.705,
+          "id": "overdue-owner-handoff:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 987.045,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 996.128,
+          "id": "overdue-owner-handoff:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 997.995,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 996.421,
+          "id": "overdue-owner-handoff:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 998.398,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 964.265,
+          "id": "overdue-owner-handoff:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 979.072,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 960.82,
+          "id": "payment-refund:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 976.954,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 982.929,
+          "id": "payment-refund:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 976.981,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 962.205,
+          "id": "payment-refund:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 959.311,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1000.136,
+          "id": "payment-refund:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 996.845,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 968.712,
+          "id": "payment-refund:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 999.536,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        }
+      ],
+      "id": "warm-1",
+      "lane": "warm",
+      "latency": {
+        "maximumMs": 1063.229,
+        "modelInferenceCount": 60,
+        "p50Ms": 982.929,
+        "p95Ms": 1009.883,
+        "rerankPassCount": 30,
+        "totalMs": 29547.256
+      },
+      "observedAt": "2026-07-16T14:45:48.424Z",
+      "quality": {
+        "candidateStatus": "passed",
+        "qualityParity": true,
+        "repeatStable": true,
+        "shortlistCoveragePassed": true
+      },
+      "resourceEnvelopeHash": "e680e83906bde59aa13b9dc53147a1950516293b543c21c8adeb408cded3f57b",
+      "resourceEnvelopeStatus": "resource-envelope-passed-governance-blocked",
+      "resourceSnapshot": {
+        "contextLength": 4096,
+        "loadedModelBytes": 2390300672,
+        "loadedModelVramBytes": 2390300672,
+        "modelArtifactBytes": 1929912432,
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "source": "ollama-api-ps"
+      },
+      "wallDurationMs": 29549.661,
+      "workerIndex": null
+    },
+    {
+      "binding": {
+        "candidateEvaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "priorEvaluationHash": "1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "caseScores": [
+        {
+          "firstDurationMs": 970.526,
+          "id": "authentication-recovery:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 980.037,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 947.412,
+          "id": "authentication-recovery:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 951.563,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1006.495,
+          "id": "authentication-recovery:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1042.005,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 962.291,
+          "id": "authentication-recovery:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1012.01,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 958.605,
+          "id": "authentication-recovery:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1026.377,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 971.487,
+          "id": "overdue-owner-handoff:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 971.984,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 80,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 968.462,
+          "id": "overdue-owner-handoff:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 970.952,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1003.771,
+          "id": "overdue-owner-handoff:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 967.898,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 957.636,
+          "id": "overdue-owner-handoff:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 957.928,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 938.488,
+          "id": "overdue-owner-handoff:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 940.278,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 973.855,
+          "id": "payment-refund:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 965.351,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 945.891,
+          "id": "payment-refund:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 946.856,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 952.719,
+          "id": "payment-refund:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 936.751,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 936.816,
+          "id": "payment-refund:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 959.74,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 951.461,
+          "id": "payment-refund:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 944.277,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        }
+      ],
+      "id": "warm-2",
+      "lane": "warm",
+      "latency": {
+        "maximumMs": 1042.005,
+        "modelInferenceCount": 60,
+        "p50Ms": 959.74,
+        "p95Ms": 1026.377,
+        "rerankPassCount": 30,
+        "totalMs": 29019.922
+      },
+      "observedAt": "2026-07-16T14:46:17.976Z",
+      "quality": {
+        "candidateStatus": "passed",
+        "qualityParity": true,
+        "repeatStable": true,
+        "shortlistCoveragePassed": true
+      },
+      "resourceEnvelopeHash": "212c2364b338194976f63e8dbc4f3983f7186ff175c1a385cbc490c3966c94dc",
+      "resourceEnvelopeStatus": "resource-envelope-passed-governance-blocked",
+      "resourceSnapshot": {
+        "contextLength": 4096,
+        "loadedModelBytes": 2390300672,
+        "loadedModelVramBytes": 2390300672,
+        "modelArtifactBytes": 1929912432,
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "source": "ollama-api-ps"
+      },
+      "wallDurationMs": 29022.11,
+      "workerIndex": null
+    },
+    {
+      "binding": {
+        "candidateEvaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "priorEvaluationHash": "1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "caseScores": [
+        {
+          "firstDurationMs": 944.595,
+          "id": "authentication-recovery:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 936.679,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 948.512,
+          "id": "authentication-recovery:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 946.45,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1000.44,
+          "id": "authentication-recovery:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1003.22,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 965.496,
+          "id": "authentication-recovery:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 953.061,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 933.443,
+          "id": "authentication-recovery:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 940.126,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 971.73,
+          "id": "overdue-owner-handoff:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 965.172,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 80,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 998.941,
+          "id": "overdue-owner-handoff:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1015.536,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 977.377,
+          "id": "overdue-owner-handoff:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 970.094,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 939.09,
+          "id": "overdue-owner-handoff:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 947.625,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 939.195,
+          "id": "overdue-owner-handoff:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 934.496,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 939.663,
+          "id": "payment-refund:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 937.393,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 965.084,
+          "id": "payment-refund:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 956.891,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 939.705,
+          "id": "payment-refund:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 976.494,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 955.207,
+          "id": "payment-refund:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 961.432,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 932.241,
+          "id": "payment-refund:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 960.392,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        }
+      ],
+      "id": "warm-3",
+      "lane": "warm",
+      "latency": {
+        "maximumMs": 1015.536,
+        "modelInferenceCount": 60,
+        "p50Ms": 953.061,
+        "p95Ms": 1003.22,
+        "rerankPassCount": 30,
+        "totalMs": 28755.78
+      },
+      "observedAt": "2026-07-16T14:46:47.000Z",
+      "quality": {
+        "candidateStatus": "passed",
+        "qualityParity": true,
+        "repeatStable": true,
+        "shortlistCoveragePassed": true
+      },
+      "resourceEnvelopeHash": "7134a0f2055cc7b92ba253589b78a485294df4f99b1c5f3ef9bb759198d1861b",
+      "resourceEnvelopeStatus": "resource-envelope-passed-governance-blocked",
+      "resourceSnapshot": {
+        "contextLength": 4096,
+        "loadedModelBytes": 2390300672,
+        "loadedModelVramBytes": 2390300672,
+        "modelArtifactBytes": 1929912432,
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "source": "ollama-api-ps"
+      },
+      "wallDurationMs": 28757.527,
+      "workerIndex": null
+    },
+    {
+      "binding": {
+        "candidateEvaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "priorEvaluationHash": "1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "caseScores": [
+        {
+          "firstDurationMs": 1575.165,
+          "id": "authentication-recovery:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1467.096,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1480.48,
+          "id": "authentication-recovery:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1467.609,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1579.842,
+          "id": "authentication-recovery:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1619.656,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1465.149,
+          "id": "authentication-recovery:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1493.501,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1463.447,
+          "id": "authentication-recovery:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1460.063,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1530.339,
+          "id": "overdue-owner-handoff:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1536.09,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 80,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1531.284,
+          "id": "overdue-owner-handoff:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1557.438,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1580.944,
+          "id": "overdue-owner-handoff:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1549.964,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1471.078,
+          "id": "overdue-owner-handoff:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1496.231,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1457.275,
+          "id": "overdue-owner-handoff:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1470.318,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1466.726,
+          "id": "payment-refund:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1474.372,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1496.988,
+          "id": "payment-refund:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1498.992,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1477.44,
+          "id": "payment-refund:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1509.05,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1504.764,
+          "id": "payment-refund:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1496.894,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1540.589,
+          "id": "payment-refund:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1524.406,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        }
+      ],
+      "id": "concurrent-1",
+      "lane": "concurrent",
+      "latency": {
+        "maximumMs": 1619.656,
+        "modelInferenceCount": 60,
+        "p50Ms": 1496.894,
+        "p95Ms": 1580.944,
+        "rerankPassCount": 30,
+        "totalMs": 45243.19
+      },
+      "observedAt": "2026-07-16T14:47:15.760Z",
+      "quality": {
+        "candidateStatus": "passed",
+        "qualityParity": true,
+        "repeatStable": true,
+        "shortlistCoveragePassed": true
+      },
+      "resourceEnvelopeHash": "31b4917f7288fdf8233e7ae63099f294ef12e169ab0b53d7ad682397c80e889b",
+      "resourceEnvelopeStatus": "failed-keep-r8-full-scan",
+      "resourceSnapshot": {
+        "contextLength": 4096,
+        "loadedModelBytes": 2390300672,
+        "loadedModelVramBytes": 2390300672,
+        "modelArtifactBytes": 1929912432,
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "source": "ollama-api-ps"
+      },
+      "wallDurationMs": 45245.096,
+      "workerIndex": 1
+    },
+    {
+      "binding": {
+        "candidateEvaluationHash": "657ead5f3d7cc4fabfdc94833fdb5273665d0a800e22ea2d92da77f777737d5e",
+        "fixtureHash": "cff07ee15490c57b8a7842d63ac860c03d490f9594307d72baa66ee34331f13e",
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "priorEvaluationHash": "1461e0cc96f752d34ad4bf38a0fe1ad5dfc7731261057eb1538488923147c00a",
+        "promptHash": "72d75d6f301ec30f3c7a63cdbf8fc46e61ed0bf1cf1b0aded88ede1197f5e900",
+        "promptVersion": "personal-ai-agent-local-relevance-prompt/v1",
+        "scorerId": "ollama-independent-score:qwen2.5:3b"
+      },
+      "caseScores": [
+        {
+          "firstDurationMs": 1224.099,
+          "id": "authentication-recovery:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1498.931,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1501.714,
+          "id": "authentication-recovery:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1465.032,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1577.729,
+          "id": "authentication-recovery:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1604.741,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1463.361,
+          "id": "authentication-recovery:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1492.263,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1455.61,
+          "id": "authentication-recovery:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1459.65,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-auth-style"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-auth-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1533.811,
+          "id": "overdue-owner-handoff:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1541.549,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 80,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1549.44,
+          "id": "overdue-owner-handoff:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1543.486,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1601.081,
+          "id": "overdue-owner-handoff:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1553.049,
+          "sourceScores": [
+            {
+              "score": 10,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1465.514,
+          "id": "overdue-owner-handoff:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1471.502,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1451.173,
+          "id": "overdue-owner-handoff:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1473.241,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-handoff-calendar"
+            },
+            {
+              "score": 70,
+              "sourceKey": "memory:memory-robust-handoff-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1463.076,
+          "id": "payment-refund:canonical",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1475.528,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1513.138,
+          "id": "payment-refund:hard-negative",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1495.079,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 30,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1481.796,
+          "id": "payment-refund:korean",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1491.821,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1513.139,
+          "id": "payment-refund:noisy",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1502.008,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        },
+        {
+          "firstDurationMs": 1522.869,
+          "id": "payment-refund:paraphrase",
+          "repeatedScoreMatch": true,
+          "secondDurationMs": 1527.643,
+          "sourceScores": [
+            {
+              "score": 0,
+              "sourceKey": "attachment:attachment-robust-refund-dashboard"
+            },
+            {
+              "score": 90,
+              "sourceKey": "memory:memory-robust-refund-procedure"
+            }
+          ]
+        }
+      ],
+      "id": "concurrent-2",
+      "lane": "concurrent",
+      "latency": {
+        "maximumMs": 1604.741,
+        "modelInferenceCount": 60,
+        "p50Ms": 1495.079,
+        "p95Ms": 1601.081,
+        "rerankPassCount": 30,
+        "totalMs": 44913.073
+      },
+      "observedAt": "2026-07-16T14:47:15.761Z",
+      "quality": {
+        "candidateStatus": "passed",
+        "qualityParity": true,
+        "repeatStable": true,
+        "shortlistCoveragePassed": true
+      },
+      "resourceEnvelopeHash": "9b428030319efe0647d37c5fadd287ac92ad65fb2cc42f11d467769aa423e658",
+      "resourceEnvelopeStatus": "failed-keep-r8-full-scan",
+      "resourceSnapshot": {
+        "contextLength": 4096,
+        "loadedModelBytes": 2390300672,
+        "loadedModelVramBytes": 2390300672,
+        "modelArtifactBytes": 1929912432,
+        "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+        "modelId": "qwen2.5:3b",
+        "source": "ollama-api-ps"
+      },
+      "wallDurationMs": 44915.317,
+      "workerIndex": 2
+    }
+  ],
+  "runtime": {
+    "cloudFeaturesDisabled": true,
+    "externalProviderCalls": "none",
+    "kind": "ollama",
+    "networkIsolation": "not-proven",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-reranker-runtime-stability/v1",
+  "status": "bounded-runtime-stability-passed-governance-blocked",
+  "thresholds": {
+    "concurrencyP95MaximumWarmMultiplier": 2.5,
+    "warmP95MaximumDriftRate": 0.25,
+    "warmP95MaximumR9Multiplier": 1.25
+  },
+  "id": "local-reranker-runtime-stability-1b4990236b67b9dfe68c9497a0207d185d8c5fb1b93ad8bf0ee81f83fc5bd4ea",
+  "stabilityHash": "1b4990236b67b9dfe68c9497a0207d185d8c5fb1b93ad8bf0ee81f83fc5bd4ea"
+}

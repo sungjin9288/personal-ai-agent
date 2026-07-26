@@ -1,0 +1,554 @@
+{
+  "actualWorkspaceLearningConflictRevocationValidated": true,
+  "costFree": true,
+  "externalProviderCalls": "none",
+  "fixtureBinding": {
+    "caseId": "workspace-decision-conflict-revocation",
+    "fixtureHash": "23985a5d9c8329f3cc30bd515d76194ff153aaa5cc54960b3d7c40a9501af24c",
+    "newerObjectiveHash": "27a4f2f37c2e7206881e22bf4b7fa9b9e13d04b0b6e40043a3c4eae7383cbbf4",
+    "newerPromotionNoteHash": "841707a6a5ec6e071d51f0977b88fcc524c4d10f6b2ada708a68bf5ccb32555a",
+    "newerScopeAuthorizationNoteHash": "47df3b9a21aee7fcfde5e3d382beee0d9b4ac461c7a726f72e671b907d5ee4ff",
+    "olderObjectiveHash": "ca4852485cb20c3666d5c6e68c16f0df16de219bc4580101dabd57b481e96a11",
+    "olderPromotionNoteHash": "51ce4023d9a85a4f3ef41d5493b328d96df8cf5c9222d92921ff405f58983650",
+    "olderScopeAuthorizationNoteHash": "dd7fd3b612da9694a694ae38c5efb02c269141c31a86ccde732085dc9c19f6fb",
+    "targetObjectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+    "bindingHash": "aecf3200ae8fa3e303d8b6e946414db1955bdcbf36c7b4f96d25bf8f9a750798"
+  },
+  "lifecycle": {
+    "newer": {
+      "authorizationAt": "2026-07-16T21:28:59.361Z",
+      "candidateId": "learningcandidate_20260716212859_c6333a",
+      "memoryId": "memory_20260716212859_8136a2",
+      "missionId": "mission_20260716212858_54934a",
+      "promotionAt": "2026-07-16T21:28:59.404Z",
+      "rollbackAt": "2026-07-16T21:28:59.663Z",
+      "scopeAuthorizationId": "learningcandidate_20260716212859_c6333a:scope-authorization:workspace"
+    },
+    "older": {
+      "authorizationAt": "2026-07-16T21:28:59.176Z",
+      "candidateId": "learningcandidate_20260716212858_b8076a",
+      "memoryId": "memory_20260716212859_e541d3",
+      "missionId": "mission_20260716212858_ac5539",
+      "promotionAt": "2026-07-16T21:28:59.217Z",
+      "rollbackAt": "2026-07-16T21:28:59.836Z",
+      "scopeAuthorizationId": "learningcandidate_20260716212858_b8076a:scope-authorization:workspace"
+    }
+  },
+  "observedAt": "2026-07-16T21:29:00.792Z",
+  "phases": {
+    "afterFullRollback": {
+      "artifacts": {
+        "deliverableHash": "319ebb9e6ddfe0d18ec0c9b889de2a63beae938418528d5a33dd8501e2d71a72",
+        "plannerHash": "7cbd1aa559880528eb7c93f600241f508173d85b9ddde360aebfd32ff455b485",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716212859_a46aa0",
+      "status": "completed"
+    },
+    "afterNewerRevocation": {
+      "artifacts": {
+        "deliverableHash": "b09f50fe3feb7b1c64c6b97201919549c75cdb3cb9a33cf602938fa0030956f9",
+        "plannerHash": "eb3faf4de3f03d9826161a330e28b43c3064afa87f14ca5733b85a5cd068d907",
+        "retrievalHash": "255e220a165b61843e6bdec7db33d92c50463348498952af9e80ca5e0a27f5ea"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        }
+      },
+      "planStepCount": 4,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+        "matchTermCount": 4,
+        "scope": "workspace",
+        "scopeId": "workspace_20260716212858_58eaea",
+        "sourceId": "memory_20260716212859_e541d3"
+      },
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 1,
+        "candidates": [
+          {
+            "contentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+            "effectiveAt": "2026-07-16T21:28:59.218Z",
+            "memoryId": "memory_20260716212859_e541d3",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          }
+        ],
+        "policyId": "workspace-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "reason": "latest effective timestamp, then descending memory id",
+        "schemaVersion": "personal-ai-agent-workspace-learning-selection/v1",
+        "selectedContentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+        "selectedMemoryId": "memory_20260716212859_e541d3",
+        "status": "selected",
+        "workspaceId": "workspace_20260716212858_58eaea"
+      },
+      "sessionId": "session_20260716212859_e9b954",
+      "status": "completed"
+    },
+    "baseline": {
+      "artifacts": {
+        "deliverableHash": "319ebb9e6ddfe0d18ec0c9b889de2a63beae938418528d5a33dd8501e2d71a72",
+        "plannerHash": "7cbd1aa559880528eb7c93f600241f508173d85b9ddde360aebfd32ff455b485",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716212859_54356c",
+      "status": "completed"
+    },
+    "conflict": {
+      "artifacts": {
+        "deliverableHash": "998dc8a2a88f25e9eba6dca0d3242d2835e5c37d61f56b00844a2dccc080cecf",
+        "plannerHash": "bfb6635414bea6688a889e2395c305ff90d39e385f752d06e9d82681e461e6ed",
+        "retrievalHash": "3fcf81e8f8dba68a327b9681228ef2802954e128e44f4f32fe098c6588b19e2c"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 4,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "54ba00882e129c3412bea80c93b5f6a7d0660610cf5260bcdffd9d1057ca89c0",
+        "matchTermCount": 5,
+        "scope": "workspace",
+        "scopeId": "workspace_20260716212858_58eaea",
+        "sourceId": "memory_20260716212859_8136a2"
+      },
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "54ba00882e129c3412bea80c93b5f6a7d0660610cf5260bcdffd9d1057ca89c0",
+            "effectiveAt": "2026-07-16T21:28:59.404Z",
+            "memoryId": "memory_20260716212859_8136a2",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          },
+          {
+            "contentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+            "effectiveAt": "2026-07-16T21:28:59.218Z",
+            "memoryId": "memory_20260716212859_e541d3",
+            "priority": 2,
+            "retrievalRank": 2,
+            "selected": false
+          }
+        ],
+        "policyId": "workspace-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "reason": "latest effective timestamp, then descending memory id",
+        "schemaVersion": "personal-ai-agent-workspace-learning-selection/v1",
+        "selectedContentHash": "54ba00882e129c3412bea80c93b5f6a7d0660610cf5260bcdffd9d1057ca89c0",
+        "selectedMemoryId": "memory_20260716212859_8136a2",
+        "status": "selected",
+        "workspaceId": "workspace_20260716212858_58eaea"
+      },
+      "sessionId": "session_20260716212859_6ffb06",
+      "status": "completed"
+    },
+    "foreignConflict": {
+      "artifacts": {
+        "deliverableHash": "8c12b5dd78afc36449fdc50380ab04343a6577824c6045605c5bfc27ad496c2f",
+        "plannerHash": "257f1afc2856a3740399c22b35d90d45fef40df81723a448619bfd97d8bc6eb2",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716212859_7dca0f",
+      "status": "completed"
+    },
+    "olderOnly": {
+      "artifacts": {
+        "deliverableHash": "b09f50fe3feb7b1c64c6b97201919549c75cdb3cb9a33cf602938fa0030956f9",
+        "plannerHash": "eb3faf4de3f03d9826161a330e28b43c3064afa87f14ca5733b85a5cd068d907",
+        "retrievalHash": "255e220a165b61843e6bdec7db33d92c50463348498952af9e80ca5e0a27f5ea"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        }
+      },
+      "planStepCount": 4,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+        "matchTermCount": 4,
+        "scope": "workspace",
+        "scopeId": "workspace_20260716212858_58eaea",
+        "sourceId": "memory_20260716212859_e541d3"
+      },
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 1,
+        "candidates": [
+          {
+            "contentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+            "effectiveAt": "2026-07-16T21:28:59.218Z",
+            "memoryId": "memory_20260716212859_e541d3",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          }
+        ],
+        "policyId": "workspace-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "reason": "latest effective timestamp, then descending memory id",
+        "schemaVersion": "personal-ai-agent-workspace-learning-selection/v1",
+        "selectedContentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+        "selectedMemoryId": "memory_20260716212859_e541d3",
+        "status": "selected",
+        "workspaceId": "workspace_20260716212858_58eaea"
+      },
+      "sessionId": "session_20260716212859_b38dbc",
+      "status": "completed"
+    }
+  },
+  "productionReadyClaim": false,
+  "promotions": {
+    "newer": {
+      "candidateId": "learningcandidate_20260716212859_c6333a",
+      "finalStatus": "rolled-back",
+      "memoryContentHash": "54ba00882e129c3412bea80c93b5f6a7d0660610cf5260bcdffd9d1057ca89c0",
+      "memoryCreatedAt": "2026-07-16T21:28:59.404Z",
+      "memoryId": "memory_20260716212859_8136a2",
+      "memoryRollbackStatus": "memory-deleted",
+      "promotionDecisionNoteHash": "841707a6a5ec6e071d51f0977b88fcc524c4d10f6b2ada708a68bf5ccb32555a",
+      "rollbackAction": "delete-memory-entry",
+      "rollbackStatus": "completed",
+      "scope": "workspace",
+      "scopeAuthorizationFromScope": "mission",
+      "scopeAuthorizationFromScopeId": "mission_20260716212858_54934a",
+      "scopeAuthorizationId": "learningcandidate_20260716212859_c6333a:scope-authorization:workspace",
+      "scopeAuthorizationNoteHash": "47df3b9a21aee7fcfde5e3d382beee0d9b4ac461c7a726f72e671b907d5ee4ff",
+      "scopeAuthorizationStatus": "consumed",
+      "scopeAuthorizationToScope": "workspace",
+      "scopeAuthorizationToScopeId": "workspace_20260716212858_58eaea",
+      "scopeId": "workspace_20260716212858_58eaea",
+      "target": "memory",
+      "verificationId": "learningcandidate_20260716212859_c6333a:promotion-verification:approve",
+      "verificationStatus": "passed"
+    },
+    "older": {
+      "candidateId": "learningcandidate_20260716212858_b8076a",
+      "finalStatus": "rolled-back",
+      "memoryContentHash": "0e95f8a2163fb012ecafc943530ffd674b815b5dfd7b1037710d03c47e163292",
+      "memoryCreatedAt": "2026-07-16T21:28:59.218Z",
+      "memoryId": "memory_20260716212859_e541d3",
+      "memoryRollbackStatus": "memory-deleted",
+      "promotionDecisionNoteHash": "51ce4023d9a85a4f3ef41d5493b328d96df8cf5c9222d92921ff405f58983650",
+      "rollbackAction": "delete-memory-entry",
+      "rollbackStatus": "completed",
+      "scope": "workspace",
+      "scopeAuthorizationFromScope": "mission",
+      "scopeAuthorizationFromScopeId": "mission_20260716212858_ac5539",
+      "scopeAuthorizationId": "learningcandidate_20260716212858_b8076a:scope-authorization:workspace",
+      "scopeAuthorizationNoteHash": "dd7fd3b612da9694a694ae38c5efb02c269141c31a86ccde732085dc9c19f6fb",
+      "scopeAuthorizationStatus": "consumed",
+      "scopeAuthorizationToScope": "workspace",
+      "scopeAuthorizationToScopeId": "workspace_20260716212858_58eaea",
+      "scopeId": "workspace_20260716212858_58eaea",
+      "target": "memory",
+      "verificationId": "learningcandidate_20260716212858_b8076a:promotion-verification:approve",
+      "verificationStatus": "passed"
+    }
+  },
+  "quality": {
+    "afterFullRollback": {
+      "id": "workspace-decision-conflict-revocation-baseline",
+      "metrics": {
+        "expectedSourceCitationRate": 0,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 0,
+        "retrievalHitRate": 0,
+        "unsupportedCitationRate": 0
+      },
+      "status": "failed",
+      "resultHash": "f80065880c7edcedfe2735509b03c6d439b16f6b0f4dc26f6b5b7825acc9ad5f"
+    },
+    "afterNewerRevocation": {
+      "id": "workspace-decision-conflict-revocation-older",
+      "metrics": {
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "1f3b001a5d45d85d6b730c290fa1c292ec52b40ad79ff512698e89fd4afcc855"
+    },
+    "baseline": {
+      "id": "workspace-decision-conflict-revocation-baseline",
+      "metrics": {
+        "expectedSourceCitationRate": 0,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 0,
+        "retrievalHitRate": 0,
+        "unsupportedCitationRate": 0
+      },
+      "status": "failed",
+      "resultHash": "f80065880c7edcedfe2735509b03c6d439b16f6b0f4dc26f6b5b7825acc9ad5f"
+    },
+    "conflict": {
+      "id": "workspace-decision-conflict-revocation-newer",
+      "metrics": {
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "fc06190260e3f3b2c82ae89a9ee0d0b7886cf3685b88c1b4f6436debb78141b1"
+    },
+    "foreignConflict": {
+      "id": "workspace-decision-conflict-revocation-foreign",
+      "metrics": {
+        "expectedSourceCitationRate": null,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": null,
+        "retrievalHitRate": null,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "bfefaa39619f2ec28c9046fa2ccc0c733a2c7aba9762c4587b3a5f61791fb8bd"
+    },
+    "olderOnly": {
+      "id": "workspace-decision-conflict-revocation-older",
+      "metrics": {
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "1f3b001a5d45d85d6b730c290fa1c292ec52b40ad79ff512698e89fd4afcc855"
+    }
+  },
+  "qualityBoundary": {
+    "actualModelTrainingExecuted": false,
+    "controlledConflictResolutionValidated": true,
+    "controlledRevocationFallbackValidated": true,
+    "generalAnswerQualityImprovementValidated": false,
+    "generalWorkspacePersonalizationValidated": false,
+    "learnedConflictResolutionValidated": false,
+    "userScopedPersonalizationValidated": false
+  },
+  "results": {
+    "baselineClean": true,
+    "distinctSessionsPassed": true,
+    "externalProviderIsolationPassed": true,
+    "foreignWorkspaceIsolated": true,
+    "fullRollbackRestoresBaseline": true,
+    "lifecycleAuditOrdered": true,
+    "newerRevocationFallsBack": true,
+    "newerWinsConflict": true,
+    "olderSelectedAlone": true,
+    "promotionsVerified": true,
+    "reviewerPassPreserved": true,
+    "topologyBound": true
+  },
+  "schemaVersion": "personal-ai-agent-workspace-learning-conflict-revocation/v1",
+  "sourceRuns": {
+    "newer": {
+      "artifacts": {
+        "deliverableHash": "9acbba0d1097b7013ec293cacc78e6792c4734377b967d7c6ff081b70bc8a687",
+        "plannerHash": "717beb884566e786f1aac5ed4be392927218387a53b7fbf1537b6353462c1424",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716212859_9274c5",
+      "status": "completed"
+    },
+    "older": {
+      "artifacts": {
+        "deliverableHash": "4b569139df583409a3bcd2ccb064b08e27c3cd4f2b26551ca17c608c6167ecbb",
+        "plannerHash": "10c12b408756ccfa6919838d9e6c89b3731f7144ae1e26681c74ee06c380a1d3",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716212858_4576a5",
+      "status": "completed"
+    }
+  },
+  "status": "workspace-learning-conflict-revocation-passed-local-only",
+  "topology": {
+    "foreignMission": {
+      "id": "mission_20260716212858_daa60a",
+      "objectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+      "workspaceId": "workspace_20260716212858_0b9c3a"
+    },
+    "foreignWorkspaceId": "workspace_20260716212858_0b9c3a",
+    "newerSourceMission": {
+      "id": "mission_20260716212858_54934a",
+      "objectiveHash": "27a4f2f37c2e7206881e22bf4b7fa9b9e13d04b0b6e40043a3c4eae7383cbbf4",
+      "workspaceId": "workspace_20260716212858_58eaea"
+    },
+    "olderSourceMission": {
+      "id": "mission_20260716212858_ac5539",
+      "objectiveHash": "ca4852485cb20c3666d5c6e68c16f0df16de219bc4580101dabd57b481e96a11",
+      "workspaceId": "workspace_20260716212858_58eaea"
+    },
+    "sourceWorkspaceId": "workspace_20260716212858_58eaea",
+    "targetMission": {
+      "id": "mission_20260716212858_40321d",
+      "objectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+      "workspaceId": "workspace_20260716212858_58eaea"
+    }
+  },
+  "evidenceHash": "22664aa7adb1cf311097431f693dd3621bde31ebff1627e3fd2f0ac2533fc2dc",
+  "id": "workspace-learning-conflict-revocation-22664aa7adb1cf311097431f693dd3621bde31ebff1627e3fd2f0ac2533fc2dc"
+}

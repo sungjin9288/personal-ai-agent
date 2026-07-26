@@ -34,6 +34,13 @@
   - Hermes provider target evidence와 live validation proof 확보
   - provider fallback/attention remediation demo scenario 정리
   - memory/retrieval/fact graph 품질 확인용 fixture 추가
+  - 완료: tenant-free local workspace 사이에서 explicit mission-to-user authorization, user decision·preference 적용, exact rollback을 검증하고 hosted·multi-user 범위는 차단
+  - 완료: retrieval-selected local-user decision 충돌을 latest-revision 하나로 제한하고 cross-workspace 적용, newer revocation fallback, full rollback을 실제 replay로 검증
+  - 완료: 검증된 local-user decision을 bounded operator override로 고정하고 cross-workspace 적용, expiry·clear latest fallback, repin parity와 unretrieved 차단을 검증
+  - 완료: 이미 설치된 qwen2.5:3b로 Q1 두 case의 실제 답변을 생성해 citation gate 통과와 required-term coverage 0.6667 실패를 함께 고정하고 기존 답변 경로를 유지
+  - 완료: 같은 qwen2.5:3b와 retrieval로 evidence-first composition candidate를 실행해 Q1 case pass 0.0→1.0과 required-term coverage 0.6667→1.0을 기록하고 runtime 활성화는 차단
+  - 완료: Q3 regression·한국어·다중 도메인·bounded context·prompt injection 10-case로 composition을 확장하고 v2 9/10·canary 1 실패를 보존
+  - 완료: deterministic instruction boundary를 적용한 v3에서 10/10·canary 0과 다른 품질 지표 회귀 0을 기록하고 runtime 활성화는 차단
 - 완료 기준:
   - provider별 status matrix가 코드, docs, smoke evidence와 일치
   - 실패/재시도/fallback을 면접에서 코드 수준으로 설명 가능
@@ -98,6 +105,58 @@
 - 완료: provider readiness matrix와 catalog smoke guard
 - 완료: provider failure recovery demo와 smoke guard
 - 완료: memory/retrieval/fact graph quality fixture와 smoke guard
+- 완료: actual qwen2.5:3b Q1 answer-quality baseline에서 두 case의 required-term coverage 회귀를 기록하고 threshold 완화 없이 `keep-current-answer-path` 결정
+- 완료: evaluator 정답을 model에 주지 않고 summary·source claim·review action을 분리한 Q3 candidate가 같은 Q1 두 case를 통과했으며 일반 품질·runtime activation은 계속 미검증
+- 완료: Q4 v2 robustness baseline에서 한국어·다중 도메인·bounded context·Q3 regression은 통과하고 objective injection canary 한 건을 실패로 고정
+- 완료: model 입력 전 instruction payload를 제거하고 raw·sanitized hash와 removal count를 남기는 Q4 v3 hardening이 동일 10-case에서 10/10을 통과했으며 일반 품질·runtime activation은 계속 미검증
+- 완료: Unicode·format control·split-letter와 영어·한국어·일본어·스페인어를 분리한 Q5 pure input boundary가 14/14를 통과
+- 완료: 같은 qwen2.5:3b와 Q4 suite의 v4 회귀에서 `2.2` safe-text 실패를 기준 완화 없이 교정하고 최종 10/10과 기존 지표 parity를 확인
+- 완료: consent·철회·de-identification·retention을 강제하는 synthetic user-query intake dry run 12건·6 domain·4 language 검증
+- 완료: Q5 intake를 같은 qwen2.5:3b·v4 prompt·loopback runtime과 결합한 Q6 content-free runner가 12건을 끝까지 실행하고 11/12와 `invalid-review-action` 1건을 stop condition으로 기록
+- 완료: v5 reviewer action candidate가 summary-only objective의 owner·trigger를 evidence-bound action으로 유지하며 Q4 10/10 parity와 synthetic Q6 12/12를 기준 완화 없이 통과
+- 완료: Q8 actual-user evaluation protocol이 private dataset 경로, owner-only·no-follow·atomic I/O, frozen all-pass threshold, tracked-path 거부, Q7 v5 binding, case별 consent 재검증과 중간 철회 fail-closed를 test fixture로 검증
+- 다음: 실제 사용자 dataset과 별도 승인을 받은 뒤 명시적 동의·철회 가능성·비식별 검토·current retention을 통과한 평가를 진행하고, 그 전에는 candidate activation을 보류
+- 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
+- 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증
+- 완료: verified workspace decision을 local operator가 bounded expiration으로 고정하고 expiry·clear 시 exact latest-revision fallback, repin parity, foreign·unretrieved memory 차단과 timeline audit를 확인한 controlled operator override 검증
+- 완료: 기존 action inbox에서 content-free override 상태와 summary를 읽고 RBAC·candidate tenant·service validation을 거쳐 set·clear하며 local HTTP와 실제 Chromium으로 not-set→active→expired→cleared를 확인한 operator surface 검증
+- 완료: verified local-user decision을 tenant-free source와 bounded expiration으로 고정하고 두 local workspace에서 older 적용, expiry·clear latest fallback, repin exact parity, unretrieved 차단과 set·clear timeline을 확인한 controlled user override 검증
+- 완료: 기존 action inbox에서 content-free user override 상태와 summary를 읽고 RBAC·candidate tenant·service validation을 거쳐 set·clear하며 local HTTP와 실제 Chromium으로 not-set→active→expired→cleared를 확인한 user operator surface 검증
+- 완료: R12 multi-scenario shadow replay에서 3 scenario·15 mission·60 role observation을 실제 재생하고 full-query hard-negative 실패를 보존한 뒤 mission-objective query contract로 교정
+- 완료: R13 bounded shadow score cache에서 exact query-document repetition을 process-local LRU로 재사용해 15/15 품질을 유지하며 120 request를 30 inference로 축소하고 maximum latency 회귀까지 증적에 보존
+- 완료: R14 shadow cache lifecycle stress에서 8-entry eviction 22, concurrent join, in-flight invalidation, stale-result drop, fresh refill와 rollback close를 actual local evidence로 검증
+- 완료: R15 shadow cache process isolation에서 concurrent child process 2개와 restarted process 1개의 cold miss·local hit·identity 분리·empty environment forwarding·shutdown close를 actual local evidence로 검증
+- 완료: R16 shadow cache termination recovery and bounded soak에서 warm worker SIGKILL 뒤 cold recovery, 16-entry·48-pair soak, 32 eviction, heap/RSS local regression gate와 shutdown close를 actual local evidence로 검증
+- 완료: P1 approved learning RAG feedback에서 explicit promotion 전·후·rollback 동일 mission을 재생해 memory provenance, retrieval match 4개, planner step 3→4→3, reviewer pass와 exact baseline artifact 복원을 검증
+- 완료: P2 multi-scenario learning feedback quality에서 같은 workspace의 세 mission과 9 session을 재생해 Q1 case pass 0/3→3/3→0/3, 사례별 foreign memory 2개 중 retrieved 0, reviewer pass와 exact rollback artifact 복원을 검증
+- 외부 승인 필요: local reranker provider-input activation, production latency·concurrency 한도, long soak·thermal telemetry, license·OS egress isolation, rollback owner
+- 완료: credential-free answer quality evaluator와 retrieval·citation·reviewer regression gate
+- 완료: store와 공개 retrieval payload를 바꾸지 않고 source hash·revision·scope·provenance를 보존하는 RAG corpus contract
+- 완료: 3개 controlled fixture에서 precision·recall·noise·source diversity와 lexical·BM25·phrase frozen baseline을 비교하는 retrieval evaluation gate
+- 완료: dependency 없는 provider-neutral embedding contract, bounded local command adapter, scope-locked semantic experiment와 controlled synonym comparison
+- 완료: semantic·lexical signal을 고정 가중치로 결합한 deterministic reranking baseline과 controlled quality·latency·rollback 비교
+- 완료: 기본 lexical parity를 보존하고 명시적 local command에서만 동작하는 mission semantic·rerank runtime, scope 거부, failure-before-provider와 state-free rollback
+- 완료: 설치된 qwen2.5 3종을 동일 retrieval suite로 비교한 local embedding qualification, 3B quality pass와 license·network·resource·rollback governance blocker 분리
+- 완료: qwen2.5 3B를 canonical·paraphrase·noisy·cross-language·hard-negative 15-case로 확장 평가하고 lexical보다 낮은 결과를 failed-keep-lexical 기준선으로 고정
+- 완료: qwen2.5 3B를 source별 독립 structured relevance scorer로 재평가해 반복 안정적 15-case·hard-negative 통과를 기록하고 governance·runtime activation 차단 유지
+- 완료: lexical top-2 shortlist로 동일 15-case·hard-negative 품질을 유지하면서 inference·p50·p95·total 감소와 loaded-model footprint를 기록하고 maximum regression·governance·runtime activation 차단 유지
+- 완료: cold 1·warm 3·concurrent client worker 2의 6-run stability 관측에서 동일 품질·resource footprint와 bounded latency gate를 확인하고 production parallelism·long soak·thermal·runtime activation 차단 유지
+- 완료: R10-bound scorer를 controlled stub mission의 manager·planner·executor·reviewer retrieval에 shadow로 연결하고 lexical provider input·store·public contract 불변과 scorer-failure fail-open 확인
+- 완료: reviewer pass·operator approval·promotion verification·artifact lineage를 요구하는 sanitized training record와 content·lineage hash contract
+- 완료: deterministic content·lineage·near-response deduplication, mission-scope train·validation split, leakage 검사와 content-free dataset manifest
+- 완료: provider-neutral train·validation JSONL, Q1 answer-quality baseline, content-free evaluation manifest와 reviewer-pending fine-tuning readiness packet
+- 완료: exact F1 dataset hash와 별도 local approval을 묶고 current permission·post-acquisition admission을 spawn 전에 재검증하며 shell·secret environment를 차단하는 bounded local training runtime contract
+- 완료: fixed repo-local candidate root의 complete inventory와 actual file hash를 admitted training run·current disk envelope에 묶는 local training candidate artifact verification
+- 완료: recorded candidate verification과 current permission·explicit no-revocation·F1 suite·resource envelope·bounded time window를 묶는 local candidate evaluation admission
+- 완료: current authority와 candidate file hash를 재검증하고 evaluator identity·bounded local stdio·canonical quality summary를 O1a run lineage에 묶는 local candidate evaluation runtime
+- 완료: exact F1 suite bytes와 manifest-listed candidate files를 temporary execution view에 고정하고 pre/post hash·cleanup을 run lineage에 묶는 immutable evaluation input view
+- 완료: evaluator executable SHA-256과 static ESM module·resource bundle을 request·admission·run에 묶고 temporary snapshot entry를 실행하는 evaluator provenance boundary
+- 완료: license·OS egress·resource evidence hash와 owner를 기존 approval inbox·RBAC·tenant·audit에 묶은 local training product permission surface, CLI·HTTP·Chromium 승인·철회 replay
+- 완료: same-suite fixture candidate의 품질·증적·권한 비교, regression keep-baseline과 rollout-blocked rollback gate
+- 승인 작업: 실제 base model license owner review, OS-level egress isolation, resource limit과 rollback owner 승인을 확보하고 현재 permission을 실행 직전에 다시 확인한 뒤 actual local model training 검토
+- 외부 작업: provider·model·budget·data transfer·reviewer·rollback owner 승인 후 별도 fine-tuning submission adapter 검토
+- 외부 작업: 실제 trained candidate evidence와 target runtime 결과 확보 후 reviewer 승인 기반 model rollout 검토
+- 외부 작업: 선택된 qwen2.5 3B의 license owner 검토, OS-level egress isolation, 승인된 resource·cold-start·concurrency limit, long-duration soak·thermal telemetry, rollback owner와 provider-input activation 승인
 - 완료: core smoke validation summary와 command guard
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence

@@ -1,5 +1,261 @@
 # Devlog
 
+## 2026-07-22 Darwin Suspended Verify-to-exec
+
+- started one root-owned signed fixture interpreter with Darwin `POSIX_SPAWN_START_SUSPENDED` and compared its kernel-observed CDHash before resume
+- passed the broker and child entrypoint through verified inherited descriptors, then replaced the child path and confirmed that only the opened original bytes executed
+- killed a mismatched executable identity before `SIGCONT` and verified that user code created no marker
+- bound the primitive contract to the MLX adapter while keeping actual MLX integration, post-resume dynamic/native closure, unified-memory enforcement, training, rollout, provider, and production claims false
+
+## 2026-07-22 Static Local-training Runtime Closure Provenance
+
+- bound the fixture trainer's pinned interpreter, entrypoint, allowlisted static import graph, and exact bytes into the MLX adapter contract
+- revalidated current runtime bytes before workspace creation and immediately before fixture invocation while removing inherited `PATH`, `PYTHONPATH`, and `PYTHON*` values
+- rejected unlisted, linked, writable, native, archive, ambient-hook, and known dynamic-import surfaces before candidate creation
+- kept arbitrary dynamic Python, native dependency closure, verify-to-exec, actual process, installation, download, training, rollout, provider, and production claims false
+
+## 2026-07-22 Durable Local-training Failure Recovery
+
+- bound each MLX adapter attempt to approval, readiness, acquisition verification, and adapter hashes before candidate publication
+- added owner-only atomic recovery phases that remove the workspace before rolling back a candidate and resume safely after partial failure
+- required an exact rollback-owner cleanup request that cannot authorize training, and kept raw paths, training data, and failure messages out of the ledger and tracked evidence
+- preserved actual process, installation, model download, training, rollout, and production claims as false while same-user TOCTOU and OS isolation remain open
+
+## 2026-07-17 Local User-query Quality Stop Condition
+
+- bound the Q5 intake to the exact Q4 model digest, Ollama runtime, v4 prompt, and unchanged answer-quality thresholds before allowing loopback local inference
+- ran 12 synthetic queries across six domains and four languages; 11 passed and one English incident-operations case failed because the model returned a placeholder reviewer action
+- changed the runner to finish all cases and retain only hashes, aggregate metrics, and the bounded `invalid-review-action` taxonomy instead of raw query, evidence, answer, or error text
+- kept `localUserQueryEvaluationValidated`, synthetic and actual user-query quality, current answer-path activation, training, rollout, and production claims false
+
+## 2026-07-17 Adversarial Input Boundary and User-query Intake
+
+- separated Unicode normalization, format-control removal, split-letter detection, and English·Korean·Japanese·Spanish instruction filtering into a pure boundary with 7 attack cases and 7 exact-preservation controls
+- replayed the same qwen2.5:3b and Q4 suite; retained an initial 9/10 failure when safe identifier `2.2` became `2. 2`, then fixed the sentence boundary without lowering thresholds and reached 10/10
+- made evidence comparison key-order independent and kept evaluator terms, raw source text, raw answer text, and canaries outside model input and tracked evidence
+- added a content-free consent and de-identification intake dry run for 12 synthetic records across six domains and four languages; actual user data, training, external transfer, activation, and production claims remain false
+
+## 2026-07-17 Answer Composition Robustness and Hardening
+
+- expanded Q3 into a 10-case suite covering the two original regressions, Korean, multiple domains, bounded eight-source context, and objective/evidence prompt injection without passing evaluator terms to the generator
+- recorded the actual v2 result as a failed `9/10` baseline with one objective canary match instead of weakening the gate or changing the current answer path
+- added a deterministic instruction boundary that removes bounded override/output-command sentences before generation and records raw input hash, sanitized input hash, and objective/evidence removal counts without storing source or answer text
+- replayed the same installed qwen2.5:3b with v3; case pass moved from 0.9 to 1.0 and forbidden-term matches from 1 to 0 with no other metric regression, while activation, rollout, actual training, and production claims remain false
+
+## 2026-07-17 Evidence-first Answer Composition Candidate
+
+- separated local answer generation into a concise summary, one claim per retrieved source, and an explicit reviewer action while keeping evaluator terms and golden answers outside the model prompt
+- bound the candidate to the Q2 evidence hash, exact qwen2.5:3b digest, Q1 fixture hash, prompt hash, case set, and unchanged thresholds
+- replayed both Q1 cases on the cloud-disabled loopback runtime; case pass changed from 0.0 to 1.0 and required-term coverage from 0.6667 to 1.0 without citation or forbidden-term regression
+- kept the current answer path, activation, rollout, actual model training, and production claims disabled because the two controlled fixtures do not establish general answer quality
+
+## 2026-07-17 Actual Local Answer Quality Baseline
+
+- added a loopback-only structured Ollama answer generator that sees the mission objective and retrieved evidence but never Q1 required terms or golden answers
+- ran the already-installed `qwen2.5:3b` against both Q1 cases with no model download, external provider call, trainer dependency, or training execution
+- preserved perfect retrieval and citation metrics while recording required-term coverage `0.6667` for both cases as a real regression and keeping the current answer path
+- stored only content-free hashes, timing, model inventory, license binding, and quality decisions; activation, rollout, actual training, and production claims remain false
+
+## 2026-07-17 Local Training Permission Surface
+
+- bound exact F1 readiness, model, trainer, expiration, license, OS egress, resource limits, approval owner, and rollback owner into a content-free product permission without starting model training
+- reused the existing approval inbox, CLI, HTTP RBAC, tenant checks, gateway audit, and Chromium approval controls while keeping raw readiness in a private mission-session file
+- replayed request, approval, read, revocation, cross-tenant denial, audit order, and browser interaction with no external provider calls and `actualModelTrainingExecuted: false`
+- kept environment evidence owner-attested rather than independently verified; future actual training must re-read the current permission immediately before process spawn
+
+## 2026-07-17 User Learning Operator Surface
+
+- connected P9 user override state to existing learning-promotion action items, summary counts, audit package, HTTP routes, and web controls without adding a new action type, store collection, or dependency
+- preserved RBAC, candidate tenant access before body read, tenant-free source validation, promotion permission evidence, note safety, sanitized response, store-to-artifact ordering, and mission timeline history
+- replayed not-set, active, expired, and cleared through the local HTTP server and actual local Chromium with zero console errors and no external provider calls
+- retained `automaticPreferenceLearningValidated: false`, `hostedTenantUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
+## 2026-07-17 User Learning Operator Override
+
+- added a bounded local-operator override for verified user-scoped decision promotions while preserving P8 latest-revision as the default and leaving user preferences outside override arbitration
+- required a tenant-free source workspace, consumed scope authorization, passed verification, future expiration, and secret/customer-payload-safe audit note before store mutation
+- added CLI set and clear actions plus mission timeline history, then replayed two local workspaces, four missions, and eight stub sessions through latest→older override→latest expiry→older repin→latest clear with exact artifact parity
+- retained `automaticPreferenceLearningValidated: false`, `generalUserPersonalizationValidated: false`, `hostedTenantUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
+## 2026-07-17 User Learning Conflict and Revocation
+
+- added a content-free latest-revision selector for retrieval-selected local-user decisions and applied it after workspace decision filtering without changing persistence, public APIs, or user preference behavior
+- recorded one selected decision in planner evidence while removing non-selected user decisions from aligned memory and retrieval provider context
+- replayed two tenant-free workspaces, four missions, and eight stub sessions to verify newer-only conflict selection in both workspaces, exact older fallback after newer rollback, exact baseline restoration after full rollback, and zero external provider calls
+- retained `learnedConflictResolutionValidated: false`, `generalUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
+## 2026-07-17 Local User Learning Personalization
+
+- extended the existing scope authorization to local mission-to-user promotion while rejecting tenant-bound workspaces before writes and keeping the store shape, public service method, audit order, and production dependencies unchanged
+- applied approved global user decisions and preferences in the stub provider while continuing to exclude user facts, raw secrets, and customer payloads
+- replayed two local workspaces, three missions, and seven credential-free stub sessions; sibling and cross-workspace targets both moved from failed to passed and returned to exact baseline hashes after rollback
+- retained `hostedTenantUserPersonalizationValidated: false`, `multiUserIsolationValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
+## 2026-07-17 Workspace Learning Operator Surface
+
+- connected the P5 override lifecycle to existing learning-promotion action items without adding a new action type, top-level store collection, or production dependency
+- added content-free state and summary counts, operator set and clear controls, web RBAC and candidate-tenant checks, sanitized mutation responses, and preserved service validation, artifact, and timeline ordering
+- replayed not-set, active, expired, and cleared state through the local HTTP server and clicked the controls in actual local Chromium with zero console errors or external provider calls
+- retained `automaticPreferenceLearningValidated: false`, `actualModelTrainingExecuted: false`, and `productionReadyClaim: false`
+
+## 2026-07-17 Workspace Learning Operator Override
+
+- added a permission-bound local operator override for verified workspace decision promotions, requiring an explicit note and future expiration without adding a top-level store collection or production dependency
+- limited override authority to decisions already selected by retrieval so foreign or unretrieved memory cannot be injected, and retained latest-revision as the fallback for invalid, expired, or cleared state
+- replayed two workspaces, four missions, and eight credential-free stub sessions to verify active older selection, exact newer fallback after expiration and clear, exact older repin parity, foreign isolation, timeline ordering, and zero external provider calls
+- retained `actualModelTrainingExecuted: false`, `learnedConflictResolutionValidated: false`, `generalWorkspacePersonalizationValidated: false`, and `productionReadyClaim: false`
+
+## 2026-07-17 Workspace Learning Conflict and Revocation
+
+- filtered retrieval-selected workspace decisions through a deterministic latest-revision policy before provider execution while preserving mission, user, and non-decision workspace memory behavior
+- recorded content-free planner selection evidence with candidate priority, content hash, effective timestamp, and selected identity without changing the store schema or public API payloads
+- replayed two workspaces, four missions, and eight credential-free stub sessions to verify newer conflict selection, exact older fallback after revocation, exact baseline restoration after full rollback, foreign-workspace isolation, and zero external provider calls
+- retained `actualModelTrainingExecuted: false`, `learnedConflictResolutionValidated: false`, `generalWorkspacePersonalizationValidated: false`, and `productionReadyClaim: false`
+
+## 2026-07-17 Workspace Learning Personalization
+
+- kept mission-to-workspace promotion default-deny and added a separate local-operator authorization record before workspace scope can pass the existing promotion verification
+- replayed one source, one same-workspace sibling, and one foreign-workspace mission across seven credential-free stub sessions; the sibling moved from three to four planner steps and failed to pass on the controlled gate while foreign memory exposure remained zero
+- linked authorization, promotion, and rollback in the mission timeline, restored the sibling exact baseline after rollback, and left general cross-mission, workspace/user personalization, actual model training, and production claims unproven
+
+## 2026-07-17 Multi-scenario Approved Learning Feedback Quality
+
+- replayed three independent same-workspace missions through baseline, simultaneous approved-memory application, and rollback for nine distinct credential-free stub sessions
+- applied the existing Q1 answer-quality gate to actual retrieval and deliverable observations, changing case pass from 0/3 to 3/3 and back to 0/3 while excluding two foreign mission-memory candidates in every promoted case
+- restored each planner and deliverable to its exact baseline hash after rollback, kept reviewer failures and external provider calls at zero, and left cross-mission generalization, workspace/user personalization, general answer quality, and actual model training unproven
+
+## 2026-07-17 Approved Learning RAG Feedback Loop
+
+- replayed one credential-free stub mission before promotion, after explicit mission-memory approval, and after rollback to prove the existing learning and retrieval paths form one reversible feedback loop
+- bound the promoted memory id and content hash to the next planner retrieval provenance, recorded four matched terms and a planner step increase from three to four, and preserved reviewer pass
+- removed the promoted memory through the recorded rollback target and reproduced the original three-step planner and exact planner/deliverable artifact hashes while keeping general answer-quality and actual-training claims false
+
+## 2026-07-17 Local Relevance Shadow Cache Termination Recovery and Bounded Soak
+
+- extended the fixed empty-environment child worker with a warm-before-termination state and observed parent-issued SIGKILL before starting a distinct cold recovery worker
+- ran 48 unique local relevance pairs through a 16-entry cache, replayed the newest 16 as hits, and recorded 64 requests, 48 inferences, 16 hits, 32 evictions, and zero entries after close
+- measured 4,023,088 bytes of final heap growth and 21,938,176 bytes of final RSS growth, and gated both peak and final samples against local 64 MiB and 128 MiB regression limits while keeping evidence content-free and provider activation blocked
+
+## 2026-07-17 Local Relevance Shadow Cache Process Isolation
+
+- added a bounded child-process worker protocol that receives query and document input only through stdin, forwards no parent environment, limits input and output size, and returns content-free cache snapshots
+- ran two concurrent workers and one restarted worker against the installed `qwen2.5:3b`; each distinct process began empty, performed one inference, served one local cache hit, returned the same score, and closed with zero entries
+- bound the actual process evidence to the R14 model, prompt, fixture input, and lifecycle evidence while keeping provider input, runtime activation, external calls, and production claims unchanged
+
+## 2026-07-17 Local Relevance Shadow Cache Lifecycle Stress
+
+- extended the process-local score cache with generation-based invalidation and idempotent close so pre-invalidation in-flight results cannot repopulate the cache and rollback rejects later cache use
+- replayed the same 15 missions with an 8-entry capacity, preserving 15/15, 60/60 expected top-1, 120 requests, 30 model inferences, and 90 hits while recording 22 LRU evictions and 8 final entries
+- ran an actual concurrent local scorer probe that joined three requests into one inference, invalidated one in-flight entry, dropped one stale result, refilled fresh, and closed with zero entries while leaving provider-input activation and production claims blocked
+
+## 2026-07-17 Bounded Local Relevance Shadow Score Cache
+
+- added a 64-entry process-local LRU keyed by model digest, scorer and prompt identity, query hash, and document hash; completed entries retain only integer scores, failures are not cached, and identical concurrent requests share one in-flight score
+- replayed the same 3 scenarios, 15 missions, and 60 role observations with the installed `qwen2.5:3b`, preserving 15/15 and lexical provider input while reducing 120 score requests to 30 model inferences with 90 cache hits
+- recorded total observation latency changing from 51406.590ms to 13939.543ms and retained the maximum-latency increase from 938.621ms to 1992.079ms, while leaving cache lifecycle, provider-input activation, qualification, and production claims blocked
+
+## 2026-07-17 Multi-scenario Local Relevance Shadow Replay
+
+- replayed 3 retrieval scenarios, 15 actual stub missions, and 60 manager·planner·executor·reviewer shadow observations with the R11-bound local scorer while preserving the original lexical provider input
+- retained the first full-query 12/15 result and hard-negative 0/3 stop condition, traced it to role and previous-output text exceeding the qualified query-document contract, and narrowed only the shadow scorer query to the mission objective
+- passed 15/15 and hard-negative 3/3 with 60/60 expected top-1 observations, kept both records content-free, and left provider-input activation, qualification, and production claims blocked
+
+## 2026-07-17 Local Relevance Shadow Integration
+
+- connected the R10-bound local relevance scorer to a controlled manager, planner, executor, and reviewer mission through explicit dependency injection while returning the original lexical retrieval object to every provider stage
+- recorded content-free query, candidate, source, scorer, and provider-input hashes without adding shadow fields to the store, public facade, CLI, HTTP payload, permission decisions, or audit history
+- verified the expected source at top-1 for all four controlled observations and kept scorer or evidence-writer failures fail-open, while leaving provider-input activation and production claims blocked
+
+## 2026-07-16 Local Reranker Runtime Stability
+
+- added a loopback-only Ollama lifecycle check and six-run stability envelope covering one cold, three warm, and two concurrent-client evaluations without changing the mission runtime
+- repeated the R9 top-2 15-case suite for 360 local inferences, preserving every quality result and loaded-model snapshot while recording cold first-pass, warm drift, and bounded concurrency latency
+- kept production server parallelism, long-duration soak, thermal telemetry, license, network isolation, rollback ownership, activation, and production claims explicitly unverified
+
+## 2026-07-16 Local Reranker Resource Envelope
+
+- added a lexical-baseline top-2 candidate selector and shared local relevance benchmark runner that verify expected-source coverage before any model scoring
+- evaluated the installed `qwen2.5:3b` without downloads or external provider calls, preserving 15/15 and hard-negative 3/3 quality while reducing recorded inference from 90 to 60 and p95 from 1425.321ms to 924.449ms
+- recorded the Ollama loaded-model and VRAM footprint, retained the higher observed maximum latency, and kept qualification, runtime activation, and production claims blocked on sustained resource and governance evidence
+
+## 2026-07-16 Local Relevance Reranker Evaluation
+
+- evaluated each query-document pair independently with the already installed qwen2.5 3B model and structured integer scores instead of order-sensitive batch selection
+- repeated all 45 pairs in reversed source order and recorded matching scores, 15-case quality pass, and hard-negative recovery without storing query or document text in evidence
+- kept runtime activation and qualification blocked behind license, OS egress isolation, resource/latency, rollback ownership, and integration review
+
+## 2026-07-16 Local Retrieval Robustness Evaluation
+
+- expanded the selected qwen2.5 3B evaluation from three synonym cases to 15 canonical, paraphrase, noisy, Korean cross-language, and hard-negative cases without downloading a model or calling an external provider
+- bound model digest, R6 qualification evidence, coverage, quality, and latency into a content-free integrity record
+- recorded the semantic-plus-lexical candidate below the lexical baseline and kept lexical rollback, activation denial, and productionReadyClaim false instead of weakening the quality gate
+
+## 2026-07-17 Local Training Runtime Contract
+
+- added a separate expiring local execution approval that binds the exact F1 readiness, dataset and export hashes, trainer id, base model id, operator, and rollback owner
+- added a shell-free child-process protocol with environment allowlisting, bounded input/output/timeout, stderr redaction, strict result fields, and content-free candidate artifact records
+- replayed the contract with the existing local approval dataset fixture and verified ten failure guards, zero store mutation, no external provider calls, no actual model training, and no rollout authority
+
+## 2026-07-16 Local Embedding Model Qualification
+
+- added a loopback-only Ollama embedding command and tamper-evident qualification gate without downloading models or calling an external provider
+- measured installed qwen2.5 0.5B, 1.5B, and 3B models with the same three semantic retrieval cases; only 3B passed every case
+- kept activation blocked because license review, Ollama cloud and OS-level egress isolation, resource approval, and rollback ownership remain incomplete
+
+## 2026-07-16 Local Semantic Retrieval Runtime
+
+- connected the bounded local embedding contract and deterministic semantic·lexical reranker to mission stages only when the operator explicitly selects `semantic-rerank`
+- preserved the exact lexical result by default, kept retrieval item and store shapes unchanged, and made rollback a state-free mode switch
+- rejected cross-scope corpus and local command failures before provider prompt, artifact, or agent-run side effects while keeping actual local model validation and production claims false
+
+## 2026-07-16 Candidate Model Evaluation Gate
+
+- added a provider-neutral candidate evidence envelope that distinguishes fixture simulation from recorded actual-model evaluation
+- compared suite and per-case quality metrics against the exact F1 baseline case set and thresholds without copying answer text into the gate result
+- returned keep-baseline on quality, reviewer, evidence, case-set, or threshold regression while keeping rollout approval, reviewer decision, and rollback owner blocked
+
+## 2026-07-16 Fine-tuning Readiness Export
+
+- added provider-neutral conversation JSONL for the L2 train and validation splits with record, content, lineage, and mission-scope metadata
+- bound the Q1 answer-quality baseline, dataset hash, export digests, review checklist, submission requirements, and rollback requirement into a content-free evaluation manifest
+- kept reviewer decision and rollback owner pending while blocking provider submission, training execution, and production claims
+
+## 2026-07-16 Training Dataset Quality Gate
+
+- added a deterministic local dataset manifest that revalidates approved record safety, content and lineage hashes, reviewer approval, and local-only authorization boundaries
+- removed exact content, lineage, and normalized near-response duplicates before keeping each mission scope entirely in train or validation
+- added record, content, lineage, mission scope, and near-response leakage checks without copying training text into the manifest or authorizing export and fine-tuning execution
+
+## 2026-07-16 Approved Training Record
+
+- added a local-only training record contract that requires approved learning promotion, passed verification, reviewer pass, completed mission/session state, and exact candidate/reviewer/deliverable artifact lineage
+- generated deterministic content and lineage hashes from separately sanitized instruction/response text without copying artifact paths or raw artifact content
+- blocked secret-like values, raw customer JSON, customer identifiers and email, and required approver, mission scope, note, and future expiration for accepted-risk records
+
+## 2026-07-16 Retrieval Reranking Experiment
+
+- added a content-free reranking contract that combines semantic and lexical scores with fixed, inspectable weights and deterministic tie handling
+- measured three controlled semantic-tie cases with the existing retrieval evaluator and recorded the exact baseline source order for state-free rollback
+- measured local reranking overhead against the fixture semantic command while keeping runtimeActivation false, adding no dependency, and making no external provider calls
+
+## 2026-07-16 Semantic Retrieval Experiment
+
+- added a provider-neutral embedding protocol and bounded local-process adapter with shell disabled, environment allowlisting, input/output limits, and hard timeout
+- added a scope-locked semantic retrieval experiment that scores R1 corpus records by cosine similarity, excludes retired records, deduplicates sources, and omits raw content from result metadata
+- measured a controlled synonym fixture against the R2 evaluator while keeping runtimeActivation false and making no external provider calls
+
+## 2026-07-16 Retrieval Quality Evaluation
+
+- added a provider-neutral evaluator for top-k precision, recall, known-noise rate, relevant source-type diversity, and unlabeled source detection
+- froze the current lexical, BM25, and phrase-boost result for three labeled retrieval cases, including selected source order and per-case metrics
+- added a candidate comparison gate that rejects per-case or suite regression even when candidate thresholds are relaxed, without changing runtime ranking behavior
+
+## 2026-07-16 RAG Corpus Contract
+
+- added a provider-neutral corpus record for memory, attachment, and fact sources with deterministic revision, chunk identity, content hash, scope, and controlled provenance
+- connected corpus lineage to retrieval artifacts without changing the persisted store, serialized retrieval item, ranking order, or provider input contract
+- added unit and credential-free smoke coverage for deterministic replay, content revision changes, path exclusion, artifact lineage, and the existing retrieval flow
+
 ## 2026-06-22 Operator Surface Demo Evidence Map
 
 - added `docs/operator-surface-demo-evidence-v1.md` to connect representative demo follow-up questions to mission, provider, action, API, and UI evidence files
@@ -4680,7 +4936,7 @@
 ## 2026-04-16 Trusted Workspace Execution Pass
 
 - date: 2026-04-16T06:49:00.000Z
-- widened the execution-capable gate from the single `personal-ai-agent` repo to the trusted personal workspace root so sibling repos under `/Users/sungjin/dev/personal` can now use the same `preflight -> approval lease -> execution session` flow
+- widened the execution-capable gate from the single `personal-ai-agent` repo to the trusted personal workspace root so sibling repos under `<local-workspace>/personal` can now use the same `preflight -> approval lease -> execution session` flow
 - moved execution policy and edit-path validation to the selected workspace root, and made fallback/stub execution manifests workspace-aware so non-default repos no longer assume `src/cli.mjs` from the current project
 - added sibling-workspace coverage to `smoke:execution-flow` and removed the empty-repo `git HEAD` warning by switching branch detection to `git symbolic-ref --short HEAD` before falling back to `rev-parse`
 <!-- document-log:end -->

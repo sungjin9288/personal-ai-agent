@@ -1,0 +1,269 @@
+{
+  "schemaVersion": "personal-ai-agent-retrieval-quality-fixture/v1",
+  "productionReadyClaim": false,
+  "algorithmId": "hybrid-lexical-bm25-phrase-v1",
+  "thresholds": {
+    "maximumNoiseRateAtK": 0,
+    "maximumUnlabeledRetrievedSourceCount": 0,
+    "minimumCasePassRate": 1,
+    "minimumPrecisionAtK": 1,
+    "minimumRecallAtK": 1,
+    "minimumSourceDiversityRate": 1
+  },
+  "cases": [
+    {
+      "id": "provider-recovery-cross-source",
+      "k": 6,
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-provider-incident",
+            "missionId": "mission-provider-recovery",
+            "fileName": "incident-notes.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Prompt normalization resolved provider drift during execution validation and preserved reviewer evidence."
+          },
+          {
+            "id": "attachment-weekend-plan",
+            "missionId": "mission-provider-recovery",
+            "fileName": "weekend-plan.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Mountain hiking routes, lunch reservations, and a grocery checklist."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-provider-recovery",
+            "content": "Provider drift recovery uses prompt normalization and a reviewable verification path.",
+            "kind": "fact",
+            "scope": "workspace",
+            "scopeId": "workspace-fixture"
+          },
+          {
+            "id": "memory-color-preference",
+            "content": "The preferred dashboard accent color is blue.",
+            "kind": "preference",
+            "scope": "mission",
+            "scopeId": "mission-provider-recovery"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Explain how prompt normalization resolved provider drift with execution validation evidence.",
+          "title": "Provider recovery evidence"
+        },
+        "pack": {
+          "requiredSections": ["Findings", "Evidence"],
+          "reviewRules": []
+        },
+        "previousOutputs": {},
+        "providerRole": "manager",
+        "role": "manager"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-provider-recovery", "type": "memory" },
+        { "key": "attachment:attachment-provider-incident", "type": "attachment" }
+      ],
+      "irrelevantSources": [
+        { "key": "memory:memory-color-preference", "type": "memory" },
+        { "key": "attachment:attachment-weekend-plan", "type": "attachment" }
+      ]
+    },
+    {
+      "id": "fact-lifecycle-provenance",
+      "k": 6,
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-fact-history",
+            "missionId": "mission-fact-lifecycle",
+            "fileName": "fact-history.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Fact revision provenance records retirement state, audit history, and the responsible owner."
+          },
+          {
+            "id": "attachment-catering-menu",
+            "missionId": "mission-fact-lifecycle",
+            "fileName": "catering-menu.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Vegetarian lunch options and beverage quantities for Friday."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-fact-lifecycle",
+            "content": "Temporal fact graph revisions retire superseded facts while preserving provenance and audit history.",
+            "kind": "decision",
+            "scope": "mission",
+            "scopeId": "mission-fact-lifecycle"
+          },
+          {
+            "id": "memory-console-density",
+            "content": "The operator console should use compact spacing.",
+            "kind": "preference",
+            "scope": "workspace",
+            "scopeId": "workspace-fixture"
+          }
+        ],
+        "mission": {
+          "constraints": [],
+          "deliverableType": "research-brief",
+          "mode": "knowledge",
+          "objective": "Verify temporal fact revision provenance, retirement state, and audit history.",
+          "title": "Fact lifecycle provenance"
+        },
+        "pack": {
+          "requiredSections": ["Findings", "Evidence Gaps"],
+          "reviewRules": []
+        },
+        "previousOutputs": {},
+        "providerRole": "reviewer",
+        "role": "reviewer"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-fact-lifecycle", "type": "memory" },
+        { "key": "attachment:attachment-fact-history", "type": "attachment" }
+      ],
+      "irrelevantSources": [
+        { "key": "memory:memory-console-density", "type": "memory" },
+        { "key": "attachment:attachment-catering-menu", "type": "attachment" }
+      ]
+    },
+    {
+      "id": "permission-evidence-diversity",
+      "k": 6,
+      "retrievalInput": {
+        "attachments": [
+          {
+            "id": "attachment-approval-runbook",
+            "missionId": "mission-permission-evidence",
+            "fileName": "approval-runbook.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "The runbook fixes permission validation before approval and preserves the audit event order."
+          },
+          {
+            "id": "attachment-office-calendar",
+            "missionId": "mission-permission-evidence",
+            "fileName": "office-calendar.md",
+            "mimeType": "text/markdown",
+            "source": "fixture",
+            "promptContent": "Office holidays and room booking times for the next quarter."
+          }
+        ],
+        "memoryEntries": [
+          {
+            "id": "memory-permission-decision",
+            "content": "Permission validation must finish before approval side effects and audit recording.",
+            "kind": "decision",
+            "scope": "mission",
+            "scopeId": "mission-permission-evidence"
+          },
+          {
+            "id": "memory-audit-fact",
+            "content": "Audit evidence preserves the permission decision and approval sequence.",
+            "kind": "fact",
+            "scope": "workspace",
+            "scopeId": "workspace-fixture"
+          },
+          {
+            "id": "memory-theme-preference",
+            "content": "Use a dark theme after sunset.",
+            "kind": "preference",
+            "scope": "workspace",
+            "scopeId": "workspace-fixture"
+          }
+        ],
+        "mission": {
+          "constraints": ["Preserve permission and approval order"],
+          "deliverableType": "decision-memo",
+          "mode": "knowledge",
+          "objective": "Explain the permission validation, approval sequence, and audit evidence order.",
+          "title": "Permission evidence order"
+        },
+        "pack": {
+          "requiredSections": ["Decision", "Evidence"],
+          "reviewRules": []
+        },
+        "previousOutputs": {},
+        "providerRole": "reviewer",
+        "role": "reviewer"
+      },
+      "expectedSources": [
+        { "key": "memory:memory-permission-decision", "type": "memory" },
+        { "key": "memory:memory-audit-fact", "type": "memory" },
+        { "key": "attachment:attachment-approval-runbook", "type": "attachment" }
+      ],
+      "irrelevantSources": [
+        { "key": "memory:memory-theme-preference", "type": "memory" },
+        { "key": "attachment:attachment-office-calendar", "type": "attachment" }
+      ]
+    }
+  ],
+  "baseline": {
+    "algorithmId": "hybrid-lexical-bm25-phrase-v1",
+    "cases": [
+      {
+        "id": "provider-recovery-cross-source",
+        "k": 6,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "selectedSourceKeys": [
+          "attachment:attachment-provider-incident",
+          "memory:memory-provider-recovery"
+        ]
+      },
+      {
+        "id": "fact-lifecycle-provenance",
+        "k": 6,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "selectedSourceKeys": [
+          "attachment:attachment-fact-history",
+          "memory:memory-fact-lifecycle"
+        ]
+      },
+      {
+        "id": "permission-evidence-diversity",
+        "k": 6,
+        "metrics": {
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "selectedSourceKeys": [
+          "memory:memory-audit-fact",
+          "attachment:attachment-approval-runbook",
+          "memory:memory-permission-decision"
+        ]
+      }
+    ],
+    "metrics": {
+      "casePassRate": 1,
+      "noiseRateAtK": 0,
+      "precisionAtK": 1,
+      "recallAtK": 1,
+      "sourceDiversityRate": 1,
+      "unlabeledRetrievedSourceCount": 0
+    },
+    "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1"
+  }
+}

@@ -55,6 +55,21 @@ export function buildLiveValidationEntries(items, archivedMarkdowns = []) {
     .map((provider) => entriesByProvider.get(provider));
 }
 
+export function readArchivedLiveValidationProvenance(markdown) {
+  const source = String(markdown || '');
+  if (!extractMarkdownSection(source, 'Archived Live Validation (not rerun in this refresh)')
+    && !extractMarkdownSection(source, 'Live Validation')) {
+    return null;
+  }
+
+  return {
+    sourceCommit: extractBulletValue(source, 'archivedLiveValidationSourceCommit')
+      || extractBulletValue(source, 'commit'),
+    sourceGeneratedAt: extractBulletValue(source, 'archivedLiveValidationSourceGeneratedAt')
+      || extractBulletValue(source, 'generatedAt'),
+  };
+}
+
 function formatLiveValidationEntry(item) {
   if (item.status === 'passed') {
     const line = `- ${item.provider}: passed (missionId=${item.missionId}, executionSessionId=${item.executionSessionId}, verification=${item.verificationStatus})`;
@@ -101,7 +116,8 @@ function formatLiveValidationEntry(item) {
 }
 
 function extractArchivedLiveValidationEntry(markdown, provider) {
-  const section = extractMarkdownSection(markdown, 'Live Validation');
+  const section = extractMarkdownSection(markdown, 'Archived Live Validation (not rerun in this refresh)')
+    || extractMarkdownSection(markdown, 'Live Validation');
   if (!section) {
     return null;
   }
@@ -141,6 +157,11 @@ function extractArchivedLiveValidationEntry(markdown, provider) {
 function extractMarkdownSection(markdown, heading) {
   const match = String(markdown || '').match(new RegExp(`(?:^|\\n)## ${escapeRegExp(heading)}\\n\\n([\\s\\S]*?)(?:\\n## |$)`));
   return match?.[1]?.trim() || '';
+}
+
+function extractBulletValue(markdown, label) {
+  const match = String(markdown || '').match(new RegExp(`^- ${escapeRegExp(label)}:\\s+(.+)$`, 'm'));
+  return match ? String(match[1] || '').trim() : '';
 }
 
 function formatLiveValidationTriageLines(triage) {

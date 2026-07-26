@@ -1,0 +1,133 @@
+{
+  "actualApprovedLearningRagFeedbackValidated": true,
+  "costFree": true,
+  "externalProviderCalls": "none",
+  "fixtureBinding": {
+    "caseId": "mission-scoped-verification-path",
+    "expectedPlanStepHash": "33cbb1e2dc4083e7cea53965a8376e4db07d0d030333a5e6e48af3f74f9e7a05",
+    "fixtureHash": "39ce62b5a92d10db6d9d19adfff6db5497fd086a196625ee1f816b1d088af02c",
+    "objectiveHash": "f4c2e410c2df8adfa7bccc8457d4494a8493269d8f9c2ca99b007a6bc725a56a",
+    "promotionNoteHash": "33cbb1e2dc4083e7cea53965a8376e4db07d0d030333a5e6e48af3f74f9e7a05",
+    "bindingHash": "cfe5e71af84069044888c02313220e968a024bf1ff953836d533177792fc3348"
+  },
+  "mission": {
+    "id": "mission_20260716191556_c950b7",
+    "objectiveHash": "f4c2e410c2df8adfa7bccc8457d4494a8493269d8f9c2ca99b007a6bc725a56a",
+    "workspaceId": "workspace_20260716191556_e9f7fe"
+  },
+  "observedAt": "2026-07-16T19:15:57.197Z",
+  "productionReadyClaim": false,
+  "promotion": {
+    "candidateId": "learningcandidate_20260716191556_5fef25",
+    "finalStatus": "rolled-back",
+    "memoryContentHash": "ae3057ec74f44f7589a804f7d67bb20f40e7ebdd4e7e82acb158e96962f9bf81",
+    "memoryId": "memory_20260716191557_498987",
+    "memoryRollbackStatus": "memory-deleted",
+    "rollbackAction": "delete-memory-entry",
+    "rollbackStatus": "completed",
+    "scope": "mission",
+    "scopeId": "mission_20260716191556_c950b7",
+    "target": "memory",
+    "verificationId": "learningcandidate_20260716191556_5fef25:promotion-verification:approve",
+    "verificationStatus": "passed"
+  },
+  "qualityBoundary": {
+    "actualModelTrainingExecuted": false,
+    "crossMissionGeneralizationValidated": false,
+    "generalAnswerQualityImprovementValidated": false,
+    "missionScopedFeedbackApplicationValidated": true
+  },
+  "results": {
+    "baselineClean": true,
+    "distinctSessionsPassed": true,
+    "externalProviderIsolationPassed": true,
+    "fixtureBindingPassed": true,
+    "plannerAndDeliverableAdapted": true,
+    "promotionVerified": true,
+    "retrievalLineageBound": true,
+    "reviewerPassPreserved": true,
+    "rollbackArtifactParity": true,
+    "rollbackRestoredBaseline": true
+  },
+  "runs": {
+    "beforePromotion": {
+      "adaptation": {
+        "deliverableApplied": false,
+        "planStepCount": 3,
+        "plannerApplied": false
+      },
+      "artifacts": {
+        "deliverableHash": "36ade05990b3202ab7d1151b392f5f6256d1563c36e999d141ac95e431141595",
+        "plannerHash": "c5c5df576f41016215b2fe0d3a70877e0a16860640a9d9732a4a951011fbf2f7",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "learningMemoryPresent": false,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "sessionId": "session_20260716191556_41c21b",
+      "status": "completed"
+    },
+    "afterPromotion": {
+      "adaptation": {
+        "deliverableApplied": true,
+        "planStepCount": 4,
+        "plannerApplied": true
+      },
+      "artifacts": {
+        "deliverableHash": "cad233c149b86b6d737f1bb3fee1c1b62b9a61f3417748542fb3dfd9eff0616c",
+        "plannerHash": "e75a59483a311dba7ff738df7412d424bccdd48e704102959bcd698fabcadf01",
+        "retrievalHash": "f617010352e9035e6dd8ad79996dcdbb0b8f5ee7b2e9e4b68fc1bf72698ff718"
+      },
+      "externalProviderCallCount": 0,
+      "learningMemoryPresent": true,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "ae3057ec74f44f7589a804f7d67bb20f40e7ebdd4e7e82acb158e96962f9bf81",
+        "matchTermCount": 4,
+        "scope": "mission",
+        "scopeId": "mission_20260716191556_c950b7",
+        "sourceId": "memory_20260716191557_498987"
+      },
+      "reviewerVerdict": "pass",
+      "sessionId": "session_20260716191557_48d869",
+      "status": "completed"
+    },
+    "afterRollback": {
+      "adaptation": {
+        "deliverableApplied": false,
+        "planStepCount": 3,
+        "plannerApplied": false
+      },
+      "artifacts": {
+        "deliverableHash": "36ade05990b3202ab7d1151b392f5f6256d1563c36e999d141ac95e431141595",
+        "plannerHash": "c5c5df576f41016215b2fe0d3a70877e0a16860640a9d9732a4a951011fbf2f7",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "learningMemoryPresent": false,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "sessionId": "session_20260716191557_64c08f",
+      "status": "completed"
+    }
+  },
+  "schemaVersion": "personal-ai-agent-approved-learning-rag-feedback/v1",
+  "status": "approved-learning-rag-feedback-passed-local-only",
+  "evidenceHash": "c9297c28df194515a052d69fbd3e73a20a42d25abe32e7adcfbee0e7c43552df",
+  "id": "approved-learning-rag-feedback-c9297c28df194515a052d69fbd3e73a20a42d25abe32e7adcfbee0e7c43552df"
+}

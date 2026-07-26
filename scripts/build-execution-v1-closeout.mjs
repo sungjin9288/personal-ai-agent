@@ -69,6 +69,15 @@ const evidenceBody = fs.readFileSync(evidencePath, 'utf8');
 const branch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
 const commit = runGit(['rev-parse', 'HEAD']);
 const generatedAt = new Date().toISOString();
+const liveValidationMode = extractBulletValue(evidenceBody, 'liveValidationMode') || 'legacy-unqualified';
+const archivedLiveValidationSourceGeneratedAt = extractBulletValue(evidenceBody, 'archivedLiveValidationSourceGeneratedAt');
+const archivedLiveValidationSourceCommit = extractBulletValue(evidenceBody, 'archivedLiveValidationSourceCommit');
+const archivedLiveValidationProviders = new Set(
+  extractBulletValue(evidenceBody, 'archivedLiveValidationProviders')
+    .split(',')
+    .map((provider) => provider.trim())
+    .filter(Boolean),
+);
 
 const deterministicPassed = /smoke:execution-flow: passed/.test(evidenceBody)
   && /smoke:execution-cli: passed/.test(evidenceBody)
@@ -148,6 +157,16 @@ const lines = [
   `- branch: ${branch}`,
   `- commit: ${commit}`,
   `- evidence: [${path.basename(evidencePath)}](${formatMarkdownLinkTarget(evidencePath, checklistPath)})`,
+  `- liveValidationMode: ${liveValidationMode}`,
+  ...(archivedLiveValidationSourceGeneratedAt
+    ? [`- archivedLiveValidationSourceGeneratedAt: ${archivedLiveValidationSourceGeneratedAt}`]
+    : []),
+  ...(archivedLiveValidationSourceCommit
+    ? [`- archivedLiveValidationSourceCommit: ${archivedLiveValidationSourceCommit}`]
+    : []),
+  ...(archivedLiveValidationProviders.size
+    ? [`- archivedLiveValidationProviders: ${[...archivedLiveValidationProviders].join(', ')}`]
+    : []),
   '',
   '## Closeout Checklist',
   '',
@@ -160,14 +179,15 @@ const lines = [
   '- [x] execution lease approval → foreground execution session 연결',
   '- [x] operator console preflight/start/stop/log surface 반영',
   '- [x] CLI execution preflight/start/stop/status/logs 계약 반영',
-  `- [${liveOpenAIStatus.checked ? 'x' : ' '}] OpenAI live validation`,
-  `- [${liveAnthropicStatus.checked ? 'x' : ' '}] Anthropic live validation`,
-  `- [${liveLocalStatus.checked ? 'x' : ' '}] Local provider live validation`,
-  `- [${liveHermesStatus.checked ? 'x' : ' '}] Hermes live validation`,
+  `- [${liveOpenAIStatus.checked ? 'x' : ' '}] OpenAI live validation${formatArchivedProviderSuffix('openai')}`,
+  `- [${liveAnthropicStatus.checked ? 'x' : ' '}] Anthropic live validation${formatArchivedProviderSuffix('anthropic')}`,
+  `- [${liveLocalStatus.checked ? 'x' : ' '}] Local provider live validation${formatArchivedProviderSuffix('local')}`,
+  `- [${liveHermesStatus.checked ? 'x' : ' '}] Hermes live validation${formatArchivedProviderSuffix('hermes')}`,
   `- [${browserE2EPassed ? 'x' : ' '}] browser interaction E2E 자동화`,
   '',
   '## Current Status',
   '',
+  `- live validation evidence mode: ${formatLiveValidationProvenance()}`,
   `- deterministic smoke: ${deterministicPassed ? 'ready' : 'blocked'}`,
   `- reference adoption gate: ${referenceAdoptionsPassed ? 'ready' : 'not verified'}`,
   `- deterministic runtime summary: ${deterministicRuntimeSummaryReady ? 'ready' : 'not verified'}`,
@@ -221,7 +241,9 @@ lines.push(
   '- 이 문서는 `build-execution-v1-evidence.mjs` 결과를 기반으로 다시 생성된다.',
   '- deterministic smoke는 repo-local execution, CLI contract, operator console, browser interaction까지 포함한 local-first 경로를 닫는다.',
   '- reference adoption gate는 외부 reference 기반으로 이식한 compaction, provider guard, Hermes provider/profile, conversion, retrieval, fact graph, instruction-boundary, orchestration profile, UI blueprint, parallel specialist 흐름의 aggregate regression을 닫는다.',
-  '- live validation은 provider credential과 runtime adapter가 준비된 환경에서만 추가 확인 대상으로 남는다.',
+  liveValidationMode === 'archived-preserved-not-rerun'
+    ? `- provider별 pass/fail은 ${archivedLiveValidationSourceCommit || 'unknown source commit'} (${archivedLiveValidationSourceGeneratedAt || 'unknown generatedAt'})에서 보존된 결과이며 이번 refresh에서 재실행되지 않았다.`
+    : '- live validation은 provider credential과 runtime adapter가 준비된 환경에서만 추가 확인 대상으로 남는다.',
   '',
 );
 
@@ -371,7 +393,8 @@ function compactSingleLine(value) {
 }
 
 function readLiveValidationProviderFailureFromEvidence(provider) {
-  const section = extractSection(evidenceBody, 'Live Validation');
+  const section = extractSection(evidenceBody, 'Archived Live Validation (not rerun in this refresh)')
+    || extractSection(evidenceBody, 'Live Validation');
   if (!section) {
     return null;
   }
@@ -407,6 +430,22 @@ function readLiveValidationProviderFailureFromEvidence(provider) {
     role: fields.failedRole || '',
     timedOut: fields.timedOut || '',
   };
+}
+
+function extractBulletValue(markdown, label) {
+  const match = String(markdown || '').match(new RegExp(`^- ${escapeRegExp(label)}:\\s+(.+)$`, 'm'));
+  return match ? String(match[1] || '').trim() : '';
+}
+
+function formatLiveValidationProvenance() {
+  if (liveValidationMode !== 'archived-preserved-not-rerun') {
+    return liveValidationMode;
+  }
+  return `${liveValidationMode}; providers=${[...archivedLiveValidationProviders].join(', ') || 'none'}; sourceCommit=${archivedLiveValidationSourceCommit || 'unknown'}; sourceGeneratedAt=${archivedLiveValidationSourceGeneratedAt || 'unknown'}`;
+}
+
+function formatArchivedProviderSuffix(provider) {
+  return archivedLiveValidationProviders.has(provider) ? ' (archived; not rerun in this refresh)' : '';
 }
 
 function extractSection(markdown, heading) {

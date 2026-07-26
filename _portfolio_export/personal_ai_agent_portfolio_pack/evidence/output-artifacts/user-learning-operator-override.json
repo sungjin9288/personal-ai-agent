@@ -1,0 +1,673 @@
+{
+  "actualUserLearningOperatorOverrideValidated": true,
+  "costFree": true,
+  "externalProviderCalls": "none",
+  "fixtureBinding": {
+    "caseId": "user-decision-operator-override",
+    "clearOverrideNoteHash": "941a676a54cae93bb3a3da180102fc6a6b98234e8602381f3343b66c58dfe7f3",
+    "firstOverrideNoteHash": "1676a9d46054e433adee38642d6ecf7c1899ce989b2265d75d2f1e4988faf6fe",
+    "fixtureHash": "86126cfd373dbf82d3cf654088ddbb89c09812529c31c82053146752c95b4908",
+    "newerObjectiveHash": "27a4f2f37c2e7206881e22bf4b7fa9b9e13d04b0b6e40043a3c4eae7383cbbf4",
+    "newerPromotionNoteHash": "943e6852872f10d3e61a6b6ed9efed06f8eb0b53252107e97aeee8fcf4ef9fe1",
+    "olderObjectiveHash": "ca4852485cb20c3666d5c6e68c16f0df16de219bc4580101dabd57b481e96a11",
+    "olderPromotionNoteHash": "eb713f077f611c492315ab2aeacad3a24204061512dd10f66d45a6b086743bcc",
+    "secondOverrideNoteHash": "90e4c8cd3359bedaf806fd8b42e7f22436937802fc3f19b58b19b1d46ee24ca4",
+    "targetObjectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+    "bindingHash": "27c0e73a29de0e45d138074829eaa44ad612f171ee1d4d83f66dc5030bf3e085"
+  },
+  "observedAt": "2100-01-01T00:04:00.000Z",
+  "overrideLifecycle": {
+    "cleared": {
+      "action": "clear",
+      "at": "2100-01-01T00:03:00.000Z",
+      "expiresAt": null,
+      "memoryId": "memory_20260716233845_ea1f73",
+      "noteHash": "941a676a54cae93bb3a3da180102fc6a6b98234e8602381f3343b66c58dfe7f3",
+      "overrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000",
+      "performedBy": "local-operator",
+      "scope": "user",
+      "scopeId": "user"
+    },
+    "expiredObservedAt": "2100-01-01T00:01:00.000Z",
+    "firstSet": {
+      "action": "set",
+      "at": "2026-07-16T23:38:46.040Z",
+      "expiresAt": "2099-01-01T00:00:00.000Z",
+      "memoryId": "memory_20260716233845_ea1f73",
+      "noteHash": "1676a9d46054e433adee38642d6ecf7c1899ce989b2265d75d2f1e4988faf6fe",
+      "overrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+      "performedBy": "local-operator",
+      "scope": "user",
+      "scopeId": "user"
+    },
+    "secondSet": {
+      "action": "set",
+      "at": "2100-01-01T00:02:00.000Z",
+      "expiresAt": "2101-01-01T00:00:00.000Z",
+      "memoryId": "memory_20260716233845_ea1f73",
+      "noteHash": "90e4c8cd3359bedaf806fd8b42e7f22436937802fc3f19b58b19b1d46ee24ca4",
+      "overrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000",
+      "performedBy": "local-operator",
+      "scope": "user",
+      "scopeId": "user"
+    }
+  },
+  "phases": {
+    "activeOverride": {
+      "artifacts": {
+        "deliverableHash": "5014db849a88f4b1fa7627d7dcdccc4d05e4bb826fd8e8fd01d946299b130a41",
+        "plannerHash": "e6f3a6f177d0363e7a6cdda32ac0c212fba84f20daefdee184924cb12d9c9f71"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+            "effectiveAt": "2026-07-16T23:38:45.858Z",
+            "memoryId": "memory_20260716233845_ea1f73",
+            "priority": 1,
+            "retrievalRank": 2,
+            "selected": true
+          },
+          {
+            "contentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+            "effectiveAt": "2026-07-16T23:38:45.943Z",
+            "memoryId": "memory_20260716233845_05ef9d",
+            "priority": 2,
+            "retrievalRank": 1,
+            "selected": false
+          }
+        ],
+        "overrideEvaluation": {
+          "activeCount": 1,
+          "clearedCount": 0,
+          "currentOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+          "expiredCount": 0,
+          "invalidCount": 0,
+          "records": [
+            {
+              "candidateId": "learningcandidate_20260716233845_b12e6d",
+              "expiresAt": "2099-01-01T00:00:00.000Z",
+              "id": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+              "memoryId": "memory_20260716233845_ea1f73",
+              "noteHash": "1676a9d46054e433adee38642d6ecf7c1899ce989b2265d75d2f1e4988faf6fe",
+              "scope": "user",
+              "scopeId": "user",
+              "setAt": "2026-07-16T23:38:46.040Z",
+              "status": "active"
+            }
+          ],
+          "selectedOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+          "unretrievedActiveCount": 0
+        },
+        "policyId": "user-decision-operator-override-v1",
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v2",
+        "scope": "user",
+        "scopeId": "user",
+        "selectedContentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+        "selectedMemoryId": "memory_20260716233845_ea1f73",
+        "selectionSource": "operator-override",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716233846_b43507",
+      "status": "completed"
+    },
+    "baseline": {
+      "artifacts": {
+        "deliverableHash": "c1176416c53fc8977fc448361f72ecac1f9cca54e8e831cf2aa836df445e4cb2",
+        "plannerHash": "1b67a72c7cd9f86ced1ec8244b9dd068655328f7cbd667425dd6ed68a92a61b2"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+            "effectiveAt": "2026-07-16T23:38:45.943Z",
+            "memoryId": "memory_20260716233845_05ef9d",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          },
+          {
+            "contentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+            "effectiveAt": "2026-07-16T23:38:45.858Z",
+            "memoryId": "memory_20260716233845_ea1f73",
+            "priority": 2,
+            "retrievalRank": 2,
+            "selected": false
+          }
+        ],
+        "overrideEvaluation": null,
+        "policyId": "user-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v1",
+        "scope": "user",
+        "scopeId": "user",
+        "selectedContentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+        "selectedMemoryId": "memory_20260716233845_05ef9d",
+        "selectionSource": "",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716233845_04c281",
+      "status": "completed"
+    },
+    "cleared": {
+      "artifacts": {
+        "deliverableHash": "c1176416c53fc8977fc448361f72ecac1f9cca54e8e831cf2aa836df445e4cb2",
+        "plannerHash": "1b67a72c7cd9f86ced1ec8244b9dd068655328f7cbd667425dd6ed68a92a61b2"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+            "effectiveAt": "2026-07-16T23:38:45.943Z",
+            "memoryId": "memory_20260716233845_05ef9d",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          },
+          {
+            "contentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+            "effectiveAt": "2026-07-16T23:38:45.858Z",
+            "memoryId": "memory_20260716233845_ea1f73",
+            "priority": 2,
+            "retrievalRank": 2,
+            "selected": false
+          }
+        ],
+        "overrideEvaluation": {
+          "activeCount": 0,
+          "clearedCount": 1,
+          "currentOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000",
+          "expiredCount": 0,
+          "invalidCount": 0,
+          "records": [
+            {
+              "candidateId": "learningcandidate_20260716233845_b12e6d",
+              "expiresAt": "2101-01-01T00:00:00.000Z",
+              "id": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000",
+              "memoryId": "memory_20260716233845_ea1f73",
+              "noteHash": "90e4c8cd3359bedaf806fd8b42e7f22436937802fc3f19b58b19b1d46ee24ca4",
+              "scope": "user",
+              "scopeId": "user",
+              "setAt": "2100-01-01T00:02:00.000Z",
+              "status": "cleared"
+            }
+          ],
+          "selectedOverrideId": null,
+          "unretrievedActiveCount": 0
+        },
+        "policyId": "user-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v2",
+        "scope": "user",
+        "scopeId": "user",
+        "selectedContentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+        "selectedMemoryId": "memory_20260716233845_05ef9d",
+        "selectionSource": "latest-revision-fallback",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716233846_a91fcf",
+      "status": "completed"
+    },
+    "crossWorkspaceActive": {
+      "artifacts": {
+        "deliverableHash": "2ee9398a5abfc12b13c0f0b2ee4b7a1c18f3b9b1a9ca7d28624bd450bcbb43d7",
+        "plannerHash": "e1f67d150854d8cd771672315073cb955bc83bd0ad5994a6275326c9df84318b"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+            "effectiveAt": "2026-07-16T23:38:45.858Z",
+            "memoryId": "memory_20260716233845_ea1f73",
+            "priority": 1,
+            "retrievalRank": 2,
+            "selected": true
+          },
+          {
+            "contentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+            "effectiveAt": "2026-07-16T23:38:45.943Z",
+            "memoryId": "memory_20260716233845_05ef9d",
+            "priority": 2,
+            "retrievalRank": 1,
+            "selected": false
+          }
+        ],
+        "overrideEvaluation": {
+          "activeCount": 1,
+          "clearedCount": 0,
+          "currentOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+          "expiredCount": 0,
+          "invalidCount": 0,
+          "records": [
+            {
+              "candidateId": "learningcandidate_20260716233845_b12e6d",
+              "expiresAt": "2099-01-01T00:00:00.000Z",
+              "id": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+              "memoryId": "memory_20260716233845_ea1f73",
+              "noteHash": "1676a9d46054e433adee38642d6ecf7c1899ce989b2265d75d2f1e4988faf6fe",
+              "scope": "user",
+              "scopeId": "user",
+              "setAt": "2026-07-16T23:38:46.040Z",
+              "status": "active"
+            }
+          ],
+          "selectedOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+          "unretrievedActiveCount": 0
+        },
+        "policyId": "user-decision-operator-override-v1",
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v2",
+        "scope": "user",
+        "scopeId": "user",
+        "selectedContentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+        "selectedMemoryId": "memory_20260716233845_ea1f73",
+        "selectionSource": "operator-override",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716233846_3fc3ea",
+      "status": "completed"
+    },
+    "expired": {
+      "artifacts": {
+        "deliverableHash": "c1176416c53fc8977fc448361f72ecac1f9cca54e8e831cf2aa836df445e4cb2",
+        "plannerHash": "1b67a72c7cd9f86ced1ec8244b9dd068655328f7cbd667425dd6ed68a92a61b2"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+            "effectiveAt": "2026-07-16T23:38:45.943Z",
+            "memoryId": "memory_20260716233845_05ef9d",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          },
+          {
+            "contentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+            "effectiveAt": "2026-07-16T23:38:45.858Z",
+            "memoryId": "memory_20260716233845_ea1f73",
+            "priority": 2,
+            "retrievalRank": 2,
+            "selected": false
+          }
+        ],
+        "overrideEvaluation": {
+          "activeCount": 0,
+          "clearedCount": 0,
+          "currentOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+          "expiredCount": 1,
+          "invalidCount": 0,
+          "records": [
+            {
+              "candidateId": "learningcandidate_20260716233845_b12e6d",
+              "expiresAt": "2099-01-01T00:00:00.000Z",
+              "id": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040",
+              "memoryId": "memory_20260716233845_ea1f73",
+              "noteHash": "1676a9d46054e433adee38642d6ecf7c1899ce989b2265d75d2f1e4988faf6fe",
+              "scope": "user",
+              "scopeId": "user",
+              "setAt": "2026-07-16T23:38:46.040Z",
+              "status": "expired"
+            }
+          ],
+          "selectedOverrideId": null,
+          "unretrievedActiveCount": 0
+        },
+        "policyId": "user-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v2",
+        "scope": "user",
+        "scopeId": "user",
+        "selectedContentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+        "selectedMemoryId": "memory_20260716233845_05ef9d",
+        "selectionSource": "latest-revision-fallback",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716233846_ca187b",
+      "status": "completed"
+    },
+    "repinned": {
+      "artifacts": {
+        "deliverableHash": "5014db849a88f4b1fa7627d7dcdccc4d05e4bb826fd8e8fd01d946299b130a41",
+        "plannerHash": "e6f3a6f177d0363e7a6cdda32ac0c212fba84f20daefdee184924cb12d9c9f71"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+            "effectiveAt": "2026-07-16T23:38:45.858Z",
+            "memoryId": "memory_20260716233845_ea1f73",
+            "priority": 1,
+            "retrievalRank": 2,
+            "selected": true
+          },
+          {
+            "contentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+            "effectiveAt": "2026-07-16T23:38:45.943Z",
+            "memoryId": "memory_20260716233845_05ef9d",
+            "priority": 2,
+            "retrievalRank": 1,
+            "selected": false
+          }
+        ],
+        "overrideEvaluation": {
+          "activeCount": 1,
+          "clearedCount": 0,
+          "currentOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000",
+          "expiredCount": 0,
+          "invalidCount": 0,
+          "records": [
+            {
+              "candidateId": "learningcandidate_20260716233845_b12e6d",
+              "expiresAt": "2101-01-01T00:00:00.000Z",
+              "id": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000",
+              "memoryId": "memory_20260716233845_ea1f73",
+              "noteHash": "90e4c8cd3359bedaf806fd8b42e7f22436937802fc3f19b58b19b1d46ee24ca4",
+              "scope": "user",
+              "scopeId": "user",
+              "setAt": "2100-01-01T00:02:00.000Z",
+              "status": "active"
+            }
+          ],
+          "selectedOverrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000",
+          "unretrievedActiveCount": 0
+        },
+        "policyId": "user-decision-operator-override-v1",
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v2",
+        "scope": "user",
+        "scopeId": "user",
+        "selectedContentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+        "selectedMemoryId": "memory_20260716233845_ea1f73",
+        "selectionSource": "operator-override",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716233846_55bca0",
+      "status": "completed"
+    }
+  },
+  "productionReadyClaim": false,
+  "promotions": {
+    "newer": {
+      "candidateId": "learningcandidate_20260716233845_a65b08",
+      "memoryContentHash": "774903ba8f4823d7856d819d153dbb892db6f44d62dbb1edbc09452161a96f24",
+      "memoryCreatedAt": "2026-07-16T23:38:45.943Z",
+      "memoryId": "memory_20260716233845_05ef9d",
+      "promotionNoteHash": "943e6852872f10d3e61a6b6ed9efed06f8eb0b53252107e97aeee8fcf4ef9fe1",
+      "promotionStatus": "promoted",
+      "scope": "user",
+      "scopeAuthorizationStatus": "consumed",
+      "scopeId": "user",
+      "target": "memory",
+      "verificationId": "learningcandidate_20260716233845_a65b08:promotion-verification:approve",
+      "verificationStatus": "passed"
+    },
+    "older": {
+      "candidateId": "learningcandidate_20260716233845_b12e6d",
+      "memoryContentHash": "132366bc1b40d84652f098a451d47b8043bd79c897dc66db07fb982a16093adb",
+      "memoryCreatedAt": "2026-07-16T23:38:45.858Z",
+      "memoryId": "memory_20260716233845_ea1f73",
+      "promotionNoteHash": "eb713f077f611c492315ab2aeacad3a24204061512dd10f66d45a6b086743bcc",
+      "promotionStatus": "promoted",
+      "scope": "user",
+      "scopeAuthorizationStatus": "consumed",
+      "scopeId": "user",
+      "target": "memory",
+      "verificationId": "learningcandidate_20260716233845_b12e6d:promotion-verification:approve",
+      "verificationStatus": "passed"
+    }
+  },
+  "quality": {
+    "activeOverride": {
+      "id": "user-decision-operator-override-older",
+      "metricsHash": "d5faa91d6406cc09fbf54272a0fa0d1117db49ee0aebe2dde23d9e32359f89f3",
+      "status": "passed"
+    },
+    "baseline": {
+      "id": "user-decision-operator-override-newer",
+      "metricsHash": "d5faa91d6406cc09fbf54272a0fa0d1117db49ee0aebe2dde23d9e32359f89f3",
+      "status": "passed"
+    },
+    "cleared": {
+      "id": "user-decision-operator-override-newer",
+      "metricsHash": "d5faa91d6406cc09fbf54272a0fa0d1117db49ee0aebe2dde23d9e32359f89f3",
+      "status": "passed"
+    },
+    "crossWorkspaceActive": {
+      "id": "user-decision-operator-override-older",
+      "metricsHash": "d5faa91d6406cc09fbf54272a0fa0d1117db49ee0aebe2dde23d9e32359f89f3",
+      "status": "passed"
+    },
+    "expired": {
+      "id": "user-decision-operator-override-newer",
+      "metricsHash": "d5faa91d6406cc09fbf54272a0fa0d1117db49ee0aebe2dde23d9e32359f89f3",
+      "status": "passed"
+    },
+    "repinned": {
+      "id": "user-decision-operator-override-older",
+      "metricsHash": "d5faa91d6406cc09fbf54272a0fa0d1117db49ee0aebe2dde23d9e32359f89f3",
+      "status": "passed"
+    }
+  },
+  "qualityBoundary": {
+    "actualModelTrainingExecuted": false,
+    "automaticPreferenceLearningValidated": false,
+    "controlledCrossWorkspaceUserOverrideValidated": true,
+    "controlledUserOperatorOverrideValidated": true,
+    "externalProviderValidationExecuted": false,
+    "generalAnswerQualityImprovementValidated": false,
+    "generalUserPersonalizationValidated": false,
+    "hostedTenantUserPersonalizationValidated": false,
+    "learnedConflictResolutionValidated": false,
+    "multiUserIsolationValidated": false
+  },
+  "results": {
+    "activeOverride": true,
+    "baselineLatest": true,
+    "clearedFallback": true,
+    "crossWorkspaceOverride": true,
+    "expiredFallback": true,
+    "lifecycle": true,
+    "promotions": true,
+    "quality": true,
+    "repinned": true,
+    "sessionIsolation": true,
+    "stubOnly": true,
+    "topology": true
+  },
+  "schemaVersion": "personal-ai-agent-user-learning-operator-override/v1",
+  "sessionCount": 8,
+  "sourceRuns": {
+    "newer": {
+      "artifacts": {
+        "deliverableHash": "dedd85c793d70965cb3717cfa1c389c10e66cf5efc832d5a2baa780dd54973f5",
+        "plannerHash": "6d9b41277a73aa5b516ca6b14ccdb86f51f3ff8af68887466ed6a093678a5471"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716233845_2b5eb1",
+      "status": "completed"
+    },
+    "older": {
+      "artifacts": {
+        "deliverableHash": "74d512a35f2e14d2b015bd3e26c63e3c8ef62759f3c9520c73f5e9c7667e9960",
+        "plannerHash": "9fde51df936a8692b090706154241dfe5a6eb057557af93039ac2fc752af9589"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "providerId": "stub",
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716233845_a06070",
+      "status": "completed"
+    }
+  },
+  "timeline": [
+    {
+      "at": "2026-07-16T23:38:46.040Z",
+      "index": 16,
+      "kind": "user-learning-selection-override-set",
+      "overrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:1784245126040"
+    },
+    {
+      "at": "2100-01-01T00:02:00.000Z",
+      "index": 17,
+      "kind": "user-learning-selection-override-set",
+      "overrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000"
+    },
+    {
+      "at": "2100-01-01T00:03:00.000Z",
+      "index": 18,
+      "kind": "user-learning-selection-override-cleared",
+      "overrideId": "learningcandidate_20260716233845_b12e6d:user-learning-selection-override:4102444920000"
+    }
+  ],
+  "topology": {
+    "crossWorkspaceId": "workspace_20260716233845_0f6bbe",
+    "crossWorkspaceMission": {
+      "id": "mission_20260716233845_f73b58",
+      "objectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+      "workspaceId": "workspace_20260716233845_0f6bbe"
+    },
+    "newerSourceMission": {
+      "id": "mission_20260716233845_c584d8",
+      "objectiveHash": "27a4f2f37c2e7206881e22bf4b7fa9b9e13d04b0b6e40043a3c4eae7383cbbf4",
+      "workspaceId": "workspace_20260716233845_0f6bbe"
+    },
+    "olderSourceMission": {
+      "id": "mission_20260716233845_23dec1",
+      "objectiveHash": "ca4852485cb20c3666d5c6e68c16f0df16de219bc4580101dabd57b481e96a11",
+      "workspaceId": "workspace_20260716233845_e9d645"
+    },
+    "sourceWorkspaceId": "workspace_20260716233845_e9d645",
+    "targetMission": {
+      "id": "mission_20260716233845_77e28f",
+      "objectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+      "workspaceId": "workspace_20260716233845_e9d645"
+    }
+  },
+  "evidenceHash": "c3df41f71aa4411c182ceb0af5c4391c67b98751cdaed23bff77adeb52858e24",
+  "id": "user-learning-operator-override-c3df41f71aa4411c"
+}

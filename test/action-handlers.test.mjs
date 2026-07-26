@@ -5,6 +5,7 @@ import { createActionHandlerFactory } from '../src/web/action-handlers.mjs';
 
 function createFixture({ body = {}, query = {}, tenant } = {}) {
   const state = {
+    candidateTenantChecks: [],
     decodedSegments: [],
     deniedTenants: [],
     jsonResponses: [],
@@ -15,6 +16,35 @@ function createFixture({ body = {}, query = {}, tenant } = {}) {
   const request = { id: 'request-action-1' };
   const response = {};
   const service = {
+    authorizeLearningPromotionScope(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'authorizeLearningPromotionScope' });
+      return { authorized: true, candidateId };
+    },
+    clearWorkspaceLearningSelectionOverride(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'clearWorkspaceLearningSelectionOverride' });
+      return {
+        learningCandidate: { id: candidateId },
+        selectionOverride: {
+          candidateId,
+          clearNote: input.note,
+          clearNoteHash: 'clear-note-hash',
+          note: 'original note',
+          status: 'cleared',
+        },
+      };
+    },
+    clearUserLearningSelectionOverride(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'clearUserLearningSelectionOverride' });
+      return {
+        learningCandidate: { id: candidateId },
+        selectionOverride: {
+          candidateId,
+          clearNote: input.note,
+          clearNoteHash: 'user-clear-note-hash',
+          status: 'cleared',
+        },
+      };
+    },
     expireLearningPromotions(input) {
       state.serviceCalls.push({ input, method: 'expireLearningPromotions' });
       return { expired: true };
@@ -47,11 +77,39 @@ function createFixture({ body = {}, query = {}, tenant } = {}) {
       state.serviceCalls.push({ candidateId, input, method: 'rollbackLearningPromotion' });
       return { candidateId, rolledBack: true };
     },
+    setWorkspaceLearningSelectionOverride(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'setWorkspaceLearningSelectionOverride' });
+      return {
+        learningCandidate: { id: candidateId },
+        selectionOverride: {
+          candidateId,
+          note: input.note,
+          noteHash: 'note-hash',
+          status: 'active',
+        },
+      };
+    },
+    setUserLearningSelectionOverride(candidateId, input) {
+      state.serviceCalls.push({ candidateId, input, method: 'setUserLearningSelectionOverride' });
+      return {
+        learningCandidate: { id: candidateId },
+        selectionOverride: {
+          candidateId,
+          note: input.note,
+          noteHash: 'user-note-hash',
+          status: 'active',
+        },
+      };
+    },
   };
   const buildHandlers = createActionHandlerFactory({
     decodePathSegment(value) {
       state.decodedSegments.push(value);
       return decodeURIComponent(String(value || ''));
+    },
+    evaluateLearningCandidateTenantAccess(candidateId, auth) {
+      state.candidateTenantChecks.push({ auth, candidateId });
+      return tenant || { allowed: true, tenantId: 'tenant-1' };
     },
     evaluateWorkspaceTenantAccess(workspaceId, auth) {
       state.tenantChecks.push({ auth, workspaceId });
@@ -184,6 +242,14 @@ test('expire handler trims the existing learning promotion filter payload', asyn
 });
 
 test('learning promotion handlers preserve path decoding and mutation payloads', async () => {
+  const authorize = createFixture({
+    body: {
+      note: ' reuse reviewed decision ',
+      scope: ' workspace ',
+    },
+  });
+  await authorize.handlers.authorizeLearningPromotionScope({ candidateId: 'candidate%2F2' });
+
   const remind = createFixture({
     body: {
       dueOnly: false,
@@ -208,6 +274,23 @@ test('learning promotion handlers preserve path decoding and mutation payloads',
   const rollback = createFixture({ body: { note: ' rollback reason ' } });
   await rollback.handlers.rollbackLearningPromotion({ candidateId: 'candidate%2F5' });
 
+  assert.deepEqual(
+    [authorize, remind, resolve, rollback].map(({ auth, state }) => state.candidateTenantChecks[0]),
+    [
+      { auth: authorize.auth, candidateId: 'candidate/2' },
+      { auth: remind.auth, candidateId: 'candidate/3' },
+      { auth: resolve.auth, candidateId: 'candidate/4' },
+      { auth: rollback.auth, candidateId: 'candidate/5' },
+    ],
+  );
+  assert.deepEqual(authorize.state.serviceCalls, [{
+    candidateId: 'candidate/2',
+    input: {
+      note: 'reuse reviewed decision',
+      scope: 'workspace',
+    },
+    method: 'authorizeLearningPromotionScope',
+  }]);
   assert.deepEqual(remind.state.serviceCalls, [{
     input: {
       dueOnly: false,
@@ -235,9 +318,175 @@ test('learning promotion handlers preserve path decoding and mutation payloads',
     method: 'rollbackLearningPromotion',
   }]);
   assert.deepEqual(
-    [remind, resolve, rollback].map(({ state }) => state.jsonResponses[0].statusCode),
-    [200, 200, 200],
+    [authorize, remind, resolve, rollback].map(({ state }) => state.jsonResponses[0].statusCode),
+    [200, 200, 200, 200],
   );
+});
+
+test('workspace learning override handlers validate candidate tenant before trimmed mutations', async () => {
+  const setOverride = createFixture({
+    body: {
+      expiresAt: ' 2026-07-18T00:00:00.000Z ',
+      note: ' pin reviewed decision ',
+    },
+  });
+  await setOverride.handlers.setWorkspaceLearningSelectionOverride({ candidateId: 'candidate%2F6' });
+
+  const clearOverride = createFixture({ body: { note: ' return to latest revision ' } });
+  await clearOverride.handlers.clearWorkspaceLearningSelectionOverride({ candidateId: 'candidate%2F7' });
+
+  assert.deepEqual(setOverride.state.candidateTenantChecks, [{
+    auth: setOverride.auth,
+    candidateId: 'candidate/6',
+  }]);
+  assert.deepEqual(clearOverride.state.candidateTenantChecks, [{
+    auth: clearOverride.auth,
+    candidateId: 'candidate/7',
+  }]);
+  assert.deepEqual(setOverride.state.serviceCalls, [{
+    candidateId: 'candidate/6',
+    input: {
+      expiresAt: '2026-07-18T00:00:00.000Z',
+      note: 'pin reviewed decision',
+    },
+    method: 'setWorkspaceLearningSelectionOverride',
+  }]);
+  assert.deepEqual(clearOverride.state.serviceCalls, [{
+    candidateId: 'candidate/7',
+    input: { note: 'return to latest revision' },
+    method: 'clearWorkspaceLearningSelectionOverride',
+  }]);
+  assert.deepEqual(setOverride.state.jsonResponses, [{
+    payload: {
+      learningCandidateId: 'candidate/6',
+      selectionOverride: {
+        candidateId: 'candidate/6',
+        noteHash: 'note-hash',
+        status: 'active',
+      },
+    },
+    statusCode: 200,
+  }]);
+  assert.deepEqual(clearOverride.state.jsonResponses, [{
+    payload: {
+      learningCandidateId: 'candidate/7',
+      selectionOverride: {
+        candidateId: 'candidate/7',
+        clearNoteHash: 'clear-note-hash',
+        status: 'cleared',
+      },
+    },
+    statusCode: 200,
+  }]);
+});
+
+test('workspace learning override handlers stop before mutation when candidate tenant is denied', async () => {
+  const tenant = {
+    allowed: false,
+    error: 'tenant-forbidden',
+    reason: 'tenant mismatch',
+    status: 403,
+  };
+  const fixture = createFixture({
+    body: {
+      expiresAt: '2026-07-18T00:00:00.000Z',
+      note: 'must not be read or stored',
+    },
+    tenant,
+  });
+
+  await fixture.handlers.setWorkspaceLearningSelectionOverride({ candidateId: 'candidate%2F8' });
+
+  assert.deepEqual(fixture.state.candidateTenantChecks, [{
+    auth: fixture.auth,
+    candidateId: 'candidate/8',
+  }]);
+  assert.deepEqual(fixture.state.serviceCalls, []);
+  assert.deepEqual(fixture.state.jsonResponses, []);
+  assert.deepEqual(fixture.state.deniedTenants, [tenant]);
+});
+
+test('user learning override handlers validate candidate tenant and sanitize notes', async () => {
+  const setOverride = createFixture({
+    body: {
+      expiresAt: ' 2026-07-19T00:00:00.000Z ',
+      note: ' pin reviewed user decision ',
+    },
+  });
+  await setOverride.handlers.setUserLearningSelectionOverride({ candidateId: 'candidate%2F9' });
+
+  const clearOverride = createFixture({ body: { note: ' return to latest user revision ' } });
+  await clearOverride.handlers.clearUserLearningSelectionOverride({ candidateId: 'candidate%2F10' });
+
+  assert.deepEqual(setOverride.state.candidateTenantChecks, [{
+    auth: setOverride.auth,
+    candidateId: 'candidate/9',
+  }]);
+  assert.deepEqual(clearOverride.state.candidateTenantChecks, [{
+    auth: clearOverride.auth,
+    candidateId: 'candidate/10',
+  }]);
+  assert.deepEqual(setOverride.state.serviceCalls, [{
+    candidateId: 'candidate/9',
+    input: {
+      expiresAt: '2026-07-19T00:00:00.000Z',
+      note: 'pin reviewed user decision',
+    },
+    method: 'setUserLearningSelectionOverride',
+  }]);
+  assert.deepEqual(clearOverride.state.serviceCalls, [{
+    candidateId: 'candidate/10',
+    input: { note: 'return to latest user revision' },
+    method: 'clearUserLearningSelectionOverride',
+  }]);
+  assert.deepEqual(setOverride.state.jsonResponses, [{
+    payload: {
+      learningCandidateId: 'candidate/9',
+      selectionOverride: {
+        candidateId: 'candidate/9',
+        noteHash: 'user-note-hash',
+        status: 'active',
+      },
+    },
+    statusCode: 200,
+  }]);
+  assert.deepEqual(clearOverride.state.jsonResponses, [{
+    payload: {
+      learningCandidateId: 'candidate/10',
+      selectionOverride: {
+        candidateId: 'candidate/10',
+        clearNoteHash: 'user-clear-note-hash',
+        status: 'cleared',
+      },
+    },
+    statusCode: 200,
+  }]);
+});
+
+test('user learning override handlers stop before body read and mutation when tenant is denied', async () => {
+  const tenant = {
+    allowed: false,
+    error: 'tenant-forbidden',
+    reason: 'tenant mismatch',
+    status: 403,
+  };
+  const fixture = createFixture({
+    body: {
+      expiresAt: '2026-07-19T00:00:00.000Z',
+      note: 'must not be read or stored',
+    },
+    tenant,
+  });
+
+  await fixture.handlers.setUserLearningSelectionOverride({ candidateId: 'candidate%2F11' });
+
+  assert.deepEqual(fixture.state.candidateTenantChecks, [{
+    auth: fixture.auth,
+    candidateId: 'candidate/11',
+  }]);
+  assert.deepEqual(fixture.state.serviceCalls, []);
+  assert.deepEqual(fixture.state.jsonResponses, []);
+  assert.deepEqual(fixture.state.deniedTenants, [tenant]);
 });
 
 test('follow-up remediation handlers preserve decoded ids and service arguments', async () => {

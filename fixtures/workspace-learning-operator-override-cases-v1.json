@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "personal-ai-agent-workspace-learning-operator-override-cases/v1",
+  "productionReadyClaim": false,
+  "cases": [
+    {
+      "id": "workspace-decision-operator-override",
+      "deliverableType": "decision-memo",
+      "mode": "knowledge",
+      "olderSourceTitle": "Workspace override stable source",
+      "olderSourceObjective": "Review the stable workspace approval path and record the reusable decision.",
+      "olderPromotionNote": "Use the stable approval path during controlled incidents. Preserve workspace override lane stable in the review.",
+      "olderScopeAuthorizationNote": "Authorize the reviewed stable decision for sibling missions in this workspace.",
+      "olderRequiredAnswerTerms": [
+        "stable approval path",
+        "workspace override lane stable"
+      ],
+      "newerSourceTitle": "Workspace override current source",
+      "newerSourceObjective": "Review the current workspace verification path and record the replacement decision.",
+      "newerPromotionNote": "Use the current verification path for normal workspace execution. Preserve workspace override lane current in the review.",
+      "newerScopeAuthorizationNote": "Authorize the reviewed current decision for sibling missions in this workspace.",
+      "newerRequiredAnswerTerms": [
+        "current verification path",
+        "workspace override lane current"
+      ],
+      "targetTitle": "Workspace override target",
+      "targetObjective": "Prepare the approval and verification path for workspace execution.",
+      "newerExpectedPlanStep": "Use the current verification path before requesting workspace execution again.",
+      "firstOverrideNote": "Temporarily pin the stable reviewed decision during the controlled incident window.",
+      "secondOverrideNote": "Reapply the stable reviewed decision for the bounded verification window.",
+      "clearOverrideNote": "Clear the bounded override and return to the latest reviewed decision."
+    }
+  ]
+}

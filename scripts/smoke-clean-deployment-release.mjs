@@ -146,7 +146,10 @@ function extractBulletValue(markdown, label) {
 function isReleaseArtifactSyncPath(filePath) {
   const relativePath = String(filePath || '').replace(/\\/g, '/').replace(/^\.\//, '');
   return [
+    'CHANGELOG.md',
+    '_portfolio_export/personal_ai_agent_portfolio_pack.zip',
     'docs/clean-deployment-release-v1.md',
+    'docs/evidence-checklist.md',
     'docs/execution-v1-closeout.md',
     'docs/execution-v1-evidence.md',
     'docs/execution-v1-handoff.md',
@@ -157,7 +160,10 @@ function isReleaseArtifactSyncPath(filePath) {
     'docs/production-retention-operating-v1.md',
     'docs/production-slo-operating-v1.md',
     'docs/release-readiness-v1.md',
-  ].includes(relativePath) || relativePath.startsWith('docs/releases/execution-v1/');
+    'portfolio_manifest.md',
+  ].includes(relativePath)
+    || relativePath.startsWith('_portfolio_export/personal_ai_agent_portfolio_pack/')
+    || relativePath.startsWith('docs/releases/execution-v1/');
 }
 
 function runGit(args) {

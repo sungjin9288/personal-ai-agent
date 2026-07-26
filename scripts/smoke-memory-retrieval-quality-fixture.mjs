@@ -13,12 +13,105 @@ const releaseReadiness = readRequiredFile('docs/release-readiness-v1.md');
 const retrievalSmoke = readRequiredFile('scripts/smoke-retrieval-memory.mjs');
 const factGraphSmoke = readRequiredFile('scripts/smoke-fact-graph-memory.mjs');
 const instructionBoundarySmoke = readRequiredFile('scripts/smoke-instruction-boundary-fixture.mjs');
+const corpusContractSmoke = readRequiredFile('scripts/smoke-retrieval-corpus-contract.mjs');
+const retrievalQualitySmoke = readRequiredFile('scripts/smoke-retrieval-quality-evaluation.mjs');
+const semanticRetrievalSmoke = readRequiredFile('scripts/smoke-semantic-retrieval-experiment.mjs');
+const rerankingSmoke = readRequiredFile('scripts/smoke-retrieval-reranking-experiment.mjs');
+const semanticRuntimeSmoke = readRequiredFile('scripts/smoke-semantic-retrieval-runtime.mjs');
+const localModelQualificationSmoke = readRequiredFile('scripts/smoke-local-embedding-model-qualification.mjs');
+const localRetrievalRobustnessSmoke = readRequiredFile('scripts/smoke-local-retrieval-robustness.mjs');
+const localRelevanceRerankerSmoke = readRequiredFile('scripts/smoke-local-relevance-reranker.mjs');
+const localRerankerResourceEnvelopeSmoke = readRequiredFile('scripts/smoke-local-reranker-resource-envelope.mjs');
+const localRerankerRuntimeStabilitySmoke = readRequiredFile('scripts/smoke-local-reranker-runtime-stability.mjs');
+const localRelevanceShadowIntegrationSmoke = readRequiredFile('scripts/smoke-local-relevance-shadow-integration.mjs');
+const localRelevanceShadowReplaySmoke = readRequiredFile('scripts/smoke-local-relevance-shadow-replay.mjs');
+const localRelevanceShadowCacheSmoke = readRequiredFile('scripts/smoke-local-relevance-shadow-cache.mjs');
+const localRelevanceShadowCacheLifecycleSmoke = readRequiredFile(
+  'scripts/smoke-local-relevance-shadow-cache-lifecycle.mjs',
+);
+const localRelevanceShadowCacheProcessIsolationSmoke = readRequiredFile(
+  'scripts/smoke-local-relevance-shadow-cache-process-isolation.mjs',
+);
+const localRelevanceShadowCacheTerminationSoakSmoke = readRequiredFile(
+  'scripts/smoke-local-relevance-shadow-cache-termination-soak.mjs',
+);
+const approvedLearningRagFeedbackSmoke = readRequiredFile(
+  'scripts/smoke-approved-learning-rag-feedback.mjs',
+);
 
 assert.equal(
   packageJson.scripts['smoke:memory-retrieval-quality-fixture'],
   'node scripts/smoke-memory-retrieval-quality-fixture.mjs',
 );
 assert.equal(packageJson.scripts['smoke:retrieval-memory'], 'node scripts/smoke-retrieval-memory.mjs');
+assert.equal(
+  packageJson.scripts['smoke:retrieval-corpus-contract'],
+  'node scripts/smoke-retrieval-corpus-contract.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:retrieval-quality-evaluation'],
+  'node scripts/smoke-retrieval-quality-evaluation.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:semantic-retrieval-experiment'],
+  'node scripts/smoke-semantic-retrieval-experiment.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:retrieval-reranking-experiment'],
+  'node scripts/smoke-retrieval-reranking-experiment.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:semantic-retrieval-runtime'],
+  'node scripts/smoke-semantic-retrieval-runtime.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-embedding-model-qualification'],
+  'node scripts/smoke-local-embedding-model-qualification.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-retrieval-robustness'],
+  'node scripts/smoke-local-retrieval-robustness.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-reranker'],
+  'node scripts/smoke-local-relevance-reranker.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-reranker-resource-envelope'],
+  'node scripts/smoke-local-reranker-resource-envelope.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-reranker-runtime-stability'],
+  'node scripts/smoke-local-reranker-runtime-stability.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-integration'],
+  'node scripts/smoke-local-relevance-shadow-integration.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-replay'],
+  'node scripts/smoke-local-relevance-shadow-replay.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-cache'],
+  'node scripts/smoke-local-relevance-shadow-cache.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-cache-lifecycle'],
+  'node scripts/smoke-local-relevance-shadow-cache-lifecycle.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-cache-process-isolation'],
+  'node scripts/smoke-local-relevance-shadow-cache-process-isolation.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:local-relevance-shadow-cache-termination-soak'],
+  'node scripts/smoke-local-relevance-shadow-cache-termination-soak.mjs',
+);
+assert.equal(
+  packageJson.scripts['smoke:approved-learning-rag-feedback'],
+  'node scripts/smoke-approved-learning-rag-feedback.mjs',
+);
 assert.equal(packageJson.scripts['smoke:fact-graph-memory'], 'node scripts/smoke-fact-graph-memory.mjs');
 assert.equal(
   packageJson.scripts['smoke:instruction-boundary'],
@@ -39,6 +132,23 @@ for (const term of [
   'not a benchmark',
   'not an accuracy score',
   'npm run smoke:memory-retrieval-quality-fixture',
+  'npm run smoke:retrieval-corpus-contract',
+  'npm run smoke:retrieval-quality-evaluation',
+  'npm run smoke:semantic-retrieval-experiment',
+  'npm run smoke:retrieval-reranking-experiment',
+  'npm run smoke:semantic-retrieval-runtime',
+  'npm run smoke:local-embedding-model-qualification',
+  'npm run smoke:local-retrieval-robustness',
+  'npm run smoke:local-relevance-reranker',
+  'npm run smoke:local-reranker-resource-envelope',
+  'npm run smoke:local-reranker-runtime-stability',
+  'npm run smoke:local-relevance-shadow-integration',
+  'npm run smoke:local-relevance-shadow-replay',
+  'npm run smoke:local-relevance-shadow-cache',
+  'npm run smoke:local-relevance-shadow-cache-lifecycle',
+  'npm run smoke:local-relevance-shadow-cache-process-isolation',
+  'npm run smoke:local-relevance-shadow-cache-termination-soak',
+  'npm run smoke:approved-learning-rag-feedback',
   'npm run smoke:retrieval-memory',
   'npm run smoke:fact-graph-memory',
   'npm run smoke:instruction-boundary',
@@ -65,6 +175,154 @@ for (const smokeTerm of [
   'mission/decision',
 ]) {
   assertContains(retrievalSmoke, smokeTerm, `retrieval smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of [
+  'modelInferenceCount',
+  'warmP95DriftRate',
+  'concurrencyP95WarmMultiplier',
+  'productionSustainedConcurrencyValidated',
+]) {
+  assertContains(
+    localRerankerRuntimeStabilitySmoke,
+    smokeTerm,
+    `local reranker runtime stability smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'providerInputPreserved',
+  'storeSchemaMutationRequired',
+  'failed-lexical-preserved',
+]) {
+  assertContains(
+    localRelevanceShadowIntegrationSmoke,
+    smokeTerm,
+    `local relevance shadow integration smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'fullQueryBaseline',
+  'mission-objective-v1',
+  'hard-negative',
+  'actualLocalRelevanceShadowReplayValidated',
+]) {
+  assertContains(
+    localRelevanceShadowReplaySmoke,
+    smokeTerm,
+    `local relevance shadow replay smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'uniqueScorePairCount',
+  'cachedModelInferenceCount',
+  'cacheHitCount',
+  'maximum-latency regression',
+]) {
+  assertContains(
+    localRelevanceShadowCacheSmoke,
+    smokeTerm,
+    `local relevance shadow cache smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'evictionCount',
+  'invalidatedInFlightEntryCount',
+  'staleResultDropCount',
+  'postCloseScoreRejected',
+]) {
+  assertContains(
+    localRelevanceShadowCacheLifecycleSmoke,
+    smokeTerm,
+    `local relevance shadow cache lifecycle smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'forwardedEnvironmentKeyCount',
+  'restartColdStartPassed',
+  'processIdentityHash',
+  'postCloseScoreRejected',
+]) {
+  assertContains(
+    localRelevanceShadowCacheProcessIsolationSmoke,
+    smokeTerm,
+    `local relevance shadow cache process isolation smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'forcedTerminationSignal',
+  'heapGrowthBytes',
+  'rssGrowthBytes',
+  'recoveryInferenceCount',
+]) {
+  assertContains(
+    localRelevanceShadowCacheTerminationSoakSmoke,
+    smokeTerm,
+    `local relevance shadow cache termination soak smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of [
+  'retrievalLineageBound',
+  'plannerAndDeliverableAdapted',
+  'rollbackArtifactParity',
+  'generalAnswerQualityImprovementValidated',
+]) {
+  assertContains(
+    approvedLearningRagFeedbackSmoke,
+    smokeTerm,
+    `approved learning RAG feedback smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of ['buildFactCorpusRecord', 'contentHash', 'chunkId', 'revision', 'provenance']) {
+  assertContains(corpusContractSmoke, smokeTerm, `corpus contract smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['precisionAtK', 'recallAtK', 'noiseRateAtK', 'sourceDiversityRate']) {
+  assertContains(retrievalQualitySmoke, smokeTerm, `retrieval quality smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of [
+  'inferenceReductionRate',
+  'qualityParity',
+  'shortlistCoveragePassed',
+  'loadedModelBytes',
+]) {
+  assertContains(
+    localRerankerResourceEnvelopeSmoke,
+    smokeTerm,
+    `local reranker resource envelope smoke missing ${smokeTerm}`,
+  );
+}
+
+for (const smokeTerm of ['createLocalCommandEmbeddingAdapter', 'allowedScopes', 'runtimeActivation']) {
+  assertContains(semanticRetrievalSmoke, smokeTerm, `semantic retrieval smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['rerankRetrievalCandidates', 'rerankingAverageMs', 'rollback.sourceKeys']) {
+  assertContains(rerankingSmoke, smokeTerm, `retrieval reranking smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['semanticFirstSource', 'failureBeforeProviderRun', 'rollbackMode']) {
+  assertContains(semanticRuntimeSmoke, smokeTerm, `semantic runtime smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['actualLocalEmbeddingModelQualityValidated', 'selectedModelId', 'governance-blocked']) {
+  assertContains(localModelQualificationSmoke, smokeTerm, `local model qualification smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['actualLocalRetrievalRobustnessValidated', 'failed-keep-lexical', 'hard-negative']) {
+  assertContains(localRetrievalRobustnessSmoke, smokeTerm, `local robustness smoke missing ${smokeTerm}`);
+}
+
+for (const smokeTerm of ['actualLocalRelevanceRerankerQualityValidated', 'repeatStable', 'quality-passed-governance-blocked']) {
+  assertContains(localRelevanceRerankerSmoke, smokeTerm, `local relevance smoke missing ${smokeTerm}`);
 }
 
 for (const smokeTerm of [

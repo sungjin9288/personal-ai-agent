@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "personal-ai-agent-approved-learning-feedback-quality-cases/v1",
+  "productionReadyClaim": false,
+  "cases": [
+    {
+      "id": "execution-verification-path",
+      "deliverableType": "decision-memo",
+      "expectedPlanStep": "Narrow the verification path before requesting workspace execution again.",
+      "isolationMarker": "verification lane alpha",
+      "minimumRetrievalMatchTermCount": 3,
+      "mode": "knowledge",
+      "objective": "Prepare a narrow verification path and approval review for workspace execution in verification lane alpha.",
+      "promotionNote": "Narrow the verification path before requesting workspace execution again. Preserve verification lane alpha in the review.",
+      "requiredAnswerTerms": [
+        "narrow the verification path",
+        "workspace execution",
+        "verification lane alpha"
+      ],
+      "title": "Execution verification feedback"
+    },
+    {
+      "id": "reviewer-evidence-recovery",
+      "deliverableType": "decision-memo",
+      "expectedPlanStep": "Address the prior reviewer finding before drafting the next proposal.",
+      "isolationMarker": "evidence lane beta",
+      "minimumRetrievalMatchTermCount": 3,
+      "mode": "knowledge",
+      "objective": "Recover a reviewer failed evidence trace before the next proposal review in evidence lane beta.",
+      "promotionNote": "The reviewer failed the evidence trace. Preserve evidence lane beta and address the prior reviewer finding before drafting the next proposal.",
+      "requiredAnswerTerms": [
+        "reviewer failed",
+        "evidence trace",
+        "evidence lane beta"
+      ],
+      "title": "Reviewer evidence feedback"
+    },
+    {
+      "id": "incident-handoff-discipline",
+      "deliverableType": "decision-memo",
+      "expectedPlanStep": "Address the prior reviewer finding before drafting the next proposal.",
+      "isolationMarker": "incident lane gamma",
+      "minimumRetrievalMatchTermCount": 3,
+      "mode": "knowledge",
+      "objective": "Prepare an incident owner review with a rollback checkpoint and audit handoff in incident lane gamma.",
+      "promotionNote": "The incident reviewer failed the handoff check. Preserve the incident owner, rollback checkpoint, and audit handoff in incident lane gamma.",
+      "requiredAnswerTerms": [
+        "incident owner",
+        "rollback checkpoint",
+        "incident lane gamma"
+      ],
+      "title": "Incident handoff feedback"
+    }
+  ]
+}

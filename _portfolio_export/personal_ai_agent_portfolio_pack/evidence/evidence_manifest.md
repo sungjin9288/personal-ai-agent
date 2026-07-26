@@ -3,11 +3,14 @@
 ## Summary
 
 - Project: Personal AI Agent
-- Generated at: 2026-06-09
+- Generated at: 2026-07-23
 - Project type: PoC / MVP 구현
-- Evidence scope: document-only implementation evidence for portfolio review
-- Source code modified: no
-- New feature development: no
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning, owner-role attestation intake, private collection execution through item lifecycle, content-free F1.12 review projection and F1.13 review resolution, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- F1.25 private collection-gap replan shadow: trusted F1.24 authority is independently rebuilt before the F1.2 collection plan is recalculated in memory; projected 15 reviewed examples, 5 scopes, and 7 cases leave tracked F1.2 evidence, intake, collection, audit, training, provider, submission, deployment, and production boundaries unchanged or false
+- F1.24 private combined readiness impact shadow: one exact reconstructed F1.21 record and one exact F1.20 replay case are composed only in the deterministic in-memory projection; five sufficiency failures remain and all mutation, audit, training, provider, submission, deployment, and production boundaries remain false
+- F1.23 private answer-quality readiness impact shadow: final F1.20 replay lineage is revalidated and its frozen case is projected only in the deterministic in-memory suite; dataset/export digests and all training, provider, submission, deployment, and production boundaries remain unchanged or false
+- Source code modified: yes, the F1.13 review resolution protocol revalidates the current F1 chain, one live exact F1.10 item, and one canonical F1.12 projection, serializes with F1.11 lifecycle through the shared workspace lock, and writes one owner-only content-free decision/resolution bundle without changing public HTTP, store, audit, provider, or training authority contracts
+- New feature development: yes, both private lanes have synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; no actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, activation, or rollout is tracked or authorized
 
 ## Generated Evidence Files
 
@@ -41,6 +44,9 @@
 - `evidence/screenshots/operator-surface-mission-run.png`
 - `evidence/screenshots/operator-surface-provider-readiness.png`
 - `evidence/screenshots/operator-surface-action-inbox.png`
+- `evidence/screenshots/workspace-learning-operator-surface.png`
+- `evidence/screenshots/user-learning-operator-surface.png`
+- `evidence/screenshots/local-training-permission-surface.png`
 
 ### Output Artifacts
 
@@ -51,6 +57,58 @@
 - `evidence/output-artifacts/representative-release-demo-summary.json`
 - `evidence/output-artifacts/representative-release-demo-browser-e2e.json`
 - `evidence/output-artifacts/operator-surface-demo-browser-report.json`
+- `evidence/output-artifacts/local-embedding-model-qualification.json`
+- `evidence/output-artifacts/local-retrieval-robustness.json`
+- `evidence/output-artifacts/local-relevance-reranker-evaluation.json`
+- `evidence/output-artifacts/local-reranker-resource-envelope.json`
+- `evidence/output-artifacts/local-reranker-runtime-stability.json`
+- `evidence/output-artifacts/local-relevance-shadow-integration.json`
+- `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
+- `evidence/output-artifacts/local-relevance-shadow-replay.json`
+- `evidence/output-artifacts/local-relevance-shadow-cache.json`
+- `evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json`
+- `evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json`
+- `evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json`
+- `evidence/output-artifacts/approved-learning-rag-feedback.json`
+- `evidence/output-artifacts/approved-learning-feedback-quality.json`
+- `evidence/output-artifacts/workspace-learning-personalization.json`
+- `evidence/output-artifacts/workspace-learning-conflict-revocation.json`
+- `evidence/output-artifacts/workspace-learning-operator-override.json`
+- `evidence/output-artifacts/workspace-learning-operator-surface.json`
+- `evidence/output-artifacts/local-user-learning-personalization.json`
+- `evidence/output-artifacts/user-learning-conflict-revocation.json`
+- `evidence/output-artifacts/user-learning-operator-override.json`
+- `evidence/output-artifacts/user-learning-operator-surface.json`
+- `evidence/output-artifacts/fine-tuning-data-sufficiency.json`
+- `evidence/output-artifacts/fine-tuning-data-collection-plan.json`
+- `evidence/output-artifacts/fine-tuning-data-intake-request.json`
+- `evidence/output-artifacts/local-training-runtime-contract.json`
+- `evidence/output-artifacts/local-training-permission-surface.json`
+- `evidence/output-artifacts/local-training-environment-preflight.json`
+- `evidence/output-artifacts/local-training-toolchain-decision.json`
+- `evidence/output-artifacts/local-training-acquisition-request.json`
+- `evidence/output-artifacts/local-training-acquisition-runtime-contract.json`
+- `evidence/output-artifacts/local-training-acquisition-artifact-verification.json`
+- `evidence/output-artifacts/local-training-post-acquisition-readiness.json`
+- `evidence/output-artifacts/mlx-lm-lora-training-adapter.json`
+- `evidence/output-artifacts/local-training-runtime-closure-provenance.json`
+- `evidence/output-artifacts/local-training-process-supervisor.json`
+- `evidence/output-artifacts/local-training-os-isolation.json`
+- `evidence/output-artifacts/local-training-runtime-exec-observation.json`
+- `evidence/output-artifacts/local-training-runtime-image-provenance.json`
+- `evidence/output-artifacts/local-training-darwin-suspended-exec.json`
+- `evidence/output-artifacts/local-training-failure-recovery.json`
+- `evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json`
+- `evidence/output-artifacts/local-candidate-evaluation-host-restart-receipt.json`
+- `evidence/output-artifacts/local-answer-quality-baseline.json`
+- `evidence/output-artifacts/local-answer-composition-candidate.json`
+- `evidence/output-artifacts/local-answer-composition-robustness.json`
+- `evidence/output-artifacts/local-answer-composition-hardening.json`
+- `evidence/output-artifacts/answer-input-boundary-evaluation.json`
+- `evidence/output-artifacts/local-answer-composition-boundary-regression.json`
+- `evidence/output-artifacts/user-query-evaluation-intake.json`
+- `evidence/output-artifacts/local-user-query-quality.json`
+- `evidence/output-artifacts/local-answer-review-action-generalization.json`
 
 ### Architecture
 
@@ -70,11 +128,13 @@
 - `docs/provider-readiness-matrix-v1.md`
 - `docs/provider-failure-recovery-demo-v1.md`
 - `docs/memory-retrieval-quality-fixture-v1.md`
+- `docs/actual-user-query-evaluation-v1.md`
 - `docs/smoke-validation-summary-v1.md`
 - `docs/external-evidence-blockers-v1.md`
 
 ## Verified Features
 
+- Full deterministic smoke sweep: 237/237 passed with `npm run smoke:all` on 2026-07-22; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -91,6 +151,100 @@
 - Provider readiness matrix: verified with `npm run smoke:provider-readiness-matrix`
 - Provider failure recovery demo: verified with `npm run smoke:provider-failure-recovery-demo`
 - Memory retrieval quality fixture: verified with `npm run smoke:memory-retrieval-quality-fixture`
+- Answer quality evaluation foundation: verified with `npm run smoke:answer-quality-evaluation`
+- RAG corpus contract: verified with `npm run smoke:retrieval-corpus-contract`
+- Retrieval quality evaluation: verified with `npm run smoke:retrieval-quality-evaluation`
+- Semantic retrieval experiment: verified with `npm run smoke:semantic-retrieval-experiment`
+- Retrieval reranking experiment: verified with `npm run smoke:retrieval-reranking-experiment`
+- Local semantic retrieval runtime: verified with `npm run smoke:semantic-retrieval-runtime`
+- Local embedding model qualification: verified with `npm run smoke:local-embedding-model-qualification`
+- Local retrieval robustness: verified with `npm run smoke:local-retrieval-robustness`
+- Local relevance reranker: verified with `npm run smoke:local-relevance-reranker`
+- Local reranker resource envelope: verified with `npm run smoke:local-reranker-resource-envelope`
+- Local reranker runtime stability: verified with `npm run smoke:local-reranker-runtime-stability`
+- Local relevance shadow integration: verified with `npm run smoke:local-relevance-shadow-integration`
+- Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
+- Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
+- Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`
+- Shadow cache process isolation: verified with `npm run smoke:local-relevance-shadow-cache-process-isolation`
+- Shadow cache termination and soak: verified with `npm run smoke:local-relevance-shadow-cache-termination-soak`
+- Approved learning RAG feedback: verified with `npm run smoke:approved-learning-rag-feedback`
+- Multi-scenario learning feedback quality: verified with `npm run smoke:approved-learning-feedback-quality`
+- Workspace learning personalization: verified with `npm run smoke:workspace-learning-personalization`
+- Workspace learning conflict and revocation: verified with `npm run smoke:workspace-learning-conflict-revocation`
+- Workspace learning operator override: verified with `npm run smoke:workspace-learning-operator-override`
+- Workspace learning operator surface: verified with `npm run smoke:workspace-learning-operator-surface` and local browser replay `npm run smoke:workspace-learning-operator-surface-browser`
+- Local user learning personalization: verified with `npm run smoke:local-user-learning-personalization`
+- User learning conflict and revocation: verified with `npm run smoke:user-learning-conflict-revocation`
+- User learning operator override: verified with `npm run smoke:user-learning-operator-override`
+- User learning operator surface: verified with `npm run smoke:user-learning-operator-surface` and local browser replay `npm run smoke:user-learning-operator-surface-browser`
+- Approved training record: verified with `npm run smoke:approved-training-record`
+- Training dataset quality gate: verified with `npm run smoke:training-dataset-quality`
+- Fine-tuning readiness export: verified with `npm run smoke:fine-tuning-readiness`
+- Fine-tuning data sufficiency gate: verified with `npm run smoke:fine-tuning-data-sufficiency`
+- Fine-tuning reviewed-data collection plan: verified with `npm run smoke:fine-tuning-data-collection-plan`
+- Fine-tuning reviewed-data intake request: verified with `npm run smoke:fine-tuning-data-intake-request`
+- Fine-tuning reviewed-data intake resolution protocol: verified with `npm run smoke:fine-tuning-data-intake-resolution`
+- Fine-tuning private collection plan protocol: verified with `npm run smoke:fine-tuning-private-collection-plan`
+- Fine-tuning private collection execution request protocol: verified with `npm run smoke:fine-tuning-private-collection-execution-request`
+- Fine-tuning private collection execution resolution protocol: verified with `npm run smoke:fine-tuning-private-collection-execution-resolution`
+- Fine-tuning private collection workspace protocol: verified with `npm run smoke:fine-tuning-private-collection-workspace`
+- Fine-tuning private collection item admission protocol: verified with `npm run smoke:fine-tuning-private-collection-item-admission`
+- Fine-tuning private collection item write protocol: verified with `npm run smoke:fine-tuning-private-collection-item`
+- Fine-tuning private collection item lifecycle protocol: verified with `npm run smoke:fine-tuning-private-collection-item-lifecycle`
+- Fine-tuning private collection item review projection protocol: verified with `npm run smoke:fine-tuning-private-collection-item-review-projection`
+- Fine-tuning private collection item review resolution protocol: verified with `npm run smoke:fine-tuning-private-collection-item-review-resolution`
+- Fine-tuning private collection item artifact request protocol: verified with `npm run smoke:fine-tuning-private-collection-item-artifact-request`
+- Fine-tuning private collection item artifact preparation resolution protocol: verified with `npm run smoke:fine-tuning-private-collection-item-artifact-preparation-resolution`
+- Private answer-quality case enrichment candidate protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate`
+- Private answer-quality enrichment candidate review resolution protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate-review-resolution`
+- Private answer-quality case materialization protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-case`
+- Private answer-quality case payload protocol: verified with `npm run smoke:fine-tuning-private-answer-quality-case-payload`
+- Private answer-quality case payload lifecycle: verified with `npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle`
+- Private answer-quality payload replay: verified with `npm run smoke:fine-tuning-private-answer-quality-case-replay`
+- Private reviewed-example canonical record materialization: verified with `npm run smoke:fine-tuning-private-reviewed-example-canonicalization`
+- Private reviewed-example dataset impact shadow: verified with `npm run smoke:fine-tuning-private-reviewed-example-dataset-impact`
+- Private combined readiness impact shadow: verified with `npm run smoke:fine-tuning-private-combined-readiness-impact`; synthetic fixture projection only, with no training, provider, or deployment authority.
+- Private collection-gap replan shadow: verified with `npm run smoke:fine-tuning-private-collection-gap-replan`; synthetic fixture projection only, with tracked F1.2 evidence and all collection, training, provider, and deployment authority unchanged or false.
+- Local training runtime contract: verified with `npm run smoke:local-training-runtime`
+- Local training product permission surface: verified with `npm run smoke:local-training-permission-surface`, `npm run smoke:local-training-permission-evidence`, and local browser replay `npm run smoke:local-training-permission-surface-browser`
+- Local training environment preflight: verified with `npm run smoke:local-training-environment-preflight`
+- Local training toolchain decision: verified with `npm run smoke:local-training-toolchain-decision`
+- Local training acquisition request: verified with `npm run smoke:local-training-acquisition-request`
+- Local training acquisition resolution protocol: verified with `npm run smoke:local-training-acquisition-resolution`
+- Local training acquisition execution plan: verified with `npm run smoke:local-training-acquisition-execution-plan`
+- Local training acquisition runtime contract: verified with `npm run smoke:local-training-acquisition-runtime`
+- Local training acquisition artifact verification: verified with `npm run smoke:local-training-acquisition-artifact-verification`
+- Local training post-acquisition readiness: verified with `npm run smoke:local-training-post-acquisition-readiness`
+- MLX-LM LoRA training adapter contract: verified with `npm run smoke:mlx-lm-lora-training-adapter`
+- Static training runtime closure provenance: verified with `npm run smoke:local-training-runtime-closure-provenance`
+- Local training process supervisor: verified with `npm run smoke:local-training-process-supervisor`
+- Darwin training OS isolation preflight: verified with `npm run smoke:local-training-os-isolation`
+- Darwin runtime exec observation: verified with `npm run smoke:local-training-runtime-exec-observation`
+- Darwin runtime image provenance: verified with `npm run smoke:local-training-runtime-image-provenance`
+- Darwin suspended verify-to-exec: verified with `npm run smoke:local-training-darwin-suspended-exec`
+- Local training failure recovery: verified with `npm run smoke:local-training-failure-recovery`
+- Local training candidate artifact verification: verified with `npm run smoke:local-training-candidate-artifact-verification`
+- Local candidate evaluation admission: verified with `npm run smoke:local-candidate-evaluation-admission`
+- Local candidate evaluation runtime: verified with `npm run smoke:local-candidate-evaluation-runtime`
+- Local candidate evaluation input view: verified with `npm run smoke:local-candidate-evaluation-input-view`
+- Local candidate evaluation pre-spawn workspace recovery: verified with `npm run smoke:local-candidate-evaluation-workspace-recovery`
+- Local candidate evaluation post-spawn process lifecycle: verified with `npm run smoke:local-candidate-evaluation-process-lifecycle`
+- Local candidate evaluation host boot identity recovery: verified with `npm run smoke:local-candidate-evaluation-host-boot-recovery`
+- Local candidate evaluation manual host restart rehearsal protocol: verified with `npm run smoke:local-candidate-evaluation-host-restart-rehearsal`
+- Local candidate evaluation host restart receipt projection contract: verified with `npm run smoke:local-candidate-evaluation-host-restart-receipt`; private source required for restart re-verification
+- Local candidate evaluator provenance: verified with `npm run smoke:local-candidate-evaluator-provenance`
+- Candidate model evaluation gate: verified with `npm run smoke:candidate-model-evaluation`
+- Actual local answer-quality baseline: verified with `npm run smoke:local-answer-quality-baseline`
+- Evidence-first answer composition candidate: verified with `npm run smoke:local-answer-composition-candidate`
+- Answer composition robustness baseline: verified with `npm run smoke:local-answer-composition-robustness`
+- Answer composition robustness hardening: verified with `npm run smoke:local-answer-composition-hardening`
+- Answer input boundary evaluation: verified with `npm run smoke:answer-input-boundary`
+- Answer composition boundary regression: verified with `npm run smoke:local-answer-composition-boundary-regression`
+- User-query evaluation intake dry run: verified with `npm run smoke:user-query-evaluation-intake`
+- Local user-query quality stop condition: verified with `npm run smoke:local-user-query-quality`
+- Reviewer action generalization candidate: verified with `npm run smoke:local-answer-review-action-generalization`
+- Actual user-query evaluation protocol: verified with `npm run smoke:actual-user-query-evaluation-readiness`; actual user data and quality remain unverified
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Web API health/meta/providers/execution status: verified with `curl`

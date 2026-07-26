@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "personal-ai-agent-training-dataset-quality-fixture/v1",
+  "productionReadyClaim": false,
+  "seed": "training-dataset-quality-v1",
+  "cases": [
+    {
+      "id": "decision-memo",
+      "instruction": "Write a decision memo from reviewed evidence.",
+      "response": "State the decision, cite the evidence, and preserve the next action."
+    },
+    {
+      "id": "provider-failure",
+      "instruction": "Summarize a failed provider attempt.",
+      "response": "Name the failure, record the stop reason, and keep the fallback decision auditable."
+    },
+    {
+      "id": "reviewer-handoff",
+      "instruction": "Prepare a reviewer handoff.",
+      "response": "Identify the owner, required evidence, deadline, and explicit resolution condition."
+    },
+    {
+      "id": "retrieval-answer",
+      "instruction": "Explain a retrieval result.",
+      "response": "Answer from the cited source and separate unsupported assumptions from confirmed facts."
+    },
+    {
+      "id": "exact-content-duplicate",
+      "instruction": "Write a decision memo from reviewed evidence.",
+      "response": "State the decision, cite the evidence, and preserve the next action."
+    },
+    {
+      "id": "near-response-duplicate",
+      "instruction": "Prepare the reviewed decision statement.",
+      "response": "State the decision; cite the evidence and preserve the next action."
+    }
+  ],
+  "expected": {
+    "accepted": 4,
+    "excludedDuplicates": 2,
+    "leakageCheckCount": 7,
+    "source": 6,
+    "status": "approved-for-local-export-review"
+  }
+}

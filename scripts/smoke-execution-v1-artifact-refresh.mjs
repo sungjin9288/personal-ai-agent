@@ -35,7 +35,7 @@ assert.equal(payload.ok, true);
 assert.equal(payload.dryRun, true);
 assert.equal(payload.preserveArchivedLiveValidation, true);
 assert.equal(payload.stepTimeoutMs, 12345);
-assert.deepEqual(payload.liveFlags, ['--live-openai', '--live-anthropic', '--live-local']);
+assert.deepEqual(payload.liveFlags, []);
 assert.deepEqual(
   payload.steps.map((step) => step.name),
   [
@@ -54,16 +54,49 @@ const evidenceStep = payload.steps.find((step) => step.name === 'evidence');
 assert.match(evidenceStep.command, /build-execution-v1-evidence\.mjs/);
 assert.equal(evidenceStep.timeoutMs, 12345);
 assert.match(evidenceStep.command, /--preserve-archived-live-validation/);
-assert.match(evidenceStep.command, /--live-openai/);
-assert.match(evidenceStep.command, /--live-anthropic/);
-assert.match(evidenceStep.command, /--live-local/);
-assert.doesNotMatch(evidenceStep.command, /--live-hermes/);
+assert.doesNotMatch(evidenceStep.command, /--live-/);
 assert.equal(
   payload.steps.filter((step) => /archive-execution-v1-snapshot\.mjs/.test(step.command)).length,
   2,
 );
 const pilotExportStep = payload.steps.find((step) => step.name === 'pilot-export-package');
 assert.match(pilotExportStep.command, /build-pilot-export-package\.mjs/);
+
+const deterministicOnlyResult = spawnSync(
+  process.execPath,
+  ['scripts/refresh-execution-v1-artifacts.mjs', '--dry-run', '--no-preserve-archived-live-validation'],
+  {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: process.env,
+  },
+);
+
+assert.equal(deterministicOnlyResult.status, 0, deterministicOnlyResult.stderr || deterministicOnlyResult.stdout);
+const deterministicOnlyPayload = JSON.parse(String(deterministicOnlyResult.stdout || '{}'));
+const deterministicEvidenceStep = deterministicOnlyPayload.steps.find((step) => step.name === 'evidence');
+
+assert.equal(deterministicOnlyPayload.preserveArchivedLiveValidation, false);
+assert.deepEqual(deterministicOnlyPayload.liveFlags, []);
+assert.doesNotMatch(deterministicEvidenceStep.command, /--preserve-archived-live-validation/);
+assert.doesNotMatch(deterministicEvidenceStep.command, /--live-/);
+
+const explicitLiveResult = spawnSync(
+  process.execPath,
+  ['scripts/refresh-execution-v1-artifacts.mjs', '--dry-run', '--live-openai'],
+  {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: process.env,
+  },
+);
+
+assert.equal(explicitLiveResult.status, 0, explicitLiveResult.stderr || explicitLiveResult.stdout);
+const explicitLivePayload = JSON.parse(String(explicitLiveResult.stdout || '{}'));
+const explicitLiveEvidenceStep = explicitLivePayload.steps.find((step) => step.name === 'evidence');
+
+assert.deepEqual(explicitLivePayload.liveFlags, ['--live-openai']);
+assert.match(explicitLiveEvidenceStep.command, /--live-openai/);
 
 console.log(
   JSON.stringify(

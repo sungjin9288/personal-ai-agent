@@ -11,6 +11,14 @@ import {
   wireActionInboxActions,
   wireMissionActionsFilterControls,
 } from '../src/web/public/lib/action-inbox.js';
+import {
+  renderLearningPromotionActionButtons,
+  renderLearningPromotionCommandMeta,
+} from '../src/web/public/lib/render-fragments.js';
+import {
+  buildLearningPromotionAuditPackageText,
+  formatLearningPromotionDetails,
+} from '../src/web/public/lib/status-labels.js';
 
 function createControl({ dataset = {}, value = '' } = {}) {
   const listeners = new Map();
@@ -206,12 +214,28 @@ test('action inbox item wiring resolves records before delegating mutations', as
     },
   });
   const reviewer = createControl({ dataset: { actionResolve: 'action-3' } });
+  const overrideSet = createControl({
+    dataset: { workspaceLearningSelectionOverrideSet: 'candidate-1' },
+  });
+  const overrideClear = createControl({
+    dataset: { workspaceLearningSelectionOverrideClear: 'candidate-1' },
+  });
+  const userOverrideSet = createControl({
+    dataset: { userLearningSelectionOverrideSet: 'candidate-1' },
+  });
+  const userOverrideClear = createControl({
+    dataset: { userLearningSelectionOverrideClear: 'candidate-1' },
+  });
   const container = createContainer({
     groups: {
       '[data-action-rerun]': [rerun],
       '[data-action-resolve]': [reviewer],
       '[data-learning-promotion-resolve]': [learning],
       '[data-provider-attention-remediate]': [provider],
+      '[data-user-learning-selection-override-clear]': [userOverrideClear],
+      '[data-user-learning-selection-override-set]': [userOverrideSet],
+      '[data-workspace-learning-selection-override-clear]': [overrideClear],
+      '[data-workspace-learning-selection-override-set]': [overrideSet],
     },
   });
   const calls = [];
@@ -234,17 +258,107 @@ test('action inbox item wiring resolves records before delegating mutations', as
     onRerun: (item) => calls.push(`rerun:${item.actionId}`),
     onReviewerFollowUpResolve: (actionId) => calls.push(`reviewer:${actionId}`),
     onSpecialistFollowUpRemediate: () => {},
+    onUserLearningSelectionOverrideClear: (item) =>
+      calls.push(`user-override-clear:${item.learningCandidateId}`),
+    onUserLearningSelectionOverrideSet: (item) =>
+      calls.push(`user-override-set:${item.learningCandidateId}`),
+    onWorkspaceLearningSelectionOverrideClear: (item) =>
+      calls.push(`override-clear:${item.learningCandidateId}`),
+    onWorkspaceLearningSelectionOverrideSet: (item) =>
+      calls.push(`override-set:${item.learningCandidateId}`),
   });
 
   await rerun.emit('click');
   await provider.emit('click');
   await learning.emit('click');
   await reviewer.emit('click');
+  await userOverrideSet.emit('click');
+  await userOverrideClear.emit('click');
+  await overrideSet.emit('click');
+  await overrideClear.emit('click');
 
   assert.deepEqual(calls, [
     'rerun:action-1',
     'provider:action-2:recoverable-fallback',
     'learning:candidate-1:reject',
     'reviewer:action-3',
+    'user-override-set:candidate-1',
+    'user-override-clear:candidate-1',
+    'override-set:candidate-1',
+    'override-clear:candidate-1',
   ]);
+});
+
+test('user learning override rendering exposes content-free state and bounded controls', () => {
+  const item = {
+    actionType: 'learning-promotion',
+    learningCandidateId: 'candidate-user-1',
+    promotionStatus: 'promoted',
+    userLearningSelectionOverride: {
+      current: {
+        expiresAt: '2026-07-19T00:00:00.000Z',
+        id: 'user-override-1',
+        memoryId: 'user-memory-1',
+        note: 'raw user note must stay hidden',
+        noteHash: 'b'.repeat(64),
+        setAt: '2026-07-17T00:00:00.000Z',
+      },
+      historyCount: 1,
+      observedAt: '2026-07-17T01:00:00.000Z',
+      sourceWorkspaceId: 'workspace-local-1',
+      status: 'active',
+    },
+    userLearningSelectionOverrideClearCommand: 'clear user override command',
+    userLearningSelectionOverrideSetCommand: 'set user override command',
+  };
+
+  const details = formatLearningPromotionDetails(item);
+  const commands = renderLearningPromotionCommandMeta(item);
+  const buttons = renderLearningPromotionActionButtons(item);
+  const auditPackage = buildLearningPromotionAuditPackageText(item);
+
+  assert.match(details, /user selection override active/);
+  assert.match(commands, /user-override-set: set user override command/);
+  assert.match(commands, /user-override-clear: clear user override command/);
+  assert.match(buttons, /data-user-learning-selection-override-set="candidate-user-1"/);
+  assert.match(buttons, /data-user-learning-selection-override-clear="candidate-user-1"/);
+  assert.match(auditPackage, /sourceWorkspaceId: workspace-local-1/);
+  assert.match(auditPackage, /noteHash: b{64}/);
+  assert.equal(auditPackage.includes('raw user note must stay hidden'), false);
+});
+
+test('workspace learning override rendering exposes content-free state and bounded controls', () => {
+  const item = {
+    actionType: 'learning-promotion',
+    learningCandidateId: 'candidate-1',
+    promotionStatus: 'promoted',
+    workspaceLearningSelectionOverride: {
+      current: {
+        expiresAt: '2026-07-18T00:00:00.000Z',
+        id: 'override-1',
+        memoryId: 'memory-1',
+        note: 'raw note must stay hidden',
+        noteHash: 'a'.repeat(64),
+        setAt: '2026-07-17T00:00:00.000Z',
+      },
+      historyCount: 1,
+      observedAt: '2026-07-17T01:00:00.000Z',
+      status: 'active',
+    },
+    workspaceLearningSelectionOverrideClearCommand: 'clear override command',
+    workspaceLearningSelectionOverrideSetCommand: 'set override command',
+  };
+
+  const details = formatLearningPromotionDetails(item);
+  const commands = renderLearningPromotionCommandMeta(item);
+  const buttons = renderLearningPromotionActionButtons(item);
+  const auditPackage = buildLearningPromotionAuditPackageText(item);
+
+  assert.match(details, /selection override active/);
+  assert.match(commands, /override-set: set override command/);
+  assert.match(commands, /override-clear: clear override command/);
+  assert.match(buttons, /data-workspace-learning-selection-override-set="candidate-1"/);
+  assert.match(buttons, /data-workspace-learning-selection-override-clear="candidate-1"/);
+  assert.match(auditPackage, /noteHash: a{64}/);
+  assert.equal(auditPackage.includes('raw note must stay hidden'), false);
 });

@@ -23,6 +23,153 @@ assert.equal(result.scannedFiles.includes('docs/architecture-code-walkthrough-v1
 assert.equal(result.scannedFiles.includes('docs/provider-readiness-matrix-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/provider-failure-recovery-demo-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/memory-retrieval-quality-fixture-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/actual-user-query-evaluation-v1.md'), true);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-training-runtime-contract.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-training-permission-surface.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-environment-preflight.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-toolchain-decision.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-acquisition-request.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-acquisition-runtime-contract.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-acquisition-artifact-verification.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-post-acquisition-readiness.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-runtime-closure-provenance.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-process-supervisor.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-os-isolation.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-runtime-exec-observation.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-runtime-image-provenance.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-darwin-suspended-exec.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-failure-recovery.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-training-candidate-artifact-verification.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-candidate-evaluation-admission.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-candidate-evaluation-runtime.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-quality-baseline.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-composition-candidate.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-composition-robustness.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-composition-hardening.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/answer-input-boundary-evaluation.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-answer-composition-boundary-regression.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/user-query-evaluation-intake.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/output-artifacts/local-user-query-quality.json'),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/local-answer-review-action-generalization.json',
+  ),
+  true,
+);
+assert.equal(
+  result.scannedFiles.includes('evidence/screenshots/local-training-permission-surface.png'),
+  true,
+);
 assert.equal(result.scannedFiles.includes('docs/smoke-validation-summary-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/external-evidence-blockers-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/fork-onboarding-v1.md'), true);

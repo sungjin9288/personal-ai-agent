@@ -1,0 +1,37 @@
+{
+  "artifacts": {
+    "screenshot": "evidence/screenshots/workspace-learning-operator-surface.png",
+    "screenshotHeight": 4357,
+    "screenshotSha256": "a2632b7a8cfd46943df39b978cd3c82bdbb0aa05c350dc5f42b7b105869228fe",
+    "screenshotWidth": 1280,
+    "sourceBrowserReportSha256": "47b0e0f6f3b46a266dfed4b9ce6a49b3e2e89634a81b6a4c3522f2b5109fb434"
+  },
+  "bindings": {
+    "candidateIdHash": "a6a8ff563275518b9eaba795a0adf493c5e0ed25cea8fc426c923828b5e998d8",
+    "missionIdHash": "7d56277a027211ec2310d310609210ec57200ef1513a8a1d3ce9a41ce60092b8",
+    "workspaceIdHash": "ad8fd2e03c34f0f85ca4ee26492f33ab47029750d30ef05936c3f76acf485ceb"
+  },
+  "claimBoundary": {
+    "actualModelTrainingExecuted": false,
+    "actualWorkspaceLearningOperatorSurfaceValidated": true,
+    "automaticPreferenceLearningValidated": false,
+    "externalProviderCalls": "none",
+    "productionReadyClaim": false
+  },
+  "generatedAt": "2026-07-16T22:04:14.891Z",
+  "lifecycle": [
+    "active",
+    "expired",
+    "cleared"
+  ],
+  "mode": "workspace-learning-operator-surface-evidence",
+  "results": {
+    "activeVisible": true,
+    "clearedVisible": true,
+    "consoleErrorCount": 0,
+    "expiredVisible": true,
+    "finalClearButtonCount": 0,
+    "setButtonCount": 1
+  },
+  "schemaVersion": "personal-ai-agent-workspace-learning-operator-surface/v1"
+}

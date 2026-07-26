@@ -32,6 +32,8 @@
 - docs/provider-readiness-matrix-v1.md
 - docs/provider-failure-recovery-demo-v1.md
 - docs/memory-retrieval-quality-fixture-v1.md
+- docs/ml-rag-development-plan-v1.md
+- docs/actual-user-query-evaluation-v1.md
 - docs/smoke-validation-summary-v1.md
 - docs/external-evidence-blockers-v1.md
 - docs/operator-surface-demo-evidence-v1.md
@@ -44,6 +46,64 @@
 - evidence/api-responses/
 - evidence/screenshots/
 - evidence/output-artifacts/
+- evidence/output-artifacts/local-embedding-model-qualification.json
+- evidence/output-artifacts/local-retrieval-robustness.json
+- evidence/output-artifacts/local-relevance-reranker-evaluation.json
+- evidence/output-artifacts/local-reranker-resource-envelope.json
+- evidence/output-artifacts/local-reranker-runtime-stability.json
+- evidence/output-artifacts/local-relevance-shadow-integration.json
+- evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json
+- evidence/output-artifacts/local-relevance-shadow-replay.json
+- evidence/output-artifacts/local-relevance-shadow-cache.json
+- evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json
+- evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json
+- evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json
+- evidence/output-artifacts/approved-learning-rag-feedback.json
+- evidence/output-artifacts/approved-learning-feedback-quality.json
+- evidence/output-artifacts/workspace-learning-personalization.json
+- evidence/output-artifacts/workspace-learning-conflict-revocation.json
+- evidence/output-artifacts/workspace-learning-operator-override.json
+- evidence/output-artifacts/workspace-learning-operator-surface.json
+- evidence/output-artifacts/local-user-learning-personalization.json
+- evidence/output-artifacts/user-learning-conflict-revocation.json
+- evidence/output-artifacts/user-learning-operator-override.json
+- evidence/output-artifacts/user-learning-operator-surface.json
+- evidence/output-artifacts/fine-tuning-data-sufficiency.json
+- evidence/output-artifacts/fine-tuning-data-collection-plan.json
+- evidence/output-artifacts/fine-tuning-data-intake-request.json
+- evidence/output-artifacts/local-training-runtime-contract.json
+- evidence/output-artifacts/local-training-permission-surface.json
+- evidence/output-artifacts/local-training-environment-preflight.json
+- evidence/output-artifacts/local-training-toolchain-decision.json
+- evidence/output-artifacts/local-training-acquisition-request.json
+- evidence/output-artifacts/local-training-acquisition-runtime-contract.json
+- evidence/output-artifacts/local-training-acquisition-artifact-verification.json
+- evidence/output-artifacts/local-training-post-acquisition-readiness.json
+- evidence/output-artifacts/mlx-lm-lora-training-adapter.json
+- evidence/output-artifacts/local-training-runtime-closure-provenance.json
+- evidence/output-artifacts/local-training-process-supervisor.json
+- evidence/output-artifacts/local-training-os-isolation.json
+- evidence/output-artifacts/local-training-runtime-exec-observation.json
+- evidence/output-artifacts/local-training-runtime-image-provenance.json
+- evidence/output-artifacts/local-training-darwin-suspended-exec.json
+- evidence/output-artifacts/local-training-failure-recovery.json
+- evidence/output-artifacts/local-training-candidate-artifact-verification.json
+- evidence/output-artifacts/local-candidate-evaluation-admission.json
+- evidence/output-artifacts/local-candidate-evaluation-runtime.json
+- evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json
+- evidence/output-artifacts/local-candidate-evaluation-host-restart-receipt.json
+- evidence/output-artifacts/local-answer-quality-baseline.json
+- evidence/output-artifacts/local-answer-composition-candidate.json
+- evidence/output-artifacts/local-answer-composition-robustness.json
+- evidence/output-artifacts/local-answer-composition-hardening.json
+- evidence/output-artifacts/answer-input-boundary-evaluation.json
+- evidence/output-artifacts/local-answer-composition-boundary-regression.json
+- evidence/output-artifacts/user-query-evaluation-intake.json
+- evidence/output-artifacts/local-user-query-quality.json
+- evidence/output-artifacts/local-answer-review-action-generalization.json
+- evidence/screenshots/workspace-learning-operator-surface.png
+- evidence/screenshots/user-learning-operator-surface.png
+- evidence/screenshots/local-training-permission-surface.png
 - evidence/architecture/
 - evidence/evidence_manifest.md
 - screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함
@@ -72,6 +132,5 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 루트 `portfolio_manifest.md` 기준
-- 압축 파일 SHA-256: 루트 `portfolio_manifest.md` 기준
+- 압축 파일 크기 및 SHA-256: 루트 `portfolio_manifest.md` 기준
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

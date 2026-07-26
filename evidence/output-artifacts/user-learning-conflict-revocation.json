@@ -1,0 +1,588 @@
+{
+  "actualUserLearningConflictRevocationValidated": true,
+  "costFree": true,
+  "externalProviderCalls": "none",
+  "fixtureBinding": {
+    "caseId": "user-decision-conflict-revocation",
+    "fixtureHash": "8f6eb44dcf4d732a354c74d6d0054f7bb067b4d2b0e707495ff5ca279ab49215",
+    "newerObjectiveHash": "27a4f2f37c2e7206881e22bf4b7fa9b9e13d04b0b6e40043a3c4eae7383cbbf4",
+    "newerPromotionNoteHash": "206c1c26b0d1b100ab2cf0c3cc1019e3d5743f96f0d73b9e4c31a51a27f5cafe",
+    "newerScopeAuthorizationNoteHash": "e7cfe15806d3c65c2d7e53f526565fb264b80bce228f837eb9d35e9b1dd0d8be",
+    "olderObjectiveHash": "ca4852485cb20c3666d5c6e68c16f0df16de219bc4580101dabd57b481e96a11",
+    "olderPromotionNoteHash": "5e30a0a24bd8509125614941ff1012d84697d954dce09a332d0c8dac4e79390a",
+    "olderScopeAuthorizationNoteHash": "204086040e620f375ad57cd1dd38abecb4fe898068e3b19ec78bcd96cb149592",
+    "targetObjectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+    "bindingHash": "0b717f20b945b5c1026483a55e6ba8e9a88e963227a5e7b9ed98addc99e0ee05"
+  },
+  "lifecycle": {
+    "newer": {
+      "authorizationAt": "2026-07-16T23:03:08.389Z",
+      "candidateId": "learningcandidate_20260716230308_16c01e",
+      "memoryId": "memory_20260716230308_e80685",
+      "missionId": "mission_20260716230307_175e7b",
+      "promotionAt": "2026-07-16T23:03:08.433Z",
+      "rollbackAt": "2026-07-16T23:03:08.680Z",
+      "scopeAuthorizationId": "learningcandidate_20260716230308_16c01e:scope-authorization:user"
+    },
+    "older": {
+      "authorizationAt": "2026-07-16T23:03:08.214Z",
+      "candidateId": "learningcandidate_20260716230308_bf11c0",
+      "memoryId": "memory_20260716230308_2c590c",
+      "missionId": "mission_20260716230307_84c3f7",
+      "promotionAt": "2026-07-16T23:03:08.257Z",
+      "rollbackAt": "2026-07-16T23:03:08.838Z",
+      "scopeAuthorizationId": "learningcandidate_20260716230308_bf11c0:scope-authorization:user"
+    }
+  },
+  "observedAt": "2026-07-16T23:03:09.690Z",
+  "phases": {
+    "afterFullRollback": {
+      "artifacts": {
+        "deliverableHash": "4c93e5593e0275e83b7a5b5123307304d7c5b2abb67560de116ea5090f8e590f",
+        "plannerHash": "dc41cfdc420ff006bb569ae5bdcfb80104af8ff6260ae5957e04789b990a4867",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716230308_3bd67f",
+      "status": "completed"
+    },
+    "afterNewerRevocation": {
+      "artifacts": {
+        "deliverableHash": "e7b8203ef92e3422f93e8ec8e000f50bfc234be1dfb8339ca07b381256269b53",
+        "plannerHash": "dd43a851cf1fd9a378a3207b19f635d1557dd1b104c4bfb949bb9540b1abf9c8",
+        "retrievalHash": "2f933ac19e5516d4d9c71644fa5cb19d8535950c70ac4043d170fe7408595756"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        }
+      },
+      "planStepCount": 4,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+        "matchTermCount": 5,
+        "scope": "user",
+        "scopeId": "user",
+        "sourceId": "memory_20260716230308_2c590c"
+      },
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 1,
+        "candidates": [
+          {
+            "contentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+            "effectiveAt": "2026-07-16T23:03:08.257Z",
+            "memoryId": "memory_20260716230308_2c590c",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          }
+        ],
+        "policyId": "user-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "reason": "latest effective timestamp, then descending memory id",
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v1",
+        "selectedContentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+        "selectedMemoryId": "memory_20260716230308_2c590c",
+        "scope": "user",
+        "scopeId": "user",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716230308_3c0c9a",
+      "status": "completed"
+    },
+    "baseline": {
+      "artifacts": {
+        "deliverableHash": "4c93e5593e0275e83b7a5b5123307304d7c5b2abb67560de116ea5090f8e590f",
+        "plannerHash": "dc41cfdc420ff006bb569ae5bdcfb80104af8ff6260ae5957e04789b990a4867",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716230308_1ee11b",
+      "status": "completed"
+    },
+    "conflict": {
+      "artifacts": {
+        "deliverableHash": "6e5a48b53a4cca421a823d978971c986fa0067ee703171c730450048a259a6cf",
+        "plannerHash": "9c4e12088d3b34e2d28e3ae02d172a4eb2d0a5121a7161ab25f7de4b805de347",
+        "retrievalHash": "3e11bca3978bc51d6750282ecd93dac8ed9f0ec624a1e32f6e7d5759a5c0fa69"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 4,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "fa3d65346d5fe91ddc3469357df18a6f12adb937b230536dd70ffaea2df0d5c1",
+        "matchTermCount": 6,
+        "scope": "user",
+        "scopeId": "user",
+        "sourceId": "memory_20260716230308_e80685"
+      },
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "fa3d65346d5fe91ddc3469357df18a6f12adb937b230536dd70ffaea2df0d5c1",
+            "effectiveAt": "2026-07-16T23:03:08.433Z",
+            "memoryId": "memory_20260716230308_e80685",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          },
+          {
+            "contentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+            "effectiveAt": "2026-07-16T23:03:08.257Z",
+            "memoryId": "memory_20260716230308_2c590c",
+            "priority": 2,
+            "retrievalRank": 2,
+            "selected": false
+          }
+        ],
+        "policyId": "user-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "reason": "latest effective timestamp, then descending memory id",
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v1",
+        "selectedContentHash": "fa3d65346d5fe91ddc3469357df18a6f12adb937b230536dd70ffaea2df0d5c1",
+        "selectedMemoryId": "memory_20260716230308_e80685",
+        "scope": "user",
+        "scopeId": "user",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716230308_41e8f5",
+      "status": "completed"
+    },
+    "crossWorkspaceConflict": {
+      "artifacts": {
+        "deliverableHash": "9d730d331e28ca22c7d0059a08cbbc839db824cb3827a57a791adfbecd0ea74c",
+        "plannerHash": "b5622ad201321fb26236ca4339c7146f67875e51f9433b3a1965ec34e8e96fa1",
+        "retrievalHash": "3e11bca3978bc51d6750282ecd93dac8ed9f0ec624a1e32f6e7d5759a5c0fa69"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 4,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "fa3d65346d5fe91ddc3469357df18a6f12adb937b230536dd70ffaea2df0d5c1",
+        "matchTermCount": 6,
+        "scope": "user",
+        "scopeId": "user",
+        "sourceId": "memory_20260716230308_e80685"
+      },
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 2,
+        "candidates": [
+          {
+            "contentHash": "fa3d65346d5fe91ddc3469357df18a6f12adb937b230536dd70ffaea2df0d5c1",
+            "effectiveAt": "2026-07-16T23:03:08.433Z",
+            "memoryId": "memory_20260716230308_e80685",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          },
+          {
+            "contentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+            "effectiveAt": "2026-07-16T23:03:08.257Z",
+            "memoryId": "memory_20260716230308_2c590c",
+            "priority": 2,
+            "retrievalRank": 2,
+            "selected": false
+          }
+        ],
+        "policyId": "user-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "reason": "latest effective timestamp, then descending memory id",
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v1",
+        "selectedContentHash": "fa3d65346d5fe91ddc3469357df18a6f12adb937b230536dd70ffaea2df0d5c1",
+        "selectedMemoryId": "memory_20260716230308_e80685",
+        "scope": "user",
+        "scopeId": "user",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716230308_336280",
+      "status": "completed"
+    },
+    "olderOnly": {
+      "artifacts": {
+        "deliverableHash": "e7b8203ef92e3422f93e8ec8e000f50bfc234be1dfb8339ca07b381256269b53",
+        "plannerHash": "dd43a851cf1fd9a378a3207b19f635d1557dd1b104c4bfb949bb9540b1abf9c8",
+        "retrievalHash": "2f933ac19e5516d4d9c71644fa5cb19d8535950c70ac4043d170fe7408595756"
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": true,
+          "plannerPromptContainsMemory": true,
+          "retrievalContainsMemory": true
+        }
+      },
+      "planStepCount": 4,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+        "matchTermCount": 5,
+        "scope": "user",
+        "scopeId": "user",
+        "sourceId": "memory_20260716230308_2c590c"
+      },
+      "reviewerVerdict": "pass",
+      "selection": {
+        "candidateCount": 1,
+        "candidates": [
+          {
+            "contentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+            "effectiveAt": "2026-07-16T23:03:08.257Z",
+            "memoryId": "memory_20260716230308_2c590c",
+            "priority": 1,
+            "retrievalRank": 1,
+            "selected": true
+          }
+        ],
+        "policyId": "user-decision-latest-revision-v1",
+        "productionReadyClaim": false,
+        "reason": "latest effective timestamp, then descending memory id",
+        "schemaVersion": "personal-ai-agent-user-learning-selection/v1",
+        "selectedContentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+        "selectedMemoryId": "memory_20260716230308_2c590c",
+        "scope": "user",
+        "scopeId": "user",
+        "status": "selected"
+      },
+      "sessionId": "session_20260716230308_5a79ad",
+      "status": "completed"
+    }
+  },
+  "productionReadyClaim": false,
+  "promotions": {
+    "newer": {
+      "candidateId": "learningcandidate_20260716230308_16c01e",
+      "finalStatus": "rolled-back",
+      "memoryContentHash": "fa3d65346d5fe91ddc3469357df18a6f12adb937b230536dd70ffaea2df0d5c1",
+      "memoryCreatedAt": "2026-07-16T23:03:08.433Z",
+      "memoryId": "memory_20260716230308_e80685",
+      "memoryRollbackStatus": "memory-deleted",
+      "promotionDecisionNoteHash": "206c1c26b0d1b100ab2cf0c3cc1019e3d5743f96f0d73b9e4c31a51a27f5cafe",
+      "rollbackAction": "delete-memory-entry",
+      "rollbackStatus": "completed",
+      "scope": "user",
+      "scopeAuthorizationFromScope": "mission",
+      "scopeAuthorizationFromScopeId": "mission_20260716230307_175e7b",
+      "scopeAuthorizationId": "learningcandidate_20260716230308_16c01e:scope-authorization:user",
+      "scopeAuthorizationNoteHash": "e7cfe15806d3c65c2d7e53f526565fb264b80bce228f837eb9d35e9b1dd0d8be",
+      "scopeAuthorizationStatus": "consumed",
+      "scopeAuthorizationToScope": "user",
+      "scopeAuthorizationToScopeId": "user",
+      "scopeId": "user",
+      "target": "memory",
+      "verificationId": "learningcandidate_20260716230308_16c01e:promotion-verification:approve",
+      "verificationStatus": "passed"
+    },
+    "older": {
+      "candidateId": "learningcandidate_20260716230308_bf11c0",
+      "finalStatus": "rolled-back",
+      "memoryContentHash": "a8666d24843484c3ed7794254b0583b97678a83cdf7826ec3ae47a722a059aad",
+      "memoryCreatedAt": "2026-07-16T23:03:08.257Z",
+      "memoryId": "memory_20260716230308_2c590c",
+      "memoryRollbackStatus": "memory-deleted",
+      "promotionDecisionNoteHash": "5e30a0a24bd8509125614941ff1012d84697d954dce09a332d0c8dac4e79390a",
+      "rollbackAction": "delete-memory-entry",
+      "rollbackStatus": "completed",
+      "scope": "user",
+      "scopeAuthorizationFromScope": "mission",
+      "scopeAuthorizationFromScopeId": "mission_20260716230307_84c3f7",
+      "scopeAuthorizationId": "learningcandidate_20260716230308_bf11c0:scope-authorization:user",
+      "scopeAuthorizationNoteHash": "204086040e620f375ad57cd1dd38abecb4fe898068e3b19ec78bcd96cb149592",
+      "scopeAuthorizationStatus": "consumed",
+      "scopeAuthorizationToScope": "user",
+      "scopeAuthorizationToScopeId": "user",
+      "scopeId": "user",
+      "target": "memory",
+      "verificationId": "learningcandidate_20260716230308_bf11c0:promotion-verification:approve",
+      "verificationStatus": "passed"
+    }
+  },
+  "quality": {
+    "afterFullRollback": {
+      "id": "user-decision-conflict-revocation-baseline",
+      "metrics": {
+        "expectedSourceCitationRate": 0,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 0,
+        "retrievalHitRate": 0,
+        "unsupportedCitationRate": 0
+      },
+      "status": "failed",
+      "resultHash": "10aac5459fe62377e6357ba0c0f8f274fbe59b2d081464c7a7dd14c49b43d6ec"
+    },
+    "afterNewerRevocation": {
+      "id": "user-decision-conflict-revocation-older",
+      "metrics": {
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "e803d2e21b5483688dcc9ce4badca38ac2121175355c50b1104745edb15e731c"
+    },
+    "baseline": {
+      "id": "user-decision-conflict-revocation-baseline",
+      "metrics": {
+        "expectedSourceCitationRate": 0,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 0,
+        "retrievalHitRate": 0,
+        "unsupportedCitationRate": 0
+      },
+      "status": "failed",
+      "resultHash": "10aac5459fe62377e6357ba0c0f8f274fbe59b2d081464c7a7dd14c49b43d6ec"
+    },
+    "conflict": {
+      "id": "user-decision-conflict-revocation-newer",
+      "metrics": {
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "be9b7770444f78f3b4e005ea5579e4dc67d45989fb5388f93d6b80eff14f4f91"
+    },
+    "crossWorkspaceConflict": {
+      "id": "user-decision-conflict-revocation-newer",
+      "metrics": {
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "be9b7770444f78f3b4e005ea5579e4dc67d45989fb5388f93d6b80eff14f4f91"
+    },
+    "olderOnly": {
+      "id": "user-decision-conflict-revocation-older",
+      "metrics": {
+        "expectedSourceCitationRate": 1,
+        "forbiddenRetrievedSourceCount": 0,
+        "forbiddenTermMatchCount": 0,
+        "requiredTermCoverage": 1,
+        "retrievalHitRate": 1,
+        "unsupportedCitationRate": 0
+      },
+      "status": "passed",
+      "resultHash": "e803d2e21b5483688dcc9ce4badca38ac2121175355c50b1104745edb15e731c"
+    }
+  },
+  "qualityBoundary": {
+    "actualModelTrainingExecuted": false,
+    "controlledCrossWorkspaceUserSelectionValidated": true,
+    "controlledUserConflictResolutionValidated": true,
+    "controlledUserRevocationFallbackValidated": true,
+    "generalAnswerQualityImprovementValidated": false,
+    "generalUserPersonalizationValidated": false,
+    "hostedTenantUserPersonalizationValidated": false,
+    "learnedConflictResolutionValidated": false,
+    "multiUserIsolationValidated": false
+  },
+  "results": {
+    "baselineClean": true,
+    "crossWorkspaceConflictApplied": true,
+    "distinctSessionsPassed": true,
+    "externalProviderIsolationPassed": true,
+    "fullRollbackRestoresBaseline": true,
+    "lifecycleAuditOrdered": true,
+    "newerRevocationFallsBack": true,
+    "newerWinsConflict": true,
+    "olderSelectedAlone": true,
+    "promotionsVerified": true,
+    "reviewerPassPreserved": true,
+    "topologyBound": true
+  },
+  "schemaVersion": "personal-ai-agent-user-learning-conflict-revocation/v1",
+  "sourceRuns": {
+    "newer": {
+      "artifacts": {
+        "deliverableHash": "77c8450e5d48d7347e372fba2a157c17d67fff316cd4abecdf70d91278605d9f",
+        "plannerHash": "64beff89e0a0a5fc8bb223ad20e4cf7cf19d433744956b6dc2f82fe94b6a7abe",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716230308_4678d9",
+      "status": "completed"
+    },
+    "older": {
+      "artifacts": {
+        "deliverableHash": "63573b9ac56e37fe50e7dcf3dc7098d2c1d7ba9b263fb743ade3adddef10c001",
+        "plannerHash": "87f84965bbefa75c5b30aa85cbcf2cba510f2328255974688e431227ba970f3a",
+        "retrievalHash": null
+      },
+      "externalProviderCallCount": 0,
+      "exposures": {
+        "newer": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        },
+        "older": {
+          "deliverableContainsMemory": false,
+          "plannerPromptContainsMemory": false,
+          "retrievalContainsMemory": false
+        }
+      },
+      "planStepCount": 3,
+      "providerId": "stub",
+      "retrieval": {
+        "contentHash": null,
+        "matchTermCount": 0,
+        "scope": "",
+        "scopeId": "",
+        "sourceId": ""
+      },
+      "reviewerVerdict": "pass",
+      "selection": null,
+      "sessionId": "session_20260716230308_22061e",
+      "status": "completed"
+    }
+  },
+  "status": "user-learning-conflict-revocation-passed-local-only",
+  "topology": {
+    "crossWorkspaceId": "workspace_20260716230307_6f9ff5",
+    "crossWorkspaceMission": {
+      "id": "mission_20260716230307_a4281a",
+      "objectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+      "workspaceId": "workspace_20260716230307_6f9ff5"
+    },
+    "newerSourceMission": {
+      "id": "mission_20260716230307_175e7b",
+      "objectiveHash": "27a4f2f37c2e7206881e22bf4b7fa9b9e13d04b0b6e40043a3c4eae7383cbbf4",
+      "workspaceId": "workspace_20260716230307_6f9ff5"
+    },
+    "olderSourceMission": {
+      "id": "mission_20260716230307_84c3f7",
+      "objectiveHash": "ca4852485cb20c3666d5c6e68c16f0df16de219bc4580101dabd57b481e96a11",
+      "workspaceId": "workspace_20260716230307_13ea7f"
+    },
+    "primaryWorkspaceId": "workspace_20260716230307_13ea7f",
+    "targetMission": {
+      "id": "mission_20260716230307_638f8b",
+      "objectiveHash": "df8fa03ac90fdde640c8b7b590b6b1f099ea6e1e51a572b7915904bf6de36f39",
+      "workspaceId": "workspace_20260716230307_13ea7f"
+    }
+  },
+  "evidenceHash": "63a5fc4b4e3a13edb593b4641b280b93df359dd0e2560f7e1c01a505f5e0b40c",
+  "id": "user-learning-conflict-revocation-63a5fc4b4e3a13edb593b4641b280b93df359dd0e2560f7e1c01a505f5e0b40c"
+}

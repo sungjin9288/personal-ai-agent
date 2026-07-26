@@ -1,0 +1,90 @@
+{
+  "actualModelTrainingExecuted": false,
+  "actualUserDataCollected": false,
+  "answerQualityCaseCollectionAuthorized": false,
+  "bindings": {
+    "assessmentHash": "c39d4d075a2d355c3563cb730f29d33e441a607958b953e03c3e8ff1172c4e27",
+    "collectionPlanHash": "91fb8b97ff1eb59e9aa7c49b86217fab643581ae149f82e108867a1475887529",
+    "collectionPlanId": "fine-tuning-data-collection-plan-91fb8b97ff1eb59e9aa7c49b86217fab643581ae149f82e108867a1475887529",
+    "datasetHash": "94e030d0e3a78e74badbff84f477dc7876507e31b5263262968efc75e7608617",
+    "datasetManifestHash": "decfca4044a82264100e5e416a67ea0f714f31060e0ee5bc028fde860aa60e8d",
+    "evaluationManifestHash": "58fb97fd3a1d38535aa18d5c831a6c72887cf2765f1b29e4ab22da4e219f0c0f",
+    "policyHash": "28feee50615084ca9820f8f01152875d1d20532a9a23aed41f2c0696189adefa",
+    "readinessHash": "c07443a427a3cc39ae3d59a0032b2cc80a5b3289547edfbab52b01c60605542f",
+    "trainSha256": "522f71178537f46f3c8a14f5b539b074d9f6247b0b6b3e2cd92e1cd643e803b8",
+    "validationSha256": "7d5e2c0a73ee721e991995ecfb8110403e29308a59fa77b2d2cdbc4db151b7a6"
+  },
+  "candidateTrainingReviewAllowed": false,
+  "collectionExecutionAuthorized": false,
+  "dataHandlingEvidenceRecorded": false,
+  "expiresAt": "2026-07-29T16:47:05.990Z",
+  "externalProviderCalls": "none",
+  "externalSubmissionAuthorized": false,
+  "ownerDecisionRecorded": false,
+  "productionReadyClaim": false,
+  "rawTrainingContentStored": false,
+  "requestedActions": [
+    "record-private-owner-decision-and-data-handling-evidence",
+    "collect-distinct-reviewed-mission-examples",
+    "expand-answer-quality-baseline",
+    "rebuild-readiness-and-reassess"
+  ],
+  "requestedAt": "2026-07-22T16:47:05.990Z",
+  "requestedBy": "local-operator-role",
+  "requiredOwnerRoles": [
+    "collection-approval-owner",
+    "data-steward",
+    "privacy-reviewer",
+    "quality-reviewer",
+    "retention-deletion-owner"
+  ],
+  "requiredReviews": [
+    {
+      "id": "private-owner-only-intake",
+      "ownerRole": "collection-approval-owner",
+      "status": "pending-owner-review"
+    },
+    {
+      "id": "source-lineage-and-usage-basis",
+      "ownerRole": "data-steward",
+      "status": "pending-owner-review"
+    },
+    {
+      "id": "consent-purpose-and-privacy-boundary",
+      "ownerRole": "privacy-reviewer",
+      "status": "pending-owner-review"
+    },
+    {
+      "id": "redaction-and-approved-training-record-gate",
+      "ownerRole": "quality-reviewer",
+      "status": "pending-owner-review"
+    },
+    {
+      "id": "retention-and-deletion-evidence",
+      "ownerRole": "retention-deletion-owner",
+      "status": "pending-owner-review"
+    }
+  ],
+  "reviewedExampleCollectionAuthorized": false,
+  "schemaVersion": "personal-ai-agent-fine-tuning-data-intake-request/v1",
+  "sourceDataIncluded": false,
+  "status": "pending-owner-review",
+  "syntheticTrainingRecordsCreated": false,
+  "targets": {
+    "answerQualityCases": {
+      "countsTowardReviewedExampleMinimum": false,
+      "minimumAdditionalItems": 8
+    },
+    "reviewedExamples": {
+      "minimumAdditionalItems": 16,
+      "observedTrainGap": 13,
+      "observedValidationGap": 3,
+      "requiredNewMissionScopes": 6,
+      "splitAssignmentAuthorized": false,
+      "splitMustBeRebuiltAndRemeasured": true
+    }
+  },
+  "trainingAuthorized": false,
+  "id": "fine-tuning-data-intake-request-bfdea8f4c74139dabdac7824ce40d362ced7d33259b8350e933a4701f7bfe0a0",
+  "requestHash": "bfdea8f4c74139dabdac7824ce40d362ced7d33259b8350e933a4701f7bfe0a0"
+}

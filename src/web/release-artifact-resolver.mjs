@@ -24,10 +24,15 @@ function isSnapshotPath(filePath = '') {
 export function createExecutionV1ReleaseArtifactResolver({
   evidenceDocPaths = [],
   handoffArtifactSpecs = [],
+  mutableArtifactPathPrefixes = [],
   mutableArtifactPaths = [],
   rootDir,
 }) {
   const allowedEvidenceDocPaths = new Set(evidenceDocPaths);
+  const allowedMutableArtifactPathPrefixes = [...mutableArtifactPathPrefixes]
+    .map(normalizeRepoRelativePath)
+    .filter(isSafeRepoRelativePath)
+    .map((prefix) => `${prefix.replace(/\/+$/, '')}/`);
   const allowedMutableArtifactPaths = new Set(mutableArtifactPaths);
 
   function isReleaseArtifactPath(filePath = '') {
@@ -35,7 +40,9 @@ export function createExecutionV1ReleaseArtifactResolver({
     if (!isSafeRepoRelativePath(relativePath)) {
       return false;
     }
-    return allowedMutableArtifactPaths.has(relativePath) || isSnapshotPath(relativePath);
+    return allowedMutableArtifactPaths.has(relativePath)
+      || allowedMutableArtifactPathPrefixes.some((prefix) => relativePath.startsWith(prefix))
+      || isSnapshotPath(relativePath);
   }
 
   function isReleaseEvidenceDocPath(filePath = '') {

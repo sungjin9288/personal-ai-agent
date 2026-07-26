@@ -1,0 +1,37 @@
+{
+  "claimBoundary": {
+    "actualEvaluatorRelaunchPerformed": false,
+    "actualHostRestartObserved": false,
+    "actualModelEvaluated": false,
+    "externalProviderCalls": "none",
+    "productionReadyClaim": false,
+    "rolloutAuthorized": false,
+    "trainingAuthorized": false
+  },
+  "failureGuards": {
+    "injectedFileSystemCannotClaimActualRestart": true,
+    "injectedPrepareCannotClaimActualRestart": true,
+    "interruptedReceiptCompletesIdempotently": true,
+    "noAutomaticRebootOrRelaunch": true,
+    "sameBootPreserved": true,
+    "symlinkTargetModePreserved": true,
+    "tamperedStatePreserved": true,
+    "unavailableBootIdentityPreserved": true,
+    "unexpiredLeasePreserved": true,
+    "unsafeTreePreserved": true
+  },
+  "mode": "local-candidate-evaluation-host-restart-rehearsal",
+  "protocol": {
+    "actualObservationRequiresManualHostRestart": true,
+    "ownerOnlyPrivateState": true,
+    "prepareResumeProtocolValidated": true,
+    "syntheticWorkspaceOnly": true
+  },
+  "recovery": {
+    "bootIdentityChangedObserved": true,
+    "priorBootSpawningLeaseRecovered": true
+  },
+  "schemaVersion": "personal-ai-agent-local-candidate-evaluation-host-restart-rehearsal-evidence/v1",
+  "evidenceHash": "45bab7b89d8658fcc0bfcfa21fca3d7ef9c03fa3e4b948cc98a8ca9d8f7b9e57",
+  "id": "local-candidate-evaluation-host-restart-rehearsal-evidence-45bab7b89d8658fcc0bfcfa21fca3d7ef9c03fa3e4b948cc98a8ca9d8f7b9e57"
+}

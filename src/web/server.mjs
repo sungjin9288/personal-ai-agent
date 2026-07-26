@@ -74,11 +74,14 @@ const productionLikeReleaseDrillDocPath = path.join(rootDir, 'docs', 'production
 const executionV1SnapshotsRoot = path.join(rootDir, 'docs', 'releases', 'execution-v1');
 const executionV1ReleaseArtifactRoot = path.join(rootDir, 'output', 'playwright');
 const executionV1MutableArtifactPaths = new Set([
+  'CHANGELOG.md',
+  '_portfolio_export/personal_ai_agent_portfolio_pack.zip',
   'docs/execution-v1-closeout.md',
   'docs/execution-v1-evidence.md',
   'docs/execution-v1-handoff.md',
   'docs/clean-deployment-release-v1.md',
   'docs/demo-evidence-index-v1.md',
+  'docs/evidence-checklist.md',
   'docs/pilot-export-package-v1.md',
   'docs/production-like-release-drill-v1.md',
   'docs/production-slo-operating-v1.md',
@@ -90,6 +93,10 @@ const executionV1MutableArtifactPaths = new Set([
   'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
   'evidence/output-artifacts/representative-release-demo-summary.json',
   'evidence/screenshots/representative-release-demo-release-status.png',
+  'portfolio_manifest.md',
+]);
+const executionV1MutableArtifactPathPrefixes = new Set([
+  '_portfolio_export/personal_ai_agent_portfolio_pack',
 ]);
 const executionV1ReleaseEvidenceDocPaths = new Set([
   ...executionV1MutableArtifactPaths,
@@ -375,6 +382,7 @@ const executionV1ReleaseHandoffArtifactSpecs = [
 const releaseArtifactResolver = createExecutionV1ReleaseArtifactResolver({
   evidenceDocPaths: executionV1ReleaseEvidenceDocPaths,
   handoffArtifactSpecs: executionV1ReleaseHandoffArtifactSpecs,
+  mutableArtifactPathPrefixes: executionV1MutableArtifactPathPrefixes,
   mutableArtifactPaths: executionV1MutableArtifactPaths,
   rootDir,
 });
@@ -851,6 +859,7 @@ const buildExecutionV1ReleaseHandlers = createExecutionV1ReleaseHandlerFactory({
 
 const buildActionHandlers = createActionHandlerFactory({
   decodePathSegment,
+  evaluateLearningCandidateTenantAccess,
   evaluateWorkspaceTenantAccess,
   parseOptionalBooleanQueryParam,
   readJsonBody,
@@ -2021,6 +2030,40 @@ function evaluateMissionTenantAccess(missionId, auth) {
   };
 }
 
+function evaluateLearningCandidateTenantAccess(candidateId, auth) {
+  const candidate = store
+    .listLearningCandidates()
+    .find((item) => item.id === String(candidateId || '').trim());
+  if (!candidate) {
+    return {
+      allowed: false,
+      error: 'learning-candidate-not-found',
+      reason: `Learning candidate not found: ${candidateId}`,
+      status: 404,
+    };
+  }
+  return {
+    ...evaluateWorkspaceTenantAccess(candidate.workspaceId, auth),
+    candidate,
+  };
+}
+
+function evaluateApprovalTenantAccess(approvalId, auth) {
+  const approval = store.getApproval(String(approvalId || '').trim());
+  if (!approval) {
+    return {
+      allowed: false,
+      error: 'approval-not-found',
+      reason: `Approval not found: ${approvalId}`,
+      status: 404,
+    };
+  }
+  return {
+    ...evaluateMissionTenantAccess(approval.missionId, auth),
+    approval,
+  };
+}
+
 function sendTenantDenied(response, tenant) {
   sendJson(response, tenant.status || 403, {
     error: tenant.error || 'tenant-forbidden',
@@ -2312,6 +2355,11 @@ async function handleApi(request, response, url) {
   );
   registerParamRoute(
     'POST',
+    '/api/actions/learning-promotions/:candidateId/authorize-scope',
+    actionHandlers.authorizeLearningPromotionScope,
+  );
+  registerParamRoute(
+    'POST',
     '/api/actions/learning-promotions/:candidateId/resolve',
     actionHandlers.resolveLearningPromotion,
   );
@@ -2319,6 +2367,26 @@ async function handleApi(request, response, url) {
     'POST',
     '/api/actions/learning-promotions/:candidateId/rollback',
     actionHandlers.rollbackLearningPromotion,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/user-selection-override',
+    actionHandlers.setUserLearningSelectionOverride,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/user-selection-override/clear',
+    actionHandlers.clearUserLearningSelectionOverride,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/workspace-selection-override',
+    actionHandlers.setWorkspaceLearningSelectionOverride,
+  );
+  registerParamRoute(
+    'POST',
+    '/api/actions/learning-promotions/:candidateId/workspace-selection-override/clear',
+    actionHandlers.clearWorkspaceLearningSelectionOverride,
   );
   registerParamRoute(
     'POST',
@@ -2476,6 +2544,11 @@ async function handleApi(request, response, url) {
 
   registerParamRoute('POST', '/api/approvals/:approvalId/resolve', async (params) => {
     const approvalId = decodePathSegment(params.approvalId);
+    const tenant = evaluateApprovalTenantAccess(approvalId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
     const body = await readJsonBody(request);
     const result = service.resolveApproval(approvalId, {
       decision: String(body.decision || '').trim(),
@@ -2483,6 +2556,33 @@ async function handleApi(request, response, url) {
     });
 
     sendJson(response, 200, result);
+  });
+
+  registerParamRoute('GET', '/api/approvals/:approvalId/local-training', async (params) => {
+    const approvalId = decodePathSegment(params.approvalId);
+    const tenant = evaluateApprovalTenantAccess(approvalId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
+    sendJson(response, 200, service.getLocalTrainingPermission(approvalId));
+  });
+
+  registerParamRoute('POST', '/api/approvals/:approvalId/local-training/revoke', async (params) => {
+    const approvalId = decodePathSegment(params.approvalId);
+    const tenant = evaluateApprovalTenantAccess(approvalId, auth);
+    if (!tenant.allowed) {
+      sendTenantDenied(response, tenant);
+      return;
+    }
+    const body = await readJsonBody(request);
+    sendJson(
+      response,
+      200,
+      service.revokeLocalTrainingPermission(approvalId, {
+        reason: String(body.reason || '').trim(),
+      }),
+    );
   });
 
   registerParamRoute('GET', '/api/artifacts/:artifactId', async (params) => {

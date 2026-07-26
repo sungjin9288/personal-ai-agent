@@ -1,0 +1,493 @@
+{
+  "activation": {
+    "authorized": false,
+    "blockerCheckIds": [
+      "ollama-cloud-features-disabled",
+      "license-review-approved",
+      "network-isolation-approved",
+      "resource-envelope-approved",
+      "rollback-owner-assigned"
+    ],
+    "status": "blocked"
+  },
+  "actualLocalEmbeddingModelQualified": false,
+  "actualLocalEmbeddingModelQualityValidated": true,
+  "candidates": [
+    {
+      "actualModelEvaluated": true,
+      "dimensions": 896,
+      "durationMs": 2907.659,
+      "license": {
+        "evidenceSource": "ollama-modelfile-metadata",
+        "textHash": "fcd318ea28bf544aac8de0ac80fd648f74b05ac01f5bc95fdb8f426319edaf40",
+        "title": "Apache License"
+      },
+      "modelDigest": "a8b0c51577010a279d933d14c2a8ab4b268079d44c5c8830c0a93900f1827c67",
+      "modelFamily": "qwen2",
+      "modelFormat": "gguf",
+      "modelId": "qwen2.5:0.5b",
+      "modelModifiedAt": "2026-05-12T01:14:08.090564208+09:00",
+      "modelSizeBytes": 397821319,
+      "parameterSize": "494.03M",
+      "quality": {
+        "algorithmId": "ollama-local:qwen2.5:0.5b",
+        "caseResults": [
+          {
+            "id": "authentication-recovery-synonyms",
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [],
+            "retrievedIrrelevantSourceKeys": [],
+            "selectedSourceKeys": [
+              "memory:memory-auth-recovery"
+            ],
+            "status": "passed"
+          },
+          {
+            "id": "overdue-handoff-synonyms",
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [],
+            "retrievedIrrelevantSourceKeys": [],
+            "selectedSourceKeys": [
+              "memory:memory-overdue-handoff"
+            ],
+            "status": "passed"
+          },
+          {
+            "id": "payment-reimbursement-synonyms",
+            "metrics": {
+              "noiseRateAtK": 1,
+              "precisionAtK": 0,
+              "recallAtK": 0,
+              "sourceDiversityRate": 0,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [
+              "memory:memory-payment-refund"
+            ],
+            "retrievedIrrelevantSourceKeys": [
+              "attachment:attachment-purchase-chart"
+            ],
+            "selectedSourceKeys": [
+              "attachment:attachment-purchase-chart"
+            ],
+            "status": "failed"
+          }
+        ],
+        "failures": [
+          {
+            "actual": 0.6667,
+            "check": "case-pass-rate",
+            "required": 1
+          },
+          {
+            "actual": 0.6667,
+            "check": "precision-at-k",
+            "required": 1
+          },
+          {
+            "actual": 0.6667,
+            "check": "recall-at-k",
+            "required": 1
+          },
+          {
+            "actual": 0.6667,
+            "check": "source-diversity-rate",
+            "required": 1
+          },
+          {
+            "actual": 0.3333,
+            "check": "noise-rate-at-k",
+            "maximum": 0
+          }
+        ],
+        "metrics": {
+          "casePassRate": 0.6667,
+          "noiseRateAtK": 0.3333,
+          "precisionAtK": 0.6667,
+          "recallAtK": 0.6667,
+          "sourceDiversityRate": 0.6667,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+        "status": "failed",
+        "suiteBound": true,
+        "thresholds": {
+          "maximumNoiseRateAtK": 0,
+          "maximumUnlabeledRetrievedSourceCount": 0,
+          "minimumCasePassRate": 1,
+          "minimumPrecisionAtK": 1,
+          "minimumRecallAtK": 1,
+          "minimumSourceDiversityRate": 1
+        },
+        "evaluationHash": "aee705f4e0135039e02c498292057cd0d0c2f4975f1901ff7464af78e89e9f69"
+      },
+      "qualityPassed": false,
+      "quantization": "Q4_K_M",
+      "source": "local-ollama-runtime-observation",
+      "evidenceHash": "675df1cf16fa61f35e1c6fc0c7a11ddf10766aa7e1be7d8bac9bc200969573a0",
+      "id": "local-embedding-candidate-675df1cf16fa61f35e1c6fc0c7a11ddf10766aa7e1be7d8bac9bc200969573a0"
+    },
+    {
+      "actualModelEvaluated": true,
+      "dimensions": 1536,
+      "durationMs": 3953.648,
+      "license": {
+        "evidenceSource": "ollama-modelfile-metadata",
+        "textHash": "fcd318ea28bf544aac8de0ac80fd648f74b05ac01f5bc95fdb8f426319edaf40",
+        "title": "Apache License"
+      },
+      "modelDigest": "65ec06548149b04c096a120e4a6da9d4017ea809c91734ea5631e89f96ddc57b",
+      "modelFamily": "qwen2",
+      "modelFormat": "gguf",
+      "modelId": "qwen2.5:1.5b",
+      "modelModifiedAt": "2026-05-12T01:22:01.950923406+09:00",
+      "modelSizeBytes": 986061892,
+      "parameterSize": "1.5B",
+      "quality": {
+        "algorithmId": "ollama-local:qwen2.5:1.5b",
+        "caseResults": [
+          {
+            "id": "authentication-recovery-synonyms",
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [],
+            "retrievedIrrelevantSourceKeys": [],
+            "selectedSourceKeys": [
+              "memory:memory-auth-recovery"
+            ],
+            "status": "passed"
+          },
+          {
+            "id": "overdue-handoff-synonyms",
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [],
+            "retrievedIrrelevantSourceKeys": [],
+            "selectedSourceKeys": [
+              "memory:memory-overdue-handoff"
+            ],
+            "status": "passed"
+          },
+          {
+            "id": "payment-reimbursement-synonyms",
+            "metrics": {
+              "noiseRateAtK": 1,
+              "precisionAtK": 0,
+              "recallAtK": 0,
+              "sourceDiversityRate": 0,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [
+              "memory:memory-payment-refund"
+            ],
+            "retrievedIrrelevantSourceKeys": [
+              "attachment:attachment-purchase-chart"
+            ],
+            "selectedSourceKeys": [
+              "attachment:attachment-purchase-chart"
+            ],
+            "status": "failed"
+          }
+        ],
+        "failures": [
+          {
+            "actual": 0.6667,
+            "check": "case-pass-rate",
+            "required": 1
+          },
+          {
+            "actual": 0.6667,
+            "check": "precision-at-k",
+            "required": 1
+          },
+          {
+            "actual": 0.6667,
+            "check": "recall-at-k",
+            "required": 1
+          },
+          {
+            "actual": 0.6667,
+            "check": "source-diversity-rate",
+            "required": 1
+          },
+          {
+            "actual": 0.3333,
+            "check": "noise-rate-at-k",
+            "maximum": 0
+          }
+        ],
+        "metrics": {
+          "casePassRate": 0.6667,
+          "noiseRateAtK": 0.3333,
+          "precisionAtK": 0.6667,
+          "recallAtK": 0.6667,
+          "sourceDiversityRate": 0.6667,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+        "status": "failed",
+        "suiteBound": true,
+        "thresholds": {
+          "maximumNoiseRateAtK": 0,
+          "maximumUnlabeledRetrievedSourceCount": 0,
+          "minimumCasePassRate": 1,
+          "minimumPrecisionAtK": 1,
+          "minimumRecallAtK": 1,
+          "minimumSourceDiversityRate": 1
+        },
+        "evaluationHash": "c04eeb63ef15c82b086917b806fe5d8d3233478e58eab9086317f7dfc5d868cf"
+      },
+      "qualityPassed": false,
+      "quantization": "Q4_K_M",
+      "source": "local-ollama-runtime-observation",
+      "evidenceHash": "deb4cda3caa50348ac63823a031433655b959f26a804abde79e43d235e2de0d2",
+      "id": "local-embedding-candidate-deb4cda3caa50348ac63823a031433655b959f26a804abde79e43d235e2de0d2"
+    },
+    {
+      "actualModelEvaluated": true,
+      "dimensions": 2048,
+      "durationMs": 5277.617,
+      "license": {
+        "evidenceSource": "ollama-modelfile-metadata",
+        "textHash": "b5c0e5cf74cf51af1ecbc4af597cfcd13fd9925611838884a681070838a14a50",
+        "title": "Qwen RESEARCH LICENSE AGREEMENT"
+      },
+      "modelDigest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+      "modelFamily": "qwen2",
+      "modelFormat": "gguf",
+      "modelId": "qwen2.5:3b",
+      "modelModifiedAt": "2026-05-12T01:31:28.67457518+09:00",
+      "modelSizeBytes": 1929912432,
+      "parameterSize": "3.1B",
+      "quality": {
+        "algorithmId": "ollama-local:qwen2.5:3b",
+        "caseResults": [
+          {
+            "id": "authentication-recovery-synonyms",
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [],
+            "retrievedIrrelevantSourceKeys": [],
+            "selectedSourceKeys": [
+              "memory:memory-auth-recovery"
+            ],
+            "status": "passed"
+          },
+          {
+            "id": "overdue-handoff-synonyms",
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [],
+            "retrievedIrrelevantSourceKeys": [],
+            "selectedSourceKeys": [
+              "memory:memory-overdue-handoff"
+            ],
+            "status": "passed"
+          },
+          {
+            "id": "payment-reimbursement-synonyms",
+            "metrics": {
+              "noiseRateAtK": 0,
+              "precisionAtK": 1,
+              "recallAtK": 1,
+              "sourceDiversityRate": 1,
+              "unlabeledRetrievedSourceCount": 0
+            },
+            "missingExpectedSourceKeys": [],
+            "retrievedIrrelevantSourceKeys": [],
+            "selectedSourceKeys": [
+              "memory:memory-payment-refund"
+            ],
+            "status": "passed"
+          }
+        ],
+        "failures": [],
+        "metrics": {
+          "casePassRate": 1,
+          "noiseRateAtK": 0,
+          "precisionAtK": 1,
+          "recallAtK": 1,
+          "sourceDiversityRate": 1,
+          "unlabeledRetrievedSourceCount": 0
+        },
+        "productionReadyClaim": false,
+        "schemaVersion": "personal-ai-agent-retrieval-quality-evaluation/v1",
+        "status": "passed",
+        "suiteBound": true,
+        "thresholds": {
+          "maximumNoiseRateAtK": 0,
+          "maximumUnlabeledRetrievedSourceCount": 0,
+          "minimumCasePassRate": 1,
+          "minimumPrecisionAtK": 1,
+          "minimumRecallAtK": 1,
+          "minimumSourceDiversityRate": 1
+        },
+        "evaluationHash": "619fa22859c77bd78a0da8f9db794cf701569c9c05976e38046a0d775e995588"
+      },
+      "qualityPassed": true,
+      "quantization": "Q4_K_M",
+      "source": "local-ollama-runtime-observation",
+      "evidenceHash": "4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6",
+      "id": "local-embedding-candidate-4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6"
+    }
+  ],
+  "checkCounts": {
+    "failed": 5,
+    "passed": 6
+  },
+  "checks": [
+    {
+      "id": "quality-passing-candidate-selected",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "actual-model-evaluated",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "same-suite-quality-passed",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "model-digest-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "license-evidence-bound",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "loopback-transport",
+      "passed": true,
+      "status": "passed"
+    },
+    {
+      "id": "ollama-cloud-features-disabled",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "license-review-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "network-isolation-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "resource-envelope-approved",
+      "passed": false,
+      "status": "failed"
+    },
+    {
+      "id": "rollback-owner-assigned",
+      "passed": false,
+      "status": "failed"
+    }
+  ],
+  "costFree": true,
+  "decision": "hold-for-governance",
+  "governance": {
+    "licenseReview": {
+      "reviewedAt": null,
+      "reviewedBy": null,
+      "status": "pending"
+    },
+    "networkIsolation": {
+      "egressDisabled": false,
+      "reviewedAt": null,
+      "reviewedBy": null,
+      "status": "pending"
+    },
+    "resourceReview": {
+      "reviewedAt": null,
+      "reviewedBy": null,
+      "status": "pending"
+    },
+    "rollbackOwner": null
+  },
+  "observedAt": "2026-07-16T12:21:31.740Z",
+  "productionReadyClaim": false,
+  "rollback": {
+    "mode": "lexical",
+    "owner": null,
+    "ownerRequired": true,
+    "stateMigrationRequired": false
+  },
+  "runtime": {
+    "cloudFeaturesDisabled": false,
+    "endpointAlias": "loopback-ollama",
+    "externalProviderCalls": "none",
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "schemaVersion": "personal-ai-agent-local-embedding-model-qualification/v1",
+  "selection": {
+    "candidateEvidenceHash": "4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6",
+    "candidateId": "local-embedding-candidate-4910e4d2daa3a0dbca4d0898d9ac2cb54eb39d26f4185d970b9a47cbc72df2c6",
+    "modelId": "qwen2.5:3b",
+    "reason": "smallest-quality-passing-local-model"
+  },
+  "status": "governance-blocked",
+  "suite": {
+    "caseIds": [
+      "authentication-recovery-synonyms",
+      "overdue-handoff-synonyms",
+      "payment-reimbursement-synonyms"
+    ],
+    "fixtureHash": "ab36feb5f378fa461119593de965a6e161558d78a367ae7c175cad8d7b939f0d",
+    "id": "personal-ai-agent-semantic-retrieval-fixture/v1",
+    "thresholds": {
+      "maximumNoiseRateAtK": 0,
+      "maximumUnlabeledRetrievedSourceCount": 0,
+      "minimumCasePassRate": 1,
+      "minimumPrecisionAtK": 1,
+      "minimumRecallAtK": 1,
+      "minimumSourceDiversityRate": 1
+    }
+  },
+  "id": "local-embedding-model-qualification-c8261d343d20dcd4e69b7b77af7e257beef1518421bbb61b107a534fb514538c",
+  "qualificationHash": "c8261d343d20dcd4e69b7b77af7e257beef1518421bbb61b107a534fb514538c"
+}

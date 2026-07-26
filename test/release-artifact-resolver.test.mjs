@@ -26,6 +26,7 @@ function createFixture(t) {
   const resolver = createExecutionV1ReleaseArtifactResolver({
     evidenceDocPaths: new Set(['docs/current.md', 'docs/missing.md', 'docs/target.md']),
     handoffArtifactSpecs: [artifactEntry],
+    mutableArtifactPathPrefixes: new Set(['generated/portfolio']),
     mutableArtifactPaths: new Set(['docs/current.md']),
     rootDir,
   });
@@ -44,12 +45,17 @@ test('release path allowlists accept known files and reject traversal-shaped pat
 
   assert.equal(resolver.normalizePath('.\\docs\\target.md'), 'docs/target.md');
   assert.equal(resolver.isReleaseArtifactPath('docs/current.md'), true);
+  assert.equal(resolver.isReleaseArtifactPath('generated/portfolio/README.md'), true);
+  assert.equal(resolver.isReleaseArtifactPath('generated\\portfolio\\docs\\plan.md'), true);
   assert.equal(resolver.isReleaseArtifactPath('docs/releases/execution-v1/commit-1/snapshot.json'), true);
   assert.equal(resolver.isReleaseArtifactPath('docs\\releases\\execution-v1\\commit-1\\snapshot.json'), true);
   assert.equal(resolver.isReleaseEvidenceDocPath('./docs/target.md'), true);
   assert.equal(resolver.isReleaseEvidenceDocPath('docs/releases/execution-v1/commit-1/snapshot.json'), true);
 
   assert.equal(resolver.isReleaseArtifactPath('docs/releases/execution-v1/../../current.md'), false);
+  assert.equal(resolver.isReleaseArtifactPath('generated/portfolio'), false);
+  assert.equal(resolver.isReleaseArtifactPath('generated/portfolio-copy/README.md'), false);
+  assert.equal(resolver.isReleaseArtifactPath('generated/portfolio/../secret.md'), false);
   assert.equal(resolver.isReleaseEvidenceDocPath('docs/releases/execution-v1/../../target.md'), false);
   assert.equal(resolver.isReleaseEvidenceDocPath('../docs/target.md'), false);
   assert.equal(resolver.isReleaseEvidenceDocPath('/docs/target.md'), false);

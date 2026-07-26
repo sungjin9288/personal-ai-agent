@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "personal-ai-agent-fine-tuning-readiness-fixture/v1",
+  "productionReadyClaim": false,
+  "datasetFixture": "fixtures/training-dataset-quality-cases-v1.json",
+  "answerQualityFixture": "fixtures/answer-quality-cases-v1.json",
+  "expected": {
+    "exportFormat": "provider-neutral-conversation-jsonl-v1",
+    "reviewCheckCount": 11,
+    "sourceRecordCount": 6,
+    "acceptedRecordCount": 4,
+    "trainLineCount": 3,
+    "validationLineCount": 1,
+    "submissionRequirementCount": 6,
+    "status": "ready-for-local-review"
+  }
+}

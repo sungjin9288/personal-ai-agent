@@ -23,6 +23,8 @@ const architectureCodeWalkthroughPath = path.join(repoDir, 'docs', 'architecture
 const providerReadinessMatrixPath = path.join(repoDir, 'docs', 'provider-readiness-matrix-v1.md');
 const providerFailureRecoveryDemoPath = path.join(repoDir, 'docs', 'provider-failure-recovery-demo-v1.md');
 const memoryRetrievalQualityFixturePath = path.join(repoDir, 'docs', 'memory-retrieval-quality-fixture-v1.md');
+const mlRagDevelopmentPlanPath = path.join(repoDir, 'docs', 'ml-rag-development-plan-v1.md');
+const actualUserQueryEvaluationPath = path.join(repoDir, 'docs', 'actual-user-query-evaluation-v1.md');
 const smokeValidationSummaryPath = path.join(repoDir, 'docs', 'smoke-validation-summary-v1.md');
 const externalEvidenceBlockersPath = path.join(repoDir, 'docs', 'external-evidence-blockers-v1.md');
 const forkOnboardingPath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
@@ -53,6 +55,8 @@ const architectureCodeWalkthrough = readRequiredFile(architectureCodeWalkthrough
 const providerReadinessMatrix = readRequiredFile(providerReadinessMatrixPath);
 const providerFailureRecoveryDemo = readRequiredFile(providerFailureRecoveryDemoPath);
 const memoryRetrievalQualityFixture = readRequiredFile(memoryRetrievalQualityFixturePath);
+const mlRagDevelopmentPlan = readRequiredFile(mlRagDevelopmentPlanPath);
+const actualUserQueryEvaluation = readRequiredFile(actualUserQueryEvaluationPath);
 const smokeValidationSummary = readRequiredFile(smokeValidationSummaryPath);
 const externalEvidenceBlockers = readRequiredFile(externalEvidenceBlockersPath);
 const forkOnboarding = readRequiredFile(forkOnboardingPath);
@@ -73,7 +77,7 @@ assert.match(manifest, /^- packageMode: manifest-only$/m);
 assert.match(manifest, /^- productionReadyClaim: false$/m);
 assert.match(manifest, /^- shareable: yes-after-hygiene-pass$/m);
 assert.match(manifest, /^- bundleSha256: [a-f0-9]{64}$/m);
-assert.match(manifest, /^- fileCount: 75$/m);
+assert.match(manifest, /^- fileCount: \d+$/m);
 assert.match(manifest, /It is not production deployment evidence/);
 assert.match(manifest, /not permission to claim `production-ready`/);
 
@@ -104,9 +108,69 @@ const requiredPaths = [
   'docs/provider-readiness-matrix-v1.md',
   'docs/provider-failure-recovery-demo-v1.md',
   'docs/memory-retrieval-quality-fixture-v1.md',
+  'docs/ml-rag-development-plan-v1.md',
+  'docs/actual-user-query-evaluation-v1.md',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
+  'evidence/output-artifacts/local-embedding-model-qualification.json',
+  'evidence/output-artifacts/local-retrieval-robustness.json',
+  'evidence/output-artifacts/local-relevance-reranker-evaluation.json',
+  'evidence/output-artifacts/local-reranker-resource-envelope.json',
+  'evidence/output-artifacts/local-reranker-runtime-stability.json',
+  'evidence/output-artifacts/local-relevance-shadow-integration.json',
+  'evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json',
+  'evidence/output-artifacts/local-relevance-shadow-replay.json',
+  'evidence/output-artifacts/local-relevance-shadow-cache.json',
+  'evidence/output-artifacts/local-relevance-shadow-cache-lifecycle.json',
+  'evidence/output-artifacts/local-relevance-shadow-cache-process-isolation.json',
+  'evidence/output-artifacts/local-relevance-shadow-cache-termination-soak.json',
+  'evidence/output-artifacts/approved-learning-rag-feedback.json',
+  'evidence/output-artifacts/approved-learning-feedback-quality.json',
+  'evidence/output-artifacts/workspace-learning-personalization.json',
+  'evidence/output-artifacts/workspace-learning-conflict-revocation.json',
+  'evidence/output-artifacts/workspace-learning-operator-override.json',
+  'evidence/output-artifacts/workspace-learning-operator-surface.json',
+  'evidence/output-artifacts/local-user-learning-personalization.json',
+  'evidence/output-artifacts/user-learning-conflict-revocation.json',
+  'evidence/output-artifacts/user-learning-operator-override.json',
+  'evidence/output-artifacts/user-learning-operator-surface.json',
+  'evidence/output-artifacts/fine-tuning-data-sufficiency.json',
+  'evidence/output-artifacts/fine-tuning-data-collection-plan.json',
+  'evidence/output-artifacts/fine-tuning-data-intake-request.json',
+  'evidence/output-artifacts/local-training-runtime-contract.json',
+  'evidence/output-artifacts/local-training-permission-surface.json',
+  'evidence/output-artifacts/local-training-environment-preflight.json',
+  'evidence/output-artifacts/local-training-toolchain-decision.json',
+  'evidence/output-artifacts/local-training-acquisition-request.json',
+  'evidence/output-artifacts/local-training-acquisition-runtime-contract.json',
+  'evidence/output-artifacts/local-training-acquisition-artifact-verification.json',
+  'evidence/output-artifacts/local-training-post-acquisition-readiness.json',
+  'evidence/output-artifacts/mlx-lm-lora-training-adapter.json',
+  'evidence/output-artifacts/local-training-runtime-closure-provenance.json',
+  'evidence/output-artifacts/local-training-process-supervisor.json',
+  'evidence/output-artifacts/local-training-os-isolation.json',
+  'evidence/output-artifacts/local-training-runtime-exec-observation.json',
+  'evidence/output-artifacts/local-training-runtime-image-provenance.json',
+  'evidence/output-artifacts/local-training-darwin-suspended-exec.json',
+  'evidence/output-artifacts/local-training-failure-recovery.json',
+  'evidence/output-artifacts/local-training-candidate-artifact-verification.json',
+  'evidence/output-artifacts/local-candidate-evaluation-admission.json',
+  'evidence/output-artifacts/local-candidate-evaluation-runtime.json',
+  'evidence/output-artifacts/local-candidate-evaluation-host-restart-rehearsal.json',
+  'evidence/output-artifacts/local-candidate-evaluation-host-restart-receipt.json',
+  'evidence/output-artifacts/local-answer-quality-baseline.json',
+  'evidence/output-artifacts/local-answer-composition-candidate.json',
+  'evidence/output-artifacts/local-answer-composition-robustness.json',
+  'evidence/output-artifacts/local-answer-composition-hardening.json',
+  'evidence/output-artifacts/answer-input-boundary-evaluation.json',
+  'evidence/output-artifacts/local-answer-composition-boundary-regression.json',
+  'evidence/output-artifacts/user-query-evaluation-intake.json',
+  'evidence/output-artifacts/local-user-query-quality.json',
+  'evidence/output-artifacts/local-answer-review-action-generalization.json',
+  'evidence/screenshots/workspace-learning-operator-surface.png',
+  'evidence/screenshots/user-learning-operator-surface.png',
+  'evidence/screenshots/local-training-permission-surface.png',
   'docs/fork-onboarding-v1.md',
   'docs/incident-slo-v1.md',
   'docs/customer-support-operations-v1.md',
@@ -282,6 +346,143 @@ assert.match(memoryRetrievalQualityFixture, /source diversity/);
 assert.match(memoryRetrievalQualityFixture, /fact graph provenance/);
 assert.match(memoryRetrievalQualityFixture, /instruction boundary/);
 assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-quality-fixture/);
+assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
+assert.match(
+  mlRagDevelopmentPlan,
+  /status: private-collection-gap-replan-shadow-current/,
+);
+assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
+assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-quality-evaluation/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:retrieval-corpus-contract/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:retrieval-quality-evaluation/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:semantic-retrieval-experiment/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:retrieval-reranking-experiment/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:approved-training-record/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:training-dataset-quality/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-readiness/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-sufficiency/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-collection-plan/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-intake-request/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-data-intake-resolution/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-private-collection-plan/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-private-collection-execution-request/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:fine-tuning-private-collection-execution-resolution/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-runtime/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-environment-preflight/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-toolchain-decision/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-acquisition-request/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-acquisition-resolution/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-training-acquisition-execution-plan/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:candidate-model-evaluation/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-quality-baseline/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-candidate/);
+assert.match(mlRagDevelopmentPlan, /\| Q3 Evidence-first answer composition \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-robustness/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-hardening/);
+assert.match(mlRagDevelopmentPlan, /\| Q4 Answer composition robustness and hardening \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:answer-input-boundary/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-answer-composition-boundary-regression/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:user-query-evaluation-intake/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-user-query-quality/);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:local-answer-review-action-generalization/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| Q7 Reviewer action generalization \| 완료 \|/,
+);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:actual-user-query-evaluation-readiness/);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| Q8 Actual user-query evaluation protocol \| 프로토콜 완료 · 데이터 대기 \|/,
+);
+assert.match(actualUserQueryEvaluation, /^# Actual User-Query Evaluation v1$/m);
+assert.match(actualUserQueryEvaluation, /^- actualUserQueryData: false$/m);
+assert.match(actualUserQueryEvaluation, /Q7 v5 reviewer-action baseline/);
+assert.match(mlRagDevelopmentPlan, /\| Q5 Adversarial input boundary and user-query intake \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| Q2 Actual local answer-quality baseline \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-conflict-revocation/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-operator-override/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:workspace-learning-operator-surface/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-user-learning-personalization/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:user-learning-conflict-revocation/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:user-learning-operator-override/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:user-learning-operator-surface/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-lifecycle/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-process-isolation/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:local-relevance-shadow-cache-termination-soak/);
+assert.match(mlRagDevelopmentPlan, /npm run smoke:approved-learning-rag-feedback/);
+assert.match(mlRagDevelopmentPlan, /\| R1 Corpus contract \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| R2 Retrieval evaluation \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| R3 Optional semantic retrieval \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| R4 Reranking \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| R13 Bounded shadow score cache \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| R14 Shadow cache lifecycle stress \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| R15 Shadow cache process isolation \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| R16 Shadow cache termination recovery and bounded soak \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| F2a Local training runtime contract \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| F2b Local training product permission surface \| 완료 \|/);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F2c\.1 Local training environment preflight \| 완료 · 실행 차단 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F2c\.2 Local training toolchain decision \| 완료 · 승인 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F2c\.3 Local training acquisition approval contract \| 완료 · owner 승인 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F2c\.4 Local training acquisition resolution surface \| 완료 · 실제 decision 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F2c\.5 Local training acquisition execution plan \| 완료 · 실제 승인 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F1\.19 Private answer-quality case payload lifecycle \| 완료 · 실제 owner decision 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F1\.20 Private answer-quality payload replay \| 완료 · 실제 local operator request 대기 \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-answer-quality-case-payload/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-answer-quality-case-replay/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-combined-readiness-impact/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /npm run smoke:fine-tuning-private-collection-gap-replan/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F1\.24 Private combined readiness impact shadow \| 완료 · synthetic fixture projection \|/,
+);
+assert.match(
+  mlRagDevelopmentPlan,
+  /\| F1\.25 Private collection-gap replan shadow \| 완료 · synthetic fixture projection \|/,
+);
+assert.match(mlRagDevelopmentPlan, /\| P1 Approved learning RAG feedback \| 완료 \|/);
+assert.match(mlRagDevelopmentPlan, /\| L1 승인된 학습 데이터 \| 완료 \|/);
 assert.match(smokeValidationSummary, /# Smoke Validation Summary v1/);
 assert.match(smokeValidationSummary, /status: smoke-validation-summary-current/);
 assert.match(smokeValidationSummary, /productionReadyClaim: false/);

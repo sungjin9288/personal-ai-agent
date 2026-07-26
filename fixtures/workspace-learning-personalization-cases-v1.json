@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "personal-ai-agent-workspace-learning-personalization-cases/v1",
+  "productionReadyClaim": false,
+  "cases": [
+    {
+      "id": "workspace-verification-personalization",
+      "deliverableType": "decision-memo",
+      "expectedPlanStep": "Narrow the verification path before requesting workspace execution again.",
+      "isolationMarker": "workspace learning lane delta",
+      "minimumRetrievalMatchTermCount": 3,
+      "mode": "knowledge",
+      "promotionNote": "Narrow the verification path before requesting workspace execution again. Preserve workspace learning lane delta in the review.",
+      "requiredAnswerTerms": [
+        "narrow the verification path",
+        "workspace execution",
+        "workspace learning lane delta"
+      ],
+      "scopeAuthorizationNote": "Authorize this reviewed mission decision for sibling missions in the source workspace.",
+      "sourceObjective": "Review a narrow verification path for workspace execution approval and record the reusable decision.",
+      "sourceTitle": "Workspace learning source",
+      "targetObjective": "Prepare a narrow verification path for workspace execution approval.",
+      "targetTitle": "Workspace learning target"
+    }
+  ]
+}

@@ -1,15 +1,17 @@
 # Smoke Validation Summary v1
 
 - status: smoke-validation-summary-current
-- localDate: 2026-06-23
+- localDate: 2026-07-17
 - productionReadyClaim: false
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
+- lastFullSweep: 237/237 passed with `npm run smoke:all` on 2026-07-22
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
 - relatedMemoryRetrievalQualityFixture: [memory-retrieval-quality-fixture-v1.md](memory-retrieval-quality-fixture-v1.md)
+- relatedMlRagDevelopmentPlan: [ml-rag-development-plan-v1.md](ml-rag-development-plan-v1.md)
 - relatedPilotExportPackage: [pilot-export-package-v1.md](pilot-export-package-v1.md)
 
 ## Purpose
@@ -36,6 +38,102 @@ The safe claim is that the local deterministic verification suite passes for the
 | Provider readiness | `npm run smoke:provider-readiness-matrix` | Verifies provider catalog, env keys, blockers, and safe claim boundary |
 | Provider recovery | `npm run smoke:provider-failure-recovery-demo` | Verifies fallback/remediation demo linkage and claim boundary |
 | Memory quality fixture | `npm run smoke:memory-retrieval-quality-fixture` | Verifies retrieval ranking, fact graph provenance, and instruction-boundary fixture linkage |
+| Answer quality evaluation | `npm run smoke:answer-quality-evaluation` | Verifies credential-free retrieval, citation, required-content, and reviewer regression gates |
+| Retrieval corpus contract | `npm run smoke:retrieval-corpus-contract` | Verifies deterministic memory, attachment, and fact corpus identity, revision, scope, hash, and provenance |
+| Retrieval quality evaluation | `npm run smoke:retrieval-quality-evaluation` | Verifies controlled precision, recall, noise, source diversity, frozen baseline replay, and candidate regression rejection |
+| Semantic retrieval experiment | `npm run smoke:semantic-retrieval-experiment` | Verifies bounded local embedding protocol, scope lock, controlled synonym comparison, and runtimeActivation=false boundary |
+| Retrieval reranking experiment | `npm run smoke:retrieval-reranking-experiment` | Verifies deterministic semantic+lexical scoring, controlled tie quality comparison, measured local latency, exact rollback order, and runtimeActivation=false boundary |
+| Local semantic retrieval runtime | `npm run smoke:semantic-retrieval-runtime` | Verifies default lexical parity, explicit local opt-in, mission scope lock, semantic+lexical selection, failure-before-provider, and state-free rollback |
+| Local embedding model qualification | `npm run smoke:local-embedding-model-qualification` | Verifies recorded actual qwen2.5 comparison integrity, 3B controlled-suite quality pass, governance blockers, activationAuthorized=false, and lexical rollback |
+| Local retrieval robustness | `npm run smoke:local-retrieval-robustness` | Verifies recorded 15-case query variation coverage, selected model binding, hard-negative regression, content-free integrity, and failed-keep-lexical decision |
+| Local relevance reranker | `npm run smoke:local-relevance-reranker` | Verifies independent pair scoring, repeated score stability, 15-case and hard-negative pass, content-free evidence, and governance-blocked activation |
+| Local reranker resource envelope | `npm run smoke:local-reranker-resource-envelope` | Verifies top-2 expected-source preflight, R8 quality parity, inference and p50/p95/total reduction, loaded-model footprint, maximum regression disclosure, and governance-blocked activation |
+| Local reranker runtime stability | `npm run smoke:local-reranker-runtime-stability` | Verifies cold 1, warm 3, concurrent client worker 2, 360 inference quality/resource parity, bounded latency gates, and explicit production parallelism, long-soak, and thermal limitations |
+| Local relevance shadow integration | `npm run smoke:local-relevance-shadow-integration` | Verifies four-role stub mission observation, exact lexical provider input preservation, content-free evidence, store isolation, and scorer-failure fail-open |
+| Multi-scenario shadow replay | `npm run smoke:local-relevance-shadow-replay` | Verifies 3 scenarios, 15 stub missions, 60 role observations, retained full-query hard-negative failure, mission-objective query correction, content-free evidence, and inactive provider path |
+| Bounded shadow score cache | `npm run smoke:local-relevance-shadow-cache` | Verifies exact model·prompt·query·document binding, 64-entry process-local LRU, 120 requests to 30 model inferences, 90 hits, 15/15 quality parity, content-free entries, maximum-latency regression disclosure, and inactive provider path |
+| Shadow cache lifecycle stress | `npm run smoke:local-relevance-shadow-cache-lifecycle` | Verifies 8-entry actual eviction, 22 LRU removals, 15/15 quality parity, concurrent in-flight join, generation invalidation, stale-result drop, fresh refill, rollback close, content-free evidence, and inactive provider path |
+| Shadow cache process isolation | `npm run smoke:local-relevance-shadow-cache-process-isolation` | Verifies two concurrent child processes and one restarted process each begin with an empty cache, perform one inference and one local hit, retain distinct process identity, inherit no parent environment, close with zero entries, and keep provider activation blocked |
+| Shadow cache termination and soak | `npm run smoke:local-relevance-shadow-cache-termination-soak` | Verifies warm-before-kill state, observed SIGKILL, cold recovery inference and score parity, exact 48-pair/16-entry soak metrics, heap/RSS regression limits, content-free evidence, and blocked provider activation |
+| Approved learning RAG feedback | `npm run smoke:approved-learning-rag-feedback` | Verifies explicit mission-memory approval, retrieval source and content-hash lineage, planner/deliverable adaptation, reviewer pass, rollback deletion, exact baseline artifact parity, and no external provider call |
+| Multi-scenario learning feedback quality | `npm run smoke:approved-learning-feedback-quality` | Verifies three same-workspace mission feedback loops, Q1 case pass 0/3 to 3/3 to 0/3, two foreign-memory exclusions per promoted case, nine distinct sessions, reviewer pass, content-free evidence, and exact rollback parity |
+| Workspace learning personalization | `npm run smoke:workspace-learning-personalization` | Verifies explicit mission-to-workspace authorization, sibling application, foreign-workspace isolation, seven distinct sessions, timeline audit ordering, content-free evidence, and exact rollback parity |
+| Workspace learning conflict and revocation | `npm run smoke:workspace-learning-conflict-revocation` | Verifies latest-revision selection from two retrieved workspace decisions, selected-only provider exposure, exact older fallback after newer revocation, exact baseline restoration after full rollback, foreign-workspace isolation, eight distinct sessions, and content-free evidence |
+| Workspace learning operator override | `npm run smoke:workspace-learning-operator-override` | Verifies verified-promotion permission evidence, future expiration, CLI set, service repin and clear, retrieved-only authority, exact latest fallback, foreign isolation, timeline order, eight distinct sessions, and content-free evidence |
+| Workspace learning operator surface | `npm run smoke:workspace-learning-operator-surface` | Verifies hash-bound Chromium evidence, content-free state, tenant-checked HTTP set and clear routes, sanitized response guards, active·expired·cleared UI lifecycle, and productionReadyClaim=false |
+| Local user learning personalization | `npm run smoke:local-user-learning-personalization` | Verifies explicit mission-to-user authorization, tenant-bound refusal, sibling and cross-workspace user decision application, seven distinct local stub sessions, content-free audit lineage, and exact rollback parity |
+| User learning conflict and revocation | `npm run smoke:user-learning-conflict-revocation` | Verifies latest-revision selection from two retrieved local-user decisions, selected-only provider exposure in two workspaces, exact older fallback after newer revocation, full baseline restoration, eight distinct sessions, and content-free evidence |
+| User learning operator override | `npm run smoke:user-learning-operator-override` | Verifies permission-complete tenant-free source promotion, CLI set, service repin and clear, retrieved-only authority, cross-workspace older selection, exact latest fallback after expiry and clear, timeline order, eight distinct sessions, and content-free evidence |
+| User learning operator surface | `npm run smoke:user-learning-operator-surface` | Verifies hash-bound Chromium evidence, content-free user state, candidate-tenant-checked HTTP set and clear routes, sanitized responses, active·expired·cleared UI lifecycle, and productionReadyClaim=false |
+| Approved training record | `npm run smoke:approved-training-record` | Verifies actual local approval lifecycle, reviewer and artifact lineage, sanitized example safety checks, deterministic hashes, accepted-risk governance, and externalSubmissionAuthorized=false boundary |
+| Training dataset quality gate | `npm run smoke:training-dataset-quality` | Verifies deterministic content, lineage, and near-response deduplication, mission-scoped train/validation split, leakage checks, content-free manifest, and fineTuningExecutionAuthorized=false boundary |
+| Fine-tuning readiness export | `npm run smoke:fine-tuning-readiness` | Verifies provider-neutral train/validation JSONL, dataset and Q1 baseline binding, reviewer-pending evaluation manifest, file replay, and externalSubmissionAuthorized=false boundary |
+| Fine-tuning data sufficiency | `npm run smoke:fine-tuning-data-sufficiency` | Verifies the F1-bound development stop condition, current insufficient-data decision, content-free evidence, and false candidate-review, training, submission, and production claims |
+| Fine-tuning reviewed-data collection plan | `npm run smoke:fine-tuning-data-collection-plan` | Verifies exact F1.1 binding, non-overlapping reviewed-example and mission-scope gaps, separate baseline-case work, risk remediation without padding, content-free evidence, and false collection, review, training, submission, and production claims |
+| Fine-tuning reviewed-data intake request | `npm run smoke:fine-tuning-data-intake-request` | Verifies exact F1.2 binding, bounded expiry, 16·6·8 targets, pending data-handling owner reviews, content-free evidence, and false collection, review, training, submission, and production claims |
+| Fine-tuning reviewed-data intake resolution | `npm run smoke:fine-tuning-data-intake-resolution` | Verifies the current F1.1–F1.3 binding, five exact ordered owner-role attestations, no-follow owner-only input, integrity-checked one-resolution history, hash-only reasons, explicit unverified identity/evidence boundaries, private-plan-only approval, and false collection, review, training, submission, and production claims |
+| Fine-tuning private collection plan | `npm run smoke:fine-tuning-private-collection-plan` | Verifies current F1.1–F1.4 hash, expiry, and target binding, seven pending steps, no-follow owner-only input, one-plan history, separate execution approval, and false workspace, collection, review, training, submission, and production claims |
+| Fine-tuning private collection execution request | `npm run smoke:fine-tuning-private-collection-execution-request` | Verifies current F1.1–F1.5 hash, inherited expiry, exact target, seven-action, and five-review binding, no-follow owner-only plan and resolution input, one-request-per-plan history, and false workspace, collection, review, training, submission, and production claims |
+| Fine-tuning private collection execution resolution | `npm run smoke:fine-tuning-private-collection-execution-resolution` | Verifies current F1.1–F1.6 thirteen-hash binding, inherited expiry, exact targets, seven actions, five ordered hash-only reviews, unanimous bounded-collection approval and rejection paths, no-follow owner-only four-input handling, one-resolution-per-request history, and false actual-data, candidate-review, training, submission, and production claims |
+| Fine-tuning private collection workspace | `npm run smoke:fine-tuning-private-collection-workspace` | Verifies current F1.1–F1.7 fourteen-hash binding, inherited expiry, exact targets and seven actions, approved-resolution-only empty two-lane workspace creation, no-follow owner-only four-input handling, one-workspace-per-resolution history, mode/allowlist/emptiness checks, no private path output, collectionStarted=false, and false actual-data, candidate-review, training, submission, and production claims |
+| Fine-tuning private collection item admission | `npm run smoke:fine-tuning-private-collection-item-admission` | Verifies current F1.1–F1.8 sixteen-hash binding, fixed workspace with only empty or finalized-item lanes, content-free envelope schema, six no-follow owner-only inputs, duplicate and lane-capacity refusal, immutable owner-only history, retention and publish-time revalidation, no private path or metadata stdout, unchanged workspace, and false content, candidate-review, training, submission, and production claims |
+| Fine-tuning private collection item write | `npm run smoke:fine-tuning-private-collection-item` | Verifies current F1.1–F1.9 nineteen-hash binding, origin-consent matrix, normalized bounded synthetic content, secret/raw JSON/customer identifier/control rejection, seven no-follow owner-only inputs, exact workspace/admission paths and unchanged workspace bytes, shared-lock atomic one-admission write, finalized-item admission continuity, tombstone refusal, and false training/provider/production claims |
+| Fine-tuning private collection item lifecycle | `npm run smoke:fine-tuning-private-collection-item-lifecycle` | Verifies exact stored item/admission/workspace binding, withdrawal and retention-delete timing, exact confirmation, shared-lock same-lane removal, pending/final resume, terminal v2 receipt immutability, link and workspace-content refusal, and false training/provider/production or independent-deletion claims |
+| Fine-tuning private collection item review projection | `npm run smoke:fine-tuning-private-collection-item-review-projection` | Verifies content-free lane-specific pending review projection from one live exact F1.10 item, current F1 chain and exact private path revalidation, shared lock, terminal/pending/removal/expiry refusal, idempotent one-final history, crash resume, no workspace mutation, and false approved-record/case/training/provider/submission/production claims |
+| Fine-tuning private collection item review resolution | `npm run smoke:fine-tuning-private-collection-item-review-resolution` | Verifies content-free quality-reviewer approve/reject resolution from one exact F1.12 final projection, F1.1–F1.12 and exact-path revalidation, shared lock, terminal/pending/removal/expiry refusal, decision-only and bundle resume, idempotent final replay, token/content/path exclusion, and false record/case/candidate-review/training/provider/submission/deployment/production claims |
+| Fine-tuning private collection item artifact request | `npm run smoke:fine-tuning-private-collection-item-artifact-request` | Verifies content-free lane-specific preparation request from one exact approved F1.13 final resolution, owner-only input and history, exact replay, expiry refusal, and false record/case/candidate-review/training/provider/submission/deployment/production authority |
+| Fine-tuning private collection item artifact preparation resolution | `npm run smoke:fine-tuning-private-collection-item-artifact-preparation-resolution` | Verifies content-free quality-reviewer approve/reject resolution from one exact F1.14 final request, token-only decision history, shared-lock replay and decision-only pending resume, lane-only preparation authority, and false record/case/candidate-review/training/provider/submission/deployment/production authority |
+| Private answer-quality case enrichment candidate | `npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate` | Verifies exact approved live F1.15 answer-quality and curated-synthetic lineage, strict observed-at expiry, objective/answer linkage, exact retrieval schema, source and term boundaries, deterministic reviewer-free precheck, owner-only input/history, pending resume and exact replay, and content-free false Q1/case/training/provider/submission/deployment/production claims |
+| Private answer-quality enrichment candidate review resolution | `npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate-review-resolution` | Verifies canonical F1.16 final candidate binding, quality-reviewer approve/reject, exact replay, empty/decision-only/complete pending recovery, owner-only file identity, lifecycle·terminal·cross-workspace fail-closed gates, and the boundary that approval opens only reviewer pass and F1.18 materialization allowance while Q1 contract, case creation/evaluation, training, provider, submission, deployment, and production claims remain false |
+| Private answer-quality case materialization | `npm run smoke:fine-tuning-private-answer-quality-case` | Verifies canonical approved F1.17 binding, live F1.16 candidate and owner-only enrichment input, in-memory retrieval rebuild, fixed reviewer-pass Q1 evaluation, content-free logical-case history, exact replay, pending recovery, and false payload, training, provider, submission, deployment, and production claims |
+| Private answer-quality case payload | `npm run smoke:fine-tuning-private-answer-quality-case-payload` | Verifies a separate retention-owner approve/reject decision, reject-before-raw-read behavior, curated-synthetic-only minimal payload, exact F1.18 definition and evaluation parity, owner-only atomic history, replay and bounded pending recovery, private file guards, and false actual-user-data, training, provider, submission, deployment, and production claims |
+| Private answer-quality case payload lifecycle | `npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle` | Verifies that the existing F1.11 public command performs payload-first F1.19→F1.18→F1.17→F1.16→F1.10 removal, publishes managed-namespace inventory and absence evidence before its terminal bundle, resumes exact pending states, rejects resurrection, and preserves the derivative-free F1.11 contract |
+| Private answer-quality payload replay | `npm run smoke:fine-tuning-private-answer-quality-case-replay` | Verifies separate local-operator replay authority, exact stored F1.19 payload identity, frozen F1.18 Q1 parity, content-free receipt, pending recovery, and no enrichment input or model call |
+| Private reviewed-example canonical record materialization | `npm run smoke:fine-tuning-private-reviewed-example-canonicalization` | Verifies exact approved F1.15 reviewed-example lineage, source projection hash binding, existing approved-record dataset validation, private atomic publish, pending recovery, and delete-before-item lifecycle without training or provider authority |
+| Private reviewed-example dataset impact shadow | `npm run smoke:fine-tuning-private-reviewed-example-dataset-impact` | Verifies a deterministic in-memory baseline-plus-F1.21 projection, five remaining stop-condition failures, and no dataset, authority, audit, or evidence mutation |
+| Private answer-quality readiness impact shadow | `npm run smoke:fine-tuning-private-answer-quality-readiness-impact` | Verifies one exact final F1.20 replay case added to the deterministic suite only in memory, Q1 parity, `2→3` case count, unchanged dataset/export digests, five remaining stop-condition failures, and no readiness, authority, audit, or evidence mutation |
+| Private combined readiness impact shadow | `npm run smoke:fine-tuning-private-combined-readiness-impact` | Verifies one final F1.21 reviewed record followed by one final F1.20 replay case in one in-memory rebuild, synthetic `4/3/1/4/2→5/4/1/5/3` projection, five remaining stop-condition failures, and no state, authority, audit, training, or provider mutation |
+| Private collection-gap replan shadow | `npm run smoke:fine-tuning-private-collection-gap-replan` | Verifies a fresh trusted-authority rebuild of F1.24 plus exact tracked F1.2 parity, projected 15/12/3 reviewed-example gaps, 5 mission scopes, 7 answer-quality cases, and no state, collection, authority, audit, training, or provider mutation |
+| Local training runtime contract | `npm run smoke:local-training-runtime` | Verifies exact F1 and expiring approval binding, current permission and post-acquisition admission revalidation before spawn, shell-free local stdio, secret environment filtering, input/output/timeout bounds, strict content-free candidate output, store invariance, and actualModelTrainingExecuted=false boundary |
+| Local training product permission surface | `npm run smoke:local-training-permission-surface` | Verifies CLI request, action inbox aggregation, approver-only HTTP approval and revocation, tenant isolation, ordered gateway audit, private readiness storage, and actualModelTrainingExecuted=false boundary |
+| Local training permission evidence | `npm run smoke:local-training-permission-evidence` | Verifies the tracked content-free replay hash, actual Chromium screenshot hash, zero browser console errors, and productionReadyClaim=false boundary |
+| Local training environment preflight | `npm run smoke:local-training-environment-preflight` | Verifies current local GGUF, manifest, license metadata, F1 readiness, system capacity, supported trainer, product permission, independent review, and rollback-owner checks; enforces the seven current blockers and actualModelTrainingExecuted=false boundary |
+| Local training toolchain decision | `npm run smoke:local-training-toolchain-decision` | Verifies immutable MLX-LM and Qwen source revisions, Apple Silicon·Python·uv prerequisites, LoRA/chat JSONL/offline selection, seven explicit acquisition approvals, and no install, download, training, or rollout boundary |
+| Local training acquisition request | `npm run smoke:local-training-acquisition-request` | Verifies exact F2c.2 binding, request integrity, five owner roles, seven ordered actions, repository-relative mutable root, proposed-not-measured resource caps, and no acquisition, install, download, training, rollout, or external submission authority |
+| Local training acquisition resolution | `npm run smoke:local-training-acquisition-resolution` | Verifies exact private decision fields, tracked and symbolic-link refusal, current toolchain and request revalidation, one content-free private resolution per request, acquisition-only approval, and no install, download, training, rollout, or external submission execution |
+| Local training acquisition execution plan | `npm run smoke:local-training-acquisition-execution-plan` | Verifies approved private resolution input, exact fields, approval integrity, expiry, current request and toolchain binding, seven ordered pending actions, 0600 private output, and no installation, download, training, rollout, or external submission execution |
+| Local training acquisition runtime contract | `npm run smoke:local-training-acquisition-runtime` | Verifies current approval·request·toolchain·exact plan binding, content-free adapter input, ordered result validation, tamper·expiry·stale·unsupported-output refusal, independently unverified adapter reports, and no actual installation, download, training, external call, or rollout |
+| Local training acquisition artifact verification | `npm run smoke:local-training-acquisition-artifact-verification` | Verifies current authority and run binding, approved-root containment, regular-file and symlink guards, exact manifest pins, streamed file hashes, adapter artifact-set binding, resource limits, content-free fixture evidence, and no actual acquisition provenance, installation, download, training, external call, or rollout |
+| Local training post-acquisition readiness | `npm run smoke:local-training-post-acquisition-readiness` | Verifies fixture-only provenance, egress closure, offline artifact resource canary, and post-review product permission evidence binding while keeping all actual gates, training, external submission, rollout, and production claims false |
+| Local training candidate artifact verification | `npm run smoke:local-training-candidate-artifact-verification` | Verifies fixed candidate-root containment, complete manifest inventory, regular-file and symlink guards, streamed SHA-256, F2c.9 run binding, current permission disk envelope, content-free evidence, and false actual-training, evaluation, rollout, and production claims |
+| Local candidate evaluation admission | `npm run smoke:local-candidate-evaluation-admission` | Verifies recorded artifact verification, current permission, explicit no-revocation, exact F1 suite bytes and case·threshold binding, current CPU·memory·disk·runtime envelope, bounded request window, content-free operator metadata, local-evaluation-only authority, and false actual-evaluation, training, rollout, and production claims |
+| Local candidate evaluation runtime | `npm run smoke:local-candidate-evaluation-runtime` | Verifies current authority revalidation, manifest-listed candidate snapshot, exact suite bytes, pre/post input hashes, cleanup-before-evidence, evaluator identity, allowlisted local stdio, bounded time and I/O, canonical content-free quality summary, O1a run lineage, fixture-only execution, caller-owned executable provenance and OS resource·network isolation, and blocked training, rollout, and production claims |
+| Local candidate evaluation input view | `npm run smoke:local-candidate-evaluation-input-view` | Verifies the F2c.13 exact-suite-byte binding, bounded read-only temporary candidate view, source-workspace exclusion, post-execution candidate and suite verification, content-free run record, cleanup completion, and false production claim |
+| F2c.14 Evaluator bundle provenance | `npm run smoke:local-candidate-evaluator-provenance` | Verifies request·admission-bound executable SHA-256 and static ESM module·resource inventory, snapshot entry execution, pre/post source and snapshot verification, content-free run hashes, and the caller-owned OS isolation boundary |
+| F2c.15 Pre-spawn workspace recovery | `npm run smoke:local-candidate-evaluation-workspace-recovery` | Verifies owner-only namespace and exact leases, current-authority-first ordering, `expired + dead PID + preparing` recovery, active·unknown·spawning·unsafe preservation, atomic claim resume, bounded deletion, and false post-spawn cleanup and production claims |
+| F2c.16 Post-spawn evaluator process lifecycle | `npm run smoke:local-candidate-evaluation-process-lifecycle` | Verifies detached POSIX process groups, bounded-failure descendant termination, close and group-absence proof before cleanup, no late signal after leader close, content-free run v6 lifecycle binding, and fail-closed workspace preservation |
+| F2c.17 Host boot identity recovery | `npm run smoke:local-candidate-evaluation-host-boot-recovery` | Verifies reliable boot-source hashing, v2 lease binding, `expired + prior boot + spawning` recovery, same-boot·legacy·unavailable-identity preservation, no PID liveness dependency for prior-boot cleanup, content-free run v6 evidence, and false actual-host-restart and production claims |
+| F2c.18 Manual host restart rehearsal | `npm run smoke:local-candidate-evaluation-host-restart-rehearsal` | Verifies private owner-only no-follow prepare/resume, two-sided host-reader claim binding, changed-boot and expiry gates, exact-one-lease prior-boot recovery, idempotent receipt completion, same-boot·unavailable·unexpired·tampered·unsafe preservation, no automatic reboot or evaluator relaunch, and false tracked actual-host-restart and production claims |
+| F2c.19 Actual host restart receipt | `npm run smoke:local-candidate-evaluation-host-restart-receipt` | Validates the content-free tracked projection contract, integrity, privacy exclusions, private-source re-verification boundary, no external provider calls, and false evaluator relaunch, model evaluation, training, rollout, and production claims; it does not independently replay the private host restart |
+| F2c.20 MLX-LM LoRA adapter contract | `npm run smoke:mlx-lm-lora-training-adapter` | Verifies the fixture-only approved F1-to-MLX adapter seam, exact train·valid bytes, fixed local argv, offline environment, complete acquisition inventory, candidate manifest binding, atomic publish, and fail-closed actual execution boundary |
+| F2c.21 Durable training failure recovery | `npm run smoke:local-training-failure-recovery` | Verifies authority-bound owner-only recovery state, atomic publish and cleanup phases, workspace-first partial failure resume, exact rollback-owner request, idempotent receipt replay, privacy exclusions, unsafe-tree preservation, and the fail-closed actual execution boundary |
+| F2c.22 Static training runtime closure provenance | `npm run smoke:local-training-runtime-closure-provenance` | Verifies pinned interpreter·entrypoint·statically resolved allowlisted fixture byte inventory and graph, deterministic content-free binding, adapter reinspection, known dynamic construct·native·archive·ambient hook refusal, and explicit false dynamic/native-closure, verify-to-exec, process, training, and production claims |
+| F2c.23 Local training process supervisor | `npm run smoke:local-training-process-supervisor` | Verifies an actual local fixture child with exact authority checks before spawn, periodically while running, and before result acceptance; live-leader revocation·timeout group termination, no late signal policy, close plus group-absence cleanup gating, content-free evidence, and false MLX integration, training, rollout, provider, and production claims |
+| F2c.24 Darwin training OS isolation preflight | `npm run smoke:local-training-os-isolation` | Verifies an unsandboxed loopback control, fixed `sandbox-exec` connect·listen denial, exact pre-exec POSIX core·CPU·file-size·open-files limits, content-free evidence, and false MLX memory, integration, training, provider, rollout, and production claims |
+| F2c.25 Darwin runtime exec observation | `npm run smoke:local-training-runtime-exec-observation` | Verifies parent pre/post and sandboxed child self-hash identity matching, content-free loaded-image and module-set observation, unresolved image accounting, and false MLX closure, verify-to-exec, training, provider, rollout, and production claims |
+| F2c.26 Darwin runtime image provenance | `npm run smoke:local-training-runtime-image-provenance` | Verifies live `vmmap` membership for every child-reported image, parent-child regular image byte identity, dyld shared-cache UUID and strict signed cache identity, content-free evidence, and false MLX native closure, verify-to-exec, training, provider, rollout, and production claims |
+| F2c.27 Darwin suspended verify-to-exec | `npm run smoke:local-training-darwin-suspended-exec` | Verifies root-owned strict code signature, descriptor-bound broker and child bytes, `POSIX_SPAWN_START_SUSPENDED`, kernel-observed CDHash comparison before resume, path-replacement resistance, mismatch termination before marker creation, content-free evidence, and false MLX integration, dynamic/native closure, training, provider, rollout, and production claims |
+| Candidate model evaluation gate | `npm run smoke:candidate-model-evaluation` | Verifies same-suite fixture candidate comparison, evidence binding, pass and regression decisions, keep-baseline rollback, and activationAuthorized=false boundary |
+| Actual local answer-quality baseline | `npm run smoke:local-answer-quality-baseline` | Verifies actual installed qwen2.5:3b Q1 evidence integrity, content-free observations, required-term regression, keep-current decision, and no training or activation authority |
+| Evidence-first answer composition candidate | `npm run smoke:local-answer-composition-candidate` | Verifies same-model Q1 improvement, source-complete claims, reviewer action, baseline and prompt binding, content-free evidence, unchanged answer path, and blocked activation |
+| Answer composition robustness baseline | `npm run smoke:local-answer-composition-robustness` | Verifies same-model 10-case expansion, actual 9/10 failure, one canary match, content-free evidence, keep-current decision, and blocked activation |
+| Answer composition robustness hardening | `npm run smoke:local-answer-composition-hardening` | Verifies deterministic instruction removal, raw/sanitized hash binding, 10/10 case pass, canary 1→0, no metric regression, unchanged answer path, and blocked activation |
+| Answer input boundary | `npm run smoke:answer-input-boundary` | Verifies 7 Unicode·multilingual·split-letter attacks and 7 safe controls, exact preservation, content-free evidence, and no actual user data |
+| Answer composition boundary regression | `npm run smoke:local-answer-composition-boundary-regression` | Verifies the same installed model and Q4 suite retain 10/10 after safe identifier correction, with unchanged thresholds, answer path, and activation |
+| User-query evaluation intake | `npm run smoke:user-query-evaluation-intake` | Verifies synthetic consent, de-identification, retention, six-domain and four-language coverage without raw query storage, training, or provider-input authority |
+| Local user-query quality | `npm run smoke:local-user-query-quality` | Verifies the exact local model/runtime/prompt/intake binding, 11/12 synthetic stop condition, bounded `invalid-review-action` evidence, raw-content exclusion, and unchanged answer path |
+| Reviewer action generalization | `npm run smoke:local-answer-review-action-generalization` | Verifies v5 prompt binding, Q4 10/10 parity, synthetic Q6 12/12, content-free evidence, unchanged thresholds, and no answer-path activation |
+| Actual user-query evaluation readiness | `npm run smoke:actual-user-query-evaluation-readiness` | Verifies owner-only no-follow inputs, atomic private outputs, frozen all-pass thresholds, tracked-path refusal, Q7 v5 selection, per-case authorization reload, withdrawal fail-closed, and unchanged actual-data and activation claims |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
 | External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
 | Portfolio claim boundary | `npm run smoke:portfolio-docs-claim-boundary` | Verifies portfolio docs do not overclaim unsupported capabilities |
@@ -62,6 +160,95 @@ npm run smoke:architecture-code-walkthrough
 npm run smoke:provider-readiness-matrix
 npm run smoke:provider-failure-recovery-demo
 npm run smoke:memory-retrieval-quality-fixture
+npm run smoke:answer-quality-evaluation
+npm run smoke:retrieval-corpus-contract
+npm run smoke:retrieval-quality-evaluation
+npm run smoke:semantic-retrieval-experiment
+npm run smoke:retrieval-reranking-experiment
+npm run smoke:semantic-retrieval-runtime
+npm run smoke:local-embedding-model-qualification
+npm run smoke:local-retrieval-robustness
+npm run smoke:local-relevance-reranker
+npm run smoke:local-reranker-resource-envelope
+npm run smoke:local-reranker-runtime-stability
+npm run smoke:local-relevance-shadow-integration
+npm run smoke:local-relevance-shadow-replay
+npm run smoke:local-relevance-shadow-cache
+npm run smoke:local-relevance-shadow-cache-lifecycle
+npm run smoke:local-relevance-shadow-cache-process-isolation
+npm run smoke:local-relevance-shadow-cache-termination-soak
+npm run smoke:approved-learning-rag-feedback
+npm run smoke:approved-learning-feedback-quality
+npm run smoke:workspace-learning-personalization
+npm run smoke:workspace-learning-conflict-revocation
+npm run smoke:workspace-learning-operator-override
+npm run smoke:workspace-learning-operator-surface
+npm run smoke:local-user-learning-personalization
+npm run smoke:user-learning-conflict-revocation
+npm run smoke:user-learning-operator-override
+npm run smoke:user-learning-operator-surface
+npm run smoke:approved-training-record
+npm run smoke:training-dataset-quality
+npm run smoke:fine-tuning-readiness
+npm run smoke:fine-tuning-data-sufficiency
+npm run smoke:fine-tuning-data-collection-plan
+npm run smoke:fine-tuning-data-intake-request
+npm run smoke:fine-tuning-data-intake-resolution
+npm run smoke:fine-tuning-private-collection-plan
+npm run smoke:fine-tuning-private-collection-execution-request
+npm run smoke:fine-tuning-private-collection-execution-resolution
+npm run smoke:fine-tuning-private-collection-workspace
+npm run smoke:fine-tuning-private-collection-item-admission
+npm run smoke:fine-tuning-private-collection-item
+npm run smoke:fine-tuning-private-collection-item-lifecycle
+npm run smoke:fine-tuning-private-collection-item-review-projection
+npm run smoke:fine-tuning-private-collection-item-review-resolution
+npm run smoke:fine-tuning-private-collection-item-artifact-request
+npm run smoke:fine-tuning-private-collection-item-artifact-preparation-resolution
+npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate
+npm run smoke:fine-tuning-private-answer-quality-enrichment-candidate-review-resolution
+npm run smoke:fine-tuning-private-answer-quality-case
+npm run smoke:fine-tuning-private-answer-quality-case-payload
+npm run smoke:fine-tuning-private-answer-quality-case-payload-lifecycle
+npm run smoke:fine-tuning-private-answer-quality-case-replay
+npm run smoke:fine-tuning-private-reviewed-example-canonicalization
+npm run smoke:fine-tuning-private-reviewed-example-dataset-impact
+npm run smoke:fine-tuning-private-answer-quality-readiness-impact
+npm run smoke:fine-tuning-private-combined-readiness-impact
+npm run smoke:fine-tuning-private-collection-gap-replan
+npm run smoke:local-training-runtime
+npm run smoke:local-training-permission-surface
+npm run smoke:local-training-permission-evidence
+npm run smoke:local-training-environment-preflight
+npm run smoke:local-training-toolchain-decision
+npm run smoke:local-training-acquisition-request
+npm run smoke:local-training-acquisition-resolution
+npm run smoke:local-training-acquisition-execution-plan
+npm run smoke:local-training-acquisition-runtime
+npm run smoke:local-training-acquisition-artifact-verification
+npm run smoke:local-training-post-acquisition-readiness
+npm run smoke:mlx-lm-lora-training-adapter
+npm run smoke:local-training-candidate-artifact-verification
+npm run smoke:local-candidate-evaluation-admission
+npm run smoke:local-candidate-evaluation-runtime
+npm run smoke:local-candidate-evaluation-input-view
+npm run smoke:local-candidate-evaluation-workspace-recovery
+npm run smoke:local-candidate-evaluation-process-lifecycle
+npm run smoke:local-candidate-evaluation-host-boot-recovery
+npm run smoke:local-candidate-evaluation-host-restart-rehearsal
+npm run smoke:local-candidate-evaluation-host-restart-receipt
+npm run smoke:local-candidate-evaluator-provenance
+npm run smoke:candidate-model-evaluation
+npm run smoke:local-answer-quality-baseline
+npm run smoke:local-answer-composition-candidate
+npm run smoke:local-answer-composition-robustness
+npm run smoke:local-answer-composition-hardening
+npm run smoke:answer-input-boundary
+npm run smoke:local-answer-composition-boundary-regression
+npm run smoke:user-query-evaluation-intake
+npm run smoke:local-user-query-quality
+npm run smoke:local-answer-review-action-generalization
+npm run smoke:actual-user-query-evaluation-readiness
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview

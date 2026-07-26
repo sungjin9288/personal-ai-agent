@@ -1,0 +1,60 @@
+{
+  "acquisitionAuthorized": false,
+  "actualDependencyInstallationPerformed": false,
+  "actualModelDownloadPerformed": false,
+  "actualModelTrainingExecuted": false,
+  "decision": {
+    "decisionHash": "1508a70c7b4615a1a96b6b359ebcb5c81b46aad22df138318d65f3ec43387b5d",
+    "id": "local-training-toolchain-decision-1508a70c7b4615a1a96b6b359ebcb5c81b46aad22df138318d65f3ec43387b5d",
+    "preflightHash": "3ff4f69d3a9e9f742a704bd9168e81973431ed90fea5a0f8be2dd70119cacc35",
+    "sourceModel": {
+      "id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "licenseId": "apache-2.0",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+    },
+    "trackId": "mlx-lm-lora-qwen2.5-1.5b",
+    "trainer": {
+      "id": "mlx-lm-lora",
+      "packageName": "mlx-lm[train]",
+      "releaseCommit": "ed1fca4cef15a824c5f1702c80f70b4cffc8e4dd",
+      "version": "0.31.3"
+    }
+  },
+  "expiresAt": "2026-07-24T07:17:54.796Z",
+  "externalProviderCalls": "none",
+  "externalSubmissionAuthorized": false,
+  "mutableRoot": "var/local-training/mlx-lm-lora-qwen2.5-1.5b",
+  "networkPolicy": "acquisition-egress-caller-owned-then-offline",
+  "productionReadyClaim": false,
+  "proposedResourceEnvelope": {
+    "maxConcurrentDownloads": 2,
+    "maxDiskBytes": 17179869184,
+    "maxDownloadBytes": 8589934592,
+    "maxRuntimeMs": 3600000,
+    "status": "proposed-not-measured"
+  },
+  "requestedActions": [
+    "create-isolated-python-environment",
+    "install-pinned-trainer-package",
+    "download-pinned-trainable-source",
+    "record-package-and-model-hashes",
+    "close-acquisition-egress",
+    "run-offline-resource-canary",
+    "request-post-install-product-permission"
+  ],
+  "requestedAt": "2026-07-17T07:17:54.796Z",
+  "requestedBy": "local-operator",
+  "requiredOwnerRoles": [
+    "approval-owner",
+    "egress-owner",
+    "license-owner",
+    "resource-owner",
+    "rollback-owner"
+  ],
+  "rolloutAuthorized": false,
+  "schemaVersion": "personal-ai-agent-local-training-acquisition-request/v1",
+  "status": "pending-owner-review",
+  "trainingAuthorized": false,
+  "id": "local-training-acquisition-request-5f4428cc8a56e67c84692666e377f46e9baf7f3c775c1509516abca97c68108f",
+  "requestHash": "5f4428cc8a56e67c84692666e377f46e9baf7f3c775c1509516abca97c68108f"
+}
