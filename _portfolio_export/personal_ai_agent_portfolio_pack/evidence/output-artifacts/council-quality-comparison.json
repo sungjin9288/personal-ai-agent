@@ -1,0 +1,1902 @@
+{
+  "actualUserDataUsed": false,
+  "approvalOrderingChanged": false,
+  "comparison": {
+    "aggregates": {
+      "baselineReviewerCorrectCount": 3,
+      "baselineStageCount": 26,
+      "candidateReviewerCorrectCount": 3,
+      "candidateStageCount": 34
+    },
+    "checks": [
+      {
+        "evidence": "Critical fixture routing must improve without a control false positive.",
+        "id": "synthetic-conflict-routing-improved",
+        "passed": true
+      },
+      {
+        "evidence": "Stub outputs do not provide a semantic grounding oracle shared by both profiles.",
+        "id": "unsupported-claim-comparable",
+        "passed": false
+      },
+      {
+        "evidence": "Both profiles must match the fixture-defined missing verification stop.",
+        "id": "missing-condition-no-regression",
+        "passed": true
+      },
+      {
+        "evidence": "Reviewer failure candidate outcome: pass.",
+        "id": "reviewer-outcome-no-regression",
+        "passed": false
+      },
+      {
+        "evidence": "Persisted agentRuns are the exact stage-count unit.",
+        "id": "stage-count-no-regression",
+        "passed": false
+      },
+      {
+        "evidence": "All runs must remain explicit stub runs with zero approval, lease, provider response, and estimated cost.",
+        "id": "cost-and-authority-boundary-preserved",
+        "passed": true
+      },
+      {
+        "evidence": "Two fresh-store replays must have identical allowlisted semantic hashes.",
+        "id": "deterministic-semantic-replay",
+        "passed": true
+      }
+    ],
+    "councilProfileStatus": "opt-in-experiment",
+    "defaultPromotionAuthorized": false,
+    "failedCheckIds": [
+      "unsupported-claim-comparable",
+      "reviewer-outcome-no-regression",
+      "stage-count-no-regression"
+    ],
+    "fixtureSetHash": "sha256:002b82cdf459c89ce663246692c5eed4bfc449ffe44de819ad5ffc9cd880bac6",
+    "improvementProven": false,
+    "selectedDefaultProfile": "knowledge-triad",
+    "unsupportedClaimAssessment": "not-comparable"
+  },
+  "costFree": true,
+  "determinism": {
+    "replayCount": 2,
+    "replaySemanticHashes": [
+      "sha256:c5b99e85efe1193fe299dd686b91e280ffcd2f714b9ac0df1afee343ab33476b",
+      "sha256:c5b99e85efe1193fe299dd686b91e280ffcd2f714b9ac0df1afee343ab33476b"
+    ]
+  },
+  "evaluatedAt": "deterministic-local-replay",
+  "evidenceHash": "sha256:93091ffbbfebfda18238d9920d40907917d8dbadd0cd0167910120cf0f5bb8e0",
+  "externalProviderCalls": "none",
+  "fixtureSetHash": "sha256:002b82cdf459c89ce663246692c5eed4bfc449ffe44de819ad5ffc9cd880bac6",
+  "fixtureSource": "fixtures/council-quality-comparison-cases-v1.json",
+  "modelDownload": false,
+  "observations": [
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3004,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:5cb2acfb8abdb3256b734e90c57726aa49e34a544a08bc32f9662e6460ef505e",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 943,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:d4ee53c942c07ab12cb95861dba1ff088258e1e7184f0cfb87c3927df0a06ce8",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 3991,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:ca6c966db26c2a0b6b58d4af05a4a78cf180bce10fb91791d4c39e8ce877b9e3",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2127,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:fef0ca47686b56516ef69efd0dbf874c7f2da989b4bda0506dc5130523fc8c78",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 7216,
+          "fileName": "specialist-research-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:95bd6feb05d9f850e2e39f78d9a5313c2735d38e318e1f50753f1d42651d837e",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 3155,
+          "fileName": "specialist-research-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:dba85c217c2719677710b290c50f8f45c1fe566c7fb345a1d8f181423f3a7d15",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 11141,
+          "fileName": "specialist-implementation-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:479772d5841ce7aba2411c84e3c0ba5087f47b1077250e4fcf1b26ae70d2c922",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 3395,
+          "fileName": "specialist-implementation-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:03e11df5b7a36bbc835ed93d72eea59cfb7dae69d992f3f37ab82905d3f53aa6",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 15420,
+          "fileName": "specialist-verification-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:a16fffa6620551e14976c4c3da3f4dad311cd4cd3c3c6d792a5a06c6ed0d8dbb",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 3559,
+          "fileName": "specialist-verification-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:468ae544b81280d88ac87e99f0f2951abf9f6f8a55f8354149582b6e1cde0f11",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 19317,
+          "fileName": "executor-prompt.md",
+          "kind": "prompt",
+          "role": "executor",
+          "runIndex": 5,
+          "sha256": "sha256:c71d07928ee50fbb6c8888724a899256f04bd284cc3644ddf4fb32af7000e9be",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 11,
+          "byteLength": 2837,
+          "fileName": "decision-memo.md",
+          "kind": "deliverable",
+          "role": "executor",
+          "runIndex": 5,
+          "sha256": "sha256:f836587d6fd81646d864ca1a446045d510f4e6a2fea5f5ce6e82d9d6ebae7312",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 12,
+          "byteLength": 22100,
+          "fileName": "reviewer-prompt.md",
+          "kind": "prompt",
+          "role": "reviewer",
+          "runIndex": 6,
+          "sha256": "sha256:51d50f2eef77c109b4b9a2c44c8e496d759b48713d8b1681a73b340a43897369",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 13,
+          "byteLength": 296,
+          "fileName": "reviewer-report.md",
+          "kind": "agent-output",
+          "role": "reviewer",
+          "runIndex": 6,
+          "sha256": "sha256:7004fe6300b8aca3cf3c8ab7f270c9ee04157f86afbce9f6a8e15da94d10c426",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 14,
+          "byteLength": 3246,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:c7def3b3f07af8d923a25ea4c7ac788b5739c577575ade75ebd3f0a75d29b13d",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 15,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [],
+      "fixtureId": "control-pass",
+      "missingSpecialistKinds": [],
+      "missionStatus": "completed",
+      "profileId": "knowledge-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": true,
+        "expectedMissionStatus": "completed",
+        "expectedOutcome": "pass",
+        "outcome": "pass",
+        "sessionStatus": "completed"
+      },
+      "semanticHash": "sha256:0dace806fcd687974a45d8c6b4dafff4f07937f7296c04c01e8c5dbd65fca120",
+      "stageCount": 7,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:specialist-branch:research",
+        "specialist:specialist-branch:implementation",
+        "specialist:specialist-branch:verification",
+        "executor:parallel-merge",
+        "reviewer:reviewer"
+      ],
+      "syntheticConflictRoutingDetected": false
+    },
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3020,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:854f4fbc4836cb5ba42c7a7f681e39f273708bd752703cfeeb27fe4e8eab9f12",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 951,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:452767ebf618bd7da9a8ffe60a97869c12d0b4e9eb6bb71ec5c4b5b051df5a52",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 4015,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:1602cc453a060a9edf82749fbd884c5b925725f73fb2f1a06991acad5adaea37",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2135,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:924cd78ecf7e846aee230ead440b551ad62af516d4c185fb9b83ba2bdfc51940",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 1128,
+          "fileName": "council-frame.json",
+          "kind": "council-frame",
+          "role": "manager",
+          "runIndex": 8,
+          "sha256": "sha256:fcf2dac8a88219ef2b50a3fcdf08e034aea2e227ffcd709feac6fdd2c33ff9fd",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 2457,
+          "fileName": "specialist-research-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:b46620fec817121017c6eb0285c77c579c4a002dbecae84595562f9d27de1ea9",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 430,
+          "fileName": "specialist-research-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:cc2d0d0de089ed8ad3688af3bee7fe84712bc981e4c61275523bdca719cf58f4",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 2457,
+          "fileName": "specialist-implementation-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:b46620fec817121017c6eb0285c77c579c4a002dbecae84595562f9d27de1ea9",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 448,
+          "fileName": "specialist-implementation-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:c8961fb87a7fbb6ecae37a3b47d6407d7767d7aca69be0963624aef551b192aa",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 2457,
+          "fileName": "specialist-verification-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:b46620fec817121017c6eb0285c77c579c4a002dbecae84595562f9d27de1ea9",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 442,
+          "fileName": "specialist-verification-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:cd1896b96a99bcc11de20f61681e4c07df4e51a76c5fcdeb25398585352501cc",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 11,
+          "byteLength": 1951,
+          "fileName": "council-brief.json",
+          "kind": "council-brief",
+          "role": "manager",
+          "runIndex": 8,
+          "sha256": "sha256:a80c32d99e31e1554120a6d2fbde7ceda0b6b10c2159964ee20e3f459f84732b",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 12,
+          "byteLength": 3304,
+          "fileName": "specialist-research-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 5,
+          "sha256": "sha256:423ba59d6e49cb6e6a8a4e26159ef7fcedc2f5746c04f477a19616200861a7b1",
+          "specialistKind": "research",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 13,
+          "byteLength": 402,
+          "fileName": "specialist-research-rebuttal-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 5,
+          "sha256": "sha256:61cc36b7408ae9eb11b8b19538a2053179b71fd3f947f3e7b85c7cd52cc79203",
+          "specialistKind": "research",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 14,
+          "byteLength": 3310,
+          "fileName": "specialist-implementation-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 6,
+          "sha256": "sha256:2d9776bf494cb9afefca4f4331e1d68c2c40f9981b1b4b1998afd77c1b583bee",
+          "specialistKind": "implementation",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 15,
+          "byteLength": 414,
+          "fileName": "specialist-implementation-rebuttal-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 6,
+          "sha256": "sha256:90c0ac702470564e33efc613c7ce4a13303b17e9b12a8b9d650edac264ae9d56",
+          "specialistKind": "implementation",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 16,
+          "byteLength": 3308,
+          "fileName": "specialist-verification-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 7,
+          "sha256": "sha256:3fba398328f898e8efc162d97516b7d93770c57641c73f85fa79fe77f2cf52fd",
+          "specialistKind": "verification",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 17,
+          "byteLength": 410,
+          "fileName": "specialist-verification-rebuttal-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 7,
+          "sha256": "sha256:12a70b667a7a2e82ad5982efa6a0a016712ae333ba1504f19b8d8c5752dd6364",
+          "specialistKind": "verification",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 18,
+          "byteLength": 6969,
+          "fileName": "executor-prompt.md",
+          "kind": "prompt",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:c9dd8bc550a477474df8c6c4df93e46eaa85307a871c0453840d2e6b97a3d350",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 19,
+          "byteLength": 1048,
+          "fileName": "decision-memo.md",
+          "kind": "deliverable",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:a2dacff575157d299c6df0f607417e9392f83753f96d32f23b85c8df7f4a75f9",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 20,
+          "byteLength": 2513,
+          "fileName": "council-manifest.json",
+          "kind": "council-manifest",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:517c9e41f6c52c5632bc71f7fd2958717e39e392f465b09103ffea7a08ca5ea0",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 21,
+          "byteLength": 7752,
+          "fileName": "reviewer-prompt.md",
+          "kind": "prompt",
+          "role": "reviewer",
+          "runIndex": 9,
+          "sha256": "sha256:f58fad2ba67d49bfdc2b7b458b2fbb637ce8e3f9e7af7bd65b9fe7424620b434",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 22,
+          "byteLength": 296,
+          "fileName": "reviewer-report.md",
+          "kind": "agent-output",
+          "role": "reviewer",
+          "runIndex": 9,
+          "sha256": "sha256:7004fe6300b8aca3cf3c8ab7f270c9ee04157f86afbce9f6a8e15da94d10c426",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 23,
+          "byteLength": 3817,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:8da507f309d91575f962cac64b970aedae2485956133b7d31ca99f8881cc7310",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 24,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [],
+      "fixtureId": "control-pass",
+      "missingSpecialistKinds": [],
+      "missionStatus": "completed",
+      "profileId": "knowledge-council-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": true,
+        "expectedMissionStatus": "completed",
+        "expectedOutcome": "pass",
+        "outcome": "pass",
+        "sessionStatus": "completed"
+      },
+      "semanticHash": "sha256:8d6d67681c7354e68befb42ba7c16770170d23e4e8d0ceea31aa131e8bbfc667",
+      "stageCount": 10,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:council-opening:research",
+        "specialist:council-opening:implementation",
+        "specialist:council-opening:verification",
+        "specialist:council-rebuttal:research",
+        "specialist:council-rebuttal:implementation",
+        "specialist:council-rebuttal:verification",
+        "executor:parallel-merge",
+        "reviewer:reviewer"
+      ],
+      "syntheticConflictRoutingDetected": false
+    },
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3048,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:b7c66bdb65a8e1974a3d3ae569e0115529aaa9b84946ebaa7e4b9a12afee89fd",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 961,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:88065a5ad2843a12990bbe0030e82c8b7a03c46c0bd1821babdc6727b0e814e8",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 4063,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:09040d0a609217d3276a8ded3a8609738343a960872533df6520e32640b38e83",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2145,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:bab390cf37e086437d0703560f2c894128cad69514a96ceb033474113a725900",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 7326,
+          "fileName": "specialist-research-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:a12f6bab540ae22d8757c07b6997839d580b89dd73f77943aed1d73b9908b1c4",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 3191,
+          "fileName": "specialist-research-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:317df7bd0b09df70d40f79ff7a84954b478fe697a5eb99d38c497b8b8a917300",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 11307,
+          "fileName": "specialist-implementation-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:0c784fdcc81d1295db7c78c274dba5a71b22d78a3998f8439a11365bc59c3689",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 3441,
+          "fileName": "specialist-implementation-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:eb3a83274ac51a79866590484492e73128c3a480095ef3487014c0d94da05c5f",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 15652,
+          "fileName": "specialist-verification-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:373924ebc55978343b6e664dca17ab3ac08bb661f7c22d2043d78025d5e31f65",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 3615,
+          "fileName": "specialist-verification-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:30445371084d51977acde552a63a1f4b1773b82c9c4e042f1b968fb940ef19aa",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 19615,
+          "fileName": "executor-prompt.md",
+          "kind": "prompt",
+          "role": "executor",
+          "runIndex": 5,
+          "sha256": "sha256:780e51e340128d9b708e3e91811777991d5c195578963789a623da7ba074278f",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 11,
+          "byteLength": 2883,
+          "fileName": "decision-memo.md",
+          "kind": "deliverable",
+          "role": "executor",
+          "runIndex": 5,
+          "sha256": "sha256:d8d5a4f6a3039a77c3fff367d58859662df97a131883054f52d923d862259453",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 12,
+          "byteLength": 22454,
+          "fileName": "reviewer-prompt.md",
+          "kind": "prompt",
+          "role": "reviewer",
+          "runIndex": 6,
+          "sha256": "sha256:94b63c495c1b102a961bd877a28a923c1d2cd32516c7acff3a08d1ec5e04752b",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 13,
+          "byteLength": 296,
+          "fileName": "reviewer-report.md",
+          "kind": "agent-output",
+          "role": "reviewer",
+          "runIndex": 6,
+          "sha256": "sha256:7004fe6300b8aca3cf3c8ab7f270c9ee04157f86afbce9f6a8e15da94d10c426",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 14,
+          "byteLength": 3266,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:132d774a97f800fcd098b1d3a8f4b2a4425b75ed93816c246d6d70b2529f7d0b",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 15,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [],
+      "fixtureId": "critical-conflict-stop",
+      "missingSpecialistKinds": [],
+      "missionStatus": "completed",
+      "profileId": "knowledge-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": false,
+        "expectedMissionStatus": "failed",
+        "expectedOutcome": "absent",
+        "outcome": "pass",
+        "sessionStatus": "completed"
+      },
+      "semanticHash": "sha256:51f1d0750f9426efb4c6de7baac0c679d0c0d04ffffda8f06371a19c186f60d7",
+      "stageCount": 7,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:specialist-branch:research",
+        "specialist:specialist-branch:implementation",
+        "specialist:specialist-branch:verification",
+        "executor:parallel-merge",
+        "reviewer:reviewer"
+      ],
+      "syntheticConflictRoutingDetected": false
+    },
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3064,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:ef9d9ad01a98ef2ebda7b71257b027c0759d82105206cf2b3ceda34859706eb9",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 969,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:08666957d9639452983f2f54a5e424ef915f21990175c27d544d11e24eb3876b",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 4087,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:584b08890b7e2e1aa4857e41ee01b4a3113b9defc3e1a1efdee848809c1f4105",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2153,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:91d2aa5915e17f46ee450b3a9d46f6786a6517ec01d418e700c6246cb8c82d41",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 1155,
+          "fileName": "council-frame.json",
+          "kind": "council-frame",
+          "role": "manager",
+          "runIndex": 8,
+          "sha256": "sha256:1bb84aed4ddee1a9a0347dad587fb8d8029c84063148ff96465b2a55f883c60b",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 2484,
+          "fileName": "specialist-research-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:2bd8d5a140d7d6dae69e9a77f174a9bfdc412102e7a97906056f696e0035ee3f",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 426,
+          "fileName": "specialist-research-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:852e3d37ca8a18e8946f3c2f41856dbb3e1b3a33fc8756951f6c1543b1d091f8",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 2484,
+          "fileName": "specialist-implementation-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:2bd8d5a140d7d6dae69e9a77f174a9bfdc412102e7a97906056f696e0035ee3f",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 448,
+          "fileName": "specialist-implementation-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:07b1157588946571a31c4bd17d88d963c909cd0224d9e425a731625bee161061",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 2484,
+          "fileName": "specialist-verification-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:2bd8d5a140d7d6dae69e9a77f174a9bfdc412102e7a97906056f696e0035ee3f",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 442,
+          "fileName": "specialist-verification-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:bd10b267ed627a0396715f011b79cf8666b45c9643cbe289b3a080308bd4822d",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 11,
+          "byteLength": 1947,
+          "fileName": "council-brief.json",
+          "kind": "council-brief",
+          "role": "manager",
+          "runIndex": 8,
+          "sha256": "sha256:6da02c1d7119cbbfed40bda020e400e348a050fea6542c04ccc92cba2a7b1cd9",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 12,
+          "byteLength": 3300,
+          "fileName": "specialist-research-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 5,
+          "sha256": "sha256:db830df22b4fb37a749de500208de957ed3f2ba316cc6b77ec9fb31c9423490a",
+          "specialistKind": "research",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 13,
+          "byteLength": 402,
+          "fileName": "specialist-research-rebuttal-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 5,
+          "sha256": "sha256:f051bd101c2ab172c944e34b851682fed832f7c4e92605c8b3a23f16c62e92b7",
+          "specialistKind": "research",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 14,
+          "byteLength": 3306,
+          "fileName": "specialist-implementation-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 6,
+          "sha256": "sha256:02bbae2c936edbec7c5c8355d08b52fe4ca5214038acfe2729c41d2daff01803",
+          "specialistKind": "implementation",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 15,
+          "byteLength": 414,
+          "fileName": "specialist-implementation-rebuttal-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 6,
+          "sha256": "sha256:a402fea4b6d3ede1d19fed7c3199ecfa010ee407f491a042ba54a1c2904e80b1",
+          "specialistKind": "implementation",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 16,
+          "byteLength": 3304,
+          "fileName": "specialist-verification-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 7,
+          "sha256": "sha256:84251c27cae6183892f5bdcab0dbcb65082a598f90d7ad346f9f782a99987f99",
+          "specialistKind": "verification",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 17,
+          "byteLength": 432,
+          "fileName": "specialist-verification-rebuttal-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 7,
+          "sha256": "sha256:403c5f89b54c1b3fc434f4e98a790499af3285f2ccac0110e83a7593fdcc78af",
+          "specialistKind": "verification",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 18,
+          "byteLength": 6976,
+          "fileName": "executor-prompt.md",
+          "kind": "prompt",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:90251330203761f68253f0b711d49742d524c282528919188516b32fce8625bb",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 19,
+          "byteLength": 1076,
+          "fileName": "decision-memo.md",
+          "kind": "deliverable",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:22c4ac75d215c30cf3c559cafca0a10e4efe0ad288cecabbf61ece1920965822",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 20,
+          "byteLength": 2529,
+          "fileName": "council-manifest.json",
+          "kind": "council-manifest",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:c8d2c3cea2d213ae91aa3fa42eaef02eed13f77c908b7e55978ce4b4ce26041f",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 21,
+          "byteLength": 3729,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:1eba0eec5d8ac38cc3747a3706070f4868ffeefb2500604b6bb739992ae62206",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 22,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [],
+      "fixtureId": "critical-conflict-stop",
+      "missingSpecialistKinds": [
+        "verification"
+      ],
+      "missionStatus": "failed",
+      "profileId": "knowledge-council-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": true,
+        "expectedMissionStatus": "failed",
+        "expectedOutcome": "absent",
+        "outcome": "absent",
+        "sessionStatus": "failed"
+      },
+      "semanticHash": "sha256:4566db12202137a91668d7d5298281db2b2bdbf9b73ae59c333c0ec9cfa8ba5f",
+      "stageCount": 9,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:council-opening:research",
+        "specialist:council-opening:implementation",
+        "specialist:council-opening:verification",
+        "specialist:council-rebuttal:research",
+        "specialist:council-rebuttal:implementation",
+        "specialist:council-rebuttal:verification",
+        "executor:parallel-merge"
+      ],
+      "syntheticConflictRoutingDetected": true
+    },
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3058,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:345382bcbb41d448a178fa51fb8403861690d4e81a6cdc24f1cfe866519ed4cb",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 968,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:d3c4ac88fb1ce70a2406b51d83caaaf5e0a9a979cdcfad2af106f43eec28b221",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 4083,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:6e1fce599574946dfa8f5dee5998d1be8a4e338cec7f90fc81cfd70d58b0c443",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2152,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:3b77e6e57f8e4019d2a7dd86e65270c9b8627ab8c1057037a72a381e84e3607b",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 7359,
+          "fileName": "specialist-research-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:84867cc5e286f78f437e5db8b9d57ae9319455935ff2919f6fdb96205ddd1060",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 3205,
+          "fileName": "specialist-research-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:b2af1907fec2d5aa5eda0e43dd50f45eccf6e3c046e1d0057cb9d5f0fb2547f1",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 11360,
+          "fileName": "specialist-implementation-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:3c067992b4486a03bcc5cbd5b2fe456eb2b53aa27bb40ea46146b14316e1e5f1",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 3458,
+          "fileName": "specialist-implementation-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:4616d138a5595cba30b598e26c9ce741ee7241bfeac4ce2da16a07ad0fd7dffe",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 15728,
+          "fileName": "specialist-verification-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:3f1b8d5c6d03a4cdba13058e417a631d554e65f5921de6a0fbe9b5aa451a62a6",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 3635,
+          "fileName": "specialist-verification-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:67cc940a42b55d64d4474d0f4cd04d1cb5987cbb1ff28b7e63bd5ca1582d75b4",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 3046,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:4b5a2eec5854f4cb5baf6ade8f7ddf54c7ee6f23a7d293fd06a02e215c52b885",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 11,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [
+        "verification"
+      ],
+      "fixtureId": "missing-verification-stop",
+      "missingSpecialistKinds": [
+        "verification"
+      ],
+      "missionStatus": "failed",
+      "profileId": "knowledge-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": true,
+        "expectedMissionStatus": "failed",
+        "expectedOutcome": "absent",
+        "outcome": "absent",
+        "sessionStatus": "failed"
+      },
+      "semanticHash": "sha256:ff81e549f84351d1232127c06e9b79f65e1ed18259fff91f1faf378c08d01e3a",
+      "stageCount": 5,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:specialist-branch:research",
+        "specialist:specialist-branch:implementation",
+        "specialist:specialist-branch:verification"
+      ],
+      "syntheticConflictRoutingDetected": false
+    },
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3074,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:8e9a70cb48686941ac3598e803bf4fdf0017e6e8e51589b985fb217306007391",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 976,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:728a485204a6ef735f17ee69cfd3058061c0d22b8244a23dfe29d12ba2e2e143",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 4107,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:39522cf0a2a949cb7c46e6dabffef436e7150eec3593ed590aeb4eb7b71a931c",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2160,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:82198cc97a66f6fd2e1ce32bb6b4c7daae54f4d6f8963c56312537605fba601b",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 1128,
+          "fileName": "council-frame.json",
+          "kind": "council-frame",
+          "role": "manager",
+          "runIndex": null,
+          "sha256": "sha256:a051b9b177e5990169ae39cab6138d7953dae5e1aa467c4580463c500269b1d1",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 2457,
+          "fileName": "specialist-research-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:a6669cb9fd46d6da60b4194a257ffb0c72ef55cba631261b84e576a997d49780",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 430,
+          "fileName": "specialist-research-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:0abada9c49007ff4a80bd5dd23f0e37cc4c2d894106893a13717cf06fc46ea25",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 2457,
+          "fileName": "specialist-implementation-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:a6669cb9fd46d6da60b4194a257ffb0c72ef55cba631261b84e576a997d49780",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 448,
+          "fileName": "specialist-implementation-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:8a843502158d40241df39d16ff9786c88ec9e57e20b056138f253f10e36e6b93",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 2457,
+          "fileName": "specialist-verification-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:a6669cb9fd46d6da60b4194a257ffb0c72ef55cba631261b84e576a997d49780",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 442,
+          "fileName": "specialist-verification-opening-decision-memo.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:cd61a864c2da2a45690d67caaed90e83d87c0a38dffbc1046a3d4df63b2743d6",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 11,
+          "byteLength": 3120,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:32444abef1a638fc4ab82d86c4190c437d7b62f59fb52dc788fcb0635116ef30",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 12,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [
+        "verification"
+      ],
+      "fixtureId": "missing-verification-stop",
+      "missingSpecialistKinds": [
+        "verification"
+      ],
+      "missionStatus": "failed",
+      "profileId": "knowledge-council-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": true,
+        "expectedMissionStatus": "failed",
+        "expectedOutcome": "absent",
+        "outcome": "absent",
+        "sessionStatus": "failed"
+      },
+      "semanticHash": "sha256:ab77cdfc144ef04e59c51147e9902aa032ae7bb6ec4b749d9538900e513d7641",
+      "stageCount": 5,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:council-opening:research",
+        "specialist:council-opening:implementation",
+        "specialist:council-opening:verification"
+      ],
+      "syntheticConflictRoutingDetected": false
+    },
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3023,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:2a230457f95150a96c340c4d892950110683d184e9f97ce26dfbe8a26c6b7baa",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 964,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:24189f05a603c7819467f96ed2a2b709f2e31a3fc909c17bc63c9fe2b906e729",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 4042,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:006a2c30614844865607f9b01793b988a255d16286d2fa32c2ff6275664f2975",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2130,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:0759a3b3b1ba7358ff1d88f4a2787cd70c766e6b6b6e134a026832104aeb8ab0",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 7292,
+          "fileName": "specialist-research-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:476f939fa55d2d2e305d2dfab78411e6bc556e59f7497c6c623b217986bfba84",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 3031,
+          "fileName": "specialist-research-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:63f6ad519745c5d18fc28811f50dd551dadcf8fbc6507bbefe57a3cc3a026091",
+          "specialistKind": "research",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 11103,
+          "fileName": "specialist-implementation-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:0bf34d8e2b143a19bb562713ad78b53788fee96d15d1fac55f91a953aad119b9",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 3276,
+          "fileName": "specialist-implementation-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:1365402e580aa9b7f50f00aa07ac291d3ab320d8615b3aaeb82c3bf9e1b74896",
+          "specialistKind": "implementation",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 15273,
+          "fileName": "specialist-verification-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:6464ac68b5d4f98bfd6915bcd2001cfa5be97ac4ab1155acf4081c2d6601ba7d",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 3453,
+          "fileName": "specialist-verification-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:2386e6a40c7b2c6ea7484be7cb8536cbf30dbd4f70438ee3a71af31fb28e5571",
+          "specialistKind": "verification",
+          "stageKind": "specialist-branch"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 19063,
+          "fileName": "executor-prompt.md",
+          "kind": "prompt",
+          "role": "executor",
+          "runIndex": 5,
+          "sha256": "sha256:3d738ada0ea6d5e7c2f8860e8787fc90aa5349bcfdf6778db13856cd1af16cb4",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 11,
+          "byteLength": 2795,
+          "fileName": "checklist.md",
+          "kind": "deliverable",
+          "role": "executor",
+          "runIndex": 5,
+          "sha256": "sha256:c92f1486d08fa3307b194be6de846c2389483723c2351dfd29a4670ac971435e",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 12,
+          "byteLength": 21811,
+          "fileName": "reviewer-prompt.md",
+          "kind": "prompt",
+          "role": "reviewer",
+          "runIndex": 6,
+          "sha256": "sha256:f8de75cabde4ef8bc447e79ca44fb6c87bc36ecb950ba0d5f386b297a565880c",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 13,
+          "byteLength": 266,
+          "fileName": "reviewer-report.md",
+          "kind": "agent-output",
+          "role": "reviewer",
+          "runIndex": 6,
+          "sha256": "sha256:b0b5acd83dfbb6fc242075ce90397d39626d679bbbfab4a7ccb4d906de2dbfec",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 14,
+          "byteLength": 3298,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:6c6b0c7d3fbaa1efb3e99673a7b1782554e4185590b1146df041bf0cff9ebe66",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 15,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [],
+      "fixtureId": "reviewer-rubric-failure",
+      "missingSpecialistKinds": [],
+      "missionStatus": "failed",
+      "profileId": "knowledge-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": true,
+        "expectedMissionStatus": "failed",
+        "expectedOutcome": "fail",
+        "outcome": "fail",
+        "sessionStatus": "failed"
+      },
+      "semanticHash": "sha256:6f90007bd5c86161442058e4a21ac99580cf66c91fbcc25a3dd4513a4270a229",
+      "stageCount": 7,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:specialist-branch:research",
+        "specialist:specialist-branch:implementation",
+        "specialist:specialist-branch:verification",
+        "executor:parallel-merge",
+        "reviewer:reviewer"
+      ],
+      "syntheticConflictRoutingDetected": false
+    },
+    {
+      "artifactBindings": [
+        {
+          "artifactIndex": 0,
+          "byteLength": 3039,
+          "fileName": "manager-prompt.md",
+          "kind": "prompt",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:9d36ba1312ae7edc39ca294d55edcdf8effe162f07df15d180df0d362561c16e",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 1,
+          "byteLength": 972,
+          "fileName": "manager-context.md",
+          "kind": "agent-output",
+          "role": "manager",
+          "runIndex": 0,
+          "sha256": "sha256:3abc47afc34b9998888da96e43749785e49040400f5ee10bba71a29b5f9530f1",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 2,
+          "byteLength": 4066,
+          "fileName": "planner-prompt.md",
+          "kind": "prompt",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:0ceeeb9fcd347f7459f1bcc89eb003ff0865732b8086807bc29846862658169d",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 3,
+          "byteLength": 2138,
+          "fileName": "planner-plan.md",
+          "kind": "agent-output",
+          "role": "planner",
+          "runIndex": 1,
+          "sha256": "sha256:87150a6a9463d5037421e737349bfcc665a5f0f2752ffe89841c00dab1da556b",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 4,
+          "byteLength": 1128,
+          "fileName": "council-frame.json",
+          "kind": "council-frame",
+          "role": "manager",
+          "runIndex": 8,
+          "sha256": "sha256:2903a8fa1ddfe317d656def4cdedda0f88b786d6a8b845b72a97e8d2137f12f5",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 5,
+          "byteLength": 2457,
+          "fileName": "specialist-research-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:376bcda92268f698155a91cc01053915b9134ca3dec17fdfab126649ab268715",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 6,
+          "byteLength": 430,
+          "fileName": "specialist-research-opening-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 2,
+          "sha256": "sha256:46345dff915514468200e694e0bc3ce0c568fd7fbb42a95163c4ff01b37416a7",
+          "specialistKind": "research",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 7,
+          "byteLength": 2457,
+          "fileName": "specialist-implementation-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:376bcda92268f698155a91cc01053915b9134ca3dec17fdfab126649ab268715",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 8,
+          "byteLength": 448,
+          "fileName": "specialist-implementation-opening-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 3,
+          "sha256": "sha256:0d785c62046aba5e9b97a48111c7011e6c95d14b0c510398f418a8464ba33ab4",
+          "specialistKind": "implementation",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 9,
+          "byteLength": 2457,
+          "fileName": "specialist-verification-opening-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:376bcda92268f698155a91cc01053915b9134ca3dec17fdfab126649ab268715",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 10,
+          "byteLength": 442,
+          "fileName": "specialist-verification-opening-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 4,
+          "sha256": "sha256:c06180bf81c48faa68b1959cd31c62683e87f0f163459276f2607e9b3faa98d4",
+          "specialistKind": "verification",
+          "stageKind": "council-opening"
+        },
+        {
+          "artifactIndex": 11,
+          "byteLength": 1951,
+          "fileName": "council-brief.json",
+          "kind": "council-brief",
+          "role": "manager",
+          "runIndex": 8,
+          "sha256": "sha256:b96e6d7f970590c9391e36d25a8068d6db1781b073d1ace6fbafec8a0b87a719",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 12,
+          "byteLength": 3304,
+          "fileName": "specialist-research-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 5,
+          "sha256": "sha256:77fd0d7593b0515780f97d691d894ad351b7ead3aab9a755a83c3c461e4cc913",
+          "specialistKind": "research",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 13,
+          "byteLength": 402,
+          "fileName": "specialist-research-rebuttal-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 5,
+          "sha256": "sha256:37372a500291f31f0084e0f8dec894a3f736a9022c7dffdd4ef7b6717580ccf9",
+          "specialistKind": "research",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 14,
+          "byteLength": 3310,
+          "fileName": "specialist-implementation-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 6,
+          "sha256": "sha256:dc931e846c12638fa6543b2e2d4e4351f44672c9df1aadd1cc04c6534ea10930",
+          "specialistKind": "implementation",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 15,
+          "byteLength": 414,
+          "fileName": "specialist-implementation-rebuttal-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 6,
+          "sha256": "sha256:937d2bcddd91e598eb9a6f5b7d471f41db92bfce151e4ddd7e98376de5de34cd",
+          "specialistKind": "implementation",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 16,
+          "byteLength": 3308,
+          "fileName": "specialist-verification-rebuttal-prompt.md",
+          "kind": "prompt",
+          "role": "specialist",
+          "runIndex": 7,
+          "sha256": "sha256:89bcfde122e546add879e22799ab2d5dc213028570d6acb47f8c48b1258b8677",
+          "specialistKind": "verification",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 17,
+          "byteLength": 410,
+          "fileName": "specialist-verification-rebuttal-checklist.md",
+          "kind": "deliverable",
+          "role": "specialist",
+          "runIndex": 7,
+          "sha256": "sha256:4960f7c41928c6ede32b765c52cd929e41c95cfff07f46457cb052e4da0b7e89",
+          "specialistKind": "verification",
+          "stageKind": "council-rebuttal"
+        },
+        {
+          "artifactIndex": 18,
+          "byteLength": 6969,
+          "fileName": "executor-prompt.md",
+          "kind": "prompt",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:7737570ae8d9b394b8309afcccbd9d29ba77542302f13c41a3ce4090a9135646",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 19,
+          "byteLength": 1050,
+          "fileName": "checklist.md",
+          "kind": "deliverable",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:8fccb4544ce45944a8fc32e2c5ffc3a9b97136bd9212c4bf1f1a103e118d6bd0",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 20,
+          "byteLength": 2513,
+          "fileName": "council-manifest.json",
+          "kind": "council-manifest",
+          "role": "executor",
+          "runIndex": 8,
+          "sha256": "sha256:b64c682e202f59e832b51f99f06eed9a5a1d08b02627f1058545bf98ef771241",
+          "specialistKind": null,
+          "stageKind": "parallel-merge"
+        },
+        {
+          "artifactIndex": 21,
+          "byteLength": 7815,
+          "fileName": "reviewer-prompt.md",
+          "kind": "prompt",
+          "role": "reviewer",
+          "runIndex": 9,
+          "sha256": "sha256:d27b1f62749f17cd2475d2bb88dbceb27e403675c1979b807a8c7da2f26da7cb",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 22,
+          "byteLength": 299,
+          "fileName": "reviewer-report.md",
+          "kind": "agent-output",
+          "role": "reviewer",
+          "runIndex": 9,
+          "sha256": "sha256:4fad9930f5881fae0a5dba18d34008560bb69abc1686cc861bdc61df7447be98",
+          "specialistKind": null,
+          "stageKind": null
+        },
+        {
+          "artifactIndex": 23,
+          "byteLength": 3839,
+          "fileName": "learning-candidate.json",
+          "kind": "learning-candidate",
+          "role": "reviewer",
+          "runIndex": null,
+          "sha256": "sha256:57ea0a3ad96fd1ea83e94b5b13a00621d8ff149db89f53b098ae0c5a101b3d37",
+          "specialistKind": null,
+          "stageKind": null
+        }
+      ],
+      "artifactCount": 24,
+      "boundary": {
+        "approvalCount": 0,
+        "estimatedCostUsdZero": true,
+        "executionLeaseCount": 0,
+        "externalProviderCallCount": 0
+      },
+      "expectedMissingSpecialistKinds": [],
+      "fixtureId": "reviewer-rubric-failure",
+      "missingSpecialistKinds": [],
+      "missionStatus": "completed",
+      "profileId": "knowledge-council-triad",
+      "providerId": "stub",
+      "reviewer": {
+        "correct": false,
+        "expectedMissionStatus": "failed",
+        "expectedOutcome": "fail",
+        "outcome": "pass",
+        "sessionStatus": "completed"
+      },
+      "semanticHash": "sha256:84b7d8958d0e5ae6af3e83317ad1f680601e4552c979db77ca2516f93db95f0e",
+      "stageCount": 10,
+      "stageSequence": [
+        "manager:manager",
+        "planner:planner",
+        "specialist:council-opening:research",
+        "specialist:council-opening:implementation",
+        "specialist:council-opening:verification",
+        "specialist:council-rebuttal:research",
+        "specialist:council-rebuttal:implementation",
+        "specialist:council-rebuttal:verification",
+        "executor:parallel-merge",
+        "reviewer:reviewer"
+      ],
+      "syntheticConflictRoutingDetected": false
+    }
+  ],
+  "permissionChanged": false,
+  "productionDependencyAdded": false,
+  "productionReadyClaim": false,
+  "publicContractChanged": false,
+  "schemaVersion": "council-quality-comparison/v1",
+  "storageSchemaChanged": false
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "council-quality-fixtures/v1",
+  "productionReadyClaim": false,
+  "cases": [
+    {
+      "id": "control-pass",
+      "title": "Control pass",
+      "objective": "Produce a public synthetic decision memo with the expected reviewer pass.",
+      "deliverableType": "decision-memo",
+      "constraints": [],
+      "expected": {
+        "missionStatus": "completed",
+        "reviewerOutcome": "pass",
+        "missingSpecialistKinds": [],
+        "syntheticConflictRouting": false
+      }
+    },
+    {
+      "id": "critical-conflict-stop",
+      "title": "Critical conflict stop",
+      "objective": "Stop a public synthetic critical conflict before reviewer side effects.",
+      "deliverableType": "decision-memo",
+      "constraints": [
+        "council-critical-conflict"
+      ],
+      "expected": {
+        "missionStatus": "failed",
+        "reviewerOutcome": "absent",
+        "missingSpecialistKinds": [],
+        "syntheticConflictRouting": true
+      }
+    },
+    {
+      "id": "missing-verification-stop",
+      "title": "Missing verification stop",
+      "objective": "Stop when the public synthetic verification contribution is unavailable.",
+      "deliverableType": "decision-memo",
+      "constraints": [
+        "parallel-block:verification"
+      ],
+      "expected": {
+        "missionStatus": "failed",
+        "reviewerOutcome": "absent",
+        "missingSpecialistKinds": [
+          "verification"
+        ],
+        "syntheticConflictRouting": false
+      }
+    },
+    {
+      "id": "reviewer-rubric-failure",
+      "title": "Reviewer rubric failure",
+      "objective": "Preserve a public synthetic checklist reviewer failure across both profiles.",
+      "deliverableType": "checklist",
+      "constraints": [
+        "force-rubric-fail"
+      ],
+      "expected": {
+        "missionStatus": "failed",
+        "reviewerOutcome": "fail",
+        "missingSpecialistKinds": [],
+        "syntheticConflictRouting": false
+      }
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-27T01:54:59.750Z
-- branch: codex/council-read-model-board
-- commit: 4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077
+- generatedAt: 2026-07-27T02:51:10.959Z
+- branch: codex/council-quality-shadow
+- commit: 3c70129317a1d552f54dee03811c5269aed14723
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

@@ -322,12 +322,44 @@ digest를 정렬된 순서로 기록한다.
 
 - model: `gpt-5.6-sol`, reasoning `high`
 - branch: `codex/council-quality-shadow`
+- status: completed on 2026-07-27
 
-구현:
+구현 결과:
 
-- 같은 public/synthetic fixture를 기존 triad와 council profile로 replay
-- conflict 발견, unsupported claim, 누락 조건, reviewer 결과, 실행 stage 수를 비교
-- council이 좋아 보인다는 인상 대신 exact artifact와 deterministic rubric으로 판정
+- control pass, critical conflict stop, missing verification stop, reviewer rubric failure의 같은
+  public/synthetic fixture를 기존 triad와 council profile로 fresh store에서 각각 두 번 replay했다.
+- persisted `agentRuns`를 stage 단위로 고정하고 stage sequence, reviewer outcome, 누락 specialist,
+  council validation, approval·execution lease·provider response를 비교했다. 첫 replay의 모든 artifact는
+  exact SHA-256과 byte length로 기록했다.
+- runtime id, timestamp, absolute path를 제외한 allowlisted semantic observation hash로 두 replay의
+  deterministic parity를 확인했다. exact artifact hash는 실제 첫 replay 증적으로 별도 보존했다.
+- critical conflict는 `council-critical-conflict`를 stub이 route한 synthetic signal이므로 일반적인
+  semantic conflict discovery로 주장하지 않는다.
+- unsupported claim은 두 profile이 공유하는 semantic grounding oracle이 없어 `not-comparable`로
+  기록하고 promotion gate를 실패시켰다.
+
+판정:
+
+- critical conflict fixture는 baseline이 reviewer까지 통과한 반면 council은 reviewer 전에 차단했다.
+- missing verification fixture는 두 profile 모두 verification contribution 누락을 reviewer 전에 차단했다.
+- reviewer rubric failure fixture는 baseline이 reviewer에서 실패했지만 council은 조건을 소실해
+  잘못 통과했다.
+- 전체 stage 수는 baseline 26, council 34였다.
+- 따라서 `improvementProven: false`, `defaultPromotionAuthorized: false`,
+  `selectedDefaultProfile: knowledge-triad`로 확정하고 council을 opt-in experiment로 유지한다.
+
+유지한 경계:
+
+- explicit `stub`만 사용했고 external provider call, model download, 실제 사용자 데이터, production
+  dependency를 사용하지 않았다.
+- public API, CLI invocation, payload, storage schema, permission, approval ordering을 변경하지 않았다.
+- approval과 execution lease는 모든 replay에서 0이며 `productionReadyClaim: false`를 유지한다.
+
+증적:
+
+- `fixtures/council-quality-comparison-cases-v1.json`
+- `evidence/output-artifacts/council-quality-comparison.json`
+- `npm run smoke:council-quality-comparison`
 - regression이면 기존 triad를 유지하고 council default 승격을 거부
 
 local provider shadow는 별도 현재 permission, model digest, license, egress, resource gate가 모두 유효할 때만

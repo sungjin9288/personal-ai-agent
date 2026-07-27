@@ -26,6 +26,7 @@
 | Memory retrieval quality fixture | 완료 | `docs/memory-retrieval-quality-fixture-v1.md` | retrieval ranking, source diversity, fact graph provenance, and instruction boundary verified by `npm run smoke:memory-retrieval-quality-fixture` |
 | Answer quality evaluation foundation | 완료 | `docs/ml-rag-development-plan-v1.md`, `fixtures/answer-quality-cases-v1.json` | retrieval, citation, required-content, irrelevant-source, and reviewer regression gate verified by `npm run smoke:answer-quality-evaluation` |
 | Council deterministic stub runtime | 완료 · C1 local 증적 | `src/core/council-contract.mjs`, `scripts/smoke-council-stub-runtime.mjs`, runtime `council-frame.json`·`council-brief.json`·`council-manifest.json` artifacts | fixed three-seat roster, byte-identical private-content-free opening prompts, CouncilBrief-only rebuttals, fresh-session council restart, parent/digest lineage, canonical artifact bytes, tamper and stale rejection, critical-conflict fail-close before reviewer·approval·execution lease, explicit non-stub refusal, and zero-cost stub telemetry verified by `npm run smoke:council-stub-runtime`; UI, local/external provider council, concurrency, quality promotion, and production claims remain unverified |
+| Council quality comparison | 완료 · C3 local shadow 증적 | `evidence/output-artifacts/council-quality-comparison.json`, `fixtures/council-quality-comparison-cases-v1.json` | four public synthetic fixtures replayed twice through both profiles with exact artifact hashes and deterministic semantic hashes; synthetic conflict routing improved, missing verification stayed fail-closed, unsupported claim remained not-comparable, reviewer rubric failure regressed, and stage count changed 26→34, so `knowledge-triad` remains default and council promotion is denied by `npm run smoke:council-quality-comparison` |
 | RAG corpus contract | 완료 | `src/core/retrieval-corpus.mjs`, `fixtures/retrieval-corpus-cases-v1.json` | deterministic source revision, chunk id, content hash, scope, and provenance verified by `npm run smoke:retrieval-corpus-contract` |
 | Retrieval quality evaluation | 완료 | `src/core/retrieval-quality-evaluation.mjs`, `fixtures/retrieval-quality-cases-v1.json` | controlled precision, recall, noise, source diversity, frozen baseline, and regression comparison verified by `npm run smoke:retrieval-quality-evaluation` |
 | Semantic retrieval experiment | 완료 | `src/core/embedding-adapter.mjs`, `src/core/semantic-retrieval.mjs`, `fixtures/semantic-retrieval-cases-v1.json` | bounded local command protocol, scope isolation, controlled synonym comparison, and runtimeActivation=false verified by `npm run smoke:semantic-retrieval-experiment` |
@@ -125,7 +126,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,295,859 bytes, SHA-256 `f912328fe34f9ad3105c3409c17c66ff4a2112ccea630894cea20f8883c2e5df` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,310,868 bytes, SHA-256 `f040b9c3763c9e6e21acce18267ef60d332b4f10ef2983cec38a60d0d02af7de` |
 
 ## 검증 실패 / 보류
 
