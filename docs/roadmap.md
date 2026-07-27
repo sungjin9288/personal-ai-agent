@@ -161,3 +161,11 @@
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
 - 남은 polish: published private/public walkthrough URL, actual pilot feedback and metric evidence
+
+## 8. Council C1–C5 closeout
+
+- 완료: fixed three-seat, two-round deterministic stub council과 read-only board, reviewer parity repair, bounded local retrieval provenance를 검증했다.
+- 결정: `knowledge-triad`를 default profile로 유지하고 `knowledge-council-triad`는 opt-in experiment로 유지한다.
+- 근거: synthetic critical-conflict routing은 개선됐지만 unsupported claim은 `not-comparable`이고 persisted stage는 26→34이므로 default promotion을 허용하지 않는다.
+- 보류: dynamic persona, concurrent dispatch, external research adapter, AirLLM은 각각 bounded role·permission, ordering·retry·resource, network·license·retention authority, model-weight license·egress·runtime envelope 증적을 확보한 뒤 다시 검토한다.
+- 경계: external provider call, model download, 새 dependency, public contract 변경은 없으며 F1.3 actual private-data evaluation과 training activation, production readiness claim은 별도 승인 전까지 보류한다.

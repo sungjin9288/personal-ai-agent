@@ -26,6 +26,7 @@ const EXCLUDE_ALWAYS = new Set([
 // drift failures on 2026-07-03; running them in CI stops that class recurring.
 const GROUPS = {
   'docs-gates': [
+    'smoke:council-closeout',
     'smoke:target-deployment-contract',
     'smoke:hosted-saas-architecture-decision',
     'smoke:hosted-identity-session-architecture',

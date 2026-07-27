@@ -69,6 +69,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - 2026-07-27 status: C1 implemented the patterns as an opt-in deterministic two-round stub council inside the existing Node mission runtime; fixed roster, independent openings, allowlisted rebuttals, evidence-bound synthesis, and reviewer-before-approval ordering are verified without adding an external package, model, provider call, or upstream code
 - 2026-07-27 quality status: C3 kept the council opt-in after same-fixture replay exposed a reviewer false pass, unsupported-claim non-comparability, and 34 candidate stages versus 26 baseline stages; synthetic conflict routing alone did not authorize default promotion
 - 2026-07-27 parity status: C3.1 repaired the reviewer false pass without exposing raw constraints to the provider; unsupported claims remain not-comparable, stage overhead remains, and default promotion stays denied
+- 2026-07-27 C5 closeout: `knowledge-triad` remains default and council remains opt-in; dynamic persona and concurrent dispatch stay deferred until bounded role and permission contracts, deterministic ordering, retry lineage, resource envelope, and baseline-relative quality evidence exist
 
 ### ui-skills
 - source: https://github.com/ibelick/ui-skills
@@ -85,6 +86,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - borrowed: separate disk footprint, resident memory, cold latency, warm latency, and usable throughput when evaluating a local runtime candidate
 - rejected for now: production dependency, provider adapter, automatic Hugging Face download, remote model code, destructive original-model cleanup, and treating memory fit as usable multi-agent latency evidence
 - 2026-07-27 status: deferred until the existing Ollama/local provider proves a council quality need and current license, egress, resource, rollback, and candidate evidence gates are satisfied
+- 2026-07-27 C5 closeout: AirLLM remains deferred; no dependency, model, or spike was added because model-weight license, acquisition authority, local disk and resident-memory envelope, cold/warm latency, usable throughput, and rollback ownership remain unproven
 
 ### wigolo
 - source: https://github.com/KnockOutEZ/wigolo
@@ -93,6 +95,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - borrowed: cache-first research posture, bounded question decomposition, structured briefs, citation and source-span provenance, explicit gaps, and surfaced stale/degraded source state
 - rejected for now: source or package vendoring, modified network-service integration, automatic MCP configuration, browser/model download, crawling, and new external search authority
 - 2026-07-27 status: C4 applied only the provenance pattern to existing local manager·planner retrieval artifacts as bounded digest-and-hash council evidence; gaps and incomplete lineage remain non-citable and visible in synthesis limitations, while no wigolo code, package, process adapter, crawl, URL fetch, provider call, or new authority was introduced
+- 2026-07-27 C5 closeout: the external research adapter remains deferred; reopening requires explicit URL fetch or crawl authority, network and secret policy, retention and deletion boundaries, license review, and an independent process boundary rather than AGPL source vendoring
 
 ### OpenHarness
 - source: https://github.com/HKUDS/OpenHarness
