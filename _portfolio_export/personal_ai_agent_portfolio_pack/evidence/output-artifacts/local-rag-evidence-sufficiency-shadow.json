@@ -1,0 +1,73 @@
+{
+  "actualModelEvaluated": true,
+  "actualUserQueryData": false,
+  "aggregate": {
+    "caseCount": 5,
+    "modelConforms": false,
+    "modelFailureCount": 1
+  },
+  "currentAnswerPathChanged": false,
+  "deterministicArtifactHash": "443a0a34b35111018571e64c049437cf45a89b52e015f974d2c072b2a3abc9b8",
+  "externalProviderCalls": "none",
+  "fixtureHash": "29b7b5664847c9cf6a747ac2e8f24c130eb3917e359b956c798bf4ef5fa05ebf",
+  "inferenceContractHash": "2010c8b55eb46d0170f18eda8eaf7666386ee217d842e38659c97d1b66b2286d",
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "licenseHash": "b5c0e5cf74cf51af1ecbc4af597cfcd13fd9925611838884a681070838a14a50"
+  },
+  "observations": [
+    {
+      "caseHash": "2d8551563f09a96db62abf144122e9ad58736183f64b086bcfc879a44e9e4e17",
+      "failureCodes": [],
+      "modelAction": "request-more-evidence",
+      "requestedClaimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551"
+      ]
+    },
+    {
+      "caseHash": "43814e3f343992730267ed1c22b6723aef412c5d5b9f93fad0266de57a7000ed",
+      "failureCodes": [],
+      "modelAction": "abstain",
+      "requestedClaimHashes": []
+    },
+    {
+      "caseHash": "98837a3a159a8aa9784cd5fb8f44332c2aff0aad1c4cbade8cbb8e0a7185055f",
+      "failureCodes": [],
+      "modelAction": "request-more-evidence",
+      "requestedClaimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551",
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ]
+    },
+    {
+      "caseHash": "cc85e43f7216970aaf388052fbafc3b6fa2d5a7f909cd1175864acfa0440b7b1",
+      "failureCodes": [],
+      "modelAction": "abstain",
+      "requestedClaimHashes": []
+    },
+    {
+      "caseHash": "d710e985eacfdcbf108e4b165383354ebcb77c0d91ddfccb6307b26c6dc68835",
+      "failureCodes": [
+        "decision-mismatch",
+        "unnecessary-abstention"
+      ],
+      "modelAction": "abstain",
+      "requestedClaimHashes": []
+    }
+  ],
+  "observedAt": "2026-07-27T08:11:14.300Z",
+  "policyHash": "dac9fda09108a44957c9a25d03e86f1151f3f8d8d6efae4e9e602a7a5d6ea4b5",
+  "productionReadyClaim": false,
+  "runtime": {
+    "cloudFeaturesDisabled": true,
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-rag-evidence-sufficiency-shadow/v1",
+  "trainingAuthorized": false,
+  "id": "local-rag-evidence-sufficiency-shadow-59eec41f1b22882621dcd9330140d8ee81ef8754ba91411f08e126f4adea4a2e",
+  "integrityHash": "59eec41f1b22882621dcd9330140d8ee81ef8754ba91411f08e126f4adea4a2e"
+}

@@ -109,6 +109,8 @@
 - `evidence/output-artifacts/local-answer-composition-boundary-regression.json`
 - `evidence/output-artifacts/user-query-evaluation-intake.json`
 - `evidence/output-artifacts/local-user-query-quality.json`
+- `evidence/output-artifacts/rag-evidence-sufficiency.json`
+- `evidence/output-artifacts/local-rag-evidence-sufficiency-shadow.json`
 - `evidence/output-artifacts/local-answer-review-action-generalization.json`
 
 ### Architecture
@@ -248,6 +250,8 @@
 - User-query evaluation intake dry run: verified with `npm run smoke:user-query-evaluation-intake`
 - Local user-query quality stop condition: verified with `npm run smoke:local-user-query-quality`
 - Reviewer action generalization candidate: verified with `npm run smoke:local-answer-review-action-generalization`
+- Q9 RAG evidence sufficiency: verified with `npm run smoke:rag-evidence-sufficiency`; required claim SHA-256 assertions, fixed conflict precedence, content-free artifact integrity, and default answer-path inactivity only
+- Q9 local RAG evidence sufficiency shadow: verified with `npm run smoke:local-rag-evidence-sufficiency-shadow`; loopback-only qwen2.5:3b matched 4/5 decisions and retained one sufficient-case `unnecessary-abstention`, so `modelConforms: false` and no runtime activation, training, user data, or external provider call
 - Actual user-query evaluation protocol: verified with `npm run smoke:actual-user-query-evaluation-readiness`; actual user data and quality remain unverified
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
