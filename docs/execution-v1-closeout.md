@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-27T06:58:47.202Z
-- branch: codex/council-closeout
-- commit: ac031bd0dccca1faa5dd2d6baf589a191e0d8d4a
+- generatedAt: 2026-07-27T08:19:02.228Z
+- branch: codex/local-rag-evidence-sufficiency
+- commit: f86641e4e8ec97054f77c1fb67907f0682b7bb8a
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

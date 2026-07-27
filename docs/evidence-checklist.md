@@ -114,6 +114,7 @@
 | User-query evaluation intake dry run | 완료 | `evidence/output-artifacts/user-query-evaluation-intake.json`, `src/core/user-query-evaluation-intake.mjs` | 12 synthetic record·6 domain·4 language, consent·철회·비식별·retention guard, raw query 미저장과 training 권한 false를 verified by `npm run smoke:user-query-evaluation-intake` |
 | Local user-query quality stop condition | 완료 | `evidence/output-artifacts/local-user-query-quality.json`, `src/core/local-user-query-quality.mjs` | 같은 qwen2.5:3b·runtime·v4 prompt로 12건을 실행해 11/12와 `invalid-review-action` 1건을 content-free로 보존하고 current path 유지 verified by `npm run smoke:local-user-query-quality` |
 | Reviewer action generalization candidate | 완료 | `evidence/output-artifacts/local-answer-review-action-generalization.json`, `src/core/local-answer-review-action-generalization.mjs` | 같은 model·runtime·threshold에서 Q4 10/10 parity와 synthetic Q6 12/12를 content-free로 검증하고 actual-user evaluation·activation을 보류 verified by `npm run smoke:local-answer-review-action-generalization` |
+| Q9 RAG evidence sufficiency | 완료 · shadow 미통과 | `src/core/rag-evidence-sufficiency-evaluation.mjs`, `evidence/output-artifacts/rag-evidence-sufficiency.json`, `evidence/output-artifacts/local-rag-evidence-sufficiency-shadow.json` | required claim·per-source SHA-256 assertion의 fixed precedence와 action, input fail-closed, content-free artifact integrity를 `npm run smoke:rag-evidence-sufficiency`로 검증; local shadow smoke는 qwen2.5:3b 4/5 정책 일치와 `unnecessary-abstention` 1건, `modelConforms: false`, runtime/default answer path 불변을 검증 |
 | Actual user-query evaluation protocol | 준비 완료 · 데이터 대기 | `docs/actual-user-query-evaluation-v1.md`, `scripts/build-user-query-evaluation-intake.mjs`, `scripts/evaluate-local-user-query-quality.mjs` | owner-only·no-follow·atomic private I/O, frozen all-pass threshold, Q7 v5 binding, case별 consent 재확인, withdrawal fail-closed와 actualUserQueryData=false 경계를 verified by `npm run smoke:actual-user-query-evaluation-readiness` |
 | Smoke validation summary | 완료 | `docs/smoke-validation-summary-v1.md` | deterministic public-readiness command list verified by `npm run smoke:smoke-validation-summary` |
 | Private reviewed-example canonical record | 완료 | `scripts/materialize-fine-tuning-private-reviewed-example.mjs` | F1.15-approved curated-synthetic lineage, existing dataset-record validation, private deletion receipt, and no training/provider authority verified by `npm run smoke:fine-tuning-private-reviewed-example-canonicalization` |
@@ -128,7 +129,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,308,676 bytes, SHA-256 `5fe7d8e1045e8521ed1f1bc55aec83a367229757ffee81afce3d40e9c38eded1` |
+| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 4,314,310 bytes, SHA-256 `5d426848eee5118fdbe78e90b15bcb9165b9f641aa4cce961af390b4ab4586c6` |
 
 ## 검증 실패 / 보류
 

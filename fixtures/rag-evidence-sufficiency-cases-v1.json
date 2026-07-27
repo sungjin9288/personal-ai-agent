@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "personal-ai-agent-rag-evidence-sufficiency-fixture/v1",
+  "policyVersion": "separate-v1",
+  "currentAnswerPathChanged": false,
+  "runtimeActivation": false,
+  "trainingAuthorized": false,
+  "actualUserQueryData": false,
+  "productionReadyClaim": false,
+  "externalProviderCalls": "none",
+  "cases": [
+    {
+      "id": "sufficient",
+      "requiredClaimKeys": ["claim-alpha", "claim-beta"],
+      "sources": [
+        {"sourceKey": "source-sufficient-alpha", "text": "claim-alpha has the synthetic value ALPHA-1.", "assertions": [{"claimKey": "claim-alpha", "valueHash": "70e057bd7903d6ac880febd7ca8e53fbce3cc6808bb40927b4e1285f5102b8e8"}]},
+        {"sourceKey": "source-sufficient-beta", "text": "claim-beta has the synthetic value BETA-1.", "assertions": [{"claimKey": "claim-beta", "valueHash": "6f2d7611d6b9f8ce5c042b2af8b180d90119a6c3bad7b7fcf8a5c1917324f18a"}]}
+      ],
+      "objective": "Decide whether both synthetic claims are supported.",
+      "expected": {"state": "sufficient", "action": "answer"}
+    },
+    {
+      "id": "partial",
+      "requiredClaimKeys": ["claim-alpha", "claim-beta"],
+      "sources": [
+        {"sourceKey": "source-partial-alpha", "text": "claim-alpha has the synthetic value ALPHA-1. No value for claim-beta is present.", "assertions": [{"claimKey": "claim-alpha", "valueHash": "70e057bd7903d6ac880febd7ca8e53fbce3cc6808bb40927b4e1285f5102b8e8"}]}
+      ],
+      "objective": "Decide whether all required synthetic claims are supported.",
+      "expected": {"state": "partial", "action": "request-more-evidence"}
+    },
+    {
+      "id": "conflicting",
+      "requiredClaimKeys": ["claim-alpha", "claim-beta"],
+      "sources": [
+        {"sourceKey": "source-conflict-alpha-one", "text": "claim-alpha has the synthetic value ALPHA-1.", "assertions": [{"claimKey": "claim-alpha", "valueHash": "70e057bd7903d6ac880febd7ca8e53fbce3cc6808bb40927b4e1285f5102b8e8"}]},
+        {"sourceKey": "source-conflict-alpha-two", "text": "claim-alpha has the synthetic value ALPHA-2.", "assertions": [{"claimKey": "claim-alpha", "valueHash": "af2805659b52635345b4d93df45557d8d10eae2a8f7638b6b69689f019875fb0"}]},
+        {"sourceKey": "source-conflict-beta", "text": "claim-beta has the synthetic value BETA-1.", "assertions": [{"claimKey": "claim-beta", "valueHash": "6f2d7611d6b9f8ce5c042b2af8b180d90119a6c3bad7b7fcf8a5c1917324f18a"}]}
+      ],
+      "objective": "Decide whether conflicting synthetic evidence permits an answer.",
+      "expected": {"state": "conflicting", "action": "abstain"}
+    },
+    {
+      "id": "irrelevant",
+      "requiredClaimKeys": ["claim-alpha", "claim-beta"],
+      "sources": [
+        {"sourceKey": "source-irrelevant", "text": "claim-gamma has the unrelated synthetic value GAMMA-1.", "assertions": []}
+      ],
+      "objective": "Decide whether unrelated synthetic evidence is enough.",
+      "expected": {"state": "irrelevant", "action": "request-more-evidence"}
+    },
+    {
+      "id": "no-evidence",
+      "requiredClaimKeys": ["claim-alpha", "claim-beta"],
+      "sources": [],
+      "objective": "Decide whether absent synthetic evidence permits an answer.",
+      "expected": {"state": "no-evidence", "action": "abstain"}
+    }
+  ]
+}

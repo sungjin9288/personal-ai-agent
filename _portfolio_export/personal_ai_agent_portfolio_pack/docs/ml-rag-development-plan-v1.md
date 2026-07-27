@@ -157,6 +157,12 @@
 - currentAnswerInputBoundaryFixture: `fixtures/answer-input-boundary-cases-v1.json`
 - currentAnswerInputBoundaryEvidence: `evidence/output-artifacts/answer-input-boundary-evaluation.json`
 - currentLocalAnswerCompositionBoundaryRegressionEvidence: `evidence/output-artifacts/local-answer-composition-boundary-regression.json`
+- currentRagEvidenceSufficiencyFixture: `fixtures/rag-evidence-sufficiency-cases-v1.json`
+- currentRagEvidenceSufficiencyEvidence: `evidence/output-artifacts/rag-evidence-sufficiency.json`
+- currentLocalRagEvidenceSufficiencyShadowEvidence: `evidence/output-artifacts/local-rag-evidence-sufficiency-shadow.json`
+- actualRagEvidenceSufficiencyValidated: true
+- actualLocalRagEvidenceSufficiencyShadowValidated: true
+- actualLocalRagEvidenceSufficiencyShadowQualified: false
 - currentUserQueryEvaluationIntakeFixture: `fixtures/user-query-evaluation-intake-dry-run-v1.json`
 - currentUserQueryEvaluationIntakeEvidence: `evidence/output-artifacts/user-query-evaluation-intake.json`
 - currentLocalUserQueryQualityEvidence: `evidence/output-artifacts/local-user-query-quality.json`
@@ -1739,6 +1745,14 @@ Fake loopback Ollama test는 12-case actual-data protocol과 첫 generation 뒤 
 
 Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한다. Actual dataset·intake는 owner-only `0700/0600` 경계와 no-follow descriptor read를 통과해야 한다. Actual intake와 quality output은 승인한 canonical path를 commit 직전까지 다시 확인하고, `0600` temporary file을 동기화한 뒤 같은 directory에서 atomic rename한다. 이 강화는 actual-data path에만 적용해 synthetic CLI contract와 platform requirement를 유지한다. Q6·Q7 all-pass threshold는 core의 단일 frozen contract로 이동했으며 suite, evaluator result, Q7 baseline, 재해시된 evidence 중 하나라도 완화되면 실패한다. 공개 API와 저장 형식은 바꾸지 않았고 actual data, model call, activation, training은 추가하지 않았다.
 
+## 현재 Q9 RAG evidence sufficiency and abstention gate
+
+Q9은 기존 answer-quality evaluator를 수정하지 않는 별도 pure evaluator다. Required claim과 source별 opaque value hash만 읽어 `conflicting → sufficient → partial → irrelevant → no-evidence` 순서로 상태를 계산한다. 행동은 `sufficient → answer`, `partial·irrelevant → request-more-evidence`, `conflicting·no-evidence → abstain`으로 고정하며 threshold override를 두지 않는다. Fixture의 expected 값은 계산 결과를 확인하는 oracle일 뿐 상태 분류 입력으로 사용하지 않는다.
+
+Deterministic fixture는 다섯 상태를 한 건씩 포함한다. `unsupported-confident-answer`, `unnecessary-abstention`, `missed-evidence-request`, `unnecessary-evidence-request`, `evidence-request-mismatch`와 기타 decision mismatch를 분리하며, 빈 evidence가 분모 0으로 통과하지 못하게 한다. Tracked artifact에는 fixture·policy·case·claim·source hash, count, state, decision, failure code만 기록하고 objective, evidence text, raw key, prompt, response, error는 기록하지 않는다.
+
+이미 설치된 `qwen2.5:3b`는 loopback-only opt-in shadow에서 fixed policy 5건 중 4건과 일치했다. `sufficient` 한 건에서 model이 `abstain`을 선택해 `unnecessary-abstention`으로 실패했다. 이 단일 tracked observation은 fixture bytes, semantic case, inference contract, model digest, runtime version에 hash로 결속한다. 따라서 shadow는 `modelConforms: false`, `actualLocalRagEvidenceSufficiencyShadowQualified: false`이며 현재 answer path와 runtime activation은 바꾸지 않는다. 외부 provider call, model download, user data, training, F1.3 authority와 production claim도 추가하지 않았다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -1752,6 +1766,7 @@ Q8.1은 실제 data를 받기 전에 private I/O와 평가 기준을 강화한�
 | Q7 Reviewer action generalization | 완료 | v5 prompt candidate를 Q4 10-case와 Q6 12-case에 같은 model·runtime·threshold로 재실행 | Q4 10/10 parity와 synthetic Q6 12/12, content-free evidence, current path·activation 불변 |
 | Q8 Actual user-query evaluation protocol | 프로토콜 완료 · 데이터 대기 | private intake, tracked-path refusal, Q7 v5 binding, per-case consent reload, withdrawal fail-closed | fake loopback protocol 검증 완료; actual user data·quality·activation·training 없음 |
 | Q8.1 Private evaluation I/O and threshold hardening | 완료 | owner-only input·output, no-follow descriptor read, atomic private write, frozen all-pass threshold | weak mode·symlink·hard link·threshold relaxation을 model 호출 또는 evidence 승인 전에 거부 |
+| Q9 RAG evidence sufficiency | 완료 · shadow 미통과 | required claim SHA-256 assertion만으로 sufficient·partial·conflicting·irrelevant·no-evidence를 고정 판정 | deterministic gate 통과; qwen2.5:3b shadow는 4/5 정책 일치와 sufficient case `unnecessary-abstention` 1건을 보존하고 current answer path·activation·training은 불변 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |

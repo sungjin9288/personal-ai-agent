@@ -1,0 +1,135 @@
+{
+  "aggregate": {
+    "allFixtureOraclesMatched": true,
+    "allPolicyDecisionsMatched": true,
+    "caseCount": 5,
+    "stateCounts": {
+      "conflicting": 1,
+      "irrelevant": 1,
+      "no-evidence": 1,
+      "partial": 1,
+      "sufficient": 1
+    }
+  },
+  "cases": [
+    {
+      "action": "abstain",
+      "caseHash": "cc85e43f7216970aaf388052fbafc3b6fa2d5a7f909cd1175864acfa0440b7b1",
+      "claimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551",
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ],
+      "conflictingClaimHashes": [
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ],
+      "counts": {
+        "coveredClaimCount": 2,
+        "requiredClaimCount": 2,
+        "sourceCount": 3
+      },
+      "failureCodes": [],
+      "requestedClaimHashes": [],
+      "sourceHashes": [
+        "5d8f15c48a8814d4f653235ba3cf1aa16ec5bf7f8684df779335af3954c0c092",
+        "9042d0a3df7ab2b4e40a8a10bf0163e78a4925879173df1ac19b66633b84229f",
+        "91670eefd2159d204fe88aec7e2b165cc5a78af9e48aa21ccdcdb87ed255325a"
+      ],
+      "state": "conflicting"
+    },
+    {
+      "action": "request-more-evidence",
+      "caseHash": "98837a3a159a8aa9784cd5fb8f44332c2aff0aad1c4cbade8cbb8e0a7185055f",
+      "claimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551",
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ],
+      "conflictingClaimHashes": [],
+      "counts": {
+        "coveredClaimCount": 0,
+        "requiredClaimCount": 2,
+        "sourceCount": 1
+      },
+      "failureCodes": [],
+      "requestedClaimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551",
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ],
+      "sourceHashes": [
+        "02685ea3801619da1c03dbc6148a7da26373c99cceba38068ad76c5ff25ebf69"
+      ],
+      "state": "irrelevant"
+    },
+    {
+      "action": "abstain",
+      "caseHash": "43814e3f343992730267ed1c22b6723aef412c5d5b9f93fad0266de57a7000ed",
+      "claimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551",
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ],
+      "conflictingClaimHashes": [],
+      "counts": {
+        "coveredClaimCount": 0,
+        "requiredClaimCount": 2,
+        "sourceCount": 0
+      },
+      "failureCodes": [],
+      "requestedClaimHashes": [],
+      "sourceHashes": [],
+      "state": "no-evidence"
+    },
+    {
+      "action": "request-more-evidence",
+      "caseHash": "2d8551563f09a96db62abf144122e9ad58736183f64b086bcfc879a44e9e4e17",
+      "claimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551",
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ],
+      "conflictingClaimHashes": [],
+      "counts": {
+        "coveredClaimCount": 1,
+        "requiredClaimCount": 2,
+        "sourceCount": 1
+      },
+      "failureCodes": [],
+      "requestedClaimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551"
+      ],
+      "sourceHashes": [
+        "77faca77d38b0a65ad6503680079539e744d5d16f4feedba40ba9f55d68679b7"
+      ],
+      "state": "partial"
+    },
+    {
+      "action": "answer",
+      "caseHash": "d710e985eacfdcbf108e4b165383354ebcb77c0d91ddfccb6307b26c6dc68835",
+      "claimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551",
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2"
+      ],
+      "conflictingClaimHashes": [],
+      "counts": {
+        "coveredClaimCount": 2,
+        "requiredClaimCount": 2,
+        "sourceCount": 2
+      },
+      "failureCodes": [],
+      "requestedClaimHashes": [],
+      "sourceHashes": [
+        "161639c430e6f2e9b9b6e4c587e0ea29b0403c9853f36bb60f214bbcd077d1a4",
+        "947626594c428bf0871e578740976eb700e291d3352bb2ddbc300071628f4244"
+      ],
+      "state": "sufficient"
+    }
+  ],
+  "actualUserQueryData": false,
+  "currentAnswerPathChanged": false,
+  "externalProviderCalls": "none",
+  "fixtureHash": "29b7b5664847c9cf6a747ac2e8f24c130eb3917e359b956c798bf4ef5fa05ebf",
+  "policyHash": "dac9fda09108a44957c9a25d03e86f1151f3f8d8d6efae4e9e602a7a5d6ea4b5",
+  "productionReadyClaim": false,
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-rag-evidence-sufficiency-artifact/v1",
+  "trainingAuthorized": false,
+  "id": "rag-evidence-sufficiency-443a0a34b35111018571e64c049437cf45a89b52e015f974d2c072b2a3abc9b8",
+  "integrityHash": "443a0a34b35111018571e64c049437cf45a89b52e015f974d2c072b2a3abc9b8"
+}

@@ -41,6 +41,7 @@
   - 완료: 같은 qwen2.5:3b와 retrieval로 evidence-first composition candidate를 실행해 Q1 case pass 0.0→1.0과 required-term coverage 0.6667→1.0을 기록하고 runtime 활성화는 차단
   - 완료: Q3 regression·한국어·다중 도메인·bounded context·prompt injection 10-case로 composition을 확장하고 v2 9/10·canary 1 실패를 보존
   - 완료: deterministic instruction boundary를 적용한 v3에서 10/10·canary 0과 다른 품질 지표 회귀 0을 기록하고 runtime 활성화는 차단
+  - 완료: Q9 required-claim SHA-256 assertion policy가 five evidence states와 fixed answer/request/abstain action을 deterministic하게 판정하고, qwen2.5:3b loopback shadow의 4/5 정책 일치와 sufficient case `unnecessary-abstention` 1건을 기본 답변 경로 밖의 비권위 실패 관찰로 보존
 - 완료 기준:
   - provider별 status matrix가 코드, docs, smoke evidence와 일치
   - 실패/재시도/fallback을 면접에서 코드 수준으로 설명 가능
@@ -115,6 +116,7 @@
 - 완료: Q5 intake를 같은 qwen2.5:3b·v4 prompt·loopback runtime과 결합한 Q6 content-free runner가 12건을 끝까지 실행하고 11/12와 `invalid-review-action` 1건을 stop condition으로 기록
 - 완료: v5 reviewer action candidate가 summary-only objective의 owner·trigger를 evidence-bound action으로 유지하며 Q4 10/10 parity와 synthetic Q6 12/12를 기준 완화 없이 통과
 - 완료: Q8 actual-user evaluation protocol이 private dataset 경로, owner-only·no-follow·atomic I/O, frozen all-pass threshold, tracked-path 거부, Q7 v5 binding, case별 consent 재검증과 중간 철회 fail-closed를 test fixture로 검증
+- 완료: Q9 evidence sufficiency fixture가 sufficient·partial·conflicting·irrelevant·no-evidence를 threshold 없이 판정하고 content-free artifact tamper rejection을 검증; tracked local shadow는 4/5에 그쳐 activation을 계속 보류
 - 다음: 실제 사용자 dataset과 별도 승인을 받은 뒤 명시적 동의·철회 가능성·비식별 검토·current retention을 통과한 평가를 진행하고, 그 전에는 candidate activation을 보류
 - 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증

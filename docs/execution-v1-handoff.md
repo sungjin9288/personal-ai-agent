@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-27T06:58:54.547Z
+- generatedAt: 2026-07-27T08:19:09.606Z
 - localDate: 2026-07-27
-- branch: codex/council-closeout
-- commit: ac031bd0dccca1faa5dd2d6baf589a191e0d8d4a
+- branch: codex/local-rag-evidence-sufficiency
+- commit: f86641e4e8ec97054f77c1fb67907f0682b7bb8a
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ac031bd0dccca1faa5dd2d6baf589a191e0d8d4a](releases/execution-v1/ac031bd0dccca1faa5dd2d6baf589a191e0d8d4a)
-- visualArtifactSetSha256: f38931afb874998cf4ad069c9060078a93d69db6d9c66e4dce19349fe5d2ba7e
-- commitPushStatus: not pushed, origin/codex/council-closeout not found
+- immutableSnapshot: [releases/execution-v1/f86641e4e8ec97054f77c1fb67907f0682b7bb8a](releases/execution-v1/f86641e4e8ec97054f77c1fb67907f0682b7bb8a)
+- visualArtifactSetSha256: c5bc2e5a3e464fbdddd4028d0beb3216a7de08e9d4073d1176debb3147ab4eac
+- commitPushStatus: not pushed, origin/codex/local-rag-evidence-sufficiency not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=53.5s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=50.5s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: f38931afb874998cf4ad069c9060078a93d69db6d9c66e4dce19349fe5d2ba7e
+- visual artifact set: c5bc2e5a3e464fbdddd4028d0beb3216a7de08e9d4073d1176debb3147ab4eac
 
 ## Live Provider Handoff
 

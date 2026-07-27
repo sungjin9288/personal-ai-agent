@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-07-27 Q9 RAG Evidence Sufficiency
+
+- added a pure required-claim SHA-256 assertion evaluator with fixed conflict-first precedence and answer/request/abstain actions; the existing answer-quality evaluator and default runtime path remain untouched
+- added five synthetic fixture categories, content-free deterministic and loopback-only qwen2.5:3b shadow artifacts, integrity/tamper checks, and fixed regression codes without threshold tuning or external providers
+- corrected the first under-specified shadow prompt by stating the already-frozen action policy and making synthetic claim values explicit; the tracked observation retains 4/5 policy matches and one sufficient-case `unnecessary-abstention` as a real stop condition, without claiming untracked replay evidence
+- bound the shadow to exact fixture bytes, semantic case hashes, the inference contract hash, and stable pre/post model digest and runtime version checks
+- retained `currentAnswerPathChanged: false`, `runtimeActivation: false`, `trainingAuthorized: false`, `actualUserQueryData: false`, and `productionReadyClaim: false`
+
 ## 2026-07-27 Council C1-C5 Closeout
 
 - closed the council roadmap against the current comparison artifact: `knowledge-triad` remains the default profile, `knowledge-council-triad` remains an opt-in experiment, and default promotion remains denied
