@@ -74,7 +74,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - license: MIT
 - borrowed: evidence-chain planning, exact surface and owner scope, one deterministic next action, accessible focus and error placement, and explicit loading·empty·blocked·approval states
 - rejected for now: CLI installation, Tailwind or component primitive migration, motion dependency, and importing the upstream visual identity
-- 2026-07-27 status: UI guidance is reserved for a read-only deliberation board after real council records and deterministic conflict validation exist
+- 2026-07-27 status: C2 implemented the guidance as a read-only mission-detail council board derived from persisted session records; it keeps one evidence-grounded next action, explicit loading·empty·blocked·reviewer·approval states, keyboard and focus restoration, existing artifact navigation, dark/reduced-motion/640px support, and no upstream package, visual identity, mutation, endpoint, or provider call
 
 ### airllm
 - source: https://github.com/lyogavin/airllm
