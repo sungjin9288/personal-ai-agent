@@ -8,6 +8,22 @@ import {
   buildFallbackSpecialistHandoff,
   normalizeSpecialistHandoff,
 } from './specialist-handoff.mjs';
+import {
+  createCouncilBrief,
+  createCouncilFrame,
+  createCouncilManifest,
+  createCouncilStatement,
+  createCouncilStatementMetadata,
+  createCouncilSynthesis,
+  createCouncilSynthesisInput,
+  formatCouncilRecord,
+  hashCouncilContent,
+  hashCouncilValue,
+  parseCouncilRecord,
+  sealCouncilStatement,
+  sealCouncilSynthesis,
+  validateCouncilManifest,
+} from './council-contract.mjs';
 import { buildRetrievalContextWithCorpus } from './retrieval-service.mjs';
 import { formatRetrievalArtifactContent } from './retrieval-artifacts.mjs';
 import {
@@ -95,6 +111,71 @@ function normalizeAgentRunStatus(value) {
   return normalized === 'executing' ? 'running' : normalized;
 }
 
+function selectLatestRunsBySpecialistKind(runs) {
+  const latestByKind = new Map();
+
+  for (const run of ensureArray(runs)) {
+    const specialistKind = normalizeText(run.specialistKind);
+    if (!specialistKind) {
+      continue;
+    }
+
+    const current = latestByKind.get(specialistKind);
+    const currentAt = String(current?.endedAt || current?.startedAt || '');
+    const nextAt = String(run.endedAt || run.startedAt || '');
+    if (!current || currentAt <= nextAt) {
+      latestByKind.set(specialistKind, run);
+    }
+  }
+
+  return latestByKind;
+}
+
+function buildCouncilRoundStates(runs) {
+  const councilRuns = ensureArray(runs).filter((run) => normalizeText(run.councilId));
+  if (!councilRuns.length) {
+    return null;
+  }
+
+  const createRound = (phase) => {
+    const roundRuns = councilRuns.filter((run) => normalizeText(run.councilPhase) === phase);
+    const latestByKind = selectLatestRunsBySpecialistKind(roundRuns);
+    const latestRuns = [...latestByKind.values()];
+
+    return {
+      latestByKind,
+      latestRuns,
+      runs: roundRuns,
+      unresolvedRuns: latestRuns.filter((run) =>
+        ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status))),
+    };
+  };
+  const opening = createRound('opening-position');
+  const rebuttal = createRound('rebuttal');
+  const latestByRoundAndKind = new Map();
+
+  for (const [round, state] of [['opening', opening], ['rebuttal', rebuttal]]) {
+    for (const [specialistKind, run] of state.latestByKind) {
+      latestByRoundAndKind.set(`${round}:${specialistKind}`, run);
+    }
+  }
+
+  return {
+    latestByRoundAndKind,
+    opening,
+    rebuttal,
+  };
+}
+
+function selectActiveCouncilRuns(councilRounds) {
+  if (!councilRounds) {
+    return null;
+  }
+  return councilRounds.rebuttal.latestRuns.length
+    ? councilRounds.rebuttal.latestByKind
+    : councilRounds.opening.latestByKind;
+}
+
 function normalizeStringList(items) {
   return ensureArray(items).map((item) => normalizeText(item)).filter(Boolean);
 }
@@ -110,6 +191,54 @@ function dedupeEntries(entries) {
   });
 }
 
+export function buildCouncilProviderInput(input) {
+  const councilPhase = normalizeText(input.councilPhase);
+  if (!councilPhase) {
+    return input;
+  }
+
+  let councilRuntime = null;
+
+  if (councilPhase === 'synthesis') {
+    const riskProfile = input.pack.riskProfile;
+    councilRuntime = {};
+    councilRuntime.artifactContent = input.pack.renderDraft({
+      adaptationNotes: [],
+      forceReviewerFail: false,
+      forceRubricFail: false,
+      planSteps: ensureArray(input.pack.plannerGuidance),
+    });
+    councilRuntime.artifactFileName = input.pack.artifactFileName;
+    councilRuntime.artifactTitle = input.pack.artifactTitle;
+    councilRuntime.deliverableType = input.pack.deliverableType;
+    councilRuntime.nextAction = riskProfile.requiresApproval
+      ? 'Pause for approval before any workspace mutation.'
+      : 'Share the draft with the owner and collect follow-up decisions.';
+    councilRuntime.proposedAction = {
+      kind: riskProfile.actionKind,
+      reason: riskProfile.reason,
+      requiresApproval: riskProfile.requiresApproval,
+      title: riskProfile.title,
+    };
+  }
+
+  return {
+    councilBrief: councilPhase === 'rebuttal' ? input.councilBrief : null,
+    councilFrame: councilPhase === 'opening-position' ? input.councilFrame : null,
+    councilId: input.councilId,
+    councilPhase,
+    councilRound: input.councilRound,
+    councilRuntime,
+    councilSeatId: input.councilSeatId,
+    councilSynthesisInput: councilPhase === 'synthesis' ? input.councilSynthesisInput : null,
+    parentRunIds: normalizeStringList(input.parentRunIds),
+    providerRole: input.providerRole,
+    role: input.role,
+    sourceDigest: input.sourceDigest,
+    specialistKind: input.specialistKind,
+  };
+}
+
 function extractOrchestrationProfileMetadata(item) {
   const profileId = normalizeText(item?.orchestrationProfileId).toLowerCase();
   if (!profileId) {
@@ -117,6 +246,7 @@ function extractOrchestrationProfileMetadata(item) {
   }
 
   return {
+    councilMode: normalizeText(item?.orchestrationProfileCouncilMode) || null,
     deliverableTypes: normalizeStringList(item?.orchestrationProfileDeliverableTypes),
     description: normalizeText(item?.orchestrationProfileDescription) || null,
     displayName: normalizeText(item?.orchestrationProfileDisplayName, profileId),
@@ -331,27 +461,13 @@ export function createMissionRunService({
     }
 
     const groupRuns = runs.filter((run) => run.parallelGroupId === latestGroupId);
-    const latestByKind = new Map();
-    const mergeRuns = [];
-
-    for (const run of groupRuns) {
-      if (normalizeText(run.stageKind) === 'parallel-merge') {
-        mergeRuns.push(run);
-        continue;
-      }
-
-      const specialistKind = normalizeText(run.specialistKind);
-      if (!specialistKind) {
-        continue;
-      }
-
-      const current = latestByKind.get(specialistKind);
-      const currentAt = String(current?.endedAt || current?.startedAt || '');
-      const nextAt = String(run.endedAt || run.startedAt || '');
-      if (!current || currentAt <= nextAt) {
-        latestByKind.set(specialistKind, run);
-      }
-    }
+    const councilRounds = buildCouncilRoundStates(groupRuns);
+    const latestByKind =
+      selectActiveCouncilRuns(councilRounds) ||
+      selectLatestRunsBySpecialistKind(
+        groupRuns.filter((run) => normalizeText(run.stageKind) !== 'parallel-merge'),
+      );
+    const mergeRuns = groupRuns.filter((run) => normalizeText(run.stageKind) === 'parallel-merge');
 
     const latestMergeRun =
       [...mergeRuns].sort((left, right) =>
@@ -372,8 +488,11 @@ export function createMissionRunService({
     const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
 
     return {
+      councilId: normalizeText(groupRuns.find((run) => normalizeText(run.councilId))?.councilId) || null,
+      councilRounds,
       latestMergeRun,
       latestRuns,
+      latestByRoundAndKind: councilRounds?.latestByRoundAndKind || new Map(),
       orchestrationProfile,
       parallelGroupId: latestGroupId,
       qualityGate,
@@ -435,7 +554,12 @@ export function createMissionRunService({
     }
 
     return [...groups.values()].map((group) => {
-      const latestByKind = new Map();
+      const councilRounds = buildCouncilRoundStates(group.runs);
+      const latestByKind =
+        selectActiveCouncilRuns(councilRounds) ||
+        selectLatestRunsBySpecialistKind(
+          group.runs.filter((run) => normalizeText(run.stageKind) !== 'parallel-merge'),
+        );
       let latestMergeRun = null;
 
       for (const run of group.runs) {
@@ -446,17 +570,6 @@ export function createMissionRunService({
             latestMergeRun = run;
           }
           continue;
-        }
-
-        const specialistKind = normalizeText(run.specialistKind);
-        if (!specialistKind) {
-          continue;
-        }
-        const current = latestByKind.get(specialistKind);
-        const currentAt = String(current?.endedAt || current?.startedAt || '');
-        const nextAt = String(run.endedAt || run.startedAt || '');
-        if (!current || currentAt <= nextAt) {
-          latestByKind.set(specialistKind, run);
         }
       }
 
@@ -469,7 +582,10 @@ export function createMissionRunService({
       const unresolvedRuns = latestRuns.filter((run) => ['blocked', 'failed'].includes(normalizeAgentRunStatus(run.status)));
 
       return {
+        councilId: normalizeText(group.runs.find((run) => normalizeText(run.councilId))?.councilId) || null,
+        councilRounds,
         latestByKind,
+        latestByRoundAndKind: councilRounds?.latestByRoundAndKind || new Map(),
         latestMergeRun,
         latestRuns,
         mission: group.mission,
@@ -523,6 +639,98 @@ export function createMissionRunService({
       status,
       summaryText: normalizeText(run.outputSummary, handoff?.currentState || ''),
     };
+  }
+
+  function readRunArtifactContent(run) {
+    const artifact = getRunArtifact(run);
+    if (!artifact?.path || !fileSystem.existsSync(artifact.path)) {
+      throw new Error(`Council artifact is missing for run ${run?.id || 'unknown'}.`);
+    }
+    return fileSystem.readFileSync(artifact.path, 'utf8');
+  }
+
+  function buildCouncilStatementRecord(run) {
+    return {
+      artifactContent: readRunArtifactContent(run),
+      councilStatement: run.councilStatement,
+      metadata: {
+        councilId: run.councilId,
+        councilPhase: run.councilPhase,
+        councilRound: run.councilRound,
+        councilSeatId: run.councilSeatId,
+        outputDigest: run.outputDigest,
+        parentRunIds: ensureArray(run.parentRunIds),
+        sourceDigest: run.sourceDigest,
+      },
+      runId: run.id,
+    };
+  }
+
+  function buildCouncilSynthesisRecord(run) {
+    return {
+      artifactContent: readRunArtifactContent(run),
+      councilSynthesis: run.councilSynthesis,
+      metadata: {
+        councilId: run.councilId,
+        councilPhase: run.councilPhase,
+        councilRound: run.councilRound,
+        councilSeatId: run.councilSeatId,
+        outputDigest: run.outputDigest,
+        parentRunIds: ensureArray(run.parentRunIds),
+        sourceDigest: run.sourceDigest,
+      },
+      runId: run.id,
+    };
+  }
+
+  function buildCouncilContextDigest({
+    attachments,
+    managerStage,
+    memoryEntries,
+    mission,
+    pack,
+    plannerStage,
+    providerId,
+    workspace,
+  }) {
+    return hashCouncilValue({
+      attachments: ensureArray(attachments)
+        .map((attachment) => ({
+          contentDigest: hashCouncilValue(String(attachment.promptContent || '')),
+          fileName: normalizeText(attachment.fileName),
+          id: normalizeText(attachment.id),
+        }))
+        .sort((left, right) => left.id.localeCompare(right.id)),
+      managerOutput: managerStage.output,
+      memory: ensureArray(memoryEntries)
+        .map((entry) => ({
+          contentDigest: hashCouncilValue(String(entry.content || '')),
+          id: normalizeText(entry.id),
+          kind: normalizeText(entry.kind),
+          scope: normalizeText(entry.scope),
+          scopeId: normalizeText(entry.scopeId),
+        }))
+        .sort((left, right) => left.id.localeCompare(right.id)),
+      mission: {
+        constraints: normalizeStringList(mission.constraints),
+        deliverableType: mission.deliverableType,
+        id: mission.id,
+        mode: mission.mode,
+        objective: mission.objective,
+        title: mission.title,
+      },
+      pack: {
+        deliverableType: pack.deliverableType,
+        requiredSections: normalizeStringList(pack.requiredSections),
+      },
+      plannerOutput: plannerStage.output,
+      providerId,
+      workspace: {
+        id: workspace.id,
+        name: workspace.name,
+        path: workspace.path,
+      },
+    });
   }
 
   function finalizeMissionFailure({ mission, session, currentStage, artifactPath = null, providerId, reviewerVerdict = null }) {
@@ -666,12 +874,18 @@ export function createMissionRunService({
     providerId,
     pack,
     attachments,
+    councilBrief = null,
+    councilFrame = null,
+    councilOpenings = [],
+    councilRebuttals = [],
+    councilSynthesisInput = null,
     memoryEntries,
     previousOutputs,
     runMetadata = {},
     outputFileName = null,
     outputTitle = null,
     promptFileName = null,
+    skipRetrieval = false,
     userLearningSelectionOverrides = [],
     workspaceLearningSelectionOverrides = [],
   }) {
@@ -689,9 +903,11 @@ export function createMissionRunService({
       role,
       workspace,
     };
-    const rawRetrieval = retrievalRuntime
-      ? await retrievalRuntime.retrieve(retrievalInput)
-      : buildRetrievalContextWithCorpus(retrievalInput);
+    const rawRetrieval = skipRetrieval
+      ? { corpusRecords: [], items: [] }
+      : retrievalRuntime
+        ? await retrievalRuntime.retrieve(retrievalInput)
+        : buildRetrievalContextWithCorpus(retrievalInput);
     const workspaceLearningSelection = selectWorkspaceLearningMemory({
       memoryEntries,
       retrievalCorpusRecords: rawRetrieval.corpusRecords,
@@ -730,6 +946,14 @@ export function createMissionRunService({
       pack,
       memoryEntries: providerMemoryEntries,
       retrievalContext,
+      councilBrief,
+      councilFrame,
+      councilId: normalizeText(runMetadata.councilId) || null,
+      councilPhase: normalizeText(runMetadata.councilPhase) || null,
+      councilRound: normalizeText(runMetadata.councilRound) || null,
+      councilSeatId: normalizeText(runMetadata.councilSeatId) || null,
+      councilSynthesisInput,
+      parentRunIds: normalizeStringList(runMetadata.parentRunIds),
       sessionSourceContext: session.sourceContext || normalizeSessionSourceContext(),
       previousOutputs,
       parallelGroupId: normalizeText(runMetadata.parallelGroupId) || null,
@@ -737,10 +961,15 @@ export function createMissionRunService({
       resumeFromRunId: normalizeText(runMetadata.resumeFromRunId) || null,
       specialistKind: normalizeText(runMetadata.specialistKind) || null,
       specialistMergeMode: normalizeText(runMetadata.stageKind) === 'parallel-merge',
+      sourceDigest: normalizeText(runMetadata.sourceDigest) || null,
       userLearningSelection,
       workspaceLearningSelection,
     };
-    const promptContent = await provider.preparePrompt(providerInput);
+    const providerExecutionInput = buildCouncilProviderInput(providerInput);
+    const promptContent = await provider.preparePrompt(providerExecutionInput);
+    const councilPromptDigest = normalizeText(runMetadata.councilPhase)
+      ? hashCouncilContent(promptContent)
+      : null;
 
     const agentRun = harness.startAgentRun({
       missionId: mission.id,
@@ -806,8 +1035,47 @@ export function createMissionRunService({
       : null;
 
     try {
-      const providerOutput = await provider.run(providerInput);
-      const normalizedOutput = provider.normalizeOutput(providerOutput, providerInput);
+      const providerOutput = await provider.run(providerExecutionInput);
+      const normalizedOutput = provider.normalizeOutput(providerOutput, providerExecutionInput);
+      const councilMetadata = normalizeText(runMetadata.councilPhase)
+        ? {
+            councilId: normalizeText(runMetadata.councilId),
+            councilPhase: normalizeText(runMetadata.councilPhase),
+            councilRound: normalizeText(runMetadata.councilRound),
+            councilSeatId: normalizeText(runMetadata.councilSeatId),
+            parentRunIds: normalizeStringList(runMetadata.parentRunIds),
+            sourceDigest: normalizeText(runMetadata.sourceDigest),
+          }
+        : null;
+      const councilStatementRecord =
+        councilMetadata && role === 'specialist'
+          ? createCouncilStatement({
+              ...sealCouncilStatement({
+                artifactContent: normalizedOutput.artifactContent,
+                councilStatement: normalizedOutput.councilStatement,
+                metadata: councilMetadata,
+                runId: agentRun.id,
+              }),
+              brief: councilBrief,
+              frame: councilFrame,
+              openings: councilOpenings,
+            })
+          : null;
+      const councilSynthesisRecord =
+        councilMetadata && role === 'executor'
+          ? createCouncilSynthesis({
+              ...sealCouncilSynthesis({
+                artifactContent: normalizedOutput.artifactContent,
+                councilSynthesis: normalizedOutput.councilSynthesis,
+                metadata: councilMetadata,
+                runId: agentRun.id,
+              }),
+              brief: councilBrief,
+              frame: councilFrame,
+              openings: councilOpenings,
+              rebuttals: councilRebuttals,
+            })
+          : null;
       const specialistHandoff =
         role === 'specialist'
           ? normalizeSpecialistHandoff(normalizedOutput.specialistHandoff, {
@@ -860,6 +1128,19 @@ export function createMissionRunService({
           nextAction: normalizeText(normalizedOutput.nextAction),
           planSteps: ensureArray(normalizedOutput.planSteps),
           ...runMetadata,
+          ...(councilPromptDigest ? { councilPromptDigest } : {}),
+          ...(councilStatementRecord
+            ? {
+                councilStatement: councilStatementRecord.councilStatement,
+                outputDigest: councilStatementRecord.metadata.outputDigest,
+              }
+            : {}),
+          ...(councilSynthesisRecord
+            ? {
+                councilSynthesis: councilSynthesisRecord.councilSynthesis,
+                outputDigest: councilSynthesisRecord.metadata.outputDigest,
+              }
+            : {}),
           specialistHandoff,
           specialistRootRunId:
             normalizeText(runMetadata.specialistKind) && !normalizeText(runMetadata.specialistRootRunId)
@@ -905,6 +1186,7 @@ export function createMissionRunService({
           usageTotalTokens: normalizeTelemetryNumber(failure.usageTotalTokens),
           workflowRole: providerRole,
           ...runMetadata,
+          ...(councilPromptDigest ? { councilPromptDigest } : {}),
           specialistHandoff:
             role === 'specialist'
               ? buildFallbackSpecialistHandoff({
@@ -1201,11 +1483,443 @@ export function createMissionRunService({
     };
   }
 
+  async function runCouncilMissionStages({
+    attachments,
+    managerStage,
+    memoryEntries,
+    mission,
+    pack,
+    parallelPlan,
+    parallelSpecialistKinds,
+    plannerStage,
+    previousOutputs,
+    providerId,
+    session,
+    stageContext,
+    workspace,
+  }) {
+    const contextDigest = buildCouncilContextDigest({
+      attachments,
+      managerStage,
+      memoryEntries,
+      mission,
+      pack,
+      plannerStage,
+      providerId,
+      workspace,
+    });
+    const parallelGroupId = createId('parallel-group');
+    const councilId = createId('council');
+    const councilFrame = createCouncilFrame({
+      contextDigest,
+      councilId,
+      evidenceCatalog: [
+        {
+          councilId,
+          id: `artifact:${managerStage.artifact.id}`,
+          kind: 'artifact',
+          sessionId: session.id,
+          workspaceId: workspace.id,
+        },
+        {
+          councilId,
+          id: `artifact:${plannerStage.artifact.id}`,
+          kind: 'artifact',
+          sessionId: session.id,
+          workspaceId: workspace.id,
+        },
+      ],
+      parentRunId: plannerStage.run.id,
+      riskSignals: ensureArray(mission.constraints).includes('council-critical-conflict')
+        ? ['critical-conflict']
+        : [],
+      sessionId: session.id,
+      workspaceId: workspace.id,
+    });
+    const frameArtifact = harness.writeArtifact({
+      content: formatCouncilRecord(councilFrame),
+      fileName: 'council-frame.json',
+      kind: 'council-frame',
+      metadata: {
+        councilId,
+        frameDigest: councilFrame.frameDigest,
+        parallelGroupId,
+      },
+      missionId: mission.id,
+      role: 'manager',
+      sessionId: session.id,
+      title: 'Council Frame',
+    });
+    const persistedFrame = parseCouncilRecord(
+      fileSystem.readFileSync(frameArtifact.path, 'utf8'),
+      'council frame artifact',
+    );
+    const openingPreviousOutputs = Object.freeze({
+      manager: {
+        summaryText: managerStage.output.summaryText,
+      },
+      planner: {
+        planSteps: ensureArray(plannerStage.output.planSteps),
+        summaryText: plannerStage.output.summaryText,
+      },
+    });
+    let group = buildParallelGroupStates({ parallelGroupId }).at(0) || null;
+    let openingByKind = group?.councilRounds?.opening?.latestByKind || new Map();
+
+    harness.updateSession(session.id, {
+      currentStage: 'specialist',
+    });
+
+    for (const specialistKind of parallelSpecialistKinds) {
+      const previousBranchRun = openingByKind.get(specialistKind) || null;
+      if (normalizeAgentRunStatus(previousBranchRun?.status) === 'completed') {
+        continue;
+      }
+
+      const councilMetadata = createCouncilStatementMetadata({
+        frame: persistedFrame,
+        round: 'opening',
+        seatId: specialistKind,
+      });
+      const stage = await runAgentStage(
+        buildMissionStageRequest({
+          context: stageContext,
+          role: 'specialist',
+          stageOptions: {
+            attachments: [],
+            councilFrame: persistedFrame,
+            memoryEntries: [],
+            previousOutputs: openingPreviousOutputs,
+            providerRole: 'executor',
+            promptFileName: `specialist-${specialistKind}-opening-prompt.md`,
+            outputFileName: `specialist-${specialistKind}-opening-${pack.artifactFileName}`,
+            outputTitle: `${specialistKind} council opening`,
+            runMetadata: buildParallelStageMetadata({
+              councilMetadata: {
+                ...councilMetadata,
+                councilFrame: persistedFrame,
+              },
+              parallelGroupId,
+              parallelPlan,
+              parallelSpecialistKinds,
+              parentRunId: persistedFrame.parentRunId,
+              previousBranchRun,
+              specialistKind,
+              stageKind: 'council-opening',
+            }),
+            skipRetrieval: true,
+            userLearningSelectionOverrides: [],
+            workspaceLearningSelectionOverrides: [],
+          },
+        }),
+      );
+      applySpecialistOutcomeDirective({
+        mission,
+        parallelGroupId,
+        requiredKinds: parallelSpecialistKinds,
+        runStage: stage,
+      });
+      group = buildParallelGroupStates({ parallelGroupId }).at(0) || null;
+      openingByKind = group?.councilRounds?.opening?.latestByKind || new Map();
+    }
+
+    const openingRuns = parallelSpecialistKinds
+      .map((specialistKind) => openingByKind.get(specialistKind))
+      .filter((run) => normalizeAgentRunStatus(run?.status) === 'completed');
+    if (openingRuns.length !== parallelSpecialistKinds.length) {
+      return {
+        failure: finalizeMissionFailure({
+          artifactPath: openingRuns.at(-1) ? getRunArtifact(openingRuns.at(-1))?.path || null : null,
+          currentStage: 'specialist',
+          mission,
+          providerId,
+          session,
+        }),
+      };
+    }
+
+    const openings = openingRuns.map((run) =>
+      createCouncilStatement({
+        ...buildCouncilStatementRecord(run),
+        frame: persistedFrame,
+      }));
+    const councilBrief = createCouncilBrief({
+      frame: persistedFrame,
+      openings,
+    });
+    const briefArtifact = harness.writeArtifact({
+      content: formatCouncilRecord(councilBrief),
+      fileName: 'council-brief.json',
+      kind: 'council-brief',
+      metadata: {
+        briefDigest: councilBrief.briefDigest,
+        councilId,
+        parallelGroupId,
+      },
+      missionId: mission.id,
+      role: 'manager',
+      sessionId: session.id,
+      title: 'Council Brief',
+    });
+    const persistedBrief = parseCouncilRecord(
+      fileSystem.readFileSync(briefArtifact.path, 'utf8'),
+      'CouncilBrief artifact',
+    );
+
+    group = buildParallelGroupStates({ parallelGroupId }).at(0) || null;
+    let rebuttalByKind = group?.councilRounds?.rebuttal?.latestByKind || new Map();
+
+    for (const specialistKind of parallelSpecialistKinds) {
+      const previousBranchRun = rebuttalByKind.get(specialistKind) || null;
+      if (normalizeAgentRunStatus(previousBranchRun?.status) === 'completed') {
+        continue;
+      }
+
+      const councilMetadata = createCouncilStatementMetadata({
+        brief: persistedBrief,
+        frame: persistedFrame,
+        openings,
+        round: 'rebuttal',
+        seatId: specialistKind,
+      });
+      const stage = await runAgentStage(
+        buildMissionStageRequest({
+          context: stageContext,
+          role: 'specialist',
+          stageOptions: {
+            attachments: [],
+            councilBrief: persistedBrief,
+            councilFrame: persistedFrame,
+            councilOpenings: openings,
+            memoryEntries: [],
+            previousOutputs: {},
+            providerRole: 'executor',
+            promptFileName: `specialist-${specialistKind}-rebuttal-prompt.md`,
+            outputFileName: `specialist-${specialistKind}-rebuttal-${pack.artifactFileName}`,
+            outputTitle: `${specialistKind} council rebuttal`,
+            runMetadata: buildParallelStageMetadata({
+              councilMetadata: {
+                ...councilMetadata,
+                councilFrame: persistedFrame,
+              },
+              parallelGroupId,
+              parallelPlan,
+              parallelSpecialistKinds,
+              parentRunId: openings.find((record) => record.metadata.councilSeatId === specialistKind).runId,
+              previousBranchRun,
+              specialistKind,
+              stageKind: 'council-rebuttal',
+            }),
+            skipRetrieval: true,
+            userLearningSelectionOverrides: [],
+            workspaceLearningSelectionOverrides: [],
+          },
+        }),
+      );
+      applySpecialistOutcomeDirective({
+        mission,
+        parallelGroupId,
+        requiredKinds: parallelSpecialistKinds,
+        runStage: stage,
+      });
+      group = buildParallelGroupStates({ parallelGroupId }).at(0) || null;
+      rebuttalByKind = group?.councilRounds?.rebuttal?.latestByKind || new Map();
+    }
+
+    const rebuttalRuns = parallelSpecialistKinds
+      .map((specialistKind) => rebuttalByKind.get(specialistKind))
+      .filter((run) => normalizeAgentRunStatus(run?.status) === 'completed');
+    if (rebuttalRuns.length !== parallelSpecialistKinds.length) {
+      return {
+        failure: finalizeMissionFailure({
+          artifactPath: rebuttalRuns.at(-1) ? getRunArtifact(rebuttalRuns.at(-1))?.path || null : null,
+          currentStage: 'specialist',
+          mission,
+          providerId,
+          session,
+        }),
+      };
+    }
+
+    const rebuttals = rebuttalRuns.map((run) =>
+      createCouncilStatement({
+        ...buildCouncilStatementRecord(run),
+        brief: persistedBrief,
+        frame: persistedFrame,
+        openings,
+      }));
+    const synthesisMetadata = createCouncilSynthesisInput({
+      brief: persistedBrief,
+      frame: persistedFrame,
+      openings,
+      rebuttals,
+    });
+    const councilSynthesisInput = {
+      brief: persistedBrief,
+      metadata: synthesisMetadata,
+      rebuttals: rebuttals.map((record) => ({
+        councilStatement: record.councilStatement,
+        metadata: record.metadata,
+        runId: record.runId,
+      })),
+    };
+    const chairPreviousOutputs = Object.freeze({
+      manager: {
+        summaryText: managerStage.output.summaryText,
+      },
+      planner: {
+        adaptationNotes: [],
+        planSteps: ensureArray(plannerStage.output.planSteps),
+        summaryText: plannerStage.output.summaryText,
+      },
+    });
+
+    harness.updateSession(session.id, {
+      currentStage: 'executor',
+    });
+
+    const executorResult = await runRequiredMissionStage({
+      currentStage: 'executor',
+      stageRequest: buildMissionStageRequest({
+        context: stageContext,
+        role: 'executor',
+        stageOptions: {
+          attachments: [],
+          councilBrief: persistedBrief,
+          councilFrame: persistedFrame,
+          councilOpenings: openings,
+          councilRebuttals: rebuttals,
+          councilSynthesisInput,
+          memoryEntries: [],
+          previousOutputs: chairPreviousOutputs,
+          runMetadata: buildParallelStageMetadata({
+            councilMetadata: {
+              ...synthesisMetadata,
+              councilFrame: persistedFrame,
+            },
+            parallelGroupId,
+            parallelPlan,
+            parallelSpecialistKinds,
+            parentRunId: plannerStage.run.id,
+            stageKind: 'parallel-merge',
+          }),
+          skipRetrieval: true,
+          userLearningSelectionOverrides: [],
+          workspaceLearningSelectionOverrides: [],
+        },
+      }),
+    });
+    if (executorResult.failure) {
+      return executorResult;
+    }
+
+    const executorStage = executorResult.stage;
+    const synthesis = buildCouncilSynthesisRecord(executorStage.run);
+    const manifest = createCouncilManifest({
+      brief: persistedBrief,
+      frame: persistedFrame,
+      openings,
+      rebuttals,
+      synthesis,
+    });
+    const manifestArtifact = harness.writeArtifact({
+      content: formatCouncilRecord(manifest),
+      fileName: 'council-manifest.json',
+      kind: 'council-manifest',
+      metadata: {
+        councilId,
+        manifestDigest: manifest.manifestDigest,
+        parallelGroupId,
+      },
+      missionId: mission.id,
+      role: 'executor',
+      sessionId: session.id,
+      title: 'Council Manifest',
+    });
+    const persistedManifest = parseCouncilRecord(
+      fileSystem.readFileSync(manifestArtifact.path, 'utf8'),
+      'council manifest artifact',
+    );
+    const validation = validateCouncilManifest({
+      brief: persistedBrief,
+      frame: persistedFrame,
+      manifest: persistedManifest,
+      openings,
+      rebuttals,
+      synthesis,
+    });
+    const finalizedExecutorRun = store.updateAgentRun(executorStage.run.id, (current) => ({
+      ...current,
+      artifactIds: [
+        ...new Set([
+          ...ensureArray(current.artifactIds),
+          frameArtifact.id,
+          briefArtifact.id,
+          manifestArtifact.id,
+        ]),
+      ],
+      councilManifestDigest: manifest.manifestDigest,
+      councilValidation: validation,
+    }));
+
+    if (!validation.ok) {
+      if (validation.status === 'blocked') {
+        const criticalIds = new Set(validation.unresolvedCriticalConflictIds);
+        for (const rebuttal of rebuttals) {
+          if (!rebuttal.councilStatement.claims.some((claim) => criticalIds.has(claim.id))) {
+            continue;
+          }
+          store.updateAgentRun(rebuttal.runId, (current) => ({
+            ...current,
+            mergeStatus: 'pending',
+            outputSummary: 'Council critical conflict requires specialist follow-up before reviewer handoff.',
+            status: 'blocked',
+          }));
+        }
+      } else {
+        store.updateAgentRun(finalizedExecutorRun.id, (current) => ({
+          ...current,
+          outputSummary: validation.detail || 'Council evidence validation failed.',
+          status: 'failed',
+        }));
+      }
+
+      return {
+        failure: finalizeMissionFailure({
+          artifactPath: executorStage.artifact.path,
+          currentStage: validation.status === 'blocked' ? 'specialist' : 'executor',
+          mission,
+          providerId,
+          session,
+        }),
+      };
+    }
+
+    markParallelGroupBranchesMerged(parallelGroupId);
+    previousOutputs.executor = executorStage.output;
+
+    return {
+      executorStage: {
+        ...executorStage,
+        run: finalizedExecutorRun,
+      },
+    };
+  }
+
   async function runMissionAttempt(missionId, options = {}) {
     const mission = getMission(missionId);
     const workspace = getWorkspace(mission.workspaceId);
     const providerId = normalizeText(options.provider) || providerRegistry.getDefaultProviderId();
     const explicitProviderSelection = Boolean(options.providerSpecified);
+    const parallelPlan = resolveMissionParallelPlan(mission);
+    const councilEnabled = parallelPlan.orchestrationProfile?.councilMode === 'two-round';
+
+    if (councilEnabled && providerId !== 'stub') {
+      throw new Error(
+        `Orchestration profile ${parallelPlan.orchestrationProfile.id} currently requires the explicit stub provider.`,
+      );
+    }
+
     const provider = providerRegistry.getProvider(providerId);
 
     if (!provider.implemented) {
@@ -1226,7 +1940,6 @@ export function createMissionRunService({
       learningCandidates: store.listLearningCandidates(),
       observedAt: userLearningClock(),
     });
-    const parallelPlan = resolveMissionParallelPlan(mission);
     const parallelSpecialistKinds = parallelPlan.effectiveKinds;
     const previousParallelGroup = parallelSpecialistKinds.length >= 2 ? getLatestParallelGroupState(mission.id) : null;
     const shouldRunParallelSpecialists = parallelSpecialistKinds.length >= 2;
@@ -1268,7 +1981,8 @@ export function createMissionRunService({
     if (managerResult.failure) {
       return managerResult.failure;
     }
-    previousOutputs.manager = managerResult.stage.output;
+    const managerStage = managerResult.stage;
+    previousOutputs.manager = managerStage.output;
 
     harness.updateSession(session.id, {
       currentStage: 'planner',
@@ -1288,7 +2002,31 @@ export function createMissionRunService({
     let executorArtifactPath = null;
     let executorOutput = null;
 
-    if (shouldRunParallelSpecialists) {
+    if (shouldRunParallelSpecialists && councilEnabled) {
+      const councilResult = await runCouncilMissionStages({
+        attachments,
+        managerStage,
+        memoryEntries,
+        mission,
+        pack,
+        parallelPlan,
+        parallelSpecialistKinds,
+        plannerStage,
+        previousOutputs,
+        providerId,
+        session,
+        stageContext,
+        workspace,
+      });
+      if (councilResult.failure) {
+        return councilResult.failure;
+      }
+
+      const executorStage = councilResult.executorStage;
+      executorArtifactPath = executorStage.artifact.path;
+      executorOutput = executorStage.output;
+      previousOutputs.executor = executorStage.output;
+    } else if (shouldRunParallelSpecialists) {
       const parallelGroupId =
         previousParallelGroup && !previousParallelGroup.wasMerged
           ? previousParallelGroup.parallelGroupId

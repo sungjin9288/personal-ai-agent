@@ -233,12 +233,24 @@ export function buildSpecialistFollowUpActionItem({
   status,
   workspace,
 }) {
+  const councilMetadata = run?.councilId
+    ? {
+        councilId: normalizeText(run.councilId),
+        councilPhase: normalizeText(run.councilPhase) || null,
+        councilRound: normalizeText(run.councilRound) || null,
+        councilSeatId: normalizeText(run.councilSeatId) || null,
+        outputDigest: normalizeText(run.outputDigest) || null,
+        parentRunIds: Array.isArray(run.parentRunIds) ? [...run.parentRunIds] : [],
+        sourceDigest: normalizeText(run.sourceDigest) || null,
+      }
+    : {};
   const baseItem = addOperationalMetadata(
     addDispatchMetadata(
       {
         actionClass: 'specialist-follow-up-required',
         actionId,
         actionType: 'specialist-follow-up',
+        ...councilMetadata,
         createdAt,
         deliverableType: mission.deliverableType,
         followUpSource,

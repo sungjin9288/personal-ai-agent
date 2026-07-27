@@ -113,6 +113,31 @@ function formatContextBoundary() {
   ].join('\n');
 }
 
+function formatCouncilContext({ councilBrief, councilFrame, councilSynthesisInput }) {
+  const context = councilSynthesisInput || councilBrief || councilFrame;
+  if (!context) {
+    return '';
+  }
+
+  return `## Council Context
+\`\`\`json
+${JSON.stringify(context, null, 2)}
+\`\`\``;
+}
+
+function buildCouncilPromptContext(input) {
+  const opening = input.councilPhase === 'opening-position';
+  const seat = opening ? '' : `\n## Council Seat\n- id: ${input.councilSeatId || 'chair'}\n`;
+
+  return `## Council Phase
+- phase: ${input.councilPhase}
+
+## Context Boundary
+${formatContextBoundary()}
+${seat}
+${formatCouncilContext(input)}`.trim();
+}
+
 function formatSessionSourceContext(sourceContext = {}) {
   const sourceType = sourceContext.sourceType || 'service';
   const lines = [
@@ -152,6 +177,9 @@ function buildPromptContext({
   memoryEntries,
   retrievalContext,
   previousOutputs,
+  councilBrief,
+  councilFrame,
+  councilSynthesisInput,
   parallelGroupId,
   parallelRequiredKinds,
   resumeFromRunId,
@@ -202,6 +230,11 @@ function buildPromptContext({
     specialistMergeMode,
     workspace,
   });
+  const councilContext = formatCouncilContext({
+    councilBrief,
+    councilFrame,
+    councilSynthesisInput,
+  });
 
   return `## Mission
 - id: ${mission.id}
@@ -251,6 +284,8 @@ ${specialistSummary}
 ${specialistArtifacts}
 
 ${specialistContext}
+
+${councilContext}
 
 ${previousOutputSummary}`.trim();
 }
@@ -363,16 +398,25 @@ ${renderMissionQualityGateSection({ mission, workspace, pack, planSteps: uniqueP
   };
 }
 
-function buildExecutorOutput({
-  mission,
-  workspace,
-  pack,
-  previousOutputs,
-  memoryEntries,
-  attachments = [],
-  userLearningSelection,
-  workspaceLearningSelection,
-}) {
+function buildExecutorOutput(input) {
+  const {
+    mission,
+    workspace,
+    pack,
+    previousOutputs,
+    memoryEntries,
+    attachments = [],
+    councilSynthesisInput = null,
+    userLearningSelection,
+    workspaceLearningSelection,
+  } = input;
+  if (councilSynthesisInput) {
+    return buildCouncilExecutorOutput(
+      buildCouncilExecutorBaseOutput(input.councilRuntime),
+      councilSynthesisInput,
+    );
+  }
+
   const forceReviewerFail = mission.constraints.includes('force-reviewer-fail');
   const forceRubricFail = mission.constraints.includes('force-rubric-fail');
   const planSteps = previousOutputs.planner ? previousOutputs.planner.planSteps : pack.plannerGuidance;
@@ -414,7 +458,7 @@ function buildExecutorOutput({
     workspace,
   })}`;
 
-  return {
+  const output = {
     type: 'executor',
     summaryText: `Executor produced a ${pack.deliverableType} draft for ${mission.title}${
       adaptationNotes.length ? ' using prior mission memory' : ''
@@ -437,9 +481,79 @@ function buildExecutorOutput({
       ? 'Pause for approval before any workspace mutation.'
       : 'Share the draft with the owner and collect follow-up decisions.',
   };
+
+  return output;
+}
+
+function buildCouncilExecutorBaseOutput(runtime = {}) {
+  return {
+    adaptationNotes: [],
+    artifactContent: runtime.artifactContent,
+    artifactFileName: runtime.artifactFileName,
+    artifactTitle: runtime.artifactTitle,
+    executionManifest: {},
+    nextAction: runtime.nextAction,
+    proposedAction: runtime.proposedAction,
+    summaryText: `Executor produced a ${runtime.deliverableType} draft for the current council mission.`,
+    type: 'executor',
+  };
+}
+
+function buildCouncilExecutorOutput(output, synthesisInput) {
+  const openingClaims = synthesisInput.brief?.claims || [];
+  const rebuttalClaims = (synthesisInput.rebuttals || [])
+    .flatMap((record) => record.councilStatement?.claims || []);
+  const challengeClaims = rebuttalClaims.filter((claim) => claim.position === 'challenge');
+  const agreementIds = rebuttalClaims
+    .filter((claim) => claim.position === 'support')
+    .map((claim) => claim.id)
+    .sort();
+  const acceptedClaimIds = openingClaims.map((claim) => claim.id).sort();
+  const unresolvedConflictIds = challengeClaims.map((claim) => claim.id).sort();
+  const unresolvedCriticalConflictIds = challengeClaims
+    .filter((claim) => claim.severity === 'critical')
+    .map((claim) => claim.id)
+    .sort();
+  const promotedClaims = [...openingClaims, ...rebuttalClaims.filter((claim) => agreementIds.includes(claim.id))];
+  const evidenceRefs = [...new Set(promotedClaims.flatMap((claim) => claim.evidenceRefs || []))].sort();
+  const councilSynthesis = {
+    acceptedClaimIds,
+    agreementIds,
+    evidenceRefs,
+    nextAction: output.nextAction,
+    nextOwner: 'workspace-owner',
+    rejectedClaims: [],
+    unresolvedConflictIds,
+    unresolvedCriticalConflictIds,
+    verificationPlan: [
+      'Recompute every council digest and reject stale or foreign evidence before reviewer handoff.',
+    ],
+  };
+  const artifactContent = `${output.artifactContent.trim()}
+
+## Council Decision
+- accepted claims: ${acceptedClaimIds.join(', ') || 'none'}
+- agreements: ${agreementIds.join(', ') || 'none'}
+- unresolved conflicts: ${unresolvedConflictIds.join(', ') || 'none'}
+- unresolved critical conflicts: ${unresolvedCriticalConflictIds.join(', ') || 'none'}
+
+## Council Evidence
+${joinBullets(evidenceRefs, 'No council evidence reference was promoted.')}
+`;
+
+  return {
+    ...output,
+    artifactContent,
+    councilSynthesis,
+    summaryText: `${output.summaryText} Council chair synthesis recorded ${acceptedClaimIds.length} accepted claims.`,
+  };
 }
 
 function buildSpecialistOutput(input) {
+  if (input.councilPhase) {
+    return buildCouncilSpecialistOutput(input);
+  }
+
   const baseOutput = buildExecutorOutput(input);
   const specialistKind = input.specialistKind || 'implementation';
   const title = `${specialistKind[0].toUpperCase()}${specialistKind.slice(1)} Specialist Draft`;
@@ -469,6 +583,105 @@ function buildSpecialistOutput(input) {
     artifactContent: `${baseOutput.artifactContent.trim()}\n\n## Specialist Role\n- kind: ${specialistKind}\n\n## Specialist Handoff\n- current state: ${specialistHandoff.currentState}\n\n## Deliverables\n${joinBullets(specialistHandoff.deliverables, 'No deliverables recorded.')}\n\n## Acceptance Criteria\n${joinBullets(specialistHandoff.acceptanceCriteria, 'No acceptance criteria recorded.')}\n\n## Evidence\n${joinBullets(specialistHandoff.evidence, 'No evidence recorded.')}\n\n## Blockers\n${joinBullets(specialistHandoff.blockers, 'No blockers recorded.')}\n\n## Next Handoff\n- target role: ${specialistHandoff.nextHandoff.targetRole}\n- recommended owner: ${specialistHandoff.nextHandoff.recommendedOwner}\n- request: ${specialistHandoff.nextHandoff.request}\n`,
     specialistHandoff,
     summaryText: `${title} generated for ${input.mission.title}.`,
+    type: 'specialist',
+  };
+}
+
+function buildCouncilSpecialistOutput(input) {
+  const specialistKind = input.specialistKind || 'implementation';
+  const opening = input.councilPhase === 'opening-position';
+  const criticalOpening =
+    opening &&
+    specialistKind === 'research' &&
+    (input.councilFrame?.riskSignals || []).includes('critical-conflict');
+  const criticalTarget = opening || specialistKind !== 'verification'
+    ? null
+    : (input.councilBrief?.claims || []).find(
+        (claim) => claim.seatId !== specialistKind && claim.severity === 'critical',
+      ) || null;
+  const evidenceRefs = opening
+    ? (input.councilFrame?.evidenceCatalog || []).map((item) => item.id)
+    : input.councilBrief?.evidenceRefs || [];
+  const targetClaimIds = opening
+    ? []
+    : criticalTarget
+      ? [criticalTarget.id]
+      : (input.councilBrief?.claims || [])
+          .filter((claim) => claim.seatId !== specialistKind)
+          .map((claim) => claim.id)
+          .sort();
+  const criticalChallenge = Boolean(criticalTarget);
+  const criticalClaim = criticalOpening || criticalChallenge;
+  const claimId = `${specialistKind}:claim-${opening ? 1 : 2}`;
+  const position = criticalChallenge ? 'challenge' : 'support';
+  const summary = criticalOpening
+    ? `${specialistKind} found a frame-bound critical risk that requires council review.`
+    : opening
+      ? `${specialistKind} proposes one evidence-bound position for the current council mission.`
+    : criticalChallenge
+      ? `${specialistKind} challenges critical opening claim ${criticalTarget.id} and requires owner resolution.`
+      : `${specialistKind} supports the other opening positions after bounded review.`;
+  const nextAction = criticalChallenge
+    ? 'Resolve the critical verification conflict before reviewer handoff.'
+    : opening
+      ? 'Wait for every required opening before the CouncilBrief is created.'
+      : 'Send this rebuttal to the chair synthesis gate.';
+  const councilStatement = {
+    claims: [{
+      evidenceRefs,
+      id: claimId,
+      position,
+      severity: criticalClaim ? 'critical' : 'normal',
+      summary,
+    }],
+    nextAction,
+    rejectedOptionIds: [],
+    targetClaimIds,
+  };
+  const specialistHandoff = {
+    acceptanceCriteria: [
+      `The ${specialistKind} statement keeps bounded claims and allowlisted evidence references.`,
+      opening
+        ? 'No other opening statement is visible in the opening input.'
+        : 'Only the immutable CouncilBrief is used for cross-review.',
+    ],
+    blockers: criticalChallenge ? [summary] : [],
+    currentState: summary,
+    deliverables: [`${input.councilPhase} statement ${claimId}`],
+    evidence: evidenceRefs.length ? evidenceRefs : ['No evidence reference was available.'],
+    nextHandoff: {
+      recommendedOwner: 'workspace-owner',
+      request: nextAction,
+      targetRole: opening ? 'council-brief' : 'manager-merge',
+    },
+  };
+  const artifactTitle = `${specialistKind} council ${opening ? 'opening' : 'rebuttal'}`;
+  const artifactContent = `# ${artifactTitle}
+
+## Claim
+- id: ${claimId}
+- position: ${position}
+- severity: ${criticalClaim ? 'critical' : 'normal'}
+- summary: ${summary}
+
+## Evidence
+${joinBullets(evidenceRefs, 'No evidence reference was available.')}
+
+## Targets
+${joinBullets(targetClaimIds, 'This opening does not target another claim.')}
+
+## Next Action
+- ${nextAction}
+`;
+
+  return {
+    artifactContent,
+    artifactFileName: `council-${specialistKind}-${opening ? 'opening' : 'rebuttal'}.md`,
+    artifactTitle,
+    councilStatement,
+    nextAction,
+    specialistHandoff,
+    summaryText: summary,
     type: 'specialist',
   };
 }
@@ -536,7 +749,9 @@ export function createStubProvider({ rootDir }) {
     implemented: true,
     preparePrompt(input) {
       const template = loadAgentTemplate({ rootDir, role: input.role });
-      const context = buildPromptContext(input);
+      const context = input.councilPhase
+        ? buildCouncilPromptContext(input)
+        : buildPromptContext(input);
 
       return `${template.trim()}
 

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-27T00:41:35.296Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-27T00:41:34.337Z
 - localDate: 2026-07-27
 - branch: codex/council-contract-stub-runtime
 - commit: ccf76cf7a5220eb821cf9aeb57a772229767e3ef
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ccf76cf7a5220eb821cf9aeb57a772229767e3ef](releases/execution-v1/ccf76cf7a5220eb821cf9aeb57a772229767e3ef)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ccf76cf7a5220eb821cf9aeb57a772229767e3ef/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ccf76cf7a5220eb821cf9aeb57a772229767e3ef/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ccf76cf7a5220eb821cf9aeb57a772229767e3ef](docs/releases/execution-v1/ccf76cf7a5220eb821cf9aeb57a772229767e3ef)
 - visualArtifactSetSha256: 77432a0992a5e3ef43a032b75314e2fc34d856eac34599acfd026d5a549d13a9
 - commitPushStatus: not pushed, origin/codex/council-contract-stub-runtime not found
 - liveValidationMode: archived-preserved-not-rerun

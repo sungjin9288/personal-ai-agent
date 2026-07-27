@@ -80,7 +80,7 @@ export function createRuntimeHarness({ store }) {
     return nextRun;
   }
 
-  function writeArtifact({ missionId, sessionId, role, kind, fileName, title, content }) {
+  function writeArtifact({ missionId, sessionId, role, kind, fileName, title, content, metadata = {} }) {
     const artifactPath = store.writeArtifactContent({
       missionId,
       sessionId,
@@ -96,6 +96,7 @@ export function createRuntimeHarness({ store }) {
       kind,
       title,
       fileName,
+      ...(Object.keys(metadata).length ? { metadata: { ...metadata } } : {}),
       path: artifactPath,
       createdAt: now(),
     });
