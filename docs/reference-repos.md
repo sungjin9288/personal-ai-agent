@@ -67,6 +67,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - borrowed: independently framed worker contributions, mandatory plan/final review, explicit conflict escalation, structured worker brief, contribution-level PASS/FIX/ESCALATE, and artifact digest audit ideas
 - rejected for now: Python·Streamlit·AutoGen·Together runtime vendoring, fixed paid model routes, `dangerously-skip-permissions`, static trust score as authorization, majority aggregation, and agent-owned execution approval
 - 2026-07-27 status: C1 implemented the patterns as an opt-in deterministic two-round stub council inside the existing Node mission runtime; fixed roster, independent openings, allowlisted rebuttals, evidence-bound synthesis, and reviewer-before-approval ordering are verified without adding an external package, model, provider call, or upstream code
+- 2026-07-27 quality status: C3 kept the council opt-in after same-fixture replay exposed a reviewer false pass, unsupported-claim non-comparability, and 34 candidate stages versus 26 baseline stages; synthetic conflict routing alone did not authorize default promotion
 
 ### ui-skills
 - source: https://github.com/ibelick/ui-skills

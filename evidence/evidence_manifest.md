@@ -63,6 +63,7 @@
 - `evidence/output-artifacts/local-reranker-resource-envelope.json`
 - `evidence/output-artifacts/local-reranker-runtime-stability.json`
 - `evidence/output-artifacts/local-relevance-shadow-integration.json`
+- `evidence/output-artifacts/council-quality-comparison.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache.json`
@@ -163,6 +164,7 @@
 - Local reranker resource envelope: verified with `npm run smoke:local-reranker-resource-envelope`
 - Local reranker runtime stability: verified with `npm run smoke:local-reranker-runtime-stability`
 - Local relevance shadow integration: verified with `npm run smoke:local-relevance-shadow-integration`
+- Council quality comparison: verified with `npm run smoke:council-quality-comparison`; baseline retained and default council promotion denied
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
 - Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`

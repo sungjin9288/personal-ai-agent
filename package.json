@@ -378,6 +378,8 @@
     "smoke:orchestration-profiles": "node scripts/smoke-orchestration-profiles.mjs",
     "smoke:council-stub-runtime": "node scripts/smoke-council-stub-runtime.mjs",
     "smoke:ui-council-board": "node scripts/smoke-ui-council-board.mjs",
+    "evaluate:council-quality-comparison": "node scripts/evaluate-council-quality-comparison.mjs --output evidence/output-artifacts/council-quality-comparison.json",
+    "smoke:council-quality-comparison": "node scripts/smoke-council-quality-comparison.mjs",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
     "smoke:specialist-follow-up-reminders": "node scripts/smoke-specialist-follow-up-reminders.mjs",

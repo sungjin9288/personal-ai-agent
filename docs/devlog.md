@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-27 Council Quality Comparison and Baseline Retention
+
+- replayed four identical public synthetic cases through `knowledge-triad` and `knowledge-council-triad` twice in fresh stores, binding every persisted artifact to exact SHA-256 and byte length while comparing only allowlisted semantic fields across replays
+- recorded the critical-conflict result as synthetic routing proof, kept unsupported-claim assessment `not-comparable`, preserved the missing-verification stop, and exposed a reviewer regression where the council changed an expected rubric failure into a pass
+- counted persisted `agentRuns` as stages and observed baseline 26 versus council 34 across the case set
+- kept `knowledge-triad` as the default, left council opt-in, denied default promotion, and retained zero approval, execution lease, external provider response, model download, actual user data, production dependency, and `productionReadyClaim: false`
+
 ## 2026-07-27 Read-only Council Deliberation Board
 
 - derived one council read model from the selected session's persisted run, artifact, reviewer, and approval records without adding an endpoint, payload field, storage change, provider call, or UI mutation
