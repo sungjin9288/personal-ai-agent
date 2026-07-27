@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-27T01:55:08.627Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-27T01:54:59.668Z
 - branch: codex/council-read-model-board
 - commit: 4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077

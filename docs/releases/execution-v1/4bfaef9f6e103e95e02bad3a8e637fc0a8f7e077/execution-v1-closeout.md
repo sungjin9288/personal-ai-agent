@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-27T01:55:08.627Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-27T01:54:59.750Z
 - branch: codex/council-read-model-board
 - commit: 4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077/execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
