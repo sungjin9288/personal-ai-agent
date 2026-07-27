@@ -25,7 +25,10 @@ import {
   validateCouncilManifest,
 } from './council-contract.mjs';
 import { buildRetrievalContextWithCorpus } from './retrieval-service.mjs';
-import { formatRetrievalArtifactContent } from './retrieval-artifacts.mjs';
+import {
+  formatRetrievalArtifactContent,
+  projectStoredRetrievalArtifactEvidence,
+} from './retrieval-artifacts.mjs';
 import {
   applyWorkspaceLearningSelection,
   buildWorkspaceLearningSelectionOverrides,
@@ -94,6 +97,53 @@ function ensureArray(value) {
 
 function ensureObject(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function buildCouncilRetrievalEvidenceEntry({ councilId, sessionId, stage, stageResult, workspaceId }) {
+  const artifact = stageResult?.retrievalArtifact || null;
+  const projection = projectStoredRetrievalArtifactEvidence(artifact, {
+    retrievalCorpusRecords: stageResult?.retrievalEvidenceLineage,
+    stageKey: stage,
+  });
+  return {
+    artifactDigest: projection.artifactDigest,
+    citations: projection.citations,
+    councilId,
+    id: `retrieval:${stage}:${artifact?.id || 'gap'}`,
+    kind: 'retrieval',
+    sessionId,
+    workspaceId,
+  };
+}
+
+function listCouncilSourceLimitations(frame) {
+  return ensureArray(frame?.evidenceCatalog)
+    .filter((entry) => entry?.kind === 'retrieval' && Array.isArray(entry.citations))
+    .flatMap((entry) => entry.citations)
+    .filter((citation) => ['degraded', 'gap'].includes(citation?.status))
+    .map((citation) => ({ citationId: normalizeText(citation.citationId), status: normalizeText(citation.status) }))
+    .filter((citation) => citation.citationId)
+    .sort((left, right) => left.citationId.localeCompare(right.citationId));
+}
+
+function applyCouncilSourceLimitations(output, frame) {
+  const limitations = listCouncilSourceLimitations(frame);
+  if (!limitations.length) {
+    return output;
+  }
+  const sourceVerificationAction = `Verify local retrieval sources before relying on ${limitations.map((item) => item.citationId).join(', ')}.`;
+  const nextAction = `${normalizeText(output.nextAction)} ${sourceVerificationAction}`.trim();
+  const limitationLines = limitations
+    .map((item) => `- ${item.citationId}: ${item.status} local retrieval provenance.`)
+    .join('\n');
+  return {
+    ...output,
+    artifactContent: `${String(output.artifactContent || '').trim()}\n\n## Council Source Limitations\n${limitationLines}\n`,
+    councilSynthesis: output.councilSynthesis
+      ? { ...output.councilSynthesis, nextAction }
+      : output.councilSynthesis,
+    nextAction,
+  };
 }
 
 function getLatestSession(sessions) {
@@ -1034,10 +1084,23 @@ export function createMissionRunService({
           }),
         })
       : null;
+    const retrievalEvidenceLineage = retrievalCorpusRecords.map((record) => ({
+      chunkCount: record.chunkCount,
+      chunkId: record.chunkId,
+      chunkIndex: record.chunkIndex,
+      contentHash: record.contentHash,
+      corpusId: record.corpusId,
+      revision: {
+        id: record.revision?.id,
+      },
+    }));
 
     try {
       const providerOutput = await provider.run(providerExecutionInput);
-      const normalizedOutput = provider.normalizeOutput(providerOutput, providerExecutionInput);
+      let normalizedOutput = provider.normalizeOutput(providerOutput, providerExecutionInput);
+      if (role === 'executor' && normalizeText(runMetadata.councilPhase) && councilFrame) {
+        normalizedOutput = applyCouncilSourceLimitations(normalizedOutput, councilFrame);
+      }
       const councilMetadata = normalizeText(runMetadata.councilPhase)
         ? {
             councilId: normalizeText(runMetadata.councilId),
@@ -1155,6 +1218,7 @@ export function createMissionRunService({
         error: null,
         promptArtifact,
         retrievalArtifact,
+        retrievalEvidenceLineage,
         run: completedRun,
         output: normalizedOutput,
       };
@@ -1209,6 +1273,7 @@ export function createMissionRunService({
         error: isProviderFailureError(error) ? error : error,
         promptArtifact,
         retrievalArtifact,
+        retrievalEvidenceLineage,
         run: failedRun,
         output: null,
       };
@@ -1529,6 +1594,20 @@ export function createMissionRunService({
           sessionId: session.id,
           workspaceId: workspace.id,
         },
+        buildCouncilRetrievalEvidenceEntry({
+          councilId,
+          sessionId: session.id,
+          stage: 'manager',
+          stageResult: managerStage,
+          workspaceId: workspace.id,
+        }),
+        buildCouncilRetrievalEvidenceEntry({
+          councilId,
+          sessionId: session.id,
+          stage: 'planner',
+          stageResult: plannerStage,
+          workspaceId: workspace.id,
+        }),
       ],
       parentRunId: plannerStage.run.id,
       riskSignals: ensureArray(mission.constraints).includes('council-critical-conflict')

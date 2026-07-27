@@ -6,6 +6,135 @@ function normalizeText(value, fallback = '') {
   return String(value || fallback).trim();
 }
 
+function isSha256(value) {
+  return /^[a-f0-9]{64}$/.test(normalizeText(value));
+}
+
+function isIsoTimestamp(value) {
+  const text = normalizeText(value);
+  return Boolean(text) && Number.isFinite(Date.parse(text));
+}
+
+function retrievalEvidenceCitationId({ artifactDigest, chunkId, index, stageKey }) {
+  const basis = [artifactDigest, chunkId || '', index || '', stageKey].join(':');
+  return `citation:${hashRetrievalContent(basis).slice(0, 32)}`;
+}
+
+function buildGapCitation(stageKey) {
+  return {
+    citationId: `citation:gap:${stageKey}`,
+    freshness: 'unknown',
+    sourceSpan: null,
+    status: 'gap',
+  };
+}
+
+function extractRetrievalArtifactBlocks(content) {
+  const blocks = String(content || '').split(/(?=^- \[(?:memory|attachment|fact)\] )/m);
+  return blocks.filter((block) => /^- \[(?:memory|attachment|fact)\] /m.test(block));
+}
+
+function readArtifactField(block, field) {
+  const match = String(block || '').match(new RegExp(`^  - ${field}:\\s*(.+)$`, 'm'));
+  return normalizeText(match?.[1]);
+}
+
+function readArtifactProvenance(block) {
+  const raw = readArtifactField(block, 'provenance');
+  if (!raw) {
+    return null;
+  }
+  try {
+    const value = JSON.parse(raw);
+    return value && typeof value === 'object' && !Array.isArray(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function buildProjectedCitation({ artifactDigest, block, index, retrievalCorpusRecords, stageKey }) {
+  const corpusId = readArtifactField(block, 'corpusId');
+  const chunkId = readArtifactField(block, 'chunkId');
+  const contentHash = readArtifactField(block, 'contentHash');
+  const snippet = readArtifactField(block, 'snippet');
+  const snippetHash = readArtifactField(block, 'snippetHash');
+  const revisionId = readArtifactField(block, 'revision');
+  const provenance = readArtifactProvenance(block);
+  const sourceUpdatedAt = normalizeText(provenance?.sourceUpdatedAt || provenance?.sourceCreatedAt) || null;
+  const corpusRecord = retrievalCorpusRecords.find((record) => normalizeText(record?.chunkId) === chunkId);
+  const chunkIndex = Number(corpusRecord?.chunkIndex);
+  const chunkCount = Number(corpusRecord?.chunkCount);
+  const available =
+    /^corpus-[a-f0-9]{64}$/.test(corpusId) &&
+    /^chunk-[a-f0-9]{64}$/.test(chunkId) &&
+    isSha256(contentHash) &&
+    isSha256(snippetHash) &&
+    hashRetrievalContent(snippet) === snippetHash &&
+    /^revision-[a-f0-9]{64}$/.test(revisionId) &&
+    normalizeText(corpusRecord?.corpusId) === corpusId &&
+    normalizeText(corpusRecord?.contentHash) === contentHash &&
+    normalizeText(corpusRecord?.revision?.id) === revisionId &&
+    Number.isInteger(chunkIndex) &&
+    chunkIndex > 0 &&
+    Number.isInteger(chunkCount) &&
+    chunkCount >= chunkIndex;
+
+  return {
+    citationId: retrievalEvidenceCitationId({ artifactDigest, chunkId, index, stageKey }),
+    freshness: isIsoTimestamp(sourceUpdatedAt) ? 'known' : 'unknown',
+    sourceSpan: available
+      ? { chunkId, contentHash, corpusId, count: chunkCount, index: chunkIndex, revisionId, snippetHash }
+      : null,
+    status: available ? 'available' : 'degraded',
+  };
+}
+
+export function projectStoredRetrievalArtifactEvidence(
+  artifact,
+  { retrievalCorpusRecords = [], stageKey = 'stage' } = {},
+) {
+  const normalizedStageKey = normalizeText(stageKey, 'stage').replace(/[^a-z0-9-]/gi, '-').slice(0, 40) || 'stage';
+  if (!artifact?.path || !fs.existsSync(artifact.path)) {
+    return {
+      artifactDigest: null,
+      citations: [buildGapCitation(normalizedStageKey)],
+    };
+  }
+
+  const content = fs.readFileSync(artifact.path, 'utf8');
+  const artifactDigest = `sha256:${hashRetrievalContent(content)}`;
+  const blocks = extractRetrievalArtifactBlocks(content);
+  if (!blocks.length) {
+    const status = /- no retrieval snippets selected\s*$/m.test(content) ? 'gap' : 'degraded';
+    return {
+      artifactDigest,
+      citations: status === 'gap'
+        ? [buildGapCitation(normalizedStageKey)]
+        : [
+            {
+              citationId: retrievalEvidenceCitationId({ artifactDigest, index: 1, stageKey: normalizedStageKey }),
+              freshness: 'unknown',
+              sourceSpan: null,
+              status: 'degraded',
+            },
+          ],
+    };
+  }
+
+  return {
+    artifactDigest,
+    citations: blocks
+      .slice(0, 6)
+      .map((block, index) => buildProjectedCitation({
+        artifactDigest,
+        block,
+        index: index + 1,
+        retrievalCorpusRecords,
+        stageKey: normalizedStageKey,
+      })),
+  };
+}
+
 function getRetrievalSourceCompareKey(sourceType, sourceLabel) {
   return `${normalizeText(sourceType)}:${normalizeText(sourceLabel)}`;
 }

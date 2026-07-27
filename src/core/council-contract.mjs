@@ -8,6 +8,7 @@ const MAX_EVIDENCE_REFS = 6;
 const MAX_TEXT_LENGTH = 600;
 const MAX_VERIFICATION_STEPS = 6;
 const DIGEST_PATTERN = /^sha256:[a-f0-9]{64}$/;
+const HASH_PATTERN = /^[a-f0-9]{64}$/;
 const CLAIM_ID_PATTERN = /^(research|implementation|verification):claim-[1-9][0-9]*$/;
 const COUNCIL_RISK_SIGNALS = Object.freeze(['critical-conflict']);
 
@@ -135,12 +136,79 @@ function assertSameValue(actual, expected, label) {
   }
 }
 
+function normalizeResearchCitation(value) {
+  assertExactKeys(value, ['citationId', 'freshness', 'sourceSpan', 'status'], 'retrieval evidence citation');
+  const citationId = normalizeText(value.citationId, 'retrieval citation id', { maxLength: 80 });
+  if (!/^citation:(?:[a-f0-9]{32}|gap:[a-z0-9-]{1,40})$/.test(citationId)) {
+    fail('invalid-evidence', `Invalid retrieval citation id: ${citationId}.`);
+  }
+  const status = normalizeText(value.status, 'retrieval citation status', { maxLength: 20 });
+  if (!['available', 'degraded', 'gap'].includes(status)) {
+    fail('invalid-evidence', `Unsupported retrieval citation status: ${status}.`);
+  }
+  const freshness = normalizeText(value.freshness, 'retrieval citation freshness', { maxLength: 20 });
+  if (!['known', 'unknown'].includes(freshness)) {
+    fail('invalid-evidence', `Unsupported retrieval freshness: ${freshness}.`);
+  }
+
+  let sourceSpan = null;
+  if (value.sourceSpan !== null) {
+    assertExactKeys(
+      value.sourceSpan,
+      ['chunkId', 'contentHash', 'corpusId', 'count', 'index', 'revisionId', 'snippetHash'],
+      'retrieval citation source span',
+    );
+    sourceSpan = {
+      chunkId: normalizeText(value.sourceSpan.chunkId, 'retrieval source span chunkId', { maxLength: 80 }),
+      contentHash: normalizeText(value.sourceSpan.contentHash, 'retrieval source span contentHash', { maxLength: 80 }),
+      corpusId: normalizeText(value.sourceSpan.corpusId, 'retrieval source span corpusId', { maxLength: 80 }),
+      count: Number(value.sourceSpan.count),
+      index: Number(value.sourceSpan.index),
+      revisionId: normalizeText(value.sourceSpan.revisionId, 'retrieval source span revisionId', { maxLength: 80 }),
+      snippetHash: normalizeText(value.sourceSpan.snippetHash, 'retrieval source span snippetHash', { maxLength: 80 }),
+    };
+    if (
+      !/^corpus-[a-f0-9]{64}$/.test(sourceSpan.corpusId) ||
+      !/^chunk-[a-f0-9]{64}$/.test(sourceSpan.chunkId) ||
+      !HASH_PATTERN.test(sourceSpan.contentHash) ||
+      !HASH_PATTERN.test(sourceSpan.snippetHash) ||
+      !/^revision-[a-f0-9]{64}$/.test(sourceSpan.revisionId) ||
+      !Number.isInteger(sourceSpan.index) ||
+      sourceSpan.index < 1 ||
+      !Number.isInteger(sourceSpan.count) ||
+      sourceSpan.count < sourceSpan.index
+    ) {
+      fail('invalid-evidence', 'Retrieval source span is invalid.');
+    }
+  }
+  if ((status === 'available') !== Boolean(sourceSpan)) {
+    fail('invalid-evidence', 'Only available retrieval citations may include a source span.');
+  }
+  if (status === 'gap' && citationId.startsWith('citation:gap:') === false) {
+    fail('invalid-evidence', 'Gap retrieval citations must use the citation:gap: prefix.');
+  }
+  if (status !== 'gap' && citationId.startsWith('citation:gap:')) {
+    fail('invalid-evidence', 'Only gap retrieval citations may use the citation:gap: prefix.');
+  }
+  return { citationId, freshness, sourceSpan, status };
+}
+
+function isCitableEvidence(item) {
+  return item.kind !== 'retrieval' || !Array.isArray(item.citations) || item.citations.some((citation) => citation.status === 'available');
+}
+
+function citableEvidenceIds(frame) {
+  return new Set(frame.evidenceCatalog.filter(isCitableEvidence).map((item) => item.id));
+}
+
 function normalizeEvidenceCatalog(frameInput) {
   if (!Array.isArray(frameInput.evidenceCatalog)) {
     fail('invalid-field', 'evidenceCatalog must be an array.');
   }
   const refs = frameInput.evidenceCatalog.map((item) => {
-    assertExactKeys(item, ['councilId', 'id', 'kind', 'sessionId', 'workspaceId'], 'evidence catalog entry');
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      fail('invalid-field', 'evidence catalog entry must be an object.');
+    }
     const id = normalizeText(item.id, 'evidence catalog id', { maxLength: 200 });
     const kind = normalizeText(item.kind, 'evidence catalog kind', { maxLength: 20 });
     if (!['artifact', 'retrieval'].includes(kind)) {
@@ -149,16 +217,39 @@ function normalizeEvidenceCatalog(frameInput) {
     if (!id.startsWith(`${kind}:`)) {
       fail('invalid-evidence', `Evidence catalog id ${id} must use the ${kind}: prefix.`);
     }
-    return {
+    const base = {
       councilId: normalizeText(item.councilId, 'evidence catalog councilId', { maxLength: 120 }),
       id,
       kind,
       sessionId: normalizeText(item.sessionId, 'evidence catalog sessionId', { maxLength: 120 }),
       workspaceId: normalizeText(item.workspaceId, 'evidence catalog workspaceId', { maxLength: 120 }),
     };
+    const legacyKeys = ['councilId', 'id', 'kind', 'sessionId', 'workspaceId'];
+    if (kind !== 'retrieval' || Object.keys(item).length === legacyKeys.length) {
+      assertExactKeys(item, legacyKeys, 'evidence catalog entry');
+      return base;
+    }
+    assertExactKeys(item, ['artifactDigest', 'citations', ...legacyKeys], 'enriched retrieval evidence catalog entry');
+    const artifactDigest = item.artifactDigest === null ? null : assertDigest(item.artifactDigest, 'retrieval artifactDigest');
+    if (!Array.isArray(item.citations) || !item.citations.length || item.citations.length > MAX_EVIDENCE_REFS) {
+      fail('invalid-evidence', `retrieval citations must contain between 1 and ${MAX_EVIDENCE_REFS} items.`);
+    }
+    const citations = item.citations.map(normalizeResearchCitation)
+      .sort((left, right) => left.citationId.localeCompare(right.citationId));
+    if (new Set(citations.map((citation) => citation.citationId)).size !== citations.length) {
+      fail('duplicate-evidence', 'retrieval citations contain duplicate citation ids.');
+    }
+    if (citations.some((citation) => citation.status !== 'gap') && !artifactDigest) {
+      fail('invalid-evidence', 'available or degraded retrieval citations require an artifactDigest.');
+    }
+    return { ...base, artifactDigest, citations };
   });
   if (new Set(refs.map((item) => item.id)).size !== refs.length) {
     fail('duplicate-evidence', 'evidenceCatalog contains duplicate ids.');
+  }
+  const citationIds = refs.flatMap((item) => item.citations?.map((citation) => citation.citationId) || []);
+  if (new Set(citationIds).size !== citationIds.length) {
+    fail('duplicate-evidence', 'evidenceCatalog contains duplicate retrieval citation ids.');
   }
   return refs.sort((left, right) => left.id.localeCompare(right.id));
 }
@@ -507,7 +598,7 @@ function normalizeStatementRecord(input, { frame, brief = null, openings = [] })
   const metadata = normalizeMetadata(input.metadata, expectedMetadata);
   const knownClaims = round === 'rebuttal' ? indexClaims(openings) : new Map();
   const councilStatement = normalizeStatement(input.councilStatement, {
-    evidenceIds: new Set(frame.evidenceCatalog.map((item) => item.id)),
+    evidenceIds: citableEvidenceIds(frame),
     knownClaims,
     round,
     seatId,
@@ -549,7 +640,7 @@ export function createCouncilBrief({ frame, openings }) {
       })),
     ),
     councilId: frame.councilId,
-    evidenceRefs: frame.evidenceCatalog.map((item) => item.id),
+    evidenceRefs: [...citableEvidenceIds(frame)].sort(),
     openingOutputDigests: normalizedOpenings
       .map((record) => ({ seatId: record.metadata.councilSeatId, outputDigest: record.metadata.outputDigest }))
       .sort((left, right) => left.seatId.localeCompare(right.seatId)),
@@ -717,7 +808,7 @@ export function createCouncilSynthesis(input) {
   });
   const metadata = normalizeMetadata(input.metadata, expectedMetadata);
   const councilSynthesis = normalizeSynthesis(input.councilSynthesis, {
-    evidenceIds: new Set(frame.evidenceCatalog.map((item) => item.id)),
+    evidenceIds: citableEvidenceIds(frame),
     knownClaims: indexClaims(openings, rebuttals),
     rebuttals,
   });

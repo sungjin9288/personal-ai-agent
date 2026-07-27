@@ -396,19 +396,32 @@ local provider shadow는 별도 현재 permission, model digest, license, egress
 
 - model: `gpt-5.6-terra`, reasoning `high`
 - branch: `codex/council-research-evidence`
+- status: completed locally on 2026-07-27
 
-구현:
+구현 결과:
 
-- 기존 retrieval artifact에 이미 보유한 provenance를 council evidence catalog로 연결
-- citation id, source span, freshness/degraded/gap 상태를 표현할 수 있는 additive internal record 검토
-- cache-first는 현재 local retrieval corpus를 먼저 조회하는 policy로 재해석
-- source gap이 있으면 synthesis limitation과 next action에 남김
+- manager와 planner가 이미 생성한 retrieval artifact를 다시 조회하지 않고 각각 하나의 bounded catalog
+  entry로 투영한다.
+- artifact digest, opaque citation id, corpus·chunk id, corpus chunk index·count, content·snippet hash,
+  revision id, `known | unknown` freshness 사실, `available | degraded | gap` 상태만 전달한다.
+- raw snippet, source label, path, URL, attachment, memory value, provenance object, 실제 timestamp는
+  council frame과 provider input에 전달하지 않는다.
+- retrieval artifact가 없으면 `gap`, lineage가 불완전하면 `degraded`로 기록하고 둘 다 claim에서
+  인용할 수 없게 한다.
+- gap 또는 degraded가 있으면 기존 synthesis artifact에 `Council Source Limitations`를 붙이고 기존
+  next action에 local source verification을 추가한다. 새 synthesis field는 만들지 않는다.
+- legacy 5-field retrieval entry와 artifact entry는 그대로 허용하고, enriched retrieval exact shape와
+  catalog 전체 citation id 중복 거부를 추가했다.
+- C3 comparison을 같은 fixture로 다시 생성해 reviewer parity, baseline 26·council 34 stage,
+  unsupported-claim `not-comparable`, `knowledge-triad` default, promotion denial을 유지했다.
 
-제외:
+유지한 경계:
 
 - wigolo code·package·MCP 설치
 - web crawl, browser download, external search engine 호출
 - 새 URL fetch authority
+- public API·CLI·store collection·permission·approval·audit ordering 변경
+- local 또는 external provider 호출, model download, 실제 사용자 데이터, production readiness 주장
 
 ### C5 — Closeout and promotion decision
 

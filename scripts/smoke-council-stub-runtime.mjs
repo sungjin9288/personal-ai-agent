@@ -207,6 +207,29 @@ assert.deepEqual(validation, {
   status: 'passed',
   unresolvedCriticalConflictIds: [],
 });
+const retrievalEvidence = frame.evidenceCatalog.filter((entry) => entry.kind === 'retrieval');
+assert.equal(retrievalEvidence.length, 2);
+assert.equal(retrievalEvidence.every((entry) => /^sha256:[a-f0-9]{64}$/.test(entry.artifactDigest)), true);
+assert.equal(retrievalEvidence.every((entry) => entry.citations.every((citation) => citation.status === 'available')), true);
+assert.equal(retrievalEvidence.every((entry) => entry.citations.every((citation) => ['known', 'unknown'].includes(citation.freshness))), true);
+assert.equal(retrievalEvidence.every((entry) => entry.citations.every((citation) => /^citation:[a-f0-9]{32}$/.test(citation.citationId))), true);
+assert.doesNotMatch(JSON.stringify(retrievalEvidence), /observedAt|sourceUpdatedAt|sourceCreatedAt/);
+assert.doesNotMatch(JSON.stringify(retrievalEvidence), new RegExp(attachmentSentinel));
+assert.doesNotMatch(JSON.stringify(retrievalEvidence), new RegExp(memorySentinel));
+assert.doesNotMatch(JSON.stringify(retrievalEvidence), /council-source\.md/);
+assert.doesNotMatch(JSON.stringify(retrievalEvidence), new RegExp(workspacePath));
+assert.doesNotMatch(readArtifact(findArtifact(successState, synthesisRun, 'deliverable')), /## Council Source Limitations/);
+const tamperedRetrievalFrame = structuredClone(frame);
+tamperedRetrievalFrame.evidenceCatalog.find((entry) => entry.kind === 'retrieval').artifactDigest =
+  'sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+assert.equal(validateCouncilManifest({
+  brief,
+  frame: tamperedRetrievalFrame,
+  manifest,
+  openings,
+  rebuttals,
+  synthesis,
+}).code, 'tampered-frame');
 assert.equal(synthesisRun.councilValidation.status, 'passed');
 assert.ok(successState.runs.indexOf(reviewerRun) > successState.runs.indexOf(synthesisRun));
 assert.equal(successState.runs.every((run) => run.providerId === 'stub'), true);
@@ -262,9 +285,22 @@ assert.equal(conflictResult.mission.status, 'failed');
 const conflictState = loadMissionState(conflictMission.id);
 const conflictSynthesisRun = conflictState.runs.find((run) => run.stageKind === 'parallel-merge');
 const conflictManifest = parseCouncilArtifact(conflictState, 'council-manifest');
+const conflictFrame = parseCouncilArtifact(conflictState, 'council-frame');
 
 assert.equal(conflictManifest.validator.status, 'blocked');
 assert.equal(conflictSynthesisRun.councilValidation.status, 'blocked');
+const gapEvidence = conflictFrame.evidenceCatalog.filter((entry) => entry.kind === 'retrieval');
+assert.equal(gapEvidence.length, 2);
+assert.equal(gapEvidence.every((entry) => entry.citations.every((citation) => citation.status === 'gap')), true);
+assert.equal(
+  conflictState.runs
+    .filter((run) => ['council-opening', 'council-rebuttal'].includes(run.stageKind))
+    .every((run) => run.councilStatement.claims.every((claim) => claim.evidenceRefs.every((id) => !id.startsWith('retrieval:')))),
+  true,
+);
+assert.equal(conflictSynthesisRun.councilSynthesis.evidenceRefs.some((id) => id.startsWith('retrieval:')), false);
+assert.match(readArtifact(findArtifact(conflictState, conflictSynthesisRun, 'deliverable')), /## Council Source Limitations/);
+assert.match(conflictSynthesisRun.councilSynthesis.nextAction, /Verify local retrieval sources/);
 assert.equal(conflictState.runs.some((run) => run.role === 'reviewer'), false);
 assert.equal(conflictState.approvals.length, 0);
 assert.equal(conflictState.executionLeases.length, 0);

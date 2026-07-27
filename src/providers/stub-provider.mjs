@@ -600,7 +600,9 @@ function buildCouncilSpecialistOutput(input) {
         (claim) => claim.seatId !== specialistKind && claim.severity === 'critical',
       ) || null;
   const evidenceRefs = opening
-    ? (input.councilFrame?.evidenceCatalog || []).map((item) => item.id)
+    ? (input.councilFrame?.evidenceCatalog || [])
+      .filter((item) => !Array.isArray(item.citations) || item.citations.some((citation) => citation.status === 'available'))
+      .map((item) => item.id)
     : input.councilBrief?.evidenceRefs || [];
   const targetClaimIds = opening
     ? []

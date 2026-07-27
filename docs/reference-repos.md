@@ -92,7 +92,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - license: AGPL-3.0-only
 - borrowed: cache-first research posture, bounded question decomposition, structured briefs, citation and source-span provenance, explicit gaps, and surfaced stale/degraded source state
 - rejected for now: source or package vendoring, modified network-service integration, automatic MCP configuration, browser/model download, crawling, and new external search authority
-- 2026-07-27 status: concept-only input for existing local retrieval and future council evidence records; any process adapter requires a separate owner-approved goal and independent public facade
+- 2026-07-27 status: C4 applied only the provenance pattern to existing local manager·planner retrieval artifacts as bounded digest-and-hash council evidence; gaps and incomplete lineage remain non-citable and visible in synthesis limitations, while no wigolo code, package, process adapter, crawl, URL fetch, provider call, or new authority was introduced
 
 ### OpenHarness
 - source: https://github.com/HKUDS/OpenHarness

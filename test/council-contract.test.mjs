@@ -19,6 +19,40 @@ import {
 } from '../src/core/council-contract.mjs';
 
 const seats = ['research', 'implementation', 'verification'];
+const hex = (character) => character.repeat(64);
+
+function enrichedRetrievalEntry({
+  citationId = `citation:${hex('a').slice(0, 32)}`,
+  id = 'retrieval:manager:artifact-retrieval',
+  status = 'available',
+} = {}) {
+  const available = status === 'available';
+  const gap = status === 'gap';
+  return {
+    artifactDigest: gap ? null : `sha256:${hex('b')}`,
+    citations: [{
+      citationId: gap ? 'citation:gap:manager' : citationId,
+      freshness: available ? 'known' : 'unknown',
+      sourceSpan: available
+        ? {
+            chunkId: `chunk-${hex('c')}`,
+            contentHash: hex('d'),
+            corpusId: `corpus-${hex('e')}`,
+            count: 2,
+            index: 1,
+            revisionId: `revision-${hex('f')}`,
+            snippetHash: hex('1'),
+          }
+        : null,
+      status,
+    }],
+    councilId: 'council-1',
+    id,
+    kind: 'retrieval',
+    sessionId: 'session-1',
+    workspaceId: 'workspace-1',
+  };
+}
 
 function metadata(expected) {
   return {
@@ -129,6 +163,107 @@ test('council contract accepts a complete evidence-bound two-round record', () =
   assert.equal(new Set(record.openings.map((item) => item.metadata.sourceDigest)).size, 1);
   assert.equal(record.rebuttals.length, 3);
   assert.deepEqual(result, { code: 'ok', ok: true, status: 'passed', unresolvedCriticalConflictIds: [] });
+});
+
+test('council contract validates bounded enriched retrieval provenance and binds it into the frame', () => {
+  const evidenceCatalog = [
+    { councilId: 'council-1', id: 'artifact:plan', kind: 'artifact', sessionId: 'session-1', workspaceId: 'workspace-1' },
+    enrichedRetrievalEntry(),
+  ];
+  const councilFrame = createCouncilFrame({
+    contextDigest: hashCouncilValue({ context: 'enriched retrieval' }),
+    councilId: 'council-1',
+    evidenceCatalog,
+    parentRunId: 'run-planner',
+    riskSignals: [],
+    sessionId: 'session-1',
+    workspaceId: 'workspace-1',
+  });
+
+  assert.equal(councilFrame.evidenceCatalog[1].citations[0].status, 'available');
+  assert.equal(councilFrame.evidenceCatalog[1].artifactDigest, `sha256:${hex('b')}`);
+  const tampered = structuredClone(councilFrame);
+  tampered.evidenceCatalog[1].artifactDigest = `sha256:${hex('2')}`;
+  assert.throws(
+    () => createCouncilStatement({
+      artifactContent: '# opening',
+      councilStatement: {
+        claims: [{ evidenceRefs: ['retrieval:manager:artifact-retrieval'], id: 'research:claim-1', position: 'support', severity: 'normal', summary: 'Bound to local retrieval.' }],
+        nextAction: 'Review the bounded source.',
+        rejectedOptionIds: [],
+        targetClaimIds: [],
+      },
+      metadata: metadata(createCouncilStatementMetadata({ frame: tampered, round: 'opening', seatId: 'research' })),
+      runId: 'run-opening',
+    }),
+    (error) => error instanceof CouncilContractError && error.code === 'tampered-frame',
+  );
+});
+
+test('council contract rejects duplicate, malformed, and non-citable enriched retrieval citations', () => {
+  const base = {
+    contextDigest: hashCouncilValue({ context: 'enriched retrieval' }),
+    councilId: 'council-1',
+    parentRunId: 'run-planner',
+    riskSignals: [],
+    sessionId: 'session-1',
+    workspaceId: 'workspace-1',
+  };
+  const duplicate = enrichedRetrievalEntry();
+  duplicate.citations.push(structuredClone(duplicate.citations[0]));
+  assert.throws(
+    () => createCouncilFrame({ ...base, evidenceCatalog: [duplicate] }),
+    (error) => error instanceof CouncilContractError && error.code === 'duplicate-evidence',
+  );
+
+  const repeatedAcrossCatalog = enrichedRetrievalEntry();
+  assert.throws(
+    () => createCouncilFrame({
+      ...base,
+      evidenceCatalog: [
+        repeatedAcrossCatalog,
+        enrichedRetrievalEntry({
+          citationId: repeatedAcrossCatalog.citations[0].citationId,
+          id: 'retrieval:planner:artifact-retrieval',
+        }),
+      ],
+    }),
+    (error) => error instanceof CouncilContractError && error.code === 'duplicate-evidence',
+  );
+
+  const malformed = enrichedRetrievalEntry();
+  malformed.citations[0].sourceSpan.contentHash = 'not-a-hash';
+  assert.throws(
+    () => createCouncilFrame({ ...base, evidenceCatalog: [malformed] }),
+    (error) => error instanceof CouncilContractError && error.code === 'invalid-evidence',
+  );
+
+  const gapFrame = createCouncilFrame({ ...base, evidenceCatalog: [enrichedRetrievalEntry({ status: 'gap' })] });
+  const gapDraft = {
+    artifactContent: '# gap opening',
+    councilStatement: {
+      claims: [{ evidenceRefs: ['retrieval:manager:artifact-retrieval'], id: 'research:claim-1', position: 'support', severity: 'normal', summary: 'Unsupported gap evidence.' }],
+      nextAction: 'Fetch a source.',
+      rejectedOptionIds: [],
+      targetClaimIds: [],
+    },
+    metadata: metadata(createCouncilStatementMetadata({ frame: gapFrame, round: 'opening', seatId: 'research' })),
+    runId: 'run-gap-opening',
+  };
+  assert.throws(
+    () => createCouncilStatement({ ...sealCouncilStatement(gapDraft), frame: gapFrame }),
+    (error) => error instanceof CouncilContractError && error.code === 'cross-council-evidence',
+  );
+
+  const degradedFrame = createCouncilFrame({ ...base, evidenceCatalog: [enrichedRetrievalEntry({ status: 'degraded' })] });
+  const degradedDraft = {
+    ...gapDraft,
+    metadata: metadata(createCouncilStatementMetadata({ frame: degradedFrame, round: 'opening', seatId: 'research' })),
+  };
+  assert.throws(
+    () => createCouncilStatement({ ...sealCouncilStatement(degradedDraft), frame: degradedFrame }),
+    (error) => error instanceof CouncilContractError && error.code === 'cross-council-evidence',
+  );
 });
 
 test('council frame requires a shared context digest and changes opening provenance when it drifts', () => {

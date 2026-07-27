@@ -8,8 +8,12 @@ import {
   summarizeStoredRetrievalArtifact,
   compareRetrievalPreviewWithLatestArtifact,
   formatRetrievalArtifactContent,
+  projectStoredRetrievalArtifactEvidence,
 } from '../src/core/retrieval-artifacts.mjs';
-import { buildMemoryCorpusRecord } from '../src/core/retrieval-corpus.mjs';
+import {
+  buildAttachmentCorpusRecord,
+  buildMemoryCorpusRecord,
+} from '../src/core/retrieval-corpus.mjs';
 
 function makeTmpDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'retrieval-artifacts-test-'));
@@ -229,6 +233,120 @@ test('compareRetrievalPreviewWithLatestArtifact', async (t) => {
     assert.equal(result.status, 'no-evidence');
     assert.equal(result.previewSourceCount, 0);
   });
+});
+
+test('projectStoredRetrievalArtifactEvidence keeps only bounded opaque provenance', () => {
+  const dir = makeTmpDir();
+  const corpusRecord = buildMemoryCorpusRecord({
+    content: 'PRIVATE_RETRIEVAL_SENTINEL',
+    createdAt: '2026-07-27T00:00:00.000Z',
+    id: 'memory-private',
+    kind: 'fact',
+    scope: 'workspace',
+    scopeId: 'workspace-private',
+    updatedAt: '2026-07-27T01:00:00.000Z',
+  });
+  const content = formatRetrievalArtifactContent({
+    providerRole: 'manager',
+    retrievalContext: [{
+      chunkIndex: 1,
+      score: 1,
+      snippet: 'PRIVATE_RETRIEVAL_SENTINEL',
+      sourceLabel: 'PRIVATE_SOURCE_LABEL',
+      sourceType: 'memory',
+    }],
+    retrievalCorpusRecords: [corpusRecord],
+    role: 'manager',
+  });
+  const artifact = {
+    createdAt: '2026-07-27T02:00:00.000Z',
+    id: 'artifact-retrieval',
+    path: writeArtifactFile(dir, 'retrieval.md', content),
+  };
+
+  const available = projectStoredRetrievalArtifactEvidence(artifact, {
+    retrievalCorpusRecords: [corpusRecord],
+    stageKey: 'manager',
+  });
+  assert.match(available.artifactDigest, /^sha256:[a-f0-9]{64}$/);
+  assert.equal(available.citations.length, 1);
+  assert.equal(available.citations[0].status, 'available');
+  assert.equal(available.citations[0].freshness, 'known');
+  assert.equal(available.citations[0].sourceSpan.chunkId, corpusRecord.chunkId);
+  assert.equal(available.citations[0].sourceSpan.contentHash, corpusRecord.contentHash);
+  assert.equal(available.citations[0].sourceSpan.corpusId, corpusRecord.corpusId);
+  assert.equal(available.citations[0].sourceSpan.count, 1);
+  assert.equal(available.citations[0].sourceSpan.index, 1);
+  assert.equal(available.citations[0].sourceSpan.revisionId, corpusRecord.revision.id);
+  assert.match(available.citations[0].sourceSpan.snippetHash, /^[a-f0-9]{64}$/);
+  const serialized = JSON.stringify(available);
+  assert.doesNotMatch(serialized, /PRIVATE_RETRIEVAL_SENTINEL|PRIVATE_SOURCE_LABEL|workspace-private/);
+
+  const gap = projectStoredRetrievalArtifactEvidence(null, { stageKey: 'planner' });
+  assert.equal(gap.artifactDigest, null);
+  assert.deepEqual(gap.citations[0], {
+    citationId: 'citation:gap:planner',
+    freshness: 'unknown',
+    sourceSpan: null,
+    status: 'gap',
+  });
+
+  const degraded = projectStoredRetrievalArtifactEvidence({
+    createdAt: artifact.createdAt,
+    path: writeArtifactFile(dir, 'legacy-retrieval.md', '- [memory] private\n  - snippet: private\n'),
+  }, { stageKey: 'manager' });
+  assert.equal(degraded.citations[0].status, 'degraded');
+  assert.equal(degraded.citations[0].sourceSpan, null);
+
+  const attachmentCorpusRecord = buildAttachmentCorpusRecord({
+    createdAt: '2026-07-27T00:00:00.000Z',
+    fileName: 'private-attachment.md',
+    id: 'attachment-private',
+    missionId: 'mission-private',
+  }, {
+    chunkCount: 7,
+    chunkIndex: 3,
+    content: 'PRIVATE_ATTACHMENT_CHUNK',
+  });
+  const attachmentContent = formatRetrievalArtifactContent({
+    providerRole: 'planner',
+    retrievalContext: [{
+      chunkIndex: 3,
+      score: 1,
+      snippet: 'PRIVATE_ATTACHMENT_CHUNK',
+      sourceLabel: 'PRIVATE_ATTACHMENT_LABEL',
+      sourceType: 'attachment',
+    }],
+    retrievalCorpusRecords: [attachmentCorpusRecord],
+    role: 'planner',
+  });
+  const attachmentProjection = projectStoredRetrievalArtifactEvidence({
+    path: writeArtifactFile(dir, 'attachment-retrieval.md', attachmentContent),
+  }, {
+    retrievalCorpusRecords: [attachmentCorpusRecord],
+    stageKey: 'planner',
+  });
+  assert.equal(attachmentProjection.citations[0].status, 'available');
+  assert.equal(attachmentProjection.citations[0].sourceSpan.index, 3);
+  assert.equal(attachmentProjection.citations[0].sourceSpan.count, 7);
+
+  const missingLineage = projectStoredRetrievalArtifactEvidence(artifact, { stageKey: 'manager' });
+  assert.equal(missingLineage.citations[0].status, 'degraded');
+  assert.equal(missingLineage.citations[0].sourceSpan, null);
+
+  const tamperedSnippetContent = content.replace(
+    '  - snippet: PRIVATE_RETRIEVAL_SENTINEL',
+    '  - snippet: TAMPERED_RETRIEVAL_SENTINEL',
+  );
+  const tamperedSnippet = projectStoredRetrievalArtifactEvidence({
+    path: writeArtifactFile(dir, 'tampered-retrieval.md', tamperedSnippetContent),
+  }, {
+    retrievalCorpusRecords: [corpusRecord],
+    stageKey: 'manager',
+  });
+  assert.equal(tamperedSnippet.citations[0].status, 'degraded');
+  assert.equal(tamperedSnippet.citations[0].sourceSpan, null);
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
 test('formatRetrievalArtifactContent', async (t) => {
