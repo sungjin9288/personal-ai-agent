@@ -227,7 +227,7 @@ test('local training process supervisor preserves the workspace without a late g
       signalProcessGroup(processGroupId, signal) {
         signals.push({ processGroupId, signal });
       },
-      timeoutMs: 100,
+      timeoutMs: 1_000,
     }),
     (error) => {
       assert.equal(error.failureCode, 'timeout');
