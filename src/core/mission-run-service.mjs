@@ -200,12 +200,13 @@ export function buildCouncilProviderInput(input) {
   let councilRuntime = null;
 
   if (councilPhase === 'synthesis') {
+    const missionConstraints = ensureArray(input.mission?.constraints);
     const riskProfile = input.pack.riskProfile;
     councilRuntime = {};
     councilRuntime.artifactContent = input.pack.renderDraft({
       adaptationNotes: [],
-      forceReviewerFail: false,
-      forceRubricFail: false,
+      forceReviewerFail: missionConstraints.includes('force-reviewer-fail'),
+      forceRubricFail: missionConstraints.includes('force-rubric-fail'),
       planSteps: ensureArray(input.pack.plannerGuidance),
     });
     councilRuntime.artifactFileName = input.pack.artifactFileName;

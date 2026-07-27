@@ -68,6 +68,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - rejected for now: Python·Streamlit·AutoGen·Together runtime vendoring, fixed paid model routes, `dangerously-skip-permissions`, static trust score as authorization, majority aggregation, and agent-owned execution approval
 - 2026-07-27 status: C1 implemented the patterns as an opt-in deterministic two-round stub council inside the existing Node mission runtime; fixed roster, independent openings, allowlisted rebuttals, evidence-bound synthesis, and reviewer-before-approval ordering are verified without adding an external package, model, provider call, or upstream code
 - 2026-07-27 quality status: C3 kept the council opt-in after same-fixture replay exposed a reviewer false pass, unsupported-claim non-comparability, and 34 candidate stages versus 26 baseline stages; synthetic conflict routing alone did not authorize default promotion
+- 2026-07-27 parity status: C3.1 repaired the reviewer false pass without exposing raw constraints to the provider; unsupported claims remain not-comparable, stage overhead remains, and default promotion stays denied
 
 ### ui-skills
 - source: https://github.com/ibelick/ui-skills
