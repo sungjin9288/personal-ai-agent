@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-27T01:55:07.588Z
+- generatedAt: 2026-07-27T02:51:19.886Z
 - localDate: 2026-07-27
-- branch: codex/council-read-model-board
-- commit: 4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077
+- branch: codex/council-quality-shadow
+- commit: 3c70129317a1d552f54dee03811c5269aed14723
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077](releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077)
-- visualArtifactSetSha256: 33ae4b2125bbcb5ab58858c6bebb97ea0d9a0a021354a57a08b42a2dfb738a48
-- commitPushStatus: not pushed, origin/codex/council-read-model-board not found
+- immutableSnapshot: [releases/execution-v1/3c70129317a1d552f54dee03811c5269aed14723](releases/execution-v1/3c70129317a1d552f54dee03811c5269aed14723)
+- visualArtifactSetSha256: 0adc3d45a59b86dc0df5ffcc6650ea887136969a54be4355111eae3db9376ce1
+- commitPushStatus: not pushed, origin/codex/council-quality-shadow not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 30 scripts, ok=true, totalDuration=55.5s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=54.7s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -54,9 +54,9 @@
 - smoke:execution-v1-live-helpers: passed
 - smoke:execution-v1-handoff: passed
 - smoke:production-readiness-gate: passed
-- reference adoption aggregate: 30 scripts, ok=true
+- reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 33ae4b2125bbcb5ab58858c6bebb97ea0d9a0a021354a57a08b42a2dfb738a48
+- visual artifact set: 0adc3d45a59b86dc0df5ffcc6650ea887136969a54be4355111eae3db9376ce1
 
 ## Live Provider Handoff
 
