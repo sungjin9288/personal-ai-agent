@@ -39,6 +39,8 @@ The safe claim is that the local deterministic verification suite passes for the
 | Provider recovery | `npm run smoke:provider-failure-recovery-demo` | Verifies fallback/remediation demo linkage and claim boundary |
 | Memory quality fixture | `npm run smoke:memory-retrieval-quality-fixture` | Verifies retrieval ranking, fact graph provenance, and instruction-boundary fixture linkage |
 | Answer quality evaluation | `npm run smoke:answer-quality-evaluation` | Verifies credential-free retrieval, citation, required-content, and reviewer regression gates |
+| Q9 RAG evidence sufficiency | `npm run smoke:rag-evidence-sufficiency` | Verifies five fixed claim-assertion states, actions, content-free artifact integrity, oracle independence, and tamper rejection |
+| Q9 local shadow observation | `npm run smoke:local-rag-evidence-sufficiency-shadow` | Verifies tracked loopback-only qwen2.5:3b 4/5 decision result, one `unnecessary-abstention`, `modelConforms: false`, no raw text leakage, and inactive answer path |
 | Retrieval corpus contract | `npm run smoke:retrieval-corpus-contract` | Verifies deterministic memory, attachment, and fact corpus identity, revision, scope, hash, and provenance |
 | Retrieval quality evaluation | `npm run smoke:retrieval-quality-evaluation` | Verifies controlled precision, recall, noise, source diversity, frozen baseline replay, and candidate regression rejection |
 | Semantic retrieval experiment | `npm run smoke:semantic-retrieval-experiment` | Verifies bounded local embedding protocol, scope lock, controlled synonym comparison, and runtimeActivation=false boundary |

@@ -60,6 +60,8 @@ const GROUPS = {
     'smoke:target-data-lifecycle-architecture',
     'smoke:target-clean-deployment-architecture',
     'smoke:target-clean-deployment-operations',
+    'smoke:rag-evidence-sufficiency',
+    'smoke:local-rag-evidence-sufficiency-shadow',
   ],
 };
 
