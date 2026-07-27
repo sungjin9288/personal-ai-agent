@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Closed Council C1–C5 with an evidence-bound promotion decision. `knowledge-triad` remains the default and `knowledge-council-triad` remains opt-in because unsupported claims are still `not-comparable` and persisted stages remain 26→34; dynamic persona, concurrent dispatch, external research adapter, and AirLLM remain deferred without provider calls, model downloads, private-data authority, or production claims.
 - Added content-free C4 council research evidence enrichment. Existing manager and planner retrieval artifacts now project artifact- and corpus-bound citations with exact chunk lineage, available/degraded/gap status, and source limitations without re-retrieval, raw source exposure, external provider calls, public contract changes, or production promotion.
 - Added a cost-free F1.25 private collection-gap replan shadow that independently reconstructs the F1.24 projection from live authority and recalculates the F1.2 collection plan in memory only. Tracked F1.2 evidence, intake, collection completion, audit, training, provider, submission, deployment, and production state remain unchanged or false.
 - Added a cost-free F1.24 combined readiness impact shadow that composes one trusted F1.21 reviewed record and one trusted F1.20 replay case in memory only.
@@ -142,8 +143,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,311,623 bytes`
-- SHA-256: `5e31e2e5fb5057102f4cbfea8fe67bbb67088ec57cd4f97f882820f6a17daf21`
+- Size: `4,308,676 bytes`
+- SHA-256: `5fe7d8e1045e8521ed1f1bc55aec83a367229757ffee81afce3d40e9c38eded1`
 
 Included public surfaces:
 

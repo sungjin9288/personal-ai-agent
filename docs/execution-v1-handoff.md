@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-27T06:10:03.820Z
+- generatedAt: 2026-07-27T06:58:54.547Z
 - localDate: 2026-07-27
-- branch: codex/council-research-evidence
-- commit: bc67392e65bf0e81bea46ee9aeb8515750ec9ce5
+- branch: codex/council-closeout
+- commit: ac031bd0dccca1faa5dd2d6baf589a191e0d8d4a
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/bc67392e65bf0e81bea46ee9aeb8515750ec9ce5](releases/execution-v1/bc67392e65bf0e81bea46ee9aeb8515750ec9ce5)
-- visualArtifactSetSha256: b77cd9bece9c1993d153a3e784d35d46e6d04d5822c33cb3c43ef67268da9916
-- commitPushStatus: not pushed, origin/codex/council-research-evidence not found
+- immutableSnapshot: [releases/execution-v1/ac031bd0dccca1faa5dd2d6baf589a191e0d8d4a](releases/execution-v1/ac031bd0dccca1faa5dd2d6baf589a191e0d8d4a)
+- visualArtifactSetSha256: f38931afb874998cf4ad069c9060078a93d69db6d9c66e4dce19349fe5d2ba7e
+- commitPushStatus: not pushed, origin/codex/council-closeout not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=50.6s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=53.5s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: b77cd9bece9c1993d153a3e784d35d46e6d04d5822c33cb3c43ef67268da9916
+- visual artifact set: f38931afb874998cf4ad069c9060078a93d69db6d9c66e4dce19349fe5d2ba7e
 
 ## Live Provider Handoff
 
