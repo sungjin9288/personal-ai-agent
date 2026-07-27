@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-27T00:41:35.296Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-27T00:41:26.864Z
 - branch: codex/council-contract-stub-runtime
 - commit: ccf76cf7a5220eb821cf9aeb57a772229767e3ef
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ccf76cf7a5220eb821cf9aeb57a772229767e3ef/execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922

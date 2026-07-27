@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-27T00:41:35.296Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-27T00:41:26.798Z
 - branch: codex/council-contract-stub-runtime
 - commit: ccf76cf7a5220eb821cf9aeb57a772229767e3ef
