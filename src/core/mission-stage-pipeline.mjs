@@ -66,6 +66,7 @@ export function buildParallelSpecialistRetryPlan({ parallelSpecialistKinds, prev
 }
 
 export function buildParallelStageMetadata({
+  councilMetadata = null,
   parallelGroupId,
   parallelPlan,
   parallelSpecialistKinds,
@@ -76,6 +77,7 @@ export function buildParallelStageMetadata({
 }) {
   const profile = parallelPlan.orchestrationProfile;
   const profileMetadata = {
+    orchestrationProfileCouncilMode: profile?.councilMode || null,
     orchestrationProfileDeliverableTypes: profile?.deliverableTypes || [],
     orchestrationProfileDescription: profile?.description || null,
     orchestrationProfileDisplayName: profile?.displayName || null,
@@ -94,17 +96,22 @@ export function buildParallelStageMetadata({
     parentRunId,
     stageKind,
   };
+  const deliberationMetadata = councilMetadata && typeof councilMetadata === 'object'
+    ? councilMetadata
+    : {};
 
-  if (stageKind !== 'specialist-branch') {
+  if (!specialistKind) {
     return {
       mergeStatus: 'merged',
       ...profileMetadata,
+      ...deliberationMetadata,
     };
   }
 
   return {
     mergeStatus: 'pending',
     ...profileMetadata,
+    ...deliberationMetadata,
     resumeFromRunId: previousBranchRun?.id || null,
     specialistKind,
     specialistRootRunId: previousBranchRun?.specialistRootRunId || previousBranchRun?.id || null,

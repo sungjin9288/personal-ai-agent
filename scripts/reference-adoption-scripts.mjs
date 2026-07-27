@@ -24,6 +24,7 @@ export const referenceAdoptionSmokeScripts = Object.freeze([
   'scripts/smoke-learning-promotion-verification-gate.mjs',
   'scripts/smoke-learning-promotion-verification-stop-condition.mjs',
   'scripts/smoke-orchestration-profiles.mjs',
+  'scripts/smoke-council-stub-runtime.mjs',
   'scripts/smoke-ui-agent-blueprints.mjs',
   'scripts/smoke-parallel-specialists.mjs',
   'scripts/smoke-process-timeout-utils.mjs',
@@ -33,6 +34,7 @@ export const referenceAdoptionSmokeScriptCount = referenceAdoptionSmokeScripts.l
 
 export const requiredReferenceAdoptionSmokeScripts = Object.freeze([
   'scripts/smoke-orchestration-profiles.mjs',
+  'scripts/smoke-council-stub-runtime.mjs',
   'scripts/smoke-ui-agent-blueprints.mjs',
   'scripts/smoke-parallel-specialists.mjs',
   'scripts/smoke-process-timeout-utils.mjs',

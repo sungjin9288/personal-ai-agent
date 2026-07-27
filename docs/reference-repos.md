@@ -60,6 +60,38 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - borrowed: deterministic role sequencing and reviewer/checker framing
 - rejected for now: deeper debate trees before the managed runtime is proven
 
+### awesome-llm-apps
+- source: https://github.com/Shubhamsaboo/awesome-llm-apps
+- inspected: 2026-07-27 at `e46d6feaeacf5f0bec31a92c6ec68f2a701ce714`
+- license: Apache-2.0
+- borrowed: independently framed worker contributions, mandatory plan/final review, explicit conflict escalation, structured worker brief, contribution-level PASS/FIX/ESCALATE, and artifact digest audit ideas
+- rejected for now: Python·Streamlit·AutoGen·Together runtime vendoring, fixed paid model routes, `dangerously-skip-permissions`, static trust score as authorization, majority aggregation, and agent-owned execution approval
+- 2026-07-27 status: C1 implemented the patterns as an opt-in deterministic two-round stub council inside the existing Node mission runtime; fixed roster, independent openings, allowlisted rebuttals, evidence-bound synthesis, and reviewer-before-approval ordering are verified without adding an external package, model, provider call, or upstream code
+
+### ui-skills
+- source: https://github.com/ibelick/ui-skills
+- inspected: 2026-07-27 at `ae74b58e722abe7ddf5948e07dd220808acce8a9`
+- license: MIT
+- borrowed: evidence-chain planning, exact surface and owner scope, one deterministic next action, accessible focus and error placement, and explicit loading·empty·blocked·approval states
+- rejected for now: CLI installation, Tailwind or component primitive migration, motion dependency, and importing the upstream visual identity
+- 2026-07-27 status: UI guidance is reserved for a read-only deliberation board after real council records and deterministic conflict validation exist
+
+### airllm
+- source: https://github.com/lyogavin/airllm
+- inspected: 2026-07-27 at `17677cb821016b36a0610c8e1f2befab030d1942`
+- license: Apache-2.0 for code; model weight licenses remain separate
+- borrowed: separate disk footprint, resident memory, cold latency, warm latency, and usable throughput when evaluating a local runtime candidate
+- rejected for now: production dependency, provider adapter, automatic Hugging Face download, remote model code, destructive original-model cleanup, and treating memory fit as usable multi-agent latency evidence
+- 2026-07-27 status: deferred until the existing Ollama/local provider proves a council quality need and current license, egress, resource, rollback, and candidate evidence gates are satisfied
+
+### wigolo
+- source: https://github.com/KnockOutEZ/wigolo
+- inspected: 2026-07-27 at `e3a9adaf1fa5090c7fde42f35124095a2d97b8d9`
+- license: AGPL-3.0-only
+- borrowed: cache-first research posture, bounded question decomposition, structured briefs, citation and source-span provenance, explicit gaps, and surfaced stale/degraded source state
+- rejected for now: source or package vendoring, modified network-service integration, automatic MCP configuration, browser/model download, crawling, and new external search authority
+- 2026-07-27 status: concept-only input for existing local retrieval and future council evidence records; any process adapter requires a separate owner-approved goal and independent public facade
+
 ### OpenHarness
 - source: https://github.com/HKUDS/OpenHarness
 - borrowed: explicit harness boundary, governance hooks, session-first orchestration

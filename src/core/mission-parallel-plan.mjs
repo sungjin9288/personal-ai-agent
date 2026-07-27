@@ -80,6 +80,11 @@ export function resolveMissionParallelPlan(mission) {
         profileId: directives.orchestrationProfileId,
       })
     : null;
+  if (profile?.councilMode && explicitKinds.length) {
+    throw new Error(
+      `Orchestration profile ${profile.id} uses a fixed council roster and cannot be combined with parallel-specialists.`,
+    );
+  }
   const effectiveKinds = [...new Set(explicitKinds.length ? explicitKinds : profile?.parallelSpecialistKinds || [])]
     .slice(0, MAX_PARALLEL_SPECIALISTS);
   const source = explicitKinds.length

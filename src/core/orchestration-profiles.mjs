@@ -27,6 +27,18 @@ const ORCHESTRATION_PROFILES = Object.freeze([
     retryPolicy: 'resume-verification-fast',
   },
   {
+    councilMode: 'two-round',
+    deliverableTypes: KNOWLEDGE_DELIVERABLE_TYPES,
+    description: 'Two-round research, implementation, and verification council with deterministic evidence gates.',
+    displayName: 'Knowledge Council Triad',
+    id: 'knowledge-council-triad',
+    mergeOwner: 'manager',
+    mode: 'knowledge',
+    parallelSpecialistKinds: ['research', 'implementation', 'verification'],
+    qualityGate: 'verification-signal-required',
+    retryPolicy: 'restart-council-with-fresh-frame',
+  },
+  {
     deliverableTypes: KNOWLEDGE_DELIVERABLE_TYPES,
     description: 'Research, implementation, verification, design, and documentation fan-out for full-spectrum knowledge synthesis.',
     displayName: 'Knowledge Full Spectrum',

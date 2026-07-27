@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-27 Council Evidence Contract and Deterministic Stub Runtime
+
+- added an opt-in fixed research·implementation·verification council with byte-identical private-content-free opening prompts, one CouncilBrief-only rebuttal round, and executor chair synthesis without adding a role, storage collection, production dependency, or external provider call
+- bound frame, statement, brief, synthesis, and manifest records to exact council, session, workspace, parent, source, output, and artifact bytes through a pure canonical SHA-256 contract
+- reread and validated the persisted manifest before reviewer handoff, stopped unresolved critical conflicts before reviewer·approval·execution lease creation, and routed blocked seats through the existing specialist follow-up lifecycle
+- verified 12 council contract and provider-input tests, 25 focused service tests, 29 reference-adoption smokes, 1669 passing unit tests with 1 intentional skip, and 33 docs gates while keeping the council stub-only, sequential, opt-in, and `productionReadyClaim: false`
+
 ## 2026-07-22 Darwin Suspended Verify-to-exec
 
 - started one root-owned signed fixture interpreter with Darwin `POSIX_SPAWN_START_SUSPENDED` and compared its kernel-observed CDHash before resume
