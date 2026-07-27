@@ -1,0 +1,128 @@
+{
+  "actualUserQueryData": false,
+  "aggregate": {
+    "caseCount": 5,
+    "gateBlockedCount": 4,
+    "generationAttemptCount": 1,
+    "generatorCallCount": 1,
+    "qualityPassCount": 1,
+    "fakeGeneratorCallCount": 1
+  },
+  "cases": [
+    {
+      "action": "request-more-evidence",
+      "answerQuality": null,
+      "caseHash": "2d8551563f09a96db62abf144122e9ad58736183f64b086bcfc879a44e9e4e17",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "requestedClaimHashes": [
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551"
+      ],
+      "state": "partial",
+      "status": "evidence-requested"
+    },
+    {
+      "action": "abstain",
+      "answerQuality": null,
+      "caseHash": "43814e3f343992730267ed1c22b6723aef412c5d5b9f93fad0266de57a7000ed",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "requestedClaimHashes": [],
+      "state": "no-evidence",
+      "status": "abstained"
+    },
+    {
+      "action": "request-more-evidence",
+      "answerQuality": null,
+      "caseHash": "98837a3a159a8aa9784cd5fb8f44332c2aff0aad1c4cbade8cbb8e0a7185055f",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "requestedClaimHashes": [
+        "c07ff26e6d6f5f2f5e2ab07e0c2eb222f2483c3ad8b2dc4c2312b73f2ce80bc2",
+        "bbe93aa38f43d679a0521140820988b7c5a3b6ea75421d68f2206354b2bb2551"
+      ],
+      "state": "irrelevant",
+      "status": "evidence-requested"
+    },
+    {
+      "action": "abstain",
+      "answerQuality": null,
+      "caseHash": "cc85e43f7216970aaf388052fbafc3b6fa2d5a7f909cd1175864acfa0440b7b1",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "requestedClaimHashes": [],
+      "state": "conflicting",
+      "status": "abstained"
+    },
+    {
+      "action": "answer",
+      "answerQuality": {
+        "counts": {
+          "citedExpectedSourceCount": 2,
+          "citedSourceCount": 2,
+          "expectedSourceCount": 2,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "groundedCitationCount": 2,
+          "requiredTermCount": 2,
+          "requiredTermMatchCount": 2,
+          "retrievedExpectedSourceCount": 2,
+          "retrievedSourceCount": 2,
+          "unsupportedCitationCount": 0
+        },
+        "failureCheckIds": [],
+        "metrics": {
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "status": "passed"
+      },
+      "caseHash": "d710e985eacfdcbf108e4b165383354ebcb77c0d91ddfccb6307b26c6dc68835",
+      "generation": {
+        "attempted": true,
+        "failureKind": null,
+        "status": "passed"
+      },
+      "requestedClaimHashes": [],
+      "state": "sufficient",
+      "status": "answered-quality-passed"
+    }
+  ],
+  "currentAnswerPathChanged": false,
+  "externalProviderCalls": "none",
+  "fixtureHash": "0573c2069b03f7b40eaced7b0e47e46ddaf473c493710c7b9c5aca843b9622d4",
+  "productionReadyClaim": false,
+  "q7EvidenceHash": "d7a044e11d4f32d6cca2b46e60bfff6b964c7edfaf44499cd2a7b926b2e23010",
+  "q7PromptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+  "q7PromptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+  "q9DeterministicArtifactHash": "443a0a34b35111018571e64c049437cf45a89b52e015f974d2c072b2a3abc9b8",
+  "q9FixtureHash": "29b7b5664847c9cf6a747ac2e8f24c130eb3917e359b956c798bf4ef5fa05ebf",
+  "q9PolicyHash": "dac9fda09108a44957c9a25d03e86f1151f3f8d8d6efae4e9e602a7a5d6ea4b5",
+  "reviewerProvenance": {
+    "independentReviewerValidated": false,
+    "reviewerVerdictSource": "synthetic-fixture-oracle"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-evidence-gated-answer-shadow/v1",
+  "thresholdsHash": "51df7f24468fb8f7632cb2f83c7ea2df9bbc47654d17fd4ef541d6c2fd0a428b",
+  "trainingAuthorized": false,
+  "id": "evidence-gated-answer-shadow-863f11820f4a3c1a8fc2cc589062c09c394b9ef441b0bcd24675011edf013b84",
+  "integrityHash": "863f11820f4a3c1a8fc2cc589062c09c394b9ef441b0bcd24675011edf013b84"
+}

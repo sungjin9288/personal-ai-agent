@@ -163,6 +163,11 @@
 - actualRagEvidenceSufficiencyValidated: true
 - actualLocalRagEvidenceSufficiencyShadowValidated: true
 - actualLocalRagEvidenceSufficiencyShadowQualified: false
+- currentEvidenceGatedAnswerFixture: `fixtures/evidence-gated-answer-cases-v1.json`
+- currentEvidenceGatedAnswerEvidence: `evidence/output-artifacts/evidence-gated-answer-shadow.json`
+- currentLocalEvidenceGatedAnswerShadowEvidence: `evidence/output-artifacts/local-evidence-gated-answer-shadow.json`
+- actualEvidenceGatedAnswerShadowValidated: true
+- actualLocalEvidenceGatedAnswerSyntheticSufficientCasePassed: true
 - currentUserQueryEvaluationIntakeFixture: `fixtures/user-query-evaluation-intake-dry-run-v1.json`
 - currentUserQueryEvaluationIntakeEvidence: `evidence/output-artifacts/user-query-evaluation-intake.json`
 - currentLocalUserQueryQualityEvidence: `evidence/output-artifacts/local-user-query-quality.json`
@@ -1753,6 +1758,14 @@ Deterministic fixture는 다섯 상태를 한 건씩 포함한다. `unsupported-
 
 이미 설치된 `qwen2.5:3b`는 loopback-only opt-in shadow에서 fixed policy 5건 중 4건과 일치했다. `sufficient` 한 건에서 model이 `abstain`을 선택해 `unnecessary-abstention`으로 실패했다. 이 단일 tracked observation은 fixture bytes, semantic case, inference contract, model digest, runtime version에 hash로 결속한다. 따라서 shadow는 `modelConforms: false`, `actualLocalRagEvidenceSufficiencyShadowQualified: false`이며 현재 answer path와 runtime activation은 바꾸지 않는다. 외부 provider call, model download, user data, training, F1.3 authority와 production claim도 추가하지 않았다.
 
+## 현재 Q10 evidence-gated answer shadow
+
+Q10은 Q9 모델 판단을 교정하거나 덮어쓰지 않는다. Q9 pure evaluator가 계산한 action만 사용해 `sufficient`일 때 답변 생성을 한 번 허용하고, `partial·irrelevant`는 근거 추가 요청으로, `conflicting·no-evidence`는 abstain으로 model 호출 전에 종료한다. 다섯 상태 전체에서 실제 generator 호출은 한 번이며, non-sufficient 경로는 generator와 answer-quality contract 자체를 읽지 않는다.
+
+생성은 Q7 v5 local composition generator를 그대로 사용하고 objective와 retrieved evidence만 전달한다. Required·forbidden term, expected source, reviewer oracle, threshold는 prompt에 보내지 않는다. 생성 뒤에는 Q1의 `requireReviewerPass: true`를 포함한 exact default threshold로 citation, grounding, required·forbidden term, unsupported source와 synthetic reviewer oracle을 평가한다. Synthetic reviewer `pass`는 독립 reviewer 승인 증적이 아니다.
+
+Deterministic artifact는 Q9 fixture·policy·deterministic artifact, 기존 Q9 4/5 local shadow, Q7 evidence·prompt, Q1 threshold를 exact hash로 묶는다. Local runner는 설치된 `qwen2.5:3b`의 model id·digest·size·license와 Ollama version, 모든 입력 artifact bytes를 generation 전후에 다시 확인한 뒤에만 content-free artifact를 쓴다. 이번 sufficient 한 건의 answer-quality는 통과했지만 Q9의 `unnecessary-abstention`, `modelConforms: false`, current answer path, runtime activation, training, actual user data와 production claim은 그대로다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -1767,6 +1780,7 @@ Deterministic fixture는 다섯 상태를 한 건씩 포함한다. `unsupported-
 | Q8 Actual user-query evaluation protocol | 프로토콜 완료 · 데이터 대기 | private intake, tracked-path refusal, Q7 v5 binding, per-case consent reload, withdrawal fail-closed | fake loopback protocol 검증 완료; actual user data·quality·activation·training 없음 |
 | Q8.1 Private evaluation I/O and threshold hardening | 완료 | owner-only input·output, no-follow descriptor read, atomic private write, frozen all-pass threshold | weak mode·symlink·hard link·threshold relaxation을 model 호출 또는 evidence 승인 전에 거부 |
 | Q9 RAG evidence sufficiency | 완료 · shadow 미통과 | required claim SHA-256 assertion만으로 sufficient·partial·conflicting·irrelevant·no-evidence를 고정 판정 | deterministic gate 통과; qwen2.5:3b shadow는 4/5 정책 일치와 sufficient case `unnecessary-abstention` 1건을 보존하고 current answer path·activation·training은 불변 |
+| Q10 Evidence-gated answer shadow | 완료 · opt-in shadow | Q9 action을 authoritative gate로 사용하고 sufficient 한 건만 Q7 v5 local composition과 Q1 frozen quality gate로 평가 | deterministic 5-state route와 generator 1회, local sufficient answer-quality pass, Q9 4/5 실패 이력과 default runtime 불변 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |

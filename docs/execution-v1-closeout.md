@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-27T08:19:02.228Z
-- branch: codex/local-rag-evidence-sufficiency
-- commit: f86641e4e8ec97054f77c1fb67907f0682b7bb8a
+- generatedAt: 2026-07-27T18:04:26.930Z
+- branch: codex/rag-evidence-gated-answer-shadow
+- commit: 9e69c94cfa4ea53915c80050099a80adc762b444
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

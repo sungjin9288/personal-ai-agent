@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-07-27 Q10 Evidence-Gated Answer Shadow
+
+- added a pure coordinator that treats the existing Q9 evaluator as the only action authority, blocks four non-sufficient states before generator or answer-contract access, and permits one sufficient answer composition
+- bound a separate Q10 fixture to exact Q9 fixture and artifacts, the preserved 4/5 `unnecessary-abstention` shadow, Q7 v5 prompt evidence, and Q1 default all-pass thresholds without modifying those baselines
+- added content-free deterministic and installed loopback qwen2.5:3b artifacts with pre/post model, runtime, license, and bound-file attribution checks plus simple and rehashed semantic tamper rejection
+- observed the single synthetic sufficient answer pass citation, grounding, required and forbidden term, unsupported source, and synthetic reviewer-oracle checks; this does not represent independent reviewer or actual-user validation
+- kept public API, CLI, HTTP payload, storage, permission, approval, audit ordering, default answer path, training, external providers, model downloads, and production readiness unchanged
+
 ## 2026-07-27 Q9 RAG Evidence Sufficiency
 
 - added a pure required-claim SHA-256 assertion evaluator with fixed conflict-first precedence and answer/request/abstain actions; the existing answer-quality evaluator and default runtime path remain untouched
