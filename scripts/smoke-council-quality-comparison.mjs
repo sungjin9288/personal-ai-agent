@@ -42,7 +42,6 @@ for (const evidence of [trackedEvidence, freshEvidence]) {
     evidence.comparison.failedCheckIds,
     [
       'unsupported-claim-comparable',
-      'reviewer-outcome-no-regression',
       'stage-count-no-regression',
     ],
   );
@@ -60,8 +59,8 @@ for (const evidence of [trackedEvidence, freshEvidence]) {
   assert.equal(conflictCandidate.syntheticConflictRoutingDetected, true);
   assert.equal(conflictCandidate.reviewer.outcome, 'absent');
   assert.equal(reviewerFailureBaseline.reviewer.outcome, 'fail');
-  assert.equal(reviewerFailureCandidate.reviewer.outcome, 'pass');
-  assert.equal(reviewerFailureCandidate.reviewer.correct, false);
+  assert.equal(reviewerFailureCandidate.reviewer.outcome, 'fail');
+  assert.equal(reviewerFailureCandidate.reviewer.correct, true);
 }
 
 assert.deepEqual(

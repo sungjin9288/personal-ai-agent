@@ -366,6 +366,32 @@ local provider shadow는 별도 현재 permission, model digest, license, egress
 실행한다. threshold와 timeout은 preflight 측정 뒤 정하며 계획 문서의 임의 숫자를 성능 주장으로 사용하지
 않는다.
 
+### C3.1 — Council reviewer parity repair
+
+- model: `gpt-5.6-sol`, reasoning `high`
+- branch: `codex/council-reviewer-parity`
+- status: completed on 2026-07-27
+
+구현 결과:
+
+- synthesis draft가 baseline과 동일하게 `force-reviewer-fail`, `force-rubric-fail` fixture directive를
+  반영하도록 교정했다.
+- directive는 내부 `renderDraft` 입력으로만 사용한다. raw mission object와 constraint는 provider
+  input에 전달하지 않고, 허용된 mission·workspace 값은 pack이 렌더링한 artifact에만 나타난다.
+- 같은 reviewer rubric failure fixture에서 두 profile 모두 reviewer `fail`, mission `failed`를
+  기록한다.
+- current C3 comparison의 `reviewer-outcome-no-regression`은 통과하며 baseline reviewer correct
+  count 3, candidate count 4를 기록한다.
+
+유지한 판정:
+
+- unsupported claim은 공통 semantic oracle이 없어 계속 `not-comparable`이다.
+- persisted stage count는 baseline 26, council 34로 유지된다.
+- `improvementProven: false`, `defaultPromotionAuthorized: false`,
+  `selectedDefaultProfile: knowledge-triad`를 유지한다.
+- external provider call, model download, 실제 사용자 데이터, 새 production dependency를 사용하지
+  않았고 public API, payload, storage, permission, approval ordering을 변경하지 않았다.
+
 ### C4 — Research evidence enrichment
 
 - model: `gpt-5.6-terra`, reasoning `high`

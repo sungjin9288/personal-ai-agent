@@ -130,6 +130,26 @@ test('unsupported claim not-comparable keeps baseline even when other observatio
   assert.ok(comparison.failedCheckIds.includes('unsupported-claim-comparable'));
 });
 
+test('reviewer parity passes when both profiles preserve the expected failure', () => {
+  const observations = comparisonObservations();
+  const replayHash = hashCouncilQualityValue(
+    observations.map((item) => item.semanticHash),
+  );
+  const comparison = buildCouncilQualityComparison({
+    fixtureSetHash: hashCouncilQualityValue(fixtures),
+    observations,
+    replaySemanticHashes: [replayHash, replayHash],
+  });
+
+  const reviewerCheck = comparison.checks.find((item) =>
+    item.id === 'reviewer-outcome-no-regression');
+  assert.equal(reviewerCheck.passed, true);
+  assert.equal(
+    comparison.failedCheckIds.includes('reviewer-outcome-no-regression'),
+    false,
+  );
+});
+
 test('reviewer false pass and boundary side effects reject candidate promotion', () => {
   const observations = comparisonObservations();
   const reviewerCandidate = observations.find((item) =>

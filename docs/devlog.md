@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-27 Council Reviewer Parity Repair
+
+- preserved `force-reviewer-fail` and `force-rubric-fail` only as internal synthesis rendering decisions while keeping raw mission constraints and private mission values outside the provider input
+- replayed the same public synthetic reviewer-rubric fixture and observed both `knowledge-triad` and `knowledge-council-triad` fail at reviewer with failed mission status
+- removed the reviewer non-regression failure from the current comparison while retaining unsupported-claim non-comparability, the 26 versus 34 stage result, `knowledge-triad` as default, and council promotion denial
+- kept API, payload, storage, permission, approval ordering, external provider calls, model download, actual user data, production dependencies, and `productionReadyClaim: false` unchanged
+
 ## 2026-07-27 Council Quality Comparison and Baseline Retention
 
 - replayed four identical public synthetic cases through `knowledge-triad` and `knowledge-council-triad` twice in fresh stores, binding every persisted artifact to exact SHA-256 and byte length while comparing only allowlisted semantic fields across replays

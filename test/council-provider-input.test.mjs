@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { buildCouncilProviderInput } from '../src/core/mission-run-service.mjs';
+import { getKnowledgePack } from '../src/packs/knowledge.mjs';
 
 const allowedKeys = [
   'councilBrief',
@@ -126,4 +127,42 @@ test('synthesis provider input contains only evidence-bound council data and saf
       title: 'Write the approved council artifact',
     },
   });
+});
+
+function knowledgeSynthesisInput(constraint) {
+  const source = baseInput('synthesis');
+  source.mission = {
+    constraints: [
+      'private constraint',
+      constraint,
+    ],
+    deliverableType: 'checklist',
+    objective: 'Verify the council synthesis boundary.',
+    title: 'Council synthesis fixture',
+  };
+  source.workspace = {
+    name: 'Council fixture workspace',
+    path: '/tmp/council-fixture',
+  };
+  source.pack = getKnowledgePack(source);
+  return source;
+}
+
+test('synthesis preserves reviewer failure without applying the rubric failure', () => {
+  const input = buildCouncilProviderInput(knowledgeSynthesisInput('force-reviewer-fail'));
+
+  assertRestricted(input);
+  assert.doesNotMatch(input.councilRuntime.artifactContent, /## Next Action/);
+  assert.match(input.councilRuntime.artifactContent, /- \[ \] confirm scope/);
+  assert.doesNotMatch(JSON.stringify(input), /private constraint|force-reviewer-fail/);
+});
+
+test('synthesis preserves rubric failure without applying the reviewer failure', () => {
+  const input = buildCouncilProviderInput(knowledgeSynthesisInput('force-rubric-fail'));
+
+  assertRestricted(input);
+  assert.match(input.councilRuntime.artifactContent, /## Next Action/);
+  assert.match(input.councilRuntime.artifactContent, /## Checklist\n- gather scope/);
+  assert.doesNotMatch(input.councilRuntime.artifactContent, /- \[ \]/);
+  assert.doesNotMatch(JSON.stringify(input), /private constraint|force-rubric-fail/);
 });
