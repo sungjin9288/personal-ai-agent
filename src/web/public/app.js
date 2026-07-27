@@ -92,6 +92,8 @@ import { state, elements } from './lib/app-state.js';
 import { bootstrapApplication } from './lib/application-bootstrap.js';
 import { wireApplicationEvents } from './lib/application-events.js';
 import { renderSessionLineage } from './lib/session-lineage.js';
+import { buildCouncilReadModel } from './lib/council-read-model.js';
+import { renderCouncilBoard as renderCouncilBoardMarkup } from './lib/council-board.js';
 import { initTheme, toggleTheme } from './lib/theme.js';
 import {
   getSanitizedStepId,
@@ -7799,6 +7801,62 @@ function renderTimeline() {
   wireTimelineSessionSelectionButtons();
 }
 
+function wireCouncilSeatNavigation() {
+  const seats = Array.from(elements.councilBoard?.querySelectorAll('.council-seat') || []);
+  seats.forEach((seat, index) => {
+    seat.addEventListener('keydown', (event) => {
+      if (event.target !== seat) {
+        return;
+      }
+      const navigationKeys = ['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'End', 'Home'];
+      if (!navigationKeys.includes(event.key)) {
+        return;
+      }
+
+      event.preventDefault();
+      const lastIndex = seats.length - 1;
+      const nextIndex =
+        event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? lastIndex
+            : ['ArrowRight', 'ArrowDown'].includes(event.key)
+              ? (index + 1) % seats.length
+              : (index - 1 + seats.length) % seats.length;
+      seats[nextIndex]?.focus();
+    });
+  });
+}
+
+function renderCouncilBoard({ loading = false } = {}) {
+  if (!elements.councilBoard) {
+    return;
+  }
+
+  const focusedElement = document.activeElement?.closest?.('[data-council-focus-key]');
+  if (focusedElement && elements.councilBoard.contains(focusedElement)) {
+    state.councilBoardFocusKey = String(focusedElement.dataset.councilFocusKey || '').trim();
+  }
+
+  const model = buildCouncilReadModel({
+    loading,
+    sessionPayload: state.currentSessionPayload,
+  });
+  elements.councilBoard.setAttribute('aria-busy', loading ? 'true' : 'false');
+  elements.councilBoard.innerHTML = renderCouncilBoardMarkup(model);
+  wireCouncilSeatNavigation();
+  wireRetrievalArtifactButtons(elements.councilBoard);
+
+  if (!loading && state.councilBoardFocusKey) {
+    const focusKey = state.councilBoardFocusKey;
+    const focusTarget = Array.from(
+      elements.councilBoard.querySelectorAll('[data-council-focus-key]'),
+    ).find((element) => element.dataset.councilFocusKey === focusKey);
+    state.councilBoardFocusKey = '';
+    window.requestAnimationFrame(() => focusTarget?.focus({ preventScroll: true }));
+  }
+}
+
 export async function selectSession(
   sessionId,
   { focusRuns = true, preferredArtifactId = null, syncUrl = true, urlMode = 'replace' } = {},
@@ -7808,6 +7866,8 @@ export async function selectSession(
   }
 
   state.selectedSessionId = sessionId;
+  state.currentSessionPayload = null;
+  renderCouncilBoard({ loading: true });
   if (focusRuns) {
     setActiveDetailTab('runs', { syncUrl: false });
   }
@@ -7819,6 +7879,7 @@ export async function selectSession(
   state.currentSessionPayload = payload;
   renderSelectionBridge();
   renderSessionDetail(payload);
+  renderCouncilBoard();
 
   const latestDeliverable = (payload.artifacts || [])
     .slice()
@@ -7849,6 +7910,7 @@ export async function selectSession(
 export function clearMissionSelection({ syncUrl = true, urlMode = 'replace' } = {}) {
   stopExecutionPolling();
   state.currentSessionPayload = null;
+  state.councilBoardFocusKey = '';
   state.executionLogs = null;
   state.executionStatus = null;
   state.harnessDocumentResult = null;
@@ -7877,6 +7939,7 @@ export function clearMissionSelection({ syncUrl = true, urlMode = 'replace' } = 
   renderTimeline();
   renderSessionList();
   renderSessionDetail(null);
+  renderCouncilBoard();
   renderArtifact(null);
   renderFlowState();
   renderAgentBlueprintBuilder();
@@ -7907,6 +7970,8 @@ async function selectMission(
   resetHarnessFilterState();
   state.selectedMissionId = missionId;
   state.selectedArtifactId = null;
+  state.currentSessionPayload = null;
+  renderCouncilBoard({ loading: true });
   state.harnessDocumentResult = null;
   state.harnessMemoryResult = null;
   resetHarnessFilterInputs();
@@ -7953,6 +8018,7 @@ async function selectMission(
     state.selectedSessionId = null;
     state.currentSessionPayload = null;
     renderSessionDetail(null);
+    renderCouncilBoard();
     renderArtifact(null);
   }
 

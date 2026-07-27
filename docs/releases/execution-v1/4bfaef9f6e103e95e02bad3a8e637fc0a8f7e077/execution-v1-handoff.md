@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-27T01:55:08.627Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-27T01:55:07.588Z
 - localDate: 2026-07-27
 - branch: codex/council-read-model-board
 - commit: 4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077](releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077](docs/releases/execution-v1/4bfaef9f6e103e95e02bad3a8e637fc0a8f7e077)
 - visualArtifactSetSha256: 33ae4b2125bbcb5ab58858c6bebb97ea0d9a0a021354a57a08b42a2dfb738a48
 - commitPushStatus: not pushed, origin/codex/council-read-model-board not found
 - liveValidationMode: archived-preserved-not-rerun

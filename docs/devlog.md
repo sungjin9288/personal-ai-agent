@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-07-27 Read-only Council Deliberation Board
+
+- derived one council read model from the selected session's persisted run, artifact, reviewer, and approval records without adding an endpoint, payload field, storage change, provider call, or UI mutation
+- separated research, implementation, and verification opening/rebuttal records from agreement, rejected options, unresolved conflicts, reviewer result, and human approval while reusing the existing artifact navigation control
+- required the reviewer to be the exact persisted successor of synthesis and failed closed on ambiguous or missing approval lineage instead of inferring completion
+- added explicit loading, empty, blocked, reviewer-failed, approval-pending, and completed states with one evidence-grounded next action, `기록 없음` fallbacks, keyboard focus restoration, `aria-live`, dark mode, reduced motion, dense desktop, and 640px support
+- verified 13 C2 tests, 12 existing council contract/provider-input tests, 1682 passing unit tests with 1 intentional skip, deterministic council and board smokes, and local browser navigation and responsive states while keeping `productionReadyClaim: false`
+
 ## 2026-07-27 Council Evidence Contract and Deterministic Stub Runtime
 
 - added an opt-in fixed research·implementation·verification council with byte-identical private-content-free opening prompts, one CouncilBrief-only rebuttal round, and executor chair synthesis without adding a role, storage collection, production dependency, or external provider call

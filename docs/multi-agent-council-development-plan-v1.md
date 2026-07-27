@@ -288,30 +288,35 @@ digest를 정렬된 순서로 기록한다.
 
 - model: `gpt-5.6-terra`, reasoning `high`
 - branch: `codex/council-read-model-board`
+- status: completed on 2026-07-27
 
-구현:
+구현 결과:
 
-- persisted run, artifact, reviewer, approval에서 council read model 파생
-- mission detail에 읽기 전용 `협의` panel 추가
-- opening/rebuttal을 seat별로 분리해 표시
-- agreement, rejected option, unresolved conflict, reviewer result, human approval을 다른 상태로 표시
-- evidence source focus와 artifact navigation은 기존 control 재사용
-- loading, empty, blocked, reviewer-failed, approval-pending, completed state 구현
-- 현재 상태에 맞는 next action 하나만 표시
+- 선택한 session의 persisted run, artifact, reviewer, approval만 사용해 council read model을 파생한다.
+- 최신 council을 고른 뒤 research, implementation, verification seat의 opening과 rebuttal을 정확한 phase로 나눠 표시한다.
+- synthesis agreement, rejected option, unresolved conflict를 claim id로 다시 연결하고, reviewer와 human approval을 별도 card로 표시한다.
+- reviewer는 synthesis 바로 다음 `session.agentRunIds` record만 인정한다. approval은 같은 session의 approval id, reviewer ownership, 지원 kind, timestamp를 모두 만족하는 단일 record만 인정하며 모호하거나 누락되면 fail-close한다.
+- mission detail에 읽기 전용 `협의` panel을 추가하고 기존 retrieval artifact navigation control을 그대로 재사용한다.
+- loading, empty, blocked, reviewer-failed, approval-pending, completed 상태와 persisted evidence에서 나온 next action 하나만 표시한다.
+- seat keyboard 이동, focus restoration, visible focus, `aria-live`, dark mode, reduced motion, dense desktop, 640px layout을 구현했다.
 
-제외:
+유지한 경계:
 
-- UI에서 rerun, merge, approval mutation
-- Tailwind, component framework, animation dependency
-- evidence가 없는 consensus 표현
+- UI rerun, merge, approval mutation을 추가하지 않았다.
+- 새 endpoint, HTTP payload, storage format, provider call, dependency를 추가하지 않았다.
+- Tailwind, component framework, animation dependency와 upstream visual identity를 가져오지 않았다.
+- 연결할 persisted evidence가 없는 값은 `기록 없음`으로 표시하고 consensus나 completion을 추론하지 않는다.
 
-완료 기준:
+검증:
 
-- 실제 record가 없는 값은 `기록 없음`으로 표시
-- keyboard로 seat, evidence, artifact를 이동 가능
-- focus restoration, visible focus, `aria-live` 상태 알림
-- dark mode, reduced motion, dense desktop, 640px 화면 검증
-- 기존 HTTP payload로 표현할 수 없는 값은 추론하지 않고 작업을 중단
+- C2 read-model/UI test: 13 passed
+- existing council contract/provider-input regression: 12 passed
+- `npm run smoke:ui-council-board`: completed, blocked, fixed 3-seat surface 통과
+- `npm run smoke:council-stub-runtime`: deterministic council lifecycle 통과
+- `npm test`: 1682 passed, 1 skipped, 0 failed
+- local browser: artifact navigation, keyboard focus, session reload focus restoration, zero console error, dark mode, reduced motion, dense desktop, 640px 화면 확인
+- Terra adversarial re-review: approval ambiguity와 missing approval이 fail-close함을 확인하고 blocking finding 없음
+- Sol architecture re-review: historical round action은 read model에만 보존하고 현재 next action 하나만 표시함을 확인했으며 blocking finding 없음
 
 ### C3 — Council quality comparison
 
