@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added content-free C4 council research evidence enrichment. Existing manager and planner retrieval artifacts now project artifact- and corpus-bound citations with exact chunk lineage, available/degraded/gap status, and source limitations without re-retrieval, raw source exposure, external provider calls, public contract changes, or production promotion.
 - Added a cost-free F1.25 private collection-gap replan shadow that independently reconstructs the F1.24 projection from live authority and recalculates the F1.2 collection plan in memory only. Tracked F1.2 evidence, intake, collection completion, audit, training, provider, submission, deployment, and production state remain unchanged or false.
 - Added a cost-free F1.24 combined readiness impact shadow that composes one trusted F1.21 reviewed record and one trusted F1.20 replay case in memory only.
 - Added F1.23 private answer-quality readiness impact shadow. The read-only projection revalidates one exact final F1.20 replay and adds its frozen F1.18 Q1 case definition to the tracked deterministic suite only in memory. It projects 2→3 answer-quality cases while dataset records, split and export digests, sufficiency stop-condition failures, collection-action completion, training, provider, submission, deployment, and production state remain unchanged or false.
@@ -141,8 +142,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,311,069 bytes`
-- SHA-256: `fd1b8bfcdf169c696bd0000859590686f105622c4fcc24e154ee87f58ca88a05`
+- Size: `4,311,623 bytes`
+- SHA-256: `5e31e2e5fb5057102f4cbfea8fe67bbb67088ec57cd4f97f882820f6a17daf21`
 
 Included public surfaces:
 

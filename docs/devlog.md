@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-07-27 Council Research Evidence Enrichment
+
+- projected the existing manager and planner retrieval artifacts into one bounded council evidence entry per stage with artifact digest, opaque citation id, corpus and chunk lineage hashes, revision, corpus chunk index and count, and only the `known` or `unknown` freshness fact
+- kept raw snippets, source labels, paths, URLs, attachments, memory values, provenance objects, and exact source timestamps outside the council frame and all provider inputs
+- treated absent retrieval artifacts as `gap` and incomplete lineage as `degraded`, excluded both from citable evidence, and added a deterministic `Council Source Limitations` section plus source-verification next action without adding a synthesis field
+- preserved legacy retrieval entries and artifact entries, rejected duplicate citation ids across the full catalog, bound enriched frame bytes to the existing tamper checks, and kept council rounds retrieval-free
+- regenerated the same C3 comparison with reviewer parity, baseline 26 versus council 34 stages, unsupported-claim non-comparability, `knowledge-triad` as default, promotion denial, and `productionReadyClaim: false` unchanged
+
 ## 2026-07-27 Council Reviewer Parity Repair
 
 - preserved `force-reviewer-fail` and `force-rubric-fail` only as internal synthesis rendering decisions while keeping raw mission constraints and private mission values outside the provider input

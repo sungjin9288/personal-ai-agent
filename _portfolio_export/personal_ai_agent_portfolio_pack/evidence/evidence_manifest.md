@@ -165,6 +165,7 @@
 - Local reranker runtime stability: verified with `npm run smoke:local-reranker-runtime-stability`
 - Local relevance shadow integration: verified with `npm run smoke:local-relevance-shadow-integration`
 - Council quality comparison: verified with `npm run smoke:council-quality-comparison`; reviewer failure parity restored, baseline retained, and default council promotion denied
+- Council research evidence enrichment: verified with `npm run smoke:council-stub-runtime`; existing manager and planner retrieval artifacts become bounded content-free council citations, gap and degraded lineage remain non-citable, exact source timestamps stay private, and council rounds perform no retrieval
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
 - Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`
