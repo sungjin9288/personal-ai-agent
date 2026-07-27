@@ -5,7 +5,7 @@
     "aggregates": {
       "baselineReviewerCorrectCount": 3,
       "baselineStageCount": 26,
-      "candidateReviewerCorrectCount": 3,
+      "candidateReviewerCorrectCount": 4,
       "candidateStageCount": 34
     },
     "checks": [
@@ -25,9 +25,9 @@
         "passed": true
       },
       {
-        "evidence": "Reviewer failure candidate outcome: pass.",
+        "evidence": "Reviewer failure candidate outcome: fail.",
         "id": "reviewer-outcome-no-regression",
-        "passed": false
+        "passed": true
       },
       {
         "evidence": "Persisted agentRuns are the exact stage-count unit.",
@@ -49,7 +49,6 @@
     "defaultPromotionAuthorized": false,
     "failedCheckIds": [
       "unsupported-claim-comparable",
-      "reviewer-outcome-no-regression",
       "stage-count-no-regression"
     ],
     "fixtureSetHash": "sha256:002b82cdf459c89ce663246692c5eed4bfc449ffe44de819ad5ffc9cd880bac6",
@@ -61,12 +60,12 @@
   "determinism": {
     "replayCount": 2,
     "replaySemanticHashes": [
-      "sha256:c5b99e85efe1193fe299dd686b91e280ffcd2f714b9ac0df1afee343ab33476b",
-      "sha256:c5b99e85efe1193fe299dd686b91e280ffcd2f714b9ac0df1afee343ab33476b"
+      "sha256:e9d7abe41451db97e33723a4157ffe97f20cc576b1621adea4dbbd9316f2be6d",
+      "sha256:e9d7abe41451db97e33723a4157ffe97f20cc576b1621adea4dbbd9316f2be6d"
     ]
   },
   "evaluatedAt": "deterministic-local-replay",
-  "evidenceHash": "sha256:93091ffbbfebfda18238d9920d40907917d8dbadd0cd0167910120cf0f5bb8e0",
+  "evidenceHash": "sha256:24e4612bc0f497e1a9437ea7703bc1ceada2cd06567e17f0f15868365e45054b",
   "externalProviderCalls": "none",
   "fixtureSetHash": "sha256:002b82cdf459c89ce663246692c5eed4bfc449ffe44de819ad5ffc9cd880bac6",
   "fixtureSource": "fixtures/council-quality-comparison-cases-v1.json",
@@ -81,7 +80,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:5cb2acfb8abdb3256b734e90c57726aa49e34a544a08bc32f9662e6460ef505e",
+          "sha256": "sha256:d9532ed6dc2611ec597f81d52b4279b4fdde8643a184a08bd6900c71f98fa6cd",
           "specialistKind": null,
           "stageKind": null
         },
@@ -103,7 +102,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:ca6c966db26c2a0b6b58d4af05a4a78cf180bce10fb91791d4c39e8ce877b9e3",
+          "sha256": "sha256:d3cb33b919997684cf1997baac8d9e7ee2766a29673043894eb27034ed79a875",
           "specialistKind": null,
           "stageKind": null
         },
@@ -114,7 +113,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:fef0ca47686b56516ef69efd0dbf874c7f2da989b4bda0506dc5130523fc8c78",
+          "sha256": "sha256:6c0abcb31434717f8b9f1795fdbede683e0a3f8f812078cddeb529e91e5fe931",
           "specialistKind": null,
           "stageKind": null
         },
@@ -125,7 +124,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:95bd6feb05d9f850e2e39f78d9a5313c2735d38e318e1f50753f1d42651d837e",
+          "sha256": "sha256:89f2293e89634ab9e8bec7b3fe0ba30a86fddbf265a2d2f491be207fac8178cf",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -136,7 +135,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:dba85c217c2719677710b290c50f8f45c1fe566c7fb345a1d8f181423f3a7d15",
+          "sha256": "sha256:0e5d65bc248b63ad8c9379804dcbde446352b0815870c13d676bb344ab7ad980",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -147,7 +146,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:479772d5841ce7aba2411c84e3c0ba5087f47b1077250e4fcf1b26ae70d2c922",
+          "sha256": "sha256:4f7f09575947e613695c3694e0101e1b6897fab61eee0c7730add6eb758f0959",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -158,7 +157,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:03e11df5b7a36bbc835ed93d72eea59cfb7dae69d992f3f37ab82905d3f53aa6",
+          "sha256": "sha256:e815f9d5409ccc6045cbb205b77ac3fc27a2f65210da5f1a5d6ca1f26d9acfbd",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -169,7 +168,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:a16fffa6620551e14976c4c3da3f4dad311cd4cd3c3c6d792a5a06c6ed0d8dbb",
+          "sha256": "sha256:013582fbd07876578bcf4917eabbffbe5d9b7b1644c76955b572669f19e4c4b5",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -180,7 +179,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:468ae544b81280d88ac87e99f0f2951abf9f6f8a55f8354149582b6e1cde0f11",
+          "sha256": "sha256:116f27b6d520fbfa4a9d85cc8745703fd496f01b258809752352f18b040a1e87",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -191,7 +190,7 @@
           "kind": "prompt",
           "role": "executor",
           "runIndex": 5,
-          "sha256": "sha256:c71d07928ee50fbb6c8888724a899256f04bd284cc3644ddf4fb32af7000e9be",
+          "sha256": "sha256:679cfebebe2344a3e2f0136a4413be84613147a45bac281e9911e09d8fd72308",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -202,7 +201,7 @@
           "kind": "deliverable",
           "role": "executor",
           "runIndex": 5,
-          "sha256": "sha256:f836587d6fd81646d864ca1a446045d510f4e6a2fea5f5ce6e82d9d6ebae7312",
+          "sha256": "sha256:e52cfb024beccfbc9e024016ecb385e454a541645943101bbfda26c2870a09b6",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -213,7 +212,7 @@
           "kind": "prompt",
           "role": "reviewer",
           "runIndex": 6,
-          "sha256": "sha256:51d50f2eef77c109b4b9a2c44c8e496d759b48713d8b1681a73b340a43897369",
+          "sha256": "sha256:3914a6e3311733f1580999a75e3f0403f39657148681ae68d9a97b423285fb7a",
           "specialistKind": null,
           "stageKind": null
         },
@@ -235,7 +234,7 @@
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:c7def3b3f07af8d923a25ea4c7ac788b5739c577575ade75ebd3f0a75d29b13d",
+          "sha256": "sha256:09c942b5107f7a33c198f96dacbe7f01a452695d4d74ec9bbdabe7591a99c292",
           "specialistKind": null,
           "stageKind": null
         }
@@ -282,7 +281,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:854f4fbc4836cb5ba42c7a7f681e39f273708bd752703cfeeb27fe4e8eab9f12",
+          "sha256": "sha256:06ab2ecf961bb6fa6affe0947a2cc8997c5bdcd13a20b0226e85acb7256f2db8",
           "specialistKind": null,
           "stageKind": null
         },
@@ -304,7 +303,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:1602cc453a060a9edf82749fbd884c5b925725f73fb2f1a06991acad5adaea37",
+          "sha256": "sha256:133b05776d44470f907fdad8f247630b45300c79701d2d03deabab1e53b9fb16",
           "specialistKind": null,
           "stageKind": null
         },
@@ -315,7 +314,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:924cd78ecf7e846aee230ead440b551ad62af516d4c185fb9b83ba2bdfc51940",
+          "sha256": "sha256:493fd4d346b9f18df7e4cadc2d70faf0ea1aaaeaa7bd1fb594ecbc2480890799",
           "specialistKind": null,
           "stageKind": null
         },
@@ -326,7 +325,7 @@
           "kind": "council-frame",
           "role": "manager",
           "runIndex": 8,
-          "sha256": "sha256:fcf2dac8a88219ef2b50a3fcdf08e034aea2e227ffcd709feac6fdd2c33ff9fd",
+          "sha256": "sha256:6532b8f8ed10d398ef373ff51d910089b9b6a1563be6c355bf55afa57a029b16",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -337,7 +336,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:b46620fec817121017c6eb0285c77c579c4a002dbecae84595562f9d27de1ea9",
+          "sha256": "sha256:31a426cad66b12d64e0cd83624159589018563ee2ff176827921cf440f6ce4eb",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -348,7 +347,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:cc2d0d0de089ed8ad3688af3bee7fe84712bc981e4c61275523bdca719cf58f4",
+          "sha256": "sha256:857b9620e67998985c9781345d4be02c0112ba605406c266270c9bd104e8a02b",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -359,7 +358,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:b46620fec817121017c6eb0285c77c579c4a002dbecae84595562f9d27de1ea9",
+          "sha256": "sha256:31a426cad66b12d64e0cd83624159589018563ee2ff176827921cf440f6ce4eb",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -370,7 +369,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:c8961fb87a7fbb6ecae37a3b47d6407d7767d7aca69be0963624aef551b192aa",
+          "sha256": "sha256:251b4f7dfdc12e2a293e829137c71da78e3eea69d91d7a71ab5cff120b7d19fa",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -381,7 +380,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:b46620fec817121017c6eb0285c77c579c4a002dbecae84595562f9d27de1ea9",
+          "sha256": "sha256:31a426cad66b12d64e0cd83624159589018563ee2ff176827921cf440f6ce4eb",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -392,7 +391,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:cd1896b96a99bcc11de20f61681e4c07df4e51a76c5fcdeb25398585352501cc",
+          "sha256": "sha256:17226dba966892565544b0aa5342e422acf87d55617caa1ea9f13a6b8990bbdd",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -403,7 +402,7 @@
           "kind": "council-brief",
           "role": "manager",
           "runIndex": 8,
-          "sha256": "sha256:a80c32d99e31e1554120a6d2fbde7ceda0b6b10c2159964ee20e3f459f84732b",
+          "sha256": "sha256:9deb9fabc980ff7068378f6dd39144fc43dfc43b790aef5fd8af640e0c7ab12d",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -414,7 +413,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 5,
-          "sha256": "sha256:423ba59d6e49cb6e6a8a4e26159ef7fcedc2f5746c04f477a19616200861a7b1",
+          "sha256": "sha256:74e7c2626ecd6e18b017b4fe3149c0653db10748d4a1826f2e847cdb1459038e",
           "specialistKind": "research",
           "stageKind": "council-rebuttal"
         },
@@ -425,7 +424,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 5,
-          "sha256": "sha256:61cc36b7408ae9eb11b8b19538a2053179b71fd3f947f3e7b85c7cd52cc79203",
+          "sha256": "sha256:57c9c1d7841b4d43128b805a60631eeb06791eb7b1ed3592fbbc593e88fd1dd0",
           "specialistKind": "research",
           "stageKind": "council-rebuttal"
         },
@@ -436,7 +435,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 6,
-          "sha256": "sha256:2d9776bf494cb9afefca4f4331e1d68c2c40f9981b1b4b1998afd77c1b583bee",
+          "sha256": "sha256:2fc885f000a64bffc68cfc98f0ea123567917fdc454e16c7bd02234bdc020739",
           "specialistKind": "implementation",
           "stageKind": "council-rebuttal"
         },
@@ -447,7 +446,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 6,
-          "sha256": "sha256:90c0ac702470564e33efc613c7ce4a13303b17e9b12a8b9d650edac264ae9d56",
+          "sha256": "sha256:7e689023b947d4dbcb66420b434a869a78cfdf17d339eb76d7eb0ec806cb5e03",
           "specialistKind": "implementation",
           "stageKind": "council-rebuttal"
         },
@@ -458,7 +457,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 7,
-          "sha256": "sha256:3fba398328f898e8efc162d97516b7d93770c57641c73f85fa79fe77f2cf52fd",
+          "sha256": "sha256:ff1049658fbd3199a8cc230ede4e4ebfcbb74e4c7f152a938fd0b10d1b6ab903",
           "specialistKind": "verification",
           "stageKind": "council-rebuttal"
         },
@@ -469,7 +468,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 7,
-          "sha256": "sha256:12a70b667a7a2e82ad5982efa6a0a016712ae333ba1504f19b8d8c5752dd6364",
+          "sha256": "sha256:3f6722208951498be7f59561534fcd4b885785b613e8378e7d56ab1ff456570c",
           "specialistKind": "verification",
           "stageKind": "council-rebuttal"
         },
@@ -480,7 +479,7 @@
           "kind": "prompt",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:c9dd8bc550a477474df8c6c4df93e46eaa85307a871c0453840d2e6b97a3d350",
+          "sha256": "sha256:e7185ebc70e08323d1b44b95cc41382a8993cfbc1dbf6a3f591d33f4094c6448",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -491,7 +490,7 @@
           "kind": "deliverable",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:a2dacff575157d299c6df0f607417e9392f83753f96d32f23b85c8df7f4a75f9",
+          "sha256": "sha256:9209068e9ae9f3f25ef2f468156a27743b7b3456265acfba14606b5737f97ec0",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -502,7 +501,7 @@
           "kind": "council-manifest",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:517c9e41f6c52c5632bc71f7fd2958717e39e392f465b09103ffea7a08ca5ea0",
+          "sha256": "sha256:360fccf6a19b83503814a7734cbf5bbe404e71d4ce1bc93aa029258d469ba2f3",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -513,7 +512,7 @@
           "kind": "prompt",
           "role": "reviewer",
           "runIndex": 9,
-          "sha256": "sha256:f58fad2ba67d49bfdc2b7b458b2fbb637ce8e3f9e7af7bd65b9fe7424620b434",
+          "sha256": "sha256:58ae27484761338db01122f8c99123c3a3734afacb1d8a4fc27d6f9e394e9a1d",
           "specialistKind": null,
           "stageKind": null
         },
@@ -535,7 +534,7 @@
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:8da507f309d91575f962cac64b970aedae2485956133b7d31ca99f8881cc7310",
+          "sha256": "sha256:e48e0e6e3deecc0b47fad3d1c90004bc05a529ea5e3841d21450b11e198e837e",
           "specialistKind": null,
           "stageKind": null
         }
@@ -585,7 +584,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:b7c66bdb65a8e1974a3d3ae569e0115529aaa9b84946ebaa7e4b9a12afee89fd",
+          "sha256": "sha256:1ac53169affe695e8e3a2099d866189daf885659204bc393bab8889c2440e1eb",
           "specialistKind": null,
           "stageKind": null
         },
@@ -607,7 +606,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:09040d0a609217d3276a8ded3a8609738343a960872533df6520e32640b38e83",
+          "sha256": "sha256:29d8b3fae72b0916718838e2b26f4bc2998d08d5d1f86b32bec231de91c8c608",
           "specialistKind": null,
           "stageKind": null
         },
@@ -618,7 +617,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:bab390cf37e086437d0703560f2c894128cad69514a96ceb033474113a725900",
+          "sha256": "sha256:8b332a1e442204c3635984216baaad7543fde220656966d09b57496a680ee4c0",
           "specialistKind": null,
           "stageKind": null
         },
@@ -629,7 +628,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:a12f6bab540ae22d8757c07b6997839d580b89dd73f77943aed1d73b9908b1c4",
+          "sha256": "sha256:68cacda081ec73db5fde37ec5b8ce9ee163494af42743cfd278a68423abe870f",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -640,7 +639,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:317df7bd0b09df70d40f79ff7a84954b478fe697a5eb99d38c497b8b8a917300",
+          "sha256": "sha256:5ac7cb47f1f915f83e307dfae466229bbe192ef579f2336dc97919790f61e795",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -651,7 +650,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:0c784fdcc81d1295db7c78c274dba5a71b22d78a3998f8439a11365bc59c3689",
+          "sha256": "sha256:e16cbb4384c1882633dfe2a2f074db9aa15e140013663248046034d31931e345",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -662,7 +661,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:eb3a83274ac51a79866590484492e73128c3a480095ef3487014c0d94da05c5f",
+          "sha256": "sha256:6dfd20b530d3fc125536a40ba5cc00a34b06793de44a12d75d00ac190c4e3001",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -673,7 +672,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:373924ebc55978343b6e664dca17ab3ac08bb661f7c22d2043d78025d5e31f65",
+          "sha256": "sha256:0d6b7f0109c33b0e6feb206a1f7bdd61b09b423edbbea75a2dd38913128aa451",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -684,7 +683,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:30445371084d51977acde552a63a1f4b1773b82c9c4e042f1b968fb940ef19aa",
+          "sha256": "sha256:c6ef1549a5ce10f5d83ff1a587e47f1e762e9b660cb28841c6795760b675387b",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -695,7 +694,7 @@
           "kind": "prompt",
           "role": "executor",
           "runIndex": 5,
-          "sha256": "sha256:780e51e340128d9b708e3e91811777991d5c195578963789a623da7ba074278f",
+          "sha256": "sha256:8e84142cfae924bd87ddbc4885f6684b1ee8c9504cbdc622c0412c07eaadcd7d",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -706,7 +705,7 @@
           "kind": "deliverable",
           "role": "executor",
           "runIndex": 5,
-          "sha256": "sha256:d8d5a4f6a3039a77c3fff367d58859662df97a131883054f52d923d862259453",
+          "sha256": "sha256:d1ef9ddb061f21575540a9c02c3619579fca4b6510ad57f1dcfd172464d9e595",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -717,7 +716,7 @@
           "kind": "prompt",
           "role": "reviewer",
           "runIndex": 6,
-          "sha256": "sha256:94b63c495c1b102a961bd877a28a923c1d2cd32516c7acff3a08d1ec5e04752b",
+          "sha256": "sha256:8c8fe3429a9e81877002c27ab907ffe4ce3487b520b208685294ccb3c608bf08",
           "specialistKind": null,
           "stageKind": null
         },
@@ -739,7 +738,7 @@
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:132d774a97f800fcd098b1d3a8f4b2a4425b75ed93816c246d6d70b2529f7d0b",
+          "sha256": "sha256:a8c7410b6d0655db8f9cd90400c55e01098011f26b7762eb98df3a14847c132b",
           "specialistKind": null,
           "stageKind": null
         }
@@ -786,7 +785,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:ef9d9ad01a98ef2ebda7b71257b027c0759d82105206cf2b3ceda34859706eb9",
+          "sha256": "sha256:23ba21ec11582fbb2bbd0dc955c60dbfdbb75472ddff61b0ce0d06429c784114",
           "specialistKind": null,
           "stageKind": null
         },
@@ -808,7 +807,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:584b08890b7e2e1aa4857e41ee01b4a3113b9defc3e1a1efdee848809c1f4105",
+          "sha256": "sha256:9922d543193e087de5bf44b843f1e49ba3dd3c3a15b66e5f63095ed692210ca2",
           "specialistKind": null,
           "stageKind": null
         },
@@ -819,7 +818,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:91d2aa5915e17f46ee450b3a9d46f6786a6517ec01d418e700c6246cb8c82d41",
+          "sha256": "sha256:2633636ecf1851743943f0b90fddf9b426476d8742beafe335f7f13a853b1ddf",
           "specialistKind": null,
           "stageKind": null
         },
@@ -830,7 +829,7 @@
           "kind": "council-frame",
           "role": "manager",
           "runIndex": 8,
-          "sha256": "sha256:1bb84aed4ddee1a9a0347dad587fb8d8029c84063148ff96465b2a55f883c60b",
+          "sha256": "sha256:41c95ed08874a0b74b438addc8e618584de114ddfe061ea70e9c63bb9bdd922b",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -841,7 +840,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:2bd8d5a140d7d6dae69e9a77f174a9bfdc412102e7a97906056f696e0035ee3f",
+          "sha256": "sha256:42f80860a84fb6cad4907a1bd892622bd2fc624e14eba1f124b05f716622d6b1",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -852,7 +851,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:852e3d37ca8a18e8946f3c2f41856dbb3e1b3a33fc8756951f6c1543b1d091f8",
+          "sha256": "sha256:e66bde5665efe964ea86def5073299466f3a8472ad4f4f393c4d16294383d620",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -863,7 +862,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:2bd8d5a140d7d6dae69e9a77f174a9bfdc412102e7a97906056f696e0035ee3f",
+          "sha256": "sha256:42f80860a84fb6cad4907a1bd892622bd2fc624e14eba1f124b05f716622d6b1",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -874,7 +873,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:07b1157588946571a31c4bd17d88d963c909cd0224d9e425a731625bee161061",
+          "sha256": "sha256:c660c0e988c6214700ef2736f1ce4d4bca4a98fd45dd82a983f702bd5499011f",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -885,7 +884,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:2bd8d5a140d7d6dae69e9a77f174a9bfdc412102e7a97906056f696e0035ee3f",
+          "sha256": "sha256:42f80860a84fb6cad4907a1bd892622bd2fc624e14eba1f124b05f716622d6b1",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -896,7 +895,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:bd10b267ed627a0396715f011b79cf8666b45c9643cbe289b3a080308bd4822d",
+          "sha256": "sha256:9cf0ad1d81d28a0810eb2d8c654efb0cc1dec205108bb329904bf811ce4659b8",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -907,7 +906,7 @@
           "kind": "council-brief",
           "role": "manager",
           "runIndex": 8,
-          "sha256": "sha256:6da02c1d7119cbbfed40bda020e400e348a050fea6542c04ccc92cba2a7b1cd9",
+          "sha256": "sha256:1abaff753454aa591167cfc69b592fdfc96a23e9d1b2907e0f04b4b2af066a4b",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -918,7 +917,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 5,
-          "sha256": "sha256:db830df22b4fb37a749de500208de957ed3f2ba316cc6b77ec9fb31c9423490a",
+          "sha256": "sha256:94edf722576f21e186f8fb6df8b4972950288ad36d6dddc38734944b49b06ed7",
           "specialistKind": "research",
           "stageKind": "council-rebuttal"
         },
@@ -929,7 +928,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 5,
-          "sha256": "sha256:f051bd101c2ab172c944e34b851682fed832f7c4e92605c8b3a23f16c62e92b7",
+          "sha256": "sha256:a490dd8d5bd7068775a0ccf524c4cc6194c01e95a50662182ed9f724cdf69ae5",
           "specialistKind": "research",
           "stageKind": "council-rebuttal"
         },
@@ -940,7 +939,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 6,
-          "sha256": "sha256:02bbae2c936edbec7c5c8355d08b52fe4ca5214038acfe2729c41d2daff01803",
+          "sha256": "sha256:2aa776bb0867e49588d09b47984982dabb6ec3a505ca393c793b4211397a89c4",
           "specialistKind": "implementation",
           "stageKind": "council-rebuttal"
         },
@@ -951,7 +950,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 6,
-          "sha256": "sha256:a402fea4b6d3ede1d19fed7c3199ecfa010ee407f491a042ba54a1c2904e80b1",
+          "sha256": "sha256:cf2f3c1d4047bdf30f5528b0807e8799903c6f937a90a7987a1233282a525eb7",
           "specialistKind": "implementation",
           "stageKind": "council-rebuttal"
         },
@@ -962,7 +961,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 7,
-          "sha256": "sha256:84251c27cae6183892f5bdcab0dbcb65082a598f90d7ad346f9f782a99987f99",
+          "sha256": "sha256:5dcc397a45fc610c10b1001cb0bee3cbf66affe8c578acb04e99c0482cc220f1",
           "specialistKind": "verification",
           "stageKind": "council-rebuttal"
         },
@@ -973,7 +972,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 7,
-          "sha256": "sha256:403c5f89b54c1b3fc434f4e98a790499af3285f2ccac0110e83a7593fdcc78af",
+          "sha256": "sha256:e71db94a22a855fcea88af81268cd67312c8cc2707a977dc661892b7f5ab7e7b",
           "specialistKind": "verification",
           "stageKind": "council-rebuttal"
         },
@@ -984,7 +983,7 @@
           "kind": "prompt",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:90251330203761f68253f0b711d49742d524c282528919188516b32fce8625bb",
+          "sha256": "sha256:bd56bd6f558d6506957df567715a1abb0e48efe72ae71e640d3048d8b1d0bffe",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -995,7 +994,7 @@
           "kind": "deliverable",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:22c4ac75d215c30cf3c559cafca0a10e4efe0ad288cecabbf61ece1920965822",
+          "sha256": "sha256:7aef87df93fdadfefafe16e57506a2d991f6bcb0a05ff816c875dc774a0850e3",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -1006,7 +1005,7 @@
           "kind": "council-manifest",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:c8d2c3cea2d213ae91aa3fa42eaef02eed13f77c908b7e55978ce4b4ce26041f",
+          "sha256": "sha256:e04ce064816ba3d9bb34e71fb7e1410ec546a843f78c128f0d3e247f56111d6e",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -1017,7 +1016,7 @@
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:1eba0eec5d8ac38cc3747a3706070f4868ffeefb2500604b6bb739992ae62206",
+          "sha256": "sha256:e6f5d0dea9096216e9703831b41c35b91b68e258bc30064d22700df660a06009",
           "specialistKind": null,
           "stageKind": null
         }
@@ -1068,7 +1067,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:345382bcbb41d448a178fa51fb8403861690d4e81a6cdc24f1cfe866519ed4cb",
+          "sha256": "sha256:5ca64670a16060f1066380791dae046078e7996efdddb2cf811d1ea85abb7b6d",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1090,7 +1089,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:6e1fce599574946dfa8f5dee5998d1be8a4e338cec7f90fc81cfd70d58b0c443",
+          "sha256": "sha256:65e9fd8194a44713fc46690175923575a2b9c1c749bf3bb10f9d3ea0875da8ae",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1101,7 +1100,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:3b77e6e57f8e4019d2a7dd86e65270c9b8627ab8c1057037a72a381e84e3607b",
+          "sha256": "sha256:a12310b2f8d33bf98db146a9362022f9f8990b9c19b4612fb3a566b17016131e",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1112,7 +1111,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:84867cc5e286f78f437e5db8b9d57ae9319455935ff2919f6fdb96205ddd1060",
+          "sha256": "sha256:ea7db37eb707a07044cc3a9c606345c2fad9ead16268358fdadb1feb1d3e35c6",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -1123,7 +1122,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:b2af1907fec2d5aa5eda0e43dd50f45eccf6e3c046e1d0057cb9d5f0fb2547f1",
+          "sha256": "sha256:f873be294e36d0edeb651413e3572146a121271e23c9d5c3cf2f0e77bf001ea3",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -1134,7 +1133,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:3c067992b4486a03bcc5cbd5b2fe456eb2b53aa27bb40ea46146b14316e1e5f1",
+          "sha256": "sha256:7ea533e209c68ffb6ddf0a046eeb0d4fb5c9567db111a8a2b7b4f83454200946",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -1145,7 +1144,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:4616d138a5595cba30b598e26c9ce741ee7241bfeac4ce2da16a07ad0fd7dffe",
+          "sha256": "sha256:5f38fa0e8c985aa9b270c81cf3b4c9c7f30012f3dbb250d55311a1d3bc79cb67",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -1156,7 +1155,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:3f1b8d5c6d03a4cdba13058e417a631d554e65f5921de6a0fbe9b5aa451a62a6",
+          "sha256": "sha256:c1e741ffcde531fa3005db30299071d904166eb1ebaa5478658505ee0632bdd1",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -1167,7 +1166,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:67cc940a42b55d64d4474d0f4cd04d1cb5987cbb1ff28b7e63bd5ca1582d75b4",
+          "sha256": "sha256:f003fa0a6c2e464327b5f2c8852c47c6c948590eb6d4f542b3712904c84fc664",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -1178,7 +1177,7 @@
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:4b5a2eec5854f4cb5baf6ade8f7ddf54c7ee6f23a7d293fd06a02e215c52b885",
+          "sha256": "sha256:abc0526e25aff8184bdcbb9ed80b66c33fbd1cdfa482df38b5104efa40163b3a",
           "specialistKind": null,
           "stageKind": null
         }
@@ -1227,7 +1226,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:8e9a70cb48686941ac3598e803bf4fdf0017e6e8e51589b985fb217306007391",
+          "sha256": "sha256:35dccd57313262933813b3353e192501dc4876f2ffc6475d930ac4b569fc210e",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1249,7 +1248,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:39522cf0a2a949cb7c46e6dabffef436e7150eec3593ed590aeb4eb7b71a931c",
+          "sha256": "sha256:9ed4e2936322da95a1d54cd9227649779835d66be71ad01ace34ed470a9e0488",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1260,7 +1259,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:82198cc97a66f6fd2e1ce32bb6b4c7daae54f4d6f8963c56312537605fba601b",
+          "sha256": "sha256:f4dec51ef221b25df0e9994c4cdb7d21e28ae8c8c563fe0683763e388f9f88cd",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1271,7 +1270,7 @@
           "kind": "council-frame",
           "role": "manager",
           "runIndex": null,
-          "sha256": "sha256:a051b9b177e5990169ae39cab6138d7953dae5e1aa467c4580463c500269b1d1",
+          "sha256": "sha256:861602f8732b22d930562f2a048c8bd62994b8b3c80e13b52cc5bf4fba3f45f5",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1282,7 +1281,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:a6669cb9fd46d6da60b4194a257ffb0c72ef55cba631261b84e576a997d49780",
+          "sha256": "sha256:c36002cf2e295553cd0d508cb542f343a753d61bc0d82a2a63aca9a2f54b065e",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -1293,7 +1292,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:0abada9c49007ff4a80bd5dd23f0e37cc4c2d894106893a13717cf06fc46ea25",
+          "sha256": "sha256:cd7b56341395a360e3e5a6d186b16be15c19887383c4de39e4be4bf41c1a24f7",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -1304,7 +1303,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:a6669cb9fd46d6da60b4194a257ffb0c72ef55cba631261b84e576a997d49780",
+          "sha256": "sha256:c36002cf2e295553cd0d508cb542f343a753d61bc0d82a2a63aca9a2f54b065e",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -1315,7 +1314,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:8a843502158d40241df39d16ff9786c88ec9e57e20b056138f253f10e36e6b93",
+          "sha256": "sha256:b41e65e912d5e1b53653ad812efcaba92853cc8e63c581fa504204e9ab2332a0",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -1326,7 +1325,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:a6669cb9fd46d6da60b4194a257ffb0c72ef55cba631261b84e576a997d49780",
+          "sha256": "sha256:c36002cf2e295553cd0d508cb542f343a753d61bc0d82a2a63aca9a2f54b065e",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -1337,7 +1336,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:cd61a864c2da2a45690d67caaed90e83d87c0a38dffbc1046a3d4df63b2743d6",
+          "sha256": "sha256:a2bf4bddb75d07be7b477f9e0a92d8df5479e024e2ce10dac173e19f514d2050",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -1348,7 +1347,7 @@
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:32444abef1a638fc4ab82d86c4190c437d7b62f59fb52dc788fcb0635116ef30",
+          "sha256": "sha256:2df53cbdb7f782d89df0ca60480e3f05969ef3ce8c5942a4108a4c491e7e1b11",
           "specialistKind": null,
           "stageKind": null
         }
@@ -1397,7 +1396,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:2a230457f95150a96c340c4d892950110683d184e9f97ce26dfbe8a26c6b7baa",
+          "sha256": "sha256:b8d41a790a35d093411713569f27c6e4c9de97fbf212944f19ce0ae3cd633ddb",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1419,7 +1418,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:006a2c30614844865607f9b01793b988a255d16286d2fa32c2ff6275664f2975",
+          "sha256": "sha256:3c2431ba37558a0e08a8230218d2d63ecd92019d85e431c495e72a16d0d91ac7",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1430,7 +1429,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:0759a3b3b1ba7358ff1d88f4a2787cd70c766e6b6b6e134a026832104aeb8ab0",
+          "sha256": "sha256:4bcd9e57c98b338615e6a468219fd592a2ee24d56b1ee524bb02b234e5f8a239",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1441,7 +1440,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:476f939fa55d2d2e305d2dfab78411e6bc556e59f7497c6c623b217986bfba84",
+          "sha256": "sha256:8178e0a705d16c73ab5678c9a265889437167ef55a914af7d502d0cab9e67563",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -1452,7 +1451,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:63f6ad519745c5d18fc28811f50dd551dadcf8fbc6507bbefe57a3cc3a026091",
+          "sha256": "sha256:12693f6b0d5b5d2bbbbf3aa226e8728d60b08255401daaa2b1430d05d90b7ab2",
           "specialistKind": "research",
           "stageKind": "specialist-branch"
         },
@@ -1463,7 +1462,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:0bf34d8e2b143a19bb562713ad78b53788fee96d15d1fac55f91a953aad119b9",
+          "sha256": "sha256:64486affffeb9da92333e4cddebf4961440e32ab68c9ad9c908d467aea25acd3",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -1474,7 +1473,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:1365402e580aa9b7f50f00aa07ac291d3ab320d8615b3aaeb82c3bf9e1b74896",
+          "sha256": "sha256:9b309538ddb7fe03c0d674f20fd15f4e25474be9c1855904b9134dad9b9acaad",
           "specialistKind": "implementation",
           "stageKind": "specialist-branch"
         },
@@ -1485,7 +1484,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:6464ac68b5d4f98bfd6915bcd2001cfa5be97ac4ab1155acf4081c2d6601ba7d",
+          "sha256": "sha256:f0d28893603a660055c71f09f82d2796d97e03ed3a9064ce2540c445dc098bc1",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -1496,7 +1495,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:2386e6a40c7b2c6ea7484be7cb8536cbf30dbd4f70438ee3a71af31fb28e5571",
+          "sha256": "sha256:99283cd212e07592e9643b2e38285a56e5dc9522ce5bfe8bc9ba42a49b8b4117",
           "specialistKind": "verification",
           "stageKind": "specialist-branch"
         },
@@ -1507,7 +1506,7 @@
           "kind": "prompt",
           "role": "executor",
           "runIndex": 5,
-          "sha256": "sha256:3d738ada0ea6d5e7c2f8860e8787fc90aa5349bcfdf6778db13856cd1af16cb4",
+          "sha256": "sha256:6509ba6270f6a79f5b6e3ad077d097a6f0b44502464c9199213f02a4a0b50372",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -1518,7 +1517,7 @@
           "kind": "deliverable",
           "role": "executor",
           "runIndex": 5,
-          "sha256": "sha256:c92f1486d08fa3307b194be6de846c2389483723c2351dfd29a4670ac971435e",
+          "sha256": "sha256:374656976871b86485322c1bf7065b297a77d3a84da5fad67d27d1f0c049078c",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -1529,7 +1528,7 @@
           "kind": "prompt",
           "role": "reviewer",
           "runIndex": 6,
-          "sha256": "sha256:f8de75cabde4ef8bc447e79ca44fb6c87bc36ecb950ba0d5f386b297a565880c",
+          "sha256": "sha256:2368e4adf078413026e6f01f7f4225bd0925cc3f9550d61935ae37573151d120",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1551,7 +1550,7 @@
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:6c6b0c7d3fbaa1efb3e99673a7b1782554e4185590b1146df041bf0cff9ebe66",
+          "sha256": "sha256:75fdf6ec4022c20e7aa1bd003fdc7bd372dc0df556f04265f90f560e51ecc85e",
           "specialistKind": null,
           "stageKind": null
         }
@@ -1598,7 +1597,7 @@
           "kind": "prompt",
           "role": "manager",
           "runIndex": 0,
-          "sha256": "sha256:9d36ba1312ae7edc39ca294d55edcdf8effe162f07df15d180df0d362561c16e",
+          "sha256": "sha256:f863cc221d7cb28fd948021e0e24ea3e123c8337d43df94240a14a7dd9ad79ca",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1620,7 +1619,7 @@
           "kind": "prompt",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:0ceeeb9fcd347f7459f1bcc89eb003ff0865732b8086807bc29846862658169d",
+          "sha256": "sha256:29147fa652da2db60635eaaca8b26cb1ecb05aeef53d6cfe5d628c0ecd59e805",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1631,7 +1630,7 @@
           "kind": "agent-output",
           "role": "planner",
           "runIndex": 1,
-          "sha256": "sha256:87150a6a9463d5037421e737349bfcc665a5f0f2752ffe89841c00dab1da556b",
+          "sha256": "sha256:5bbf04ca0f21f2b3d513d85bb11cda84760beddf025c17fd36ef7a7824c917a8",
           "specialistKind": null,
           "stageKind": null
         },
@@ -1642,7 +1641,7 @@
           "kind": "council-frame",
           "role": "manager",
           "runIndex": 8,
-          "sha256": "sha256:2903a8fa1ddfe317d656def4cdedda0f88b786d6a8b845b72a97e8d2137f12f5",
+          "sha256": "sha256:5cf219ce3fb0acd031ef85c0282534b720fc721bcf9a55f7261e80bb8986b27b",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -1653,7 +1652,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:376bcda92268f698155a91cc01053915b9134ca3dec17fdfab126649ab268715",
+          "sha256": "sha256:987172db2b6774a94e758154fe34ea3154eaca9e266cf8ba01282dca02f82a68",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -1664,7 +1663,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 2,
-          "sha256": "sha256:46345dff915514468200e694e0bc3ce0c568fd7fbb42a95163c4ff01b37416a7",
+          "sha256": "sha256:2a4271f8194654c03f708612e06cf04d8b1e02984fd15a31a9878e9a1aa1795b",
           "specialistKind": "research",
           "stageKind": "council-opening"
         },
@@ -1675,7 +1674,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:376bcda92268f698155a91cc01053915b9134ca3dec17fdfab126649ab268715",
+          "sha256": "sha256:987172db2b6774a94e758154fe34ea3154eaca9e266cf8ba01282dca02f82a68",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -1686,7 +1685,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 3,
-          "sha256": "sha256:0d785c62046aba5e9b97a48111c7011e6c95d14b0c510398f418a8464ba33ab4",
+          "sha256": "sha256:837f8ccb47ae61ee6f1f7901108341d1f64c7e24f048c338a09d4ab774aa96a7",
           "specialistKind": "implementation",
           "stageKind": "council-opening"
         },
@@ -1697,7 +1696,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:376bcda92268f698155a91cc01053915b9134ca3dec17fdfab126649ab268715",
+          "sha256": "sha256:987172db2b6774a94e758154fe34ea3154eaca9e266cf8ba01282dca02f82a68",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -1708,7 +1707,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 4,
-          "sha256": "sha256:c06180bf81c48faa68b1959cd31c62683e87f0f163459276f2607e9b3faa98d4",
+          "sha256": "sha256:28c0a16bbc028520051d1f2bc4e51fd9426c3cf5378420d7940c7693d728aaf0",
           "specialistKind": "verification",
           "stageKind": "council-opening"
         },
@@ -1719,7 +1718,7 @@
           "kind": "council-brief",
           "role": "manager",
           "runIndex": 8,
-          "sha256": "sha256:b96e6d7f970590c9391e36d25a8068d6db1781b073d1ace6fbafec8a0b87a719",
+          "sha256": "sha256:f2a1ece03f1be8355fbab952516b88db1117b449da9e0b71f0ed2b5dafdd95b3",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -1730,7 +1729,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 5,
-          "sha256": "sha256:77fd0d7593b0515780f97d691d894ad351b7ead3aab9a755a83c3c461e4cc913",
+          "sha256": "sha256:fcc4c856778270281c2b1a84ef505dc39021eed8e79fdf4e26994e3e0401f75b",
           "specialistKind": "research",
           "stageKind": "council-rebuttal"
         },
@@ -1741,7 +1740,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 5,
-          "sha256": "sha256:37372a500291f31f0084e0f8dec894a3f736a9022c7dffdd4ef7b6717580ccf9",
+          "sha256": "sha256:ce2b6caa84fae152417e2317ed2818a6cb49428ef31d7daed7fa57e58081ba3a",
           "specialistKind": "research",
           "stageKind": "council-rebuttal"
         },
@@ -1752,7 +1751,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 6,
-          "sha256": "sha256:dc931e846c12638fa6543b2e2d4e4351f44672c9df1aadd1cc04c6534ea10930",
+          "sha256": "sha256:0b1dc2f6b4fd283ad1a19660fc3255a7b79cad0d4e42bae7d0fb40323d26d6f2",
           "specialistKind": "implementation",
           "stageKind": "council-rebuttal"
         },
@@ -1763,7 +1762,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 6,
-          "sha256": "sha256:937d2bcddd91e598eb9a6f5b7d471f41db92bfce151e4ddd7e98376de5de34cd",
+          "sha256": "sha256:26bc672a838cff78c519dc9bcca5a23381f6f90d34b962476a9bb228dbe4c459",
           "specialistKind": "implementation",
           "stageKind": "council-rebuttal"
         },
@@ -1774,7 +1773,7 @@
           "kind": "prompt",
           "role": "specialist",
           "runIndex": 7,
-          "sha256": "sha256:89bcfde122e546add879e22799ab2d5dc213028570d6acb47f8c48b1258b8677",
+          "sha256": "sha256:cf33dda5d52b0b802e8ea8cd22bd28b6889735ada3a1f90689511d63451776b1",
           "specialistKind": "verification",
           "stageKind": "council-rebuttal"
         },
@@ -1785,7 +1784,7 @@
           "kind": "deliverable",
           "role": "specialist",
           "runIndex": 7,
-          "sha256": "sha256:4960f7c41928c6ede32b765c52cd929e41c95cfff07f46457cb052e4da0b7e89",
+          "sha256": "sha256:084bc15f6f51047b49a7a804f8301c8c5b3368d8dc95e127935f38b7428126b3",
           "specialistKind": "verification",
           "stageKind": "council-rebuttal"
         },
@@ -1796,18 +1795,18 @@
           "kind": "prompt",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:7737570ae8d9b394b8309afcccbd9d29ba77542302f13c41a3ce4090a9135646",
+          "sha256": "sha256:685a821bbf46840035ba80d1b5927f6bfa8c5c7532b7a678ef165d6ed5dd993f",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
         {
           "artifactIndex": 19,
-          "byteLength": 1050,
+          "byteLength": 988,
           "fileName": "checklist.md",
           "kind": "deliverable",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:8fccb4544ce45944a8fc32e2c5ffc3a9b97136bd9212c4bf1f1a103e118d6bd0",
+          "sha256": "sha256:3a105e171473f0ace3eb6747863ea403f1867246b843b27c4171276d8bff2de5",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
@@ -1818,40 +1817,40 @@
           "kind": "council-manifest",
           "role": "executor",
           "runIndex": 8,
-          "sha256": "sha256:b64c682e202f59e832b51f99f06eed9a5a1d08b02627f1058545bf98ef771241",
+          "sha256": "sha256:2a14e541b8e485393f42c3600a9f1b3590e1e07463c1d1fa119d8319bb15e4f8",
           "specialistKind": null,
           "stageKind": "parallel-merge"
         },
         {
           "artifactIndex": 21,
-          "byteLength": 7815,
+          "byteLength": 7753,
           "fileName": "reviewer-prompt.md",
           "kind": "prompt",
           "role": "reviewer",
           "runIndex": 9,
-          "sha256": "sha256:d27b1f62749f17cd2475d2bb88dbceb27e403675c1979b807a8c7da2f26da7cb",
+          "sha256": "sha256:981bd239eaacf0ca6c19542f27abdcef3dcf0630dedc852e48791e746651a009",
           "specialistKind": null,
           "stageKind": null
         },
         {
           "artifactIndex": 22,
-          "byteLength": 299,
+          "byteLength": 266,
           "fileName": "reviewer-report.md",
           "kind": "agent-output",
           "role": "reviewer",
           "runIndex": 9,
-          "sha256": "sha256:4fad9930f5881fae0a5dba18d34008560bb69abc1686cc861bdc61df7447be98",
+          "sha256": "sha256:b0b5acd83dfbb6fc242075ce90397d39626d679bbbfab4a7ccb4d906de2dbfec",
           "specialistKind": null,
           "stageKind": null
         },
         {
           "artifactIndex": 23,
-          "byteLength": 3839,
+          "byteLength": 3868,
           "fileName": "learning-candidate.json",
           "kind": "learning-candidate",
           "role": "reviewer",
           "runIndex": null,
-          "sha256": "sha256:57ea0a3ad96fd1ea83e94b5b13a00621d8ff149db89f53b098ae0c5a101b3d37",
+          "sha256": "sha256:2c16217b185a332e67aca2f220c041eb8658a3183ee1a0167989fda84b964860",
           "specialistKind": null,
           "stageKind": null
         }
@@ -1866,17 +1865,17 @@
       "expectedMissingSpecialistKinds": [],
       "fixtureId": "reviewer-rubric-failure",
       "missingSpecialistKinds": [],
-      "missionStatus": "completed",
+      "missionStatus": "failed",
       "profileId": "knowledge-council-triad",
       "providerId": "stub",
       "reviewer": {
-        "correct": false,
+        "correct": true,
         "expectedMissionStatus": "failed",
         "expectedOutcome": "fail",
-        "outcome": "pass",
-        "sessionStatus": "completed"
+        "outcome": "fail",
+        "sessionStatus": "failed"
       },
-      "semanticHash": "sha256:84b7d8958d0e5ae6af3e83317ad1f680601e4552c979db77ca2516f93db95f0e",
+      "semanticHash": "sha256:50c2e0002b2a6fb528dc28ce48452cbbf1467d4bcc15673a86c1e665c96ff84f",
       "stageCount": 10,
       "stageSequence": [
         "manager:manager",
