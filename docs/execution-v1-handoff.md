@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-27T05:04:16.290Z
+- generatedAt: 2026-07-27T06:10:03.820Z
 - localDate: 2026-07-27
-- branch: codex/council-reviewer-parity
-- commit: f2afd998febbf8edfccc9a1baa396129b33a25a8
+- branch: codex/council-research-evidence
+- commit: bc67392e65bf0e81bea46ee9aeb8515750ec9ce5
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f2afd998febbf8edfccc9a1baa396129b33a25a8](releases/execution-v1/f2afd998febbf8edfccc9a1baa396129b33a25a8)
-- visualArtifactSetSha256: adabb1e63fb9744a275bdfbf5d0943e3a8b594d308da47c068f56c9a222942d5
-- commitPushStatus: not pushed, origin/codex/council-reviewer-parity not found
+- immutableSnapshot: [releases/execution-v1/bc67392e65bf0e81bea46ee9aeb8515750ec9ce5](releases/execution-v1/bc67392e65bf0e81bea46ee9aeb8515750ec9ce5)
+- visualArtifactSetSha256: b77cd9bece9c1993d153a3e784d35d46e6d04d5822c33cb3c43ef67268da9916
+- commitPushStatus: not pushed, origin/codex/council-research-evidence not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=1.0m
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=50.6s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: adabb1e63fb9744a275bdfbf5d0943e3a8b594d308da47c068f56c9a222942d5
+- visual artifact set: b77cd9bece9c1993d153a3e784d35d46e6d04d5822c33cb3c43ef67268da9916
 
 ## Live Provider Handoff
 
