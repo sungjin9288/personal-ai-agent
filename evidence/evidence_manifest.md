@@ -166,6 +166,7 @@
 - Local relevance shadow integration: verified with `npm run smoke:local-relevance-shadow-integration`
 - Council quality comparison: verified with `npm run smoke:council-quality-comparison`; reviewer failure parity restored, baseline retained, and default council promotion denied
 - Council research evidence enrichment: verified with `npm run smoke:council-stub-runtime`; existing manager and planner retrieval artifacts become bounded content-free council citations, gap and degraded lineage remain non-citable, exact source timestamps stay private, and council rounds perform no retrieval
+- Council C1–C5 closeout: verified with `npm run smoke:council-closeout`; `knowledge-triad` remains default, council remains opt-in, and dynamic persona, concurrent dispatch, external research adapter, and AirLLM remain deferred without external calls, model downloads, private-data authority, or production claims
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
 - Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`

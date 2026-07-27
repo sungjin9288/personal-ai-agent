@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-07-27 Council C1-C5 Closeout
+
+- closed the council roadmap against the current comparison artifact: `knowledge-triad` remains the default profile, `knowledge-council-triad` remains an opt-in experiment, and default promotion remains denied
+- recorded the decisive limits without weakening the positive local evidence: reviewer failure parity is restored and synthetic critical-conflict routing improves, but unsupported claims remain `not-comparable` and persisted stages remain 26→34
+- reevaluated dynamic persona, concurrent dispatch, external research adapter, and AirLLM without implementing them; each stays deferred until its quality, authority, license, and runtime evidence is independently available
+- kept the work credential-free and local: no external provider call, model download, new dependency, public contract, storage, permission, approval, or audit-order change was made
+- kept F1.3 private-data evaluation and training activation outside council authority and preserved `productionReadyClaim: false`
+
 ## 2026-07-27 Council Research Evidence Enrichment
 
 - projected the existing manager and planner retrieval artifacts into one bounded council evidence entry per stage with artifact digest, opaque citation id, corpus and chunk lineage hashes, revision, corpus chunk index and count, and only the `known` or `unknown` freshness fact

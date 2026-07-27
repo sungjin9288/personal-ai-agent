@@ -1,8 +1,10 @@
 # Multi-Agent Council Development Plan v1
 
-- status: in-progress
+- status: completed
 - plannedAt: 2026-07-27
+- completedAt: 2026-07-27
 - repositoryBaseline: `83c5ce3f31f80f1971cf58b2065c1aff0fd1b58f`
+- closeoutBaseline: `ad6cf894dc0373f10d1cd3adf23de4a3d2e4ba2e`
 - relatedBackbone: [orchestration-backbone-v1.md](orchestration-backbone-v1.md)
 - relatedReferences: [reference-repos.md](reference-repos.md)
 - productionReadyClaim: false
@@ -396,7 +398,7 @@ local provider shadow는 별도 현재 permission, model digest, license, egress
 
 - model: `gpt-5.6-terra`, reasoning `high`
 - branch: `codex/council-research-evidence`
-- status: completed locally on 2026-07-27
+- status: completed and merged on 2026-07-27 through PR #798
 
 구현 결과:
 
@@ -427,21 +429,41 @@ local provider shadow는 별도 현재 permission, model digest, license, egress
 
 - model: `gpt-5.6-terra`, reasoning `medium`
 - branch: `codex/council-closeout`
+- status: completed on 2026-07-27
 
-구현:
+최종 결정:
 
-- 문서, evidence checklist, roadmap, portfolio export를 실제 구현 상태와 동기화
-- council opt-in 유지 또는 default 승격 결정을 C3 evidence로 기록
-- dynamic persona, concurrent dispatch, external research adapter, AirLLM spike를 각각 재평가
+- `knowledge-triad`를 default profile로 유지한다.
+- `knowledge-council-triad`는 opt-in experiment로 유지한다.
+- `improvementProven: false`, `defaultPromotionAuthorized: false`를 유지한다.
+- C1–C4의 local deterministic 결과는 보존하지만 일반적인 답변 품질 개선이나 production 적합성으로
+  확대하지 않는다.
 
-승격 조건:
+승격 조건 검토:
 
-- 기존 triad보다 의미 있는 conflict 또는 누락 조건을 더 발견
-- unsupported claim이 늘지 않음
-- reviewer와 human approval 경계가 동일하게 유지됨
-- runtime/resource envelope가 local evidence 안에서 bounded함
+| 조건 | 현재 증적 | 판정 |
+| --- | --- | --- |
+| 기존 triad보다 의미 있는 conflict 또는 누락 조건을 더 발견 | synthetic critical-conflict fixture에서는 council이 reviewer 전에 중단했지만 일반 semantic conflict discovery는 검증하지 않았다. | 부분 충족 |
+| unsupported claim이 늘지 않음 | 두 profile이 공유하는 semantic oracle이 없어 `not-comparable`이다. | 미충족 |
+| reviewer와 human approval 경계가 동일하게 유지됨 | reviewer failure parity를 복구했고 approval·execution lease는 생성되지 않았다. | 충족 |
+| runtime/resource envelope가 local evidence 안에서 bounded함 | persisted stage가 baseline 26에서 candidate 34로 늘었고 local/external provider council의 resource envelope는 측정하지 않았다. | 미충족 |
 
-조건을 충족하지 못하면 council은 opt-in experiment로 남긴다.
+따라서 default 승격 조건은 충족되지 않았다. 이 결론은
+`evidence/output-artifacts/council-quality-comparison.json`의 exact comparison을 따른다.
+
+재평가 결과:
+
+| 항목 | 결정 | 다시 검토할 조건 |
+| --- | --- | --- |
+| dynamic persona | 보류 | bounded role registry, permission ownership, prompt isolation, fixed roster 대비 품질 증적이 필요하다. |
+| concurrent dispatch | 보류 | deterministic ordering, retry lineage, resource·latency envelope, sequential baseline 대비 품질 증적이 필요하다. |
+| external research adapter | 보류 | 새 URL fetch·crawl authority, network·secret·retention policy, license와 독립 process boundary가 먼저 승인되어야 한다. Wigolo AGPL code는 vendoring하지 않는다. |
+| AirLLM | 보류 | 기존 local provider보다 나은 council quality need, model-weight license, acquisition egress, disk·resident memory·cold/warm latency·throughput, rollback owner evidence가 필요하다. |
+
+이번 closeout은 위 네 항목을 구현하지 않았다. external provider call, model download, 새 dependency,
+public API·CLI·storage·permission·approval·audit ordering도 변경하지 않았다.
+`productionReadyClaim: false`를 유지하며 F1.3 actual private-data evaluation과 training activation은 계속
+보류한다.
 
 ## 검증 계획
 

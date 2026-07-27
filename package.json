@@ -380,6 +380,7 @@
     "smoke:ui-council-board": "node scripts/smoke-ui-council-board.mjs",
     "evaluate:council-quality-comparison": "node scripts/evaluate-council-quality-comparison.mjs --output evidence/output-artifacts/council-quality-comparison.json",
     "smoke:council-quality-comparison": "node scripts/smoke-council-quality-comparison.mjs",
+    "smoke:council-closeout": "node scripts/smoke-council-closeout.mjs",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
     "smoke:specialist-follow-up-reminders": "node scripts/smoke-specialist-follow-up-reminders.mjs",
