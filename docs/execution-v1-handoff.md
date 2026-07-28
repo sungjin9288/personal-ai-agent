@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-28T04:52:11.319Z
+- generatedAt: 2026-07-28T06:26:09.323Z
 - localDate: 2026-07-28
-- branch: codex/council-local-provider-shadow
-- commit: ab0e7d1ba58231eaff6b555dd98d12b863cbd280
+- branch: codex/smoke-all-idempotency
+- commit: ea504b9c46afda7935473e40e8c56b765c5e0f42
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ab0e7d1ba58231eaff6b555dd98d12b863cbd280](releases/execution-v1/ab0e7d1ba58231eaff6b555dd98d12b863cbd280)
-- visualArtifactSetSha256: c4644bdc193a5f2b528f48eda21103795afb9918eea2eba9fc897c8d14c84ca2
-- commitPushStatus: not pushed, origin/codex/council-local-provider-shadow not found
+- immutableSnapshot: [releases/execution-v1/ea504b9c46afda7935473e40e8c56b765c5e0f42](releases/execution-v1/ea504b9c46afda7935473e40e8c56b765c5e0f42)
+- visualArtifactSetSha256: 0a4a61de685751693d0f77ce2d28c8b70573c09e4698b17518e9567239b318e8
+- commitPushStatus: not pushed, origin/codex/smoke-all-idempotency not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=1.3m
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=1.5m
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: c4644bdc193a5f2b528f48eda21103795afb9918eea2eba9fc897c8d14c84ca2
+- visual artifact set: 0a4a61de685751693d0f77ce2d28c8b70573c09e4698b17518e9567239b318e8
 
 ## Live Provider Handoff
 
