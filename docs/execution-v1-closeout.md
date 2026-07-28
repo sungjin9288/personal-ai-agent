@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-28T06:25:57.936Z
-- branch: codex/smoke-all-idempotency
-- commit: ea504b9c46afda7935473e40e8c56b765c5e0f42
+- generatedAt: 2026-07-28T07:43:18.671Z
+- branch: codex/council-seat-contract-shadow
+- commit: 258dba820168b4b1e296525cbff10c0cc66d1180
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

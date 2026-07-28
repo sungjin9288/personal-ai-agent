@@ -1,0 +1,202 @@
+{
+  "actualUserData": false,
+  "apiCostUsd": 0,
+  "baseline": {
+    "artifactId": "local-council-provider-shadow-10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+    "decision": "keep-stub-only",
+    "integrityHash": "10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+    "localShadowQualified": false
+  },
+  "calls": [
+    {
+      "attemptCount": 1,
+      "durationMs": 6080,
+      "failureKind": "council-contract:invalid-claim",
+      "inputTokens": 967,
+      "outputHash": "7414af6023b0149dfaa242ced5e3badac2245b36f10aee75b50fb9261c400854",
+      "outputTokens": 236,
+      "phase": "opening-position",
+      "promptHash": "4d3d9ca372e66021bc05d59a8c9fa9d3cb3ca774b576c48748610af07a755387",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "failed",
+      "totalTokens": 1203
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 4644,
+      "failureKind": null,
+      "inputTokens": 965,
+      "outputHash": "ed29e793e770325c798d2379d22eb6e692d4710b2a6426c9198a92ef5532e096",
+      "outputTokens": 169,
+      "phase": "opening-position",
+      "promptHash": "dcaf0a30197a3302a057f56606e37c6a053ff0ab2bb463d16da1ed0347423411",
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "passed",
+      "totalTokens": 1134
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 5901,
+      "failureKind": null,
+      "inputTokens": 964,
+      "outputHash": "509caae09ab2ca11b8249971af789a20d842680c4b4e6d5eeb10d982ca9e72d8",
+      "outputTokens": 213,
+      "phase": "opening-position",
+      "promptHash": "7b51185fe765ea1ea191498ed530de56ffae1f83b9f49b501599c081eea2dae7",
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "passed",
+      "totalTokens": 1177
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "synthesis",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "chair",
+      "status": "not-attempted",
+      "totalTokens": 0
+    }
+  ],
+  "defaultProfilePromotionAuthorized": false,
+  "externalProviderCallCount": 0,
+  "fixtureHash": "8607e58b6c64546930213d43de0fbfdad6a5b2689c661ecad890d928efc172dd",
+  "localShadowQualified": false,
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "licenseHash": "a032f549c4cd3b9402e6cb7d4aa84c7911cacb580ae5df3972035982e41ff192",
+    "sizeBytes": 1929912432
+  },
+  "observedAt": "2026-07-28T07:04:20.230Z",
+  "openingIsolation": {
+    "contextHash": "a15c9263398374c21f3410a4d8e64d5e272cb280204a099c4c2388ef7b276425",
+    "contextKind": "council-frame",
+    "otherOpeningStatementCount": 0,
+    "verified": true
+  },
+  "productionReadyClaim": false,
+  "promptProfile": {
+    "hash": "3bae91a70de7b2acab6eb77dbc698e7b608b42d08e811de55582c1a38f0ee840",
+    "id": "seat-scoped-v1"
+  },
+  "qualification": {
+    "c6BaselinePreserved": true,
+    "contractValidated": false,
+    "decision": "keep-stub-only",
+    "deterministicRebuttalTargetsVerified": false,
+    "independentOpeningDiversityObserved": true,
+    "limitations": [
+      "actual-user-data-not-evaluated",
+      "independent-review-not-performed",
+      "semantic-council-quality-not-validated",
+      "default-runtime-activation-not-authorized"
+    ],
+    "openingIsolationVerified": true,
+    "seatScopedOpeningPromptsVerified": true
+  },
+  "runtime": {
+    "afterContextLength": 4096,
+    "afterLoaded": true,
+    "afterSizeBytes": 2390300672,
+    "afterVramBytes": 2390300672,
+    "beforeLoaded": true,
+    "cloudFeaturesDisabled": true,
+    "endpointAlias": "loopback-ollama",
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-council-seat-contract-shadow/v1",
+  "summary": {
+    "callCount": 7,
+    "distinctOpeningOutputCount": 3,
+    "distinctOpeningPromptCount": 3,
+    "failedCallCount": 1,
+    "matchedRebuttalTargetCount": 0,
+    "notAttemptedCallCount": 4,
+    "passedCallCount": 2,
+    "totalDurationMs": 16625,
+    "totalInputTokens": 2896,
+    "totalOutputTokens": 618,
+    "totalTokens": 3514
+  },
+  "targetBindings": [
+    {
+      "expectedTargetHash": "9b1dcc20ffd66d8a853453ec5fef3dcba61c7fd4daac0fde498a844583a63c7a",
+      "matched": false,
+      "observedTargetHash": null,
+      "seatId": "research"
+    },
+    {
+      "expectedTargetHash": "8f34b30af14059f877d622e7aa1c8f4101b991736dfabad7b9c8d4b0870d46e7",
+      "matched": false,
+      "observedTargetHash": null,
+      "seatId": "implementation"
+    },
+    {
+      "expectedTargetHash": "70585eef88d4a881790d588cd82c058b9f976e4d294a952bcd8c90fdf67376ef",
+      "matched": false,
+      "observedTargetHash": null,
+      "seatId": "verification"
+    }
+  ],
+  "trainingAuthorized": false,
+  "validation": {
+    "code": "council-contract-failed",
+    "manifestDigest": null,
+    "status": "failed"
+  },
+  "id": "local-council-seat-contract-shadow-a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b",
+  "integrityHash": "a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b"
+}

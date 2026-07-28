@@ -8,6 +8,7 @@ import {
 
 function specialistInput({
   councilPhase = 'opening-position',
+  councilPromptProfile = null,
   councilSeatId = 'research',
 } = {}) {
   return {
@@ -20,6 +21,7 @@ function specialistInput({
         }
       : null,
     councilPhase,
+    councilPromptProfile,
     councilSeatId,
     role: 'specialist',
   };
@@ -62,6 +64,30 @@ test('local council opening prompts keep shared bytes and omit seat identity', (
   assert.doesNotMatch(research, /research|implementation|verification/);
   assert.match(research, /"id": "claim-1"/);
   assert.match(research, /opening targetClaimIds and rejectedOptionIds must be empty/);
+});
+
+test('seat-scoped opening prompts expose one fixed responsibility without other openings', () => {
+  const delegatedPrompt = 'Shared specialist template and Council Context.';
+  const research = buildRequestPrompt(
+    specialistInput({ councilPromptProfile: 'seat-scoped-v1' }),
+    delegatedPrompt,
+  );
+  const implementation = buildRequestPrompt(
+    specialistInput({
+      councilPromptProfile: 'seat-scoped-v1',
+      councilSeatId: 'implementation',
+    }),
+    delegatedPrompt,
+  );
+
+  assert.notEqual(research, implementation);
+  assert.match(research, /seat: research/);
+  assert.match(research, /available evidence supports/);
+  assert.doesNotMatch(research, /implementation feasibility|failure conditions/);
+  assert.match(
+    research,
+    /opening input contains only the shared CouncilFrame and no other opening statement/,
+  );
 });
 
 test('local council specialist normalization adds only the fixed seat prefix', () => {
@@ -113,6 +139,49 @@ test('local council rebuttal normalization preserves known targets', () => {
 
   const prompt = buildRequestPrompt(input, 'Rebuttal Council Context.');
   assert.match(prompt, /research:claim-1, verification:claim-1/);
+});
+
+test('seat-scoped rebuttal prompt and normalization require the fixed target', () => {
+  const input = specialistInput({
+    councilPhase: 'rebuttal',
+    councilPromptProfile: 'seat-scoped-v1',
+    councilSeatId: 'implementation',
+  });
+  input.councilBrief.claims.push({
+    id: 'implementation:claim-1',
+    seatId: 'implementation',
+  });
+  const prompt = buildRequestPrompt(input, 'Rebuttal Council Context.');
+
+  assert.match(prompt, /targetClaimIds must equal exactly: \["verification:claim-1"\]/);
+  assert.doesNotThrow(() =>
+    normalizeStructuredOutput(
+      {
+        output: specialistOutput({
+          claimId: 'claim-2',
+          targetClaimIds: ['verification:claim-1'],
+        }),
+        role: 'specialist',
+      },
+      input,
+      'Local',
+    ),
+  );
+  assert.throws(
+    () =>
+      normalizeStructuredOutput(
+        {
+          output: specialistOutput({
+            claimId: 'claim-2',
+            targetClaimIds: ['research:claim-1'],
+          }),
+          role: 'specialist',
+        },
+        input,
+        'Local',
+      ),
+    /seat target binding failed/,
+  );
 });
 
 test('local council synthesis normalization preserves contract output without a mission pack', () => {

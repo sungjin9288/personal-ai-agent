@@ -400,6 +400,8 @@
     "smoke:council-closeout": "node scripts/smoke-council-closeout.mjs",
     "evaluate:local-council-provider-shadow": "node scripts/evaluate-local-council-provider-shadow.mjs --endpoint http://127.0.0.1:11434 --model qwen2.5:3b --cloud-features-disabled true --output evidence/output-artifacts/local-council-provider-shadow.json",
     "smoke:local-council-provider-shadow": "node scripts/smoke-local-council-provider-shadow.mjs",
+    "evaluate:local-council-seat-contract-shadow": "node scripts/evaluate-local-council-provider-shadow.mjs --endpoint http://127.0.0.1:11434 --model qwen2.5:3b --cloud-features-disabled true --prompt-profile seat-scoped-v1 --output evidence/output-artifacts/local-council-seat-contract-shadow.json",
+    "smoke:local-council-seat-contract-shadow": "node scripts/smoke-local-council-seat-contract-shadow.mjs",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
     "smoke:specialist-follow-up-reminders": "node scripts/smoke-specialist-follow-up-reminders.mjs",

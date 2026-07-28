@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "personal-ai-agent-local-council-seat-contract-shadow-fixture/v1",
+  "fixtureId": "local-council-seat-contract-shadow-v1",
+  "councilId": "council-local-seat-contract-shadow",
+  "workspaceId": "workspace-local-seat-contract-shadow",
+  "sessionId": "session-local-seat-contract-shadow",
+  "parentRunId": "run-local-seat-contract-shadow-planner",
+  "promptProfile": "seat-scoped-v1",
+  "evidenceCatalog": [
+    {
+      "id": "artifact:bounded-plan",
+      "kind": "artifact"
+    },
+    {
+      "id": "artifact:verification-record",
+      "kind": "artifact"
+    }
+  ],
+  "requiredSeats": [
+    "research",
+    "implementation",
+    "verification"
+  ]
+}

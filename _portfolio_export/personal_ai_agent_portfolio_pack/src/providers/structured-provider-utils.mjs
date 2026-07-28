@@ -1,4 +1,8 @@
 import { createProviderFailure } from './provider-runtime-utils.mjs';
+import {
+  assertCouncilSeatTargetBinding,
+  resolveCouncilSeatPromptContract,
+} from '../core/council-seat-prompt-contract.mjs';
 import { ensureMissionQualityGateSection } from '../core/mission-quality-gate.mjs';
 
 export function normalizeText(value, fallback = '') {
@@ -424,12 +428,33 @@ Artifact rules:
 function buildCouncilRoleContract(input) {
   if (input.role === 'specialist') {
     const opening = input.councilPhase === 'opening-position';
+    const seatContract = resolveCouncilSeatPromptContract({
+      councilBrief: input.councilBrief,
+      phase: input.councilPhase,
+      profile: input.councilPromptProfile,
+      seatId: input.councilSeatId,
+    });
     const rebuttalTargets = opening
       ? []
       : (input.councilBrief?.claims || [])
           .filter((claim) => claim?.seatId !== input.councilSeatId)
           .map((claim) => normalizeText(claim?.id))
           .filter(Boolean);
+    const expectedTargets = seatContract?.requiredTargetClaimId
+      ? [seatContract.requiredTargetClaimId]
+      : opening
+        ? []
+        : ['opening claim id from Council Context'];
+    const seatRules = seatContract
+      ? `
+Seat responsibility:
+- seat: ${seatContract.seatId}
+- responsibility: ${seatContract.responsibility}
+- keep the claim inside this responsibility and do not imitate another seat's responsibility
+${opening
+  ? '- opening input contains only the shared CouncilFrame and no other opening statement'
+  : `- rebuttal targetClaimIds must equal exactly: ${JSON.stringify(expectedTargets)}`}`
+      : '';
     return `Return only valid JSON with this shape:
 {
   "summaryText": "bounded council position",
@@ -445,7 +470,7 @@ function buildCouncilRoleContract(input) {
         "severity": "normal | critical"
       }
     ],
-    "targetClaimIds": ${opening ? '[]' : '["opening claim id from Council Context"]'},
+    "targetClaimIds": ${JSON.stringify(expectedTargets)},
     "rejectedOptionIds": [],
     "nextAction": "single next action sentence"
   }
@@ -457,8 +482,9 @@ Council rules:
 - return exactly one claim; the runtime assigns its fixed seat and round id
 - opening targetClaimIds and rejectedOptionIds must be empty
 - rebuttal targetClaimIds must contain at least one other seat opening claim
-${opening ? '' : `- rebuttal targetClaimIds must choose from: ${rebuttalTargets.join(', ')}`}
-- do not include raw attachments, memory, paths, URLs, or hidden reasoning`;
+${opening || seatContract ? '' : `- rebuttal targetClaimIds must choose from: ${rebuttalTargets.join(', ')}`}
+- do not include raw attachments, memory, paths, URLs, or hidden reasoning
+${seatRules}`;
   }
 
   if (input.role === 'executor' && input.councilPhase === 'synthesis') {
@@ -951,6 +977,27 @@ function normalizeCouncilSpecialistOutput(output, input, providerLabel) {
       recoverable: false,
       timedOut: false,
     });
+  }
+  try {
+    assertCouncilSeatTargetBinding({
+      councilBrief: input.councilBrief,
+      phase: input.councilPhase,
+      profile: input.councilPromptProfile,
+      seatId: input.councilSeatId,
+      targetClaimIds: councilStatement.targetClaimIds,
+    });
+  } catch (error) {
+    throw createProviderFailure(
+      `${providerLabel} council seat target binding failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      {
+        failureKind: 'schema-invalid',
+        rawMessage: JSON.stringify(output),
+        recoverable: false,
+        timedOut: false,
+      },
+    );
   }
   const evidence = Array.isArray(councilStatement.claims)
     ? [...new Set(councilStatement.claims.flatMap((claim) => claim?.evidenceRefs || []))]
