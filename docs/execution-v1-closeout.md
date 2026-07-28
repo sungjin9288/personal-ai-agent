@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-28T00:18:37.091Z
-- branch: codex/evidence-gated-answer-robustness
-- commit: 6c869d84c01034527440e735f87160c8199c02ae
+- generatedAt: 2026-07-28T01:16:45.568Z
+- branch: codex/local-artifact-writer-hardening
+- commit: 96ddccb91ca89d9cd65c6713d38d3b13a13aa6f8
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-28T00:18:44.209Z
+- generatedAt: 2026-07-28T01:16:52.582Z
 - localDate: 2026-07-28
-- branch: codex/evidence-gated-answer-robustness
-- commit: 6c869d84c01034527440e735f87160c8199c02ae
+- branch: codex/local-artifact-writer-hardening
+- commit: 96ddccb91ca89d9cd65c6713d38d3b13a13aa6f8
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6c869d84c01034527440e735f87160c8199c02ae](releases/execution-v1/6c869d84c01034527440e735f87160c8199c02ae)
-- visualArtifactSetSha256: ea5b488ff85bee634da65c556c84c47160b13cf6837a8126d841f5b9a2aecc6e
-- commitPushStatus: not pushed, origin/codex/evidence-gated-answer-robustness not found
+- immutableSnapshot: [releases/execution-v1/96ddccb91ca89d9cd65c6713d38d3b13a13aa6f8](releases/execution-v1/96ddccb91ca89d9cd65c6713d38d3b13a13aa6f8)
+- visualArtifactSetSha256: dbd9d580aca0c15702440ae67a9fc05bc16fd78759f73eb56418e37b1bee8bc2
+- commitPushStatus: not pushed, origin/codex/local-artifact-writer-hardening not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=51.0s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=48.9s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: ea5b488ff85bee634da65c556c84c47160b13cf6837a8126d841f5b9a2aecc6e
+- visual artifact set: dbd9d580aca0c15702440ae67a9fc05bc16fd78759f73eb56418e37b1bee8bc2
 
 ## Live Provider Handoff
 
