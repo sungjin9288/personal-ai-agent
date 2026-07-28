@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-28 Q12 Local Artifact Writer Hardening
+
+- replaced final-file truncation with a same-parent exclusive no-follow temporary file, write-all loop, file and parent-directory fsync, atomic rename, and final identity/metadata verification
+- preserved Q10/Q11 JSON bytes, output path, `0600`, single-link checks, runner ordering, and existing validation messages while rejecting static and dynamic link/path replacement before rename
+- added deterministic partial-write, injected failure, crash, safe orphan, and concurrent-writer coverage; Node v24 lacks `openat`/`renameat`, so the final same-user syscall window remains explicit rather than claimed closed
+
 ## 2026-07-28 Q11 Multi-Scenario Evidence-Gated Answer Robustness
 
 - added a separate 12-case synthetic robustness lane that calls the existing Q9 evaluator and Q10 coordinator without modifying either baseline

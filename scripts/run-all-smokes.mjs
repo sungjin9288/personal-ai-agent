@@ -64,6 +64,7 @@ const GROUPS = {
     'smoke:local-rag-evidence-sufficiency-shadow',
     'smoke:evidence-gated-answer-shadow',
     'smoke:evidence-gated-answer-robustness',
+    'smoke:evidence-gated-answer-output-hardening',
     'smoke:local-evidence-gated-answer-shadow',
     'smoke:local-evidence-gated-answer-robustness',
   ],

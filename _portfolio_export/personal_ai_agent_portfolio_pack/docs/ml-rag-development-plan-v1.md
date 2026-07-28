@@ -1779,6 +1779,10 @@ Deterministic lane은 fake generator 네 번과 Q1 frozen threshold를 사용해
 
 이 결과는 다국어 문장과 domain metadata를 포함한 synthetic structural robustness 증적이다. Q9 assertion hash와 source text의 의미적 일치를 판정하지 않으며, synthetic reviewer oracle은 독립 reviewer가 아니다. 따라서 actual user quality, F1.3, training, current answer path, runtime activation, external provider, production readiness에는 권한이나 완료 근거를 추가하지 않는다.
 
+## 현재 Q12 local artifact writer hardening
+
+Q12는 Q10/Q11 artifact bytes와 runner 순서를 바꾸지 않고 final in-place truncate를 same-parent exclusive no-follow temp의 write-all, temp fsync/fstat, directory-chain 및 parent dev/ino checkpoint, atomic rename, final inode/size/mode/nlink verification과 parent-directory fsync로 교체한다. static/dynamic symlink·hardlink·destination/parent swap, partial write, injected write/fsync/rename failure, crash, safe orphan recovery, concurrency를 `npm run smoke:evidence-gated-answer-output-hardening`으로 검증한다. Node v24에는 `openat`/`renameat`가 없으므로 마지막 same-user syscall window는 닫혔다고 주장하지 않는다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -1795,6 +1799,7 @@ Deterministic lane은 fake generator 네 번과 Q1 frozen threshold를 사용해
 | Q9 RAG evidence sufficiency | 완료 · shadow 미통과 | required claim SHA-256 assertion만으로 sufficient·partial·conflicting·irrelevant·no-evidence를 고정 판정 | deterministic gate 통과; qwen2.5:3b shadow는 4/5 정책 일치와 sufficient case `unnecessary-abstention` 1건을 보존하고 current answer path·activation·training은 불변 |
 | Q10 Evidence-gated answer shadow | 완료 · opt-in shadow | Q9 action을 authoritative gate로 사용하고 sufficient 한 건만 Q7 v5 local composition과 Q1 frozen quality gate로 평가 | deterministic 5-state route와 generator 1회, local sufficient answer-quality pass, Q9 4/5 실패 이력과 default runtime 불변 |
 | Q11 Multi-scenario evidence-gated answer robustness | 완료 · opt-in synthetic shadow | 4개 언어·4개 domain의 12개 case에서 Q9 route와 Q10 coordinator를 재사용하고 sufficient 네 건만 local generation | deterministic 12/12와 loopback qwen2.5:3b sufficient 4/4 quality pass; structural evidence만 인정하고 default runtime·training·production claim 불변 |
+| Q12 Local artifact writer hardening | 완료 · local filesystem boundary | same-parent no-follow temp, write-all, fsync, identity checkpoint, atomic rename와 final metadata 검증 | focused failure/crash/link/swap/orphan/concurrency smoke만 검증하며 Node v24 `openat`/`renameat` 부재의 마지막 same-user syscall window는 residual |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
