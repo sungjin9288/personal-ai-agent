@@ -1,0 +1,161 @@
+{
+  "actualUserData": false,
+  "apiCostUsd": 0,
+  "calls": [
+    {
+      "attemptCount": 1,
+      "durationMs": 6837,
+      "failureKind": null,
+      "inputTokens": 882,
+      "outputHash": "bc3c3ee74bc37fe39de8c5d4326539b1f3c314f46b1009c558e51a39ca6fc422",
+      "outputTokens": 184,
+      "phase": "opening-position",
+      "promptHash": "1120607544cfd4762add42b5550e1107ea7ae1b4341c18eae59c024b6ffbc9dc",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "passed",
+      "totalTokens": 1066
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 3915,
+      "failureKind": null,
+      "inputTokens": 882,
+      "outputHash": "bc3c3ee74bc37fe39de8c5d4326539b1f3c314f46b1009c558e51a39ca6fc422",
+      "outputTokens": 184,
+      "phase": "opening-position",
+      "promptHash": "1120607544cfd4762add42b5550e1107ea7ae1b4341c18eae59c024b6ffbc9dc",
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "passed",
+      "totalTokens": 1066
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 3649,
+      "failureKind": null,
+      "inputTokens": 882,
+      "outputHash": "bc3c3ee74bc37fe39de8c5d4326539b1f3c314f46b1009c558e51a39ca6fc422",
+      "outputTokens": 184,
+      "phase": "opening-position",
+      "promptHash": "1120607544cfd4762add42b5550e1107ea7ae1b4341c18eae59c024b6ffbc9dc",
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "passed",
+      "totalTokens": 1066
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 5342,
+      "failureKind": "council-contract:missing-field",
+      "inputTokens": 1195,
+      "outputHash": "7ca4b2e8788187898dc89d2c3d6751bc341846e831f057cc501f2f1de66cb51d",
+      "outputTokens": 181,
+      "phase": "rebuttal",
+      "promptHash": "2c6f5c883733881ca09ce098e84ab581690fa18db3556e1f05ffc9c52f7766e3",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "failed",
+      "totalTokens": 1376
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 5689,
+      "failureKind": "council-contract:missing-field",
+      "inputTokens": 1195,
+      "outputHash": "cbf3467009905d18aaf59a8e5a31fbafce022d980a19f3187617554fa69ce319",
+      "outputTokens": 192,
+      "phase": "rebuttal",
+      "promptHash": "f61c3c3cb66b4edae738f64f3f3aef6575faa825c561e1363a6a93939c5b50a8",
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "failed",
+      "totalTokens": 1387
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 5575,
+      "failureKind": "council-contract:tampered-artifact",
+      "inputTokens": 1195,
+      "outputHash": "68f778bc479d492454220ba2b7d6659ccbff51f8d955ff40a77857b0f15bfa4f",
+      "outputTokens": 187,
+      "phase": "rebuttal",
+      "promptHash": "4b485e7e62dd08ca0caf292393b203352276ece81b429627015e740db3c2bc87",
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "failed",
+      "totalTokens": 1382
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "synthesis",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "chair",
+      "status": "not-attempted",
+      "totalTokens": 0
+    }
+  ],
+  "defaultProfilePromotionAuthorized": false,
+  "externalProviderCallCount": 0,
+  "fixtureHash": "6410eabad5d6974918e1a299ce01fd56aac446b71774c8d8c88748aade0389ff",
+  "localShadowQualified": false,
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "licenseHash": "a032f549c4cd3b9402e6cb7d4aa84c7911cacb580ae5df3972035982e41ff192",
+    "sizeBytes": 1929912432
+  },
+  "observedAt": "2026-07-28T04:41:58.617Z",
+  "productionReadyClaim": false,
+  "qualification": {
+    "contractValidated": false,
+    "decision": "keep-stub-only",
+    "independentOpeningDiversityObserved": false,
+    "limitations": [
+      "actual-user-data-not-evaluated",
+      "independent-review-not-performed",
+      "semantic-council-quality-not-validated"
+    ],
+    "sharedOpeningPromptVerified": true
+  },
+  "runtime": {
+    "afterContextLength": 4096,
+    "afterLoaded": true,
+    "afterSizeBytes": 2390300672,
+    "afterVramBytes": 2390300672,
+    "beforeLoaded": false,
+    "cloudFeaturesDisabled": true,
+    "endpointAlias": "loopback-ollama",
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-council-provider-shadow/v1",
+  "summary": {
+    "callCount": 7,
+    "distinctOpeningOutputCount": 1,
+    "distinctOpeningPromptCount": 1,
+    "failedCallCount": 3,
+    "notAttemptedCallCount": 1,
+    "passedCallCount": 3,
+    "totalDurationMs": 31007,
+    "totalInputTokens": 6231,
+    "totalOutputTokens": 1112,
+    "totalTokens": 7343
+  },
+  "trainingAuthorized": false,
+  "validation": {
+    "code": "council-contract-failed",
+    "manifestDigest": null,
+    "status": "failed"
+  },
+  "id": "local-council-provider-shadow-10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+  "integrityHash": "10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65"
+}

@@ -42,6 +42,14 @@
 - docs/agent-runtime-evidence.md
 - docs/evidence-checklist.md
 - docs/evidence-gallery.md
+- docs/multi-agent-council-development-plan-v1.md
+- src/core/local-council-provider-shadow.mjs
+- src/providers/structured-provider-utils.mjs
+- fixtures/local-council-provider-shadow-v1.json
+- scripts/evaluate-local-council-provider-shadow.mjs
+- scripts/smoke-local-council-provider-shadow.mjs
+- test/local-council-provider-contract.test.mjs
+- test/local-council-provider-shadow.test.mjs
 - evidence/cli-logs/
 - evidence/api-responses/
 - evidence/screenshots/
@@ -101,6 +109,7 @@
 - evidence/output-artifacts/user-query-evaluation-intake.json
 - evidence/output-artifacts/local-user-query-quality.json
 - evidence/output-artifacts/local-answer-review-action-generalization.json
+- evidence/output-artifacts/local-council-provider-shadow.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/screenshots/user-learning-operator-surface.png
 - evidence/screenshots/local-training-permission-surface.png
@@ -132,6 +141,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,359,762 bytes
-- 압축 파일 SHA-256: `fb4d308d4c6565522eeeb62d1b85329f7d0418f9fc93dc622f119251c5f70f29`
+- 압축 파일 크기: 4,393,592 bytes
+- 압축 파일 SHA-256: `36768adec78e90f7719e0842d56b765534ef299430e1c55769cd1226b90b2272`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

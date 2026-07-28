@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-28T03:12:37.796Z
-- branch: codex/claim-source-attribution-shadow
-- commit: ef605608eebf5b61a55068908ca0d6457356d800
+- generatedAt: 2026-07-28T04:52:03.715Z
+- branch: codex/council-local-provider-shadow
+- commit: ab0e7d1ba58231eaff6b555dd98d12b863cbd280
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
