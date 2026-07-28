@@ -1,4 +1,6 @@
 const PROFILE_ID = 'seat-scoped-v1';
+const ROBUSTNESS_PROFILE_ID = 'seat-scoped-v2';
+const SUPPORTED_PROFILE_IDS = new Set([PROFILE_ID, ROBUSTNESS_PROFILE_ID]);
 
 const SEAT_CONTRACTS = {
   research: {
@@ -39,7 +41,7 @@ export function resolveCouncilSeatPromptContract({
   if (!profile) {
     return null;
   }
-  if (profile !== PROFILE_ID) {
+  if (!SUPPORTED_PROFILE_IDS.has(profile)) {
     fail(`unsupported profile ${profile}.`);
   }
 
@@ -67,12 +69,33 @@ export function resolveCouncilSeatPromptContract({
   }
 
   return {
-    profile: PROFILE_ID,
+    profile,
     requiredTargetClaimId,
     responsibility: seat.responsibility,
     seatId: normalizedSeatId,
     targetSeatId: seat.targetSeatId,
   };
+}
+
+export function classifyCouncilClaimFailure(error) {
+  if (error?.code !== 'invalid-claim') {
+    return null;
+  }
+
+  const message = String(error?.message || '');
+  if (message.includes('claims must contain between')) {
+    return 'claim-count';
+  }
+  if (message.includes('must belong to seat')) {
+    return 'claim-seat';
+  }
+  if (message.includes('Unsupported claim position')) {
+    return 'claim-position';
+  }
+  if (message.includes('Unsupported claim severity')) {
+    return 'claim-severity';
+  }
+  return 'claim-other';
 }
 
 export function assertCouncilSeatTargetBinding({
@@ -111,4 +134,8 @@ export function assertCouncilSeatTargetBinding({
 
 export function getCouncilSeatPromptProfileId() {
   return PROFILE_ID;
+}
+
+export function getCouncilSeatRobustnessPromptProfileId() {
+  return ROBUSTNESS_PROFILE_ID;
 }
