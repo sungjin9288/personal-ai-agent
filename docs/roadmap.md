@@ -44,6 +44,7 @@
   - 완료: Q9 required-claim SHA-256 assertion policy가 five evidence states와 fixed answer/request/abstain action을 deterministic하게 판정하고, qwen2.5:3b loopback shadow의 4/5 정책 일치와 sufficient case `unnecessary-abstention` 1건을 기본 답변 경로 밖의 비권위 실패 관찰로 보존
   - 완료: Q10 evidence-gated answer shadow가 Q9 action을 authoritative gate로 사용해 non-sufficient 4건을 model 호출 전에 차단하고 sufficient 1건만 Q7 v5로 조합한 뒤 Q1 frozen quality gate를 통과; Q9 4/5 실패 이력과 default answer path는 그대로 유지
   - 완료: Q11 multi-scenario robustness fixture가 4개 언어·4개 domain의 12개 synthetic structural row에서 Q9 action을 그대로 사용하고 sufficient 4건만 Q10 coordinator로 조합; deterministic과 installed loopback qwen2.5:3b 모두 sufficient 4/4 frozen quality gate를 통과했지만 multilingual semantic truth나 runtime activation 증적은 아님
+  - 완료: Q13 claim-source attribution shadow가 Q10 quality-pass 뒤에만 Q7 v5 flattened source claim의 term ownership을 lexical로 검사; non-sufficient 8건은 모든 lazy contract getter를 읽지 않고, deterministic과 loopback qwen2.5:3b sufficient 4/4 pass는 semantic attribution·independent review·activation 증적이 아님
 - 완료 기준:
   - provider별 status matrix가 코드, docs, smoke evidence와 일치
   - 실패/재시도/fallback을 면접에서 코드 수준으로 설명 가능
@@ -122,6 +123,7 @@
 - 완료: Q10 evidence-gated answer shadow가 five-state route에서 generator call 1회를 강제하고 installed qwen2.5:3b sufficient answer를 content-free로 검증; 이는 opt-in synthetic shadow이며 actual user quality·runtime activation·production readiness 증적이 아님
 - 완료: Q11 multi-scenario robustness가 12개 synthetic structural case에서 non-sufficient 8건을 pre-generator 차단하고 sufficient 4건의 loopback qwen2.5:3b answer-quality를 4/4로 기록; Q9/Q10 baseline과 default path는 불변
 - 완료: Q12 local artifact writer hardening이 final in-place truncate를 same-parent atomic replace로 교체하고 failure/crash 전후 complete JSON, `0600`, single-link를 focused smoke로 확인; Node v24 `openat`/`renameat` 부재의 마지막 same-user syscall window는 residual로 유지
+- 완료: Q13 claim-source attribution shadow가 Q11 12-row lane의 Q10 route/order를 그대로 재사용하고 sufficient 4건만 source-bound lexical term ownership을 4/4로 기록; actual-user quality, independent reviewer, runtime activation과 production readiness는 계속 보류
 - 다음: 실제 사용자 dataset과 별도 승인을 받은 뒤 명시적 동의·철회 가능성·비식별 검토·current retention을 통과한 평가를 진행하고, 그 전에는 candidate activation을 보류
 - 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증

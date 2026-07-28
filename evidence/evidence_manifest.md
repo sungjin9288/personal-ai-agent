@@ -115,6 +115,8 @@
 - `evidence/output-artifacts/local-evidence-gated-answer-shadow.json`
 - `evidence/output-artifacts/evidence-gated-answer-robustness.json`
 - `evidence/output-artifacts/local-evidence-gated-answer-robustness.json`
+- `evidence/output-artifacts/evidence-gated-answer-claim-attribution.json`
+- `evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json`
 - `evidence/output-artifacts/local-answer-review-action-generalization.json`
 
 ### Architecture
@@ -261,6 +263,8 @@
 - Q12 local artifact writer hardening: verified with `npm run smoke:evidence-gated-answer-output-hardening`; same-parent no-follow temp replacement, static/dynamic link and path checks, failure/crash recovery, exact JSON bytes, `0600`, and single-link verification only. Node v24 has no `openat`/`renameat`, so the final same-user syscall window remains a documented residual.
 - Q10 local sufficient-answer shadow: verified with `npm run smoke:local-evidence-gated-answer-shadow`; installed loopback qwen2.5:3b composed one sufficient synthetic answer and passed frozen quality checks while Q9 4/5 failure history, synthetic reviewer provenance, inactive runtime, no user data, and no production claim remain explicit
 - Q11 local multi-scenario observation: verified with `npm run smoke:local-evidence-gated-answer-robustness`; installed loopback qwen2.5:3b reached only four sufficient cases and passed 4/4 frozen synthetic quality checks with content-free pre/post attribution. This does not establish multilingual semantic quality, actual-user quality, runtime activation, training authority, or production readiness.
+- Q13 claim-source attribution shadow: verified with `npm run smoke:evidence-gated-answer-claim-attribution`; Q10 remains the only route authority, eight non-sufficient rows read no generator, Q1 quality, or attribution contract, and four sufficient synthetic flattened Q7 v5 answers passed lexical source-term ownership. This does not establish semantic attribution or independent reviewer validation.
+- Q13 local claim-source attribution observation: verified with `npm run smoke:local-evidence-gated-answer-claim-attribution`; installed loopback qwen2.5:3b reached four sufficient rows and passed 4/4 lexical source-term attribution with content-free model/runtime provenance. Runtime activation, training, actual user data, external providers, production readiness, semantic attribution, and independent reviewer validation remain false.
 - Actual user-query evaluation protocol: verified with `npm run smoke:actual-user-query-evaluation-readiness`; actual user data and quality remain unverified
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`

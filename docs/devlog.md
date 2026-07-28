@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-07-28 Q13 Claim-Source Attribution Shadow
+
+- added a separate lexical source-attribution lane that forwards lazy getters to the existing Q10 coordinator and reads the attribution contract only after `answered-quality-passed`
+- bound Q13 to exact Q1/Q7/Q9/Q10/Q11/Q12 bytes, rejected malformed flattened envelopes and source-term crossovers, and stored only content-free hashes, counts, failure identifiers, and local runtime provenance
+- verified deterministic and loopback qwen2.5:3b sufficient rows at 4/4; this does not validate semantic attribution, an independent reviewer, actual user data, activation, training, external providers, or production readiness
+
 ## 2026-07-28 Q12 Local Artifact Writer Hardening
 
 - replaced final-file truncation with a same-parent exclusive no-follow temporary file, write-all loop, file and parent-directory fsync, atomic rename, and final identity/metadata verification
