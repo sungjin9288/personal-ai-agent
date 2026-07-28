@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added the content-free C8 Council claim-contract robustness shadow for the installed loopback `qwen2.5:3b`. The C7 research failure reproduced as `claim-seat`; literal claim rules produced three valid openings and three exact rebuttal targets, but one implementation rebuttal failed `missing-field`, so synthesis remained dependency-blocked and `keep-stub-only` stayed unchanged without threshold relaxation, promotion, activation, external calls, API cost, actual user data, or production claims.
 - Added a content-free C6 local provider council shadow for the installed loopback `qwen2.5:3b`. Three openings passed the exact statement contract but were identical, all three rebuttals failed the target-claim contract, synthesis remained dependency-blocked, and the evidence-bound decision stays `keep-stub-only` without production activation, external calls, API cost, model download, actual user data, or F1.3 authority.
 - Closed Council C1–C5 with an evidence-bound promotion decision. `knowledge-triad` remains the default and `knowledge-council-triad` remains opt-in because unsupported claims are still `not-comparable` and persisted stages remain 26→34; dynamic persona, concurrent dispatch, external research adapter, and AirLLM remain deferred without provider calls, model downloads, private-data authority, or production claims.
 - Added content-free C4 council research evidence enrichment. Existing manager and planner retrieval artifacts now project artifact- and corpus-bound citations with exact chunk lineage, available/degraded/gap status, and source limitations without re-retrieval, raw source exposure, external provider calls, public contract changes, or production promotion.
@@ -144,8 +145,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,411,879 bytes`
-- SHA-256: `840f810cdc5ab6ddd6aed16740befe7c7a47127b199cea67c0d94c2f7b494dfe`
+- Size: `4,426,838 bytes`
+- SHA-256: `f1630169344787a2220747da83996fc61da39d68afb36b6fe8fca8435bc4aebc`
 
 Included public surfaces:
 

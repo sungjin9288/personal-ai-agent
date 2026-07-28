@@ -56,6 +56,11 @@
 - scripts/smoke-local-council-seat-contract-shadow.mjs
 - test/council-seat-prompt-contract.test.mjs
 - test/local-council-seat-contract-shadow.test.mjs
+- src/core/local-council-claim-contract-robustness.mjs
+- fixtures/local-council-claim-contract-robustness-v1.json
+- scripts/smoke-local-council-claim-contract-robustness.mjs
+- test/local-council-claim-contract-robustness.test.mjs
+- evidence/output-artifacts/local-council-claim-contract-robustness.json
 - evidence/cli-logs/
 - evidence/api-responses/
 - evidence/screenshots/
@@ -148,6 +153,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,411,879 bytes
-- 압축 파일 SHA-256: `840f810cdc5ab6ddd6aed16740befe7c7a47127b199cea67c0d94c2f7b494dfe`
+- 압축 파일 크기: 4,426,838 bytes
+- 압축 파일 SHA-256: `f1630169344787a2220747da83996fc61da39d68afb36b6fe8fca8435bc4aebc`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

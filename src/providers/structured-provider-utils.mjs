@@ -434,6 +434,13 @@ function buildCouncilRoleContract(input) {
       profile: input.councilPromptProfile,
       seatId: input.councilSeatId,
     });
+    if (seatContract?.profile === 'seat-scoped-v2') {
+      return buildRobustCouncilSpecialistContract({
+        input,
+        opening,
+        seatContract,
+      });
+    }
     const rebuttalTargets = opening
       ? []
       : (input.councilBrief?.claims || [])
@@ -521,6 +528,68 @@ Council rules:
   }
 
   throw new Error(`Unsupported council provider role: ${input.role}`);
+}
+
+function buildRobustCouncilSpecialistContract({
+  input,
+  opening,
+  seatContract,
+}) {
+  const evidenceIds = opening
+    ? (input.councilFrame?.evidenceCatalog || []).map((item) => item?.id)
+    : (input.councilBrief?.evidenceRefs || []);
+  const availableEvidenceIds = evidenceIds
+    .map((value) => normalizeText(value))
+    .filter(Boolean);
+  if (availableEvidenceIds.length === 0) {
+    throw new Error('seat-scoped-v2 requires at least one available evidence id.');
+  }
+  const exampleEvidenceId = availableEvidenceIds[0];
+  const targetClaimIds = seatContract.requiredTargetClaimId
+    ? [seatContract.requiredTargetClaimId]
+    : [];
+
+  return `Return only valid JSON matching this single example:
+{
+  "summaryText": "bounded council position",
+  "artifactContent": "# Council ${opening ? 'Opening' : 'Rebuttal'}\\n...",
+  "nextAction": "single next action sentence",
+  "councilStatement": {
+    "claims": [
+      {
+        "id": "${opening ? 'claim-1' : 'claim-2'}",
+        "position": "unknown",
+        "summary": "bounded claim",
+        "evidenceRefs": [${JSON.stringify(exampleEvidenceId)}],
+        "severity": "normal"
+      }
+    ],
+    "targetClaimIds": ${JSON.stringify(targetClaimIds)},
+    "rejectedOptionIds": [],
+    "nextAction": "single next action sentence"
+  }
+}
+
+Exact claim rules:
+- return exactly one claim
+- position must be exactly one JSON string: "support", "challenge", or "unknown"
+- severity must be exactly one JSON string: "normal" or "critical"
+- never return an enum description or a list of alternatives as a field value
+- evidenceRefs must be a JSON array containing only these exact evidence ids: ${JSON.stringify(availableEvidenceIds)}
+- use no field other than id, position, summary, evidenceRefs, and severity inside the claim
+- the runtime assigns the fixed seat prefix to the claim id; do not invent another seat
+
+Round rules:
+- opening targetClaimIds and rejectedOptionIds must be empty arrays
+${opening
+  ? '- opening input contains only the shared CouncilFrame and no other opening statement'
+  : `- rebuttal targetClaimIds must equal exactly ${JSON.stringify(targetClaimIds)}`}
+- do not include raw attachments, memory, paths, URLs, or hidden reasoning
+
+Seat responsibility:
+- seat: ${seatContract.seatId}
+- responsibility: ${seatContract.responsibility}
+- keep the claim inside this responsibility and do not imitate another seat's responsibility`;
 }
 
 export function buildRequestPrompt(input, delegatedPrompt) {

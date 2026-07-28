@@ -56,6 +56,7 @@ assert.match(plan, /^# Multi-Agent Council Development Plan v1\n\n- status: comp
 assert.match(plan, /C4 — Research evidence enrichment[\s\S]*status: completed and merged/);
 assert.match(plan, /C5 — Closeout and promotion decision[\s\S]*status: completed/);
 assert.match(plan, /C6 — Local provider shadow qualification[\s\S]*status: completed/);
+assert.match(plan, /C8 — Claim contract robustness shadow[\s\S]*status: completed/);
 assert.match(plan, /`knowledge-triad`를 default profile로 유지/);
 assert.match(plan, /`knowledge-council-triad`는 opt-in experiment로 유지/);
 assert.match(plan, /dynamic persona[\s\S]*concurrent dispatch[\s\S]*external research adapter[\s\S]*AirLLM/);
@@ -69,7 +70,10 @@ for (const document of [checklist, gallery, manifest]) {
 }
 
 for (const document of [roadmap, checklist, gallery, manifest]) {
-  assert.match(document, /Council C1–C7|Council C6 local provider shadow qualification/);
+  assert.match(
+    document,
+    /Council C1–C8|Council C8 claim contract robustness shadow/,
+  );
   assert.match(document, /keep-stub-only/);
 }
 

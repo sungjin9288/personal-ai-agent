@@ -542,6 +542,39 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - external provider, API 비용, model download, 새 dependency, actual user data, F1.3 authority,
   runtime activation과 production claim은 없다.
 
+### C8 — Claim contract robustness shadow
+
+- model: installed loopback `qwen2.5:3b`
+- branch: `codex/council-claim-contract-robustness-shadow`
+- status: completed on 2026-07-28 with `keep-stub-only`
+
+구현 범위:
+
+- C7 research opening의 exact prompt·output hash와 `invalid-claim`을 다시 확인하고, raw response를
+  저장하지 않은 채 원인을 `claim-seat`로 분류했다.
+- `seat-scoped-v2`는 `position`, `severity`, `evidenceRefs`의 허용값과 하나의 literal JSON 예시를
+  명확히 했다. fixed seat responsibility, opening isolation, deterministic rebuttal target rotation은
+  C7과 동일하다.
+- 모델이 만들지 않은 claim, evidence, target은 runtime에서 보충하거나 고치지 않았다. C6와 C7
+  artifact의 tracked bytes와 `keep-stub-only` 결정도 변경하지 않았다.
+
+실제 관측:
+
+- opening 3회는 모두 contract를 통과했고 prompt hash와 output hash도 각각 3개였다.
+- rebuttal target은 3/3 일치했지만 implementation rebuttal이
+  `council-contract:missing-field`로 실패했다. synthesis는 dependency-blocked로 실행하지 않았다.
+- 총 7 stage record 중 passed 5, failed 1, not-attempted 1이었다. 관측된 7,981 token과
+  38,701 ms는 이 한 번의 local run 값이며 성능 보장이나 production capacity 근거가 아니다.
+
+결정:
+
+- 7/7 contract pass와 valid synthesis를 충족하지 못했으므로
+  `localShadowQualified: false`, `decision: keep-stub-only`로 종료했다.
+- 실패 뒤 prompt나 threshold를 완화하지 않았다. default profile promotion과 runtime activation도
+  계속 금지한다.
+- external provider, API 비용, model download, 새 dependency, actual user data, F1.3 authority,
+  dynamic persona, concurrent dispatch와 production claim은 없다.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.
@@ -549,7 +582,7 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 1. touched council contract와 failure boundary unit test
 2. deterministic stub council smoke
 3. 기존 parallel specialist, retry, reviewer, approval, timeline regression
-4. C6 baseline integrity와 C7 seat contract content-free evidence smoke
+4. C6·C7 baseline integrity와 C8 claim contract content-free evidence smoke
 5. UI 변경이 있는 C2만 local browser smoke
 6. `npm test`
 7. `npm run smoke:docs-gates`

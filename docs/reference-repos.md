@@ -71,6 +71,7 @@ These repositories are design input. Patterns are borrowed deliberately and docu
 - 2026-07-27 parity status: C3.1 repaired the reviewer false pass without exposing raw constraints to the provider; unsupported claims remain not-comparable, stage overhead remains, and default promotion stays denied
 - 2026-07-27 C5 closeout: `knowledge-triad` remains default and council remains opt-in; dynamic persona and concurrent dispatch stay deferred until bounded role and permission contracts, deterministic ordering, retry lineage, resource envelope, and baseline-relative quality evidence exist
 - 2026-07-28 C6 local observation: installed loopback `qwen2.5:3b` completed three valid but identical openings, failed all three rebuttals on the exact target contract, and left synthesis dependency-blocked; the evidence-bound decision remains `keep-stub-only` without concurrent dispatch, external calls, model download, private-data authority, or production activation
+- 2026-07-28 C7·C8 local observation: fixed seat responsibilities separated all opening prompts and outputs; the C7 research failure was reproduced as content-free `claim-seat`, and a literal claim contract reached opening 3/3 plus rebuttal target 3/3, but one implementation rebuttal `missing-field` left the candidate at 5/7 with synthesis blocked; no threshold was relaxed and `keep-stub-only` remains
 
 ### ui-skills
 - source: https://github.com/ibelick/ui-skills

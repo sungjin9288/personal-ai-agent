@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-28T07:43:18.671Z
-- branch: codex/council-seat-contract-shadow
-- commit: 258dba820168b4b1e296525cbff10c0cc66d1180
+- generatedAt: 2026-07-28T08:54:22.567Z
+- branch: codex/council-claim-contract-robustness-shadow
+- commit: 323db15d0dddfedfe73d0df12c82fc7d797511f8
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

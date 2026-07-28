@@ -29,6 +29,7 @@ const GROUPS = {
     'smoke:council-closeout',
     'smoke:local-council-provider-shadow',
     'smoke:local-council-seat-contract-shadow',
+    'smoke:local-council-claim-contract-robustness',
     'smoke:target-deployment-contract',
     'smoke:hosted-saas-architecture-decision',
     'smoke:hosted-identity-session-architecture',

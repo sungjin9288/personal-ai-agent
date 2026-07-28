@@ -13,10 +13,19 @@ function specialistInput({
 } = {}) {
   return {
     councilBrief: councilPhase === 'rebuttal'
-      ? {
+        ? {
           claims: [
             { id: 'research:claim-1', seatId: 'research' },
+            { id: 'implementation:claim-1', seatId: 'implementation' },
             { id: 'verification:claim-1', seatId: 'verification' },
+          ],
+        }
+      : null,
+    councilFrame: councilPhase === 'opening-position'
+      ? {
+          evidenceCatalog: [
+            { id: 'artifact:bounded-plan' },
+            { id: 'artifact:verification-record' },
           ],
         }
       : null,
@@ -87,6 +96,36 @@ test('seat-scoped opening prompts expose one fixed responsibility without other 
   assert.match(
     research,
     /opening input contains only the shared CouncilFrame and no other opening statement/,
+  );
+});
+
+test('seat-scoped-v2 opening prompt uses literal enum values and exact evidence ids', () => {
+  const input = specialistInput({
+    councilPromptProfile: 'seat-scoped-v2',
+  });
+  const prompt = buildRequestPrompt(input, 'Shared specialist template and Council Context.');
+
+  assert.match(prompt, /"position": "unknown"/);
+  assert.match(prompt, /"severity": "normal"/);
+  assert.match(prompt, /"evidenceRefs": \["artifact:bounded-plan"\]/);
+  assert.match(
+    prompt,
+    /position must be exactly one JSON string: "support", "challenge", or "unknown"/,
+  );
+  assert.doesNotMatch(prompt, /"position": "support \| challenge \| unknown"/);
+  assert.doesNotMatch(prompt, /"severity": "normal \| critical"/);
+  assert.match(prompt, /opening input contains only the shared CouncilFrame/);
+});
+
+test('seat-scoped-v2 prompt fails closed without available evidence', () => {
+  const input = specialistInput({
+    councilPromptProfile: 'seat-scoped-v2',
+  });
+  input.councilFrame.evidenceCatalog = [];
+
+  assert.throws(
+    () => buildRequestPrompt(input, 'Shared specialist template and Council Context.'),
+    /requires at least one available evidence id/,
   );
 });
 
@@ -181,6 +220,31 @@ test('seat-scoped rebuttal prompt and normalization require the fixed target', (
         'Local',
       ),
     /seat target binding failed/,
+  );
+});
+
+test('seat-scoped-v2 rebuttal keeps the same deterministic target binding', () => {
+  const input = specialistInput({
+    councilPhase: 'rebuttal',
+    councilPromptProfile: 'seat-scoped-v2',
+    councilSeatId: 'research',
+  });
+  input.councilBrief.evidenceRefs = ['artifact:bounded-plan'];
+  const prompt = buildRequestPrompt(input, 'Rebuttal Council Context.');
+
+  assert.match(prompt, /targetClaimIds must equal exactly \["implementation:claim-1"\]/);
+  assert.doesNotThrow(() =>
+    normalizeStructuredOutput(
+      {
+        output: specialistOutput({
+          claimId: 'claim-2',
+          targetClaimIds: ['implementation:claim-1'],
+        }),
+        role: 'specialist',
+      },
+      input,
+      'Local',
+    ),
   );
 });
 
