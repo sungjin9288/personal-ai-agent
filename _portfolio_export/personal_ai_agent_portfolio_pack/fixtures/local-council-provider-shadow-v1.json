@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "personal-ai-agent-local-council-provider-shadow-fixture/v1",
+  "fixtureId": "local-council-provider-shadow-v1",
+  "councilId": "council-local-shadow",
+  "workspaceId": "workspace-local-shadow",
+  "sessionId": "session-local-shadow",
+  "parentRunId": "run-local-shadow-planner",
+  "evidenceCatalog": [
+    {
+      "id": "artifact:bounded-plan",
+      "kind": "artifact"
+    },
+    {
+      "id": "artifact:verification-record",
+      "kind": "artifact"
+    }
+  ],
+  "requiredSeats": [
+    "research",
+    "implementation",
+    "verification"
+  ]
+}

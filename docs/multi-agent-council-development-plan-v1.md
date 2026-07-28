@@ -2,7 +2,7 @@
 
 - status: completed
 - plannedAt: 2026-07-27
-- completedAt: 2026-07-27
+- completedAt: 2026-07-28
 - repositoryBaseline: `83c5ce3f31f80f1971cf58b2065c1aff0fd1b58f`
 - closeoutBaseline: `ad6cf894dc0373f10d1cd3adf23de4a3d2e4ba2e`
 - relatedBackbone: [orchestration-backbone-v1.md](orchestration-backbone-v1.md)
@@ -464,6 +464,45 @@ local provider shadow는 별도 현재 permission, model digest, license, egress
 public API·CLI·storage·permission·approval·audit ordering도 변경하지 않았다.
 `productionReadyClaim: false`를 유지하며 F1.3 actual private-data evaluation과 training activation은 계속
 보류한다.
+
+### C6 — Local provider shadow qualification
+
+- model: installed loopback `qwen2.5:3b`
+- branch: `codex/council-local-provider-shadow`
+- status: completed on 2026-07-28
+
+검증 범위:
+
+- production mission의 non-stub refusal은 유지한 채, 별도 evaluator에서 opening 3회, rebuttal 3회,
+  synthesis 1회의 고정 순서를 구성했다.
+- 각 호출은 직전 단계의 exact contract가 유효할 때만 다음 단계로 진행하며 concurrent dispatch는
+  사용하지 않는다.
+- local provider의 structured output을 기존 CouncilStatement와 CouncilSynthesis contract에 맞춰
+  투영하되, 모델이 만들지 않은 semantic target이나 claim을 보충하지 않는다.
+- tracked artifact는 raw prompt와 response를 저장하지 않고 model·runtime provenance, hash, token,
+  duration, failure taxonomy만 기록한다.
+
+실제 관측:
+
+- opening 3회는 contract를 통과했지만 세 seat가 같은 prompt와 같은 output을 생성했다.
+  `distinctOpeningPromptCount`와 `distinctOpeningOutputCount`는 모두 1이었다.
+- rebuttal 3회는 허용된 다른 seat의 claim id를 명시했음에도 exact target contract를 통과하지
+  못했다. 두 건은 `council-contract:missing-field`, 한 건은 `council-contract:tampered-artifact`였다.
+- synthesis는 유효한 rebuttal이 없어 `dependency-blocked`로 실행하지 않았다.
+- `npm run evaluate:local-council-provider-shadow` 한 번의 관측값은 7,343 token, 31,007 ms,
+  loaded footprint 2,390,300,672 bytes였다. 이는 단일 local run의 기록이며 성능 보장이나
+  production capacity 근거가 아니다.
+
+결정:
+
+- `localShadowQualified: false`, `defaultProfilePromotionAuthorized: false`,
+  `decision: keep-stub-only`를 유지한다.
+- `knowledge-triad`는 default, `knowledge-council-triad`는 deterministic stub 기반 opt-in으로
+  유지한다.
+- external provider call, API 비용, model download, 새 dependency, actual user data, F1.3 authority,
+  production runtime activation은 없었다.
+- 다음 후보는 seat별 책임을 명시하면서도 다른 opening을 노출하지 않는 prompt contract를 먼저
+  설계하고, 같은 모델에서 opening diversity와 exact rebuttal target을 모두 통과해야 한다.
 
 ## 검증 계획
 

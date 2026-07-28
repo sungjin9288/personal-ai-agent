@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-07-28 Council Local Provider Shadow Qualification
+
+- added a separate sequential evaluator for the installed loopback `qwen2.5:3b` without opening the production mission non-stub guard
+- projected local structured output into exact council contracts while refusing to invent semantic rebuttal targets or persist raw prompts and responses
+- observed three valid but identical openings, three missing-target rebuttal failures, and dependency-blocked synthesis; retained `keep-stub-only`, the default profile, false runtime activation, and false production claims
+- recorded one local run's model, runtime, token, latency, resource, and failure provenance without external calls, API cost, model download, actual user data, concurrent dispatch, or F1.3 authority
+
 ## 2026-07-28 Q13 Claim-Source Attribution Shadow
 
 - added a separate lexical source-attribution lane that forwards lazy getters to the existing Q10 coordinator and reads the attribution contract only after `answered-quality-passed`

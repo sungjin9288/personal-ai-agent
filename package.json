@@ -398,6 +398,8 @@
     "evaluate:council-quality-comparison": "node scripts/evaluate-council-quality-comparison.mjs --output evidence/output-artifacts/council-quality-comparison.json",
     "smoke:council-quality-comparison": "node scripts/smoke-council-quality-comparison.mjs",
     "smoke:council-closeout": "node scripts/smoke-council-closeout.mjs",
+    "evaluate:local-council-provider-shadow": "node scripts/evaluate-local-council-provider-shadow.mjs --endpoint http://127.0.0.1:11434 --model qwen2.5:3b --cloud-features-disabled true --output evidence/output-artifacts/local-council-provider-shadow.json",
+    "smoke:local-council-provider-shadow": "node scripts/smoke-local-council-provider-shadow.mjs",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
     "smoke:specialist-follow-up-reminders": "node scripts/smoke-specialist-follow-up-reminders.mjs",

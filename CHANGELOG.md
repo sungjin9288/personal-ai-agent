@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added a content-free C6 local provider council shadow for the installed loopback `qwen2.5:3b`. Three openings passed the exact statement contract but were identical, all three rebuttals failed the target-claim contract, synthesis remained dependency-blocked, and the evidence-bound decision stays `keep-stub-only` without production activation, external calls, API cost, model download, actual user data, or F1.3 authority.
 - Closed Council C1–C5 with an evidence-bound promotion decision. `knowledge-triad` remains the default and `knowledge-council-triad` remains opt-in because unsupported claims are still `not-comparable` and persisted stages remain 26→34; dynamic persona, concurrent dispatch, external research adapter, and AirLLM remain deferred without provider calls, model downloads, private-data authority, or production claims.
 - Added content-free C4 council research evidence enrichment. Existing manager and planner retrieval artifacts now project artifact- and corpus-bound citations with exact chunk lineage, available/degraded/gap status, and source limitations without re-retrieval, raw source exposure, external provider calls, public contract changes, or production promotion.
 - Added a cost-free F1.25 private collection-gap replan shadow that independently reconstructs the F1.24 projection from live authority and recalculates the F1.2 collection plan in memory only. Tracked F1.2 evidence, intake, collection completion, audit, training, provider, submission, deployment, and production state remain unchanged or false.
@@ -143,8 +144,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,359,762 bytes`
-- SHA-256: `fb4d308d4c6565522eeeb62d1b85329f7d0418f9fc93dc622f119251c5f70f29`
+- Size: `4,393,843 bytes`
+- SHA-256: `75f7c084241b8aa7f90f62da593a97c7b0e76017afd9fbc5b60af0d78167c386`
 
 Included public surfaces:
 
