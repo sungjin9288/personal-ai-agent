@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-27T18:04:41.211Z
+- generatedAt: 2026-07-28T00:18:44.209Z
 - localDate: 2026-07-28
-- branch: codex/rag-evidence-gated-answer-shadow
-- commit: 9e69c94cfa4ea53915c80050099a80adc762b444
+- branch: codex/evidence-gated-answer-robustness
+- commit: 6c869d84c01034527440e735f87160c8199c02ae
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/9e69c94cfa4ea53915c80050099a80adc762b444](releases/execution-v1/9e69c94cfa4ea53915c80050099a80adc762b444)
-- visualArtifactSetSha256: fdce24dc7cec3685902441795620e79f98b0c72f8ea27ca5b36e7199c8d5aaf3
-- commitPushStatus: not pushed, origin/codex/rag-evidence-gated-answer-shadow not found
+- immutableSnapshot: [releases/execution-v1/6c869d84c01034527440e735f87160c8199c02ae](releases/execution-v1/6c869d84c01034527440e735f87160c8199c02ae)
+- visualArtifactSetSha256: ea5b488ff85bee634da65c556c84c47160b13cf6837a8126d841f5b9a2aecc6e
+- commitPushStatus: not pushed, origin/codex/evidence-gated-answer-robustness not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=1.1m
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=51.0s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: fdce24dc7cec3685902441795620e79f98b0c72f8ea27ca5b36e7199c8d5aaf3
+- visual artifact set: ea5b488ff85bee634da65c556c84c47160b13cf6837a8126d841f5b9a2aecc6e
 
 ## Live Provider Handoff
 

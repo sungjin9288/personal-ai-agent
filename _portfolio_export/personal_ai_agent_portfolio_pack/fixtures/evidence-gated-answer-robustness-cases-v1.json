@@ -1,0 +1,572 @@
+{
+  "schemaVersion": "personal-ai-agent-evidence-gated-answer-robustness-fixture/v1",
+  "thresholdsHash": "51df7f24468fb8f7632cb2f83c7ea2df9bbc47654d17fd4ef541d6c2fd0a428b",
+  "thresholds": {
+    "maximumForbiddenRetrievedSourceCount": 0,
+    "maximumForbiddenTermMatches": 0,
+    "maximumUnsupportedCitationRate": 0,
+    "minimumCasePassRate": 1,
+    "minimumCitationGroundingRate": 1,
+    "minimumExpectedSourceCitationRate": 1,
+    "minimumRequiredTermCoverage": 1,
+    "minimumRetrievalHitRate": 1,
+    "requireReviewerPass": true
+  },
+  "q7EvidenceHash": "d7a044e11d4f32d6cca2b46e60bfff6b964c7edfaf44499cd2a7b926b2e23010",
+  "q7EvidenceFileHash": "7a71e2c24ec751903fb2b971b0f776381dce4dcc9f553f466730e08ad31a974f",
+  "q7PromptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+  "q7PromptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+  "q9PolicyHash": "dac9fda09108a44957c9a25d03e86f1151f3f8d8d6efae4e9e602a7a5d6ea4b5",
+  "q9ArtifactHash": "443a0a34b35111018571e64c049437cf45a89b52e015f974d2c072b2a3abc9b8",
+  "q10ArtifactHash": "863f11820f4a3c1a8fc2cc589062c09c394b9ef441b0bcd24675011edf013b84",
+  "q9CoreFileHash": "665b44f656bf344af3b354901e55acb624554d5cf42f72cf94a5d9c3747053c3",
+  "q9FixtureFileHash": "29b7b5664847c9cf6a747ac2e8f24c130eb3917e359b956c798bf4ef5fa05ebf",
+  "q9ArtifactFileHash": "081395c6414ce6044c5a87807b155cfaeb1bc8ca8ebcf846d959382dabe47d5b",
+  "q9LocalArtifactFileHash": "58884da68cd1cfc0511ca496b766e8e83bb61e50a0a1f26a3600fbf0e839268e",
+  "q10CoreFileHash": "4fa0739a19e6360a5ae247fe3fc1ee125d82a2f5ea4c7895e513353ebff6828b",
+  "q10FixtureFileHash": "0573c2069b03f7b40eaced7b0e47e46ddaf473c493710c7b9c5aca843b9622d4",
+  "q10ArtifactFileHash": "af410a400035e2de9a7e256be4deddaee2f90bd1976e934b8db393fc334ef958",
+  "q10LocalArtifactFileHash": "a635d3c0a467ac3de7a5388540c44598e8bc4b63136b03b0654925d4ccbe0d5d",
+  "currentAnswerPathChanged": false,
+  "runtimeActivation": false,
+  "trainingAuthorized": false,
+  "actualUserQueryData": false,
+  "productionReadyClaim": false,
+  "externalProviderCalls": "none",
+  "cases": [
+    {
+      "id": "q11-01-ko-engineering-sufficient",
+      "language": "ko",
+      "domain": "engineering",
+      "expectedState": "sufficient",
+      "expectedAction": "answer",
+      "expectedGeneratorCallCount": 1,
+      "caseHash": "b28149039b98eeb39b5420bb88f68b22642cfb6023152a3c4dfdf7724d052314",
+      "q9Case": {
+        "id": "q11-01-ko-engineering-sufficient",
+        "objective": "한국어 엔지니어링 증적에서 배포 잠금과 스냅샷 무결성을 확인한다.",
+        "requiredClaimKeys": [
+          "deployment-lock",
+          "snapshot-integrity"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-01-lock",
+            "text": "배포 잠금 REQ-LOCK 이 적용되었고 변경은 검토 대기 상태다.",
+            "assertions": [
+              {
+                "claimKey": "deployment-lock",
+                "valueHash": "1111111111111111111111111111111111111111111111111111111111111111"
+              }
+            ]
+          },
+          {
+            "sourceKey": "q11-01-snapshot",
+            "text": "저장 스냅샷 SNAPSHOT-HASH 가 기록과 일치한다.",
+            "assertions": [
+              {
+                "claimKey": "snapshot-integrity",
+                "valueHash": "2222222222222222222222222222222222222222222222222222222222222222"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "sufficient",
+          "action": "answer"
+        }
+      },
+      "answerQualityContract": {
+        "caseHash": "b28149039b98eeb39b5420bb88f68b22642cfb6023152a3c4dfdf7724d052314",
+        "expectedSourceKeys": [
+          "q11-01-lock",
+          "q11-01-snapshot"
+        ],
+        "forbiddenSourceKeys": [],
+        "requiredAnswerTerms": [
+          "REQ-LOCK",
+          "SNAPSHOT-HASH"
+        ],
+        "forbiddenAnswerTerms": [
+          "UNVERIFIED-LOCK"
+        ],
+        "reviewerVerdict": "pass",
+        "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+        "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+        "thresholds": {
+          "maximumForbiddenRetrievedSourceCount": 0,
+          "maximumForbiddenTermMatches": 0,
+          "maximumUnsupportedCitationRate": 0,
+          "minimumCasePassRate": 1,
+          "minimumCitationGroundingRate": 1,
+          "minimumExpectedSourceCitationRate": 1,
+          "minimumRequiredTermCoverage": 1,
+          "minimumRetrievalHitRate": 1,
+          "requireReviewerPass": true
+        }
+      }
+    },
+    {
+      "id": "q11-02-en-policy-sufficient",
+      "language": "en",
+      "domain": "policy",
+      "expectedState": "sufficient",
+      "expectedAction": "answer",
+      "expectedGeneratorCallCount": 1,
+      "caseHash": "837f9453010734585e66d31282d7aa2e5841fbc5471a5ea578530f33d5b58c56",
+      "q9Case": {
+        "id": "q11-02-en-policy-sufficient",
+        "objective": "Confirm the policy approval and audit trace from the English evidence.",
+        "requiredClaimKeys": [
+          "policy-approval",
+          "audit-trace"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-02-owner",
+            "text": "The policy owner recorded OWNER-APPROVAL before the exception review.",
+            "assertions": [
+              {
+                "claimKey": "policy-approval",
+                "valueHash": "3333333333333333333333333333333333333333333333333333333333333333"
+              }
+            ]
+          },
+          {
+            "sourceKey": "q11-02-audit",
+            "text": "The immutable audit entry carries AUDIT-HASH for the reviewed exception.",
+            "assertions": [
+              {
+                "claimKey": "audit-trace",
+                "valueHash": "4444444444444444444444444444444444444444444444444444444444444444"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "sufficient",
+          "action": "answer"
+        }
+      },
+      "answerQualityContract": {
+        "caseHash": "837f9453010734585e66d31282d7aa2e5841fbc5471a5ea578530f33d5b58c56",
+        "expectedSourceKeys": [
+          "q11-02-owner",
+          "q11-02-audit"
+        ],
+        "forbiddenSourceKeys": [],
+        "requiredAnswerTerms": [
+          "OWNER-APPROVAL",
+          "AUDIT-HASH"
+        ],
+        "forbiddenAnswerTerms": [
+          "UNSIGNED-OWNER"
+        ],
+        "reviewerVerdict": "pass",
+        "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+        "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+        "thresholds": {
+          "maximumForbiddenRetrievedSourceCount": 0,
+          "maximumForbiddenTermMatches": 0,
+          "maximumUnsupportedCitationRate": 0,
+          "minimumCasePassRate": 1,
+          "minimumCitationGroundingRate": 1,
+          "minimumExpectedSourceCitationRate": 1,
+          "minimumRequiredTermCoverage": 1,
+          "minimumRetrievalHitRate": 1,
+          "requireReviewerPass": true
+        }
+      }
+    },
+    {
+      "id": "q11-03-ja-operations-sufficient",
+      "language": "ja",
+      "domain": "operations",
+      "expectedState": "sufficient",
+      "expectedAction": "answer",
+      "expectedGeneratorCallCount": 1,
+      "caseHash": "df225b0deb5a2ed23b020d0cf9c45c0fad3099ebfee709b6b34bd6cb7284fd6a",
+      "q9Case": {
+        "id": "q11-03-ja-operations-sufficient",
+        "objective": "日本語の運用証跡からリースとロールバックの状態を確認する。",
+        "requiredClaimKeys": [
+          "lease-state",
+          "rollback-state"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-03-lease",
+            "text": "運用リース LEASE-ID は担当者により有効として記録された。",
+            "assertions": [
+              {
+                "claimKey": "lease-state",
+                "valueHash": "5555555555555555555555555555555555555555555555555555555555555555"
+              }
+            ]
+          },
+          {
+            "sourceKey": "q11-03-rollback",
+            "text": "復旧時点 ROLLBACK-SNAPSHOT は検証ログと一致している。",
+            "assertions": [
+              {
+                "claimKey": "rollback-state",
+                "valueHash": "6666666666666666666666666666666666666666666666666666666666666666"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "sufficient",
+          "action": "answer"
+        }
+      },
+      "answerQualityContract": {
+        "caseHash": "df225b0deb5a2ed23b020d0cf9c45c0fad3099ebfee709b6b34bd6cb7284fd6a",
+        "expectedSourceKeys": [
+          "q11-03-lease",
+          "q11-03-rollback"
+        ],
+        "forbiddenSourceKeys": [],
+        "requiredAnswerTerms": [
+          "LEASE-ID",
+          "ROLLBACK-SNAPSHOT"
+        ],
+        "forbiddenAnswerTerms": [
+          "STALE-LEASE"
+        ],
+        "reviewerVerdict": "pass",
+        "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+        "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+        "thresholds": {
+          "maximumForbiddenRetrievedSourceCount": 0,
+          "maximumForbiddenTermMatches": 0,
+          "maximumUnsupportedCitationRate": 0,
+          "minimumCasePassRate": 1,
+          "minimumCitationGroundingRate": 1,
+          "minimumExpectedSourceCitationRate": 1,
+          "minimumRequiredTermCoverage": 1,
+          "minimumRetrievalHitRate": 1,
+          "requireReviewerPass": true
+        }
+      }
+    },
+    {
+      "id": "q11-04-es-documentation-sufficient",
+      "language": "es",
+      "domain": "documentation",
+      "expectedState": "sufficient",
+      "expectedAction": "answer",
+      "expectedGeneratorCallCount": 1,
+      "caseHash": "6bc8d413cfa18548c0f6bcdf107ba138a9dc8e598c441066d48ce439bc22fff9",
+      "q9Case": {
+        "id": "q11-04-es-documentation-sufficient",
+        "objective": "Confirma la fuente y la revisión en la evidencia documental en español.",
+        "requiredClaimKeys": [
+          "source-integrity",
+          "review-status"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-04-source",
+            "text": "La fuente publicada conserva SOURCE-HASH en el registro documental.",
+            "assertions": [
+              {
+                "claimKey": "source-integrity",
+                "valueHash": "7777777777777777777777777777777777777777777777777777777777777777"
+              }
+            ]
+          },
+          {
+            "sourceKey": "q11-04-review",
+            "text": "La revisión editorial figura con REVIEW-STATUS aprobado por la responsable.",
+            "assertions": [
+              {
+                "claimKey": "review-status",
+                "valueHash": "8888888888888888888888888888888888888888888888888888888888888888"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "sufficient",
+          "action": "answer"
+        }
+      },
+      "answerQualityContract": {
+        "caseHash": "6bc8d413cfa18548c0f6bcdf107ba138a9dc8e598c441066d48ce439bc22fff9",
+        "expectedSourceKeys": [
+          "q11-04-source",
+          "q11-04-review"
+        ],
+        "forbiddenSourceKeys": [],
+        "requiredAnswerTerms": [
+          "SOURCE-HASH",
+          "REVIEW-STATUS"
+        ],
+        "forbiddenAnswerTerms": [
+          "UNREVIEWED-SOURCE"
+        ],
+        "reviewerVerdict": "pass",
+        "promptVersion": "personal-ai-agent-evidence-first-answer-prompt/v5",
+        "promptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+        "thresholds": {
+          "maximumForbiddenRetrievedSourceCount": 0,
+          "maximumForbiddenTermMatches": 0,
+          "maximumUnsupportedCitationRate": 0,
+          "minimumCasePassRate": 1,
+          "minimumCitationGroundingRate": 1,
+          "minimumExpectedSourceCitationRate": 1,
+          "minimumRequiredTermCoverage": 1,
+          "minimumRetrievalHitRate": 1,
+          "requireReviewerPass": true
+        }
+      }
+    },
+    {
+      "id": "q11-05-ko-policy-partial",
+      "language": "ko",
+      "domain": "policy",
+      "expectedState": "partial",
+      "expectedAction": "request-more-evidence",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "ae966c06c1d9000c3c1daa0510fcce14fdbfa846d867eaffe30870ae5f331e7e",
+      "q9Case": {
+        "id": "q11-05-ko-policy-partial",
+        "objective": "한국어 정책 증적의 승인과 시행일을 확인한다.",
+        "requiredClaimKeys": [
+          "approval",
+          "effective-date"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-05-policy",
+            "text": "정책 승인 기록은 있으나 시행일은 제공되지 않았다.",
+            "assertions": [
+              {
+                "claimKey": "approval",
+                "valueHash": "9999999999999999999999999999999999999999999999999999999999999999"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "partial",
+          "action": "request-more-evidence"
+        }
+      }
+    },
+    {
+      "id": "q11-06-en-documentation-partial",
+      "language": "en",
+      "domain": "documentation",
+      "expectedState": "partial",
+      "expectedAction": "request-more-evidence",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "ac1012ae4ac6280fab369087e2982218e9fecdfb6df28461d33f19cf5749cf21",
+      "q9Case": {
+        "id": "q11-06-en-documentation-partial",
+        "objective": "Check the English document version and reviewer record.",
+        "requiredClaimKeys": [
+          "version",
+          "reviewer"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-06-document",
+            "text": "The document version is present, but no reviewer record is supplied.",
+            "assertions": [
+              {
+                "claimKey": "version",
+                "valueHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "partial",
+          "action": "request-more-evidence"
+        }
+      }
+    },
+    {
+      "id": "q11-07-ja-engineering-conflicting",
+      "language": "ja",
+      "domain": "engineering",
+      "expectedState": "conflicting",
+      "expectedAction": "abstain",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "af56abc27b4fd7bd329f3385b54494871b30ac0e31ded06ecdcec833a1436e5e",
+      "q9Case": {
+        "id": "q11-07-ja-engineering-conflicting",
+        "objective": "日本語の設計証跡にある互換性の値を確認する。",
+        "requiredClaimKeys": [
+          "compatibility"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-07-first",
+            "text": "最初の設計記録は互換性ありと示す。",
+            "assertions": [
+              {
+                "claimKey": "compatibility",
+                "valueHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ]
+          },
+          {
+            "sourceKey": "q11-07-second",
+            "text": "後の設計記録は互換性なしと示す。",
+            "assertions": [
+              {
+                "claimKey": "compatibility",
+                "valueHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "conflicting",
+          "action": "abstain"
+        }
+      }
+    },
+    {
+      "id": "q11-08-es-operations-conflicting",
+      "language": "es",
+      "domain": "operations",
+      "expectedState": "conflicting",
+      "expectedAction": "abstain",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "0f7ea57aba587c8e9f01fd7452cabb4a1f5008f5ecc038f0018036dd6b3f5db1",
+      "q9Case": {
+        "id": "q11-08-es-operations-conflicting",
+        "objective": "Verifica el estado de la operación en los registros en español.",
+        "requiredClaimKeys": [
+          "operation-state"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-08-open",
+            "text": "El primer registro indica que la operación está abierta.",
+            "assertions": [
+              {
+                "claimKey": "operation-state",
+                "valueHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+              }
+            ]
+          },
+          {
+            "sourceKey": "q11-08-closed",
+            "text": "El segundo registro indica que la operación está cerrada.",
+            "assertions": [
+              {
+                "claimKey": "operation-state",
+                "valueHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+              }
+            ]
+          }
+        ],
+        "expected": {
+          "state": "conflicting",
+          "action": "abstain"
+        }
+      }
+    },
+    {
+      "id": "q11-09-ko-documentation-irrelevant",
+      "language": "ko",
+      "domain": "documentation",
+      "expectedState": "irrelevant",
+      "expectedAction": "request-more-evidence",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "1bef80a948755bbc8cf8f1dd176e9d31404448c0a795531930e6df72b7073c37",
+      "q9Case": {
+        "id": "q11-09-ko-documentation-irrelevant",
+        "objective": "한국어 문서의 승인 여부를 확인한다.",
+        "requiredClaimKeys": [
+          "approval"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-09-style",
+            "text": "문서의 글꼴과 여백만 설명하며 승인 정보는 없다.",
+            "assertions": []
+          }
+        ],
+        "expected": {
+          "state": "irrelevant",
+          "action": "request-more-evidence"
+        }
+      }
+    },
+    {
+      "id": "q11-10-en-operations-irrelevant",
+      "language": "en",
+      "domain": "operations",
+      "expectedState": "irrelevant",
+      "expectedAction": "request-more-evidence",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "be276fe0d564c47b5638f8b45f3ca3e8ef639c5d8b8a4aebc65184dbbeff0f83",
+      "q9Case": {
+        "id": "q11-10-en-operations-irrelevant",
+        "objective": "Check the English operational handoff owner.",
+        "requiredClaimKeys": [
+          "handoff-owner"
+        ],
+        "sources": [
+          {
+            "sourceKey": "q11-10-weather",
+            "text": "The operational note only reports the weather near the facility.",
+            "assertions": []
+          }
+        ],
+        "expected": {
+          "state": "irrelevant",
+          "action": "request-more-evidence"
+        }
+      }
+    },
+    {
+      "id": "q11-11-ja-policy-no-evidence",
+      "language": "ja",
+      "domain": "policy",
+      "expectedState": "no-evidence",
+      "expectedAction": "abstain",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "fb598a0fd01df0aa21bee075d37009e425b229384d9d144581ee5b40a9e5f9b9",
+      "q9Case": {
+        "id": "q11-11-ja-policy-no-evidence",
+        "objective": "日本語の方針例外に対する承認を確認する。",
+        "requiredClaimKeys": [
+          "exception-approval"
+        ],
+        "sources": [],
+        "expected": {
+          "state": "no-evidence",
+          "action": "abstain"
+        }
+      }
+    },
+    {
+      "id": "q11-12-es-engineering-no-evidence",
+      "language": "es",
+      "domain": "engineering",
+      "expectedState": "no-evidence",
+      "expectedAction": "abstain",
+      "expectedGeneratorCallCount": 0,
+      "caseHash": "e622cbb9b44d1cc82cc4549dd3ce4ceaec28447ba5ef1dd73d80c9f552376d69",
+      "q9Case": {
+        "id": "q11-12-es-engineering-no-evidence",
+        "objective": "Confirma la validación de ingeniería en español.",
+        "requiredClaimKeys": [
+          "engineering-validation"
+        ],
+        "sources": [],
+        "expected": {
+          "state": "no-evidence",
+          "action": "abstain"
+        }
+      }
+    }
+  ]
+}
