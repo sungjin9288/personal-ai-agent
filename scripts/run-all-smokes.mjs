@@ -27,6 +27,7 @@ const EXCLUDE_ALWAYS = new Set([
 const GROUPS = {
   'docs-gates': [
     'smoke:council-closeout',
+    'smoke:local-council-provider-shadow',
     'smoke:target-deployment-contract',
     'smoke:hosted-saas-architecture-decision',
     'smoke:hosted-identity-session-architecture',

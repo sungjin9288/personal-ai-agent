@@ -421,11 +421,87 @@ Artifact rules:
   throw new Error(`Unsupported provider role: ${role}`);
 }
 
+function buildCouncilRoleContract(input) {
+  if (input.role === 'specialist') {
+    const opening = input.councilPhase === 'opening-position';
+    const rebuttalTargets = opening
+      ? []
+      : (input.councilBrief?.claims || [])
+          .filter((claim) => claim?.seatId !== input.councilSeatId)
+          .map((claim) => normalizeText(claim?.id))
+          .filter(Boolean);
+    return `Return only valid JSON with this shape:
+{
+  "summaryText": "bounded council position",
+  "artifactContent": "# Council ${opening ? 'Opening' : 'Rebuttal'}\\n...",
+  "nextAction": "single next action sentence",
+  "councilStatement": {
+    "claims": [
+      {
+        "id": "${opening ? 'claim-1' : 'claim-2'}",
+        "position": "support | challenge | unknown",
+        "summary": "bounded claim",
+        "evidenceRefs": ["available evidence id from Council Context"],
+        "severity": "normal | critical"
+      }
+    ],
+    "targetClaimIds": ${opening ? '[]' : '["opening claim id from Council Context"]'},
+    "rejectedOptionIds": [],
+    "nextAction": "single next action sentence"
+  }
+}
+
+Council rules:
+- use only evidence ids present in Council Context
+- targetClaimIds and rejectedOptionIds may reference only claim ids present in Council Context
+- return exactly one claim; the runtime assigns its fixed seat and round id
+- opening targetClaimIds and rejectedOptionIds must be empty
+- rebuttal targetClaimIds must contain at least one other seat opening claim
+${opening ? '' : `- rebuttal targetClaimIds must choose from: ${rebuttalTargets.join(', ')}`}
+- do not include raw attachments, memory, paths, URLs, or hidden reasoning`;
+  }
+
+  if (input.role === 'executor' && input.councilPhase === 'synthesis') {
+    return `Return only valid JSON with this shape:
+{
+  "summaryText": "bounded chair summary",
+  "artifactContent": "# Council Decision\\n...",
+  "nextAction": "single next action sentence",
+  "councilSynthesis": {
+    "acceptedClaimIds": [],
+    "rejectedClaims": [
+      {
+        "claimId": "claim id from Council Context",
+        "reason": "bounded reason"
+      }
+    ],
+    "agreementIds": [],
+    "unresolvedConflictIds": [],
+    "unresolvedCriticalConflictIds": [],
+    "evidenceRefs": [],
+    "verificationPlan": ["bounded verification step"],
+    "nextOwner": "workspace-owner",
+    "nextAction": "single next action sentence"
+  }
+}
+
+Council rules:
+- use only claim and evidence ids present in Council Context
+- every accepted or agreed claim must have evidence and its evidence id must be listed
+- every unresolved challenge claim must appear in unresolvedConflictIds
+- every unresolved critical challenge must also appear in unresolvedCriticalConflictIds
+- nextOwner must be workspace-owner
+- do not include raw attachments, memory, paths, URLs, or hidden reasoning`;
+  }
+
+  throw new Error(`Unsupported council provider role: ${input.role}`);
+}
+
 export function buildRequestPrompt(input, delegatedPrompt) {
   return `${delegatedPrompt.trim()}
 
 ## Structured Output Contract
-${buildRoleContract(input)}
+${input.councilPhase ? buildCouncilRoleContract(input) : buildRoleContract(input)}
 `;
 }
 
@@ -829,9 +905,125 @@ function normalizeReviewerOutput(output, providerLabel) {
   };
 }
 
+function normalizeCouncilClaimIds(statement, input) {
+  if (!statement || typeof statement !== 'object' || Array.isArray(statement)) {
+    return statement;
+  }
+  const claims = Array.isArray(statement.claims)
+    ? statement.claims.map((claim) => {
+        if (!claim || typeof claim !== 'object' || Array.isArray(claim)) {
+          return claim;
+        }
+        const id = normalizeText(claim.id);
+        const fixedId = statement.claims.length === 1
+          ? `${input.councilSeatId}:claim-${input.councilPhase === 'opening-position' ? 1 : 2}`
+          : id;
+        return {
+          evidenceRefs: claim.evidenceRefs,
+          id: fixedId,
+          position: claim.position,
+          severity: claim.severity,
+          summary: claim.summary,
+        };
+      })
+    : statement.claims;
+  return {
+    claims,
+    nextAction: statement.nextAction,
+    rejectedOptionIds: statement.rejectedOptionIds,
+    targetClaimIds: statement.targetClaimIds,
+  };
+}
+
+function normalizeCouncilSpecialistOutput(output, input, providerLabel) {
+  const artifactContent = normalizeText(output.artifactContent);
+  const nextAction = normalizeText(output.nextAction);
+  const summaryText = normalizeText(output.summaryText);
+  const normalizedStatement = normalizeCouncilClaimIds(output.councilStatement, input);
+  const councilStatement = normalizedStatement && {
+    ...normalizedStatement,
+    nextAction: normalizeText(normalizedStatement.nextAction, nextAction),
+  };
+  if (!artifactContent || !nextAction || !summaryText || !councilStatement) {
+    throw createProviderFailure(`${providerLabel} council specialist output is missing required fields.`, {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(output),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+  const evidence = Array.isArray(councilStatement.claims)
+    ? [...new Set(councilStatement.claims.flatMap((claim) => claim?.evidenceRefs || []))]
+    : [];
+  const opening = input.councilPhase === 'opening-position';
+  return {
+    artifactContent,
+    artifactFileName: `council-${input.councilSeatId}-${opening ? 'opening' : 'rebuttal'}.md`,
+    artifactTitle: `${input.councilSeatId} council ${opening ? 'opening' : 'rebuttal'}`,
+    councilStatement,
+    nextAction,
+    specialistHandoff: {
+      acceptanceCriteria: ['The persisted council statement passes the council contract.'],
+      blockers: [],
+      currentState: summaryText,
+      deliverables: [`${opening ? 'opening' : 'rebuttal'} council statement`],
+      evidence: evidence.length ? evidence : ['No citable evidence was promoted.'],
+      nextHandoff: {
+        recommendedOwner: 'workspace-owner',
+        request: nextAction,
+        targetRole: opening ? 'council-brief' : 'manager-merge',
+      },
+    },
+    summaryText,
+    type: 'specialist',
+  };
+}
+
+function normalizeCouncilSynthesisOutput(output, input, providerLabel) {
+  const artifactContent = normalizeText(output.artifactContent);
+  const nextAction = normalizeText(output.nextAction);
+  const summaryText = normalizeText(output.summaryText);
+  const councilSynthesis = output.councilSynthesis;
+  if (
+    !artifactContent ||
+    !nextAction ||
+    !summaryText ||
+    !councilSynthesis ||
+    typeof councilSynthesis !== 'object' ||
+    Array.isArray(councilSynthesis)
+  ) {
+    throw createProviderFailure(`${providerLabel} council synthesis output is missing required fields.`, {
+      failureKind: 'schema-invalid',
+      rawMessage: JSON.stringify(output),
+      recoverable: false,
+      timedOut: false,
+    });
+  }
+  return {
+    adaptationNotes: [],
+    artifactContent,
+    artifactFileName: input.councilRuntime?.artifactFileName || 'council-decision.md',
+    artifactTitle: input.councilRuntime?.artifactTitle || 'Council Decision',
+    councilSynthesis,
+    executionManifest: null,
+    nextAction,
+    proposedAction: input.councilRuntime?.proposedAction || null,
+    summaryText,
+    type: 'executor',
+  };
+}
+
 export function normalizeStructuredOutput(result, input, providerLabel) {
   const output = result?.output || result;
   const role = normalizeText(result?.role || input?.role || input?.providerRole);
+
+  if (input?.councilPhase && role === 'specialist') {
+    return normalizeCouncilSpecialistOutput(output, input, providerLabel);
+  }
+
+  if (input?.councilPhase === 'synthesis' && role === 'executor') {
+    return normalizeCouncilSynthesisOutput(output, input, providerLabel);
+  }
 
   if (role === 'manager') {
     return normalizeManagerOutput(output);
