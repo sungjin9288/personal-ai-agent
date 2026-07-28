@@ -1,0 +1,280 @@
+{
+  "actualUserQueryData": false,
+  "currentAnswerPathChanged": false,
+  "externalProviderCalls": "none",
+  "productionReadyClaim": false,
+  "runtimeActivation": false,
+  "trainingAuthorized": false,
+  "aggregate": {
+    "caseCount": 12,
+    "casePassRate": 1,
+    "gateBlockedCount": 8,
+    "generationAttemptCount": 4,
+    "generatorCallCount": 4,
+    "qualityPassCount": 4
+  },
+  "cases": [
+    {
+      "action": "answer",
+      "answerQuality": {
+        "failureCheckIds": [],
+        "metrics": {
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "status": "passed"
+      },
+      "caseHash": "b28149039b98eeb39b5420bb88f68b22642cfb6023152a3c4dfdf7724d052314",
+      "domainHash": "8c85b6639e62e10b8330a8b883004b43c119053d7d62b512a98c77eb069627a7",
+      "generation": {
+        "attempted": true,
+        "failureKind": null,
+        "status": "passed"
+      },
+      "languageHash": "1fdbc74ccfd68d0714ae539c0d93f2f3a1805387632eca33d3bd6a5013afb13e",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "sufficient",
+      "status": "answered-quality-passed"
+    },
+    {
+      "action": "answer",
+      "answerQuality": {
+        "failureCheckIds": [],
+        "metrics": {
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "status": "passed"
+      },
+      "caseHash": "837f9453010734585e66d31282d7aa2e5841fbc5471a5ea578530f33d5b58c56",
+      "domainHash": "823412d1eacb67956220e532959f0104603057c88704863ca38e7cd188fda812",
+      "generation": {
+        "attempted": true,
+        "failureKind": null,
+        "status": "passed"
+      },
+      "languageHash": "dbd3a49d0d906b4ed9216b73330d2fb080ef2f758c12f3885068222e5e17151c",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "sufficient",
+      "status": "answered-quality-passed"
+    },
+    {
+      "action": "answer",
+      "answerQuality": {
+        "failureCheckIds": [],
+        "metrics": {
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "status": "passed"
+      },
+      "caseHash": "df225b0deb5a2ed23b020d0cf9c45c0fad3099ebfee709b6b34bd6cb7284fd6a",
+      "domainHash": "74de07c4e919534b1b460e3465bb216ce0cc2bd458e42abaf0f22448da08d063",
+      "generation": {
+        "attempted": true,
+        "failureKind": null,
+        "status": "passed"
+      },
+      "languageHash": "3702fc1866630796050c50e9c829bd32fde7cc4c883f28e3e4ca430307c485b0",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "sufficient",
+      "status": "answered-quality-passed"
+    },
+    {
+      "action": "answer",
+      "answerQuality": {
+        "failureCheckIds": [],
+        "metrics": {
+          "citationGroundingRate": 1,
+          "expectedSourceCitationRate": 1,
+          "forbiddenRetrievedSourceCount": 0,
+          "forbiddenTermMatchCount": 0,
+          "requiredTermCoverage": 1,
+          "retrievalHitRate": 1,
+          "unsupportedCitationRate": 0
+        },
+        "status": "passed"
+      },
+      "caseHash": "6bc8d413cfa18548c0f6bcdf107ba138a9dc8e598c441066d48ce439bc22fff9",
+      "domainHash": "caf9f906b16a91cb0160c50abdac8bd6db9a283fa9751f9801ef991554b46a8a",
+      "generation": {
+        "attempted": true,
+        "failureKind": null,
+        "status": "passed"
+      },
+      "languageHash": "c0bc1e08f9743b2d50d5f1607503bf4e849af0e729fca896515bea955d70a33e",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "sufficient",
+      "status": "answered-quality-passed"
+    },
+    {
+      "action": "request-more-evidence",
+      "answerQuality": null,
+      "caseHash": "ae966c06c1d9000c3c1daa0510fcce14fdbfa846d867eaffe30870ae5f331e7e",
+      "domainHash": "823412d1eacb67956220e532959f0104603057c88704863ca38e7cd188fda812",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "1fdbc74ccfd68d0714ae539c0d93f2f3a1805387632eca33d3bd6a5013afb13e",
+      "requestedClaimHashes": [
+        "af4bf31c05f95858c7f34708e192c42c490f69a0ffb90bbd72782298158f5200"
+      ],
+      "sanitizedFailureCode": null,
+      "state": "partial",
+      "status": "evidence-requested"
+    },
+    {
+      "action": "request-more-evidence",
+      "answerQuality": null,
+      "caseHash": "ac1012ae4ac6280fab369087e2982218e9fecdfb6df28461d33f19cf5749cf21",
+      "domainHash": "caf9f906b16a91cb0160c50abdac8bd6db9a283fa9751f9801ef991554b46a8a",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "dbd3a49d0d906b4ed9216b73330d2fb080ef2f758c12f3885068222e5e17151c",
+      "requestedClaimHashes": [
+        "2d70999ae1805e4bcef9b4ab3a4b827f578c61740f30076fcdc35c7ae7f586b3"
+      ],
+      "sanitizedFailureCode": null,
+      "state": "partial",
+      "status": "evidence-requested"
+    },
+    {
+      "action": "abstain",
+      "answerQuality": null,
+      "caseHash": "af56abc27b4fd7bd329f3385b54494871b30ac0e31ded06ecdcec833a1436e5e",
+      "domainHash": "8c85b6639e62e10b8330a8b883004b43c119053d7d62b512a98c77eb069627a7",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "3702fc1866630796050c50e9c829bd32fde7cc4c883f28e3e4ca430307c485b0",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "conflicting",
+      "status": "abstained"
+    },
+    {
+      "action": "abstain",
+      "answerQuality": null,
+      "caseHash": "0f7ea57aba587c8e9f01fd7452cabb4a1f5008f5ecc038f0018036dd6b3f5db1",
+      "domainHash": "74de07c4e919534b1b460e3465bb216ce0cc2bd458e42abaf0f22448da08d063",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "c0bc1e08f9743b2d50d5f1607503bf4e849af0e729fca896515bea955d70a33e",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "conflicting",
+      "status": "abstained"
+    },
+    {
+      "action": "request-more-evidence",
+      "answerQuality": null,
+      "caseHash": "1bef80a948755bbc8cf8f1dd176e9d31404448c0a795531930e6df72b7073c37",
+      "domainHash": "caf9f906b16a91cb0160c50abdac8bd6db9a283fa9751f9801ef991554b46a8a",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "1fdbc74ccfd68d0714ae539c0d93f2f3a1805387632eca33d3bd6a5013afb13e",
+      "requestedClaimHashes": [
+        "9deb65b8788f41ff94a217842017db2f843954fc0eb46110835903908e5a265f"
+      ],
+      "sanitizedFailureCode": null,
+      "state": "irrelevant",
+      "status": "evidence-requested"
+    },
+    {
+      "action": "request-more-evidence",
+      "answerQuality": null,
+      "caseHash": "be276fe0d564c47b5638f8b45f3ca3e8ef639c5d8b8a4aebc65184dbbeff0f83",
+      "domainHash": "74de07c4e919534b1b460e3465bb216ce0cc2bd458e42abaf0f22448da08d063",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "dbd3a49d0d906b4ed9216b73330d2fb080ef2f758c12f3885068222e5e17151c",
+      "requestedClaimHashes": [
+        "5a449e699b2e1cc1b450d038ad49724c6649729761fd7e68a212119557e5a166"
+      ],
+      "sanitizedFailureCode": null,
+      "state": "irrelevant",
+      "status": "evidence-requested"
+    },
+    {
+      "action": "abstain",
+      "answerQuality": null,
+      "caseHash": "fb598a0fd01df0aa21bee075d37009e425b229384d9d144581ee5b40a9e5f9b9",
+      "domainHash": "823412d1eacb67956220e532959f0104603057c88704863ca38e7cd188fda812",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "3702fc1866630796050c50e9c829bd32fde7cc4c883f28e3e4ca430307c485b0",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "no-evidence",
+      "status": "abstained"
+    },
+    {
+      "action": "abstain",
+      "answerQuality": null,
+      "caseHash": "e622cbb9b44d1cc82cc4549dd3ce4ceaec28447ba5ef1dd73d80c9f552376d69",
+      "domainHash": "8c85b6639e62e10b8330a8b883004b43c119053d7d62b512a98c77eb069627a7",
+      "generation": {
+        "attempted": false,
+        "failureKind": null,
+        "status": "blocked-by-gate"
+      },
+      "languageHash": "c0bc1e08f9743b2d50d5f1607503bf4e849af0e729fca896515bea955d70a33e",
+      "requestedClaimHashes": [],
+      "sanitizedFailureCode": null,
+      "state": "no-evidence",
+      "status": "abstained"
+    }
+  ],
+  "fixtureHash": "4f2b65b2acd1becbbf4efce269226fc56ecd92afdcf0dc923c8ae947283c9092",
+  "q1ThresholdsHash": "51df7f24468fb8f7632cb2f83c7ea2df9bbc47654d17fd4ef541d6c2fd0a428b",
+  "q7EvidenceHash": "d7a044e11d4f32d6cca2b46e60bfff6b964c7edfaf44499cd2a7b926b2e23010",
+  "q7PromptHash": "06083ae4aa5fc71cfe9bb8c3e5943c6ed215bfab4cfebdf2b5c62e42ce24adb8",
+  "q9ArtifactHash": "443a0a34b35111018571e64c049437cf45a89b52e015f974d2c072b2a3abc9b8",
+  "q9PolicyHash": "dac9fda09108a44957c9a25d03e86f1151f3f8d8d6efae4e9e602a7a5d6ea4b5",
+  "q10ArtifactHash": "863f11820f4a3c1a8fc2cc589062c09c394b9ef441b0bcd24675011edf013b84",
+  "reviewerProvenance": {
+    "independentReviewerValidated": false,
+    "reviewerVerdictSource": "synthetic-fixture-oracle"
+  },
+  "schemaVersion": "personal-ai-agent-evidence-gated-answer-robustness-artifact/v1",
+  "id": "evidence-gated-answer-robustness-3478dea0bb6a2f3650f7191523527dc7f355e97288fd0c277375d04a43581f86",
+  "integrityHash": "3478dea0bb6a2f3650f7191523527dc7f355e97288fd0c277375d04a43581f86"
+}

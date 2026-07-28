@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-07-28 Q11 Multi-Scenario Evidence-Gated Answer Robustness
+
+- added a separate 12-case synthetic robustness lane that calls the existing Q9 evaluator and Q10 coordinator without modifying either baseline
+- balanced Korean, English, Japanese, and Spanish across engineering, policy, operations, and documentation; Q9 remains the sole structural route authority, so eight non-sufficient cases stop before generator or answer-contract access
+- allowed only four sufficient cases to reach the installed loopback `qwen2.5:3b`; all four passed the unchanged Q1 thresholds with a synthetic reviewer oracle
+- bound the run to exact Q7, Q9, and Q10 bytes plus the model digest, size, license, and Ollama version before and after generation, then stored only content-free hashes, metrics, and failure identifiers
+- kept public contracts, default runtime, actual user data, training, external providers, model downloads, activation, and production readiness unchanged; this proves synthetic structural robustness, not multilingual semantic truth
+
 ## 2026-07-27 Q10 Evidence-Gated Answer Shadow
 
 - added a pure coordinator that treats the existing Q9 evaluator as the only action authority, blocks four non-sufficient states before generator or answer-contract access, and permits one sufficient answer composition

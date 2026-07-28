@@ -113,6 +113,8 @@
 - `evidence/output-artifacts/local-rag-evidence-sufficiency-shadow.json`
 - `evidence/output-artifacts/evidence-gated-answer-shadow.json`
 - `evidence/output-artifacts/local-evidence-gated-answer-shadow.json`
+- `evidence/output-artifacts/evidence-gated-answer-robustness.json`
+- `evidence/output-artifacts/local-evidence-gated-answer-robustness.json`
 - `evidence/output-artifacts/local-answer-review-action-generalization.json`
 
 ### Architecture
@@ -255,7 +257,9 @@
 - Q9 RAG evidence sufficiency: verified with `npm run smoke:rag-evidence-sufficiency`; required claim SHA-256 assertions, fixed conflict precedence, content-free artifact integrity, and default answer-path inactivity only
 - Q9 local RAG evidence sufficiency shadow: verified with `npm run smoke:local-rag-evidence-sufficiency-shadow`; loopback-only qwen2.5:3b matched 4/5 decisions and retained one sufficient-case `unnecessary-abstention`, so `modelConforms: false` and no runtime activation, training, user data, or external provider call
 - Q10 evidence-gated answer shadow: verified with `npm run smoke:evidence-gated-answer-shadow`; Q9-authoritative five-state routing, four failure-before-provider exits, one fake generator call, Q7 v5 and Q1 frozen-threshold binding, content-free integrity, and tamper rejection only
+- Q11 multi-scenario evidence-gated answer robustness: verified with `npm run smoke:evidence-gated-answer-robustness`; twelve synthetic structural rows bind Q7/Q9/Q10 bytes, retain Q9 as route authority, and allow four sufficient-only deterministic generations. This is not a multilingual semantic-quality or local-runtime claim.
 - Q10 local sufficient-answer shadow: verified with `npm run smoke:local-evidence-gated-answer-shadow`; installed loopback qwen2.5:3b composed one sufficient synthetic answer and passed frozen quality checks while Q9 4/5 failure history, synthetic reviewer provenance, inactive runtime, no user data, and no production claim remain explicit
+- Q11 local multi-scenario observation: verified with `npm run smoke:local-evidence-gated-answer-robustness`; installed loopback qwen2.5:3b reached only four sufficient cases and passed 4/4 frozen synthetic quality checks with content-free pre/post attribution. This does not establish multilingual semantic quality, actual-user quality, runtime activation, training authority, or production readiness.
 - Actual user-query evaluation protocol: verified with `npm run smoke:actual-user-query-evaluation-readiness`; actual user data and quality remain unverified
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`

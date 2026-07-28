@@ -168,6 +168,11 @@
 - currentLocalEvidenceGatedAnswerShadowEvidence: `evidence/output-artifacts/local-evidence-gated-answer-shadow.json`
 - actualEvidenceGatedAnswerShadowValidated: true
 - actualLocalEvidenceGatedAnswerSyntheticSufficientCasePassed: true
+- currentEvidenceGatedAnswerRobustnessFixture: `fixtures/evidence-gated-answer-robustness-cases-v1.json`
+- currentEvidenceGatedAnswerRobustnessEvidence: `evidence/output-artifacts/evidence-gated-answer-robustness.json`
+- currentLocalEvidenceGatedAnswerRobustnessEvidence: `evidence/output-artifacts/local-evidence-gated-answer-robustness.json`
+- actualEvidenceGatedAnswerRobustnessValidated: true
+- actualLocalEvidenceGatedAnswerSyntheticSufficientCasesPassed: true
 - currentUserQueryEvaluationIntakeFixture: `fixtures/user-query-evaluation-intake-dry-run-v1.json`
 - currentUserQueryEvaluationIntakeEvidence: `evidence/output-artifacts/user-query-evaluation-intake.json`
 - currentLocalUserQueryQualityEvidence: `evidence/output-artifacts/local-user-query-quality.json`
@@ -1766,6 +1771,14 @@ Q10은 Q9 모델 판단을 교정하거나 덮어쓰지 않는다. Q9 pure evalu
 
 Deterministic artifact는 Q9 fixture·policy·deterministic artifact, 기존 Q9 4/5 local shadow, Q7 evidence·prompt, Q1 threshold를 exact hash로 묶는다. Local runner는 설치된 `qwen2.5:3b`의 model id·digest·size·license와 Ollama version, 모든 입력 artifact bytes를 generation 전후에 다시 확인한 뒤에만 content-free artifact를 쓴다. 이번 sufficient 한 건의 answer-quality는 통과했지만 Q9의 `unnecessary-abstention`, `modelConforms: false`, current answer path, runtime activation, training, actual user data와 production claim은 그대로다.
 
+## 현재 Q11 multi-scenario evidence-gated answer robustness
+
+Q11은 Q9과 Q10을 수정하지 않는 별도 synthetic robustness lane이다. 한국어·영어·일본어·스페인어와 engineering·policy·operations·documentation을 각각 세 건씩 배치한 12개 case에서 Q9 pure evaluator가 state와 action을 계산한다. `partial·irrelevant·conflicting·no-evidence` 여덟 건은 generator와 answer-quality contract를 읽기 전에 끝나며, `sufficient` 네 건만 Q10 coordinator를 통해 답변 생성에 도달한다.
+
+Deterministic lane은 fake generator 네 번과 Q1 frozen threshold를 사용해 12/12 route와 4/4 quality 결과를 검증했다. Local lane은 이미 설치된 loopback `qwen2.5:3b`만 네 번 호출했고 네 답변 모두 같은 threshold와 synthetic reviewer oracle을 통과했다. 실행 전후 Q7·Q9·Q10과 Q11 deterministic artifact bytes, model digest·size·license, Ollama version이 일치한 뒤에만 content-free artifact를 기록했다.
+
+이 결과는 다국어 문장과 domain metadata를 포함한 synthetic structural robustness 증적이다. Q9 assertion hash와 source text의 의미적 일치를 판정하지 않으며, synthetic reviewer oracle은 독립 reviewer가 아니다. 따라서 actual user quality, F1.3, training, current answer path, runtime activation, external provider, production readiness에는 권한이나 완료 근거를 추가하지 않는다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -1781,6 +1794,7 @@ Deterministic artifact는 Q9 fixture·policy·deterministic artifact, 기존 Q9 
 | Q8.1 Private evaluation I/O and threshold hardening | 완료 | owner-only input·output, no-follow descriptor read, atomic private write, frozen all-pass threshold | weak mode·symlink·hard link·threshold relaxation을 model 호출 또는 evidence 승인 전에 거부 |
 | Q9 RAG evidence sufficiency | 완료 · shadow 미통과 | required claim SHA-256 assertion만으로 sufficient·partial·conflicting·irrelevant·no-evidence를 고정 판정 | deterministic gate 통과; qwen2.5:3b shadow는 4/5 정책 일치와 sufficient case `unnecessary-abstention` 1건을 보존하고 current answer path·activation·training은 불변 |
 | Q10 Evidence-gated answer shadow | 완료 · opt-in shadow | Q9 action을 authoritative gate로 사용하고 sufficient 한 건만 Q7 v5 local composition과 Q1 frozen quality gate로 평가 | deterministic 5-state route와 generator 1회, local sufficient answer-quality pass, Q9 4/5 실패 이력과 default runtime 불변 |
+| Q11 Multi-scenario evidence-gated answer robustness | 완료 · opt-in synthetic shadow | 4개 언어·4개 domain의 12개 case에서 Q9 route와 Q10 coordinator를 재사용하고 sufficient 네 건만 local generation | deterministic 12/12와 loopback qwen2.5:3b sufficient 4/4 quality pass; structural evidence만 인정하고 default runtime·training·production claim 불변 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
