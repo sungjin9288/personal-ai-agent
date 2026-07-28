@@ -173,6 +173,10 @@
 - currentLocalEvidenceGatedAnswerRobustnessEvidence: `evidence/output-artifacts/local-evidence-gated-answer-robustness.json`
 - actualEvidenceGatedAnswerRobustnessValidated: true
 - actualLocalEvidenceGatedAnswerSyntheticSufficientCasesPassed: true
+- currentClaimSourceAttributionFixture: `fixtures/evidence-gated-answer-claim-attribution-cases-v1.json`
+- currentClaimSourceAttributionEvidence: `evidence/output-artifacts/evidence-gated-answer-claim-attribution.json`
+- currentLocalClaimSourceAttributionEvidence: `evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json`
+- actualLexicalClaimSourceAttributionValidated: true
 - currentUserQueryEvaluationIntakeFixture: `fixtures/user-query-evaluation-intake-dry-run-v1.json`
 - currentUserQueryEvaluationIntakeEvidence: `evidence/output-artifacts/user-query-evaluation-intake.json`
 - currentLocalUserQueryQualityEvidence: `evidence/output-artifacts/local-user-query-quality.json`
@@ -1783,6 +1787,12 @@ Deterministic lane은 fake generator 네 번과 Q1 frozen threshold를 사용해
 
 Q12는 Q10/Q11 artifact bytes와 runner 순서를 바꾸지 않고 final in-place truncate를 same-parent exclusive no-follow temp의 write-all, temp fsync/fstat, directory-chain 및 parent dev/ino checkpoint, atomic rename, final inode/size/mode/nlink verification과 parent-directory fsync로 교체한다. static/dynamic symlink·hardlink·destination/parent swap, partial write, injected write/fsync/rename failure, crash, safe orphan recovery, concurrency를 `npm run smoke:evidence-gated-answer-output-hardening`으로 검증한다. Node v24에는 `openat`/`renameat`가 없으므로 마지막 same-user syscall window는 닫혔다고 주장하지 않는다.
 
+## 현재 Q13 claim-source attribution shadow
+
+Q13은 Q10 coordinator를 유일한 route authority로 그대로 호출한다. non-sufficient 여덟 row는 generator, Q1 answer-quality contract, attribution contract getter를 읽지 않고 종료하며, Q10이 `answered-quality-passed`를 반환한 sufficient 네 row만 Q7 v5 flattened source-claim envelope을 lexical로 검사한다. summary와 reviewer action의 term은 credit을 받지 않으며, 각 required term은 지정 source claim에 정확히 한 번 있고 다른 claim에는 없어야 한다.
+
+Fixture는 Q1 evaluator, Q7 v5 generator, Q9/Q10/Q11 core, Q11 fixture, Q12 writer와 Q7 evidence의 exact hash를 묶는다. deterministic과 loopback `qwen2.5:3b` observation은 12/12 route, 4/4 Q1 quality, 4/4 lexical attribution만 content-free hash·count·failure-id·runtime provenance로 기록했다. 이는 semantic attribution, independent reviewer validation, actual user quality, current answer path, runtime activation, training, external provider 또는 production readiness 증적이 아니다.
+
 ## 개발 순서
 
 | 단계 | 상태 | 비용 없는 구현 | 완료 기준 |
@@ -1800,6 +1810,7 @@ Q12는 Q10/Q11 artifact bytes와 runner 순서를 바꾸지 않고 final in-plac
 | Q10 Evidence-gated answer shadow | 완료 · opt-in shadow | Q9 action을 authoritative gate로 사용하고 sufficient 한 건만 Q7 v5 local composition과 Q1 frozen quality gate로 평가 | deterministic 5-state route와 generator 1회, local sufficient answer-quality pass, Q9 4/5 실패 이력과 default runtime 불변 |
 | Q11 Multi-scenario evidence-gated answer robustness | 완료 · opt-in synthetic shadow | 4개 언어·4개 domain의 12개 case에서 Q9 route와 Q10 coordinator를 재사용하고 sufficient 네 건만 local generation | deterministic 12/12와 loopback qwen2.5:3b sufficient 4/4 quality pass; structural evidence만 인정하고 default runtime·training·production claim 불변 |
 | Q12 Local artifact writer hardening | 완료 · local filesystem boundary | same-parent no-follow temp, write-all, fsync, identity checkpoint, atomic rename와 final metadata 검증 | focused failure/crash/link/swap/orphan/concurrency smoke만 검증하며 Node v24 `openat`/`renameat` 부재의 마지막 same-user syscall window는 residual |
+| Q13 Claim-source attribution shadow | 완료 · opt-in synthetic lexical shadow | Q10 route 뒤 Q7 v5 flattened source claim의 source-bound term 위치를 lexical로 검증 | deterministic과 loopback qwen2.5:3b 모두 sufficient 4/4 attribution pass; semantic truth·independent review·activation·training·production claim 불변 |
 | R1 Corpus contract | 완료 | memory·attachment·fact source의 chunk id, content hash, revision, scope, provenance 계약 통일 | 저장 형식과 retrieval payload 변경 없이 동일 index record 재생성 |
 | R2 Retrieval evaluation | 완료 | 3개 fixture, precision·recall·noise·source diversity 기준, 현재 lexical·BM25·phrase baseline과 per-case regression 비교 | ranking candidate가 자체 gate와 frozen baseline을 모두 통과할 때만 반영 |
 | R3 Optional semantic retrieval | 완료 | provider-neutral embedding contract, bounded local command adapter, scope-locked cosine experiment, controlled synonym comparison | 새 dependency와 runtime 활성화 없이 local protocol·quality gain·rollback boundary 검증 |
