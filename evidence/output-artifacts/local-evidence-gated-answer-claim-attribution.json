@@ -1,0 +1,71 @@
+{
+  "actualUserQueryData": false,
+  "currentAnswerPathChanged": false,
+  "externalProviderCalls": "none",
+  "independentReviewerValidated": false,
+  "productionReadyClaim": false,
+  "runtimeActivation": false,
+  "semanticAttributionValidated": false,
+  "trainingAuthorized": false,
+  "actualModelEvaluated": true,
+  "deterministicArtifactHash": "ab6adce8c1f74a6b68452dd0efefaa6ff83fc444c68a1bb853e37ad8da31825c",
+  "fixtureHash": "aa60acb9ce262877e46ed8074254e804cc310e107612b21e94d2e00a5ef194df",
+  "lexicalClaimSourceAttributionValidated": true,
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "licenseHash": "b5c0e5cf74cf51af1ecbc4af597cfcd13fd9925611838884a681070838a14a50",
+    "sizeBytes": 1929912432
+  },
+  "observations": [
+    {
+      "caseHash": "b28149039b98eeb39b5420bb88f68b22642cfb6023152a3c4dfdf7724d052314",
+      "durationMs": 5435.022,
+      "failureIds": [],
+      "inputHash": "7a995106a79085a9c8ee7ee60513d4ecd28f03f81cb3e0c8ab1e3448a83c0088",
+      "responseHash": "d8bc37ca35c475d569b3bcd9fc656f8405bc0c9ed5bd132c091a5e05076a1d5d"
+    },
+    {
+      "caseHash": "837f9453010734585e66d31282d7aa2e5841fbc5471a5ea578530f33d5b58c56",
+      "durationMs": 4192.55,
+      "failureIds": [],
+      "inputHash": "67dad026a1f2f040e22028bd8c544451da7b696026ab1fe7824bf4a7b4a16fab",
+      "responseHash": "2da944cbd9329ad21e94dd4da293205c8e346418ad5c9fc02b5a0eff68a1858d"
+    },
+    {
+      "caseHash": "df225b0deb5a2ed23b020d0cf9c45c0fad3099ebfee709b6b34bd6cb7284fd6a",
+      "durationMs": 5981.979,
+      "failureIds": [],
+      "inputHash": "61586b6f83ac52e4cc6ed272209540499e9fdd9e39aaf08486066c3a772e7e07",
+      "responseHash": "d90e7ba437309d76c64ad27bc8324edc25fc13a9aa9585cec580bb21236bab97"
+    },
+    {
+      "caseHash": "6bc8d413cfa18548c0f6bcdf107ba138a9dc8e598c441066d48ce439bc22fff9",
+      "durationMs": 4502.195,
+      "failureIds": [],
+      "inputHash": "0f8805fabda772a9d04cc002f9c064126ae88696615992f5f87f2142f07869b0",
+      "responseHash": "f91d9182fadfb3c24612768521b87ed8fcde9afc483770265616bb971f941162"
+    }
+  ],
+  "observedAt": "2026-07-28T02:57:37.516Z",
+  "runtime": {
+    "cloudFeaturesDisabled": true,
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "schemaVersion": "personal-ai-agent-local-evidence-gated-answer-claim-attribution-artifact/v1",
+  "suiteAggregate": {
+    "attributionAttemptCount": 4,
+    "attributionContractGetterAccessCount": 4,
+    "attributionPassCount": 4,
+    "caseCount": 12,
+    "claimSourceAttributionRate": 1,
+    "gateBlockedCount": 8,
+    "generationAttemptCount": 4,
+    "generatorGetterAccessCount": 4,
+    "qualityPassCount": 4
+  },
+  "id": "local-evidence-gated-answer-claim-attribution-f610c9fdd02a117d5430403cf564d03613561d7389a9d708dd5d1eb29c5d191e",
+  "integrityHash": "f610c9fdd02a117d5430403cf564d03613561d7389a9d708dd5d1eb29c5d191e"
+}

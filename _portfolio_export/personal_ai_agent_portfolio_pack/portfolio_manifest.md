@@ -42,6 +42,13 @@
 - docs/agent-runtime-evidence.md
 - docs/evidence-checklist.md
 - docs/evidence-gallery.md
+- src/core/evidence-gated-answer-claim-attribution.mjs
+- fixtures/evidence-gated-answer-claim-attribution-cases-v1.json
+- scripts/evaluate-evidence-gated-answer-claim-attribution.mjs
+- scripts/evaluate-local-evidence-gated-answer-claim-attribution.mjs
+- scripts/smoke-evidence-gated-answer-claim-attribution.mjs
+- scripts/smoke-local-evidence-gated-answer-claim-attribution.mjs
+- test/evidence-gated-answer-claim-attribution.test.mjs
 - evidence/cli-logs/
 - evidence/api-responses/
 - evidence/screenshots/
@@ -101,6 +108,8 @@
 - evidence/output-artifacts/user-query-evaluation-intake.json
 - evidence/output-artifacts/local-user-query-quality.json
 - evidence/output-artifacts/local-answer-review-action-generalization.json
+- evidence/output-artifacts/evidence-gated-answer-claim-attribution.json
+- evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/screenshots/user-learning-operator-surface.png
 - evidence/screenshots/local-training-permission-surface.png

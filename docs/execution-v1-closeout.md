@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-28T01:16:45.568Z
-- branch: codex/local-artifact-writer-hardening
-- commit: 96ddccb91ca89d9cd65c6713d38d3b13a13aa6f8
+- generatedAt: 2026-07-28T03:12:37.796Z
+- branch: codex/claim-source-attribution-shadow
+- commit: ef605608eebf5b61a55068908ca0d6457356d800
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

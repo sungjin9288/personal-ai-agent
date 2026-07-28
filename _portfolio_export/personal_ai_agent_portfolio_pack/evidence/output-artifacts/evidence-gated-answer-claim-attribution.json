@@ -1,0 +1,26 @@
+{
+  "actualUserQueryData": false,
+  "currentAnswerPathChanged": false,
+  "externalProviderCalls": "none",
+  "independentReviewerValidated": false,
+  "productionReadyClaim": false,
+  "runtimeActivation": false,
+  "semanticAttributionValidated": false,
+  "trainingAuthorized": false,
+  "lexicalClaimSourceAttributionValidated": true,
+  "aggregate": {
+    "attributionAttemptCount": 4,
+    "attributionContractGetterAccessCount": 4,
+    "attributionPassCount": 4,
+    "caseCount": 12,
+    "claimSourceAttributionRate": 1,
+    "gateBlockedCount": 8,
+    "generationAttemptCount": 4,
+    "generatorGetterAccessCount": 4,
+    "qualityPassCount": 4
+  },
+  "fixtureHash": "aa60acb9ce262877e46ed8074254e804cc310e107612b21e94d2e00a5ef194df",
+  "schemaVersion": "personal-ai-agent-evidence-gated-answer-claim-attribution-artifact/v1",
+  "id": "evidence-gated-answer-claim-attribution-ab6adce8c1f74a6b68452dd0efefaa6ff83fc444c68a1bb853e37ad8da31825c",
+  "integrityHash": "ab6adce8c1f74a6b68452dd0efefaa6ff83fc444c68a1bb853e37ad8da31825c"
+}
