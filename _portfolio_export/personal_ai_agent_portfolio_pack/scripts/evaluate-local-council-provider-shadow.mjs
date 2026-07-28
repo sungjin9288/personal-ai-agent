@@ -19,9 +19,17 @@ import {
   buildLocalCouncilProviderShadowArtifact,
   hashLocalCouncilShadowValue,
 } from '../src/core/local-council-provider-shadow.mjs';
+import {
+  assertLocalCouncilSeatContractShadowArtifact,
+  buildLocalCouncilSeatContractShadowArtifact,
+} from '../src/core/local-council-seat-contract-shadow.mjs';
+import {
+  resolveCouncilSeatPromptContract,
+} from '../src/core/council-seat-prompt-contract.mjs';
 import { requestLoopbackJson } from '../src/core/loopback-json-client.mjs';
 import { createLocalProvider } from '../src/providers/local-provider.mjs';
 import { extractProviderFailure } from '../src/providers/provider-runtime-utils.mjs';
+import { buildRequestPrompt } from '../src/providers/structured-provider-utils.mjs';
 import {
   resolveEvidenceOutputPath,
   writeEvidenceJson,
@@ -29,9 +37,31 @@ import {
 
 const repoDir = process.cwd();
 const options = parseOptions(process.argv.slice(2));
-const fixturePath = path.join(repoDir, 'fixtures/local-council-provider-shadow-v1.json');
+const seatContractMode = options.promptProfile === 'seat-scoped-v1';
+const fixturePath = path.join(
+  repoDir,
+  seatContractMode
+    ? 'fixtures/local-council-seat-contract-shadow-v1.json'
+    : 'fixtures/local-council-provider-shadow-v1.json',
+);
 const fixtureText = fs.readFileSync(fixturePath, 'utf8');
 const fixture = JSON.parse(fixtureText);
+const baselinePath = path.join(
+  repoDir,
+  'evidence/output-artifacts/local-council-provider-shadow.json',
+);
+const baselineText = seatContractMode
+  ? fs.readFileSync(baselinePath, 'utf8')
+  : null;
+const baselineArtifact = baselineText ? JSON.parse(baselineText) : null;
+if (baselineArtifact) {
+  assertLocalCouncilProviderShadowArtifact(baselineArtifact, {
+    fixtureText: fs.readFileSync(
+      path.join(repoDir, 'fixtures/local-council-provider-shadow-v1.json'),
+      'utf8',
+    ),
+  });
+}
 const before = await readRuntime();
 const provider = createLocalProvider({
   rootDir: repoDir,
@@ -44,6 +74,7 @@ const provider = createLocalProvider({
   },
 });
 const calls = [];
+const targetBindings = [];
 
 const frame = createCouncilFrame({
   contextDigest: hashCouncilValue({
@@ -61,6 +92,22 @@ const frame = createCouncilFrame({
   sessionId: fixture.sessionId,
   workspaceId: fixture.workspaceId,
 });
+const openingIsolation = {
+  contextHash: hashLocalCouncilShadowValue(frame),
+  contextKind: 'council-frame',
+  otherOpeningStatementCount: 0,
+  verified: true,
+};
+const promptProfileHash = seatContractMode
+  ? hashLocalCouncilShadowValue(
+      fixture.requiredSeats.map((seatId) =>
+        resolveCouncilSeatPromptContract({
+          phase: 'opening-position',
+          profile: options.promptProfile,
+          seatId,
+        })),
+    )
+  : null;
 
 const openings = [];
 for (const seatId of fixture.requiredSeats) {
@@ -75,6 +122,7 @@ for (const seatId of fixture.requiredSeats) {
     metadata,
     seatId,
   });
+  assertOpeningIsolation(input);
   let observation;
   try {
     observation = await runProviderStage(input);
@@ -126,7 +174,13 @@ if (brief) {
       observation = await runProviderStage(input);
     } catch (error) {
       calls.push(providerFailureCall(input, error));
+      if (seatContractMode) {
+        targetBindings.push(buildTargetBinding(input));
+      }
       continue;
+    }
+    if (seatContractMode) {
+      targetBindings.push(observation.targetBinding);
     }
     const draft = {
       artifactContent: observation.output.artifactContent,
@@ -153,6 +207,15 @@ if (brief) {
   calls.push(
     ...fixture.requiredSeats.map((seatId) => notAttemptedCall('rebuttal', seatId)),
   );
+  if (seatContractMode) {
+    targetBindings.push(
+      ...fixture.requiredSeats.map((seatId) =>
+        buildTargetBinding({
+          councilPhase: 'rebuttal',
+          councilSeatId: seatId,
+        })),
+    );
+  }
 }
 
 let validation = {
@@ -248,40 +311,75 @@ if (brief && rebuttals.length === fixture.requiredSeats.length) {
 const after = await readRuntime();
 assertRuntimeStable(before, after);
 
-const artifact = buildLocalCouncilProviderShadowArtifact({
-  calls,
-  fixtureHash: hashLocalCouncilShadowValue(fixtureText),
-  model: after.model,
-  observedAt: new Date().toISOString(),
-  runtime: {
-    afterContextLength: after.process.contextLength,
-    afterLoaded: after.process.loaded,
-    afterSizeBytes: after.process.sizeBytes,
-    afterVramBytes: after.process.vramBytes,
-    beforeLoaded: before.process.loaded,
-    cloudFeaturesDisabled: true,
-    endpointAlias: 'loopback-ollama',
-    kind: 'ollama',
-    transportLoopback: true,
-    version: after.version,
-  },
-  validation,
-});
-assertLocalCouncilProviderShadowArtifact(artifact, { fixtureText });
+const runtime = {
+  afterContextLength: after.process.contextLength,
+  afterLoaded: after.process.loaded,
+  afterSizeBytes: after.process.sizeBytes,
+  afterVramBytes: after.process.vramBytes,
+  beforeLoaded: before.process.loaded,
+  cloudFeaturesDisabled: true,
+  endpointAlias: 'loopback-ollama',
+  kind: 'ollama',
+  transportLoopback: true,
+  version: after.version,
+};
+const artifact = seatContractMode
+  ? buildLocalCouncilSeatContractShadowArtifact({
+      baseline: {
+        artifactId: baselineArtifact.id,
+        decision: baselineArtifact.qualification.decision,
+        integrityHash: baselineArtifact.integrityHash,
+        localShadowQualified: baselineArtifact.localShadowQualified,
+      },
+      calls,
+      fixtureHash: hashLocalCouncilShadowValue(fixtureText),
+      model: after.model,
+      observedAt: new Date().toISOString(),
+      openingIsolation,
+      promptProfileHash,
+      runtime,
+      targetBindings,
+      validation,
+    })
+  : buildLocalCouncilProviderShadowArtifact({
+      calls,
+      fixtureHash: hashLocalCouncilShadowValue(fixtureText),
+      model: after.model,
+      observedAt: new Date().toISOString(),
+      runtime,
+      validation,
+    });
+if (seatContractMode) {
+  assertLocalCouncilSeatContractShadowArtifact(artifact, {
+    baselineArtifact,
+    fixtureText,
+  });
+} else {
+  assertLocalCouncilProviderShadowArtifact(artifact, { fixtureText });
+}
 writeEvidenceJson({
   artifact,
-  defaultRelativePath: 'evidence/output-artifacts/local-council-provider-shadow.json',
-  label: 'Local council provider shadow output',
+  defaultRelativePath: seatContractMode
+    ? 'evidence/output-artifacts/local-council-seat-contract-shadow.json'
+    : 'evidence/output-artifacts/local-council-provider-shadow.json',
+  label: seatContractMode
+    ? 'Local council seat contract shadow output'
+    : 'Local council provider shadow output',
   repoDir,
   value: options.outputPath,
 });
+if (baselineText && fs.readFileSync(baselinePath, 'utf8') !== baselineText) {
+  throw new Error('C7 changed the C6 baseline artifact.');
+}
 
 console.log(JSON.stringify({
   callCount: artifact.summary.callCount,
   decision: artifact.qualification.decision,
   distinctOpeningOutputCount: artifact.summary.distinctOpeningOutputCount,
   localShadowQualified: artifact.localShadowQualified,
-  mode: 'local-council-provider-shadow',
+  mode: seatContractMode
+    ? 'local-council-seat-contract-shadow'
+    : 'local-council-provider-shadow',
   ok: true,
   outputPath: path.relative(repoDir, options.outputPath),
 }, null, 2));
@@ -292,6 +390,7 @@ function specialistInput({ councilBrief, councilFrame, metadata, seatId }) {
     councilFrame,
     councilId: fixture.councilId,
     councilPhase: metadata.councilPhase,
+    councilPromptProfile: options.promptProfile,
     councilRound: metadata.councilRound,
     councilRuntime: null,
     councilSeatId: seatId,
@@ -305,7 +404,7 @@ function specialistInput({ councilBrief, councilFrame, metadata, seatId }) {
 }
 
 async function runProviderStage(input) {
-  const prompt = provider.preparePrompt(input);
+  const prompt = prepareObservedPrompt(input);
   const result = await provider.run(input);
   const output = provider.normalizeOutput(result, input);
   return {
@@ -324,6 +423,42 @@ async function runProviderStage(input) {
       totalTokens: Number(result.usageTotalTokens || 0),
     },
     output,
+    targetBinding: input.councilPhase === 'rebuttal' && seatContractMode
+      ? buildTargetBinding(input, output.councilStatement?.targetClaimIds)
+      : null,
+  };
+}
+
+function assertOpeningIsolation(input) {
+  if (
+    seatContractMode &&
+    (
+      input.councilPhase !== 'opening-position' ||
+      input.councilBrief !== null ||
+      input.councilFrame !== frame
+    )
+  ) {
+    throw new Error('C7 opening input must contain only the shared CouncilFrame.');
+  }
+}
+
+function buildTargetBinding(input, targetClaimIds = []) {
+  const seatContract = resolveCouncilSeatPromptContract({
+    phase: 'opening-position',
+    profile: options.promptProfile,
+    seatId: input.councilSeatId,
+  });
+  const expectedTarget = `${seatContract.targetSeatId}:claim-1`;
+  const observedTarget = Array.isArray(targetClaimIds) && targetClaimIds.length === 1
+    ? String(targetClaimIds[0] || '').trim()
+    : '';
+  return {
+    expectedTargetHash: hashLocalCouncilShadowValue(expectedTarget),
+    matched: observedTarget === expectedTarget,
+    observedTargetHash: observedTarget
+      ? hashLocalCouncilShadowValue(observedTarget)
+      : null,
+    seatId: input.councilSeatId,
   };
 }
 
@@ -346,12 +481,19 @@ function providerFailureCall(input, error) {
     outputHash: null,
     outputTokens: Math.max(0, Number(failure.usageOutputTokens || 0)),
     phase: input.councilPhase,
-    promptHash: hashLocalCouncilShadowValue(provider.preparePrompt(input)),
+    promptHash: hashLocalCouncilShadowValue(prepareObservedPrompt(input)),
     retryCount: Math.max(0, Number(failure.retryCount || attemptCount - 1)),
     seatId: input.councilSeatId,
     status: 'failed',
     totalTokens: Math.max(0, Number(failure.usageTotalTokens || 0)),
   };
+}
+
+function prepareObservedPrompt(input) {
+  const delegatedPrompt = provider.preparePrompt(input);
+  return seatContractMode
+    ? buildRequestPrompt(input, delegatedPrompt)
+    : delegatedPrompt;
 }
 
 function notAttemptedCall(phase, seatId) {
@@ -446,6 +588,8 @@ function parseOptions(args) {
   const endpoint = values.get('--endpoint');
   const model = values.get('--model');
   const output = values.get('--output');
+  const promptProfile = values.get('--prompt-profile') || null;
+  const goalLabel = promptProfile ? 'C7' : 'C6';
   if (
     !endpoint ||
     model !== 'qwen2.5:3b' ||
@@ -453,21 +597,39 @@ function parseOptions(args) {
     !output
   ) {
     throw new Error(
-      'C6 local council shadow requires loopback endpoint, qwen2.5:3b, disabled cloud features, and output.',
+      `${goalLabel} local council shadow requires loopback endpoint, qwen2.5:3b, disabled cloud features, and output.`,
     );
   }
   if (!/^http:\/\/127\.0\.0\.1(?::\d+)?$/.test(endpoint)) {
-    throw new Error('C6 local council endpoint must be loopback.');
+    throw new Error(`${goalLabel} local council endpoint must be loopback.`);
+  }
+  if (promptProfile && promptProfile !== 'seat-scoped-v1') {
+    throw new Error('Local council prompt profile must be seat-scoped-v1.');
+  }
+  const outputPath = resolveEvidenceOutputPath({
+    defaultRelativePath: promptProfile
+      ? 'evidence/output-artifacts/local-council-seat-contract-shadow.json'
+      : 'evidence/output-artifacts/local-council-provider-shadow.json',
+    label: promptProfile
+      ? 'Local council seat contract shadow output'
+      : 'Local council provider shadow output',
+    repoDir,
+    value: output,
+  });
+  if (
+    promptProfile &&
+    outputPath === path.join(
+      repoDir,
+      'evidence/output-artifacts/local-council-provider-shadow.json',
+    )
+  ) {
+    throw new Error('C7 output must not overwrite the C6 baseline artifact.');
   }
   return {
     endpoint,
     model,
-    outputPath: resolveEvidenceOutputPath({
-      defaultRelativePath: 'evidence/output-artifacts/local-council-provider-shadow.json',
-      label: 'Local council provider shadow output',
-      repoDir,
-      value: output,
-    }),
+    outputPath,
+    promptProfile,
     timeoutMs: 120_000,
   };
 }

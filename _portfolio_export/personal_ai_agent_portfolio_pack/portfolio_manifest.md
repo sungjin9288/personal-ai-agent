@@ -50,6 +50,12 @@
 - scripts/smoke-local-council-provider-shadow.mjs
 - test/local-council-provider-contract.test.mjs
 - test/local-council-provider-shadow.test.mjs
+- src/core/council-seat-prompt-contract.mjs
+- src/core/local-council-seat-contract-shadow.mjs
+- fixtures/local-council-seat-contract-shadow-v1.json
+- scripts/smoke-local-council-seat-contract-shadow.mjs
+- test/council-seat-prompt-contract.test.mjs
+- test/local-council-seat-contract-shadow.test.mjs
 - src/core/evidence-gated-answer-claim-attribution.mjs
 - fixtures/evidence-gated-answer-claim-attribution-cases-v1.json
 - scripts/evaluate-evidence-gated-answer-claim-attribution.mjs
@@ -117,6 +123,7 @@
 - evidence/output-artifacts/local-user-query-quality.json
 - evidence/output-artifacts/local-answer-review-action-generalization.json
 - evidence/output-artifacts/local-council-provider-shadow.json
+- evidence/output-artifacts/local-council-seat-contract-shadow.json
 - evidence/output-artifacts/evidence-gated-answer-claim-attribution.json
 - evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json
 - evidence/screenshots/workspace-learning-operator-surface.png

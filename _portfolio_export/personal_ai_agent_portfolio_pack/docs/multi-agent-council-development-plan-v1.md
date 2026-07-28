@@ -504,6 +504,44 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - 다음 후보는 seat별 책임을 명시하면서도 다른 opening을 노출하지 않는 prompt contract를 먼저
   설계하고, 같은 모델에서 opening diversity와 exact rebuttal target을 모두 통과해야 한다.
 
+### C7 — Seat-scoped prompt contract shadow
+
+- model: installed loopback `qwen2.5:3b`
+- branch: `codex/council-seat-contract-shadow`
+- status: completed on 2026-07-28 with `keep-stub-only`
+
+구현 범위:
+
+- `seat-scoped-v1`을 명시한 shadow input에서만 research는 evidence support·gap, implementation은
+  feasibility·dependency·minimal change, verification은 failure·permission·audit·rollback 책임을
+  받는다. profile이 없으면 C6의 shared opening prompt bytes가 그대로 유지된다.
+- opening은 같은 CouncilFrame만 공유하고 다른 opening statement를 받지 않는다. 실제 local request
+  prompt와 output은 저장하지 않고 prompt·output hash만 기록한다.
+- rebuttal target은 research→implementation, implementation→verification, verification→research
+  순환으로 하나를 고정한다. 모델 output이 exact target을 만들지 않으면 normalization에서
+  fail-closed하며 runtime이 claim이나 target을 보충하지 않는다.
+- C6 artifact의 exact id·integrity hash·`keep-stub-only` 결정을 C7 artifact에 결속하고, C7 output은
+  C6 경로를 사전에 거부한다.
+
+실제 관측:
+
+- `npm run evaluate:local-council-seat-contract-shadow`에서 opening prompt hash와 output hash는 각각
+  3개로 분리됐다.
+- research opening이 `council-contract:invalid-claim`으로 실패해 opening은 2/3만 통과했다.
+  따라서 rebuttal 3회와 synthesis는 dependency-blocked였고 target match는 0/3이었다.
+- 총 7 stage record 중 passed 2, failed 1, not-attempted 4를 기록했다. 관측된 3,514 token과
+  16,625 ms는 이 한 번의 local run 값이며 성능 보장이나 capacity 근거가 아니다.
+- `localShadowQualified: false`, `defaultProfilePromotionAuthorized: false`,
+  `decision: keep-stub-only`를 유지한다. prompt나 threshold를 실패 뒤 완화하지 않았다.
+
+경계:
+
+- C7은 fixed seat responsibility와 deterministic target contract의 opt-in shadow다. arbitrary persona,
+  production non-stub council, public API·CLI·storage contract, permission·approval·audit ordering을
+  변경하지 않는다.
+- external provider, API 비용, model download, 새 dependency, actual user data, F1.3 authority,
+  runtime activation과 production claim은 없다.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.
@@ -511,13 +549,14 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 1. touched council contract와 failure boundary unit test
 2. deterministic stub council smoke
 3. 기존 parallel specialist, retry, reviewer, approval, timeline regression
-4. UI 변경이 있는 C2만 local browser smoke
-5. `npm test`
-6. `npm run smoke:docs-gates`
-7. `npm run smoke:all`
-8. `npm run smoke:release-artifact-hygiene`
-9. `git diff --check`
-10. tracked release artifact가 바뀐 경우에만 execution-v1 artifact refresh와 `artifact-sync-current` 확인
+4. C6 baseline integrity와 C7 seat contract content-free evidence smoke
+5. UI 변경이 있는 C2만 local browser smoke
+6. `npm test`
+7. `npm run smoke:docs-gates`
+8. `npm run smoke:all`
+9. `npm run smoke:release-artifact-hygiene`
+10. `git diff --check`
+11. tracked release artifact가 바뀐 경우에만 execution-v1 artifact refresh와 `artifact-sync-current` 확인
 
 다음 중 하나라도 발생하면 현재 `/goal`을 중단하고 범위를 줄인다.
 
