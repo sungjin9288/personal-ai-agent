@@ -121,6 +121,7 @@
 - 완료: Q9 evidence sufficiency fixture가 sufficient·partial·conflicting·irrelevant·no-evidence를 threshold 없이 판정하고 content-free artifact tamper rejection을 검증; tracked local shadow는 4/5에 그쳐 activation을 계속 보류
 - 완료: Q10 evidence-gated answer shadow가 five-state route에서 generator call 1회를 강제하고 installed qwen2.5:3b sufficient answer를 content-free로 검증; 이는 opt-in synthetic shadow이며 actual user quality·runtime activation·production readiness 증적이 아님
 - 완료: Q11 multi-scenario robustness가 12개 synthetic structural case에서 non-sufficient 8건을 pre-generator 차단하고 sufficient 4건의 loopback qwen2.5:3b answer-quality를 4/4로 기록; Q9/Q10 baseline과 default path는 불변
+- 완료: Q12 local artifact writer hardening이 final in-place truncate를 same-parent atomic replace로 교체하고 failure/crash 전후 complete JSON, `0600`, single-link를 focused smoke로 확인; Node v24 `openat`/`renameat` 부재의 마지막 same-user syscall window는 residual로 유지
 - 다음: 실제 사용자 dataset과 별도 승인을 받은 뒤 명시적 동의·철회 가능성·비식별 검토·current retention을 통과한 평가를 진행하고, 그 전에는 candidate activation을 보류
 - 완료: 별도 scope authorization, sibling 적용, foreign workspace 차단, timeline audit, exact rollback을 포함한 controlled workspace learning personalization 검증
 - 완료: retrieval-selected workspace decision 충돌에서 latest revision 하나만 provider에 전달하고 newer revocation 뒤 exact older fallback, full rollback 뒤 exact baseline 복원, foreign workspace exposure 0을 확인한 controlled conflict and revocation 검증
