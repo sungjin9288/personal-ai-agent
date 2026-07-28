@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-27T18:04:26.930Z
-- branch: codex/rag-evidence-gated-answer-shadow
-- commit: 9e69c94cfa4ea53915c80050099a80adc762b444
+- generatedAt: 2026-07-28T00:18:37.091Z
+- branch: codex/evidence-gated-answer-robustness
+- commit: 6c869d84c01034527440e735f87160c8199c02ae
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
