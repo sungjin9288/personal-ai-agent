@@ -69,7 +69,7 @@ for (const document of [checklist, gallery, manifest]) {
 }
 
 for (const document of [roadmap, checklist, gallery, manifest]) {
-  assert.match(document, /Council C1–C6|Council C6 local provider shadow qualification/);
+  assert.match(document, /Council C1–C7|Council C6 local provider shadow qualification/);
   assert.match(document, /keep-stub-only/);
 }
 
