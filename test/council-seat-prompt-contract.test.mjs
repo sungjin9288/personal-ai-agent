@@ -114,6 +114,30 @@ test('seat-scoped robustness profile preserves fixed responsibilities and target
   assert.equal(contract.requiredTargetClaimId, 'research:claim-1');
 });
 
+test('seat-scoped-v3 remains opt-in and keeps phase-specific target contracts', () => {
+  const opening = resolveCouncilSeatPromptContract({
+    phase: 'opening-position',
+    profile: 'seat-scoped-v3',
+    seatId: 'implementation',
+  });
+  const rebuttal = resolveCouncilSeatPromptContract({
+    councilBrief: {
+      claims: [
+        { id: 'research:claim-1', seatId: 'research' },
+        { id: 'implementation:claim-1', seatId: 'implementation' },
+        { id: 'verification:claim-1', seatId: 'verification' },
+      ],
+    },
+    phase: 'rebuttal',
+    profile: 'seat-scoped-v3',
+    seatId: 'implementation',
+  });
+
+  assert.equal(opening.requiredTargetClaimId, null);
+  assert.equal(rebuttal.requiredTargetClaimId, 'verification:claim-1');
+  assert.equal(rebuttal.profile, 'seat-scoped-v3');
+});
+
 test('invalid claim diagnostics expose only bounded content-free subreasons', () => {
   const cases = [
     ['claims must contain between 1 and 6 items.', 'claim-count'],

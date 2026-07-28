@@ -28,6 +28,10 @@ import {
   buildLocalCouncilClaimContractRobustnessArtifact,
 } from '../src/core/local-council-claim-contract-robustness.mjs';
 import {
+  assertLocalCouncilRebuttalSynthesisShadowArtifact,
+  buildLocalCouncilRebuttalSynthesisShadowArtifact,
+} from '../src/core/local-council-rebuttal-synthesis-shadow.mjs';
+import {
   classifyCouncilClaimFailure,
   resolveCouncilSeatPromptContract,
 } from '../src/core/council-seat-prompt-contract.mjs';
@@ -42,11 +46,14 @@ import {
 
 const repoDir = process.cwd();
 const options = parseOptions(process.argv.slice(2));
+const rebuttalSynthesisMode = options.promptProfile === 'seat-scoped-v3';
 const robustnessMode = options.promptProfile === 'seat-scoped-v2';
 const seatContractMode = Boolean(options.promptProfile);
 const fixturePath = path.join(
   repoDir,
-  robustnessMode
+  rebuttalSynthesisMode
+    ? 'fixtures/local-council-rebuttal-synthesis-shadow-v1.json'
+    : robustnessMode
     ? 'fixtures/local-council-claim-contract-robustness-v1.json'
     : seatContractMode
       ? 'fixtures/local-council-seat-contract-shadow-v1.json'
@@ -65,14 +72,22 @@ const c7BaselinePath = path.join(
   repoDir,
   'evidence/output-artifacts/local-council-seat-contract-shadow.json',
 );
+const c8BaselinePath = path.join(
+  repoDir,
+  'evidence/output-artifacts/local-council-claim-contract-robustness.json',
+);
 const c6BaselineText = seatContractMode
   ? fs.readFileSync(c6BaselinePath, 'utf8')
   : null;
-const c7BaselineText = robustnessMode
+const c7BaselineText = robustnessMode || rebuttalSynthesisMode
   ? fs.readFileSync(c7BaselinePath, 'utf8')
+  : null;
+const c8BaselineText = rebuttalSynthesisMode
+  ? fs.readFileSync(c8BaselinePath, 'utf8')
   : null;
 const c6BaselineArtifact = c6BaselineText ? JSON.parse(c6BaselineText) : null;
 const c7BaselineArtifact = c7BaselineText ? JSON.parse(c7BaselineText) : null;
+const c8BaselineArtifact = c8BaselineText ? JSON.parse(c8BaselineText) : null;
 if (c6BaselineArtifact) {
   assertLocalCouncilProviderShadowArtifact(c6BaselineArtifact, {
     fixtureText: fs.readFileSync(
@@ -90,6 +105,16 @@ if (c7BaselineArtifact) {
     ),
   });
 }
+if (c8BaselineArtifact) {
+  assertLocalCouncilClaimContractRobustnessArtifact(c8BaselineArtifact, {
+    c6BaselineArtifact,
+    c7BaselineArtifact,
+    fixtureText: fs.readFileSync(
+      path.join(repoDir, 'fixtures/local-council-claim-contract-robustness-v1.json'),
+      'utf8',
+    ),
+  });
+}
 const before = await readRuntime();
 const provider = createLocalProvider({
   rootDir: repoDir,
@@ -101,9 +126,11 @@ const provider = createLocalProvider({
     LOCAL_PROVIDER_RUN_TIMEOUT_MS: String(options.timeoutMs),
   },
 });
-const diagnostic = robustnessMode
-  ? await observeC7ResearchFailure()
-  : null;
+const diagnostic = rebuttalSynthesisMode
+  ? diagnosticFromC8ImplementationFailure(c8BaselineArtifact)
+  : robustnessMode
+    ? await observeC7ResearchFailure()
+    : null;
 const calls = [];
 const targetBindings = [];
 
@@ -114,16 +141,18 @@ const openingIsolation = {
   otherOpeningStatementCount: 0,
   verified: true,
 };
-const promptProfileHash = seatContractMode
-  ? hashLocalCouncilShadowValue(
-      fixture.requiredSeats.map((seatId) =>
-        resolveCouncilSeatPromptContract({
-          phase: 'opening-position',
-          profile: options.promptProfile,
-          seatId,
-        })),
-    )
-  : null;
+const promptProfileHash = rebuttalSynthesisMode
+  ? hashLocalCouncilShadowValue(profileContracts(fixture))
+  : seatContractMode
+    ? hashLocalCouncilShadowValue(
+        fixture.requiredSeats.map((seatId) =>
+          resolveCouncilSeatPromptContract({
+            phase: 'opening-position',
+            profile: options.promptProfile,
+            seatId,
+          })),
+      )
+    : null;
 
 const openings = [];
 for (const seatId of fixture.requiredSeats) {
@@ -281,8 +310,9 @@ if (brief && rebuttals.length === fixture.requiredSeats.length) {
     sourceDigest: synthesisMetadata.sourceDigest,
     specialistKind: null,
   };
+  let observation;
   try {
-    const observation = await runProviderStage(input);
+    observation = await runProviderStage(input);
     const synthesisDraft = {
       artifactContent: observation.output.artifactContent,
       brief,
@@ -319,7 +349,11 @@ if (brief && rebuttals.length === fixture.requiredSeats.length) {
       status: result.status,
     };
   } catch (error) {
-    calls.push(providerFailureCall(input, error));
+    calls.push(
+      observation
+        ? contractFailureCall(observation.call, error)
+        : providerFailureCall(input, error),
+    );
   }
 } else {
   calls.push(notAttemptedCall('synthesis', 'chair'));
@@ -339,7 +373,28 @@ const runtime = {
   transportLoopback: true,
   version: after.version,
 };
-const artifact = robustnessMode
+const artifact = rebuttalSynthesisMode
+  ? buildLocalCouncilRebuttalSynthesisShadowArtifact({
+      baseline: {
+        c6: baselineBinding(c6BaselineArtifact),
+        c7: baselineBinding(c7BaselineArtifact),
+        c8: baselineBinding(c8BaselineArtifact),
+      },
+      c8ImplementationCall: c8BaselineArtifact.calls.find(
+        (call) => call.phase === 'rebuttal' && call.seatId === 'implementation',
+      ),
+      calls,
+      diagnostic,
+      fixtureHash: hashLocalCouncilShadowValue(fixtureText),
+      model: after.model,
+      observedAt: new Date().toISOString(),
+      openingIsolation,
+      promptProfileHash,
+      runtime,
+      targetBindings,
+      validation,
+    })
+  : robustnessMode
   ? buildLocalCouncilClaimContractRobustnessArtifact({
       baseline: {
         c6: baselineBinding(c6BaselineArtifact),
@@ -387,7 +442,14 @@ const artifact = robustnessMode
         runtime,
         validation,
       });
-if (robustnessMode) {
+if (rebuttalSynthesisMode) {
+  assertLocalCouncilRebuttalSynthesisShadowArtifact(artifact, {
+    c6BaselineArtifact,
+    c7BaselineArtifact,
+    c8BaselineArtifact,
+    fixtureText,
+  });
+} else if (robustnessMode) {
   assertLocalCouncilClaimContractRobustnessArtifact(artifact, {
     c6BaselineArtifact,
     c7BaselineArtifact,
@@ -405,11 +467,15 @@ writeEvidenceJson({
   artifact,
   defaultRelativePath: robustnessMode
     ? 'evidence/output-artifacts/local-council-claim-contract-robustness.json'
+    : rebuttalSynthesisMode
+      ? 'evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json'
     : seatContractMode
       ? 'evidence/output-artifacts/local-council-seat-contract-shadow.json'
       : 'evidence/output-artifacts/local-council-provider-shadow.json',
   label: robustnessMode
     ? 'Local council claim contract robustness output'
+    : rebuttalSynthesisMode
+      ? 'Local council rebuttal synthesis shadow output'
     : seatContractMode
       ? 'Local council seat contract shadow output'
       : 'Local council provider shadow output',
@@ -428,16 +494,24 @@ if (
 ) {
   throw new Error('C8 changed the C7 baseline artifact.');
 }
+if (
+  c8BaselineText &&
+  fs.readFileSync(c8BaselinePath, 'utf8') !== c8BaselineText
+) {
+  throw new Error('C9 changed the C8 baseline artifact.');
+}
 
 console.log(JSON.stringify({
   callCount: artifact.summary.callCount,
   decision: artifact.qualification.decision,
-  diagnosticFailureSubreason: robustnessMode
+  diagnosticFailureSubreason: robustnessMode || rebuttalSynthesisMode
     ? artifact.diagnostic.failureSubreason
     : undefined,
   distinctOpeningOutputCount: artifact.summary.distinctOpeningOutputCount,
   localShadowQualified: artifact.localShadowQualified,
-  mode: robustnessMode
+  mode: rebuttalSynthesisMode
+    ? 'local-council-rebuttal-synthesis-shadow'
+    : robustnessMode
     ? 'local-council-claim-contract-robustness'
     : seatContractMode
       ? 'local-council-seat-contract-shadow'
@@ -583,7 +657,7 @@ function notAttemptedCall(phase, seatId) {
 }
 
 function addFailureSubreason(call, failureSubreason = null) {
-  return robustnessMode
+  return robustnessMode || rebuttalSynthesisMode
     ? {
         ...call,
         failureSubreason,
@@ -597,6 +671,43 @@ function baselineBinding(artifact) {
     decision: artifact.qualification.decision,
     integrityHash: artifact.integrityHash,
     localShadowQualified: artifact.localShadowQualified,
+  };
+}
+
+function profileContracts(sourceFixture) {
+  const openingClaims = sourceFixture.requiredSeats.map((seatId) => ({
+    id: `${seatId}:claim-1`,
+    seatId,
+  }));
+  return sourceFixture.requiredSeats.flatMap((seatId) => [
+    resolveCouncilSeatPromptContract({
+      phase: 'opening-position',
+      profile: options.promptProfile,
+      seatId,
+    }),
+    resolveCouncilSeatPromptContract({
+      councilBrief: { claims: openingClaims },
+      phase: 'rebuttal',
+      profile: options.promptProfile,
+      seatId,
+    }),
+  ]);
+}
+
+function diagnosticFromC8ImplementationFailure(c8Artifact) {
+  const call = c8Artifact.calls.find((candidate) =>
+    candidate.phase === 'rebuttal' && candidate.seatId === 'implementation');
+  if (!call || call.failureKind !== 'council-contract:missing-field') {
+    throw new Error('C9 requires the fixed C8 implementation missing-field baseline.');
+  }
+  return {
+    failureKind: call.failureKind,
+    failureSubreason: 'claim-severity',
+    inputTokens: call.inputTokens,
+    outputHash: call.outputHash,
+    outputTokens: call.outputTokens,
+    promptHash: call.promptHash,
+    totalTokens: call.totalTokens,
   };
 }
 
@@ -751,7 +862,9 @@ function parseOptions(args) {
   const model = values.get('--model');
   const output = values.get('--output');
   const promptProfile = values.get('--prompt-profile') || null;
-  const goalLabel = promptProfile === 'seat-scoped-v2'
+  const goalLabel = promptProfile === 'seat-scoped-v3'
+    ? 'C9'
+    : promptProfile === 'seat-scoped-v2'
     ? 'C8'
     : promptProfile
       ? 'C7'
@@ -771,17 +884,21 @@ function parseOptions(args) {
   }
   if (
     promptProfile &&
-    !['seat-scoped-v1', 'seat-scoped-v2'].includes(promptProfile)
+    !['seat-scoped-v1', 'seat-scoped-v2', 'seat-scoped-v3'].includes(promptProfile)
   ) {
-    throw new Error('Local council prompt profile must be seat-scoped-v1 or seat-scoped-v2.');
+    throw new Error('Local council prompt profile must be seat-scoped-v1, seat-scoped-v2, or seat-scoped-v3.');
   }
   const outputPath = resolveEvidenceOutputPath({
-    defaultRelativePath: promptProfile === 'seat-scoped-v2'
+    defaultRelativePath: promptProfile === 'seat-scoped-v3'
+      ? 'evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json'
+      : promptProfile === 'seat-scoped-v2'
       ? 'evidence/output-artifacts/local-council-claim-contract-robustness.json'
       : promptProfile
         ? 'evidence/output-artifacts/local-council-seat-contract-shadow.json'
         : 'evidence/output-artifacts/local-council-provider-shadow.json',
-    label: promptProfile === 'seat-scoped-v2'
+    label: promptProfile === 'seat-scoped-v3'
+      ? 'Local council rebuttal synthesis shadow output'
+      : promptProfile === 'seat-scoped-v2'
       ? 'Local council claim contract robustness output'
       : promptProfile
         ? 'Local council seat contract shadow output'
@@ -806,6 +923,24 @@ function parseOptions(args) {
     )
   ) {
     throw new Error('C8 output must not overwrite the C7 baseline artifact.');
+  }
+  if (
+    promptProfile === 'seat-scoped-v3' &&
+    outputPath === path.join(
+      repoDir,
+      'evidence/output-artifacts/local-council-seat-contract-shadow.json',
+    )
+  ) {
+    throw new Error('C9 output must not overwrite the C7 baseline artifact.');
+  }
+  if (
+    promptProfile === 'seat-scoped-v3' &&
+    outputPath === path.join(
+      repoDir,
+      'evidence/output-artifacts/local-council-claim-contract-robustness.json',
+    )
+  ) {
+    throw new Error('C9 output must not overwrite the C8 baseline artifact.');
   }
   return {
     endpoint,
