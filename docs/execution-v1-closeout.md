@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-28T04:52:03.715Z
-- branch: codex/council-local-provider-shadow
-- commit: ab0e7d1ba58231eaff6b555dd98d12b863cbd280
+- generatedAt: 2026-07-28T06:25:57.936Z
+- branch: codex/smoke-all-idempotency
+- commit: ea504b9c46afda7935473e40e8c56b765c5e0f42
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
