@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import {
   assertLocalCouncilProviderShadowArtifact,
 } from '../src/core/local-council-provider-shadow.mjs';
+import { writeEvidenceJson } from './evidence-gated-answer-output.mjs';
 
 const repoDir = process.cwd();
 const fixtureText = fs.readFileSync(
@@ -48,9 +50,22 @@ assert.equal(
 );
 assert.equal(artifact.calls.at(-1).failureKind, 'dependency-blocked');
 
-const stat = fs.statSync(outputPath);
-assert.equal(stat.mode & 0o777, 0o600);
-assert.equal(stat.nlink, 1);
+const temporaryRepository = fs.mkdtempSync(
+  path.join(os.tmpdir(), 'personal-ai-agent-local-council-shadow-'),
+);
+try {
+  const writtenPath = writeEvidenceJson({
+    artifact,
+    defaultRelativePath: 'local-council-provider-shadow.json',
+    label: 'Local council provider shadow smoke output',
+    repoDir: temporaryRepository,
+  });
+  const stat = fs.statSync(writtenPath);
+  assert.equal(stat.mode & 0o777, 0o600);
+  assert.equal(stat.nlink, 1);
+} finally {
+  fs.rmSync(temporaryRepository, { force: true, recursive: true });
+}
 
 console.log(JSON.stringify({
   decision: artifact.qualification.decision,
