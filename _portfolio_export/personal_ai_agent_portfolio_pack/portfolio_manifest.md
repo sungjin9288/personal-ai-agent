@@ -56,6 +56,11 @@
 - scripts/smoke-local-council-seat-contract-shadow.mjs
 - test/council-seat-prompt-contract.test.mjs
 - test/local-council-seat-contract-shadow.test.mjs
+- src/core/local-council-claim-contract-robustness.mjs
+- fixtures/local-council-claim-contract-robustness-v1.json
+- scripts/smoke-local-council-claim-contract-robustness.mjs
+- test/local-council-claim-contract-robustness.test.mjs
+- evidence/output-artifacts/local-council-claim-contract-robustness.json
 - src/core/evidence-gated-answer-claim-attribution.mjs
 - fixtures/evidence-gated-answer-claim-attribution-cases-v1.json
 - scripts/evaluate-evidence-gated-answer-claim-attribution.mjs

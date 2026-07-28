@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "personal-ai-agent-local-council-claim-contract-robustness-fixture/v1",
+  "fixtureId": "local-council-claim-contract-robustness-v1",
+  "councilId": "council-local-claim-contract-robustness",
+  "workspaceId": "workspace-local-claim-contract-robustness",
+  "sessionId": "session-local-claim-contract-robustness",
+  "parentRunId": "run-local-claim-contract-robustness-planner",
+  "promptProfile": "seat-scoped-v2",
+  "evidenceCatalog": [
+    {
+      "id": "artifact:bounded-plan",
+      "kind": "artifact"
+    },
+    {
+      "id": "artifact:verification-record",
+      "kind": "artifact"
+    }
+  ],
+  "requiredSeats": [
+    "research",
+    "implementation",
+    "verification"
+  ]
+}

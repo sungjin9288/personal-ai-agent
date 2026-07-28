@@ -3,7 +3,9 @@ import { test } from 'node:test';
 
 import {
   assertCouncilSeatTargetBinding,
+  classifyCouncilClaimFailure,
   getCouncilSeatPromptProfileId,
+  getCouncilSeatRobustnessPromptProfileId,
   resolveCouncilSeatPromptContract,
 } from '../src/core/council-seat-prompt-contract.mjs';
 
@@ -94,5 +96,44 @@ test('seat-scoped contracts reject unknown profiles and incomplete briefs', () =
         seatId: 'verification',
       }),
     /requires exactly one research opening claim/,
+  );
+});
+
+test('seat-scoped robustness profile preserves fixed responsibilities and target rotation', () => {
+  const robustnessProfile = getCouncilSeatRobustnessPromptProfileId();
+  const contract = resolveCouncilSeatPromptContract({
+    councilBrief,
+    phase: 'rebuttal',
+    profile: robustnessProfile,
+    seatId: 'verification',
+  });
+
+  assert.equal(contract.profile, 'seat-scoped-v2');
+  assert.equal(contract.responsibility.includes('failure conditions'), true);
+  assert.equal(contract.targetSeatId, 'research');
+  assert.equal(contract.requiredTargetClaimId, 'research:claim-1');
+});
+
+test('invalid claim diagnostics expose only bounded content-free subreasons', () => {
+  const cases = [
+    ['claims must contain between 1 and 6 items.', 'claim-count'],
+    ['Claim research:claim-1 must belong to seat verification.', 'claim-seat'],
+    ['Unsupported claim position: support | challenge | unknown.', 'claim-position'],
+    ['Unsupported claim severity: normal | critical.', 'claim-severity'],
+    ['Unexpected invalid claim detail.', 'claim-other'],
+  ];
+
+  for (const [message, expected] of cases) {
+    assert.equal(
+      classifyCouncilClaimFailure({ code: 'invalid-claim', message }),
+      expected,
+    );
+  }
+  assert.equal(
+    classifyCouncilClaimFailure({
+      code: 'cross-council-evidence',
+      message: 'private detail',
+    }),
+    null,
   );
 });
