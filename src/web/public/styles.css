@@ -1547,6 +1547,111 @@ button {
   min-height: 0;
 }
 
+.council-blueprint-preview-shell,
+.council-blueprint-role-grid,
+.council-blueprint-plan,
+.council-blueprint-role-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.council-blueprint-preview-head,
+.council-blueprint-role-heading,
+.council-blueprint-plan li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.council-blueprint-preview-head h4,
+.council-blueprint-plan h5,
+.council-blueprint-role-card p,
+.council-blueprint-preview-shell p {
+  margin: 0;
+}
+
+.council-blueprint-boundary,
+.council-blueprint-selection-count,
+.council-blueprint-no-execution,
+.council-blueprint-plan small,
+.council-blueprint-role-card dt,
+.council-blueprint-role-card dd {
+  color: var(--text-3);
+  font-size: 0.78rem;
+}
+
+.council-blueprint-role-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.council-blueprint-role-button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-veil);
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 7px 10px;
+}
+
+.council-blueprint-role-button.is-selected {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.council-blueprint-role-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.council-blueprint-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.council-blueprint-role-card,
+.council-blueprint-plan {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.council-blueprint-role-card dl,
+.council-blueprint-role-card dl div,
+.council-blueprint-plan ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.council-blueprint-role-card dd {
+  margin: 0;
+}
+
+.council-blueprint-plan ol {
+  padding-left: 20px;
+}
+
+.council-blueprint-plan li {
+  flex-wrap: wrap;
+}
+
+.council-blueprint-plan li span {
+  color: var(--accent);
+  font-size: 0.78rem;
+}
+
+.council-blueprint-plan li small {
+  flex-basis: 100%;
+}
+
+.council-blueprint-status.is-error {
+  color: var(--danger);
+}
+
 .agent-blueprint-shell {
   display: flex;
   flex-direction: column;

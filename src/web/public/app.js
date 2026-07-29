@@ -94,6 +94,7 @@ import { wireApplicationEvents } from './lib/application-events.js';
 import { renderSessionLineage } from './lib/session-lineage.js';
 import { buildCouncilReadModel } from './lib/council-read-model.js';
 import { renderCouncilBoard as renderCouncilBoardMarkup } from './lib/council-board.js';
+import { renderCouncilBlueprintPreview as renderCouncilBlueprintPreviewMarkup } from './lib/council-blueprint-preview.js';
 import { initTheme, toggleTheme } from './lib/theme.js';
 import {
   getSanitizedStepId,
@@ -749,6 +750,58 @@ function setSelectedAgentBlueprint(blueprintId, mode = getMissionFormMode()) {
   const exists = catalog.some((item) => item.id === blueprintId);
   state.selectedAgentBlueprintByMode[mode] = exists ? blueprintId : getDefaultAgentBlueprintId(mode);
   renderAgentBlueprintBuilder();
+}
+
+function renderCouncilBlueprintPreview() {
+  if (!elements.councilBlueprintPreview) {
+    return;
+  }
+  elements.councilBlueprintPreview.innerHTML = renderCouncilBlueprintPreviewMarkup({
+    catalog: state.councilBlueprintCatalog,
+    error: state.councilBlueprintPreviewError,
+    loading: state.councilBlueprintPreviewLoading,
+    preview: state.councilBlueprintPreview,
+    selectedRoleIds: state.councilBlueprintSelectedRoleIds,
+  });
+  wireCouncilBlueprintPreviewButtons();
+}
+
+async function loadCouncilBlueprintPreview({ focusRoleId = '' } = {}) {
+  state.councilBlueprintPreviewLoading = true;
+  state.councilBlueprintPreviewError = '';
+  renderCouncilBlueprintPreview();
+  try {
+    if (!state.councilBlueprintCatalog) {
+      state.councilBlueprintCatalog = await api('/api/council/blueprints');
+    }
+    const params = new URLSearchParams();
+    state.councilBlueprintSelectedRoleIds.forEach((roleId) => params.append('role', roleId));
+    state.councilBlueprintPreview = await api(`/api/council/blueprint-preview?${params.toString()}`);
+    state.councilBlueprintSelectedRoleIds = [...state.councilBlueprintPreview.selectedRoleIds];
+  } catch (error) {
+    state.councilBlueprintPreviewError = error.message || 'Council preview를 불러오지 못했습니다.';
+  } finally {
+    state.councilBlueprintPreviewLoading = false;
+    renderCouncilBlueprintPreview();
+    if (focusRoleId) {
+      const focusTarget = [...(elements.councilBlueprintPreview?.querySelectorAll('[data-council-blueprint-role]') || [])]
+        .find((button) => button.dataset.councilBlueprintRole === focusRoleId);
+      focusTarget?.focus();
+    }
+  }
+}
+
+function wireCouncilBlueprintPreviewButtons() {
+  elements.councilBlueprintPreview?.querySelectorAll('[data-council-blueprint-role]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const roleId = String(button.dataset.councilBlueprintRole || '').trim();
+      const selected = state.councilBlueprintSelectedRoleIds;
+      state.councilBlueprintSelectedRoleIds = selected.includes(roleId)
+        ? selected.filter((item) => item !== roleId)
+        : [...selected, roleId];
+      void loadCouncilBlueprintPreview({ focusRoleId: roleId });
+    });
+  });
 }
 
 function formatSpecialistKindLabel(kind = '') {
@@ -9277,6 +9330,7 @@ function renderBootstrapStaticSurfaces() {
   renderPlaybooks();
   renderTemplates();
   renderAgentBlueprintBuilder();
+  renderCouncilBlueprintPreview();
   updateRunFallbackControls();
   setActiveStep('step-setup', { syncUrl: false });
 }
@@ -9291,6 +9345,7 @@ async function loadBootstrapData() {
     loadApprovals(),
     loadMissions(),
     loadReleaseStatus(),
+    loadCouncilBlueprintPreview(),
   ]);
 }
 

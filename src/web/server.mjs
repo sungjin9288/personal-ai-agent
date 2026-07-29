@@ -12,6 +12,12 @@ import {
 } from '../core/document-conversion-service.mjs';
 import { buildDoctorDiagnosticsSummary, runDoctor } from '../core/doctor-service.mjs';
 import { createId } from '../core/id.mjs';
+import {
+  CouncilBlueprintPreviewValidationError,
+  createCouncilBlueprintPreview,
+  getCouncilBlueprintCatalog,
+  toCouncilBlueprintPreviewErrorPayload,
+} from '../core/council-blueprint-preview.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
 import { createReleaseCommandOrchestrator } from '../core/release-command-orchestrator.mjs';
@@ -2182,6 +2188,29 @@ async function handleApi(request, response, url) {
       },
       rootDir,
     });
+  });
+
+  registerExactRoute('GET', '/api/council/blueprints', async () => {
+    sendJson(response, 200, getCouncilBlueprintCatalog());
+  });
+
+  registerExactRoute('GET', '/api/council/blueprint-preview', async () => {
+    try {
+      const roleIds = url.searchParams.has('role') ? url.searchParams.getAll('role') : undefined;
+      sendJson(
+        response,
+        200,
+        createCouncilBlueprintPreview({
+          failedStageIds: url.searchParams.getAll('failedStage'),
+          roleIds,
+        }),
+      );
+    } catch (error) {
+      if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
+        throw error;
+      }
+      sendJson(response, 400, toCouncilBlueprintPreviewErrorPayload(error));
+    }
   });
 
   registerExactRoute('GET', '/api/health', async () => {
