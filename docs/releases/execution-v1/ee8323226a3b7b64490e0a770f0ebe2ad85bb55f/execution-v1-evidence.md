@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-29T06:57:30.190Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-29T06:57:20.612Z
 - branch: codex/council-strict-prompt-candidate-qualification
 - commit: ee8323226a3b7b64490e0a770f0ebe2ad85bb55f

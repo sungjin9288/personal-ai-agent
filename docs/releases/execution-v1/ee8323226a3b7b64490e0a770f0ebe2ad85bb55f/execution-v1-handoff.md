@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-29T06:57:30.190Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-29T06:57:29.073Z
 - localDate: 2026-07-29
 - branch: codex/council-strict-prompt-candidate-qualification
 - commit: ee8323226a3b7b64490e0a770f0ebe2ad85bb55f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f](releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f](docs/releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f)
 - visualArtifactSetSha256: c262b90f005ebc25525b5fda31e78e497f99ca88e5c3bf424baf52c0f878ef96
 - commitPushStatus: not pushed, origin/codex/council-strict-prompt-candidate-qualification not found
 - liveValidationMode: archived-preserved-not-rerun

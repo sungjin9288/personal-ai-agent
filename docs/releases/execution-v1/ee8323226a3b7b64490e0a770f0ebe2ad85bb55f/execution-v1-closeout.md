@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-29T06:57:30.190Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-29T06:57:20.695Z
 - branch: codex/council-strict-prompt-candidate-qualification
 - commit: ee8323226a3b7b64490e0a770f0ebe2ad85bb55f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f/execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
