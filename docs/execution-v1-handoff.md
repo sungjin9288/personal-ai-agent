@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-28T08:54:30.174Z
-- localDate: 2026-07-28
-- branch: codex/council-claim-contract-robustness-shadow
-- commit: 323db15d0dddfedfe73d0df12c82fc7d797511f8
+- generatedAt: 2026-07-29T00:10:59.118Z
+- localDate: 2026-07-29
+- branch: codex/council-rebuttal-synthesis-shadow
+- commit: 305d88c4680d4bae25d76f6153e886768552d6af
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/323db15d0dddfedfe73d0df12c82fc7d797511f8](releases/execution-v1/323db15d0dddfedfe73d0df12c82fc7d797511f8)
-- visualArtifactSetSha256: d9d14c3da0d393593fa4b89264282a57ed91bd263fdf4ce9def6c755a99ff124
-- commitPushStatus: not pushed, origin/codex/council-claim-contract-robustness-shadow not found
+- immutableSnapshot: [releases/execution-v1/305d88c4680d4bae25d76f6153e886768552d6af](releases/execution-v1/305d88c4680d4bae25d76f6153e886768552d6af)
+- visualArtifactSetSha256: aea30423b781846495dee2ba7b4f46308dd838932694505cb7773a64e31138cd
+- commitPushStatus: not pushed, origin/codex/council-rebuttal-synthesis-shadow not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=55.8s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=55.6s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: d9d14c3da0d393593fa4b89264282a57ed91bd263fdf4ce9def6c755a99ff124
+- visual artifact set: aea30423b781846495dee2ba7b4f46308dd838932694505cb7773a64e31138cd
 
 ## Live Provider Handoff
 
