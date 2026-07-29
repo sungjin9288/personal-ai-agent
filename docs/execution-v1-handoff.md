@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-29T03:41:14.504Z
+- generatedAt: 2026-07-29T05:42:31.289Z
 - localDate: 2026-07-29
-- branch: codex/council-chair-synthesis-contract-shadow
-- commit: 8a42a749876cc3d504c37fbcbd196ee52834a2b4
+- branch: codex/council-rebuttal-stability-chair-reachability-shadow
+- commit: f60887df38cefeb7e9aa19d47fdb8823211e2eca
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/8a42a749876cc3d504c37fbcbd196ee52834a2b4](releases/execution-v1/8a42a749876cc3d504c37fbcbd196ee52834a2b4)
-- visualArtifactSetSha256: 7838518e552ff2401397963c653738a64d7b9175d287d50a103fb469ca5a5248
-- commitPushStatus: not pushed, origin/codex/council-chair-synthesis-contract-shadow not found
+- immutableSnapshot: [releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca](releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca)
+- visualArtifactSetSha256: 7c505f85763265318eb5cf87d9c35db9217eee0adc9f9f943f87bb127fc258bd
+- commitPushStatus: not pushed, origin/codex/council-rebuttal-stability-chair-reachability-shadow not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=56.4s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=56.7s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 7838518e552ff2401397963c653738a64d7b9175d287d50a103fb469ca5a5248
+- visual artifact set: 7c505f85763265318eb5cf87d9c35db9217eee0adc9f9f943f87bb127fc258bd
 
 ## Live Provider Handoff
 

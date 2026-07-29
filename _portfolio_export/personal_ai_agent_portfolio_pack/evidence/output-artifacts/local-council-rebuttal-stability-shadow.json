@@ -1,0 +1,205 @@
+{
+  "actualUserData": false,
+  "apiCostUsd": 0,
+  "baseline": {
+    "c6": {
+      "artifactId": "local-council-provider-shadow-10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+      "decision": "keep-stub-only",
+      "fileSha256": "85e1dc53c1897f481fb004ad8cb5a925dd08eefa153a37d23d206105ea28c2a5",
+      "integrityHash": "10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+      "localShadowQualified": false
+    },
+    "c7": {
+      "artifactId": "local-council-seat-contract-shadow-a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b",
+      "decision": "keep-stub-only",
+      "fileSha256": "18a4d47141b607e67124d4867b0489e9ec92ff4fe59765d9c18a504cd699c206",
+      "integrityHash": "a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b",
+      "localShadowQualified": false
+    },
+    "c8": {
+      "artifactId": "local-council-claim-contract-robustness-25fc074907c5221a976a4c8e71f057d9b92b035f244445d5a55f4032635c642a",
+      "decision": "keep-stub-only",
+      "fileSha256": "ac47dc2368477adb7f04e6c309ad009fd356710b86d89c1c3afbdcd1303df93d",
+      "integrityHash": "25fc074907c5221a976a4c8e71f057d9b92b035f244445d5a55f4032635c642a",
+      "localShadowQualified": false
+    },
+    "c9": {
+      "artifactId": "local-council-rebuttal-synthesis-shadow-6bb2a76a135fff47dd302cec4b697e05f4b4ca262c3db3ecc463831e0a2013f9",
+      "decision": "keep-stub-only",
+      "fileSha256": "b77056fbe11a7939adb83da13a16b5b571a1c153977a194cfe297aa8e1fec822",
+      "integrityHash": "6bb2a76a135fff47dd302cec4b697e05f4b4ca262c3db3ecc463831e0a2013f9",
+      "localShadowQualified": false
+    },
+    "c10": {
+      "artifactId": "local-council-chair-synthesis-contract-shadow-cdeb58b4f643034bb2d0566612db50992d8e49c6eff6bc649227189efa56b513",
+      "decision": "keep-stub-only",
+      "fileSha256": "455ddb9137c05600fa2a08f607c209657d34bc37677ce9ad5c41bacfd759e8df",
+      "integrityHash": "cdeb58b4f643034bb2d0566612db50992d8e49c6eff6bc649227189efa56b513",
+      "localShadowQualified": false
+    }
+  },
+  "calls": [
+    {
+      "attemptCount": 1,
+      "durationMs": 8071,
+      "failureKind": "council-contract:invalid-output",
+      "failureStage": "structured-output",
+      "inputTokens": 1015,
+      "outputHash": "622e42dc09f1cd33028c9da7ace3b8681a4ef5f3c8780c522795cc1dad0cc14c",
+      "outputTokens": 119,
+      "phase": "opening-position",
+      "promptHash": "4db620537ab17c2a40eaaff1339597ea440a05960f8af0f5809e1a42763b24ef",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "failed",
+      "totalTokens": 1134
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "opening-position",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "opening-position",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "not-attempted",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "synthesis",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "chair",
+      "status": "not-attempted",
+      "totalTokens": 0
+    }
+  ],
+  "defaultProfilePromotionAuthorized": false,
+  "externalProviderCallCount": 0,
+  "fixtureHash": "fadb80af1706ebc974b7804b36084972c6dd12d355797a06f1b50a7ca4fe65b1",
+  "localShadowQualified": false,
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "licenseHash": "a032f549c4cd3b9402e6cb7d4aa84c7911cacb580ae5df3972035982e41ff192",
+    "sizeBytes": 1929912432
+  },
+  "observedAt": "2026-07-29T04:41:36.501Z",
+  "productionReadyClaim": false,
+  "promptProfile": {
+    "hash": "33b2c3867353765e28e3ae2db5396bf2706c93eaa19fa416c2f4df603b8f5179",
+    "id": "seat-scoped-v5"
+  },
+  "qualification": {
+    "decision": "keep-stub-only",
+    "firstFailureStopsRemainingStages": true,
+    "fullContractPassed": false
+  },
+  "rootCauseClassification": {
+    "category": "post-provider-specialist-contract-non-conformance",
+    "exactField": "insufficient-observation"
+  },
+  "runtime": {
+    "afterContextLength": 4096,
+    "afterLoaded": true,
+    "afterSizeBytes": 2390300672,
+    "afterVramBytes": 2390300672,
+    "beforeLoaded": false,
+    "cloudFeaturesDisabled": true,
+    "endpointAlias": "loopback-ollama",
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-council-rebuttal-stability-shadow/v1",
+  "summary": {
+    "callCount": 7,
+    "failedCallCount": 1,
+    "notAttemptedCallCount": 6,
+    "passedCallCount": 0,
+    "totalDurationMs": 8071,
+    "totalInputTokens": 1015,
+    "totalOutputTokens": 119,
+    "totalTokens": 1134
+  },
+  "trainingAuthorized": false,
+  "validation": {
+    "code": "dependency-blocked",
+    "manifestDigest": null,
+    "status": "blocked"
+  },
+  "id": "local-council-rebuttal-stability-shadow-ece1beefe359c9ce305479ca80da17f648f4f45331570214fe60d86e12031c1d",
+  "integrityHash": "ece1beefe359c9ce305479ca80da17f648f4f45331570214fe60d86e12031c1d"
+}

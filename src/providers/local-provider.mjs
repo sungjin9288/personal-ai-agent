@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { createStubProvider } from './stub-provider.mjs';
 import {
   createProviderFailure,
@@ -14,6 +16,7 @@ import {
   normalizeText,
   normalizeStructuredOutput,
   parseJsonText,
+  parseStrictJsonText,
   parsePositiveInteger,
 } from './structured-provider-utils.mjs';
 import { getProviderSpec } from './provider-catalog.mjs';
@@ -172,7 +175,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
             temperature: 0,
           }),
         },
-        maxAttempts: LOCAL_SPEC.runtime.maxAttempts,
+        maxAttempts: input.councilPromptProfile === 'seat-scoped-v5' ? 1 : LOCAL_SPEC.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'Local',
         rateLimit: {
@@ -193,11 +196,18 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         usage,
       });
       let output;
+      let outputText = '';
       try {
-        const outputText = extractChatCompletionText(payload);
-        output = parseJsonText(outputText, 'Local');
+        outputText = extractChatCompletionText(payload);
+        output = input.councilPromptProfile === 'seat-scoped-v5'
+          ? parseStrictJsonText(outputText, 'Local')
+          : parseJsonText(outputText, 'Local');
       } catch (error) {
-        withProviderMetadata(error, {
+        const outputTextHash = input.councilPromptProfile === 'seat-scoped-v5' && outputText
+          ? createHash('sha256').update(outputText).digest('hex')
+          : null;
+        try {
+          withProviderMetadata(error, {
           attemptCount,
           attemptHistory,
           durationMs,
@@ -207,7 +217,11 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
           usageInputTokens: usage.inputTokens,
           usageOutputTokens: usage.outputTokens,
           usageTotalTokens: usage.totalTokens,
-        });
+          });
+        } catch (providerError) {
+          if (outputTextHash) providerError.outputTextHash = outputTextHash;
+          throw providerError;
+        }
       }
 
       return {
@@ -216,6 +230,9 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         durationMs,
         estimatedCostUsd,
         output,
+        ...(input.councilPromptProfile === 'seat-scoped-v5'
+          ? { outputTextHash: createHash('sha256').update(outputText).digest('hex') }
+          : {}),
         providerResponseId,
         role: input.providerRole || input.role,
         retryCount,

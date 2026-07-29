@@ -71,6 +71,12 @@
 - scripts/smoke-local-council-chair-synthesis-contract-shadow.mjs
 - test/local-council-chair-synthesis-contract-shadow.test.mjs
 - evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json
+- src/core/local-council-rebuttal-stability-shadow.mjs
+- fixtures/local-council-rebuttal-stability-shadow-v1.json
+- scripts/evaluate-local-council-rebuttal-stability-shadow.mjs
+- scripts/smoke-local-council-rebuttal-stability-shadow.mjs
+- test/local-council-rebuttal-stability-shadow.test.mjs
+- evidence/output-artifacts/local-council-rebuttal-stability-shadow.json
 - src/core/evidence-gated-answer-claim-attribution.mjs
 - fixtures/evidence-gated-answer-claim-attribution-cases-v1.json
 - scripts/evaluate-evidence-gated-answer-claim-attribution.mjs

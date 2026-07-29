@@ -118,6 +118,81 @@ export function parseJsonText(text, providerLabel) {
   }
 }
 
+export function parseStrictJsonText(text, providerLabel) {
+  const candidate = typeof text === 'string' ? text.trim() : '';
+  if (!candidate || candidate.startsWith('```') || candidate[0] !== '{' || candidate.at(-1) !== '}') {
+    throw createProviderFailure(`${providerLabel} provider returned non-strict JSON content.`, {
+      failureKind: 'non-json-output', rawMessage: candidate, recoverable: false, timedOut: false,
+    });
+  }
+  try {
+    const output = JSON.parse(candidate);
+    assertNoDuplicateJsonKeys(candidate);
+    return output;
+  } catch (error) {
+    throw createProviderFailure(`${providerLabel} provider returned invalid strict JSON.`, {
+      failureKind: 'non-json-output', rawMessage: candidate, recoverable: false, timedOut: false,
+    });
+  }
+}
+
+function assertNoDuplicateJsonKeys(text) {
+  let index = 0;
+  const skip = () => { while (/\s/.test(text[index] || '')) index += 1; };
+  const string = () => {
+    const start = index;
+    index += 1;
+    let escaped = false;
+    while (index < text.length) {
+      const value = text[index++];
+      if (escaped) escaped = false;
+      else if (value === '\\') escaped = true;
+      else if (value === '"') return JSON.parse(text.slice(start, index));
+    }
+    throw new Error('unterminated JSON string');
+  };
+  const value = () => {
+    skip();
+    if (text[index] === '{') {
+      index += 1;
+      const keys = new Set();
+      skip();
+      if (text[index] === '}') { index += 1; return; }
+      while (true) {
+        skip();
+        if (text[index] !== '"') throw new Error('invalid JSON object key');
+        const key = string();
+        if (keys.has(key)) throw new Error(`duplicate JSON key ${key}`);
+        keys.add(key);
+        skip();
+        if (text[index++] !== ':') throw new Error('invalid JSON object separator');
+        value();
+        skip();
+        if (text[index] === '}') { index += 1; return; }
+        if (text[index++] !== ',') throw new Error('invalid JSON object delimiter');
+      }
+    }
+    if (text[index] === '[') {
+      index += 1;
+      skip();
+      if (text[index] === ']') { index += 1; return; }
+      while (true) {
+        value();
+        skip();
+        if (text[index] === ']') { index += 1; return; }
+        if (text[index++] !== ',') throw new Error('invalid JSON array delimiter');
+      }
+    }
+    if (text[index] === '"') { string(); return; }
+    const start = index;
+    while (index < text.length && !/[\s,}\]]/.test(text[index])) index += 1;
+    JSON.parse(text.slice(start, index));
+  };
+  value();
+  skip();
+  if (index !== text.length) throw new Error('trailing JSON content');
+}
+
 function decodeJsonStringLiteral(value) {
   if (!value) {
     return '';
@@ -441,6 +516,9 @@ function buildCouncilRoleContract(input) {
         seatContract,
       });
     }
+    if (seatContract?.profile === 'seat-scoped-v5') {
+      return buildRebuttalStabilityCouncilSpecialistContract({ input, opening, seatContract });
+    }
     if (seatContract?.profile === 'seat-scoped-v3' || seatContract?.profile === 'seat-scoped-v4') {
       return buildRebuttalCompletionCouncilSpecialistContract({
         input,
@@ -502,7 +580,7 @@ ${seatRules}`;
   }
 
   if (input.role === 'executor' && input.councilPhase === 'synthesis') {
-    if (input.councilPromptProfile === 'seat-scoped-v4') {
+    if (['seat-scoped-v4', 'seat-scoped-v5'].includes(input.councilPromptProfile)) {
       return buildChairSynthesisContract(input);
     }
     return `Return only valid JSON with this shape:
@@ -716,6 +794,35 @@ Seat responsibility:
 - seat: ${seatContract.seatId}
 - responsibility: ${seatContract.responsibility}
 - keep the claim inside this responsibility and do not imitate another seat's responsibility`;
+}
+
+function buildRebuttalStabilityCouncilSpecialistContract({ input, opening, seatContract }) {
+  const evidenceIds = (opening ? input.councilFrame?.evidenceCatalog : input.councilBrief?.evidenceRefs)
+    ?.map((value) => normalizeText(value?.id || value)).filter(Boolean) || [];
+  if (!evidenceIds.length) throw new Error('seat-scoped-v5 requires at least one available evidence id.');
+  const claimId = `${seatContract.seatId}:claim-${opening ? 1 : 2}`;
+  const targetClaimIds = seatContract.requiredTargetClaimId ? [seatContract.requiredTargetClaimId] : [];
+  return `Return only strict JSON with exactly these keys and no prose or code fence:
+{
+  "summaryText": "bounded ${opening ? 'opening' : 'rebuttal'} position",
+  "artifactContent": "# Council ${opening ? 'Opening' : 'Rebuttal'}\\n...",
+  "nextAction": "single next action sentence",
+  "councilStatement": {
+    "claims": [{ "id": ${JSON.stringify(claimId)}, "position": "${opening ? 'unknown' : 'challenge'}", "summary": "bounded claim", "evidenceRefs": [${JSON.stringify(evidenceIds[0])}], "severity": "normal" }],
+    "targetClaimIds": ${JSON.stringify(targetClaimIds)}, "rejectedOptionIds": [], "nextAction": "single next action sentence"
+  }
+}
+
+Exact C11 rules:
+- top-level keys must be exactly summaryText, artifactContent, nextAction, councilStatement
+- councilStatement keys must be exactly claims, targetClaimIds, rejectedOptionIds, nextAction
+- the one claim keys must be exactly id, position, summary, evidenceRefs, severity
+- claim id must be exactly ${JSON.stringify(claimId)}; do not omit or abbreviate the seat prefix
+- position is support, challenge, or unknown; severity is normal or critical; all text fields are non-empty
+- evidenceRefs must be a non-empty array using only ${JSON.stringify(evidenceIds)}
+- targetClaimIds must be exactly ${JSON.stringify(targetClaimIds)} and rejectedOptionIds must be []
+- top-level nextAction and councilStatement.nextAction must be identical; the runtime will not repair, supplement, or rewrite output
+- do not include raw attachments, memory, paths, URLs, or hidden reasoning`;
 }
 
 export function buildRequestPrompt(input, delegatedPrompt) {
@@ -1157,6 +1264,9 @@ function normalizeCouncilClaimIds(statement, input) {
 }
 
 function normalizeCouncilSpecialistOutput(output, input, providerLabel) {
+  if (input.councilPromptProfile === 'seat-scoped-v5') {
+    return normalizeStrictCouncilSpecialistOutput(output, input, providerLabel);
+  }
   const artifactContent = normalizeText(output.artifactContent);
   const nextAction = normalizeText(output.nextAction);
   const summaryText = normalizeText(output.summaryText);
@@ -1221,6 +1331,40 @@ function normalizeCouncilSpecialistOutput(output, input, providerLabel) {
   };
 }
 
+function normalizeStrictCouncilSpecialistOutput(output, input, providerLabel) {
+  try {
+    exactCouncilKeys(output, ['artifactContent', 'councilStatement', 'nextAction', 'summaryText'], 'C11 specialist output');
+    const statement = output.councilStatement;
+    exactCouncilKeys(statement, ['claims', 'nextAction', 'rejectedOptionIds', 'targetClaimIds'], 'C11 councilStatement');
+    if (!['artifactContent', 'nextAction', 'summaryText'].every((key) => typeof output[key] === 'string' && output[key].trim()) ||
+        output.nextAction !== statement.nextAction || !Array.isArray(statement.claims) || statement.claims.length !== 1 ||
+        !Array.isArray(statement.targetClaimIds) || !Array.isArray(statement.rejectedOptionIds) || statement.rejectedOptionIds.length !== 0) {
+      throw new Error('C11 specialist required fields are invalid.');
+    }
+    const claim = statement.claims[0];
+    exactCouncilKeys(claim, ['evidenceRefs', 'id', 'position', 'severity', 'summary'], 'C11 claim');
+    if (typeof claim.id !== 'string' || typeof claim.position !== 'string' || typeof claim.severity !== 'string' ||
+        typeof claim.summary !== 'string' || !Array.isArray(claim.evidenceRefs)) {
+      throw new Error('C11 claim shape is invalid.');
+    }
+    const opening = input.councilPhase === 'opening-position';
+    return {
+      artifactContent: output.artifactContent, artifactFileName: `council-${input.councilSeatId}-${opening ? 'opening' : 'rebuttal'}.md`,
+      artifactTitle: `${input.councilSeatId} council ${opening ? 'opening' : 'rebuttal'}`,
+      councilStatement: statement, nextAction: output.nextAction,
+      specialistHandoff: { acceptanceCriteria: ['The persisted council statement passes the council contract.'], blockers: [],
+        currentState: output.summaryText, deliverables: [`${opening ? 'opening' : 'rebuttal'} council statement`],
+        evidence: claim.evidenceRefs, nextHandoff: { recommendedOwner: 'workspace-owner', request: output.nextAction,
+          targetRole: opening ? 'council-brief' : 'manager-merge' } },
+      summaryText: output.summaryText, type: 'specialist',
+    };
+  } catch (error) {
+    throw createProviderFailure(`${providerLabel} C11 council specialist contract failed: ${error.message}`, {
+      failureKind: 'schema-invalid', rawMessage: JSON.stringify(output), recoverable: false, timedOut: false,
+    });
+  }
+}
+
 function normalizeCouncilSynthesisOutput(output, input, providerLabel) {
   const artifactContent = normalizeText(output.artifactContent);
   const nextAction = normalizeText(output.nextAction);
@@ -1241,7 +1385,7 @@ function normalizeCouncilSynthesisOutput(output, input, providerLabel) {
       timedOut: false,
     });
   }
-  if (input.councilPromptProfile === 'seat-scoped-v4') {
+  if (['seat-scoped-v4', 'seat-scoped-v5'].includes(input.councilPromptProfile)) {
     try {
       exactCouncilKeys(output, ['artifactContent', 'councilSynthesis', 'nextAction', 'summaryText'], 'chair output');
       exactCouncilKeys(councilSynthesis, [
