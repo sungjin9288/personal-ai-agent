@@ -575,6 +575,38 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - external provider, API 비용, model download, 새 dependency, actual user data, F1.3 authority,
   dynamic persona, concurrent dispatch와 production claim은 없다.
 
+### C9 — Rebuttal contract completion and synthesis shadow
+
+- model: installed loopback `qwen2.5:3b`
+- branch: `codex/council-rebuttal-synthesis-shadow`
+- status: completed on 2026-07-29 with `keep-stub-only`
+
+구현 범위:
+
+- 기존 `seat-scoped-v1`·`seat-scoped-v2` bytes와 동작은 유지하고, opt-in
+  `seat-scoped-v3`에 opening과 rebuttal의 phase-specific JSON example을 분리했다.
+  rebuttal claim의 non-empty `severity` enum을 명시했으며 schema, validator, target binding,
+  runtime output 보정은 바꾸지 않았다.
+- C9 artifact는 C6·C7·C8의 id·integrity hash·결정을 모두 결속한다. C8 implementation
+  rebuttal의 fixed `missing-field` hash·token record는 raw prompt나 response 없이
+  `claim-severity` content-free taxonomy로만 기록한다.
+
+실제 관측:
+
+- 한 번의 순차 local run에서 opening 3/3과 rebuttal 3/3, exact target 3/3은 통과했다.
+  chair synthesis도 실제로 한 번 호출했지만 content-free `provider:unknown`으로 실패해
+  manifest validation은 통과하지 못했다.
+- 총 7 stage record 중 passed 6, failed 1, not-attempted 0이었다. 관측된 7,915 token과
+  116,849 ms는 이 한 번의 local run 값이며 성능 보장이나 production capacity 근거가 아니다.
+
+결정:
+
+- synthesis exact contract와 valid manifest를 충족하지 못했으므로 `localShadowQualified: false`,
+  `decision: keep-stub-only`로 종료했다. default profile promotion, runtime activation, training,
+  actual user data와 production claim은 계속 false다.
+- C9은 실패 뒤 prompt, schema, threshold를 수정하거나 재실행하지 않았다. external provider,
+  API 비용, model download, 새 dependency, F1.3 authority, concurrent dispatch는 없다.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.
@@ -582,7 +614,7 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 1. touched council contract와 failure boundary unit test
 2. deterministic stub council smoke
 3. 기존 parallel specialist, retry, reviewer, approval, timeline regression
-4. C6·C7 baseline integrity와 C8 claim contract content-free evidence smoke
+4. C6·C7·C8 baseline integrity와 C9 synthesis shadow content-free evidence smoke
 5. UI 변경이 있는 C2만 local browser smoke
 6. `npm test`
 7. `npm run smoke:docs-gates`

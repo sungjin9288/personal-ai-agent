@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "personal-ai-agent-local-council-rebuttal-synthesis-shadow-fixture/v1",
+  "fixtureId": "local-council-rebuttal-synthesis-shadow-v1",
+  "councilId": "council-local-rebuttal-synthesis-shadow",
+  "workspaceId": "workspace-local-rebuttal-synthesis-shadow",
+  "sessionId": "session-local-rebuttal-synthesis-shadow",
+  "parentRunId": "run-local-rebuttal-synthesis-shadow-planner",
+  "promptProfile": "seat-scoped-v3",
+  "evidenceCatalog": [
+    {
+      "id": "artifact:bounded-plan",
+      "kind": "artifact"
+    },
+    {
+      "id": "artifact:verification-record",
+      "kind": "artifact"
+    }
+  ],
+  "requiredSeats": [
+    "research",
+    "implementation",
+    "verification"
+  ]
+}

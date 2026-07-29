@@ -404,6 +404,8 @@
     "smoke:local-council-seat-contract-shadow": "node scripts/smoke-local-council-seat-contract-shadow.mjs",
     "evaluate:local-council-claim-contract-robustness": "node scripts/evaluate-local-council-provider-shadow.mjs --endpoint http://127.0.0.1:11434 --model qwen2.5:3b --cloud-features-disabled true --prompt-profile seat-scoped-v2 --output evidence/output-artifacts/local-council-claim-contract-robustness.json",
     "smoke:local-council-claim-contract-robustness": "node scripts/smoke-local-council-claim-contract-robustness.mjs",
+    "evaluate:local-council-rebuttal-synthesis-shadow": "node scripts/evaluate-local-council-provider-shadow.mjs --endpoint http://127.0.0.1:11434 --model qwen2.5:3b --cloud-features-disabled true --prompt-profile seat-scoped-v3 --output evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json",
+    "smoke:local-council-rebuttal-synthesis-shadow": "node scripts/smoke-local-council-rebuttal-synthesis-shadow.mjs",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
     "smoke:specialist-follow-up-reminders": "node scripts/smoke-specialist-follow-up-reminders.mjs",

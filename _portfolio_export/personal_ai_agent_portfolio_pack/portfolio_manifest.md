@@ -61,6 +61,11 @@
 - scripts/smoke-local-council-claim-contract-robustness.mjs
 - test/local-council-claim-contract-robustness.test.mjs
 - evidence/output-artifacts/local-council-claim-contract-robustness.json
+- src/core/local-council-rebuttal-synthesis-shadow.mjs
+- fixtures/local-council-rebuttal-synthesis-shadow-v1.json
+- scripts/smoke-local-council-rebuttal-synthesis-shadow.mjs
+- test/local-council-rebuttal-synthesis-shadow.test.mjs
+- evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json
 - src/core/evidence-gated-answer-claim-attribution.mjs
 - fixtures/evidence-gated-answer-claim-attribution-cases-v1.json
 - scripts/evaluate-evidence-gated-answer-claim-attribution.mjs

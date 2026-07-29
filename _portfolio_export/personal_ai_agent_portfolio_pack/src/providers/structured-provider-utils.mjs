@@ -441,6 +441,13 @@ function buildCouncilRoleContract(input) {
         seatContract,
       });
     }
+    if (seatContract?.profile === 'seat-scoped-v3') {
+      return buildRebuttalCompletionCouncilSpecialistContract({
+        input,
+        opening,
+        seatContract,
+      });
+    }
     const rebuttalTargets = opening
       ? []
       : (input.councilBrief?.claims || [])
@@ -584,6 +591,63 @@ Round rules:
 ${opening
   ? '- opening input contains only the shared CouncilFrame and no other opening statement'
   : `- rebuttal targetClaimIds must equal exactly ${JSON.stringify(targetClaimIds)}`}
+- do not include raw attachments, memory, paths, URLs, or hidden reasoning
+
+Seat responsibility:
+- seat: ${seatContract.seatId}
+- responsibility: ${seatContract.responsibility}
+- keep the claim inside this responsibility and do not imitate another seat's responsibility`;
+}
+
+function buildRebuttalCompletionCouncilSpecialistContract({
+  input,
+  opening,
+  seatContract,
+}) {
+  const evidenceIds = opening
+    ? (input.councilFrame?.evidenceCatalog || []).map((item) => item?.id)
+    : (input.councilBrief?.evidenceRefs || []);
+  const availableEvidenceIds = evidenceIds.map((value) => normalizeText(value)).filter(Boolean);
+  if (availableEvidenceIds.length === 0) {
+    throw new Error('seat-scoped-v3 requires at least one available evidence id.');
+  }
+
+  const exampleEvidenceId = availableEvidenceIds[0];
+  const targetClaimIds = seatContract.requiredTargetClaimId ? [seatContract.requiredTargetClaimId] : [];
+  const phaseExample = opening
+    ? `{
+  "summaryText": "bounded opening position",
+  "artifactContent": "# Council Opening\\n...",
+  "nextAction": "single next action sentence",
+  "councilStatement": {
+    "claims": [{ "id": "claim-1", "position": "unknown", "summary": "bounded claim", "evidenceRefs": [${JSON.stringify(exampleEvidenceId)}], "severity": "normal" }],
+    "targetClaimIds": [], "rejectedOptionIds": [], "nextAction": "single next action sentence"
+  }
+}`
+    : `{
+  "summaryText": "bounded rebuttal position",
+  "artifactContent": "# Council Rebuttal\\n...",
+  "nextAction": "single next action sentence",
+  "councilStatement": {
+    "claims": [{ "id": "claim-2", "position": "challenge", "summary": "bounded rebuttal claim", "evidenceRefs": [${JSON.stringify(exampleEvidenceId)}], "severity": "normal" }],
+    "targetClaimIds": ${JSON.stringify(targetClaimIds)}, "rejectedOptionIds": [], "nextAction": "single next action sentence"
+  }
+}`;
+
+  return `Return only valid JSON matching this ${opening ? 'opening' : 'rebuttal'} example:
+${phaseExample}
+
+Exact claim rules:
+- return exactly one claim with exactly id, position, summary, evidenceRefs, and severity
+- position must be exactly one JSON string: "support", "challenge", or "unknown"
+- severity is required and must be exactly one non-empty JSON string: "normal" or "critical"
+- evidenceRefs must be a JSON array containing only these exact evidence ids: ${JSON.stringify(availableEvidenceIds)}
+- the runtime assigns the fixed seat prefix to the claim id; do not invent another seat
+
+Round rules:
+${opening
+  ? '- opening targetClaimIds and rejectedOptionIds must be empty arrays\n- opening input contains only the shared CouncilFrame and no other opening statement'
+  : `- rebuttal targetClaimIds must equal exactly ${JSON.stringify(targetClaimIds)}\n- rebuttal must include the required claim severity field`}
 - do not include raw attachments, memory, paths, URLs, or hidden reasoning
 
 Seat responsibility:

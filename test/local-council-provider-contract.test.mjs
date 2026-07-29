@@ -248,6 +248,24 @@ test('seat-scoped-v2 rebuttal keeps the same deterministic target binding', () =
   );
 });
 
+test('seat-scoped-v3 separates opening and rebuttal JSON examples and requires severity', () => {
+  const opening = buildRequestPrompt(
+    specialistInput({ councilPromptProfile: 'seat-scoped-v3' }),
+    'Council Context',
+  );
+  const rebuttalInput = specialistInput({
+    councilPhase: 'rebuttal',
+    councilPromptProfile: 'seat-scoped-v3',
+  });
+  rebuttalInput.councilBrief.evidenceRefs = ['artifact:bounded-plan'];
+  const rebuttal = buildRequestPrompt(rebuttalInput, 'Council Context');
+
+  assert.match(opening, /matching this opening example/);
+  assert.match(rebuttal, /matching this rebuttal example/);
+  assert.match(rebuttal, /severity is required and must be exactly one non-empty JSON string/);
+  assert.match(rebuttal, /rebuttal must include the required claim severity field/);
+});
+
 test('local council synthesis normalization preserves contract output without a mission pack', () => {
   const input = {
     councilPhase: 'synthesis',

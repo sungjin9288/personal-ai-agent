@@ -171,7 +171,7 @@
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
 - 남은 polish: published private/public walkthrough URL, actual pilot feedback and metric evidence
 
-## 8. Council C1–C8 closeout
+## 8. Council C1–C9 closeout
 
 - 완료: fixed three-seat, two-round deterministic stub council과 read-only board, reviewer parity repair, bounded local retrieval provenance를 검증했다.
 - 결정: `knowledge-triad`를 default profile로 유지하고 `knowledge-council-triad`는 opt-in experiment로 유지한다.
@@ -179,5 +179,6 @@
 - C6 관측: installed loopback `qwen2.5:3b`의 opening 3회는 valid하지만 동일했고 rebuttal 3회는 exact target contract를 통과하지 못했으며 synthesis는 실행되지 않았다. 따라서 `keep-stub-only`를 유지한다.
 - C7 관측: fixed seat responsibility로 local request prompt와 opening output이 각각 3개로 분리됐지만 research opening이 `invalid-claim`으로 실패했다. rebuttal·synthesis는 dependency-blocked였으므로 exact target qualification은 0/3이고 `keep-stub-only`를 유지한다.
 - C8 관측: C7 research failure를 content-free `claim-seat`로 재현했고, literal enum·evidence contract로 opening 3/3과 rebuttal target 3/3을 통과했다. implementation rebuttal의 `missing-field` 때문에 전체 contract는 5/7에 그쳤고 synthesis는 실행하지 않아 `keep-stub-only`를 유지한다.
+- C9 관측: phase-specific v3 claim contract로 opening 3/3, rebuttal 3/3, exact target 3/3과 actual chair synthesis 호출까지 진행했지만 synthesis가 content-free `provider:unknown`으로 실패해 manifest validation은 통과하지 못했다. 따라서 `keep-stub-only`를 유지한다.
 - 보류: dynamic persona, concurrent dispatch, external research adapter, AirLLM은 각각 bounded role·permission, ordering·retry·resource, network·license·retention authority, model-weight license·egress·runtime envelope 증적을 확보한 뒤 다시 검토한다.
 - 경계: external provider call, model download, 새 dependency, public contract 변경은 없으며 F1.3 actual private-data evaluation과 training activation, production readiness claim은 별도 승인 전까지 보류한다.
