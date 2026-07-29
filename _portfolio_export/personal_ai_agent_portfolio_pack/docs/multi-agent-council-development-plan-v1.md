@@ -632,6 +632,16 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - promotion, activation, training, actual user data, production claim, external provider, API cost는 false 또는
   zero이며, C6–C9 raw file SHA-256 binding과 content-free evidence smoke를 통과했다.
 
+### C11 — Rebuttal stability and chair reachability shadow
+
+- status: `completed-keep-stub-only`; deterministic validation and the single authorized actual local observation are complete.
+- opt-in `seat-scoped-v5` only: specialist outputs require full fixed claim ids, exact top-level/statement/claim keys, non-empty allowed evidence, exact target rotation, enum values, and identical top-level/statement `nextAction`. Runtime does not rewrite claim ids or fill `nextAction`.
+- C11 local parsing rejects prose, code fences, malformed JSON, repair/salvage, and duplicate JSON keys. C11 requests use one attempt and zero retry; the first authoritative failure blocks every remaining stage without a provider call.
+- deterministic fake-provider covers 7/7 pass, missing severity, invalid enum, target/evidence foreign/missing/duplicate cases, extra key, duplicate JSON key, malformed JSON, provider failure, chair shape, synthesis semantic, and manifest failures. Post-provider failures retain only content-free hash and metrics.
+- the single loopback `qwen2.5:3b` observation stopped at the research opening with `structured-output`; the remaining six stages, including chair, were `dependency-blocked`. The failing call preserved output hash, prompt hash, token counts, duration, attempt 1, and retry 0 without raw content.
+- the exact missing or malformed field remains `insufficient-observation`; the result is not repaired or inferred. C11 fixture and artifact smokes freeze C6–C10 artifact id/integrity/decision/file SHA-256 and continue to require `keep-stub-only`.
+- runtime activation, promotion, training, actual-user-data, external provider, API cost, deployment, and production authority remain false or zero.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.

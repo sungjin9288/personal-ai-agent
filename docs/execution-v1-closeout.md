@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-29T03:41:13.400Z
-- branch: codex/council-chair-synthesis-contract-shadow
-- commit: 8a42a749876cc3d504c37fbcbd196ee52834a2b4
+- generatedAt: 2026-07-29T05:09:31.130Z
+- branch: codex/council-rebuttal-stability-chair-reachability-shadow
+- commit: 40740effe0d396257a6b04473f7438d78a023fc1
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

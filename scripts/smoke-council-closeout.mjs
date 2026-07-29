@@ -59,6 +59,14 @@ assert.match(plan, /C6 — Local provider shadow qualification[\s\S]*status: com
 assert.match(plan, /C7 — Seat-scoped prompt contract shadow[\s\S]*status: completed/);
 assert.match(plan, /C8 — Claim contract robustness shadow[\s\S]*status: completed/);
 assert.match(plan, /C9 — Rebuttal contract completion and synthesis shadow[\s\S]*status: completed/);
+assert.match(
+  plan,
+  /C10 — Chair synthesis exact-contract shadow[\s\S]*status: implementation and one unretried local observation complete; promotion remains denied\./,
+);
+assert.match(
+  plan,
+  /C11 — Rebuttal stability and chair reachability shadow[\s\S]*status: `completed-keep-stub-only`/,
+);
 assert.match(plan, /`knowledge-triad`를 default profile로 유지/);
 assert.match(plan, /`knowledge-council-triad`는 opt-in experiment로 유지/);
 assert.match(plan, /dynamic persona[\s\S]*concurrent dispatch[\s\S]*external research adapter[\s\S]*AirLLM/);
@@ -88,7 +96,7 @@ assert.equal(localShadowArtifact.externalProviderCallCount, 0);
 
 assert.match(
   manifest,
-  /New feature development: yes, F1\.13 private lanes[\s\S]*Council C6–C9 add only content-free local shadow observations and fail-closed contract checks\./,
+  /New feature development: yes, F1\.13 private lanes[\s\S]*Council C6–C10 add only content-free local shadow observations and fail-closed contract checks\.[\s\S]*Council C11 adds strict rebuttal-stability and chair-reachability observation under the same fail-closed boundary\./,
 );
 
 for (const artifactPath of [
@@ -96,6 +104,8 @@ for (const artifactPath of [
   'evidence/output-artifacts/local-council-seat-contract-shadow.json',
   'evidence/output-artifacts/local-council-claim-contract-robustness.json',
   'evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json',
+  'evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json',
+  'evidence/output-artifacts/local-council-rebuttal-stability-shadow.json',
 ]) {
   assert.ok(manifest.includes(`- \`${artifactPath}\``), `manifest missing Council artifact ${artifactPath}`);
 }
