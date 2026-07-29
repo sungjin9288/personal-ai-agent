@@ -56,6 +56,7 @@ assert.match(plan, /^# Multi-Agent Council Development Plan v1\n\n- status: comp
 assert.match(plan, /C4 — Research evidence enrichment[\s\S]*status: completed and merged/);
 assert.match(plan, /C5 — Closeout and promotion decision[\s\S]*status: completed/);
 assert.match(plan, /C6 — Local provider shadow qualification[\s\S]*status: completed/);
+assert.match(plan, /C7 — Seat-scoped prompt contract shadow[\s\S]*status: completed/);
 assert.match(plan, /C8 — Claim contract robustness shadow[\s\S]*status: completed/);
 assert.match(plan, /C9 — Rebuttal contract completion and synthesis shadow[\s\S]*status: completed/);
 assert.match(plan, /`knowledge-triad`를 default profile로 유지/);
@@ -84,6 +85,22 @@ assert.equal(localShadowArtifact.defaultProfilePromotionAuthorized, false);
 assert.equal(localShadowArtifact.runtimeActivation, false);
 assert.equal(localShadowArtifact.apiCostUsd, 0);
 assert.equal(localShadowArtifact.externalProviderCallCount, 0);
+
+assert.match(
+  manifest,
+  /New feature development: yes, F1\.13 private lanes[\s\S]*Council C6–C9 add only content-free local shadow observations and fail-closed contract checks\./,
+);
+
+for (const artifactPath of [
+  'evidence/output-artifacts/local-council-provider-shadow.json',
+  'evidence/output-artifacts/local-council-seat-contract-shadow.json',
+  'evidence/output-artifacts/local-council-claim-contract-robustness.json',
+  'evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json',
+]) {
+  assert.ok(manifest.includes(`- \`${artifactPath}\``), `manifest missing Council artifact ${artifactPath}`);
+}
+
+assert.match(manifest, /Council C7 seat-scoped prompt contract shadow/);
 
 assert.match(references, /C5 closeout/);
 assert.match(references, /C6 local observation/);

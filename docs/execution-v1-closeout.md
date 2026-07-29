@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-29T00:10:51.424Z
-- branch: codex/council-rebuttal-synthesis-shadow
-- commit: 305d88c4680d4bae25d76f6153e886768552d6af
+- generatedAt: 2026-07-29T02:10:20.179Z
+- branch: codex/docs-evidence-freshness-closure
+- commit: d146be320d0a674930baf7613da082e8c091733f
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

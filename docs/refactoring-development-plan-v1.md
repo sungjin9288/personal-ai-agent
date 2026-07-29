@@ -11,9 +11,9 @@
 
 개발 작업은 코드만으로 끝낼 수 있는 항목과 외부 계정·승인·운영 환경 증적이 필요한 항목을 분리한다. 외부 증거가 없는 기능은 구현 여부와 검증 여부를 구분해 기록한다.
 
-## 2. 현재 기준선
+## 2. D4 시작 기준선 (historical)
 
-| 항목 | 현재 측정값 | 측정 방법 |
+| 항목 | D4 시작 측정값 | 측정 방법 |
 |---|---:|---|
 | `mission-service.mjs` | 433줄 | `wc -l src/core/mission-service.mjs` |
 | `mission-read-service.mjs` | 3,765줄 | `wc -l src/core/mission-read-service.mjs` |
@@ -21,6 +21,21 @@
 | `server.mjs` | 2,560줄 | `wc -l src/web/server.mjs` |
 | 단위 테스트 | 811개 통과 | `npm test` |
 | 문서 게이트 | 33개 통과 | `npm run smoke:docs-gates` |
+
+위 수치는 D4 시작 커밋의 historical baseline이며 현재 상태를 뜻하지 않는다.
+
+### 현재 스냅샷 (2026-07-29, post-C9)
+
+| 항목 | 현재 측정값 | 측정 방법 |
+|---|---:|---|
+| `mission-service.mjs` | 509줄 | `wc -l src/core/mission-service.mjs` |
+| `mission-read-service.mjs` | 3,853줄 | `wc -l src/core/mission-read-service.mjs` |
+| `app.js` | 9,304줄 | `wc -l src/web/public/app.js` |
+| `server.mjs` | 2,660줄 | `wc -l src/web/server.mjs` |
+| `createMissionService` 공개 facade | 86개 | return facade key를 Node로 추출 |
+| 단위 테스트 | 1,781개 통과, 1개 skip | `npm test` |
+| 문서 게이트 | 46개 통과 | `npm run smoke:docs-gates` |
+| deterministic smoke | 278/278 통과 | `npm run smoke:all` |
 
 2026-06-30 점검 이후 attachment, retrieval artifact, provider telemetry, escalation, maintenance, learning promotion, frontend copy/navigation/state, web path guard와 API route table의 1차 분리는 완료되었다. 이 계획은 완료된 작업을 반복하지 않고 남은 경계만 다룬다.
 
@@ -92,7 +107,7 @@
 | D4.4b Specialist·reviewer | 완료 | specialist remediation·reminder와 reviewer follow-up resolution을 한 service로 이동 |
 | D4.4c Action maintenance | 완료 | action inbox read aggregation과 overdue·maintenance orchestration을 분리 |
 | D4.5 Mission run·catalog | 완료 | mission stage·approval closeout과 workspace·mission·attachment CRUD를 분리 |
-| D4.6 Composition closeout | 완료 | mission service를 dependency composition과 77개 공개 facade 위임으로 축소 |
+| D4.6 Composition closeout | 완료 | mission service를 dependency composition과 D4.6 시작 시점의 77개 공개 facade 위임으로 축소 |
 
 R1 완료 검증:
 
@@ -812,7 +827,7 @@ D3에서 분리한 순수 계산과 read model을 그대로 사용하면서, `mi
 
 #### D4.6 Composition closeout — 완료
 
-- `mission-service.mjs`는 filesystem, store, clock, harness, provider registry와 도메인 service 생성 순서를 한 곳에서 조립하고 기존 77개 공개 method를 같은 순서로 위임한다.
+- `mission-service.mjs`는 filesystem, store, clock, harness, provider registry와 도메인 service 생성 순서를 한 곳에서 조립하고 D4.6 시작 시점의 77개 공개 method를 같은 순서로 위임한다.
 - `mission-read-service.mjs`는 channel, summary, harness, maintenance, inbox, overview, orchestration, timeline, audit, session read model을 소유한다.
 - gateway event는 저장 후 session source context를 갱신하고, learning candidate는 store 갱신 후 artifact를 덮어쓰는 기존 effect ordering을 독립 coordinator unit test로 고정했다.
 - mission run은 memory·attachment retrieval context와 parallel group state를 소유하고, provider runtime은 fallback timeline·summary를 소유해 read service와의 순환 의존을 만들지 않았다.

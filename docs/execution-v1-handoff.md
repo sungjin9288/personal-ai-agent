@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-29T00:10:59.118Z
+- generatedAt: 2026-07-29T02:10:28.710Z
 - localDate: 2026-07-29
-- branch: codex/council-rebuttal-synthesis-shadow
-- commit: 305d88c4680d4bae25d76f6153e886768552d6af
+- branch: codex/docs-evidence-freshness-closure
+- commit: d146be320d0a674930baf7613da082e8c091733f
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/305d88c4680d4bae25d76f6153e886768552d6af](releases/execution-v1/305d88c4680d4bae25d76f6153e886768552d6af)
-- visualArtifactSetSha256: aea30423b781846495dee2ba7b4f46308dd838932694505cb7773a64e31138cd
-- commitPushStatus: not pushed, origin/codex/council-rebuttal-synthesis-shadow not found
+- immutableSnapshot: [releases/execution-v1/d146be320d0a674930baf7613da082e8c091733f](releases/execution-v1/d146be320d0a674930baf7613da082e8c091733f)
+- visualArtifactSetSha256: 03c083973999aa452595b382d2bad21918b1f082d7238698dba3fcd4190cccd1
+- commitPushStatus: not pushed, origin/codex/docs-evidence-freshness-closure not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=55.6s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=58.8s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: aea30423b781846495dee2ba7b4f46308dd838932694505cb7773a64e31138cd
+- visual artifact set: 03c083973999aa452595b382d2bad21918b1f082d7238698dba3fcd4190cccd1
 
 ## Live Provider Handoff
 
