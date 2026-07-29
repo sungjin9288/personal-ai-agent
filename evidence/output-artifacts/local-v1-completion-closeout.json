@@ -1,0 +1,110 @@
+{
+  "activity": {
+    "apiCostUsd": 0,
+    "c13RerunCount": 0,
+    "closeoutModelExecutionCount": 0,
+    "externalProviderCallCount": 0,
+    "modelDownloadCount": 0
+  },
+  "authority": {
+    "actualUserData": false,
+    "defaultProfilePromotion": false,
+    "deployment": false,
+    "productionReadyClaim": false,
+    "runtimeActivation": false,
+    "training": false
+  },
+  "c13": {
+    "actualModelCompatibility": "actual-incompatible",
+    "attemptFileSha256": "49c042a1ca25f23755f986cb60aa61f5ec2fce1b3dee7bfeb721d01ecfe6dfc1",
+    "chairReachability": "not-reached",
+    "decision": "keep-stub-only",
+    "defaultProfile": "knowledge-triad",
+    "failureKind": "council-contract:invalid-output",
+    "failureStage": "structured-output",
+    "finalFileSha256": "7c480599c955b113e801731d085e47074fc05d81adcac5c085383047436e1beb",
+    "localProviderRequestCount": 1,
+    "observationAttemptCount": 1,
+    "retryCount": 0
+  },
+  "deliveryStatus": {
+    "council": "completed-keep-stub-only",
+    "d4": "completed",
+    "fineTuningProtocols": "completed-private-authority-deferred",
+    "localRag": "completed-default-path-unchanged"
+  },
+  "externalBlockerIds": [
+    "anthropic-billing-live-validation",
+    "hermes-target-provider-architecture-live-validation",
+    "target-local-provider-architecture",
+    "public-or-private-walkthrough-url",
+    "actual-pilot-feedback-and-metrics",
+    "hosted-saas-or-production-deployment"
+  ],
+  "implementationCommit": "bb67e79641f737656e2b62f9256fc7002c584e40",
+  "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v1",
+  "sourceDocumentSha256": {
+    "README.md": "a22c4fe26ceb85aca0417f7dc588418c18580f2d1c38d7792a80870948f21bc5",
+    "docs/refactoring-development-plan-v1.md": "e90e4814d8b140ba429e1d798cde55fe800e761de2f271f3a24b33cb90429dbf",
+    "docs/ml-rag-development-plan-v1.md": "ab101a982d2753ed99840e0cc73af7397bb3babef71a26d0e7883f5221eb9ac9",
+    "docs/multi-agent-council-development-plan-v1.md": "a332c36e667aa254ce8bd18463c5c68c906cc2685006a36982951908ad5f5167",
+    "docs/external-evidence-blockers-v1.md": "1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a",
+    "docs/roadmap.md": "660a57a4b05bb84ba8ab91558a83aa277a77a1ed4c8726495e72c04aa4183124",
+    "docs/product-plan-v1.md": "1b6443d3fed754c3e737171fd0e8c0c155e8ca9fd9437e82da81067e7e38039b",
+    "docs/local-v1-completion-closeout-v1.md": "d2446625cf22f3fca103d8896dbdc136c740d7884dd7aef9122e83cbbfbd3137",
+    "docs/smoke-validation-summary-v1.md": "a7c344f8d137d1d66780f471181dca4555bc010bdd77c294ed4eaab87aafcc7b",
+    "evidence/evidence_manifest.md": "8c18621ab68c542dd60d487ef19008ab0a1039096ac5be302e504a046c895ecb"
+  },
+  "status": "local-v1-complete-external-evidence-open",
+  "verification": {
+    "checks": [
+      {
+        "failed": 0,
+        "id": "unit-tests",
+        "passed": 1820,
+        "skipped": 1,
+        "status": "passed"
+      },
+      {
+        "failed": 0,
+        "id": "docs-gates",
+        "passed": 51,
+        "skipped": 0,
+        "status": "passed"
+      },
+      {
+        "failed": 0,
+        "id": "smoke-all",
+        "passed": 284,
+        "skipped": 0,
+        "status": "passed"
+      },
+      {
+        "failed": 0,
+        "id": "release-artifact-hygiene",
+        "passed": 1,
+        "skipped": 0,
+        "status": "passed"
+      },
+      {
+        "failed": 0,
+        "id": "artifact-sync-current",
+        "passed": 1,
+        "skipped": 0,
+        "status": "passed"
+      },
+      {
+        "failed": 0,
+        "id": "git-diff-check",
+        "passed": 1,
+        "skipped": 0,
+        "status": "passed"
+      }
+    ],
+    "reportSha256": "2064e67f2da7a162a7332ba9d26588bbc0a8d351f641d8222b79d02bd72af72f",
+    "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v1",
+    "status": "passed"
+  },
+  "id": "local-v1-completion-closeout-dbf9831f85f523b9665cd75143d3072fb2b00a12d74f4c3a481ea545ac3cef3a",
+  "integrityHash": "dbf9831f85f523b9665cd75143d3072fb2b00a12d74f4c3a481ea545ac3cef3a"
+}

@@ -69,6 +69,17 @@ const evidenceBody = fs.readFileSync(evidencePath, 'utf8');
 const branch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
 const commit = runGit(['rev-parse', 'HEAD']);
 const generatedAt = new Date().toISOString();
+const boundImplementationCommit = extractBulletValue(evidenceBody, 'boundImplementationCommit') || commit;
+const deterministicEvidenceStatus = extractBulletValue(evidenceBody, 'deterministicEvidenceStatus') || 'legacy-unqualified';
+const deterministicEvidenceSourceGeneratedAt = extractBulletValue(evidenceBody, 'deterministicEvidenceSourceGeneratedAt');
+const deterministicEvidenceSourceCommit = extractBulletValue(evidenceBody, 'deterministicEvidenceSourceCommit');
+const deterministicEvidenceReuseReason = extractBulletValue(evidenceBody, 'deterministicEvidenceReuseReason');
+if (
+  deterministicEvidenceStatus === 'reused-existing-not-rerun' &&
+  (!deterministicEvidenceSourceGeneratedAt || !deterministicEvidenceSourceCommit || !deterministicEvidenceReuseReason)
+) {
+  throw new Error('Reused deterministic execution evidence must retain source commit, generatedAt, and reuse reason.');
+}
 const liveValidationMode = extractBulletValue(evidenceBody, 'liveValidationMode') || 'legacy-unqualified';
 const archivedLiveValidationSourceGeneratedAt = extractBulletValue(evidenceBody, 'archivedLiveValidationSourceGeneratedAt');
 const archivedLiveValidationSourceCommit = extractBulletValue(evidenceBody, 'archivedLiveValidationSourceCommit');
@@ -84,6 +95,9 @@ const deterministicPassed = /smoke:execution-flow: passed/.test(evidenceBody)
   && /smoke:ui-execution-console: passed/.test(evidenceBody)
   && /smoke:ui-execution-browser-e2e: passed/.test(evidenceBody);
 const browserE2EPassed = /smoke:ui-execution-browser-e2e: passed/.test(evidenceBody);
+const browserE2EStatus = deterministicEvidenceStatus === 'reused-existing-not-rerun'
+  ? 'reused-existing-not-rerun'
+  : browserE2EPassed ? 'ready' : 'not verified';
 const referenceAdoptionsPassed = /smoke:reference-adoptions: passed/.test(evidenceBody);
 const deterministicRuntimeSummaryReady = [
   'smoke:execution-flow',
@@ -156,7 +170,18 @@ const lines = [
   `- generatedAt: ${generatedAt}`,
   `- branch: ${branch}`,
   `- commit: ${commit}`,
+  `- boundImplementationCommit: ${boundImplementationCommit}`,
   `- evidence: [${path.basename(evidencePath)}](${formatMarkdownLinkTarget(evidencePath, checklistPath)})`,
+  `- deterministicEvidenceStatus: ${deterministicEvidenceStatus}`,
+  ...(deterministicEvidenceSourceGeneratedAt
+    ? [`- deterministicEvidenceSourceGeneratedAt: ${deterministicEvidenceSourceGeneratedAt}`]
+    : []),
+  ...(deterministicEvidenceSourceCommit
+    ? [`- deterministicEvidenceSourceCommit: ${deterministicEvidenceSourceCommit}`]
+    : []),
+  ...(deterministicEvidenceReuseReason
+    ? [`- deterministicEvidenceReuseReason: ${deterministicEvidenceReuseReason}`]
+    : []),
   `- liveValidationMode: ${liveValidationMode}`,
   ...(archivedLiveValidationSourceGeneratedAt
     ? [`- archivedLiveValidationSourceGeneratedAt: ${archivedLiveValidationSourceGeneratedAt}`]
@@ -183,12 +208,13 @@ const lines = [
   `- [${liveAnthropicStatus.checked ? 'x' : ' '}] Anthropic live validation${formatArchivedProviderSuffix('anthropic')}`,
   `- [${liveLocalStatus.checked ? 'x' : ' '}] Local provider live validation${formatArchivedProviderSuffix('local')}`,
   `- [${liveHermesStatus.checked ? 'x' : ' '}] Hermes live validation${formatArchivedProviderSuffix('hermes')}`,
-  `- [${browserE2EPassed ? 'x' : ' '}] browser interaction E2E 자동화`,
+  `- [${browserE2EStatus === 'ready' ? 'x' : ' '}] browser interaction E2E 자동화${browserE2EStatus === 'reused-existing-not-rerun' ? ' (reused existing result; not rerun)' : ''}`,
   '',
   '## Current Status',
   '',
   `- live validation evidence mode: ${formatLiveValidationProvenance()}`,
   `- deterministic smoke: ${deterministicPassed ? 'ready' : 'blocked'}`,
+  `- deterministic evidence: ${formatDeterministicEvidenceProvenance()}`,
   `- reference adoption gate: ${referenceAdoptionsPassed ? 'ready' : 'not verified'}`,
   `- deterministic runtime summary: ${deterministicRuntimeSummaryReady ? 'ready' : 'not verified'}`,
   `- handoff generator: ${handoffGeneratorPassed ? 'ready' : 'not verified'}`,
@@ -197,7 +223,7 @@ const lines = [
   `- anthropic live validation: ${liveAnthropicStatus.label}`,
   `- local live validation: ${liveLocalStatus.label}`,
   `- hermes live validation: ${liveHermesStatus.label}`,
-  `- browser interaction e2e: ${browserE2EPassed ? 'ready' : 'not verified'}`,
+  `- browser interaction e2e: ${browserE2EStatus}`,
   '',
   '## Recommended Next Action',
   '',
@@ -442,6 +468,13 @@ function formatLiveValidationProvenance() {
     return liveValidationMode;
   }
   return `${liveValidationMode}; providers=${[...archivedLiveValidationProviders].join(', ') || 'none'}; sourceCommit=${archivedLiveValidationSourceCommit || 'unknown'}; sourceGeneratedAt=${archivedLiveValidationSourceGeneratedAt || 'unknown'}`;
+}
+
+function formatDeterministicEvidenceProvenance() {
+  if (deterministicEvidenceStatus !== 'reused-existing-not-rerun') {
+    return deterministicEvidenceStatus;
+  }
+  return `${deterministicEvidenceStatus}; sourceCommit=${deterministicEvidenceSourceCommit}; sourceGeneratedAt=${deterministicEvidenceSourceGeneratedAt}; reason=${deterministicEvidenceReuseReason}`;
 }
 
 function formatArchivedProviderSuffix(provider) {

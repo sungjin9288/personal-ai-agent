@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Closed the repository-local no-cost v1 boundary as `local-v1-complete-external-evidence-open`. The deterministic closeout contract binds the implementation commit, current source-document hashes, measured verification results, C13 `actual-incompatible` / `keep-stub-only` history, and six external blockers while keeping all provider, model, training, actual-user-data, deployment, and production authority false.
 - Added the content-free C13 Council v6 actual compatibility observation for the installed loopback `qwen2.5:3b`. One exclusive owner-only receipt bound the only local request. The installed but unloaded model loaded on demand, then research opening failed at `structured-output` with `council-contract:invalid-output`; retry remained 0 and six later stages, including chair, were dependency-blocked. The result is `actual-incompatible` and remains `keep-stub-only` with no promotion, activation, training, actual-user-data, external-provider, API-cost, deployment, or production authority.
 - Added the content-free C11 Council rebuttal-stability and chair-reachability shadow for the installed loopback `qwen2.5:3b`. The opt-in strict v5 contract rejects repair, supplementation, malformed or duplicate-key JSON, and retries. The single run stopped at the research opening `structured-output` failure, preserved content-free prompt/output hashes and token/duration metrics, and marked the remaining six stages dependency-blocked. C6–C10 bytes and `keep-stub-only` remain unchanged with no promotion, activation, training, actual-user-data, external-provider, API-cost, deployment, or production authority.
 - Added the content-free C10 Council chair-synthesis exact-contract shadow for the installed loopback `qwen2.5:3b`. The single unretried run preserved v3 specialist prompt bytes, passed all three openings, and recorded an implementation rebuttal `council-contract:missing-field` at the `structured-output` stage; verification rebuttal still ran, leaving 5/7 passed and chair synthesis dependency-blocked. C6–C9 artifact identities and file hashes remain bound, while `keep-stub-only`, false promotion, activation, training, actual-user-data and production claims, zero external calls, and zero API cost remain unchanged.
@@ -149,8 +150,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,517,754 bytes`
-- SHA-256: `9a7a5eb65e6a817b34969be49b46a6adcce6af18de6ab2f4831f98751c0d7156`
+- Size: `4,532,800 bytes`
+- SHA-256: `54de3382847fd03f16be175163c20817fc363abcfdd15645f7a5820f037f8948`
 
 Included public surfaces:
 

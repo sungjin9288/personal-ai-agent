@@ -160,6 +160,7 @@ function isReleaseArtifactSyncPath(filePath) {
     'docs/production-retention-operating-v1.md',
     'docs/production-slo-operating-v1.md',
     'docs/release-readiness-v1.md',
+    'evidence/output-artifacts/local-v1-completion-closeout.json',
     'portfolio_manifest.md',
   ].includes(relativePath)
     || relativePath.startsWith('_portfolio_export/personal_ai_agent_portfolio_pack/')

@@ -641,7 +641,12 @@ try {
   assert.equal(status.values['reference adoption gate'], 'ready');
   assert.equal(status.values['deterministic runtime summary'], 'ready');
   assert.equal(status.values['handoff generator'], 'ready');
-  assert.equal(status.values['browser interaction e2e'], 'ready');
+  assert.equal(
+    status.values['browser interaction e2e'],
+    status.values['deterministic evidence']?.startsWith('reused-existing-not-rerun')
+      ? 'reused-existing-not-rerun'
+      : 'ready',
+  );
   assert.equal(status.values['openai live validation'], 'passed');
   assert.match(status.values['anthropic live validation'], /^failed /);
   assert.equal(
@@ -782,6 +787,7 @@ function isReleaseArtifactSyncPath(filePath) {
     'evidence/cli-logs/representative-release-demo-replay.log',
     'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
     'evidence/output-artifacts/representative-release-demo-summary.json',
+    'evidence/output-artifacts/local-v1-completion-closeout.json',
     'evidence/screenshots/representative-release-demo-release-status.png',
     'portfolio_manifest.md',
   ].includes(relativePath)

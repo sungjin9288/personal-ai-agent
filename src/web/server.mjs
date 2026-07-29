@@ -92,6 +92,7 @@ const executionV1MutableArtifactPaths = new Set([
   'evidence/cli-logs/representative-release-demo-replay.log',
   'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
   'evidence/output-artifacts/representative-release-demo-summary.json',
+  'evidence/output-artifacts/local-v1-completion-closeout.json',
   'evidence/screenshots/representative-release-demo-release-status.png',
   'portfolio_manifest.md',
 ]);

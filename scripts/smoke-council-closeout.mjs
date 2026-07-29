@@ -91,7 +91,7 @@ for (const document of [checklist, gallery, manifest]) {
 for (const document of [roadmap, checklist, gallery, manifest]) {
   assert.match(
     document,
-    /Council C1–C9|Council C9 rebuttal contract completion and synthesis shadow|Council C8 claim contract robustness shadow/,
+    /Council C1–C13|Council C1–C9|Council C9 rebuttal contract completion and synthesis shadow|Council C8 claim contract robustness shadow/,
   );
   assert.match(document, /keep-stub-only/);
 }

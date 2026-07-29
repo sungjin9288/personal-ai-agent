@@ -1,10 +1,15 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-07-29T08:05:19.232Z
-- branch: codex/council-v6-actual-compatibility-observation
-- commit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
+- generatedAt: 2026-07-29T12:24:02.045Z
+- branch: codex/local-v1-completion-closeout
+- commit: bb67e79641f737656e2b62f9256fc7002c584e40
+- boundImplementationCommit: bb67e79641f737656e2b62f9256fc7002c584e40
 - mode: execution-v1-verification
 - liveFlags: none
+- deterministicEvidenceStatus: reused-existing-not-rerun
+- deterministicEvidenceSourceGeneratedAt: 2026-07-29T08:05:19.232Z
+- deterministicEvidenceSourceCommit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
+- deterministicEvidenceReuseReason: ui-http-unchanged-browser-excluded
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -76,7 +81,7 @@
 - available: 2
 - missing: 0
 - visualArtifactCount: 1
-- artifactSetSha256: 957b208928459c602fb2ff638c392b69e637efda21bf93b72e5fa28cbae5d2ce
+- artifactSetSha256: 3e0cb5253206b53bdc7eea2841cf9ada8cc4f3d454c839b03f340c994aebd7f9
 
 ## Archived Live Validation (not rerun in this refresh)
 
@@ -114,7 +119,7 @@
 
 ## Coverage and Remaining Gaps
 
-- browser interaction E2E: ready (Playwright CLI flow passed)
+- browser interaction E2E: reused existing result; not rerun (ui-http-unchanged-browser-excluded)
 - reference adoption gate: ready (aggregate smoke passed)
 - live provider 결과는 위 source commit에서 보존되었으며 이번 refresh에서 재실행되지 않음
 

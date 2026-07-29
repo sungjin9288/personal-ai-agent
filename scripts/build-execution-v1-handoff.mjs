@@ -51,6 +51,24 @@ const archivedLiveValidationSourceCommit = extractBulletValue(closeoutMarkdown, 
   || extractBulletValue(evidenceMarkdown, 'archivedLiveValidationSourceCommit');
 const archivedLiveValidationProviders = extractBulletValue(closeoutMarkdown, 'archivedLiveValidationProviders')
   || extractBulletValue(evidenceMarkdown, 'archivedLiveValidationProviders');
+const boundImplementationCommit = extractBulletValue(closeoutMarkdown, 'boundImplementationCommit')
+  || extractBulletValue(evidenceMarkdown, 'boundImplementationCommit')
+  || commit;
+const deterministicEvidenceStatus = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceStatus')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceStatus')
+  || 'legacy-unqualified';
+const deterministicEvidenceSourceGeneratedAt = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceSourceGeneratedAt')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceSourceGeneratedAt');
+const deterministicEvidenceSourceCommit = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceSourceCommit')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceSourceCommit');
+const deterministicEvidenceReuseReason = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceReuseReason')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceReuseReason');
+if (
+  deterministicEvidenceStatus === 'reused-existing-not-rerun' &&
+  (!deterministicEvidenceSourceGeneratedAt || !deterministicEvidenceSourceCommit || !deterministicEvidenceReuseReason)
+) {
+  throw new Error('Reused deterministic execution evidence must retain source commit, generatedAt, and reuse reason.');
+}
 const snapshotDir = path.join(snapshotsRoot, commit);
 const snapshotDisplayPath = fs.existsSync(snapshotDir)
   ? formatMarkdownLinkTarget(snapshotDir, outputPath)
@@ -117,11 +135,22 @@ const lines = [
   `- localDate: ${localDate}`,
   `- branch: ${branch}`,
   `- commit: ${commit}`,
+  `- boundImplementationCommit: ${boundImplementationCommit}`,
   `- evidence: [${path.basename(evidencePath)}](${formatMarkdownLinkTarget(evidencePath, outputPath)})`,
   `- closeout: [${path.basename(closeoutPath)}](${formatMarkdownLinkTarget(closeoutPath, outputPath)})`,
   `- immutableSnapshot: [${snapshotDisplayPath}](${snapshotDisplayPath})`,
   `- visualArtifactSetSha256: ${visualArtifactSetSha256}`,
   `- commitPushStatus: ${commitPushStatus.summary}`,
+  `- deterministicEvidenceStatus: ${deterministicEvidenceStatus}`,
+  ...(deterministicEvidenceSourceGeneratedAt
+    ? [`- deterministicEvidenceSourceGeneratedAt: ${deterministicEvidenceSourceGeneratedAt}`]
+    : []),
+  ...(deterministicEvidenceSourceCommit
+    ? [`- deterministicEvidenceSourceCommit: ${deterministicEvidenceSourceCommit}`]
+    : []),
+  ...(deterministicEvidenceReuseReason
+    ? [`- deterministicEvidenceReuseReason: ${deterministicEvidenceReuseReason}`]
+    : []),
   `- liveValidationMode: ${liveValidationMode}`,
   ...(archivedLiveValidationSourceGeneratedAt
     ? [`- archivedLiveValidationSourceGeneratedAt: ${archivedLiveValidationSourceGeneratedAt}`]
@@ -136,6 +165,7 @@ const lines = [
   '## Operational State',
   '',
   `- live validation evidence: ${formatLiveValidationProvenance()}`,
+  `- deterministic evidence: ${formatDeterministicEvidenceProvenance()}`,
   `- deterministic execution flow: ${statusMap.get('deterministic smoke') || 'not verified'}`,
   `- CLI execution contract: ${deterministicRows.includes('smoke:execution-cli: passed') ? 'ready' : 'not verified'}`,
   `- operator console execution contract: ${deterministicRows.includes('smoke:ui-execution-console: passed') ? 'ready' : 'not verified'}`,
@@ -304,7 +334,10 @@ function buildCompletionBoundary(providerStates) {
   const validationSummary = liveValidationMode === 'archived-preserved-not-rerun'
     ? `supported by archived ${formatProviderLabels(passedProviders)} live validation from ${archivedLiveValidationSourceCommit || 'an unknown source commit'} (${archivedLiveValidationSourceGeneratedAt || 'unknown generatedAt'}), not rerun in this refresh`
     : `validated by ${formatProviderLabels(passedProviders)}`;
-  return `Execution v1 is provider-scoped pilot ready for a bounded local-first path ${validationSummary}. It is not production-ready or live-provider-complete because ${formatSentenceList(blockers)}.`;
+  const deterministicSummary = deterministicEvidenceStatus === 'reused-existing-not-rerun'
+    ? ` Deterministic execution and browser results are reused from ${deterministicEvidenceSourceCommit} (${deterministicEvidenceSourceGeneratedAt}) and are not current execution evidence.`
+    : '';
+  return `Execution v1 is provider-scoped pilot ready for a bounded local-first path ${validationSummary}.${deterministicSummary} It is not production-ready or live-provider-complete because ${formatSentenceList(blockers)}.`;
 }
 
 function formatLiveValidationProvenance() {
@@ -312,6 +345,13 @@ function formatLiveValidationProvenance() {
     return liveValidationMode;
   }
   return `${liveValidationMode}; providers=${archivedLiveValidationProviders || 'none'}; sourceCommit=${archivedLiveValidationSourceCommit || 'unknown'}; sourceGeneratedAt=${archivedLiveValidationSourceGeneratedAt || 'unknown'}`;
+}
+
+function formatDeterministicEvidenceProvenance() {
+  if (deterministicEvidenceStatus !== 'reused-existing-not-rerun') {
+    return deterministicEvidenceStatus;
+  }
+  return `${deterministicEvidenceStatus}; sourceCommit=${deterministicEvidenceSourceCommit}; sourceGeneratedAt=${deterministicEvidenceSourceGeneratedAt}; reason=${deterministicEvidenceReuseReason}`;
 }
 
 function buildMissingProviderEvidenceStep(missingProviders) {

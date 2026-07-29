@@ -21,6 +21,8 @@ const handoffMarkdown = readRequiredFile(handoffPath);
 const evidenceCommit = extractBulletValue(evidenceMarkdown, 'commit');
 const closeoutCommit = extractBulletValue(closeoutMarkdown, 'commit');
 const handoffCommit = extractBulletValue(handoffMarkdown, 'commit');
+const deterministicEvidenceStatus = extractBulletValue(evidenceMarkdown, 'deterministicEvidenceStatus');
+const boundImplementationCommit = extractBulletValue(evidenceMarkdown, 'boundImplementationCommit');
 const verifiedCommit = closeoutCommit || evidenceCommit;
 const artifactSyncCommit = buildArtifactSyncCommit(currentCommit, verifiedCommit);
 const effectiveVerifiedCommit = artifactSyncCommit.detected ? artifactSyncCommit.verifiedCommit : currentCommit;
@@ -53,6 +55,8 @@ const snapshotCloseoutMarkdown = readRequiredFile(snapshotCloseoutPath);
 const snapshotHandoffMarkdown = readRequiredFile(snapshotHandoffPath);
 
 assert.equal(manifest.verifiedCommit, effectiveVerifiedCommit);
+assert.equal(manifest.boundImplementationCommit, boundImplementationCommit);
+assert.equal(manifest.deterministicEvidenceStatus, deterministicEvidenceStatus);
 assert.equal(manifest.snapshotDir, snapshotDirDisplayPath);
 assert.equal(manifest.sourceEvidencePath, formatDisplayPath(evidencePath));
 assert.equal(manifest.sourceCloseoutPath, formatDisplayPath(closeoutPath));
@@ -75,6 +79,12 @@ assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'visualArtifactSetSha25
 assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'liveValidationMode'), extractBulletValue(evidenceMarkdown, 'liveValidationMode'));
 assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'liveValidationMode'), extractBulletValue(closeoutMarkdown, 'liveValidationMode'));
 assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'liveValidationMode'), extractBulletValue(handoffMarkdown, 'liveValidationMode'));
+assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'boundImplementationCommit'), boundImplementationCommit);
+assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'boundImplementationCommit'), boundImplementationCommit);
+assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'boundImplementationCommit'), boundImplementationCommit);
+assert.equal(extractBulletValue(snapshotEvidenceMarkdown, 'deterministicEvidenceStatus'), deterministicEvidenceStatus);
+assert.equal(extractBulletValue(snapshotCloseoutMarkdown, 'deterministicEvidenceStatus'), deterministicEvidenceStatus);
+assert.equal(extractBulletValue(snapshotHandoffMarkdown, 'deterministicEvidenceStatus'), deterministicEvidenceStatus);
 assert.equal(
   extractBulletValue(snapshotEvidenceMarkdown, 'archivedLiveValidationSourceCommit'),
   extractBulletValue(evidenceMarkdown, 'archivedLiveValidationSourceCommit'),
@@ -126,7 +136,9 @@ assert.equal(deterministicLines.includes('smoke:production-readiness-gate: passe
 assertReferenceAdoptionAggregate(currentReferenceAdoptionLines, 'current evidence');
 assertReferenceAdoptionAggregate(snapshotReferenceAdoptionLines, 'snapshot evidence');
 assert.equal(
-  extractSectionBullets(snapshotCloseoutMarkdown, 'Current Status').includes('browser interaction e2e: ready'),
+  extractSectionBullets(snapshotCloseoutMarkdown, 'Current Status').includes(
+    `browser interaction e2e: ${deterministicEvidenceStatus === 'reused-existing-not-rerun' ? 'reused-existing-not-rerun' : 'ready'}`,
+  ),
   true,
 );
 assert.equal(
@@ -292,6 +304,7 @@ function isReleaseArtifactSyncPath(filePath) {
     'evidence/cli-logs/representative-release-demo-replay.log',
     'evidence/output-artifacts/representative-release-demo-browser-e2e.json',
     'evidence/output-artifacts/representative-release-demo-summary.json',
+    'evidence/output-artifacts/local-v1-completion-closeout.json',
     'evidence/screenshots/representative-release-demo-release-status.png',
     'portfolio_manifest.md',
   ].includes(relativePath)

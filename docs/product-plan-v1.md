@@ -1,8 +1,8 @@
 # Product Plan v1
 
-- status: draft-source-of-record
-- localDate: 2026-05-04
-- milestone: execution-v1 product planning completion
+- status: local-v1-complete-external-evidence-open
+- localDate: 2026-07-29
+- milestone: repository-local no-cost v1 completion
 - implementationBaseline: provider-scoped pilot ready for OpenAI-backed local-first path
 - relatedEvidence: [execution-v1-evidence.md](execution-v1-evidence.md), [execution-v1-closeout.md](execution-v1-closeout.md), [execution-v1-handoff.md](execution-v1-handoff.md)
 - relatedSecurity: [security-model-v1.md](security-model-v1.md)
@@ -14,6 +14,7 @@
 - relatedDemoScenarios: [demo-scenarios-v1.md](demo-scenarios-v1.md)
 - relatedIncidentSlo: [incident-slo-v1.md](incident-slo-v1.md)
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
+- relatedLocalV1CompletionCloseout: [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md)
 
 ## Product Thesis
 
@@ -250,7 +251,9 @@ Deferred models:
 - [x] Secret management gate implemented
 - [x] Observability telemetry gate implemented
 
-## Recommended Step Plan
+## External Authority Follow-up
+
+The repository-local v1 has no remaining implementation step in this list. Each item below starts only after its named external account, owner, target-environment, or deployment authority is supplied.
 
 1. Broaden live validation coverage beyond the archived OpenAI/local pilot proof.
    - run `npm run preflight:execution-v1:all`
@@ -287,4 +290,6 @@ Deferred models:
 
 The project should currently be described as `provider-scoped pilot ready for OpenAI-backed local-first path`.
 
-It should not yet be described as production-ready for other companies because Anthropic/Hermes validation, target local provider architecture evidence, enforced enterprise controls, and production-like deployment evidence are not complete.
+The repository-local no-cost v1 closeout is tracked separately in [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md). It does not expand provider, data, training, deployment, or production authority.
+
+It should not yet be described as production-ready for other companies because Anthropic/Hermes validation, target local provider architecture evidence, enforced enterprise controls, and production-like deployment evidence are not complete. The next work that can change those boundaries requires external authority and evidence: the six rows in [external-evidence-blockers-v1.md](external-evidence-blockers-v1.md), and separately an actual F1.3 owner/private-data decision before collection or training work.

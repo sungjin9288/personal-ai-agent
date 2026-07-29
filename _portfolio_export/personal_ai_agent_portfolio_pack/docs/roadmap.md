@@ -2,10 +2,10 @@
 
 ## 1. 현재 상태 요약
 
-- 현재 구현 완료: Node.js ESM CLI/web runtime, local JSON store, workspace/mission/session/artifact/approval model, provider registry/adapters, OpenAI-backed local-first pilot evidence, smoke scripts, GitHub Actions provider smoke
-- 개발 중: target provider operations, release blocker closure, hosted identity/session architecture, hosted tenant isolation, target secret manager, target observability/SLO, clean deployment evidence
-- 미구현: hosted production SaaS, full production multi-tenant isolation, production-ready all-provider deployment, public demo link
-- 검증 필요: Anthropic billing/credit blocker closure, Hermes live validation, target local provider architecture proof, actual pilot feedback and metrics
+- 현재 구현 완료: Node.js ESM CLI/web runtime, local JSON store, workspace/mission/session/artifact/approval model, provider registry/adapters, D4 service refactoring, local RAG fixture/shadow contracts, Council C1–C13 contracts and observations, smoke scripts, GitHub Actions provider smoke
+- 현재 closeout: `local-v1-complete-external-evidence-open`. Repository-local no-cost v1은 [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md)의 deterministic verification과 content-free artifact로 닫는다. C13은 `actual-incompatible`, `keep-stub-only`다. F1.3 request protocol은 완료됐고 실제 owner decision, private-data evaluation과 training authority는 보류한다.
+- 외부 증거 필요: Anthropic billing/credit과 live validation, Hermes target architecture/live validation, target local provider architecture, accessible walkthrough URL, actual pilot feedback/metrics, hosted SaaS or production deployment
+- 미구현 또는 미검증: hosted production SaaS, full production multi-tenant isolation, production-ready all-provider deployment, public demo link
 
 ## 2. Phase 1 - MVP 완성
 
@@ -93,11 +93,11 @@
 
 | 우선순위 | 작업 | 이유 | 예상 산출물 |
 |---|---|---|---|
-| 1 | 대표 demo scenario 재현 근거 확장 | 포트폴리오 설명의 중심 사례가 정해졌으므로 screenshot/CLI output 근거가 필요 | demo script, screenshot, CLI output |
-| 2 | README를 구현 완료/개발 중/미구현 기준으로 재구성 | 현재 README는 운영 로그가 길어 핵심 전달이 어렵다 | updated README |
-| 3 | 핵심 smoke command 최신 실행 결과 정리 | 구현 주장에 검증 근거를 붙이기 위함 | smoke summary |
-| 4 | Anthropic/Hermes validation blocker 정리 | multi-provider claim의 위험을 줄이기 위함 | provider readiness matrix |
-| 5 | Architecture walkthrough 작성 | 면접에서 코드 수준 설명을 강화 | architecture notes |
+| 1 | Local-first v1 completion artifact 동기화 | repository-local complete claim을 source hash와 deterministic verification에만 묶기 위함 | content-free closeout artifact, current manifest |
+| 2 | F1.3 request의 owner/private-data 승인 판단 | 완료된 deterministic protocol과 실제 private data authority를 분리하기 위함 | owner-only private decision 또는 explicit deferral |
+| 3 | Anthropic/Hermes/target local provider 증거 | provider adapter와 live readiness claim을 구분하기 위함 | target-boundary provider evidence |
+| 4 | Walkthrough URL와 pilot feedback 증거 | local replay와 외부 사용성·효과 claim을 구분하기 위함 | accessible URL, sanitized feedback evidence |
+| 5 | Hosted deployment evidence | local pilot preparation과 hosted production claim을 구분하기 위함 | deployment, identity, tenant, rollback, observability evidence |
 
 ## 7. 대표 demo 보조 증거 현황
 
@@ -171,7 +171,7 @@
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
 - 남은 polish: published private/public walkthrough URL, actual pilot feedback and metric evidence
 
-## 8. Council C1–C9 closeout
+## 8. Council C1–C13 closeout
 
 - 완료: fixed three-seat, two-round deterministic stub council과 read-only board, reviewer parity repair, bounded local retrieval provenance를 검증했다.
 - 결정: `knowledge-triad`를 default profile로 유지하고 `knowledge-council-triad`는 opt-in experiment로 유지한다.

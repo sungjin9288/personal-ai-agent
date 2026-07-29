@@ -74,6 +74,7 @@
 - `evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json`
 - `evidence/output-artifacts/local-council-v6-actual-compatibility-attempt.json`
 - `evidence/output-artifacts/local-council-v6-actual-compatibility-observation.json`
+- `evidence/output-artifacts/local-v1-completion-closeout.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache.json`
@@ -150,10 +151,11 @@
 - `docs/actual-user-query-evaluation-v1.md`
 - `docs/smoke-validation-summary-v1.md`
 - `docs/external-evidence-blockers-v1.md`
+- `docs/local-v1-completion-closeout-v1.md`
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 282/282 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 284/284 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -192,6 +194,8 @@
 - Council C10 chair synthesis exact-contract shadow: verified with `npm run smoke:local-council-chair-synthesis-contract-shadow`; one unretried loopback run preserved v3 specialist prompt bytes, passed all three openings, then recorded implementation rebuttal `council-contract:missing-field` at the `structured-output` stage. Verification rebuttal still ran, leaving 5/7 passed and chair dependency-blocked. C6·C7·C8·C9 raw artifact SHA-256 values remain bound and `decision: keep-stub-only`, false promotion·activation·training·actual-user-data·production claims, zero external calls, and zero API cost remain unchanged.
 - Council C11 rebuttal stability and chair reachability shadow: verified with `npm run smoke:local-council-rebuttal-stability-shadow`; strict v5 exact-shape, no-repair, no-supplement, retry-zero, first-failure-stop, canonical fixture/profile binding, and stage taxonomy checks pass. The one loopback observation stopped at research opening `structured-output`, preserved content-free prompt/output hashes and token/duration metrics, and marked six later stages dependency-blocked. C6–C10 raw artifact SHA-256 values, `decision: keep-stub-only`, false promotion·activation·training·actual-user-data·deployment·production claims, zero external calls, and zero API cost remain unchanged.
 - Council C12 strict prompt candidate qualification: verified with `npm run smoke:local-council-strict-prompt-candidate-qualification`; opt-in v6 passed the injected fake-provider 7-stage replay with retry 0. The canonical example and strict validator share runtime-derived values; malformed, prose, fence, duplicate-key, shape, enum, evidence, target, and `nextAction` drift fail closed and first failure blocks later calls. C6–C11 raw SHA-256 values, `keep-stub-only`, false authority, zero external calls, and zero API cost remain unchanged. This does not verify actual model compatibility or chair reachability.
+- Council C13 actual compatibility observation: verified with `npm run smoke:local-council-v6-actual-compatibility-observation`; one owner-authorized loopback `qwen2.5:3b` request, retry 0, stopped at research opening with `structured-output` / `council-contract:invalid-output`. The content-free receipt and observation bind C6–C12 integrity and prompt hashes, record `actual-incompatible` with `chairReachability: not-reached`, and retain `keep-stub-only` plus false promotion, activation, training, private-data, deployment, and production authority. No external provider, API cost, service start, preload, or model download occurred.
+- Local-first v1 completion closeout: verified by the deterministic completion smoke and `evidence/output-artifacts/local-v1-completion-closeout.json`; it binds repository-local D4, local RAG, F1 protocol, Council C1–C13, and external-blocker status without treating provider, actual-user-data, training, deployment, or production evidence as complete.
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
 - Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`
@@ -285,6 +289,7 @@
 - Actual user-query evaluation protocol: verified with `npm run smoke:actual-user-query-evaluation-readiness`; actual user data and quality remain unverified
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
+- External evidence remaining after local-v1 closeout: `anthropic-billing-live-validation`, `hermes-target-provider-architecture-live-validation`, `target-local-provider-architecture`, `public-or-private-walkthrough-url`, `actual-pilot-feedback-and-metrics`, and `hosted-saas-or-production-deployment`.
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure
