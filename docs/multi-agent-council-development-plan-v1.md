@@ -5,6 +5,7 @@
 - completedAt: 2026-07-28
 - repositoryBaseline: `83c5ce3f31f80f1971cf58b2065c1aff0fd1b58f`
 - closeoutBaseline: `ad6cf894dc0373f10d1cd3adf23de4a3d2e4ba2e`
+- localV1CompletionCloseout: [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md)
 - relatedBackbone: [orchestration-backbone-v1.md](orchestration-backbone-v1.md)
 - relatedReferences: [reference-repos.md](reference-repos.md)
 - productionReadyClaim: false

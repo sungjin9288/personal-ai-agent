@@ -34,6 +34,7 @@ const payload = JSON.parse(String(result.stdout || '{}'));
 assert.equal(payload.ok, true);
 assert.equal(payload.dryRun, true);
 assert.equal(payload.preserveArchivedLiveValidation, true);
+assert.equal(payload.reuseExistingDeterministic, false);
 assert.equal(payload.stepTimeoutMs, 12345);
 assert.deepEqual(payload.liveFlags, []);
 assert.deepEqual(
@@ -54,6 +55,7 @@ const evidenceStep = payload.steps.find((step) => step.name === 'evidence');
 assert.match(evidenceStep.command, /build-execution-v1-evidence\.mjs/);
 assert.equal(evidenceStep.timeoutMs, 12345);
 assert.match(evidenceStep.command, /--preserve-archived-live-validation/);
+assert.doesNotMatch(evidenceStep.command, /--reuse-existing-deterministic/);
 assert.doesNotMatch(evidenceStep.command, /--live-/);
 assert.equal(
   payload.steps.filter((step) => /archive-execution-v1-snapshot\.mjs/.test(step.command)).length,
@@ -77,8 +79,26 @@ const deterministicOnlyPayload = JSON.parse(String(deterministicOnlyResult.stdou
 const deterministicEvidenceStep = deterministicOnlyPayload.steps.find((step) => step.name === 'evidence');
 
 assert.equal(deterministicOnlyPayload.preserveArchivedLiveValidation, false);
+assert.equal(deterministicOnlyPayload.reuseExistingDeterministic, false);
 assert.deepEqual(deterministicOnlyPayload.liveFlags, []);
 assert.doesNotMatch(deterministicEvidenceStep.command, /--preserve-archived-live-validation/);
+assert.doesNotMatch(deterministicEvidenceStep.command, /--reuse-existing-deterministic/);
+
+const reuseResult = spawnSync(
+  process.execPath,
+  ['scripts/refresh-execution-v1-artifacts.mjs', '--dry-run', '--reuse-existing-deterministic'],
+  {
+    cwd: repoDir,
+    encoding: 'utf8',
+    env: process.env,
+  },
+);
+
+assert.equal(reuseResult.status, 0, reuseResult.stderr || reuseResult.stdout);
+const reusePayload = JSON.parse(String(reuseResult.stdout || '{}'));
+const reuseEvidenceStep = reusePayload.steps.find((step) => step.name === 'evidence');
+assert.equal(reusePayload.reuseExistingDeterministic, true);
+assert.match(reuseEvidenceStep.command, /--reuse-existing-deterministic/);
 assert.doesNotMatch(deterministicEvidenceStep.command, /--live-/);
 
 const explicitLiveResult = spawnSync(

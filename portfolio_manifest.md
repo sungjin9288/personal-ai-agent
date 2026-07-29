@@ -23,6 +23,12 @@
 - docs/project-card.md
 - docs/case-study.md
 - docs/resume-bullets.md
+- src/core/local-v1-completion-closeout.mjs
+- scripts/build-local-v1-completion-closeout.mjs
+- scripts/smoke-local-v1-completion-closeout.mjs
+- test/local-v1-completion-closeout.test.mjs
+- docs/local-v1-completion-closeout-v1.md
+- evidence/output-artifacts/local-v1-completion-closeout.json
 - src/core/local-council-strict-prompt-candidate-qualification.mjs
 - fixtures/local-council-strict-prompt-candidate-qualification-v1.json
 - scripts/build-local-council-strict-prompt-candidate-qualification.mjs

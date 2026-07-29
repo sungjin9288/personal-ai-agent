@@ -35,6 +35,7 @@ const GROUPS = {
     'smoke:local-council-rebuttal-stability-shadow',
     'smoke:local-council-strict-prompt-candidate-qualification',
     'smoke:local-council-v6-actual-compatibility-observation',
+    'smoke:local-v1-completion-closeout',
     'smoke:target-deployment-contract',
     'smoke:hosted-saas-architecture-decision',
     'smoke:hosted-identity-session-architecture',

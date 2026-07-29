@@ -5,6 +5,10 @@ import {
   buildLiveValidationEntries,
   readArchivedLiveValidationProvenance,
 } from './execution-v1-live-evidence-utils.mjs';
+import {
+  currentDeterministicProvenance,
+  readReusedDeterministicProvenance,
+} from './execution-v1-deterministic-evidence-utils.mjs';
 import { sanitizePortableMarkdown } from './live-validation-utils.mjs';
 
 const repoDir = process.cwd();
@@ -16,10 +20,14 @@ const reuseExistingDeterministic = process.argv.includes('--reuse-existing-deter
 const forwardedArgs = process.argv
   .slice(2)
   .filter((arg) => arg !== '--preserve-archived-live-validation' && arg !== '--reuse-existing-deterministic');
+const committedEvidenceMarkdown = readGitFileAtHead('docs/execution-v1-evidence.md');
 const archivedEvidenceMarkdowns = preserveArchivedLiveValidation
-  ? [readGitFileAtHead('docs/execution-v1-evidence.md'), readOptionalFile(outputPath)].filter(Boolean)
+  ? [committedEvidenceMarkdown, readOptionalFile(outputPath)].filter(Boolean)
   : [];
-const existingRawSummary = parseRawSummary(readOptionalFile(outputPath));
+const existingEvidenceMarkdown = readOptionalFile(outputPath);
+const existingRawSummary = parseRawSummary(
+  reuseExistingDeterministic ? committedEvidenceMarkdown : existingEvidenceMarkdown,
+);
 
 const verifyArgs = [
   verifyScriptPath,
@@ -42,6 +50,9 @@ const verification = buildVerificationSummary({
   reuseExistingDeterministic,
   verifyOutput: JSON.parse(String(verifyResult.stdout || '{}')),
 });
+const deterministicProvenance = reuseExistingDeterministic
+  ? readReusedDeterministicProvenance(committedEvidenceMarkdown)
+  : currentDeterministicProvenance();
 const visualManifestResult = buildVisualEvidenceManifest();
 const branch = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
 const commit = runGit(['rev-parse', 'HEAD']);
@@ -84,8 +95,19 @@ const lines = [
   `- generatedAt: ${generatedAt}`,
   `- branch: ${branch}`,
   `- commit: ${commit}`,
+  `- boundImplementationCommit: ${commit}`,
   `- mode: ${verification.mode}`,
   `- liveFlags: ${liveFlags.length ? liveFlags.join(', ') : 'none'}`,
+  `- deterministicEvidenceStatus: ${deterministicProvenance.deterministicEvidenceStatus}`,
+  ...(deterministicProvenance.deterministicEvidenceSourceGeneratedAt
+    ? [`- deterministicEvidenceSourceGeneratedAt: ${deterministicProvenance.deterministicEvidenceSourceGeneratedAt}`]
+    : []),
+  ...(deterministicProvenance.deterministicEvidenceSourceCommit
+    ? [`- deterministicEvidenceSourceCommit: ${deterministicProvenance.deterministicEvidenceSourceCommit}`]
+    : []),
+  ...(deterministicProvenance.deterministicEvidenceReuseReason
+    ? [`- deterministicEvidenceReuseReason: ${deterministicProvenance.deterministicEvidenceReuseReason}`]
+    : []),
   `- liveValidationMode: ${liveValidationMode}`,
   ...(hasArchivedLiveValidation
     ? [
@@ -178,7 +200,9 @@ lines.push(
   '',
   '## Coverage and Remaining Gaps',
   '',
-  `- browser interaction E2E: ${browserE2EPassed ? 'ready (Playwright CLI flow passed)' : 'not verified'}`,
+  deterministicProvenance.deterministicEvidenceStatus === 'reused-existing-not-rerun'
+    ? `- browser interaction E2E: reused existing result; not rerun (${deterministicProvenance.deterministicEvidenceReuseReason})`
+    : `- browser interaction E2E: ${browserE2EPassed ? 'ready (Playwright CLI flow passed)' : 'not verified'}`,
   `- reference adoption gate: ${referenceAdoptionsPassed ? 'ready (aggregate smoke passed)' : 'not verified'}`,
   hasArchivedLiveValidation
     ? '- live provider 결과는 위 source commit에서 보존되었으며 이번 refresh에서 재실행되지 않음'
@@ -205,6 +229,8 @@ console.log(
       branch,
       generatedAt,
       liveValidationMode,
+      ...deterministicProvenance,
+      boundImplementationCommit: commit,
       archivedLiveValidationSourceCommit: archivedLiveValidationSourceCommit || null,
       archivedLiveValidationSourceGeneratedAt: archivedLiveValidationSourceGeneratedAt || null,
       archivedLiveValidationProviders,

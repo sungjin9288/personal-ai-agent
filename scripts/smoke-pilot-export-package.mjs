@@ -112,7 +112,9 @@ const requiredPaths = [
   'docs/actual-user-query-evaluation-v1.md',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
+  'docs/local-v1-completion-closeout-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
+  'evidence/output-artifacts/local-v1-completion-closeout.json',
   'evidence/output-artifacts/local-embedding-model-qualification.json',
   'evidence/output-artifacts/local-retrieval-robustness.json',
   'evidence/output-artifacts/local-relevance-reranker-evaluation.json',
@@ -349,7 +351,7 @@ assert.match(memoryRetrievalQualityFixture, /npm run smoke:memory-retrieval-qual
 assert.match(mlRagDevelopmentPlan, /# ML, RAG, and Fine-tuning Development Plan v1/);
 assert.match(
   mlRagDevelopmentPlan,
-  /status: private-collection-gap-replan-shadow-current/,
+  /status: local-v1-protocol-complete-private-authority-deferred/,
 );
 assert.match(mlRagDevelopmentPlan, /productionReadyClaim: false/);
 assert.match(mlRagDevelopmentPlan, /costFreeDefault: true/);

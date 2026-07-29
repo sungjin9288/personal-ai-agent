@@ -24,7 +24,7 @@
 
 위 수치는 D4 시작 커밋의 historical baseline이며 현재 상태를 뜻하지 않는다.
 
-### 현재 스냅샷 (2026-07-29, post-C9)
+### Post-C9 historical snapshot (2026-07-29, superseded)
 
 | 항목 | 현재 측정값 | 측정 방법 |
 |---|---:|---|
@@ -36,6 +36,8 @@
 | 단위 테스트 | 1,781개 통과, 1개 skip | `npm test` |
 | 문서 게이트 | 46개 통과 | `npm run smoke:docs-gates` |
 | deterministic smoke | 278/278 통과 | `npm run smoke:all` |
+
+이 표는 C9 직후 측정한 historical snapshot이다. 현재 검증 결과는 [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md)와 SHA-bound completion artifact에 기록하며, 이 수치를 현재 결과로 재사용하지 않는다.
 
 2026-06-30 점검 이후 attachment, retrieval artifact, provider telemetry, escalation, maintenance, learning promotion, frontend copy/navigation/state, web path guard와 API route table의 1차 분리는 완료되었다. 이 계획은 완료된 작업을 반복하지 않고 남은 경계만 다룬다.
 

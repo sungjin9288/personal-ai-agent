@@ -34,7 +34,9 @@ const BASE_PACKAGE_FILES = [
   'docs/actual-user-query-evaluation-v1.md',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
+  'docs/local-v1-completion-closeout-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
+  'evidence/output-artifacts/local-v1-completion-closeout.json',
   'evidence/output-artifacts/local-embedding-model-qualification.json',
   'evidence/output-artifacts/local-retrieval-robustness.json',
   'evidence/output-artifacts/local-relevance-reranker-evaluation.json',
@@ -146,6 +148,25 @@ const generatedAt = new Date().toISOString();
 const evidence = readRequiredFile(path.join(repoDir, 'docs', 'execution-v1-evidence.md'));
 const closeout = readRequiredFile(path.join(repoDir, 'docs', 'execution-v1-closeout.md'));
 const verifiedCommit = extractBulletValue(closeout, 'commit') || extractBulletValue(evidence, 'commit');
+const boundImplementationCommit = extractBulletValue(closeout, 'boundImplementationCommit')
+  || extractBulletValue(evidence, 'boundImplementationCommit')
+  || verifiedCommit;
+const deterministicEvidenceStatus = extractBulletValue(closeout, 'deterministicEvidenceStatus')
+  || extractBulletValue(evidence, 'deterministicEvidenceStatus')
+  || 'legacy-unqualified';
+const deterministicEvidenceSourceGeneratedAt = extractBulletValue(closeout, 'deterministicEvidenceSourceGeneratedAt')
+  || extractBulletValue(evidence, 'deterministicEvidenceSourceGeneratedAt');
+const deterministicEvidenceSourceCommit = extractBulletValue(closeout, 'deterministicEvidenceSourceCommit')
+  || extractBulletValue(evidence, 'deterministicEvidenceSourceCommit');
+const deterministicEvidenceReuseReason = extractBulletValue(closeout, 'deterministicEvidenceReuseReason')
+  || extractBulletValue(evidence, 'deterministicEvidenceReuseReason');
+
+if (
+  deterministicEvidenceStatus === 'reused-existing-not-rerun' &&
+  (!deterministicEvidenceSourceGeneratedAt || !deterministicEvidenceSourceCommit || !deterministicEvidenceReuseReason)
+) {
+  throw new Error('Reused deterministic execution evidence must retain source commit, generatedAt, and reuse reason.');
+}
 
 if (!/^[0-9a-f]{40}$/i.test(verifiedCommit)) {
   throw new Error(`valid verified commit not found in execution-v1 artifacts: ${verifiedCommit || '<empty>'}`);
@@ -180,6 +201,11 @@ fs.writeFileSync(
     bundleSha256,
     fileEntries,
     generatedAt,
+    boundImplementationCommit,
+    deterministicEvidenceReuseReason,
+    deterministicEvidenceSourceCommit,
+    deterministicEvidenceSourceGeneratedAt,
+    deterministicEvidenceStatus,
     verifiedCommit,
   }),
   'utf8',
@@ -200,6 +226,7 @@ console.log(
       mode: 'pilot-export-package',
       ok: true,
       outputPath: path.relative(repoDir, outputPath),
+      deterministicEvidenceStatus,
       verifiedCommit,
     },
     null,
@@ -227,7 +254,17 @@ function buildFileEntry(relativePath) {
   };
 }
 
-function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit }) {
+function renderManifest({
+  boundImplementationCommit,
+  bundleSha256,
+  deterministicEvidenceReuseReason,
+  deterministicEvidenceSourceCommit,
+  deterministicEvidenceSourceGeneratedAt,
+  deterministicEvidenceStatus,
+  fileEntries,
+  generatedAt,
+  verifiedCommit,
+}) {
   const rows = fileEntries
     .map((entry) => `| \`${entry.path}\` | ${entry.bytes} | \`${entry.sha256}\` |`)
     .join('\n');
@@ -237,6 +274,12 @@ function renderManifest({ bundleSha256, fileEntries, generatedAt, verifiedCommit
 - status: dry-run-package-current
 - generatedAt: ${generatedAt}
 - verifiedCommit: ${verifiedCommit}
+- boundImplementationCommit: ${boundImplementationCommit}
+- deterministicEvidenceStatus: ${deterministicEvidenceStatus}
+${deterministicEvidenceSourceGeneratedAt ? `- deterministicEvidenceSourceGeneratedAt: ${deterministicEvidenceSourceGeneratedAt}
+` : ''}${deterministicEvidenceSourceCommit ? `- deterministicEvidenceSourceCommit: ${deterministicEvidenceSourceCommit}
+` : ''}${deterministicEvidenceReuseReason ? `- deterministicEvidenceReuseReason: ${deterministicEvidenceReuseReason}
+` : ''}- packageMode: manifest-only
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass

@@ -5,6 +5,7 @@ const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const skipEvidence = args.includes('--skip-evidence');
 const preserveArchivedLiveValidation = !args.includes('--no-preserve-archived-live-validation');
+const reuseExistingDeterministic = args.includes('--reuse-existing-deterministic');
 const explicitLiveFlags = args.filter((arg) => /^--live-(openai|anthropic|local|hermes)$/.test(arg));
 const refreshStepTimeoutMs = parsePositiveIntegerEnv(
   'PERSONAL_AI_AGENT_REFRESH_STEP_TIMEOUT_MS',
@@ -14,6 +15,7 @@ const refreshStepTimeoutMs = parsePositiveIntegerEnv(
 const steps = buildSteps({
   liveFlags: explicitLiveFlags,
   preserveArchivedLiveValidation,
+  reuseExistingDeterministic,
   skipEvidence,
 });
 
@@ -22,6 +24,7 @@ if (dryRun) {
     dryRun: true,
     ok: true,
     preserveArchivedLiveValidation,
+    reuseExistingDeterministic,
     skippedEvidenceRefresh: skipEvidence,
     stepTimeoutMs: refreshStepTimeoutMs,
     liveFlags: explicitLiveFlags,
@@ -43,13 +46,14 @@ printSummary({
   dryRun: false,
   ok: true,
   preserveArchivedLiveValidation,
+  reuseExistingDeterministic,
   skippedEvidenceRefresh: skipEvidence,
   stepTimeoutMs: refreshStepTimeoutMs,
   liveFlags: explicitLiveFlags,
   steps: results,
 });
 
-function buildSteps({ liveFlags, preserveArchivedLiveValidation, skipEvidence }) {
+function buildSteps({ liveFlags, preserveArchivedLiveValidation, reuseExistingDeterministic, skipEvidence }) {
   const output = [];
 
   if (!skipEvidence) {
@@ -57,6 +61,7 @@ function buildSteps({ liveFlags, preserveArchivedLiveValidation, skipEvidence })
       args: [
         'scripts/build-execution-v1-evidence.mjs',
         preserveArchivedLiveValidation ? '--preserve-archived-live-validation' : null,
+        reuseExistingDeterministic ? '--reuse-existing-deterministic' : null,
         ...liveFlags,
       ].filter(Boolean),
       name: 'evidence',

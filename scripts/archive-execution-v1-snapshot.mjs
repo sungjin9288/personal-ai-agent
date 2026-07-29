@@ -15,6 +15,25 @@ const handoffMarkdown = fs.existsSync(currentHandoffPath) ? fs.readFileSync(curr
 const evidenceCommit = extractBulletValue(evidenceMarkdown, 'commit');
 const closeoutCommit = extractBulletValue(closeoutMarkdown, 'commit');
 const verifiedCommit = closeoutCommit || evidenceCommit;
+const boundImplementationCommit = extractBulletValue(closeoutMarkdown, 'boundImplementationCommit')
+  || extractBulletValue(evidenceMarkdown, 'boundImplementationCommit')
+  || verifiedCommit;
+const deterministicEvidenceStatus = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceStatus')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceStatus')
+  || 'legacy-unqualified';
+const deterministicEvidenceSourceGeneratedAt = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceSourceGeneratedAt')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceSourceGeneratedAt');
+const deterministicEvidenceSourceCommit = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceSourceCommit')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceSourceCommit');
+const deterministicEvidenceReuseReason = extractBulletValue(closeoutMarkdown, 'deterministicEvidenceReuseReason')
+  || extractBulletValue(evidenceMarkdown, 'deterministicEvidenceReuseReason');
+
+if (
+  deterministicEvidenceStatus === 'reused-existing-not-rerun' &&
+  (!deterministicEvidenceSourceGeneratedAt || !deterministicEvidenceSourceCommit || !deterministicEvidenceReuseReason)
+) {
+  throw new Error('Reused deterministic execution evidence must retain source commit, generatedAt, and reuse reason.');
+}
 
 if (!verifiedCommit) {
   throw new Error('execution-v1 evidence/closeout에서 verified commit을 찾을 수 없습니다.');
@@ -77,6 +96,17 @@ fs.writeFileSync(
             snapshotHandoffPath: formatDisplayPath(snapshotHandoffPath),
           }
         : {}),
+      boundImplementationCommit,
+      deterministicEvidenceStatus,
+      ...(deterministicEvidenceSourceGeneratedAt
+        ? { deterministicEvidenceSourceGeneratedAt }
+        : {}),
+      ...(deterministicEvidenceSourceCommit
+        ? { deterministicEvidenceSourceCommit }
+        : {}),
+      ...(deterministicEvidenceReuseReason
+        ? { deterministicEvidenceReuseReason }
+        : {}),
       verifiedCommit,
     },
     null,
@@ -93,6 +123,8 @@ console.log(
       snapshotCloseoutPath,
       snapshotEvidencePath,
       ...(archivedHandoff ? { snapshotHandoffPath } : {}),
+      boundImplementationCommit,
+      deterministicEvidenceStatus,
       snapshotManifestPath,
       verifiedCommit,
     },
