@@ -3,14 +3,15 @@
 ## Summary
 
 - Project: Personal AI Agent
-- Generated at: 2026-07-23
+- Initial generated at: 2026-07-23
+- Last updated at: 2026-07-29
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, data sufficiency, reviewed-data planning, owner-role attestation intake, private collection execution through item lifecycle, content-free F1.12 review projection and F1.13 review resolution, bounded local training runtime, product permission surfaces, local toolchain and acquisition protocols, the fixture-only MLX-LM LoRA adapter contract, actual local answer-quality comparison, adversarial input boundaries, synthetic user-query intake, content-free local user-query evaluation, reviewer-action generalization, and the private actual-user evaluation protocol
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, and Council C6–C9 content-free local observations. Council evidence remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, provider, deployment, or production authority.
 - F1.25 private collection-gap replan shadow: trusted F1.24 authority is independently rebuilt before the F1.2 collection plan is recalculated in memory; projected 15 reviewed examples, 5 scopes, and 7 cases leave tracked F1.2 evidence, intake, collection, audit, training, provider, submission, deployment, and production boundaries unchanged or false
 - F1.24 private combined readiness impact shadow: one exact reconstructed F1.21 record and one exact F1.20 replay case are composed only in the deterministic in-memory projection; five sufficiency failures remain and all mutation, audit, training, provider, submission, deployment, and production boundaries remain false
 - F1.23 private answer-quality readiness impact shadow: final F1.20 replay lineage is revalidated and its frozen case is projected only in the deterministic in-memory suite; dataset/export digests and all training, provider, submission, deployment, and production boundaries remain unchanged or false
-- Source code modified: yes, the F1.13 review resolution protocol revalidates the current F1 chain, one live exact F1.10 item, and one canonical F1.12 projection, serializes with F1.11 lifecycle through the shared workspace lock, and writes one owner-only content-free decision/resolution bundle without changing public HTTP, store, audit, provider, or training authority contracts
-- New feature development: yes, both private lanes have synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; no actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, activation, or rollout is tracked or authorized
+- Source code modified: yes, current tracked changes include the F1.13 owner-only review-resolution protocol and Council C6–C9 local shadow contracts, fixtures, artifact writers, and deterministic smokes. They preserve public HTTP, store, audit, provider, training, promotion, activation, and production authority contracts.
+- New feature development: yes, F1.13 private lanes retain synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; Council C6–C9 add only content-free local shadow observations and fail-closed contract checks. No actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, promotion, activation, rollout, deployment, or production use is tracked or authorized.
 
 ## Generated Evidence Files
 
@@ -64,6 +65,10 @@
 - `evidence/output-artifacts/local-reranker-runtime-stability.json`
 - `evidence/output-artifacts/local-relevance-shadow-integration.json`
 - `evidence/output-artifacts/council-quality-comparison.json`
+- `evidence/output-artifacts/local-council-provider-shadow.json`
+- `evidence/output-artifacts/local-council-seat-contract-shadow.json`
+- `evidence/output-artifacts/local-council-claim-contract-robustness.json`
+- `evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache.json`
@@ -143,7 +148,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 237/237 passed with `npm run smoke:all` on 2026-07-22; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 278/278 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -176,6 +181,7 @@
 - Council research evidence enrichment: verified with `npm run smoke:council-stub-runtime`; existing manager and planner retrieval artifacts become bounded content-free council citations, gap and degraded lineage remain non-citable, exact source timestamps stay private, and council rounds perform no retrieval
 - Council C1–C5 closeout: verified with `npm run smoke:council-closeout`; `knowledge-triad` remains default, council remains opt-in, and dynamic persona, concurrent dispatch, external research adapter, and AirLLM remain deferred without external calls, model downloads, private-data authority, or production claims
 - Council C6 local provider shadow qualification: verified with `npm run smoke:local-council-provider-shadow`; installed loopback `qwen2.5:3b` produced three valid but identical openings, failed all three rebuttals on exact target contract, left synthesis dependency-blocked, and retained `decision: keep-stub-only`, false activation, and false production claims without external calls, API cost, model download, actual user data, or F1.3 authority
+- Council C7 seat-scoped prompt contract shadow: verified with `npm run smoke:local-council-seat-contract-shadow`; C6 artifact identity and decision are preserved while fixed research, implementation, and verification prompts produce three local request prompt hashes and three opening output hashes. Research opening failed `invalid-claim`, so rebuttal target match remained 0/3, synthesis stayed dependency-blocked, and `decision: keep-stub-only`, false promotion, activation, training, and production claims remained unchanged.
 - Council C8 claim contract robustness shadow: verified with `npm run smoke:local-council-claim-contract-robustness`; C6·C7 artifacts remain bound and unchanged, C7 research `invalid-claim` reproduced as content-free `claim-seat`, opening passed 3/3 and exact rebuttal targets matched 3/3, but one implementation rebuttal `missing-field` left the candidate at 5/7 and synthesis dependency-blocked, so `decision: keep-stub-only`, false promotion·activation·training·production claims, zero external calls, and zero API cost remain
 - Council C9 rebuttal contract completion and synthesis shadow: verified with `npm run smoke:local-council-rebuttal-synthesis-shadow`; C6·C7·C8 artifacts remain bound and unchanged, the C8 implementation rebuttal is content-free `claim-severity`, and one sequential v3 run passed opening 3/3, rebuttal 3/3, and exact targets 3/3 before the actual chair synthesis failed as `provider:unknown`; manifest validation therefore remained failed and `decision: keep-stub-only`, false promotion·activation·training·production claims, zero external calls, and zero API cost remain
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
