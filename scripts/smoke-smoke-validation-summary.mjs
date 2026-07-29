@@ -10,6 +10,7 @@ const roadmap = readRequiredFile('docs/roadmap.md');
 const evidenceGallery = readRequiredFile('docs/evidence-gallery.md');
 const evidenceManifest = readRequiredFile('evidence/evidence_manifest.md');
 const releaseReadiness = readRequiredFile('docs/release-readiness-v1.md');
+const smokeRunner = readRequiredFile('scripts/run-all-smokes.mjs');
 
 const expectedCommands = [
   'npm run package:pilot-export',
@@ -134,6 +135,21 @@ const expectedCommands = [
 
 assert.equal(packageJson.scripts['smoke:smoke-validation-summary'], 'node scripts/smoke-smoke-validation-summary.mjs');
 
+const fullSweep = parseLastFullSweep(doc);
+const excludedSmokeScripts = parseRunnerExclusions(smokeRunner);
+const runnableSmokeCount = Object.keys(packageJson.scripts)
+  .filter((name) => name.startsWith('smoke:'))
+  .filter((name) => !excludedSmokeScripts.has(name)).length;
+
+assert.equal(fullSweep.passed, runnableSmokeCount, 'lastFullSweep passed count must match the current runner inventory');
+assert.equal(fullSweep.total, runnableSmokeCount, 'lastFullSweep total must match the current runner inventory');
+assert.match(doc, new RegExp(`^- localDate: ${fullSweep.date}$`, 'm'), 'localDate must match lastFullSweep date');
+assertContains(
+  evidenceManifest,
+  `Full deterministic smoke sweep: ${fullSweep.passed}/${fullSweep.total} passed with \`npm run smoke:all\` on ${fullSweep.date}`,
+  'evidence manifest full sweep must match smoke validation summary',
+);
+
 for (const command of expectedCommands) {
   assertContains(doc, command, `smoke validation summary missing command ${command}`);
   assertContains(readme, command, `README missing public-readiness command ${command}`);
@@ -216,6 +232,7 @@ console.log(
   JSON.stringify(
     {
       commandCount: expectedCommands.length,
+      fullSweep,
       mode: 'smoke-validation-summary-smoke',
       ok: true,
       productionReadyClaim: false,
@@ -250,6 +267,24 @@ function extractCodeBlockAfterHeading(markdown, heading) {
   const match = afterHeading.match(/```bash\n([\s\S]*?)\n```/);
   assert.ok(match, `missing bash code block after ${heading}`);
   return match[1];
+}
+
+function parseLastFullSweep(markdown) {
+  const match = String(markdown || '').match(
+    /^- lastFullSweep: (\d+)\/(\d+) passed with `npm run smoke:all` on (\d{4}-\d{2}-\d{2})$/m,
+  );
+  assert.ok(match, 'lastFullSweep must include passed/total counts and an ISO date');
+  return {
+    passed: Number(match[1]),
+    total: Number(match[2]),
+    date: match[3],
+  };
+}
+
+function parseRunnerExclusions(runnerSource) {
+  const match = String(runnerSource || '').match(/const EXCLUDE_ALWAYS = new Set\(\[([\s\S]*?)\]\);/);
+  assert.ok(match, 'run-all-smokes.mjs must define EXCLUDE_ALWAYS');
+  return new Set([...match[1].matchAll(/'([^']+)'/g)].map((entry) => entry[1]));
 }
 
 function combinedText() {
