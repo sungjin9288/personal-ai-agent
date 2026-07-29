@@ -86,6 +86,7 @@ Representative demo evidence:
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
 - ML/RAG and fine-tuning development plan: [docs/ml-rag-development-plan-v1.md](docs/ml-rag-development-plan-v1.md)
+- Local-first v1 completion closeout: [docs/local-v1-completion-closeout-v1.md](docs/local-v1-completion-closeout-v1.md)
 - Actual user-query evaluation protocol: [docs/actual-user-query-evaluation-v1.md](docs/actual-user-query-evaluation-v1.md)
 - Smoke validation summary: [docs/smoke-validation-summary-v1.md](docs/smoke-validation-summary-v1.md)
 - External evidence blockers: [docs/external-evidence-blockers-v1.md](docs/external-evidence-blockers-v1.md)
@@ -102,6 +103,8 @@ Representative demo evidence:
 | Local-first CLI/web MVP | Implemented and smoke-tested |
 | OpenAI-backed local-first pilot | Supported inside the documented pilot boundary |
 | Local provider pilot proof | Archived for the configured local rehearsal boundary |
+| Council local compatibility | C13 recorded `actual-incompatible`; default remains `keep-stub-only` |
+| Local RAG answer shadows | Fixture and bounded-observation evidence only; default answer path remains unchanged |
 | Anthropic live validation | Blocked by provider account billing/credit evidence |
 | Hermes live validation | Blocked until target Hermes provider architecture/model evidence is supplied |
 | Hosted SaaS / production deployment | Not implemented; target evidence only |
@@ -400,6 +403,7 @@ npm run smoke:user-query-evaluation-intake
 npm run smoke:local-user-query-quality
 npm run smoke:local-answer-review-action-generalization
 npm run smoke:actual-user-query-evaluation-readiness
+npm run smoke:local-v1-completion-closeout
 npm run smoke:smoke-validation-summary
 npm run smoke:external-evidence-blockers
 npm run smoke:readme-portfolio-overview
@@ -573,6 +577,8 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - There is no public hosted demo URL. The current demo is the credential-free representative replay and evidence package.
 - The recorded walkthrough is currently a recording script and acceptance checklist, not a published video URL.
 - Customer usage metrics, cost reduction claims, and production SLA claims are intentionally not included because this repository does not contain supporting evidence for them.
+- Council C13 made one unretried local `qwen2.5:3b` compatibility observation and stopped at research opening with `council-contract:invalid-output`; the result is `actual-incompatible`, chair reachability is `not-reached`, and the default remains `keep-stub-only`. It grants no repair, promotion, activation, training, private-data, deployment, or production authority.
+- Local RAG answer-quality and evidence-gated shadows are fixture or bounded local-observation evidence. They do not activate the default answer path or establish actual-user quality, semantic attribution, independent review, training, or rollout authority.
 - The current fine-tuning packet is structurally reviewable but fails the cost-free data sufficiency gate: 4 accepted examples, a 3/1 train-validation split, 4 mission scopes, and 2 passing baseline cases. The initial 20/16/4, 10-scope, and 10-case policy is a development stop condition, not a model-quality or production-performance claim (`npm run smoke:fine-tuning-data-sufficiency`). Candidate review, training, provider submission, and rollout remain unauthorized.
 - The reviewed-data collection plan converts those deficits into one non-overlapping minimum of 16 additional reviewed examples, including 6 new mission scopes, plus 8 separate answer-quality baseline cases (`npm run smoke:fine-tuning-data-collection-plan`). It stores no training content, creates no synthetic records, and grants no collection, candidate-review, training, submission, or rollout authority.
 - The reviewed-data intake request binds that plan to a time-limited, content-free owner review packet with five explicit data-handling roles (`npm run smoke:fine-tuning-data-intake-request`). It records no owner decision or source data and grants no collection, candidate-review, training, submission, or rollout authority.

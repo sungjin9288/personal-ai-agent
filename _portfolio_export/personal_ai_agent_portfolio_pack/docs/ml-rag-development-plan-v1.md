@@ -1,10 +1,13 @@
 # ML, RAG, and Fine-tuning Development Plan v1
 
-- status: private-collection-gap-replan-shadow-current
+- status: local-v1-protocol-complete-private-authority-deferred
 - currentCostFreeMilestone: private-collection-gap-replan-shadow
+- localV1ProtocolStatus: complete
+- actualOwnerPrivateDataTrainingStatus: deferred
 - completedMilestones:
   - status: local-answer-input-boundary-current
 - productionReadyClaim: false
+- localV1CompletionCloseout: `docs/local-v1-completion-closeout-v1.md`
 - costFreeDefault: true
 - externalProviderCalls: none
 - paidCloudExecution: none

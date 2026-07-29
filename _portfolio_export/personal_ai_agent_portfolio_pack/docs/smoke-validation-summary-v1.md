@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 282/282 passed with `npm run smoke:all` on 2026-07-29
+- lastFullSweep: 284/284 passed with `npm run smoke:all` on 2026-07-29
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -54,6 +54,9 @@ The safe claim is that the local deterministic verification suite passes for the
 | Council C9 rebuttal contract completion and synthesis shadow | `npm run smoke:local-council-rebuttal-synthesis-shadow` | Verifies preserved C6·C7·C8 artifacts, content-free `claim-severity` C8 binding, fixed v3 phase-specific prompt contract, seven-stage order, opening isolation, 3/3 exact target binding, attempted chair synthesis with failed manifest validation, hardened artifact writing, false authority fields, and `keep-stub-only` decision |
 | Council C10 chair synthesis exact-contract shadow | `npm run smoke:local-council-chair-synthesis-contract-shadow` | Verifies the one-run 5/7 observation, implementation rebuttal `missing-field`, dependency-blocked chair, C6–C9 raw file SHA bindings, v4 chair-only exact allowlists, retry 0, separate chair/full contract flags, and unchanged `keep-stub-only` authority boundary |
 | Council C11 rebuttal stability and chair reachability shadow | `npm run smoke:local-council-rebuttal-stability-shadow` | Verifies the single unretried loopback observation, research opening `structured-output` failure, six dependency-blocked stages, canonical v5 and fixture bindings, C6–C10 raw file SHA bindings, content-free metrics, exact failure taxonomy, and unchanged `keep-stub-only` authority boundary |
+| Council C12 strict prompt candidate qualification | `npm run smoke:local-council-strict-prompt-candidate-qualification` | Verifies the deterministic fake-provider 7/7 v6 contract qualification, first-failure stop, C6–C11 binding, and unchanged `keep-stub-only` authority boundary |
+| Council C13 actual compatibility observation | `npm run smoke:local-council-v6-actual-compatibility-observation` | Verifies the existing content-free one-attempt receipt and `actual-incompatible` observation without rerunning the evaluator, provider, or model |
+| Local-first v1 completion closeout | `npm run smoke:local-v1-completion-closeout` | Verifies the implementation SHA, source document hashes, C13 result, six external blockers, false authority fields, and measured repository-local verification results |
 | Retrieval corpus contract | `npm run smoke:retrieval-corpus-contract` | Verifies deterministic memory, attachment, and fact corpus identity, revision, scope, hash, and provenance |
 | Retrieval quality evaluation | `npm run smoke:retrieval-quality-evaluation` | Verifies controlled precision, recall, noise, source diversity, frozen baseline replay, and candidate regression rejection |
 | Semantic retrieval experiment | `npm run smoke:semantic-retrieval-experiment` | Verifies bounded local embedding protocol, scope lock, controlled synonym comparison, and runtimeActivation=false boundary |
