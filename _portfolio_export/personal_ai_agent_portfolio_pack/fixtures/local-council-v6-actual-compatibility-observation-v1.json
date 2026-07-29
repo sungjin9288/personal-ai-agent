@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "personal-ai-agent-local-council-v6-actual-compatibility-observation-fixture/v1",
+  "fixtureId": "local-council-v6-actual-compatibility-observation-v1",
+  "authorizationId": "owner-authorization:c13-local-observation",
+  "authorizedAt": "2026-07-29T00:00:00.000Z",
+  "workspaceId": "workspace-c13-local-observation",
+  "sessionId": "session-c13-local-observation",
+  "councilId": "council-c13-local-observation",
+  "parentRunId": "run-c13-local-observation",
+  "promptProfile": "seat-scoped-v6-candidate",
+  "requiredSeats": ["research", "implementation", "verification"],
+  "evidenceCatalog": [{ "id": "artifact:bounded-plan", "kind": "artifact" }]
+}

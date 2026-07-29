@@ -1,0 +1,17 @@
+{
+  "baselineDigest": "a0ccea95ec47a0b8612bd6ac73aefcf2397f7e3fd1fc90c82dadd218d77833f2",
+  "fixtureHash": "d6933474dfa24e55b19d25dae9ffc5143a4dc589812abcca6853e8c81648383f",
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "licenseHash": "a032f549c4cd3b9402e6cb7d4aa84c7911cacb580ae5df3972035982e41ff192",
+    "sizeBytes": 1929912432
+  },
+  "observationAttemptCount": 1,
+  "promptFreezeDigest": "5fd32c160ab81218b0e4bc3f53189da15cab4f3eb36a9e3965090abb39a9da30",
+  "reservedAt": "2026-07-29T07:32:37.629Z",
+  "schemaVersion": "personal-ai-agent-local-council-v6-actual-compatibility-attempt/v1",
+  "status": "reserved",
+  "id": "local-council-v6-actual-compatibility-attempt-9460ee9733db09a9e0c54c1bf86bf441efcf7e115b6eb84c7e5c4668c9c1bde2",
+  "integrityHash": "9460ee9733db09a9e0c54c1bf86bf441efcf7e115b6eb84c7e5c4668c9c1bde2"
+}

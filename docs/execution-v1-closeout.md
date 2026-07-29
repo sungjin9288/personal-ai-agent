@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-29T06:57:20.695Z
-- branch: codex/council-strict-prompt-candidate-qualification
-- commit: ee8323226a3b7b64490e0a770f0ebe2ad85bb55f
+- generatedAt: 2026-07-29T08:05:19.297Z
+- branch: codex/council-v6-actual-compatibility-observation
+- commit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

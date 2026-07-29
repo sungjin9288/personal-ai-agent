@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-29T06:57:29.073Z
+- generatedAt: 2026-07-29T08:05:26.528Z
 - localDate: 2026-07-29
-- branch: codex/council-strict-prompt-candidate-qualification
-- commit: ee8323226a3b7b64490e0a770f0ebe2ad85bb55f
+- branch: codex/council-v6-actual-compatibility-observation
+- commit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f](releases/execution-v1/ee8323226a3b7b64490e0a770f0ebe2ad85bb55f)
-- visualArtifactSetSha256: c262b90f005ebc25525b5fda31e78e497f99ca88e5c3bf424baf52c0f878ef96
-- commitPushStatus: not pushed, origin/codex/council-strict-prompt-candidate-qualification not found
+- immutableSnapshot: [releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f](releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f)
+- visualArtifactSetSha256: 957b208928459c602fb2ff638c392b69e637efda21bf93b72e5fa28cbae5d2ce
+- commitPushStatus: not pushed, origin/codex/council-v6-actual-compatibility-observation not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=54.5s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=49.5s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: c262b90f005ebc25525b5fda31e78e497f99ca88e5c3bf424baf52c0f878ef96
+- visual artifact set: 957b208928459c602fb2ff638c392b69e637efda21bf93b72e5fa28cbae5d2ce
 
 ## Live Provider Handoff
 

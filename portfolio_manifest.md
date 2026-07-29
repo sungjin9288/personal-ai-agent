@@ -30,6 +30,14 @@
 - test/council-prompt-profile-freeze.test.mjs
 - test/local-council-strict-prompt-candidate-qualification.test.mjs
 - evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json
+- src/core/council-prompt-profile-freeze.mjs
+- src/core/local-council-v6-actual-compatibility-observation.mjs
+- fixtures/local-council-v6-actual-compatibility-observation-v1.json
+- scripts/evaluate-local-council-v6-actual-compatibility-observation.mjs
+- scripts/smoke-local-council-v6-actual-compatibility-observation.mjs
+- test/local-council-v6-actual-compatibility-observation.test.mjs
+- evidence/output-artifacts/local-council-v6-actual-compatibility-attempt.json
+- evidence/output-artifacts/local-council-v6-actual-compatibility-observation.json
 - docs/interview-story.md
 - docs/roadmap.md
 - docs/readme-improvement.md
@@ -185,6 +193,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,498,553 bytes
-- 압축 파일 SHA-256: `0767e2348425a4ee7df25953b93b5a541796e9d32545515ae8df139b31be7e3d`
+- 압축 파일 크기: 4,517,754 bytes
+- 압축 파일 SHA-256: `9a7a5eb65e6a817b34969be49b46a6adcce6af18de6ab2f4831f98751c0d7156`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

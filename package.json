@@ -411,6 +411,8 @@
     "smoke:local-council-rebuttal-stability-shadow": "node scripts/smoke-local-council-rebuttal-stability-shadow.mjs",
     "build:local-council-strict-prompt-candidate-qualification": "node scripts/build-local-council-strict-prompt-candidate-qualification.mjs",
     "smoke:local-council-strict-prompt-candidate-qualification": "node scripts/smoke-local-council-strict-prompt-candidate-qualification.mjs",
+    "evaluate:local-council-v6-actual-compatibility-observation": "node scripts/evaluate-local-council-v6-actual-compatibility-observation.mjs --endpoint http://127.0.0.1:11434 --model qwen2.5:3b --cloud-features-disabled true --output evidence/output-artifacts/local-council-v6-actual-compatibility-observation.json",
+    "smoke:local-council-v6-actual-compatibility-observation": "node scripts/smoke-local-council-v6-actual-compatibility-observation.mjs",
     "evaluate:local-council-rebuttal-stability-shadow": "node scripts/evaluate-local-council-rebuttal-stability-shadow.mjs --endpoint http://127.0.0.1:11434 --model qwen2.5:3b --cloud-features-disabled true --output evidence/output-artifacts/local-council-rebuttal-stability-shadow.json",
     "smoke:parallel-specialists": "node scripts/smoke-parallel-specialists.mjs",
     "smoke:specialist-follow-up-inbox": "node scripts/smoke-specialist-follow-up-inbox.mjs",
