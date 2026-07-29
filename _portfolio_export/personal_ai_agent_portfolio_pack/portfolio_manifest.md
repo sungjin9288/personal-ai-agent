@@ -66,6 +66,11 @@
 - scripts/smoke-local-council-rebuttal-synthesis-shadow.mjs
 - test/local-council-rebuttal-synthesis-shadow.test.mjs
 - evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json
+- src/core/local-council-chair-synthesis-contract-shadow.mjs
+- fixtures/local-council-chair-synthesis-contract-shadow-v1.json
+- scripts/smoke-local-council-chair-synthesis-contract-shadow.mjs
+- test/local-council-chair-synthesis-contract-shadow.test.mjs
+- evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json
 - src/core/evidence-gated-answer-claim-attribution.mjs
 - fixtures/evidence-gated-answer-claim-attribution-cases-v1.json
 - scripts/evaluate-evidence-gated-answer-claim-attribution.mjs
@@ -73,6 +78,8 @@
 - scripts/smoke-evidence-gated-answer-claim-attribution.mjs
 - scripts/smoke-local-evidence-gated-answer-claim-attribution.mjs
 - test/evidence-gated-answer-claim-attribution.test.mjs
+- evidence/output-artifacts/evidence-gated-answer-claim-attribution.json
+- evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json
 - evidence/cli-logs/
 - evidence/api-responses/
 - evidence/screenshots/
@@ -134,8 +141,6 @@
 - evidence/output-artifacts/local-answer-review-action-generalization.json
 - evidence/output-artifacts/local-council-provider-shadow.json
 - evidence/output-artifacts/local-council-seat-contract-shadow.json
-- evidence/output-artifacts/evidence-gated-answer-claim-attribution.json
-- evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json
 - evidence/screenshots/workspace-learning-operator-surface.png
 - evidence/screenshots/user-learning-operator-surface.png
 - evidence/screenshots/local-training-permission-surface.png

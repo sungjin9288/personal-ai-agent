@@ -441,7 +441,7 @@ function buildCouncilRoleContract(input) {
         seatContract,
       });
     }
-    if (seatContract?.profile === 'seat-scoped-v3') {
+    if (seatContract?.profile === 'seat-scoped-v3' || seatContract?.profile === 'seat-scoped-v4') {
       return buildRebuttalCompletionCouncilSpecialistContract({
         input,
         opening,
@@ -502,6 +502,9 @@ ${seatRules}`;
   }
 
   if (input.role === 'executor' && input.councilPhase === 'synthesis') {
+    if (input.councilPromptProfile === 'seat-scoped-v4') {
+      return buildChairSynthesisContract(input);
+    }
     return `Return only valid JSON with this shape:
 {
   "summaryText": "bounded chair summary",
@@ -535,6 +538,65 @@ Council rules:
   }
 
   throw new Error(`Unsupported council provider role: ${input.role}`);
+}
+
+function exactCouncilKeys(value, keys, label) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`${label} must be an object.`);
+  }
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  if (actual.length !== expected.length || actual.some((key, index) => key !== expected[index])) {
+    throw new Error(`${label} keys are invalid.`);
+  }
+}
+
+function getChairSynthesisAllowlists(input) {
+  const briefClaims = Array.isArray(input.councilSynthesisInput?.brief?.claims)
+    ? input.councilSynthesisInput.brief.claims : [];
+  const rebuttalClaims = Array.isArray(input.councilSynthesisInput?.rebuttals)
+    ? input.councilSynthesisInput.rebuttals.flatMap((record) => record?.councilStatement?.claims || []) : [];
+  const claimIds = [...new Set([...briefClaims, ...rebuttalClaims]
+    .map((claim) => normalizeText(claim?.id)).filter(Boolean))];
+  const evidenceIds = [...new Set((input.councilSynthesisInput?.brief?.evidenceRefs || [])
+    .map((value) => normalizeText(value)).filter(Boolean))];
+  if (!claimIds.length || !evidenceIds.length) {
+    throw new Error('seat-scoped-v4 chair synthesis requires Council Context claim and evidence allowlists.');
+  }
+  return { claimIds, evidenceIds };
+}
+
+function buildChairSynthesisContract(input) {
+  const { claimIds, evidenceIds } = getChairSynthesisAllowlists(input);
+  const rejectedClaims = claimIds.map((claimId) => ({
+    claimId,
+    reason: 'Keep this claim unpromoted in the local shadow.',
+  }));
+  return `Return only valid JSON with exactly these top-level keys and no others:
+{
+  "summaryText": "bounded chair summary",
+  "artifactContent": "# Council Decision\\n...",
+  "nextAction": "Keep the default profile unchanged pending independent review.",
+  "councilSynthesis": {
+    "acceptedClaimIds": [], "rejectedClaims": ${JSON.stringify(rejectedClaims)},
+    "agreementIds": [], "unresolvedConflictIds": [], "unresolvedCriticalConflictIds": [],
+    "evidenceRefs": [], "verificationPlan": ["bounded verification step"],
+    "nextOwner": "workspace-owner",
+    "nextAction": "Keep the default profile unchanged pending independent review."
+  }
+}
+
+Exact Council Context allowlists:
+- claim ids: ${JSON.stringify(claimIds)}
+- evidence ids: ${JSON.stringify(evidenceIds)}
+
+Exact chair rules:
+- councilSynthesis must contain exactly acceptedClaimIds, rejectedClaims, agreementIds, unresolvedConflictIds, unresolvedCriticalConflictIds, evidenceRefs, verificationPlan, nextOwner, nextAction
+- every rejectedClaims item must contain exactly claimId and reason
+- every claim reference must use only the claim ids above; every evidence reference must use only the evidence ids above
+- all id collections must be arrays, verificationPlan must be a non-empty string array, and nextOwner must be workspace-owner
+- top-level nextAction and councilSynthesis.nextAction must be identical
+- do not add missing ids, evidence, defaults, fields, raw attachments, memory, paths, URLs, or hidden reasoning`;
 }
 
 function buildRobustCouncilSpecialistContract({
@@ -1178,6 +1240,48 @@ function normalizeCouncilSynthesisOutput(output, input, providerLabel) {
       recoverable: false,
       timedOut: false,
     });
+  }
+  if (input.councilPromptProfile === 'seat-scoped-v4') {
+    try {
+      exactCouncilKeys(output, ['artifactContent', 'councilSynthesis', 'nextAction', 'summaryText'], 'chair output');
+      exactCouncilKeys(councilSynthesis, [
+        'acceptedClaimIds', 'agreementIds', 'evidenceRefs', 'nextAction', 'nextOwner',
+        'rejectedClaims', 'unresolvedConflictIds', 'unresolvedCriticalConflictIds', 'verificationPlan',
+      ], 'chair councilSynthesis');
+      const arrayFields = [
+        'acceptedClaimIds', 'agreementIds', 'evidenceRefs', 'rejectedClaims',
+        'unresolvedConflictIds', 'unresolvedCriticalConflictIds', 'verificationPlan',
+      ];
+      if (arrayFields.some((field) => !Array.isArray(councilSynthesis[field]))) {
+        throw new Error('chair synthesis collection fields must be arrays.');
+      }
+      councilSynthesis.rejectedClaims.forEach((item) =>
+        exactCouncilKeys(item, ['claimId', 'reason'], 'chair rejected claim'));
+      const { claimIds, evidenceIds } = getChairSynthesisAllowlists(input);
+      const claimReferences = [
+        ...(councilSynthesis.acceptedClaimIds || []),
+        ...(councilSynthesis.agreementIds || []),
+        ...(councilSynthesis.unresolvedConflictIds || []),
+        ...(councilSynthesis.unresolvedCriticalConflictIds || []),
+        ...(councilSynthesis.rejectedClaims || []).map((item) => item.claimId),
+      ];
+      if (!claimReferences.every((value) => claimIds.includes(value)) ||
+          !councilSynthesis.evidenceRefs.every((value) => evidenceIds.includes(value))) {
+        throw new Error('chair output contains an id outside Council Context.');
+      }
+      if (councilSynthesis.rejectedClaims.some((item) =>
+        !normalizeText(item.claimId) || !normalizeText(item.reason)) ||
+        councilSynthesis.verificationPlan.length === 0 ||
+        councilSynthesis.verificationPlan.some((step) => !normalizeText(step)) ||
+        normalizeText(councilSynthesis.nextOwner) !== 'workspace-owner' ||
+        normalizeText(councilSynthesis.nextAction) !== nextAction) {
+        throw new Error('chair output contains an invalid decision field.');
+      }
+    } catch (error) {
+      throw createProviderFailure(`${providerLabel} chair synthesis contract failed: ${error.message}`, {
+        failureKind: 'schema-invalid', rawMessage: JSON.stringify(output), recoverable: false, timedOut: false,
+      });
+    }
   }
   return {
     adaptationNotes: [],

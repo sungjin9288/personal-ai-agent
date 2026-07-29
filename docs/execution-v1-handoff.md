@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-29T02:10:28.710Z
+- generatedAt: 2026-07-29T03:41:14.504Z
 - localDate: 2026-07-29
-- branch: codex/docs-evidence-freshness-closure
-- commit: d146be320d0a674930baf7613da082e8c091733f
+- branch: codex/council-chair-synthesis-contract-shadow
+- commit: 8a42a749876cc3d504c37fbcbd196ee52834a2b4
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/d146be320d0a674930baf7613da082e8c091733f](releases/execution-v1/d146be320d0a674930baf7613da082e8c091733f)
-- visualArtifactSetSha256: 03c083973999aa452595b382d2bad21918b1f082d7238698dba3fcd4190cccd1
-- commitPushStatus: not pushed, origin/codex/docs-evidence-freshness-closure not found
+- immutableSnapshot: [releases/execution-v1/8a42a749876cc3d504c37fbcbd196ee52834a2b4](releases/execution-v1/8a42a749876cc3d504c37fbcbd196ee52834a2b4)
+- visualArtifactSetSha256: 7838518e552ff2401397963c653738a64d7b9175d287d50a103fb469ca5a5248
+- commitPushStatus: not pushed, origin/codex/council-chair-synthesis-contract-shadow not found
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -21,7 +21,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=58.8s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=56.4s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -56,7 +56,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 03c083973999aa452595b382d2bad21918b1f082d7238698dba3fcd4190cccd1
+- visual artifact set: 7838518e552ff2401397963c653738a64d7b9175d287d50a103fb469ca5a5248
 
 ## Live Provider Handoff
 

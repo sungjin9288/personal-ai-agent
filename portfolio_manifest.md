@@ -66,6 +66,20 @@
 - scripts/smoke-local-council-rebuttal-synthesis-shadow.mjs
 - test/local-council-rebuttal-synthesis-shadow.test.mjs
 - evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json
+- src/core/local-council-chair-synthesis-contract-shadow.mjs
+- fixtures/local-council-chair-synthesis-contract-shadow-v1.json
+- scripts/smoke-local-council-chair-synthesis-contract-shadow.mjs
+- test/local-council-chair-synthesis-contract-shadow.test.mjs
+- evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json
+- src/core/evidence-gated-answer-claim-attribution.mjs
+- fixtures/evidence-gated-answer-claim-attribution-cases-v1.json
+- scripts/evaluate-evidence-gated-answer-claim-attribution.mjs
+- scripts/evaluate-local-evidence-gated-answer-claim-attribution.mjs
+- scripts/smoke-evidence-gated-answer-claim-attribution.mjs
+- scripts/smoke-local-evidence-gated-answer-claim-attribution.mjs
+- test/evidence-gated-answer-claim-attribution.test.mjs
+- evidence/output-artifacts/evidence-gated-answer-claim-attribution.json
+- evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json
 - evidence/cli-logs/
 - evidence/api-responses/
 - evidence/screenshots/
@@ -158,6 +172,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,440,843 bytes
-- 압축 파일 SHA-256: `b0b669735b7542e9c21418fe09dd868c55731b10c985842fc8b1fc5c248fb2dd`
+- 압축 파일 크기: 4,468,462 bytes
+- 압축 파일 SHA-256: `bff1a7a20188f642f5137b6070e243ae26783465cb350474a5a2deae52d1c8b5`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료
