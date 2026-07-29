@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-29T08:05:27.660Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-29T08:05:19.297Z
 - branch: codex/council-v6-actual-compatibility-observation
 - commit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f/execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922

@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-29T08:05:27.660Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-29T08:05:26.528Z
 - localDate: 2026-07-29
 - branch: codex/council-v6-actual-compatibility-observation
 - commit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f](releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f](docs/releases/execution-v1/a8795f390cbd9a8b432ce112a3c9d91362af6c5f)
 - visualArtifactSetSha256: 957b208928459c602fb2ff638c392b69e637efda21bf93b72e5fa28cbae5d2ce
 - commitPushStatus: not pushed, origin/codex/council-v6-actual-compatibility-observation not found
 - liveValidationMode: archived-preserved-not-rerun

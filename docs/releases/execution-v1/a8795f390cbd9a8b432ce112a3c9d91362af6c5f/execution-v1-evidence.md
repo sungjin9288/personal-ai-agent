@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-29T08:05:27.660Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-29T08:05:19.232Z
 - branch: codex/council-v6-actual-compatibility-observation
 - commit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
