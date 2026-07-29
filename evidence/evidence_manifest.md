@@ -6,12 +6,12 @@
 - Initial generated at: 2026-07-23
 - Last updated at: 2026-07-29
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, and Council C6–C9 content-free local observations. Council evidence remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, provider, deployment, or production authority.
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, and Council C6–C10 content-free local observations. Council evidence remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, provider, deployment, or production authority.
 - F1.25 private collection-gap replan shadow: trusted F1.24 authority is independently rebuilt before the F1.2 collection plan is recalculated in memory; projected 15 reviewed examples, 5 scopes, and 7 cases leave tracked F1.2 evidence, intake, collection, audit, training, provider, submission, deployment, and production boundaries unchanged or false
 - F1.24 private combined readiness impact shadow: one exact reconstructed F1.21 record and one exact F1.20 replay case are composed only in the deterministic in-memory projection; five sufficiency failures remain and all mutation, audit, training, provider, submission, deployment, and production boundaries remain false
 - F1.23 private answer-quality readiness impact shadow: final F1.20 replay lineage is revalidated and its frozen case is projected only in the deterministic in-memory suite; dataset/export digests and all training, provider, submission, deployment, and production boundaries remain unchanged or false
-- Source code modified: yes, current tracked changes include the F1.13 owner-only review-resolution protocol and Council C6–C9 local shadow contracts, fixtures, artifact writers, and deterministic smokes. They preserve public HTTP, store, audit, provider, training, promotion, activation, and production authority contracts.
-- New feature development: yes, F1.13 private lanes retain synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; Council C6–C9 add only content-free local shadow observations and fail-closed contract checks. No actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, promotion, activation, rollout, deployment, or production use is tracked or authorized.
+- Source code modified: yes, current tracked changes include the F1.13 owner-only review-resolution protocol and Council C6–C10 local shadow contracts, fixtures, artifact writers, and deterministic smokes. They preserve public HTTP, store, audit, provider, training, promotion, activation, and production authority contracts.
+- New feature development: yes, F1.13 private lanes retain synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; Council C6–C9 add only content-free local shadow observations and fail-closed contract checks. Council C10 adds the chair exact-contract observation under the same fail-closed boundary. No actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, promotion, activation, rollout, deployment, or production use is tracked or authorized.
 
 ## Generated Evidence Files
 
@@ -69,6 +69,7 @@
 - `evidence/output-artifacts/local-council-seat-contract-shadow.json`
 - `evidence/output-artifacts/local-council-claim-contract-robustness.json`
 - `evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json`
+- `evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache.json`
@@ -148,7 +149,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 278/278 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 279/279 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -184,6 +185,7 @@
 - Council C7 seat-scoped prompt contract shadow: verified with `npm run smoke:local-council-seat-contract-shadow`; C6 artifact identity and decision are preserved while fixed research, implementation, and verification prompts produce three local request prompt hashes and three opening output hashes. Research opening failed `invalid-claim`, so rebuttal target match remained 0/3, synthesis stayed dependency-blocked, and `decision: keep-stub-only`, false promotion, activation, training, and production claims remained unchanged.
 - Council C8 claim contract robustness shadow: verified with `npm run smoke:local-council-claim-contract-robustness`; C6·C7 artifacts remain bound and unchanged, C7 research `invalid-claim` reproduced as content-free `claim-seat`, opening passed 3/3 and exact rebuttal targets matched 3/3, but one implementation rebuttal `missing-field` left the candidate at 5/7 and synthesis dependency-blocked, so `decision: keep-stub-only`, false promotion·activation·training·production claims, zero external calls, and zero API cost remain
 - Council C9 rebuttal contract completion and synthesis shadow: verified with `npm run smoke:local-council-rebuttal-synthesis-shadow`; C6·C7·C8 artifacts remain bound and unchanged, the C8 implementation rebuttal is content-free `claim-severity`, and one sequential v3 run passed opening 3/3, rebuttal 3/3, and exact targets 3/3 before the actual chair synthesis failed as `provider:unknown`; manifest validation therefore remained failed and `decision: keep-stub-only`, false promotion·activation·training·production claims, zero external calls, and zero API cost remain
+- Council C10 chair synthesis exact-contract shadow: verified with `npm run smoke:local-council-chair-synthesis-contract-shadow`; one unretried loopback run preserved v3 specialist prompt bytes, passed all three openings, then recorded implementation rebuttal `council-contract:missing-field` at the `structured-output` stage. Verification rebuttal still ran, leaving 5/7 passed and chair dependency-blocked. C6·C7·C8·C9 raw artifact SHA-256 values remain bound and `decision: keep-stub-only`, false promotion·activation·training·actual-user-data·production claims, zero external calls, and zero API cost remain unchanged.
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
 - Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`

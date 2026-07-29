@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "personal-ai-agent-local-council-chair-synthesis-contract-shadow-fixture/v1",
+  "fixtureId": "local-council-chair-synthesis-contract-shadow-v1",
+  "councilId": "council-local-chair-synthesis-contract-shadow",
+  "workspaceId": "workspace-local-chair-synthesis-contract-shadow",
+  "sessionId": "session-local-chair-synthesis-contract-shadow",
+  "parentRunId": "run-local-chair-synthesis-contract-shadow-planner",
+  "promptProfile": "seat-scoped-v4",
+  "evidenceCatalog": [
+    { "id": "artifact:bounded-plan", "kind": "artifact" },
+    { "id": "artifact:verification-record", "kind": "artifact" }
+  ],
+  "requiredSeats": ["research", "implementation", "verification"]
+}
