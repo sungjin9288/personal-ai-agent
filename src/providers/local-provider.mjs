@@ -175,7 +175,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
             temperature: 0,
           }),
         },
-        maxAttempts: input.councilPromptProfile === 'seat-scoped-v5' ? 1 : LOCAL_SPEC.runtime.maxAttempts,
+        maxAttempts: ['seat-scoped-v5', 'seat-scoped-v6-candidate'].includes(input.councilPromptProfile) ? 1 : LOCAL_SPEC.runtime.maxAttempts,
         method: 'POST',
         providerLabel: 'Local',
         rateLimit: {
@@ -199,11 +199,11 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
       let outputText = '';
       try {
         outputText = extractChatCompletionText(payload);
-        output = input.councilPromptProfile === 'seat-scoped-v5'
+        output = ['seat-scoped-v5', 'seat-scoped-v6-candidate'].includes(input.councilPromptProfile)
           ? parseStrictJsonText(outputText, 'Local')
           : parseJsonText(outputText, 'Local');
       } catch (error) {
-        const outputTextHash = input.councilPromptProfile === 'seat-scoped-v5' && outputText
+        const outputTextHash = ['seat-scoped-v5', 'seat-scoped-v6-candidate'].includes(input.councilPromptProfile) && outputText
           ? createHash('sha256').update(outputText).digest('hex')
           : null;
         try {
@@ -230,7 +230,7 @@ export function createLocalProvider({ rootDir, env = process.env, fetchImpl = gl
         durationMs,
         estimatedCostUsd,
         output,
-        ...(input.councilPromptProfile === 'seat-scoped-v5'
+        ...(['seat-scoped-v5', 'seat-scoped-v6-candidate'].includes(input.councilPromptProfile)
           ? { outputTextHash: createHash('sha256').update(outputText).digest('hex') }
           : {}),
         providerResponseId,

@@ -6,6 +6,7 @@ import {
   classifyCouncilClaimFailure,
   getCouncilSeatPromptProfileId,
   getCouncilSeatRobustnessPromptProfileId,
+  getCouncilStrictPromptCandidateProfileId,
   resolveCouncilSeatPromptContract,
 } from '../src/core/council-seat-prompt-contract.mjs';
 
@@ -136,6 +137,19 @@ test('seat-scoped-v3 remains opt-in and keeps phase-specific target contracts', 
   assert.equal(opening.requiredTargetClaimId, null);
   assert.equal(rebuttal.requiredTargetClaimId, 'verification:claim-1');
   assert.equal(rebuttal.profile, 'seat-scoped-v3');
+});
+
+test('seat-scoped-v6-candidate remains opt-in with the v5 target rotation', () => {
+  const profile = getCouncilStrictPromptCandidateProfileId();
+  const contract = resolveCouncilSeatPromptContract({
+    councilBrief,
+    phase: 'rebuttal',
+    profile,
+    seatId: 'research',
+  });
+
+  assert.equal(profile, 'seat-scoped-v6-candidate');
+  assert.equal(contract.requiredTargetClaimId, 'implementation:claim-1');
 });
 
 test('invalid claim diagnostics expose only bounded content-free subreasons', () => {

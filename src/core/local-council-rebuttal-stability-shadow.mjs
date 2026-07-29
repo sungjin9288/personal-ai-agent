@@ -143,6 +143,13 @@ function notAttemptedCall(phase, seatId) {
 
 export async function runC11CouncilShadow({ fixture, fixtureText, provider }) {
   assertC11Fixture(fixture);
+  return runCouncilPromptProfileShadow({ fixture, fixtureText, provider, promptProfile: 'seat-scoped-v5' });
+}
+
+export async function runCouncilPromptProfileShadow({ fixture, fixtureText, provider, promptProfile }) {
+  if (!['seat-scoped-v5', 'seat-scoped-v6-candidate'].includes(promptProfile)) {
+    throw new Error(`Unsupported strict Council prompt profile: ${promptProfile}.`);
+  }
   const frame = createCouncilFrame({
     contextDigest: hashCouncilValue({ fixtureHash: hashLocalCouncilShadowValue(fixtureText) }),
     councilId: fixture.councilId,
@@ -164,11 +171,11 @@ export async function runC11CouncilShadow({ fixture, fixtureText, provider }) {
   };
   for (const seatId of fixture.requiredSeats) {
     const metadata = createCouncilStatementMetadata({ frame, round: 'opening', seatId });
-    const input = specialistInput({ fixture, frame, metadata, seatId });
+    const input = specialistInput({ fixture, frame, metadata, promptProfile, seatId });
     const observed = await observeC11ProviderStage({ input, provider });
     if (!observed.ok) { calls.push(observed.call); failure = observed.call; appendBlocked(); return result(); }
     try {
-      assertC11SpecialistSemantics(observed.output, input);
+      assertStrictSpecialistSemantics(observed.output, input);
       const record = createCouncilStatement({
         ...sealCouncilStatement({ artifactContent: observed.output.artifactContent, councilStatement: observed.output.councilStatement,
           metadata: { ...metadata, outputDigest: `sha256:${'0'.repeat(64)}` }, runId: `run-opening-${seatId}` }), frame,
@@ -183,11 +190,11 @@ export async function runC11CouncilShadow({ fixture, fixtureText, provider }) {
   catch (error) { throw new Error(`C11 generated opening state is invalid: ${error.message}`); }
   for (const seatId of fixture.requiredSeats) {
     const metadata = createCouncilStatementMetadata({ brief, frame, openings, round: 'rebuttal', seatId });
-    const input = specialistInput({ brief, fixture, frame: null, metadata, seatId });
+    const input = specialistInput({ brief, fixture, frame: null, metadata, promptProfile, seatId });
     const observed = await observeC11ProviderStage({ input, provider });
     if (!observed.ok) { calls.push(observed.call); failure = observed.call; appendBlocked(); return result(); }
     try {
-      assertC11SpecialistSemantics(observed.output, input);
+      assertStrictSpecialistSemantics(observed.output, input);
       const record = createCouncilStatement({
         ...sealCouncilStatement({ artifactContent: observed.output.artifactContent, councilStatement: observed.output.councilStatement,
           metadata: { ...metadata, outputDigest: `sha256:${'0'.repeat(64)}` }, runId: `run-rebuttal-${seatId}` }), brief, frame, openings,
@@ -200,7 +207,7 @@ export async function runC11CouncilShadow({ fixture, fixtureText, provider }) {
   const metadata = createCouncilSynthesisInput({ brief, frame, openings, rebuttals });
   const input = {
     councilBrief: null, councilFrame: null, councilId: fixture.councilId, councilPhase: 'synthesis',
-    councilPromptProfile: 'seat-scoped-v5', councilRound: 'rebuttal', councilRuntime: {
+    councilPromptProfile: promptProfile, councilRound: 'rebuttal', councilRuntime: {
       artifactFileName: 'local-council-shadow-decision.md', artifactTitle: 'Local Council Shadow Decision',
       deliverableType: 'decision-memo', nextAction: 'Keep the default profile unchanged pending independent review.',
       proposedAction: { kind: 'none', reason: 'Shadow qualification cannot mutate a workspace.', requiresApproval: false, title: 'No workspace action' },
@@ -233,16 +240,17 @@ export async function runC11CouncilShadow({ fixture, fixtureText, provider }) {
   }
 }
 
-function specialistInput({ brief = null, fixture, frame, metadata, seatId }) {
+function specialistInput({ brief = null, fixture, frame, metadata, promptProfile, seatId }) {
   return {
     councilBrief: brief, councilFrame: frame, councilId: fixture.councilId, councilPhase: metadata.councilPhase,
-    councilPromptProfile: 'seat-scoped-v5', councilRound: metadata.councilRound, councilRuntime: null,
+    councilPromptProfile: promptProfile, councilRound: metadata.councilRound, councilRuntime: null,
     councilSeatId: seatId, councilSynthesisInput: null, parentRunIds: metadata.parentRunIds,
     providerRole: 'specialist', role: 'specialist', sourceDigest: metadata.sourceDigest, specialistKind: seatId,
   };
 }
 
-function assertC11SpecialistSemantics(output, input) {
+function assertStrictSpecialistSemantics(output, input) {
+  if (input.councilPromptProfile === 'seat-scoped-v6-candidate') return;
   const statement = output.councilStatement;
   const claim = statement.claims[0];
   const expectedClaimId = `${input.councilSeatId}:claim-${input.councilPhase === 'opening-position' ? 1 : 2}`;

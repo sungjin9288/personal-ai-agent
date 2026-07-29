@@ -23,6 +23,13 @@
 - docs/project-card.md
 - docs/case-study.md
 - docs/resume-bullets.md
+- src/core/local-council-strict-prompt-candidate-qualification.mjs
+- fixtures/local-council-strict-prompt-candidate-qualification-v1.json
+- scripts/build-local-council-strict-prompt-candidate-qualification.mjs
+- scripts/smoke-local-council-strict-prompt-candidate-qualification.mjs
+- test/council-prompt-profile-freeze.test.mjs
+- test/local-council-strict-prompt-candidate-qualification.test.mjs
+- evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json
 - docs/interview-story.md
 - docs/roadmap.md
 - docs/readme-improvement.md

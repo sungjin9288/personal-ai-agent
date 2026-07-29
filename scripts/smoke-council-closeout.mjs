@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import { assertCouncilQualityComparison } from '../src/core/council-quality-comparison.mjs';
 import { assertLocalCouncilProviderShadowArtifact } from '../src/core/local-council-provider-shadow.mjs';
+import { assertC12CandidateArtifact, assertC12Fixture } from '../src/core/local-council-strict-prompt-candidate-qualification.mjs';
 
 const repoDir = process.cwd();
 const packageJson = readJson('package.json');
@@ -17,11 +18,15 @@ const checklist = readText('docs/evidence-checklist.md');
 const gallery = readText('docs/evidence-gallery.md');
 const references = readText('docs/reference-repos.md');
 const manifest = readText('evidence/evidence_manifest.md');
+const c12Artifact = readJson('evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json');
+const c12FixtureText = readText('fixtures/local-council-strict-prompt-candidate-qualification-v1.json');
 
 assertCouncilQualityComparison(comparisonArtifact, fixtures);
 assertLocalCouncilProviderShadowArtifact(localShadowArtifact, {
   fixtureText: localShadowFixtureText,
 });
+assertC12Fixture(JSON.parse(c12FixtureText));
+assertC12CandidateArtifact(c12Artifact, { c12FixtureText });
 
 assert.equal(
   packageJson.scripts['smoke:council-closeout'],
@@ -67,6 +72,10 @@ assert.match(
   plan,
   /C11 — Rebuttal stability and chair reachability shadow[\s\S]*status: `completed-keep-stub-only`/,
 );
+assert.match(
+  plan,
+  /C12 — Strict prompt candidate qualification[\s\S]*status: `candidate-qualified-keep-stub-only`/,
+);
 assert.match(plan, /`knowledge-triad`를 default profile로 유지/);
 assert.match(plan, /`knowledge-council-triad`는 opt-in experiment로 유지/);
 assert.match(plan, /dynamic persona[\s\S]*concurrent dispatch[\s\S]*external research adapter[\s\S]*AirLLM/);
@@ -96,7 +105,7 @@ assert.equal(localShadowArtifact.externalProviderCallCount, 0);
 
 assert.match(
   manifest,
-  /New feature development: yes, F1\.13 private lanes[\s\S]*Council C6–C10 add only content-free local shadow observations and fail-closed contract checks\.[\s\S]*Council C11 adds strict rebuttal-stability and chair-reachability observation under the same fail-closed boundary\./,
+  /New feature development: yes, F1\.13 private lanes[\s\S]*Council C6–C10 add only content-free local shadow observations and fail-closed contract checks\.[\s\S]*Council C11 adds strict rebuttal-stability and chair-reachability observation, while C12 adds deterministic v6 prompt candidate qualification without a model invocation\./,
 );
 
 for (const artifactPath of [
@@ -106,6 +115,7 @@ for (const artifactPath of [
   'evidence/output-artifacts/local-council-rebuttal-synthesis-shadow.json',
   'evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json',
   'evidence/output-artifacts/local-council-rebuttal-stability-shadow.json',
+  'evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json',
 ]) {
   assert.ok(manifest.includes(`- \`${artifactPath}\``), `manifest missing Council artifact ${artifactPath}`);
 }
@@ -128,6 +138,7 @@ console.log(
       councilProfileStatus: comparison.councilProfileStatus,
       defaultPromotionAuthorized: comparison.defaultPromotionAuthorized,
       localProviderShadowDecision: localShadowArtifact.qualification.decision,
+      c12CandidateStatus: c12Artifact.candidateStatus,
       failedCheckIds: comparison.failedCheckIds,
       stageCounts: {
         baseline: comparison.aggregates.baselineStageCount,
