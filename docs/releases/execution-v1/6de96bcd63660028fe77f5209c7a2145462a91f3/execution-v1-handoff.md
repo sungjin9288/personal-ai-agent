@@ -1,13 +1,16 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-29T23:47:30.393Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-29T23:47:29.468Z
 - localDate: 2026-07-30
 - branch: codex/council-blueprint-preview
 - commit: 6de96bcd63660028fe77f5209c7a2145462a91f3
 - boundImplementationCommit: 6de96bcd63660028fe77f5209c7a2145462a91f3
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3](releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3](docs/releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3)
 - visualArtifactSetSha256: a49f08e589cf6ba647e3802a5882e276b52a4fb1b0946a2302620ef1098dd81b
 - commitPushStatus: not pushed, origin/codex/council-blueprint-preview not found
 - deterministicEvidenceStatus: current-run

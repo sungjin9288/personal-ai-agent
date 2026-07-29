@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-29T23:47:30.393Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-29T23:47:21.994Z
 - branch: codex/council-blueprint-preview
 - commit: 6de96bcd63660028fe77f5209c7a2145462a91f3
