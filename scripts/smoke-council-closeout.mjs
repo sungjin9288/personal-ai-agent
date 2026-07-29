@@ -105,7 +105,7 @@ assert.equal(localShadowArtifact.externalProviderCallCount, 0);
 
 assert.match(
   manifest,
-  /New feature development: yes, F1\.13 private lanes[\s\S]*Council C6–C10 add only content-free local shadow observations and fail-closed contract checks\.[\s\S]*Council C11 adds strict rebuttal-stability and chair-reachability observation, while C12 adds deterministic v6 prompt candidate qualification without a model invocation\./,
+  /New feature development: yes, F1\.13 private lanes[\s\S]*Council C6–C10 add only content-free local shadow observations and fail-closed contract checks\.[\s\S]*Council C11 adds strict rebuttal-stability and chair-reachability observation, C12 adds deterministic v6 prompt candidate qualification, and C13 records one unretried local v6 observation as `actual-incompatible`\./,
 );
 
 for (const artifactPath of [
@@ -116,6 +116,8 @@ for (const artifactPath of [
   'evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json',
   'evidence/output-artifacts/local-council-rebuttal-stability-shadow.json',
   'evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json',
+  'evidence/output-artifacts/local-council-v6-actual-compatibility-attempt.json',
+  'evidence/output-artifacts/local-council-v6-actual-compatibility-observation.json',
 ]) {
   assert.ok(manifest.includes(`- \`${artifactPath}\``), `manifest missing Council artifact ${artifactPath}`);
 }

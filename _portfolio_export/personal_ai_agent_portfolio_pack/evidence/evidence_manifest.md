@@ -6,12 +6,12 @@
 - Initial generated at: 2026-07-23
 - Last updated at: 2026-07-29
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, and Council C6–C12 content-free local observations. Council evidence remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, provider, deployment, or production authority.
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, and Council C6–C13 content-free local observations. C13 records one `actual-incompatible` v6 observation and remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, external-provider, deployment, or production authority.
 - F1.25 private collection-gap replan shadow: trusted F1.24 authority is independently rebuilt before the F1.2 collection plan is recalculated in memory; projected 15 reviewed examples, 5 scopes, and 7 cases leave tracked F1.2 evidence, intake, collection, audit, training, provider, submission, deployment, and production boundaries unchanged or false
 - F1.24 private combined readiness impact shadow: one exact reconstructed F1.21 record and one exact F1.20 replay case are composed only in the deterministic in-memory projection; five sufficiency failures remain and all mutation, audit, training, provider, submission, deployment, and production boundaries remain false
 - F1.23 private answer-quality readiness impact shadow: final F1.20 replay lineage is revalidated and its frozen case is projected only in the deterministic in-memory suite; dataset/export digests and all training, provider, submission, deployment, and production boundaries remain unchanged or false
-- Source code modified: yes, current tracked changes include the F1.13 owner-only review-resolution protocol and Council C6–C12 local shadow contracts, fixtures, artifact writers, and deterministic smokes. They preserve public HTTP, store, audit, provider, training, promotion, activation, and production authority contracts.
-- New feature development: yes, F1.13 private lanes retain synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; Council C6–C10 add only content-free local shadow observations and fail-closed contract checks. Council C11 adds strict rebuttal-stability and chair-reachability observation, while C12 adds deterministic v6 prompt candidate qualification without a model invocation. No actual private item, owner review decision, approved training record, answer-quality case, model training, provider submission, promotion, activation, rollout, deployment, or production use is tracked or authorized.
+- Source code modified: yes, current tracked changes include the F1.13 owner-only review-resolution protocol and Council C6–C13 local shadow contracts, fixtures, artifact writers, and deterministic smokes. They preserve public HTTP, store, audit, provider, training, promotion, activation, and production authority contracts.
+- New feature development: yes, F1.13 private lanes retain synthetic approve/reject replay, terminal and removal refusal, idempotent history, and decision-only crash resume; Council C6–C10 add only content-free local shadow observations and fail-closed contract checks. Council C11 adds strict rebuttal-stability and chair-reachability observation, C12 adds deterministic v6 prompt candidate qualification, and C13 records one unretried local v6 observation as `actual-incompatible`. No actual private item, owner review decision, approved training record, answer-quality case, model training, external provider submission, promotion, activation, rollout, deployment, or production use is tracked or authorized.
 
 ## Generated Evidence Files
 
@@ -72,6 +72,8 @@
 - `evidence/output-artifacts/local-council-chair-synthesis-contract-shadow.json`
 - `evidence/output-artifacts/local-council-rebuttal-stability-shadow.json`
 - `evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json`
+- `evidence/output-artifacts/local-council-v6-actual-compatibility-attempt.json`
+- `evidence/output-artifacts/local-council-v6-actual-compatibility-observation.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay.json`
 - `evidence/output-artifacts/local-relevance-shadow-cache.json`
@@ -151,7 +153,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 281/281 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 282/282 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list

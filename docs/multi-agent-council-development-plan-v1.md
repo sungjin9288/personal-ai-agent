@@ -647,9 +647,19 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - status: `candidate-qualified-keep-stub-only`; this is deterministic fixture qualification, not a new local-model observation.
 - opt-in `seat-scoped-v6-candidate` keeps the v5 specialist schema, claim-id rotation, evidence allowlist, enum, exact target, and identical `nextAction` contract. Its one canonical JSON example and its strict validator use the same runtime-derived descriptor. The chair continues to use the v5 chair contract.
 - fixed deterministic input and delegated prompt freeze the UTF-8 byte length and SHA-256 of all seven opening·rebuttal·chair prompts for v1 through v5; C12 cannot alter any legacy prompt byte.
+
 - injected fake-provider replay passed opening 3/3, rebuttal 3/3, and chair 1/1 with retry 0. Malformed JSON, prose, code fence, duplicate key, missing or extra key, invalid enum, foreign evidence, wrong target, and mismatched `nextAction` all fail closed; the first failure prevents every later provider call.
 - the content-free artifact records v5/v6 UTF-8 byte and line counts by stage only. It freezes C6–C11 id, integrity, decision, and raw file SHA-256, including the C11 raw SHA-256, while retaining `candidate-qualified` separately from `localShadowQualified: false` and `decision: keep-stub-only`.
 - no evaluator, Ollama/model endpoint, external provider, API cost, model download, promotion, activation, training, actual-user data, deployment, or production authority was used. Actual model compatibility and chair reachability remain unverified.
+
+### C13 — v6 actual compatibility observation
+
+- status: `actual-incompatible-keep-stub-only`; the owner-authorized local observation ran exactly once.
+- runtime preflight freezes C6–C12 artifact bindings and all 35 v1–v5 prompt byte/hash values before runtime access. It requires an already-running loopback Ollama service plus installed `qwen2.5:3b` and license provenance; it never starts the service, pulls a model, or retries a request.
+- the exclusive `0600` attempt receipt is written immediately before the first provider request. A prior receipt or final artifact is terminal and prevents runtime access or rerun.
+- `qwen2.5:3b` was installed but unloaded at preflight. The first and only local request loaded it on demand as part of the observation (`beforeLoaded: false`, `afterLoaded: true`); no service start, preload command, or model download was performed.
+- the actual run stopped at the research opening with `structured-output` / `council-contract:invalid-output`. It made one local request with retry 0; the remaining six stages, including chair, are `dependency-blocked`.
+- the final content-free artifact binds both the receipt semantic integrity hash and raw receipt file SHA-256. It records `actual-incompatible` and `chairReachability: not-reached` without raw prompt or output content. `keep-stub-only`, `localShadowQualified: false`, and all promotion, activation, training, private-data, deployment, and production flags remain false.
 
 ## 검증 계획
 

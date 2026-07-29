@@ -1,12 +1,12 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-29T06:58:36.644Z
+- generatedAt: 2026-07-29T07:48:53.487Z
 - verifiedCommit: ee8323226a3b7b64490e0a770f0ebe2ad85bb55f
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: 25ea8d06ffe485cc1a857f9aca6d15415ab97b4d6cb3e82a6cf21d0218ad27f0
+- bundleSha256: cd6d15970e14170f1bace1cf7ec744b791c41a60faf704c7c46cc7e20972b2f2
 - fileCount: 135
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -64,7 +64,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
 | `README.md` | 80099 | `68c998a96b7b40e29666e769c0ea61c30b77a185789e78057ace2698d26f9a16` |
-| `CHANGELOG.md` | 44270 | `427b2110a0b6431f4147da755457b3502e9bfadf1f152f58b52fef7fcf2f80ca` |
+| `CHANGELOG.md` | 44861 | `7bc89d201dfab5421f6bbcd40a78dc53acfd26df80264af0c78496908d1bc5b7` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -86,7 +86,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/memory-retrieval-quality-fixture-v1.md` | 16894 | `6efd3afdeb52bfc563dc5cb1ce66c310813fbde3187cd1f559e7bf6d561eaeaf` |
 | `docs/ml-rag-development-plan-v1.md` | 289807 | `e74e9b6b66e2ec325e66e1432c2a2117da8f3e543a9865215ca1c7eb0e88937c` |
 | `docs/actual-user-query-evaluation-v1.md` | 7573 | `bc4c9cb12b524004b693dd7b91412b2c9750121a4ce8ef96774cc5e5d6a70d40` |
-| `docs/smoke-validation-summary-v1.md` | 49223 | `e10328f0016b88e62bda9686050643b3301287fd41c2af17530923bcc272a3f6` |
+| `docs/smoke-validation-summary-v1.md` | 49223 | `a8eecacff806d8448bc662f1d14023f9a5aa57bb7f409c5807904db535bbf8fe` |
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
 | `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
