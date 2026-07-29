@@ -1,12 +1,15 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-07-29T05:42:32.277Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-07-29T05:42:31.289Z
 - localDate: 2026-07-29
 - branch: codex/council-rebuttal-stability-chair-reachability-shadow
 - commit: f60887df38cefeb7e9aa19d47fdb8823211e2eca
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
-- closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca](releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca/execution-v1-evidence.md)
+- closeout: [execution-v1-closeout.md](docs/releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca/execution-v1-closeout.md)
+- immutableSnapshot: [docs/releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca](docs/releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca)
 - visualArtifactSetSha256: 7c505f85763265318eb5cf87d9c35db9217eee0adc9f9f943f87bb127fc258bd
 - commitPushStatus: not pushed, origin/codex/council-rebuttal-stability-chair-reachability-shadow not found
 - liveValidationMode: archived-preserved-not-rerun

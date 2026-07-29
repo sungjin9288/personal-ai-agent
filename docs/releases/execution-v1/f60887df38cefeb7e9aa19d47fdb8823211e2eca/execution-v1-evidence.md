@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-07-29T05:42:32.277Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-07-29T05:42:23.431Z
 - branch: codex/council-rebuttal-stability-chair-reachability-shadow
 - commit: f60887df38cefeb7e9aa19d47fdb8823211e2eca

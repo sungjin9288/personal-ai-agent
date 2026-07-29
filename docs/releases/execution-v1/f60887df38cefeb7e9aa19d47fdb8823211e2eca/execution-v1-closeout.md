@@ -1,9 +1,12 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-07-29T05:42:32.277Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-07-29T05:42:23.503Z
 - branch: codex/council-rebuttal-stability-chair-reachability-shadow
 - commit: f60887df38cefeb7e9aa19d47fdb8823211e2eca
-- evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
+- evidence: [execution-v1-evidence.md](docs/releases/execution-v1/f60887df38cefeb7e9aa19d47fdb8823211e2eca/execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
