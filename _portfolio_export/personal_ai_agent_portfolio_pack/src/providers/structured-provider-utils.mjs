@@ -516,6 +516,9 @@ function buildCouncilRoleContract(input) {
         seatContract,
       });
     }
+    if (seatContract?.profile === 'seat-scoped-v6-candidate') {
+      return buildStrictPromptCandidateCouncilSpecialistContract({ input, opening, seatContract });
+    }
     if (seatContract?.profile === 'seat-scoped-v5') {
       return buildRebuttalStabilityCouncilSpecialistContract({ input, opening, seatContract });
     }
@@ -580,7 +583,7 @@ ${seatRules}`;
   }
 
   if (input.role === 'executor' && input.councilPhase === 'synthesis') {
-    if (['seat-scoped-v4', 'seat-scoped-v5'].includes(input.councilPromptProfile)) {
+    if (['seat-scoped-v4', 'seat-scoped-v5', 'seat-scoped-v6-candidate'].includes(input.councilPromptProfile)) {
       return buildChairSynthesisContract(input);
     }
     return `Return only valid JSON with this shape:
@@ -823,6 +826,47 @@ Exact C11 rules:
 - targetClaimIds must be exactly ${JSON.stringify(targetClaimIds)} and rejectedOptionIds must be []
 - top-level nextAction and councilStatement.nextAction must be identical; the runtime will not repair, supplement, or rewrite output
 - do not include raw attachments, memory, paths, URLs, or hidden reasoning`;
+}
+
+function describeStrictPromptCandidate(input, opening, seatContract) {
+  const evidenceIds = (opening ? input.councilFrame?.evidenceCatalog : input.councilBrief?.evidenceRefs)
+    ?.map((value) => normalizeText(value?.id || value)).filter(Boolean) || [];
+  if (!evidenceIds.length) throw new Error('seat-scoped-v6-candidate requires at least one available evidence id.');
+  return {
+    claimId: `${seatContract.seatId}:claim-${opening ? 1 : 2}`,
+    claimKeys: ['evidenceRefs', 'id', 'position', 'severity', 'summary'],
+    evidenceIds,
+    positions: ['support', 'challenge', 'unknown'],
+    phaseName: opening ? 'opening' : 'rebuttal',
+    severities: ['normal', 'critical'],
+    statementKeys: ['claims', 'nextAction', 'rejectedOptionIds', 'targetClaimIds'],
+    targetClaimIds: seatContract.requiredTargetClaimId ? [seatContract.requiredTargetClaimId] : [],
+    topLevelKeys: ['artifactContent', 'councilStatement', 'nextAction', 'summaryText'],
+  };
+}
+
+function buildStrictPromptCandidateCouncilSpecialistContract({ input, opening, seatContract }) {
+  const descriptor = describeStrictPromptCandidate(input, opening, seatContract);
+  const example = {
+    summaryText: `bounded ${descriptor.phaseName} position`,
+    artifactContent: `# Council ${opening ? 'Opening' : 'Rebuttal'}\\n...`,
+    nextAction: 'single next action sentence',
+    councilStatement: {
+      claims: [{ id: descriptor.claimId, position: opening ? 'unknown' : 'challenge', summary: 'bounded claim', evidenceRefs: [descriptor.evidenceIds[0]], severity: 'normal' }],
+      targetClaimIds: descriptor.targetClaimIds, rejectedOptionIds: [], nextAction: 'single next action sentence',
+    },
+  };
+  return `Return only strict JSON matching this single canonical example:\n${JSON.stringify(example, null, 2)}
+
+Exact C12 rules:
+- top-level keys must be exactly ${descriptor.topLevelKeys.join(', ')}
+- councilStatement keys must be exactly ${descriptor.statementKeys.join(', ')}
+- the one claim keys must be exactly ${descriptor.claimKeys.join(', ')}
+- claim id must be exactly ${JSON.stringify(descriptor.claimId)}; evidenceRefs must be a non-empty array using only ${JSON.stringify(descriptor.evidenceIds)}
+- targetClaimIds must be exactly ${JSON.stringify(descriptor.targetClaimIds)} and rejectedOptionIds must be []
+- position is ${descriptor.positions.join(', ')}; severity is ${descriptor.severities.join(', ')}; all text fields are non-empty
+- top-level nextAction and councilStatement.nextAction must be identical; the runtime will not repair, supplement, or rewrite output
+- do not include prose, code fences, raw attachments, memory, paths, URLs, or hidden reasoning`;
 }
 
 export function buildRequestPrompt(input, delegatedPrompt) {
@@ -1264,6 +1308,9 @@ function normalizeCouncilClaimIds(statement, input) {
 }
 
 function normalizeCouncilSpecialistOutput(output, input, providerLabel) {
+  if (input.councilPromptProfile === 'seat-scoped-v6-candidate') {
+    return normalizeStrictPromptCandidateCouncilSpecialistOutput(output, input, providerLabel);
+  }
   if (input.councilPromptProfile === 'seat-scoped-v5') {
     return normalizeStrictCouncilSpecialistOutput(output, input, providerLabel);
   }
@@ -1331,6 +1378,51 @@ function normalizeCouncilSpecialistOutput(output, input, providerLabel) {
   };
 }
 
+function normalizeStrictPromptCandidateCouncilSpecialistOutput(output, input, providerLabel) {
+  try {
+    const opening = input.councilPhase === 'opening-position';
+    const seatContract = resolveCouncilSeatPromptContract({
+      councilBrief: input.councilBrief,
+      phase: input.councilPhase,
+      profile: input.councilPromptProfile,
+      seatId: input.councilSeatId,
+    });
+    const descriptor = describeStrictPromptCandidate(input, opening, seatContract);
+    exactCouncilKeys(output, descriptor.topLevelKeys, 'C12 specialist output');
+    const statement = output.councilStatement;
+    exactCouncilKeys(statement, descriptor.statementKeys, 'C12 councilStatement');
+    if (!['artifactContent', 'nextAction', 'summaryText'].every((key) => typeof output[key] === 'string' && output[key].trim()) ||
+        output.nextAction !== statement.nextAction || !Array.isArray(statement.claims) || statement.claims.length !== 1 ||
+        !Array.isArray(statement.targetClaimIds) || !Array.isArray(statement.rejectedOptionIds) || statement.rejectedOptionIds.length !== 0) {
+      throw new Error('C12 specialist required fields are invalid.');
+    }
+    const claim = statement.claims[0];
+    exactCouncilKeys(claim, descriptor.claimKeys, 'C12 claim');
+    if (typeof claim.id !== 'string' || typeof claim.position !== 'string' || typeof claim.severity !== 'string' ||
+        typeof claim.summary !== 'string' || !Array.isArray(claim.evidenceRefs) || claim.id !== descriptor.claimId ||
+        !descriptor.positions.includes(claim.position) || !descriptor.severities.includes(claim.severity) ||
+        !claim.summary.trim() || claim.evidenceRefs.length === 0 || new Set(claim.evidenceRefs).size !== claim.evidenceRefs.length ||
+        !claim.evidenceRefs.every((value) => descriptor.evidenceIds.includes(value)) ||
+        JSON.stringify(statement.targetClaimIds) !== JSON.stringify(descriptor.targetClaimIds)) {
+      throw new Error('C12 specialist semantic contract failed.');
+    }
+    return {
+      artifactContent: output.artifactContent, artifactFileName: `council-${input.councilSeatId}-${opening ? 'opening' : 'rebuttal'}.md`,
+      artifactTitle: `${input.councilSeatId} council ${opening ? 'opening' : 'rebuttal'}`,
+      councilStatement: statement, nextAction: output.nextAction,
+      specialistHandoff: { acceptanceCriteria: ['The persisted council statement passes the council contract.'], blockers: [],
+        currentState: output.summaryText, deliverables: [`${opening ? 'opening' : 'rebuttal'} council statement`],
+        evidence: claim.evidenceRefs, nextHandoff: { recommendedOwner: 'workspace-owner', request: output.nextAction,
+          targetRole: opening ? 'council-brief' : 'manager-merge' } },
+      summaryText: output.summaryText, type: 'specialist',
+    };
+  } catch (error) {
+    throw createProviderFailure(`${providerLabel} C12 council specialist contract failed: ${error.message}`, {
+      failureKind: 'schema-invalid', rawMessage: JSON.stringify(output), recoverable: false, timedOut: false,
+    });
+  }
+}
+
 function normalizeStrictCouncilSpecialistOutput(output, input, providerLabel) {
   try {
     exactCouncilKeys(output, ['artifactContent', 'councilStatement', 'nextAction', 'summaryText'], 'C11 specialist output');
@@ -1385,7 +1477,7 @@ function normalizeCouncilSynthesisOutput(output, input, providerLabel) {
       timedOut: false,
     });
   }
-  if (['seat-scoped-v4', 'seat-scoped-v5'].includes(input.councilPromptProfile)) {
+  if (['seat-scoped-v4', 'seat-scoped-v5', 'seat-scoped-v6-candidate'].includes(input.councilPromptProfile)) {
     try {
       exactCouncilKeys(output, ['artifactContent', 'councilSynthesis', 'nextAction', 'summaryText'], 'chair output');
       exactCouncilKeys(councilSynthesis, [

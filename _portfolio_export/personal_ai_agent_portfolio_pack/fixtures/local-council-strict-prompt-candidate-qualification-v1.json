@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "personal-ai-agent-local-council-strict-prompt-candidate-qualification-fixture/v1",
+  "fixtureId": "local-council-strict-prompt-candidate-qualification-v1",
+  "councilId": "council-local-strict-prompt-candidate-qualification",
+  "workspaceId": "workspace-local-strict-prompt-candidate-qualification",
+  "sessionId": "session-local-strict-prompt-candidate-qualification",
+  "parentRunId": "run-local-strict-prompt-candidate-qualification-planner",
+  "promptProfile": "seat-scoped-v6-candidate",
+  "qualifiedAt": "2026-07-29T06:00:00.000Z",
+  "evidenceCatalog": [
+    { "id": "artifact:bounded-plan", "kind": "artifact" },
+    { "id": "artifact:verification-record", "kind": "artifact" }
+  ],
+  "requiredSeats": ["research", "implementation", "verification"]
+}

@@ -23,6 +23,13 @@
 - docs/project-card.md
 - docs/case-study.md
 - docs/resume-bullets.md
+- src/core/local-council-strict-prompt-candidate-qualification.mjs
+- fixtures/local-council-strict-prompt-candidate-qualification-v1.json
+- scripts/build-local-council-strict-prompt-candidate-qualification.mjs
+- scripts/smoke-local-council-strict-prompt-candidate-qualification.mjs
+- test/council-prompt-profile-freeze.test.mjs
+- test/local-council-strict-prompt-candidate-qualification.test.mjs
+- evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json
 - docs/interview-story.md
 - docs/roadmap.md
 - docs/readme-improvement.md
@@ -178,6 +185,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,479,547 bytes
-- 압축 파일 SHA-256: `76769a46120c40799f1d1900f7cc55ed16c5cc7e9668918488fff485922133f2`
+- 압축 파일 크기: 4,498,553 bytes
+- 압축 파일 SHA-256: `0767e2348425a4ee7df25953b93b5a541796e9d32545515ae8df139b31be7e3d`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

@@ -1,8 +1,8 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-29T05:42:23.503Z
-- branch: codex/council-rebuttal-stability-chair-reachability-shadow
-- commit: f60887df38cefeb7e9aa19d47fdb8823211e2eca
+- generatedAt: 2026-07-29T06:57:20.695Z
+- branch: codex/council-strict-prompt-candidate-qualification
+- commit: ee8323226a3b7b64490e0a770f0ebe2ad85bb55f
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z

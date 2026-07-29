@@ -1,0 +1,270 @@
+{
+  "actualModelCompatibility": "unverified",
+  "actualUserData": false,
+  "apiCostUsd": 0,
+  "baseline": {
+    "c6": {
+      "artifactId": "local-council-provider-shadow-10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+      "decision": "keep-stub-only",
+      "fileSha256": "85e1dc53c1897f481fb004ad8cb5a925dd08eefa153a37d23d206105ea28c2a5",
+      "integrityHash": "10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+      "localShadowQualified": false
+    },
+    "c7": {
+      "artifactId": "local-council-seat-contract-shadow-a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b",
+      "decision": "keep-stub-only",
+      "fileSha256": "18a4d47141b607e67124d4867b0489e9ec92ff4fe59765d9c18a504cd699c206",
+      "integrityHash": "a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b",
+      "localShadowQualified": false
+    },
+    "c8": {
+      "artifactId": "local-council-claim-contract-robustness-25fc074907c5221a976a4c8e71f057d9b92b035f244445d5a55f4032635c642a",
+      "decision": "keep-stub-only",
+      "fileSha256": "ac47dc2368477adb7f04e6c309ad009fd356710b86d89c1c3afbdcd1303df93d",
+      "integrityHash": "25fc074907c5221a976a4c8e71f057d9b92b035f244445d5a55f4032635c642a",
+      "localShadowQualified": false
+    },
+    "c9": {
+      "artifactId": "local-council-rebuttal-synthesis-shadow-6bb2a76a135fff47dd302cec4b697e05f4b4ca262c3db3ecc463831e0a2013f9",
+      "decision": "keep-stub-only",
+      "fileSha256": "b77056fbe11a7939adb83da13a16b5b571a1c153977a194cfe297aa8e1fec822",
+      "integrityHash": "6bb2a76a135fff47dd302cec4b697e05f4b4ca262c3db3ecc463831e0a2013f9",
+      "localShadowQualified": false
+    },
+    "c10": {
+      "artifactId": "local-council-chair-synthesis-contract-shadow-cdeb58b4f643034bb2d0566612db50992d8e49c6eff6bc649227189efa56b513",
+      "decision": "keep-stub-only",
+      "fileSha256": "455ddb9137c05600fa2a08f607c209657d34bc37677ce9ad5c41bacfd759e8df",
+      "integrityHash": "cdeb58b4f643034bb2d0566612db50992d8e49c6eff6bc649227189efa56b513",
+      "localShadowQualified": false
+    },
+    "c11": {
+      "artifactId": "local-council-rebuttal-stability-shadow-ece1beefe359c9ce305479ca80da17f648f4f45331570214fe60d86e12031c1d",
+      "decision": "keep-stub-only",
+      "fileSha256": "484029d99ba835bd998bd18a2aa730b729ea20dd1935ae7e2b078928ebc3dfc2",
+      "integrityHash": "ece1beefe359c9ce305479ca80da17f648f4f45331570214fe60d86e12031c1d",
+      "localShadowQualified": false
+    }
+  },
+  "calls": [
+    {
+      "attemptCount": 1,
+      "durationMs": 0,
+      "failureKind": null,
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": "766dc7c6e6e391659321964a51ad0cfbca42afe2cca635228d8acfe5e3a85b1b",
+      "outputTokens": 0,
+      "phase": "opening-position",
+      "promptHash": "82529559201d3b13e975d11ade279171167531e325dcd334a95872d08d8ed014",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "passed",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 0,
+      "failureKind": null,
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": "46c41d0a47a2861f60ef9515d736c31b721ea93418b2356d2f6b88e9da8c286b",
+      "outputTokens": 0,
+      "phase": "opening-position",
+      "promptHash": "6da518b29236849ceb838a4d32e5b392ea0fa86dec08d123add440de78e58798",
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "passed",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 0,
+      "failureKind": null,
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": "123596b497cd18712b354f535cc3dda3e1fdbeb6bff6468a65d665731e7fb244",
+      "outputTokens": 0,
+      "phase": "opening-position",
+      "promptHash": "432f52c1706d5e68b84aa0bdf656890f8c4cf3a57411d71e7a3844da76bd364b",
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "passed",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 0,
+      "failureKind": null,
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": "36506407df4bbb9706a0c93fd004239f8af9d4f3f8cf9f358bdc50627d1ff471",
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": "f0f85a2d4558efde3f8dc54ccf959afba12e74221cc20ba548c4edf549a2f9e9",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "passed",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 0,
+      "failureKind": null,
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": "dc982a371e3357f0a3c7bab25847d3b6c4457619b7c2212f40df79ac559b1160",
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": "f0e5c762aa8a00b560aca0753a9cb4b9e5360af02b34c9758b8259f708f77f8f",
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "passed",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 0,
+      "failureKind": null,
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": "fe2d2e6c0786e3a51f22166ef977b1cd52e6bce5bd7d483b38fa8060b6399d60",
+      "outputTokens": 0,
+      "phase": "rebuttal",
+      "promptHash": "56704a40f3da48ea13bf09251f539e901423b0913e592ffe7d368841787cff2a",
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "passed",
+      "totalTokens": 0
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 0,
+      "failureKind": null,
+      "failureStage": null,
+      "inputTokens": 0,
+      "outputHash": "2075094f38ea3aaa90408c1f5466cdd0dd79273df9838b97963c50032e311e60",
+      "outputTokens": 0,
+      "phase": "synthesis",
+      "promptHash": "d2e0b3e235249caaad502db6933a55ff4be2b8cb1a4b7fea2998bec4dbf71197",
+      "retryCount": 0,
+      "seatId": "chair",
+      "status": "passed",
+      "totalTokens": 0
+    }
+  ],
+  "candidateStatus": "candidate-qualified",
+  "chairReachability": "unverified",
+  "defaultProfilePromotionAuthorized": false,
+  "externalProviderCallCount": 0,
+  "fixtureHash": "edaea406f8fb2b5b317973f31d9d633099920dd429aa85f2ec3ec944a79be635",
+  "localShadowQualified": false,
+  "productionReadyClaim": false,
+  "promptComparison": {
+    "v5": {
+      "bytes": 11035,
+      "lines": 179,
+      "stages": [
+        {
+          "bytes": 1441,
+          "lines": 25,
+          "stage": "opening-position:research"
+        },
+        {
+          "bytes": 1453,
+          "lines": 25,
+          "stage": "opening-position:implementation"
+        },
+        {
+          "bytes": 1449,
+          "lines": 25,
+          "stage": "opening-position:verification"
+        },
+        {
+          "bytes": 1493,
+          "lines": 25,
+          "stage": "rebuttal:research"
+        },
+        {
+          "bytes": 1501,
+          "lines": 25,
+          "stage": "rebuttal:implementation"
+        },
+        {
+          "bytes": 1489,
+          "lines": 25,
+          "stage": "rebuttal:verification"
+        },
+        {
+          "bytes": 2209,
+          "lines": 29,
+          "stage": "synthesis:chair"
+        }
+      ]
+    },
+    "v6": {
+      "bytes": 11347,
+      "lines": 251,
+      "stages": [
+        {
+          "bytes": 1487,
+          "lines": 36,
+          "stage": "opening-position:research"
+        },
+        {
+          "bytes": 1499,
+          "lines": 36,
+          "stage": "opening-position:implementation"
+        },
+        {
+          "bytes": 1495,
+          "lines": 36,
+          "stage": "opening-position:verification"
+        },
+        {
+          "bytes": 1551,
+          "lines": 38,
+          "stage": "rebuttal:research"
+        },
+        {
+          "bytes": 1559,
+          "lines": 38,
+          "stage": "rebuttal:implementation"
+        },
+        {
+          "bytes": 1547,
+          "lines": 38,
+          "stage": "rebuttal:verification"
+        },
+        {
+          "bytes": 2209,
+          "lines": 29,
+          "stage": "synthesis:chair"
+        }
+      ]
+    }
+  },
+  "promptProfile": "seat-scoped-v6-candidate",
+  "qualification": {
+    "decision": "keep-stub-only",
+    "deterministicContractPassed": true
+  },
+  "qualifiedAt": "2026-07-29T06:00:00.000Z",
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-council-strict-prompt-candidate-qualification/v1",
+  "summary": {
+    "callCount": 7,
+    "failedCallCount": 0,
+    "notAttemptedCallCount": 0,
+    "passedCallCount": 7,
+    "retryCount": 0
+  },
+  "trainingAuthorized": false,
+  "validation": {
+    "code": "ok",
+    "manifestDigest": "sha256:76b7008dab61fa2548bd981ee3bcda5c4040dfa4abdbea97ed579cb7df97e70f",
+    "status": "passed"
+  },
+  "id": "local-council-strict-prompt-candidate-qualification-b1fbd59e44f38cf8e03ff61e8d963fc7ec31b8d385be7ff7b9ff4d38c7c0549e",
+  "integrityHash": "b1fbd59e44f38cf8e03ff61e8d963fc7ec31b8d385be7ff7b9ff4d38c7c0549e"
+}

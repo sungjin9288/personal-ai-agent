@@ -3,12 +3,14 @@ const ROBUSTNESS_PROFILE_ID = 'seat-scoped-v2';
 const REBUTTAL_COMPLETION_PROFILE_ID = 'seat-scoped-v3';
 const CHAIR_SYNTHESIS_CONTRACT_PROFILE_ID = 'seat-scoped-v4';
 const REBUTTAL_STABILITY_PROFILE_ID = 'seat-scoped-v5';
+const STRICT_PROMPT_CANDIDATE_PROFILE_ID = 'seat-scoped-v6-candidate';
 const SUPPORTED_PROFILE_IDS = new Set([
   PROFILE_ID,
   ROBUSTNESS_PROFILE_ID,
   REBUTTAL_COMPLETION_PROFILE_ID,
   CHAIR_SYNTHESIS_CONTRACT_PROFILE_ID,
   REBUTTAL_STABILITY_PROFILE_ID,
+  STRICT_PROMPT_CANDIDATE_PROFILE_ID,
 ]);
 
 const SEAT_CONTRACTS = {
@@ -159,4 +161,8 @@ export function getCouncilChairSynthesisContractPromptProfileId() {
 
 export function getCouncilRebuttalStabilityPromptProfileId() {
   return REBUTTAL_STABILITY_PROFILE_ID;
+}
+
+export function getCouncilStrictPromptCandidateProfileId() {
+  return STRICT_PROMPT_CANDIDATE_PROFILE_ID;
 }
