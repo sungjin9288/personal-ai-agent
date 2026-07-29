@@ -607,6 +607,31 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - C9은 실패 뒤 prompt, schema, threshold를 수정하거나 재실행하지 않았다. external provider,
   API 비용, model download, 새 dependency, F1.3 authority, concurrent dispatch는 없다.
 
+### C10 — Chair synthesis exact-contract shadow
+
+- status: implementation and one unretried local observation complete; promotion remains denied.
+
+구현 범위:
+
+- opt-in `seat-scoped-v4`는 research·implementation·verification opening/rebuttal의 v3 prompt bytes와
+  behavior를 그대로 유지한다. executor chair synthesis만 Council Context의 claim·evidence allowlist를
+  그대로 사용해 exact top-level/nested JSON key contract를 요구한다.
+- evaluator는 seven-stage sequential order와 retry 0을 유지한다. provider response 뒤 normalize 실패는
+  `structured-output`, synthesis record 실패는 `council-synthesis`, manifest 실패는
+  `council-manifest`, request 전 실패는 `provider-request`로 분리하며 post-provider token/hash를 보존한다.
+- C10 artifact는 C6·C7·C8·C9의 artifact id, integrity hash, decision, raw file SHA-256을 결속한다.
+  `chairSynthesisContractPassed`와 `fullContractPassed`는 관측값으로 분리하지만, 둘 다 true여도
+  `localShadowQualified: false`와 `decision: keep-stub-only`를 유지한다.
+
+실제 관측 결과와 경계:
+
+- C9의 `provider:unknown`은 transport/API failure로 재해석하지 않았다. C10의 새 run은 opening 3/3 뒤
+  implementation rebuttal의 `structured-output` stage `council-contract:missing-field`를 최초 실패로 기록했다. verification rebuttal까지
+  진행해 5/7이 통과했지만 chair synthesis는 dependency-blocked였으므로 exact chair contract는 관측되지 않았다.
+- 실패 뒤 prompt, schema, threshold를 완화하거나 같은 goal에서 재실행하지 않았다.
+- promotion, activation, training, actual user data, production claim, external provider, API cost는 false 또는
+  zero이며, C6–C9 raw file SHA-256 binding과 content-free evidence smoke를 통과했다.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.
@@ -614,7 +639,7 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 1. touched council contract와 failure boundary unit test
 2. deterministic stub council smoke
 3. 기존 parallel specialist, retry, reviewer, approval, timeline regression
-4. C6·C7·C8 baseline integrity와 C9 synthesis shadow content-free evidence smoke
+4. C6·C7·C8·C9 baseline integrity와 C10 chair synthesis shadow content-free evidence smoke
 5. UI 변경이 있는 C2만 local browser smoke
 6. `npm test`
 7. `npm run smoke:docs-gates`

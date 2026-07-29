@@ -1,0 +1,256 @@
+{
+  "actualUserData": false,
+  "apiCostUsd": 0,
+  "baseline": {
+    "c6": {
+      "artifactId": "local-council-provider-shadow-10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+      "decision": "keep-stub-only",
+      "integrityHash": "10faee9a5cf1b502dbba304d8b027262e51dc2b555d422f1aeb5b6aecbf83d65",
+      "localShadowQualified": false,
+      "fileSha256": "85e1dc53c1897f481fb004ad8cb5a925dd08eefa153a37d23d206105ea28c2a5"
+    },
+    "c7": {
+      "artifactId": "local-council-seat-contract-shadow-a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b",
+      "decision": "keep-stub-only",
+      "integrityHash": "a7c3346f508383046b248862d3a696ff71ac64980f3055d218d5a4548aefe87b",
+      "localShadowQualified": false,
+      "fileSha256": "18a4d47141b607e67124d4867b0489e9ec92ff4fe59765d9c18a504cd699c206"
+    },
+    "c8": {
+      "artifactId": "local-council-claim-contract-robustness-25fc074907c5221a976a4c8e71f057d9b92b035f244445d5a55f4032635c642a",
+      "decision": "keep-stub-only",
+      "integrityHash": "25fc074907c5221a976a4c8e71f057d9b92b035f244445d5a55f4032635c642a",
+      "localShadowQualified": false,
+      "fileSha256": "ac47dc2368477adb7f04e6c309ad009fd356710b86d89c1c3afbdcd1303df93d"
+    },
+    "c9": {
+      "artifactId": "local-council-rebuttal-synthesis-shadow-6bb2a76a135fff47dd302cec4b697e05f4b4ca262c3db3ecc463831e0a2013f9",
+      "decision": "keep-stub-only",
+      "integrityHash": "6bb2a76a135fff47dd302cec4b697e05f4b4ca262c3db3ecc463831e0a2013f9",
+      "localShadowQualified": false,
+      "fileSha256": "b77056fbe11a7939adb83da13a16b5b571a1c153977a194cfe297aa8e1fec822"
+    }
+  },
+  "calls": [
+    {
+      "attemptCount": 1,
+      "durationMs": 9775,
+      "failureKind": null,
+      "inputTokens": 1018,
+      "outputHash": "d6c58c9296da831bc3d6c9e6c34fd7c13a7a921643db563d6b30b54da94433ac",
+      "outputTokens": 176,
+      "phase": "opening-position",
+      "promptHash": "1f638db6fa97247e1f78032603553a57a292aa847c7e219dcdc4cc16bb5f52b1",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "passed",
+      "totalTokens": 1194,
+      "failureSubreason": null,
+      "failureStage": null
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 7327,
+      "failureKind": null,
+      "inputTokens": 1016,
+      "outputHash": "f93349fb2d4899de897f88d08753d5e800ed4a3bc390b1bf44854cd8cd7b3efc",
+      "outputTokens": 183,
+      "phase": "opening-position",
+      "promptHash": "adafc9e3d417f23ded4832ca95072b30fe0f840d38abc7bc6acf68a8ca84a333",
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "passed",
+      "totalTokens": 1199,
+      "failureSubreason": null,
+      "failureStage": null
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 5627,
+      "failureKind": null,
+      "inputTokens": 1015,
+      "outputHash": "d73f241b597f43b6535bb7a648cc2c5efaee5c9ca8d93ec3f201038378d19ea7",
+      "outputTokens": 145,
+      "phase": "opening-position",
+      "promptHash": "7dccaf232bf3382f62fb4f953c2eceee74f83ea390aa0f04c2fb0426edfca9c0",
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "passed",
+      "totalTokens": 1160,
+      "failureSubreason": null,
+      "failureStage": null
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 10042,
+      "failureKind": null,
+      "inputTokens": 1277,
+      "outputHash": "9a086d8a1c283c95d524a51ee06f8d79944b2d30c05f64fa203fe689d53b4771",
+      "outputTokens": 187,
+      "phase": "rebuttal",
+      "promptHash": "6daab356fd04886e87d0ece8f4c12ec5675ccc247aedf75efea18b9b51cdb252",
+      "retryCount": 0,
+      "seatId": "research",
+      "status": "passed",
+      "totalTokens": 1464,
+      "failureSubreason": null,
+      "failureStage": null
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 10539,
+      "failureKind": "council-contract:missing-field",
+      "inputTokens": 1275,
+      "outputHash": "5f2dde9d2008bfce87d5bebb02ff5f27094d229adae43e832e4f02b648baf046",
+      "outputTokens": 200,
+      "phase": "rebuttal",
+      "promptHash": "260d26d01b671cc571b33490e5bea6547534f3c41b3d1100efe06fe618e9b3e3",
+      "retryCount": 0,
+      "seatId": "implementation",
+      "status": "failed",
+      "totalTokens": 1475,
+      "failureSubreason": null,
+      "failureStage": "structured-output"
+    },
+    {
+      "attemptCount": 1,
+      "durationMs": 10906,
+      "failureKind": null,
+      "inputTokens": 1274,
+      "outputHash": "d4265cec5de2ba4ce32497727f1bac20502fb9908aa1e918c303e22d47511574",
+      "outputTokens": 205,
+      "phase": "rebuttal",
+      "promptHash": "d15a14859f8fabfe540951ac95a5c8bce253c8052d6932750c39a87b4abb83b9",
+      "retryCount": 0,
+      "seatId": "verification",
+      "status": "passed",
+      "totalTokens": 1479,
+      "failureSubreason": null,
+      "failureStage": null
+    },
+    {
+      "attemptCount": 0,
+      "durationMs": 0,
+      "failureKind": "dependency-blocked",
+      "inputTokens": 0,
+      "outputHash": null,
+      "outputTokens": 0,
+      "phase": "synthesis",
+      "promptHash": null,
+      "retryCount": 0,
+      "seatId": "chair",
+      "status": "not-attempted",
+      "totalTokens": 0,
+      "failureSubreason": null,
+      "failureStage": null
+    }
+  ],
+  "chairSynthesisContractPassed": false,
+  "defaultProfilePromotionAuthorized": false,
+  "diagnostic": {
+    "failureKind": "council-contract:missing-field",
+    "failureSubreason": "claim-severity",
+    "inputTokens": 1298,
+    "outputHash": "e1f81c661b0a783ed5dcb93d1aaf97fbd0c24bf24c7c413814e9ea591c904931",
+    "outputTokens": 184,
+    "promptHash": "3ce634da79bef716662b73054e84af4795282078513b589b3e8bdc739bb4197e",
+    "totalTokens": 1482,
+    "exactFailureReproduced": true
+  },
+  "externalProviderCallCount": 0,
+  "fixtureHash": "a1a2cdd2dddf2f6edc748fb7c35f0b9b4c404df88f5551aab4b08c12698c6aea",
+  "fullContractPassed": false,
+  "localShadowQualified": false,
+  "model": {
+    "digest": "357c53fb659c5076de1d65ccb0b397446227b71a42be9d1603d46168015c9e4b",
+    "id": "qwen2.5:3b",
+    "licenseHash": "a032f549c4cd3b9402e6cb7d4aa84c7911cacb580ae5df3972035982e41ff192",
+    "sizeBytes": 1929912432
+  },
+  "observedAt": "2026-07-29T02:53:37.522Z",
+  "openingIsolation": {
+    "contextHash": "bc0ee8a5f8455672dd10deb49da300d37c626dfae87e6e3f58ec7349630f129c",
+    "contextKind": "council-frame",
+    "otherOpeningStatementCount": 0,
+    "verified": true
+  },
+  "productionReadyClaim": false,
+  "promptProfile": {
+    "hash": "323adcc9ef75cebf9a37bd6101e64ab0fbbbbe27d12f6b2efc24640ea4672efe",
+    "id": "seat-scoped-v4"
+  },
+  "qualification": {
+    "c6BaselinePreserved": true,
+    "c7BaselinePreserved": true,
+    "c8BaselinePreserved": true,
+    "c9BaselinePreserved": true,
+    "deterministicRebuttalTargetsVerified": true,
+    "fullSequenceAttempted": false,
+    "openingIsolationVerified": true,
+    "seatScopedOpeningPromptsVerified": true,
+    "validationObserved": true,
+    "decision": "keep-stub-only",
+    "limitations": [
+      "actual-user-data-not-evaluated",
+      "independent-review-not-performed",
+      "semantic-council-quality-not-validated",
+      "same-model-single-run-only",
+      "default-runtime-activation-not-authorized"
+    ]
+  },
+  "runtime": {
+    "afterContextLength": 4096,
+    "afterLoaded": true,
+    "afterSizeBytes": 2390300672,
+    "afterVramBytes": 2390300672,
+    "beforeLoaded": false,
+    "cloudFeaturesDisabled": true,
+    "endpointAlias": "loopback-ollama",
+    "kind": "ollama",
+    "transportLoopback": true,
+    "version": "0.23.0"
+  },
+  "runtimeActivation": false,
+  "schemaVersion": "personal-ai-agent-local-council-chair-synthesis-contract-shadow/v1",
+  "summary": {
+    "callCount": 7,
+    "distinctOpeningOutputCount": 3,
+    "distinctOpeningPromptCount": 3,
+    "failedCallCount": 1,
+    "matchedRebuttalTargetCount": 3,
+    "notAttemptedCallCount": 1,
+    "passedCallCount": 5,
+    "totalDurationMs": 54216,
+    "totalInputTokens": 6875,
+    "totalOutputTokens": 1096,
+    "totalTokens": 7971
+  },
+  "targetBindings": [
+    {
+      "expectedTargetHash": "9b1dcc20ffd66d8a853453ec5fef3dcba61c7fd4daac0fde498a844583a63c7a",
+      "matched": true,
+      "observedTargetHash": "9b1dcc20ffd66d8a853453ec5fef3dcba61c7fd4daac0fde498a844583a63c7a",
+      "seatId": "research"
+    },
+    {
+      "expectedTargetHash": "8f34b30af14059f877d622e7aa1c8f4101b991736dfabad7b9c8d4b0870d46e7",
+      "matched": true,
+      "observedTargetHash": "8f34b30af14059f877d622e7aa1c8f4101b991736dfabad7b9c8d4b0870d46e7",
+      "seatId": "implementation"
+    },
+    {
+      "expectedTargetHash": "70585eef88d4a881790d588cd82c058b9f976e4d294a952bcd8c90fdf67376ef",
+      "matched": true,
+      "observedTargetHash": "70585eef88d4a881790d588cd82c058b9f976e4d294a952bcd8c90fdf67376ef",
+      "seatId": "verification"
+    }
+  ],
+  "trainingAuthorized": false,
+  "validation": {
+    "code": "council-contract-failed",
+    "manifestDigest": null,
+    "status": "failed"
+  },
+  "id": "local-council-chair-synthesis-contract-shadow-cdeb58b4f643034bb2d0566612db50992d8e49c6eff6bc649227189efa56b513",
+  "integrityHash": "cdeb58b4f643034bb2d0566612db50992d8e49c6eff6bc649227189efa56b513"
+}
