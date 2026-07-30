@@ -29,6 +29,14 @@
 - test/local-v1-completion-closeout.test.mjs
 - docs/local-v1-completion-closeout-v1.md
 - evidence/output-artifacts/local-v1-completion-closeout.json
+- docs/council-blueprint-preview-v1.md
+- docs/council-concurrent-schedule-shadow-v1.md
+- src/core/council-blueprint-preview.mjs
+- src/core/council-concurrent-schedule-shadow.mjs
+- scripts/smoke-council-blueprint-preview.mjs
+- scripts/smoke-council-concurrent-schedule-shadow.mjs
+- test/council-blueprint-preview.test.mjs
+- test/council-concurrent-schedule-shadow.test.mjs
 - src/core/local-council-strict-prompt-candidate-qualification.mjs
 - fixtures/local-council-strict-prompt-candidate-qualification-v1.json
 - scripts/build-local-council-strict-prompt-candidate-qualification.mjs
@@ -199,6 +207,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,532,804 bytes
-- 압축 파일 SHA-256: `3380386e16d3ec3e811bcf9797562eed7dd928c612afc358e82928f9d95fabf7`
+- 압축 파일 크기: 4,551,558 bytes
+- 압축 파일 SHA-256: `5dcdb5032fbabc8265d79e3f40d81a6f266400b2689fae01fd2a73d9c4d22cfa`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료
