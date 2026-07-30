@@ -41,7 +41,7 @@
     "actual-pilot-feedback-and-metrics",
     "hosted-saas-or-production-deployment"
   ],
-  "implementationCommit": "bb67e79641f737656e2b62f9256fc7002c584e40",
+  "implementationCommit": "089710826622674f01d224a6b53465f44cab0ed7",
   "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v1",
   "sourceDocumentSha256": {
     "README.md": "a22c4fe26ceb85aca0417f7dc588418c18580f2d1c38d7792a80870948f21bc5",
@@ -52,8 +52,8 @@
     "docs/roadmap.md": "660a57a4b05bb84ba8ab91558a83aa277a77a1ed4c8726495e72c04aa4183124",
     "docs/product-plan-v1.md": "1b6443d3fed754c3e737171fd0e8c0c155e8ca9fd9437e82da81067e7e38039b",
     "docs/local-v1-completion-closeout-v1.md": "d2446625cf22f3fca103d8896dbdc136c740d7884dd7aef9122e83cbbfbd3137",
-    "docs/smoke-validation-summary-v1.md": "a7c344f8d137d1d66780f471181dca4555bc010bdd77c294ed4eaab87aafcc7b",
-    "evidence/evidence_manifest.md": "8c18621ab68c542dd60d487ef19008ab0a1039096ac5be302e504a046c895ecb"
+    "docs/smoke-validation-summary-v1.md": "d09636e2ef1c21d5139ad807ed932c2e35d74a7b70597dd9c836173d90e53279",
+    "evidence/evidence_manifest.md": "c2590adddc38e4bb9bd1e82dddcd0cdfaa5ea3349246519efaa8b482be77446a"
   },
   "status": "local-v1-complete-external-evidence-open",
   "verification": {
@@ -61,21 +61,21 @@
       {
         "failed": 0,
         "id": "unit-tests",
-        "passed": 1820,
+        "passed": 1826,
         "skipped": 1,
         "status": "passed"
       },
       {
         "failed": 0,
         "id": "docs-gates",
-        "passed": 51,
+        "passed": 52,
         "skipped": 0,
         "status": "passed"
       },
       {
         "failed": 0,
         "id": "smoke-all",
-        "passed": 284,
+        "passed": 285,
         "skipped": 0,
         "status": "passed"
       },
@@ -101,10 +101,10 @@
         "status": "passed"
       }
     ],
-    "reportSha256": "2064e67f2da7a162a7332ba9d26588bbc0a8d351f641d8222b79d02bd72af72f",
+    "reportSha256": "68512447a8d382bd0b6e7dcd8b4fb02ac6971ee503a6540a26d94e5ea436d1ca",
     "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v1",
     "status": "passed"
   },
-  "id": "local-v1-completion-closeout-dbf9831f85f523b9665cd75143d3072fb2b00a12d74f4c3a481ea545ac3cef3a",
-  "integrityHash": "dbf9831f85f523b9665cd75143d3072fb2b00a12d74f4c3a481ea545ac3cef3a"
+  "id": "local-v1-completion-closeout-a30fba23ac305d6cfe403120d68127db64b1193bf673607b765f7212b5372d94",
+  "integrityHash": "a30fba23ac305d6cfe403120d68127db64b1193bf673607b765f7212b5372d94"
 }

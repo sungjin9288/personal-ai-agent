@@ -1,7 +1,7 @@
 # Pilot Export Package v1
 
 - status: dry-run-package-current
-- generatedAt: 2026-07-30T00:11:11.279Z
+- generatedAt: 2026-07-30T00:35:51.501Z
 - verifiedCommit: 49586b6179382f005bedecfb578f792707e4fcad
 - boundImplementationCommit: 49586b6179382f005bedecfb578f792707e4fcad
 - deterministicEvidenceStatus: current-run
@@ -9,7 +9,7 @@
 - packageMode: manifest-only
 - productionReadyClaim: false
 - shareable: yes-after-hygiene-pass
-- bundleSha256: adcf64e587f4692bae46f6fef0738da0b41a5fb1880f423d7597274a68f0e2e7
+- bundleSha256: 852ea37e4d978908a514a7a9d3ee1938a33e352a5ad87bc0532873c632264596
 - fileCount: 137
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
 - relatedDeployment: [deployment-pilot-v1.md](deployment-pilot-v1.md)
@@ -67,7 +67,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | Path | Bytes | Sha256 |
 | --- | ---: | --- |
 | `README.md` | 81111 | `a22c4fe26ceb85aca0417f7dc588418c18580f2d1c38d7792a80870948f21bc5` |
-| `CHANGELOG.md` | 45277 | `9783ec36c710e600cd62c689e07b5bf992e959a1c05a67deb249babe15a5dbc3` |
+| `CHANGELOG.md` | 45277 | `c0498b912933e72c2bcb7810f19da7a7c326364a555258e7b5020d9664cb846c` |
 | `links.md` | 1274 | `55d078fd4ed06bbe725bbd39b527c476a2dd925f66bfba0c729868ed5ece81d1` |
 | `SUPPORT.md` | 3031 | `014678a1dbde6ba23e9cb4f9f0792bf28a67302799dfa9ac4eac6d6e1e43a2b1` |
 | `CONTRIBUTING.md` | 3538 | `c0eb900493b00cc33250a4e4122107a99e2fdc71f4e7441a11bac1d04c67e9b2` |
@@ -93,7 +93,7 @@ The package can be shared only after release artifact hygiene passes with zero c
 | `docs/external-evidence-blockers-v1.md` | 6443 | `1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a` |
 | `docs/local-v1-completion-closeout-v1.md` | 3003 | `d2446625cf22f3fca103d8896dbdc136c740d7884dd7aef9122e83cbbfbd3137` |
 | `docs/operator-surface-demo-evidence-v1.md` | 5487 | `c8b550add27b5e0b0f0692a755707397c1a287d4c64d9e07801fde35f317f2c4` |
-| `evidence/output-artifacts/local-v1-completion-closeout.json` | 4013 | `2beaae44951abad2196cc75547857cc8af2f46acab744e13d5afe180b8d6cbf6` |
+| `evidence/output-artifacts/local-v1-completion-closeout.json` | 4013 | `bb6465c79a98489022bde7e594a9be06147b9b9eab900da85ecd7074e56a4d41` |
 | `evidence/output-artifacts/local-embedding-model-qualification.json` | 15383 | `2d8960b1c4da4cfc77bf69b4ff400e05b1f5adf508d67f5544409ded528b40d5` |
 | `evidence/output-artifacts/local-retrieval-robustness.json` | 30382 | `37307acf03ee242fc7a4b7ee16691608c10fecda370a8df8bc1db8f768dd5a46` |
 | `evidence/output-artifacts/local-relevance-reranker-evaluation.json` | 70503 | `0192e188a225d54c706dc6b5a9be72cd97fb6362abc64eb83f3e361c540b6b99` |
