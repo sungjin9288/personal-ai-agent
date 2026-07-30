@@ -37,12 +37,21 @@ const manifest = fs.readFileSync(
   'utf8',
 );
 
+const recordedActiveAt = new Date(Date.parse(stored.requestedAt) + 1).toISOString();
 assert.doesNotThrow(() =>
   assertFineTuningDataIntakeRequest(stored, {
     assessment,
     collectionPlan,
-    now: new Date().toISOString(),
+    now: recordedActiveAt,
   }));
+assert.throws(
+  () => assertFineTuningDataIntakeRequest(stored, {
+    assessment,
+    collectionPlan,
+    now: stored.expiresAt,
+  }),
+  /Fine-tuning data intake request expired/,
+);
 assert.equal(stored.status, 'pending-owner-review');
 assert.equal(stored.bindings.collectionPlanId, collectionPlan.id);
 assert.equal(

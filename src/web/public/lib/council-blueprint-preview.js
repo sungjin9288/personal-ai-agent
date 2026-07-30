@@ -45,7 +45,8 @@ export function renderCouncilBlueprintPreview({ catalog, error = '', loading = f
         const isSelected = selected.has(role.id);
         const cannotRemove = isSelected && count <= 3;
         const cannotAdd = !isSelected && count >= 7;
-        return `<button type="button" class="council-blueprint-role-button${isSelected ? ' is-selected' : ''}" data-council-blueprint-role="${escapeHtml(role.id)}" aria-pressed="${isSelected}" aria-label="${isSelected ? 'Remove' : 'Add'} ${escapeHtml(role.id)} council specialist"${loading || cannotRemove || cannotAdd ? ' disabled' : ''}>${escapeHtml(title(role.id))}</button>`;
+        const actionLabel = `${isSelected ? 'Remove' : 'Add'} ${role.id} council specialist`;
+        return `<button type="button" class="council-blueprint-role-button${isSelected ? ' is-selected' : ''}" data-council-blueprint-role="${escapeHtml(role.id)}" aria-pressed="${isSelected}" aria-label="${escapeHtml(actionLabel)}" title="${escapeHtml(actionLabel)}"${loading || cannotRemove || cannotAdd ? ' disabled' : ''}>${escapeHtml(title(role.id))}</button>`;
       }).join('')}
     </div>
     <p class="council-blueprint-selection-count">${count}/7 specialist roles selected (minimum 3). Chair and reviewer are locked.</p>
