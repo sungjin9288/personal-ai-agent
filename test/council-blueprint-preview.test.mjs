@@ -10,6 +10,7 @@ import {
   projectCouncilBlueprintMeetingStatus,
 } from '../src/core/council-blueprint-preview.mjs';
 import { renderCouncilBlueprintPreview } from '../src/web/public/lib/council-blueprint-preview.js';
+import { createCouncilConcurrentScheduleShadow } from '../src/core/council-concurrent-schedule-shadow.mjs';
 
 const DEFAULT_ROLES = ['research', 'implementation', 'verification'];
 
@@ -153,6 +154,19 @@ test('council blueprint renderer keeps controls accessible and has no execution 
     selectedRoleIds: DEFAULT_ROLES,
   });
   assert.equal((loadingMarkup.match(/ disabled/g) || []).length, 7);
+
+  const scheduleMarkup = renderCouncilBlueprintPreview({
+    catalog,
+    preview,
+    scheduleShadow: createCouncilConcurrentScheduleShadow({ roleIds: DEFAULT_ROLES }),
+    selectedRoleIds: DEFAULT_ROLES,
+  });
+  assert.match(scheduleMarkup, /Sequential baseline vs four candidate waves/);
+  assert.match(scheduleMarkup, /canonical merge: opening:research, opening:implementation, opening:verification/);
+  assert.match(scheduleMarkup, /Parity — stage ids: true, dependencies: true, authority: true/);
+  assert.match(scheduleMarkup, /Blocker: none/);
+  assert.match(scheduleMarkup, /actualConcurrentDispatch: false/);
+  assert.match(scheduleMarkup, /No execution or dispatch action is available here/);
 });
 
 test('council preview leaves the mission constraint payload builder byte-equivalent', () => {

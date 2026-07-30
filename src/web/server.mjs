@@ -18,6 +18,7 @@ import {
   getCouncilBlueprintCatalog,
   toCouncilBlueprintPreviewErrorPayload,
 } from '../core/council-blueprint-preview.mjs';
+import { createCouncilConcurrentScheduleShadow } from '../core/council-concurrent-schedule-shadow.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
 import { createReleaseCommandOrchestrator } from '../core/release-command-orchestrator.mjs';
@@ -72,6 +73,15 @@ const preflightAllScriptPath = path.join(codeRootDir, 'scripts', 'preflight-exec
 const preflightScriptPath = path.join(codeRootDir, 'scripts', 'preflight-execution-v1-live.mjs');
 const snapshotScriptPath = path.join(codeRootDir, 'scripts', 'archive-execution-v1-snapshot.mjs');
 const evidenceDocPath = path.join(rootDir, 'docs', 'execution-v1-evidence.md');
+
+function parseCouncilCompletionEvent(value) {
+  const parts = String(value || '').split('|');
+  if (parts.length !== 3 || parts.some((part) => !part.trim())) {
+    throw new CouncilBlueprintPreviewValidationError('council-concurrent-schedule-shadow: completion events must use stageId|attemptId|outcome.');
+  }
+  const [stageId, attemptId, outcome] = parts;
+  return { attemptId, outcome, stageId };
+}
 const closeoutDocPath = path.join(rootDir, 'docs', 'execution-v1-closeout.md');
 const handoffDocPath = path.join(rootDir, 'docs', 'execution-v1-handoff.md');
 const releaseReadinessDocPath = path.join(rootDir, 'docs', 'release-readiness-v1.md');
@@ -2205,6 +2215,19 @@ async function handleApi(request, response, url) {
           roleIds,
         }),
       );
+    } catch (error) {
+      if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
+        throw error;
+      }
+      sendJson(response, 400, toCouncilBlueprintPreviewErrorPayload(error));
+    }
+  });
+
+  registerExactRoute('GET', '/api/council/concurrent-schedule-shadow', async () => {
+    try {
+      const roleIds = url.searchParams.has('role') ? url.searchParams.getAll('role') : undefined;
+      const completionEvents = url.searchParams.getAll('completionEvent').map(parseCouncilCompletionEvent);
+      sendJson(response, 200, createCouncilConcurrentScheduleShadow({ completionEvents, roleIds }));
     } catch (error) {
       if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
         throw error;

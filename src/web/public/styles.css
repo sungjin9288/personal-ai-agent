@@ -1648,6 +1648,10 @@ button {
   flex-basis: 100%;
 }
 
+.council-schedule-shadow {
+  background: var(--surface-veil);
+}
+
 .council-blueprint-status.is-error {
   color: var(--danger);
 }

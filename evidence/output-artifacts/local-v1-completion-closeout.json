@@ -41,7 +41,7 @@
     "actual-pilot-feedback-and-metrics",
     "hosted-saas-or-production-deployment"
   ],
-  "implementationCommit": "089710826622674f01d224a6b53465f44cab0ed7",
+  "implementationCommit": "05e5daa76c82d3204be9fbf7adac342c8bff653f",
   "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v1",
   "sourceDocumentSha256": {
     "README.md": "a22c4fe26ceb85aca0417f7dc588418c18580f2d1c38d7792a80870948f21bc5",
@@ -52,8 +52,8 @@
     "docs/roadmap.md": "660a57a4b05bb84ba8ab91558a83aa277a77a1ed4c8726495e72c04aa4183124",
     "docs/product-plan-v1.md": "1b6443d3fed754c3e737171fd0e8c0c155e8ca9fd9437e82da81067e7e38039b",
     "docs/local-v1-completion-closeout-v1.md": "d2446625cf22f3fca103d8896dbdc136c740d7884dd7aef9122e83cbbfbd3137",
-    "docs/smoke-validation-summary-v1.md": "d09636e2ef1c21d5139ad807ed932c2e35d74a7b70597dd9c836173d90e53279",
-    "evidence/evidence_manifest.md": "c2590adddc38e4bb9bd1e82dddcd0cdfaa5ea3349246519efaa8b482be77446a"
+    "docs/smoke-validation-summary-v1.md": "a462c0f864ac1a474d7991d2e76cf91c6d8ec3fd14217136207d40810f6724b8",
+    "evidence/evidence_manifest.md": "a5f8fa94d35b70e4b9e0b6f24696c95472ebbb4795d8e5631205ac27d1c84b8f"
   },
   "status": "local-v1-complete-external-evidence-open",
   "verification": {
@@ -61,21 +61,21 @@
       {
         "failed": 0,
         "id": "unit-tests",
-        "passed": 1826,
+        "passed": 1832,
         "skipped": 1,
         "status": "passed"
       },
       {
         "failed": 0,
         "id": "docs-gates",
-        "passed": 52,
+        "passed": 53,
         "skipped": 0,
         "status": "passed"
       },
       {
         "failed": 0,
         "id": "smoke-all",
-        "passed": 285,
+        "passed": 286,
         "skipped": 0,
         "status": "passed"
       },
@@ -101,10 +101,10 @@
         "status": "passed"
       }
     ],
-    "reportSha256": "68512447a8d382bd0b6e7dcd8b4fb02ac6971ee503a6540a26d94e5ea436d1ca",
+    "reportSha256": "8aeda78bc59a830c69d66c3dcafc43b7e2c6b52e369158382b9f90522c00ab8c",
     "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v1",
     "status": "passed"
   },
-  "id": "local-v1-completion-closeout-a30fba23ac305d6cfe403120d68127db64b1193bf673607b765f7212b5372d94",
-  "integrityHash": "a30fba23ac305d6cfe403120d68127db64b1193bf673607b765f7212b5372d94"
+  "id": "local-v1-completion-closeout-a44b402650bfb2b84b51c34c10b8cddabe53c1b2a15763bea6ee133fd63c2cfa",
+  "integrityHash": "a44b402650bfb2b84b51c34c10b8cddabe53c1b2a15763bea6ee133fd63c2cfa"
 }

@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-30T00:09:07.758Z
-- branch: codex/council-blueprint-preview
-- commit: 49586b6179382f005bedecfb578f792707e4fcad
-- boundImplementationCommit: 49586b6179382f005bedecfb578f792707e4fcad
+- generatedAt: 2026-07-30T02:13:28.827Z
+- branch: codex/council-concurrent-schedule-shadow
+- commit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
+- boundImplementationCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: current-run
 - liveValidationMode: archived-preserved-not-rerun

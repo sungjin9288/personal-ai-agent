@@ -23,7 +23,29 @@ function renderRoleDetails(role) {
   </article>`;
 }
 
-export function renderCouncilBlueprintPreview({ catalog, error = '', loading = false, preview, selectedRoleIds = [] } = {}) {
+function renderScheduleWave(wave, projection) {
+  const readyStageIds = new Set(projection?.readyStageIds || []);
+  const stages = (projection?.stages || []).filter((stage) => wave.stageIds.includes(stage.id));
+  return `<li><strong>${escapeHtml(wave.id)}</strong><span>${escapeHtml(wave.status || 'waiting')}</span><small>barrier: ${escapeHtml(wave.barrier)} · canonical merge: ${escapeHtml(wave.stageIds.join(', '))}${readyStageIds.size ? ` · ready: ${escapeHtml([...readyStageIds].filter((id) => wave.stageIds.includes(id)).join(', ') || 'none')}` : ''}${stages.some((stage) => stage.status === 'dependency-blocked') ? ' · downstream dependency-blocked' : ''}</small></li>`;
+}
+
+function renderScheduleComparison(preview, scheduleShadow) {
+  const baselineStages = scheduleShadow?.sequentialBaseline?.meetingPlan?.stages || preview?.meetingPlan?.stages || [];
+  const schedule = scheduleShadow?.schedule;
+  const projection = scheduleShadow?.completionProjection;
+  if (!schedule || !projection) return '';
+
+  return `<section class="council-blueprint-plan council-schedule-shadow" aria-label="Synthetic concurrent schedule comparison">
+    <h5>Sequential baseline vs four candidate waves</h5>
+    <p>Sequential baseline: ${escapeHtml(baselineStages.map((stage) => stage.id).join(' → '))}</p>
+    <ol>${schedule.waves.map((wave) => renderScheduleWave({ ...wave, status: projection.waves.find((item) => item.id === wave.id)?.status }, projection)).join('')}</ol>
+    <p class="council-blueprint-no-execution">Parity — stage ids: ${escapeHtml(scheduleShadow.parity?.stageIdsEqual)}, dependencies: ${escapeHtml(scheduleShadow.parity?.dependenciesEqual)}, authority: ${escapeHtml(scheduleShadow.parity?.authorityEqual)}.</p>
+    <p class="council-blueprint-no-execution">Blocker: ${projection.blocker ? `${escapeHtml(projection.blocker.stageId)} · ${escapeHtml(projection.blocker.waveId)} · ${escapeHtml(projection.blocker.outcome)}` : 'none'}.</p>
+    <p class="council-blueprint-no-execution">Synthetic/read-only schedule · actualConcurrentDispatch: false · overall: ${escapeHtml(projection.overallStatus)}. No execution or dispatch action is available here.</p>
+  </section>`;
+}
+
+export function renderCouncilBlueprintPreview({ catalog, error = '', loading = false, preview, scheduleShadow, selectedRoleIds = [] } = {}) {
   const selectableRoles = catalog?.selectableRoles || [];
   const selected = new Set(selectedRoleIds);
   const selectedRoles = preview?.specialists || selectableRoles.filter((role) => selected.has(role.id));
@@ -62,6 +84,7 @@ export function renderCouncilBlueprintPreview({ catalog, error = '', loading = f
         ${stages.map((stage) => `<li><strong>${escapeHtml(stage.id)}</strong><span>${escapeHtml(stage.status)}</span><small>${stage.dependsOn.length ? `depends on ${escapeHtml(stage.dependsOn.join(', '))}` : 'no dependencies'}${stage.targetRoleId ? ` · targets ${escapeHtml(stage.targetRoleId)}` : ''}</small></li>`).join('')}
       </ol>
     </section>
+    ${renderScheduleComparison(preview, scheduleShadow)}
     <p class="council-blueprint-no-execution">No execution action is available here. This panel has read-only authority only.</p>
   </div>`;
 }

@@ -50,6 +50,12 @@ try {
   assert.equal(appJs.includes('renderCouncilBlueprintPreview'), true);
   assert.equal(appJs.includes('councilBlueprintSelectedRoleIds'), true);
   assert.equal(appJs.includes('/api/council/blueprint-preview'), true);
+  assert.equal(appJs.includes('/api/council/concurrent-schedule-shadow'), true);
+  assert.equal(appJs.includes('Sequential baseline vs four candidate waves'), true);
+  assert.equal(appJs.includes('actualConcurrentDispatch: false'), true);
+  assert.equal(appJs.includes('Parity — stage ids:'), true);
+  assert.equal(appJs.includes('Blocker:'), true);
+  assert.equal(appJs.includes('No execution or dispatch action is available here'), true);
   assert.equal(appJs.includes('focusRoleId: roleId'), true);
   assert.equal(appJs.includes('focusTarget?.focus()'), true);
   assert.equal(appJs.includes('No execution action is available here'), true);
@@ -155,6 +161,7 @@ try {
   assert.equal(stylesCss.includes('.surface-ai-compose'), true);
   assert.equal(stylesCss.includes('.council-blueprint-preview-shell'), true);
   assert.equal(stylesCss.includes('.council-blueprint-role-button'), true);
+  assert.equal(stylesCss.includes('.council-schedule-shadow'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-grid'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-step'), true);
   assert.equal(stylesCss.includes('.agent-intent-strip'), true);
