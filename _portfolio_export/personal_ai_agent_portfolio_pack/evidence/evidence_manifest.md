@@ -155,7 +155,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 284/284 passed with `npm run smoke:all` on 2026-07-29; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 285/285 passed with `npm run smoke:all` on 2026-07-30; browser E2E commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list

@@ -1,12 +1,12 @@
 # Smoke Validation Summary v1
 
 - status: smoke-validation-summary-current
-- localDate: 2026-07-29
+- localDate: 2026-07-30
 - productionReadyClaim: false
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 284/284 passed with `npm run smoke:all` on 2026-07-29
+- lastFullSweep: 285/285 passed with `npm run smoke:all` on 2026-07-30
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)

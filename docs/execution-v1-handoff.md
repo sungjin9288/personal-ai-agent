@@ -1,14 +1,14 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-29T23:47:29.468Z
+- generatedAt: 2026-07-30T00:09:15.344Z
 - localDate: 2026-07-30
 - branch: codex/council-blueprint-preview
-- commit: 6de96bcd63660028fe77f5209c7a2145462a91f3
-- boundImplementationCommit: 6de96bcd63660028fe77f5209c7a2145462a91f3
+- commit: 49586b6179382f005bedecfb578f792707e4fcad
+- boundImplementationCommit: 49586b6179382f005bedecfb578f792707e4fcad
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3](releases/execution-v1/6de96bcd63660028fe77f5209c7a2145462a91f3)
-- visualArtifactSetSha256: a49f08e589cf6ba647e3802a5882e276b52a4fb1b0946a2302620ef1098dd81b
+- immutableSnapshot: [releases/execution-v1/49586b6179382f005bedecfb578f792707e4fcad](releases/execution-v1/49586b6179382f005bedecfb578f792707e4fcad)
+- visualArtifactSetSha256: 11b075854cab0752d9a473c4f9ce49d843160a5d3ab9bde9b4fe079329de8860
 - commitPushStatus: not pushed, origin/codex/council-blueprint-preview not found
 - deterministicEvidenceStatus: current-run
 - liveValidationMode: archived-preserved-not-rerun
@@ -24,7 +24,7 @@
 - CLI execution contract: ready
 - operator console execution contract: ready
 - browser interaction E2E: ready
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=50.9s
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=51.8s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -59,7 +59,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: a49f08e589cf6ba647e3802a5882e276b52a4fb1b0946a2302620ef1098dd81b
+- visual artifact set: 11b075854cab0752d9a473c4f9ce49d843160a5d3ab9bde9b4fe079329de8860
 
 ## Live Provider Handoff
 

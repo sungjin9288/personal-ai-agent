@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-07-29T23:47:22.058Z
+- generatedAt: 2026-07-30T00:09:07.758Z
 - branch: codex/council-blueprint-preview
-- commit: 6de96bcd63660028fe77f5209c7a2145462a91f3
-- boundImplementationCommit: 6de96bcd63660028fe77f5209c7a2145462a91f3
+- commit: 49586b6179382f005bedecfb578f792707e4fcad
+- boundImplementationCommit: 49586b6179382f005bedecfb578f792707e4fcad
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: current-run
 - liveValidationMode: archived-preserved-not-rerun
