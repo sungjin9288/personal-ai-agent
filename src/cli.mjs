@@ -15,6 +15,12 @@ import { buildDoctorDiagnosticsSummary, runDoctor } from './core/doctor-service.
 import { getReleaseBlockerHandoff } from './core/release-readiness-service.mjs';
 import { resolveRootDir } from './core/root.mjs';
 import { createStore } from './core/store.mjs';
+import {
+  CouncilBlueprintPreviewValidationError,
+  createCouncilBlueprintPreview,
+  getCouncilBlueprintCatalog,
+  toCouncilBlueprintPreviewErrorPayload,
+} from './core/council-blueprint-preview.mjs';
 
 function readOption(args, name, fallback = '') {
   const index = args.indexOf(name);
@@ -132,6 +138,9 @@ Commands:
 
   channel adapters [--channel <cli|web|schedule|slack|telegram|whatsapp|discord|email>] [--status <enabled|disabled>] [--enabled-only]
 
+  council blueprints
+  council blueprint-preview [--role <research|product|architecture|implementation|security|verification|operations>]... [--failed-stage <stageId>]...
+
   workspace add <path> [--name <name>]
   workspace list
   workspace show <workspaceId>
@@ -206,6 +215,33 @@ Commands:
 }
 
 function printCommandHelp(group, command) {
+  if (group === 'council' && command === 'blueprints') {
+    console.log(`Personal AI Agent
+
+Usage:
+  council blueprints
+
+Output:
+  Prints the read-only council blueprint role catalog. This command does not create a store, mission, provider request, or runtime work.
+`);
+    return true;
+  }
+
+  if (group === 'council' && command === 'blueprint-preview') {
+    console.log(`Personal AI Agent
+
+Usage:
+  council blueprint-preview [--role <role>]... [--failed-stage <stageId>]...
+
+Roles:
+  research, product, architecture, implementation, security, verification, operations
+
+Rules:
+  Select 3 to 7 unique specialist roles. chair and reviewer are fixed. The preview is read-only and does not execute a council or create a mission.
+`);
+    return true;
+  }
+
   if (group === 'doctor' && !command) {
     console.log(`Personal AI Agent
 
@@ -387,6 +423,53 @@ function printJson(payload) {
   console.log(JSON.stringify(payload, null, 2));
 }
 
+function handleCouncilBlueprintCommand(args) {
+  const [group, command, ...rest] = args;
+  if (group !== 'council') {
+    return false;
+  }
+
+  if (isHelpRequest([command])) {
+    console.log(`Personal AI Agent
+
+Council commands:
+  council blueprints
+  council blueprint-preview [--role <role>]... [--failed-stage <stageId>]...
+`);
+    return true;
+  }
+
+  if (isHelpRequest(rest) && printCommandHelp(group, command)) {
+    return true;
+  }
+
+  try {
+    if (command === 'blueprints') {
+      printJson(getCouncilBlueprintCatalog());
+      return true;
+    }
+    if (command === 'blueprint-preview') {
+      const roleIds = rest.includes('--role') ? readOptions(rest, '--role') : undefined;
+      printJson(
+        createCouncilBlueprintPreview({
+          failedStageIds: readOptions(rest, '--failed-stage'),
+          roleIds,
+        }),
+      );
+      return true;
+    }
+  } catch (error) {
+    if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
+      throw error;
+    }
+    printJson(toCouncilBlueprintPreviewErrorPayload(error));
+    process.exitCode = 1;
+    return true;
+  }
+
+  return false;
+}
+
 function compactFactGraph(graph) {
   const nodeById = new Map((graph.nodes || []).map((node) => [node.id, node]));
   return {
@@ -443,11 +526,14 @@ function resolveScopeId(scope, args) {
 }
 
 async function main() {
+  const args = process.argv.slice(2);
+  if (handleCouncilBlueprintCommand(args)) {
+    return;
+  }
+
   const rootDir = resolveRootDir();
   const store = createStore({ rootDir });
   const service = createMissionService({ store, rootDir });
-
-  const args = process.argv.slice(2);
   const [group, command, ...rest] = args;
 
   if (!group || isHelpRequest([group])) {

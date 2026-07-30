@@ -43,8 +43,16 @@ try {
   assert.equal(rootHtml.includes('id="agent-blueprint-builder"'), true);
   assert.equal(rootHtml.includes('추가할 AI와 역할을 먼저 고르기'), true);
   assert.equal(rootHtml.includes('AI 구성 카드를 고르면 orchestration directive는 자동으로 포함됩니다.'), true);
+  assert.equal(rootHtml.includes('id="council-blueprint-preview"'), true);
+  assert.equal(rootHtml.includes('역할 회의 계획만 미리 보기'), true);
 
   assert.equal(appJs.includes('buildMissionConstraintPayload'), true);
+  assert.equal(appJs.includes('renderCouncilBlueprintPreview'), true);
+  assert.equal(appJs.includes('councilBlueprintSelectedRoleIds'), true);
+  assert.equal(appJs.includes('/api/council/blueprint-preview'), true);
+  assert.equal(appJs.includes('focusRoleId: roleId'), true);
+  assert.equal(appJs.includes('focusTarget?.focus()'), true);
+  assert.equal(appJs.includes('No execution action is available here'), true);
   assert.equal(appJs.includes('AI가 지금 읽는 자료'), true);
   assert.equal(appJs.includes('추천 상황'), true);
   assert.equal(appJs.includes('선택 결과'), true);
@@ -145,6 +153,8 @@ try {
   assert.equal(appJs.includes('renderAgentBlueprintCardButton({ blueprint, active: blueprint.id === selectedBlueprint?.id })'), true);
 
   assert.equal(stylesCss.includes('.surface-ai-compose'), true);
+  assert.equal(stylesCss.includes('.council-blueprint-preview-shell'), true);
+  assert.equal(stylesCss.includes('.council-blueprint-role-button'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-grid'), true);
   assert.equal(stylesCss.includes('.agent-blueprint-step'), true);
   assert.equal(stylesCss.includes('.agent-intent-strip'), true);

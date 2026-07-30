@@ -1,19 +1,16 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-07-29T12:24:08.906Z
-- localDate: 2026-07-29
-- branch: codex/local-v1-completion-closeout
-- commit: bb67e79641f737656e2b62f9256fc7002c584e40
-- boundImplementationCommit: bb67e79641f737656e2b62f9256fc7002c584e40
+- generatedAt: 2026-07-30T00:09:15.344Z
+- localDate: 2026-07-30
+- branch: codex/council-blueprint-preview
+- commit: 49586b6179382f005bedecfb578f792707e4fcad
+- boundImplementationCommit: 49586b6179382f005bedecfb578f792707e4fcad
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/bb67e79641f737656e2b62f9256fc7002c584e40](releases/execution-v1/bb67e79641f737656e2b62f9256fc7002c584e40)
-- visualArtifactSetSha256: 3e0cb5253206b53bdc7eea2841cf9ada8cc4f3d454c839b03f340c994aebd7f9
-- commitPushStatus: not pushed to origin/codex/local-v1-completion-closeout
-- deterministicEvidenceStatus: reused-existing-not-rerun
-- deterministicEvidenceSourceGeneratedAt: 2026-07-29T08:05:19.232Z
-- deterministicEvidenceSourceCommit: a8795f390cbd9a8b432ce112a3c9d91362af6c5f
-- deterministicEvidenceReuseReason: ui-http-unchanged-browser-excluded
+- immutableSnapshot: [releases/execution-v1/49586b6179382f005bedecfb578f792707e4fcad](releases/execution-v1/49586b6179382f005bedecfb578f792707e4fcad)
+- visualArtifactSetSha256: 11b075854cab0752d9a473c4f9ce49d843160a5d3ab9bde9b4fe079329de8860
+- commitPushStatus: not pushed, origin/codex/council-blueprint-preview not found
+- deterministicEvidenceStatus: current-run
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -22,12 +19,12 @@
 ## Operational State
 
 - live validation evidence: archived-preserved-not-rerun; providers=openai, anthropic, local; sourceCommit=cc19deb60f3d6f948f5be7b1991df532298be922; sourceGeneratedAt=2026-07-22T14:21:18.412Z
-- deterministic evidence: reused-existing-not-rerun; sourceCommit=a8795f390cbd9a8b432ce112a3c9d91362af6c5f; sourceGeneratedAt=2026-07-29T08:05:19.232Z; reason=ui-http-unchanged-browser-excluded
+- deterministic evidence: current-run
 - deterministic execution flow: ready
 - CLI execution contract: ready
 - operator console execution contract: ready
-- browser interaction E2E: reused-existing-not-rerun
-- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=49.5s
+- browser interaction E2E: ready
+- reference adoption aggregate: ready, 31 scripts, ok=true, totalDuration=51.8s
 - deterministic runtime summary: ready
 - snapshot portability: ready
 - OpenAI live validation: passed
@@ -62,7 +59,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 3e0cb5253206b53bdc7eea2841cf9ada8cc4f3d454c839b03f340c994aebd7f9
+- visual artifact set: 11b075854cab0752d9a473c4f9ce49d843160a5d3ab9bde9b4fe079329de8860
 
 ## Live Provider Handoff
 
@@ -94,4 +91,4 @@ Expected pre-live state:
 
 ## Completion Boundary
 
-Execution v1 is provider-scoped pilot ready for a bounded local-first path supported by archived OpenAI and local provider live validation from cc19deb60f3d6f948f5be7b1991df532298be922 (2026-07-22T14:21:18.412Z), not rerun in this refresh. Deterministic execution and browser results are reused from a8795f390cbd9a8b432ce112a3c9d91362af6c5f (2026-07-29T08:05:19.232Z) and are not current execution evidence. It is not production-ready or live-provider-complete because Anthropic live validation still requires target Anthropic provider account evidence for account ownership proof, billing and credit remediation proof, active billing plan proof, available credit balance proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live:execution-v1:anthropic proof with mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence, Hermes live validation still requires target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence, and target local provider architecture approval still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence.
+Execution v1 is provider-scoped pilot ready for a bounded local-first path supported by archived OpenAI and local provider live validation from cc19deb60f3d6f948f5be7b1991df532298be922 (2026-07-22T14:21:18.412Z), not rerun in this refresh. It is not production-ready or live-provider-complete because Anthropic live validation still requires target Anthropic provider account evidence for account ownership proof, billing and credit remediation proof, active billing plan proof, available credit balance proof, API key and secret injection proof, ANTHROPIC_MODEL model access proof, provider terms and customer approval proof, quota and spend guard proof, target-boundary live:execution-v1:anthropic proof with mission id, execution session id, provider response status, retry lineage, artifact provenance, and handoff reference, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, remediation audit proof, release artifact hygiene result, and regenerated execution snapshot evidence, Hermes live validation still requires target Hermes provider architecture evidence for endpoint ownership proof, HERMES_PROVIDER_MODEL model pinning proof, target secret injection proof, tool-call parsing proof, session lifecycle proof with mission id, execution session id, provider response id, retry lineage, artifact provenance, and handoff reference, data and transcript policy proof, quota and rate guard proof, telemetry proof, fallback and stop-condition proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, customer approval proof, provider operations proof, target-boundary live:execution-v1:hermes proof, release artifact hygiene result, and regenerated execution snapshot evidence, and target local provider architecture approval still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence.
