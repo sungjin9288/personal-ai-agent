@@ -21,6 +21,7 @@ export const state = {
   councilBlueprintPreviewError: '',
   councilBlueprintPreviewLoading: false,
   councilBlueprintSelectedRoleIds: ['research', 'implementation', 'verification'],
+  councilConcurrentScheduleShadow: null,
   currentViewLinkCopied: false,
   currentViewLinkCopiedTimer: null,
   doctor: null,

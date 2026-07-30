@@ -40,6 +40,7 @@ The CLI preview dispatches before root/store/mission-service initialization, so 
 ## Scope & Limitations
 
 - Concurrent execution is deferred; this plan neither schedules nor simulates it.
+- The read-only structural follow-up is documented in [Council Concurrent Schedule Shadow v1.1b](council-concurrent-schedule-shadow-v1.md); it does not change this frozen v1.1a contract.
 - The existing C6–C13 fixtures, evidence, artifacts, contracts, provider behavior, storage schema, mission flow, and approvals are unchanged.
 - `keep-stub-only` remains the C13 decision. This preview is not evidence of local-model compatibility, provider readiness, runtime execution, deployment, or production readiness.
 

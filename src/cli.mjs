@@ -21,6 +21,7 @@ import {
   getCouncilBlueprintCatalog,
   toCouncilBlueprintPreviewErrorPayload,
 } from './core/council-blueprint-preview.mjs';
+import { createCouncilConcurrentScheduleShadow } from './core/council-concurrent-schedule-shadow.mjs';
 
 function readOption(args, name, fallback = '') {
   const index = args.indexOf(name);
@@ -140,6 +141,7 @@ Commands:
 
   council blueprints
   council blueprint-preview [--role <research|product|architecture|implementation|security|verification|operations>]... [--failed-stage <stageId>]...
+  council concurrent-schedule-shadow [--role <research|product|architecture|implementation|security|verification|operations>]... [--completion-event '<stageId>|<attemptId>|<outcome>']...
 
   workspace add <path> [--name <name>]
   workspace list
@@ -238,6 +240,18 @@ Roles:
 
 Rules:
   Select 3 to 7 unique specialist roles. chair and reviewer are fixed. The preview is read-only and does not execute a council or create a mission.
+`);
+    return true;
+  }
+
+  if (group === 'council' && command === 'concurrent-schedule-shadow') {
+    console.log(`Personal AI Agent
+
+Usage:
+  council concurrent-schedule-shadow [--role <role>]... [--completion-event '<stageId>|<attemptId>|<outcome>']...
+
+Rules:
+  Projects a synthetic, read-only four-wave schedule. Completion events are terminal records only; this command never dispatches work, creates a mission, or initializes storage.
 `);
     return true;
   }
@@ -435,6 +449,7 @@ function handleCouncilBlueprintCommand(args) {
 Council commands:
   council blueprints
   council blueprint-preview [--role <role>]... [--failed-stage <stageId>]...
+  council concurrent-schedule-shadow [--role <role>]... [--completion-event '<stageId>|<attemptId>|<outcome>']...
 `);
     return true;
   }
@@ -458,6 +473,16 @@ Council commands:
       );
       return true;
     }
+    if (command === 'concurrent-schedule-shadow') {
+      const roleIds = rest.includes('--role') ? readOptions(rest, '--role') : undefined;
+      printJson(
+        createCouncilConcurrentScheduleShadow({
+          completionEvents: readCouncilCompletionEvents(rest),
+          roleIds,
+        }),
+      );
+      return true;
+    }
   } catch (error) {
     if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
       throw error;
@@ -468,6 +493,30 @@ Council commands:
   }
 
   return false;
+}
+
+function readCouncilCompletionEvents(args) {
+  const values = [];
+  const occurrences = args.filter((value) => value === '--completion-event').length;
+
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] !== '--completion-event') continue;
+    const value = args[index + 1];
+    if (value && !value.startsWith('--')) values.push(value);
+  }
+  if (values.length !== occurrences) {
+    throw new CouncilBlueprintPreviewValidationError('council-concurrent-schedule-shadow: completion events must use stageId|attemptId|outcome.');
+  }
+  return values.map(parseCouncilCompletionEvent);
+}
+
+function parseCouncilCompletionEvent(value) {
+  const parts = String(value || '').split('|');
+  if (parts.length !== 3 || parts.some((part) => !part.trim())) {
+    throw new CouncilBlueprintPreviewValidationError('council-concurrent-schedule-shadow: completion events must use stageId|attemptId|outcome.');
+  }
+  const [stageId, attemptId, outcome] = parts;
+  return { attemptId, outcome, stageId };
 }
 
 function compactFactGraph(graph) {
