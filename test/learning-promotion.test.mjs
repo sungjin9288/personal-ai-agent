@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createLearningPromotion } from '../src/core/learning-promotion.mjs';
+import { createLearningPromotion, getLearningPromotionExpirationPolicy } from '../src/core/learning-promotion.mjs';
 
 const FIXED_NOW = '2026-07-03T00:00:00.000Z';
 
@@ -238,6 +238,85 @@ test('scope authorization supports local single-user promotion across workspaces
   assert.equal(memoryEntries[0].scope, 'user');
   assert.equal(memoryEntries[0].scopeId, 'user');
   assert.equal(result.learningCandidate.promotionScopeAuthorization.status, 'consumed');
+});
+
+test('scope authorization: exact expiration boundary is expired and does not write', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: FIXED_NOW,
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion } = makePromotion(store, { now: () => FIXED_NOW });
+
+  assert.equal(getLearningPromotionExpirationPolicy(candidate, FIXED_NOW).expired, true);
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', {
+      note: 'The exact expiration boundary must not authorize a scope change.',
+      scope: 'workspace',
+    }),
+    /is expired/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
+test('scope authorization: invalid injected clock rejects before writing', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: '2026-08-01T00:00:00.000Z',
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const { promotion } = makePromotion(store, { now: () => 'invalid-clock' });
+
+  assert.throws(
+    () => promotion.authorizeLearningPromotionScope('lc-1', {
+      note: 'Do not authorize when the injected clock cannot be parsed.',
+      scope: 'workspace',
+    }),
+    /Invalid learning promotion observation time/,
+  );
+  assert.deepEqual(store.effects, []);
+});
+
+test('scope authorization: queue projection reuses its authorization timestamp at the expiry boundary', () => {
+  const candidate = validCandidate({
+    evidence: {
+      artifactIds: ['a-1'],
+      gatewayEventId: 'gw-1',
+      reviewerVerdict: 'pass',
+      runIds: ['r-1'],
+    },
+    retention: {
+      expiresAt: FIXED_NOW,
+      policy: 'pending-review-expires-unpromoted',
+    },
+  });
+  const store = createFakeStore([candidate]);
+  const observedAt = ['2026-07-02T23:59:59.999Z', FIXED_NOW];
+  const { promotion } = makePromotion(store, { now: () => observedAt.shift() || FIXED_NOW });
+
+  const result = promotion.authorizeLearningPromotionScope('lc-1', {
+    note: 'Authorize while the review window is still open.',
+    scope: 'workspace',
+  });
+
+  assert.equal(result.scopeAuthorization.authorizedAt, '2026-07-02T23:59:59.999Z');
+  assert.equal(result.queueItem.expirationPolicy.status, 'active');
 });
 
 test('scope authorization blocks global user promotion from a tenant-bound workspace', () => {

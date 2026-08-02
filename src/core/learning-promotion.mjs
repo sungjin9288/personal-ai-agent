@@ -63,7 +63,7 @@ export function getLearningPromotionExpiresAt(candidate) {
   return candidate?.retention?.expiresAt || candidate?.proposal?.expiresAt || null;
 }
 
-export function getLearningPromotionExpirationPolicy(candidate) {
+export function getLearningPromotionExpirationPolicy(candidate, observedAt) {
   const expiresAt = getLearningPromotionExpiresAt(candidate);
   const ttlHours =
     Number(candidate?.retention?.reviewTtlHours || candidate?.proposal?.reviewTtlHours) ||
@@ -71,8 +71,14 @@ export function getLearningPromotionExpirationPolicy(candidate) {
   const expiresAtMs = Date.parse(String(expiresAt || ''));
   const expiredAt = candidate?.promotionExpiration?.expiredAt || null;
   const expiredByStatus = candidate?.promotionStatus === 'expired';
+  const observedAtMs = observedAt === undefined ? Date.now() : Date.parse(String(observedAt || ''));
+  if (observedAt !== undefined && !Number.isFinite(observedAtMs)) {
+    throw new Error('Invalid learning promotion observation time.');
+  }
   const expiredByClock =
-    candidate?.promotionStatus === 'pending-review' && Number.isFinite(expiresAtMs) && Date.now() >= expiresAtMs;
+    candidate?.promotionStatus === 'pending-review' &&
+    Number.isFinite(expiresAtMs) &&
+    observedAtMs >= expiresAtMs;
 
   return {
     expired: Boolean(expiredByStatus || expiredByClock),
@@ -156,7 +162,7 @@ export function createLearningPromotion({
   getWorkspace,
   writeUpdatedLearningCandidateArtifact,
 }) {
-  function buildLearningPromotionQueueItem(candidate) {
+  function buildLearningPromotionQueueItem(candidate, observedAt) {
     const mission = store.getMission(candidate.missionId);
     const workspace = mission ? store.getWorkspace(mission.workspaceId) : store.getWorkspace(candidate.workspaceId);
 
@@ -172,7 +178,8 @@ export function createLearningPromotion({
     const target = defaultLearningPromotionTarget(candidate);
     const scope = normalizeText(candidate.scope, 'mission');
     const promotionStatus = normalizeText(candidate.promotionStatus, 'pending-review');
-    const expirationPolicy = getLearningPromotionExpirationPolicy(candidate);
+    const queueObservedAt = observedAt === undefined ? now() : observedAt;
+    const expirationPolicy = getLearningPromotionExpirationPolicy(candidate, queueObservedAt);
     const resolveCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision <approve|reject> --target ${target} --scope ${scope} --note "<note>"`;
     const stopConditionRejectCommand = `node src/cli.mjs action resolve-learning-promotion ${candidate.id} --decision reject --target ${target} --scope ${scope} --note "<note>"`;
     const rollbackCommand = `node src/cli.mjs action rollback-learning-promotion ${candidate.id} --note "<note>"`;
@@ -724,7 +731,8 @@ export function createLearningPromotion({
         'User-scoped learning promotion is limited to local workspaces without a tenant binding.',
       );
     }
-    if (getLearningPromotionExpirationPolicy(candidate).expired) {
+    const authorizedAt = now();
+    if (getLearningPromotionExpirationPolicy(candidate, authorizedAt).expired) {
       throw new Error(`Learning candidate ${candidateId} is expired.`);
     }
 
@@ -737,12 +745,11 @@ export function createLearningPromotion({
     ) {
       return {
         learningCandidate: candidate,
-        queueItem: buildLearningPromotionQueueItem(candidate),
+        queueItem: buildLearningPromotionQueueItem(candidate, authorizedAt),
         scopeAuthorization: existing,
       };
     }
 
-    const authorizedAt = now();
     const scopeAuthorization = {
       authorizedAt,
       authorizedBy: 'local-operator',
@@ -768,7 +775,7 @@ export function createLearningPromotion({
     writeUpdatedLearningCandidateArtifact(updatedCandidate);
     return {
       learningCandidate: updatedCandidate,
-      queueItem: buildLearningPromotionQueueItem(updatedCandidate),
+      queueItem: buildLearningPromotionQueueItem(updatedCandidate, authorizedAt),
       scopeAuthorization,
     };
   }
@@ -1089,7 +1096,7 @@ export function createLearningPromotion({
 
     const expiredAt = now();
     const expiredCandidates = candidates.map((candidate) => {
-      const expirationPolicy = getLearningPromotionExpirationPolicy(candidate);
+      const expirationPolicy = getLearningPromotionExpirationPolicy(candidate, expiredAt);
       const updatedCandidate = store.updateLearningCandidate(candidate.id, (current) => ({
         ...current,
         promotionExpiration: {
@@ -1108,7 +1115,7 @@ export function createLearningPromotion({
       return updatedCandidate;
     });
 
-    const items = expiredCandidates.map((candidate) => buildLearningPromotionQueueItem(candidate)).filter(Boolean);
+    const items = expiredCandidates.map((candidate) => buildLearningPromotionQueueItem(candidate, expiredAt)).filter(Boolean);
 
     return {
       expiredCandidates,
