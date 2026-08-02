@@ -1,5 +1,5 @@
 const REUSED_STATUS = 'reused-existing-not-rerun';
-const REUSE_REASON = 'ui-http-unchanged-browser-excluded';
+const REUSE_REASON = 'execution-v1-ui-http-unchanged-browser-excluded';
 
 export function readReusedDeterministicProvenance(markdown) {
   const sourceGeneratedAt = extractBulletValue(markdown, 'deterministicEvidenceSourceGeneratedAt')

@@ -45,7 +45,20 @@ function renderScheduleComparison(preview, scheduleShadow) {
   </section>`;
 }
 
-export function renderCouncilBlueprintPreview({ catalog, error = '', loading = false, preview, scheduleShadow, selectedRoleIds = [] } = {}) {
+function renderEnvelopeShadow(envelopeShadow) {
+  const envelope = envelopeShadow?.syntheticEnvelope;
+  const safety = envelopeShadow?.safetyEnvelope;
+  if (!envelope || !safety) return '';
+
+  return `<section class="council-blueprint-plan council-schedule-shadow" aria-label="Synthetic concurrent envelope">
+    <h5>Deterministic synthetic concurrency envelope</h5>
+    <p>Sequential latency: ${escapeHtml(envelope.sequentialLatencyTicks)} synthetic-tick · Wave latency: ${escapeHtml(envelope.waveLatencyTicks)} synthetic-tick · Wave peak: ${escapeHtml(envelope.wavePeakResourceUnits)} synthetic-slot · Max parallelism: ${escapeHtml(envelope.maxParallelism)}.</p>
+    <p class="council-blueprint-no-execution">${escapeHtml(safety.result)}${safety.failureCodes.length ? ` · ${escapeHtml(safety.failureCodes.join(', '))}` : ''}. decision: ${escapeHtml(envelopeShadow.decision)}.</p>
+    <p class="council-blueprint-no-execution">Structural units only — actualMeasurements: false · actualConcurrentDispatchQualified: false · external/model/download/C13 calls: 0. No runtime measurement or dispatch action is available here.</p>
+  </section>`;
+}
+
+export function renderCouncilBlueprintPreview({ catalog, envelopeShadow, error = '', loading = false, preview, scheduleShadow, selectedRoleIds = [] } = {}) {
   const selectableRoles = catalog?.selectableRoles || [];
   const selected = new Set(selectedRoleIds);
   const selectedRoles = preview?.specialists || selectableRoles.filter((role) => selected.has(role.id));
@@ -85,6 +98,7 @@ export function renderCouncilBlueprintPreview({ catalog, error = '', loading = f
       </ol>
     </section>
     ${renderScheduleComparison(preview, scheduleShadow)}
+    ${renderEnvelopeShadow(envelopeShadow)}
     <p class="council-blueprint-no-execution">No execution action is available here. This panel has read-only authority only.</p>
   </div>`;
 }

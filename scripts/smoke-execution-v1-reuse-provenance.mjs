@@ -24,11 +24,17 @@ if (deterministicEvidenceStatus === 'reused-existing-not-rerun') {
   for (const document of documents) {
     assert.match(extractBulletValue(document, 'deterministicEvidenceSourceCommit'), /^[a-f0-9]{40}$/);
     assert.match(extractBulletValue(document, 'deterministicEvidenceSourceGeneratedAt'), /^\d{4}-\d{2}-\d{2}T/);
-    assert.equal(extractBulletValue(document, 'deterministicEvidenceReuseReason'), 'ui-http-unchanged-browser-excluded');
+    assert.equal(
+      extractBulletValue(document, 'deterministicEvidenceReuseReason'),
+      'execution-v1-ui-http-unchanged-browser-excluded',
+    );
   }
   assert.match(snapshot.deterministicEvidenceSourceCommit, /^[a-f0-9]{40}$/);
   assert.match(snapshot.deterministicEvidenceSourceGeneratedAt, /^\d{4}-\d{2}-\d{2}T/);
-  assert.equal(snapshot.deterministicEvidenceReuseReason, 'ui-http-unchanged-browser-excluded');
+  assert.equal(
+    snapshot.deterministicEvidenceReuseReason,
+    'execution-v1-ui-http-unchanged-browser-excluded',
+  );
   assert.match(evidence, /browser interaction E2E: reused existing result; not rerun/);
   assert.match(closeout, /browser interaction e2e: reused-existing-not-rerun/);
   assert.match(handoff, /not current execution evidence/);

@@ -19,6 +19,7 @@ import {
   toCouncilBlueprintPreviewErrorPayload,
 } from '../core/council-blueprint-preview.mjs';
 import { createCouncilConcurrentScheduleShadow } from '../core/council-concurrent-schedule-shadow.mjs';
+import { createCouncilConcurrentEnvelopeShadow } from '../core/council-concurrent-envelope-shadow.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
 import { createReleaseCommandOrchestrator } from '../core/release-command-orchestrator.mjs';
@@ -2228,6 +2229,18 @@ async function handleApi(request, response, url) {
       const roleIds = url.searchParams.has('role') ? url.searchParams.getAll('role') : undefined;
       const completionEvents = url.searchParams.getAll('completionEvent').map(parseCouncilCompletionEvent);
       sendJson(response, 200, createCouncilConcurrentScheduleShadow({ completionEvents, roleIds }));
+    } catch (error) {
+      if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
+        throw error;
+      }
+      sendJson(response, 400, toCouncilBlueprintPreviewErrorPayload(error));
+    }
+  });
+
+  registerExactRoute('GET', '/api/council/concurrent-envelope-shadow', async () => {
+    try {
+      const roleIds = url.searchParams.has('role') ? url.searchParams.getAll('role') : undefined;
+      sendJson(response, 200, createCouncilConcurrentEnvelopeShadow({ roleIds }));
     } catch (error) {
       if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
         throw error;

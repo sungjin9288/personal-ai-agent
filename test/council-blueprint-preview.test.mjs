@@ -10,6 +10,7 @@ import {
   projectCouncilBlueprintMeetingStatus,
 } from '../src/core/council-blueprint-preview.mjs';
 import { renderCouncilBlueprintPreview } from '../src/web/public/lib/council-blueprint-preview.js';
+import { createCouncilConcurrentEnvelopeShadow } from '../src/core/council-concurrent-envelope-shadow.mjs';
 import { createCouncilConcurrentScheduleShadow } from '../src/core/council-concurrent-schedule-shadow.mjs';
 
 const DEFAULT_ROLES = ['research', 'implementation', 'verification'];
@@ -167,6 +168,17 @@ test('council blueprint renderer keeps controls accessible and has no execution 
   assert.match(scheduleMarkup, /Blocker: none/);
   assert.match(scheduleMarkup, /actualConcurrentDispatch: false/);
   assert.match(scheduleMarkup, /No execution or dispatch action is available here/);
+
+  const envelopeMarkup = renderCouncilBlueprintPreview({
+    catalog,
+    envelopeShadow: createCouncilConcurrentEnvelopeShadow({ roleIds: DEFAULT_ROLES }),
+    preview,
+    selectedRoleIds: DEFAULT_ROLES,
+  });
+  assert.match(envelopeMarkup, /Deterministic synthetic concurrency envelope/);
+  assert.match(envelopeMarkup, /actualMeasurements: false/);
+  assert.match(envelopeMarkup, /actualConcurrentDispatchQualified: false/);
+  assert.match(envelopeMarkup, /No runtime measurement or dispatch action is available here/);
 });
 
 test('council preview leaves the mission constraint payload builder byte-equivalent', () => {

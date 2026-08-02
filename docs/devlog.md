@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-08-02 Council v1.1c deterministic concurrency envelope shadow
+
+- derived a read-only structural envelope from the existing v1.1b schedule after exact stage-to-wave, stage/dependency, and fixed-attempt validation; v1.1c computes its own content digest because v1.1b has no upstream digest, and every stage receives one synthetic tick and one synthetic slot only
+- kept four through seven specialist selections valid but closed: default limits return `outside-default-synthetic-envelope` and `keep-dispatch-disabled`, without turning a structural projection into a scheduler or capacity claim
+- added CLI, GET, and Council preview rendering without POST, new controls, domain/store mutation, mission constraints, providers/models/Ollama, C13 evaluator, workers, network, or runtime measurements; the existing mandatory request-audit write is retained
+
 ## 2026-07-28 Council Local Provider Shadow Qualification
 
 - added a separate sequential evaluator for the installed loopback `qwen2.5:3b` without opening the production mission non-stub guard
