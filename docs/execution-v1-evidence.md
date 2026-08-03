@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-03T04:26:54.383Z
-- branch: codex/smoke-failure-diagnostics
-- commit: 42aef644264ce7a447715da08d80e28cfdd27d4c
-- boundImplementationCommit: 42aef644264ce7a447715da08d80e28cfdd27d4c
+- generatedAt: 2026-08-03T05:37:39.630Z
+- branch: codex/public-release-asset-identity
+- commit: da6b9f39a566dc96223d99f4887bae53cecd3425
+- boundImplementationCommit: da6b9f39a566dc96223d99f4887bae53cecd3425
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun

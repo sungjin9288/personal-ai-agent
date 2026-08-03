@@ -166,8 +166,8 @@ The aggregate runner keeps its command order and final summary contract unchange
 | Representative demo evidence | `npm run smoke:representative-demo-evidence` | Verifies representative demo summary and evidence artifacts |
 | Operator surface evidence | `npm run smoke:operator-surface-demo-evidence` | Verifies mission/provider/action browser evidence map |
 | Pilot export validation | `npm run smoke:pilot-export-package` | Verifies pilot export package file list, hashes, and claim boundary |
-| Portfolio package refresh | `npm run smoke:portfolio-package-refresh` | Builds two isolated deterministic candidates without mutation and verifies the tracked pack, ZIP, and root metadata match |
-| Portfolio ZIP | `npm run smoke:portfolio-zip` | Verifies ZIP integrity, required entries, metadata, and hygiene safety |
+| Portfolio package refresh | `npm run smoke:portfolio-package-refresh` | Builds two isolated deterministic local candidates without mutation and verifies the tracked pack, ZIP, and local metadata match while preserving the recorded public release identity |
+| Portfolio ZIP | `npm run smoke:portfolio-zip` | Verifies the local ZIP against local manifest/checklist metadata, packed-source parity, recorded public release record parity, and hygiene safety without network access |
 | Release artifact hygiene | `npm run smoke:release-artifact-hygiene` | Verifies release artifacts have zero secret and machine-local path findings |
 
 ## Replay Block

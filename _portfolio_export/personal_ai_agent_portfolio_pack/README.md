@@ -533,6 +533,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 
 - Current public release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Release asset: `personal_ai_agent_portfolio_pack.zip`
+- The verified published v0.1.0 identity is recorded separately. The repository-local `_portfolio_export/personal_ai_agent_portfolio_pack.zip` is regenerated separately; its local candidate checksum is not a claim about the published asset.
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Portfolio manifest: [portfolio_manifest.md](portfolio_manifest.md)
 - Evidence checklist: [docs/evidence-checklist.md](docs/evidence-checklist.md)
