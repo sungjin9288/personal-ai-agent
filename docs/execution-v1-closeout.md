@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-03T01:11:29.559Z
-- branch: codex/council-retry-lineage-shadow
-- commit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
-- boundImplementationCommit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
+- generatedAt: 2026-08-03T02:26:01.065Z
+- branch: codex/council-retry-terminality-shadow
+- commit: 1faabcec7a447600a00123ede010194c1242e9cd
+- boundImplementationCommit: 1faabcec7a447600a00123ede010194c1242e9cd
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z

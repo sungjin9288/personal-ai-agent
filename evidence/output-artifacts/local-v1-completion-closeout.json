@@ -41,19 +41,19 @@
     "actual-pilot-feedback-and-metrics",
     "hosted-saas-or-production-deployment"
   ],
-  "implementationCommit": "3df195e12f2f7089e05ad73b9368f0f8f71df0b7",
+  "implementationCommit": "1faabcec7a447600a00123ede010194c1242e9cd",
   "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v1",
   "sourceDocumentSha256": {
-    "README.md": "bba74b50d67a55cbb5a7bc9d76be6da1bc2e7538af1c97efa6b574f7d2a788e4",
+    "README.md": "bf01fb27bbef86a3d58d401caad2128df7ef59d767812d8acf3bd8c4c5e87394",
     "docs/refactoring-development-plan-v1.md": "e90e4814d8b140ba429e1d798cde55fe800e761de2f271f3a24b33cb90429dbf",
     "docs/ml-rag-development-plan-v1.md": "ab101a982d2753ed99840e0cc73af7397bb3babef71a26d0e7883f5221eb9ac9",
-    "docs/multi-agent-council-development-plan-v1.md": "a5d1e4f7b6f2325eb8ae2b7a4044f6c97611f7e60ede598471578572abbaa9a3",
+    "docs/multi-agent-council-development-plan-v1.md": "bb35537fb9f720368d7fa91c3b09f28a09159a22a77d31dc44842e7919f457ab",
     "docs/external-evidence-blockers-v1.md": "1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a",
-    "docs/roadmap.md": "b8efebc5430f55c972b1d606e5a8af6ea1fe02020fba49b9aa0923e14bfd45dd",
+    "docs/roadmap.md": "73c3c2aefdd8921e1d4fd7bebe570dea2379ffb85a375dce9508779500a56eb3",
     "docs/product-plan-v1.md": "1b6443d3fed754c3e737171fd0e8c0c155e8ca9fd9437e82da81067e7e38039b",
     "docs/local-v1-completion-closeout-v1.md": "d2446625cf22f3fca103d8896dbdc136c740d7884dd7aef9122e83cbbfbd3137",
-    "docs/smoke-validation-summary-v1.md": "0ca4f80082aced8cd135a7d0e93d3a6972683dd7306f38e0416c9654d029f0b4",
-    "evidence/evidence_manifest.md": "9988e8fb907a84c0872447224c092fac56f54c0cddc379c48a5c91c6e95c5f84"
+    "docs/smoke-validation-summary-v1.md": "9fe910d06defe1cd22b7deee78ee777ab01dace03d38f6c73fb0d59456cf9e33",
+    "evidence/evidence_manifest.md": "06e1e192877ca1ad9944dee18eb19336407794dbb773c946f00b8f5ed874a33d"
   },
   "status": "local-v1-complete-external-evidence-open",
   "verification": {
@@ -61,21 +61,21 @@
       {
         "failed": 0,
         "id": "unit-tests",
-        "passed": 1849,
+        "passed": 1862,
         "skipped": 1,
         "status": "passed"
       },
       {
         "failed": 0,
         "id": "docs-gates",
-        "passed": 55,
+        "passed": 56,
         "skipped": 0,
         "status": "passed"
       },
       {
         "failed": 0,
         "id": "smoke-all",
-        "passed": 286,
+        "passed": 287,
         "skipped": 0,
         "status": "passed"
       },
@@ -101,10 +101,10 @@
         "status": "passed"
       }
     ],
-    "reportSha256": "72df11e86f9fc86601a981f56ec22c46d8f589e4fe290a8dcd58ee3f48e48859",
+    "reportSha256": "cf9910eaea76dd8e7085bf92847396badd461171562e7f886fd1d95d6f564a49",
     "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v1",
     "status": "passed"
   },
-  "id": "local-v1-completion-closeout-fceb65e1ec2ec58199e6f14aaecfab81af0a7127d2d971e09d918ae623f4b82f",
-  "integrityHash": "fceb65e1ec2ec58199e6f14aaecfab81af0a7127d2d971e09d918ae623f4b82f"
+  "id": "local-v1-completion-closeout-84ea69415b50c95addebe81953b16bc5c6607be196abf41f6eedddb8236a5215",
+  "integrityHash": "84ea69415b50c95addebe81953b16bc5c6607be196abf41f6eedddb8236a5215"
 }
