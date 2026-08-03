@@ -5,6 +5,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import {
+  listPortfolioTreeFiles,
+  loadPortfolioFileManifest,
+} from './refresh-portfolio-package.mjs';
+
 const repoDir = process.cwd();
 const packageJsonPath = path.join(repoDir, 'package.json');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
@@ -40,6 +45,7 @@ const unzipTest = runRequired('unzip', ['-t', zipPath]);
 assertContains(unzipTest.stdout, 'No errors detected', 'portfolio ZIP integrity check did not report success');
 
 const zipEntries = runRequired('zipinfo', ['-1', zipPath]).stdout.trim().split('\n').filter(Boolean);
+const configuredFiles = loadPortfolioFileManifest({ rootDir: repoDir });
 for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/README.md',
   'personal_ai_agent_portfolio_pack/links.md',
@@ -165,6 +171,15 @@ for (const entry of zipEntries) {
   assert.equal(/__MACOSX|\.DS_Store|\.env$|node_modules|\/\.git\//.test(entry), false, `forbidden ZIP entry: ${entry}`);
 }
 
+const zipFiles = zipEntries
+  .filter((entry) => !entry.endsWith('/'))
+  .map((entry) => entry.replace(/^personal_ai_agent_portfolio_pack\//, ''))
+  .sort();
+assert.deepEqual(zipFiles, configuredFiles, 'portfolio ZIP files must exactly match the configured manifest');
+const packedFiles = listPortfolioTreeFiles(packDir)
+  .map((filePath) => path.relative(packDir, filePath).split(path.sep).join('/'));
+assert.deepEqual(packedFiles, configuredFiles, 'portfolio pack files must exactly match the configured manifest');
+
 const packedManifest = readRequiredFile(path.join(packDir, 'portfolio_manifest.md'));
 const packedChangelog = readRequiredFile(path.join(packDir, 'CHANGELOG.md'));
 const packedEvidenceChecklist = readRequiredFile(path.join(packDir, 'docs', 'evidence-checklist.md'));
@@ -236,14 +251,7 @@ function assertPackedFilesMatchSource() {
 }
 
 function listFiles(rootDir) {
-  const entries = fs.readdirSync(rootDir, { withFileTypes: true });
-  return entries.flatMap((entry) => {
-    const fullPath = path.join(rootDir, entry.name);
-    if (entry.isDirectory()) {
-      return listFiles(fullPath);
-    }
-    return entry.isFile() ? [fullPath] : [];
-  });
+  return listPortfolioTreeFiles(rootDir);
 }
 
 function isTextLike(filePath) {

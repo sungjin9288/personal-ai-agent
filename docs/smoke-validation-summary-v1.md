@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 287/287 passed with `npm run smoke:all` on 2026-08-03
+- lastFullSweep: 288/288 passed with `npm run smoke:all` on 2026-08-03
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -163,6 +163,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Representative demo evidence | `npm run smoke:representative-demo-evidence` | Verifies representative demo summary and evidence artifacts |
 | Operator surface evidence | `npm run smoke:operator-surface-demo-evidence` | Verifies mission/provider/action browser evidence map |
 | Pilot export validation | `npm run smoke:pilot-export-package` | Verifies pilot export package file list, hashes, and claim boundary |
+| Portfolio package refresh | `npm run smoke:portfolio-package-refresh` | Builds two isolated deterministic candidates without mutation and verifies the tracked pack, ZIP, and root metadata match |
 | Portfolio ZIP | `npm run smoke:portfolio-zip` | Verifies ZIP integrity, required entries, metadata, and hygiene safety |
 | Release artifact hygiene | `npm run smoke:release-artifact-hygiene` | Verifies release artifacts have zero secret and machine-local path findings |
 
@@ -279,6 +280,7 @@ npm run smoke:portfolio-docs-claim-boundary
 npm run smoke:representative-demo-evidence
 npm run smoke:operator-surface-demo-evidence
 npm run smoke:pilot-export-package
+npm run smoke:portfolio-package-refresh
 npm run smoke:portfolio-zip
 npm run smoke:release-artifact-hygiene
 ```
@@ -290,7 +292,7 @@ Safe to claim:
 - The listed deterministic local smoke commands are the public-readiness verification baseline.
 - The smoke summary supports a local-first, provider-scoped pilot evidence boundary.
 - Artifact hygiene covers the current release documentation and execution snapshot references.
-- Portfolio ZIP metadata is checked by command, not copied by hand.
+- Portfolio ZIP metadata is generated and checked by command, not copied by hand.
 
 Do not claim:
 
@@ -302,4 +304,4 @@ Do not claim:
 
 ## Acceptance Rule
 
-This summary is current only when `npm run smoke:smoke-validation-summary`, `npm run smoke:readme-portfolio-overview`, `npm run smoke:portfolio-zip`, and `npm run smoke:release-artifact-hygiene` pass, and the README public-readiness command list contains every command in the replay block above.
+This summary is current only when `npm run smoke:smoke-validation-summary`, `npm run smoke:readme-portfolio-overview`, `npm run smoke:portfolio-package-refresh`, `npm run smoke:portfolio-zip`, and `npm run smoke:release-artifact-hygiene` pass, and the README public-readiness command list contains every command in the replay block above.

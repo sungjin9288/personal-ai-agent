@@ -160,7 +160,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 287/287 passed with `npm run smoke:all` on 2026-08-03; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 288/288 passed with `npm run smoke:all` on 2026-08-03; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list

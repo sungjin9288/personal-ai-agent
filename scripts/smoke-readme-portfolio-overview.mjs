@@ -146,6 +146,7 @@ for (const term of [
   'npm run smoke:operator-surface-demo-evidence',
   'npm run smoke:execution-v1-status',
   'npm run smoke:pilot-export-package',
+  'npm run smoke:portfolio-package-refresh',
   'npm run smoke:portfolio-zip',
   'evidence/cli-logs/representative-release-demo-replay.log',
   'evidence/output-artifacts/representative-release-demo-summary.json',
@@ -298,6 +299,7 @@ assert.deepEqual(publicReadinessCommands, [
   'npm run smoke:representative-demo-evidence',
   'npm run smoke:operator-surface-demo-evidence',
   'npm run smoke:pilot-export-package',
+  'npm run smoke:portfolio-package-refresh',
   'npm run smoke:portfolio-zip',
   'npm run smoke:release-artifact-hygiene',
 ]);
