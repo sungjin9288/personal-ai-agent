@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-03T04:27:07.261Z
+- generatedAt: 2026-08-03T05:37:47.773Z
 - localDate: 2026-08-03
-- branch: codex/smoke-failure-diagnostics
-- commit: 42aef644264ce7a447715da08d80e28cfdd27d4c
-- boundImplementationCommit: 42aef644264ce7a447715da08d80e28cfdd27d4c
+- branch: codex/public-release-asset-identity
+- commit: da6b9f39a566dc96223d99f4887bae53cecd3425
+- boundImplementationCommit: da6b9f39a566dc96223d99f4887bae53cecd3425
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/42aef644264ce7a447715da08d80e28cfdd27d4c](releases/execution-v1/42aef644264ce7a447715da08d80e28cfdd27d4c)
+- immutableSnapshot: [releases/execution-v1/da6b9f39a566dc96223d99f4887bae53cecd3425](releases/execution-v1/da6b9f39a566dc96223d99f4887bae53cecd3425)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/smoke-failure-diagnostics not found
+- commitPushStatus: not pushed, origin/codex/public-release-asset-identity not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

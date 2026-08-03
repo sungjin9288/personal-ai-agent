@@ -25,6 +25,8 @@ for (const term of [
   'Fork onboarding: [docs/fork-onboarding-v1.md](docs/fork-onboarding-v1.md)',
   'Support: [SUPPORT.md](SUPPORT.md)',
   'Changelog: [CHANGELOG.md](CHANGELOG.md)',
+  'verified published v0.1.0 identity is recorded separately',
+  'local candidate checksum is not a claim about the published asset',
   'Issue handoff: blank issues are disabled',
   'bug report template',
   'Doctor diagnostics summary',

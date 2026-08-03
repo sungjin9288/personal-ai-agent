@@ -198,7 +198,7 @@
 
 ## 갱신 및 검증
 
-`npm run refresh:portfolio-package`는 manifest 검증, hygiene 검사, self-reference 정규화, deterministic ZIP 생성을 모두 staging에서 끝낸 뒤 pack·ZIP·root metadata를 함께 교체한다. 중간 실패는 기존 산출물을 복구한다.
+`npm run refresh:portfolio-package`는 manifest 검증, hygiene 검사, local candidate self-reference 정규화, deterministic ZIP 생성을 모두 staging에서 끝낸 뒤 pack·ZIP·local metadata를 함께 교체한다. 중간 실패는 기존 산출물을 복구한다. `CHANGELOG.md`는 기록된 public release identity를 그대로 보존하며, 이 local candidate의 크기와 SHA-256을 갱신하지 않는다.
 
 `npm run smoke:portfolio-package-refresh`는 두 candidate가 byte-identical인지 확인하고 tracked pack·ZIP·metadata와 비교한다. 이 검증은 repository 파일을 변경하지 않는다.
 
@@ -226,6 +226,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,576,576 bytes
-- 압축 파일 SHA-256: `e80bec86ba9b78e8adc5f59f538e629393a6c5b683deeabd89e669a2aed80023`
+- 압축 파일 크기: 4,577,955 bytes
+- 압축 파일 SHA-256: `363840aca16752227a0bf6c5558e6a68af46515b9869990302ac3c492dd24070`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

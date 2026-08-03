@@ -12,12 +12,10 @@ export const PORTFOLIO_MANIFEST_PATH = 'config/portfolio-package-files.json';
 
 const FIXED_DATE = new Date('2000-01-01T00:00:00.000Z');
 const NORMALIZED_PACK_TEXT = {
-  'CHANGELOG.md': normalizePackedChangelog,
   'docs/evidence-checklist.md': normalizePackedEvidenceChecklist,
   'portfolio_manifest.md': normalizePackedPortfolioManifest,
 };
 const ROOT_METADATA_WRITERS = {
-  'CHANGELOG.md': writeChangelogMetadata,
   'docs/evidence-checklist.md': writeEvidenceChecklistMetadata,
   'portfolio_manifest.md': writePortfolioManifestMetadata,
 };
@@ -306,15 +304,6 @@ function buildRootMetadataDocuments({ absoluteRoot, zipBytes, zipSha256 }) {
   );
 }
 
-function normalizePackedChangelog(source) {
-  return replaceOne(
-    source,
-    /^- Size: `[^`]+`\n- SHA-256: `[a-f0-9]{64}`$/m,
-    '- Size and SHA-256 are tracked in the repository root `portfolio_manifest.md` after the ZIP is generated.',
-    'CHANGELOG metadata markers',
-  );
-}
-
 function normalizePackedPortfolioManifest(source) {
   return replaceOne(
     source,
@@ -327,15 +316,10 @@ function normalizePackedPortfolioManifest(source) {
 function normalizePackedEvidenceChecklist(source) {
   return replaceOne(
     source,
-    /^\| 기존 portfolio zip 갱신 \| 완료 \| `_portfolio_export\/personal_ai_agent_portfolio_pack\.zip` \| .* \|$/m,
-    '| 기존 portfolio zip 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 최종 size/SHA-256은 루트 `portfolio_manifest.md` 기준 |',
+    /^\| Repository-local portfolio ZIP 갱신 \| 완료 \| `_portfolio_export\/personal_ai_agent_portfolio_pack\.zip` \| .* \|$/m,
+    '| Repository-local portfolio ZIP 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | 최종 size/SHA-256은 루트 `portfolio_manifest.md` 기준 |',
     'evidence checklist portfolio ZIP marker',
   );
-}
-
-function writeChangelogMetadata(source, { formattedBytes, zipSha256 }) {
-  const withSize = replaceOne(source, /^- Size: `[^`]+`$/m, `- Size: \`${formattedBytes}\``, 'CHANGELOG Size marker');
-  return replaceOne(withSize, /^- SHA-256: `[a-f0-9]{64}`$/m, `- SHA-256: \`${zipSha256}\``, 'CHANGELOG SHA-256 marker');
 }
 
 function writePortfolioManifestMetadata(source, { formattedBytes, zipSha256 }) {
@@ -346,8 +330,8 @@ function writePortfolioManifestMetadata(source, { formattedBytes, zipSha256 }) {
 function writeEvidenceChecklistMetadata(source, { formattedBytes, zipSha256 }) {
   return replaceOne(
     source,
-    /^\| 기존 portfolio zip 갱신 \| 완료 \| `_portfolio_export\/personal_ai_agent_portfolio_pack\.zip` \| .* \|$/m,
-    `| 기존 portfolio zip 갱신 | 완료 | \`_portfolio_export/personal_ai_agent_portfolio_pack.zip\` | ${formattedBytes}, SHA-256 \`${zipSha256}\` |`,
+    /^\| Repository-local portfolio ZIP 갱신 \| 완료 \| `_portfolio_export\/personal_ai_agent_portfolio_pack\.zip` \| .* \|$/m,
+    `| Repository-local portfolio ZIP 갱신 | 완료 | \`_portfolio_export/personal_ai_agent_portfolio_pack.zip\` | local candidate: ${formattedBytes}, SHA-256 \`${zipSha256}\`; published v0.1.0 asset과 별도 |`,
     'evidence checklist portfolio ZIP marker',
   );
 }

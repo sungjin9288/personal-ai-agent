@@ -9,6 +9,7 @@ const readmePath = path.join(repoDir, 'README.md');
 const packageJsonPath = path.join(repoDir, 'package.json');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const portfolioZipPath = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack.zip');
+const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
 const releaseHygienePath = path.join(repoDir, 'scripts', 'release-artifact-hygiene-utils.mjs');
 const pilotExportBuilderPath = path.join(repoDir, 'scripts', 'build-pilot-export-package.mjs');
 
@@ -16,6 +17,7 @@ const changelog = readRequiredFile(changelogPath);
 const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
+const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
 const releaseHygiene = readRequiredFile(releaseHygienePath);
 const pilotExportBuilder = readRequiredFile(pilotExportBuilderPath);
 
@@ -30,6 +32,10 @@ const zipBytes = fs.statSync(portfolioZipPath).size;
 const actualZipSha = crypto.createHash('sha256').update(fs.readFileSync(portfolioZipPath)).digest('hex');
 assert.equal(zipSize, `${zipBytes.toLocaleString('en-US')} bytes`);
 assert.equal(zipSha, actualZipSha);
+assertPublicReleaseRecord(publicRelease);
+
+const publishedSize = `${publicRelease.asset.sizeBytes.toLocaleString('en-US')} bytes`;
+const publishedReleaseSection = extractMarkdownSection(changelog, '## v0.1.0 - 2026-06-23');
 
 for (const term of [
   '# Changelog',
@@ -51,10 +57,22 @@ for (const term of [
   'npm run smoke:portfolio-zip',
   'npm run smoke:doctor',
   'npm run smoke:ui-doctor-surface',
-  zipSha,
-  zipSize,
 ]) {
   assertContains(changelog, term, `CHANGELOG missing ${term}`);
+}
+
+for (const field of [
+  publicRelease.releaseUrl,
+  String(publicRelease.asset.id),
+  publicRelease.asset.name,
+  publicRelease.releasePublishedAt,
+  publicRelease.asset.createdAt,
+  publicRelease.asset.updatedAt,
+  publishedSize,
+  publicRelease.asset.sha256,
+  publicRelease.observedAt,
+]) {
+  assertContains(publishedReleaseSection, field, `CHANGELOG published release section missing ${field}`);
 }
 
 for (const readmeTerm of [
@@ -86,8 +104,8 @@ console.log(
     {
       mode: 'changelog-smoke',
       ok: true,
-      release: 'v0.1.0',
-      zipSha256: zipSha,
+      localPortfolioZipSha256: zipSha,
+      publicReleaseAssetSha256: publicRelease.asset.sha256,
     },
     null,
     2,
@@ -123,4 +141,30 @@ function assertNoLocalPaths(text) {
   assert.doesNotMatch(String(text || ''), /\/Users\//);
   assert.doesNotMatch(String(text || ''), /\/private\/var\/folders\//);
   assert.doesNotMatch(String(text || ''), /\/var\/folders\//);
+}
+
+function extractMarkdownSection(markdown, heading) {
+  const start = markdown.indexOf(heading);
+  assert.notEqual(start, -1, `CHANGELOG missing ${heading}`);
+  const next = markdown.indexOf('\n## ', start + heading.length);
+  return markdown.slice(start, next === -1 ? undefined : next);
+}
+
+function assertPublicReleaseRecord(record) {
+  assert.deepEqual(record, {
+    schemaVersion: 'personal-ai-agent-public-release-record/v1',
+    tag: 'v0.1.0',
+    releaseUrl: 'https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0',
+    releasePublishedAt: '2026-06-23T03:47:44Z',
+    asset: {
+      id: 455331518,
+      name: 'personal_ai_agent_portfolio_pack.zip',
+      sizeBytes: 412036,
+      sha256: '66439a6a255b17adbbc04f2489804f0870848854f9a73934b9f7bad99285e6b5',
+      createdAt: '2026-06-23T06:09:19Z',
+      updatedAt: '2026-06-23T06:09:20Z',
+    },
+    observedAt: '2026-08-03',
+    verification: 'GitHub release metadata, downloaded asset bytes, and unzip verification',
+  });
 }

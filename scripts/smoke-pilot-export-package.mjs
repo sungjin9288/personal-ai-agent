@@ -6,6 +6,7 @@ import path from 'node:path';
 const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
+const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
 const linksPath = path.join(repoDir, 'links.md');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const supportPath = path.join(repoDir, 'SUPPORT.md');
@@ -38,6 +39,7 @@ const packagePath = path.join(repoDir, 'package.json');
 
 const manifest = readRequiredFile(manifestPath);
 const changelog = readRequiredFile(changelogPath);
+const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
 const links = readRequiredFile(linksPath);
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
 const support = readRequiredFile(supportPath);
@@ -89,6 +91,7 @@ const manifestEntries = parseManifestEntries(manifest);
 const requiredPaths = [
   'README.md',
   'CHANGELOG.md',
+  'config/public-release-v0.1.0.json',
   'links.md',
   'SUPPORT.md',
   'CONTRIBUTING.md',
@@ -597,7 +600,7 @@ assert.match(changelog, /SUPPORT\.md/);
 assert.match(changelog, /## v0\.1\.0 - 2026-06-23/);
 assert.match(changelog, /\/api\/doctor/);
 assert.match(changelog, /productionReadyClaim: false/);
-assert.match(changelog, new RegExp(escapeRegExp(zipSha256)));
+assert.match(changelog, new RegExp(escapeRegExp(publicRelease.asset.sha256)));
 
 console.log(
   JSON.stringify(

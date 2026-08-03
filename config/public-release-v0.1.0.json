@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "personal-ai-agent-public-release-record/v1",
+  "tag": "v0.1.0",
+  "releaseUrl": "https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0",
+  "releasePublishedAt": "2026-06-23T03:47:44Z",
+  "asset": {
+    "id": 455331518,
+    "name": "personal_ai_agent_portfolio_pack.zip",
+    "sizeBytes": 412036,
+    "sha256": "66439a6a255b17adbbc04f2489804f0870848854f9a73934b9f7bad99285e6b5",
+    "createdAt": "2026-06-23T06:09:19Z",
+    "updatedAt": "2026-06-23T06:09:20Z"
+  },
+  "observedAt": "2026-08-03",
+  "verification": "GitHub release metadata, downloaded asset bytes, and unzip verification"
+}

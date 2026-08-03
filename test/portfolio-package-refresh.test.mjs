@@ -14,19 +14,27 @@ import {
   refreshPortfolioPackage,
 } from '../scripts/refresh-portfolio-package.mjs';
 
-test('portfolio refresh is idempotent and normalizes self-referential metadata', () => {
+test('portfolio refresh is idempotent and preserves the recorded public release changelog', () => {
   const fixture = createFixture();
   try {
+    const changelogBefore = read(fixture.rootDir, 'CHANGELOG.md');
+    const candidate = buildPortfolioPackageCandidate({ rootDir: fixture.rootDir });
+    try {
+      assert.deepEqual([...candidate.rootDocuments.keys()], [
+        'docs/evidence-checklist.md',
+        'portfolio_manifest.md',
+      ]);
+    } finally {
+      candidate.cleanup();
+    }
     const first = refreshPortfolioPackage({ rootDir: fixture.rootDir });
     const firstSnapshot = snapshotOutputs(fixture.rootDir);
     const second = refreshPortfolioPackage({ rootDir: fixture.rootDir });
 
     assert.deepEqual(second, first);
     assert.deepEqual(snapshotOutputs(fixture.rootDir), firstSnapshot);
-    assert.match(
-      read(fixture.rootDir, `${PORTFOLIO_PACK_DIR}/CHANGELOG.md`),
-      /Size and SHA-256 are tracked in the repository root/,
-    );
+    assert.equal(read(fixture.rootDir, 'CHANGELOG.md'), changelogBefore);
+    assert.equal(read(fixture.rootDir, `${PORTFOLIO_PACK_DIR}/CHANGELOG.md`), changelogBefore);
     assert.match(
       read(fixture.rootDir, `${PORTFOLIO_PACK_DIR}/portfolio_manifest.md`),
       /압축 파일 크기 및 SHA-256: 루트 `portfolio_manifest\.md` 기준/,
@@ -35,6 +43,26 @@ test('portfolio refresh is idempotent and normalizes self-referential metadata',
       read(fixture.rootDir, `${PORTFOLIO_PACK_DIR}/docs/evidence-checklist.md`),
       /최종 size\/SHA-256은 루트 `portfolio_manifest\.md` 기준/,
     );
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test('a different local candidate changes only local metadata and preserves the public release changelog', () => {
+  const fixture = createFixture();
+  try {
+    refreshPortfolioPackage({ rootDir: fixture.rootDir });
+    const changelogBefore = read(fixture.rootDir, 'CHANGELOG.md');
+    const manifestBefore = read(fixture.rootDir, 'portfolio_manifest.md');
+    const checklistBefore = read(fixture.rootDir, 'docs/evidence-checklist.md');
+
+    write(fixture.rootDir, 'sample.txt', 'changed sample\n');
+    refreshPortfolioPackage({ rootDir: fixture.rootDir });
+
+    assert.equal(read(fixture.rootDir, 'CHANGELOG.md'), changelogBefore);
+    assert.equal(read(fixture.rootDir, `${PORTFOLIO_PACK_DIR}/CHANGELOG.md`), changelogBefore);
+    assert.notEqual(read(fixture.rootDir, 'portfolio_manifest.md'), manifestBefore);
+    assert.notEqual(read(fixture.rootDir, 'docs/evidence-checklist.md'), checklistBefore);
   } finally {
     fixture.cleanup();
   }
@@ -217,30 +245,45 @@ test('hygiene failure preserves the tracked package and metadata', () => {
   }
 });
 
-test('missing and duplicate metadata markers fail before publication', async (t) => {
-  for (const markerCase of ['missing', 'duplicate']) {
-    await t.test(markerCase, () => {
-      const fixture = createFixture();
-      try {
-        const changelogPath = path.join(fixture.rootDir, 'CHANGELOG.md');
-        const source = fs.readFileSync(changelogPath, 'utf8');
-        fs.writeFileSync(
-          changelogPath,
-          markerCase === 'missing'
-            ? source.replace(/^- Size: .+\n/m, '')
-            : `${source}- Size: \`1 bytes\`\n`,
-        );
-        const before = snapshotOutputs(fixture.rootDir);
+test('missing and duplicate local metadata markers fail before publication', async (t) => {
+  for (const target of [
+    {
+      path: 'portfolio_manifest.md',
+      line: /^- 압축 파일 크기: .+\n/m,
+      message: /portfolio manifest (size marker|metadata markers) must appear exactly once/,
+    },
+    {
+      path: 'docs/evidence-checklist.md',
+      line: /^\| Repository-local portfolio ZIP 갱신 \| 완료 \| .*\n/m,
+      message: /evidence checklist portfolio ZIP marker must appear exactly once/,
+    },
+  ]) {
+    for (const markerCase of ['missing', 'duplicate']) {
+      await t.test(`${target.path} ${markerCase}`, () => {
+        const fixture = createFixture();
+        try {
+          const targetPath = path.join(fixture.rootDir, target.path);
+          const source = fs.readFileSync(targetPath, 'utf8');
+          const match = source.match(target.line);
+          assert.ok(match, `fixture marker missing: ${target.path}`);
+          fs.writeFileSync(
+            targetPath,
+            markerCase === 'missing'
+              ? source.replace(target.line, '')
+              : `${source}${match[0]}`,
+          );
+          const before = snapshotOutputs(fixture.rootDir);
 
-        assert.throws(
-          () => refreshPortfolioPackage({ rootDir: fixture.rootDir }),
-          /CHANGELOG (Size marker|metadata markers) must appear exactly once/,
-        );
-        assert.deepEqual(snapshotOutputs(fixture.rootDir), before);
-      } finally {
-        fixture.cleanup();
-      }
-    });
+          assert.throws(
+            () => refreshPortfolioPackage({ rootDir: fixture.rootDir }),
+            target.message,
+          );
+          assert.deepEqual(snapshotOutputs(fixture.rootDir), before);
+        } finally {
+          fixture.cleanup();
+        }
+      });
+    }
   }
 });
 
@@ -381,8 +424,8 @@ function createFixture() {
   write(rootDir, 'CHANGELOG.md', [
     '# Changelog',
     '',
-    '- Size: `10 bytes`',
-    `- SHA-256: \`${'a'.repeat(64)}\``,
+    'Public release artifact: `v0.1.0`',
+    '',
     '',
   ].join('\n'));
   write(rootDir, 'portfolio_manifest.md', [
@@ -395,12 +438,14 @@ function createFixture() {
   write(rootDir, 'docs/evidence-checklist.md', [
     '# Evidence',
     '',
-    `| 기존 portfolio zip 갱신 | 완료 | \`_portfolio_export/personal_ai_agent_portfolio_pack.zip\` | 10 bytes, SHA-256 \`${'a'.repeat(64)}\` |`,
+    `| Repository-local portfolio ZIP 갱신 | 완료 | \`_portfolio_export/personal_ai_agent_portfolio_pack.zip\` | local candidate: 10 bytes, SHA-256 \`${'a'.repeat(64)}\`; published v0.1.0 asset과 별도 |`,
     '',
   ].join('\n'));
   write(rootDir, 'sample.txt', 'sample\n');
+  write(rootDir, 'config/public-release-v0.1.0.json', `${JSON.stringify({ tag: 'v0.1.0' })}\n`);
   writeManifest(rootDir, [
     'CHANGELOG.md',
+    'config/public-release-v0.1.0.json',
     'docs/evidence-checklist.md',
     'portfolio_manifest.md',
     'sample.txt',
