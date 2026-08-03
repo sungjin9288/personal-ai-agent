@@ -33,18 +33,22 @@
 - docs/council-concurrent-schedule-shadow-v1.md
 - docs/council-concurrent-envelope-shadow-v1.1c.md
 - docs/council-concurrent-retry-lineage-shadow-v1.1d.md
+- docs/council-concurrent-retry-terminality-shadow-v1.1e.md
 - src/core/council-blueprint-preview.mjs
 - src/core/council-concurrent-schedule-shadow.mjs
 - src/core/council-concurrent-envelope-shadow.mjs
 - src/core/council-concurrent-retry-lineage-shadow.mjs
+- src/core/council-concurrent-retry-terminality-shadow.mjs
 - scripts/smoke-council-blueprint-preview.mjs
 - scripts/smoke-council-concurrent-schedule-shadow.mjs
 - scripts/smoke-council-concurrent-envelope-shadow.mjs
 - scripts/smoke-council-concurrent-retry-lineage-shadow.mjs
+- scripts/smoke-council-concurrent-retry-terminality-shadow.mjs
 - test/council-blueprint-preview.test.mjs
 - test/council-concurrent-schedule-shadow.test.mjs
 - test/council-concurrent-envelope-shadow.test.mjs
 - test/council-concurrent-retry-lineage-shadow.test.mjs
+- test/council-concurrent-retry-terminality-shadow.test.mjs
 - src/core/local-council-strict-prompt-candidate-qualification.mjs
 - fixtures/local-council-strict-prompt-candidate-qualification-v1.json
 - scripts/build-local-council-strict-prompt-candidate-qualification.mjs
@@ -215,6 +219,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,580,189 bytes
-- 압축 파일 SHA-256: `a2261198d9489a4ec7b56495b47c2ce9ecdec4f2fe623ed40bec1318caa0caa6`
+- 압축 파일 크기: 4,588,524 bytes
+- 압축 파일 SHA-256: `08d47754c60a7b05b7785993f61f66a8ce7d648316738d818ffb0b5bb59628d9`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

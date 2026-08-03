@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-03T01:11:40.326Z
+- generatedAt: 2026-08-03T02:26:09.025Z
 - localDate: 2026-08-03
-- branch: codex/council-retry-lineage-shadow
-- commit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
-- boundImplementationCommit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
+- branch: codex/council-retry-terminality-shadow
+- commit: 1faabcec7a447600a00123ede010194c1242e9cd
+- boundImplementationCommit: 1faabcec7a447600a00123ede010194c1242e9cd
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/3df195e12f2f7089e05ad73b9368f0f8f71df0b7](releases/execution-v1/3df195e12f2f7089e05ad73b9368f0f8f71df0b7)
+- immutableSnapshot: [releases/execution-v1/1faabcec7a447600a00123ede010194c1242e9cd](releases/execution-v1/1faabcec7a447600a00123ede010194c1242e9cd)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/council-retry-lineage-shadow not found
+- commitPushStatus: not pushed, origin/codex/council-retry-terminality-shadow not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

@@ -678,6 +678,13 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - no blocker remains `awaiting-terminal-outcome`, a fully completed schedule is `completed-without-retry`, and four through seven specialists remain `outside-synthetic-envelope` with no projected retry. Same-wave event order is canonicalized by v1.1b; stale, duplicate, invalid, and barrier-breaking events retain its fail-closed behavior.
 - this is core-only. It adds no CLI, HTTP, UI, store/schema, mission/provider, permission, approval, audit, worker, retry, model, Ollama, C13, network, or filesystem-write path. `retryDecision: keep-retry-disabled`, `decision: keep-dispatch-disabled`, `keep-stub-only`, and `productionReadyClaim: false` remain fixed.
 
+### v1.1e — Deterministic retry terminality shadow
+
+- status: completed deterministic projection; it does not add a runtime retry observation.
+- reconstructs and exact-binds v1.1d with its SHA-256 digest and inherited source binding before reading an optional exact-key attempt 2 outcome. A failed first attempt is rejected for missing recoverability evidence; only a timeout is a hypothetical attempt 2 candidate.
+- a completed attempt 2 opens the next barrier only when all same-wave siblings completed; sibling failure, timeout, or pending completion remains blocked. A reviewer retry completion is projection-complete, while failed/timeout attempt 2 is retry-exhausted without attempt 3 or a configurable budget.
+- this is core-only. It adds no CLI, HTTP, UI, store/schema, mission/provider, permission, approval, audit, worker, retry, clock, model, Ollama, C13, network, filesystem, or store-write path. `retryDecision: keep-retry-disabled`, `decision: keep-dispatch-disabled`, `keep-stub-only`, and `productionReadyClaim: false` remain fixed.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.

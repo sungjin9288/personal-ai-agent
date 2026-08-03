@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Added Council v1.1e deterministic retry-terminality shadow. It reconstructs and exactly binds v1.1d before accepting only an exact-key hypothetical timeout attempt 2 outcome. Failed blockers are rejected for missing recoverability evidence; completed retry opens a projected next barrier only after all same-wave siblings complete, reviewer completion closes the projection, and failed/timeout retry is exhausted without attempt 3 or a configurable budget. Retry and dispatch remain disabled, and provider, model, Ollama, C13, worker, network, filesystem, and store execution counts remain zero. No public surface, schema, permission, approval, or audit flow changes.
 - Added Council v1.1d deterministic retry-lineage shadow. It reconstructs and exactly binds the v1.1b completion projection and v1.1c envelope before deriving one hypothetical attempt 2 / retry 1 lineage for the canonical first failed or timed-out blocker. The record is `projection-only-not-authorized`; retry and dispatch remain disabled, four through seven seats remain outside the fixed envelope, and provider, model, Ollama, C13, worker, network, filesystem, and store execution counts remain zero. No public surface, schema, permission, approval, or audit flow changes.
 - Added Council v1.1c deterministic synthetic concurrency envelope shadow. It validates the existing v1.1b exact stage-to-wave structure, stage ids, dependencies, and attempt records, then calculates a deterministic content digest rather than claiming an upstream digest exists. Three seats produce structural sequential 8, wave 4, and wave peak 3; four through seven seats return a bounded denial and retain `keep-dispatch-disabled`. CLI remains no-write, while GET retains mandatory request-audit history without domain/store mutation. No provider, model, Ollama, C13 evaluator, concurrent worker, network, mission, approval, or production authority is added.
 - Closed the repository-local no-cost v1 boundary as `local-v1-complete-external-evidence-open`. The deterministic closeout contract binds the implementation commit, current source-document hashes, measured verification results, C13 `actual-incompatible` / `keep-stub-only` history, and six external blockers while keeping all provider, model, training, actual-user-data, deployment, and production authority false.
@@ -152,8 +153,8 @@ Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,580,189 bytes`
-- SHA-256: `a2261198d9489a4ec7b56495b47c2ce9ecdec4f2fe623ed40bec1318caa0caa6`
+- Size: `4,588,524 bytes`
+- SHA-256: `08d47754c60a7b05b7785993f61f66a8ce7d648316738d818ffb0b5bb59628d9`
 
 Included public surfaces:
 

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-08-03 Council v1.1e deterministic retry terminality shadow
+
+- reconstructed the canonical v1.1d retry-lineage result and bound its exact SHA-256 source digest plus inherited v1.1b/v1.1c binding before interpreting a hypothetical attempt 2 outcome
+- rejected failed blockers without recoverability evidence; accepted only timeout candidates, opened a projected next barrier only after all same-wave siblings completed, and kept failed/timeout attempt 2 terminally exhausted without attempt 3 or a configurable budget
+- kept the work core-only: no CLI, HTTP, UI, store/schema, audit, provider/model/Ollama, C13, worker, retry, dispatch, clock, network, filesystem, or store-write path was added
+
 ## 2026-08-03 Council v1.1d deterministic retry lineage shadow
 
 - bound canonical v1.1b completion projection and v1.1c envelope sources through exact reconstruction and SHA-256 content digests before deriving a single hypothetical retry lineage
