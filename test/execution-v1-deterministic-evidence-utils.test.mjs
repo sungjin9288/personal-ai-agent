@@ -14,7 +14,7 @@ test('reused deterministic provenance preserves the original source and states t
     '- commit: 0123456789abcdef0123456789abcdef01234567',
     '',
   ].join('\n')), {
-    deterministicEvidenceReuseReason: 'ui-http-unchanged-browser-excluded',
+    deterministicEvidenceReuseReason: 'execution-v1-ui-http-unchanged-browser-excluded',
     deterministicEvidenceSourceCommit: '0123456789abcdef0123456789abcdef01234567',
     deterministicEvidenceSourceGeneratedAt: '2026-07-01T00:00:00.000Z',
     deterministicEvidenceStatus: 'reused-existing-not-rerun',

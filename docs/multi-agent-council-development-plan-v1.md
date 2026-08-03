@@ -662,6 +662,14 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - the actual run stopped at the research opening with `structured-output` / `council-contract:invalid-output`. It made one local request with retry 0; the remaining six stages, including chair, are `dependency-blocked`.
 - the final content-free artifact binds both the receipt semantic integrity hash and raw receipt file SHA-256. It records `actual-incompatible` and `chairReachability: not-reached` without raw prompt or output content. `keep-stub-only`, `localShadowQualified: false`, and all promotion, activation, training, private-data, deployment, and production flags remain false.
 
+### v1.1c — Deterministic synthetic concurrency envelope shadow
+
+- status: completed deterministic projection; it does not add a runtime observation.
+- reads only the v1.1b schedule for the existing `roleIds`, validates its exact stage-to-wave structure, contract version, stage ids, dependencies, and fixed attempt records, then computes a deterministic content digest before assigning each stage one `synthetic-tick` and one `synthetic-slot`.
+- the three-specialist projection reports sequential latency 8, wave latency 4, sequential peak 1, wave peak 3, and max parallelism 3. These are fixed structural units, not provider, model, Ollama, worker, or C13 measurements.
+- four through seven valid specialists return `outside-default-synthetic-envelope` rather than a validation error. The result remains fail closed as `keep-dispatch-disabled`; actual measurement and dispatch qualification remain false, and external/model/download/C13 counts remain zero.
+- this adds read-only CLI, GET, and existing Council preview rendering only. It adds no POST, button, domain/store mutation, mission constraint, retry, worker, provider, model, network, or C13 evaluator path; the existing mandatory request-audit write is retained.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.

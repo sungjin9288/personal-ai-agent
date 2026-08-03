@@ -7,14 +7,18 @@ const repoDir = process.cwd();
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoDir, 'package.json'), 'utf8'));
 const allSmokeScripts = Object.keys(packageJson.scripts).filter((name) => name.startsWith('smoke:'));
 
-// Scripts that cannot run in a headless/offline sweep: the Playwright browser
-// end-to-end smokes download a browser and hang without network/display.
+// Scripts that cannot run in a deterministic headless/offline sweep. Browser
+// smokes need a display/runtime, the local claim-attribution smoke invokes an
+// actual Ollama model, and runtime-image provenance is bound to the current
+// Darwin host image set. Each remains available as an explicit standalone gate.
 const EXCLUDE_ALWAYS = new Set([
   'smoke:ui-execution-browser-e2e',
   'smoke:ui-execution-browser-e2e-artifact-restore',
   'smoke:workspace-learning-operator-surface-browser',
   'smoke:user-learning-operator-surface-browser',
   'smoke:local-training-permission-surface-browser',
+  'smoke:local-evidence-gated-answer-claim-attribution',
+  'smoke:local-training-runtime-image-provenance',
   // The sweep runners themselves are smoke:* scripts; never recurse into them.
   'smoke:all',
   'smoke:docs-gates',
@@ -28,6 +32,7 @@ const GROUPS = {
   'docs-gates': [
     'smoke:council-blueprint-preview',
     'smoke:council-concurrent-schedule-shadow',
+    'smoke:council-concurrent-envelope-shadow',
     'smoke:council-closeout',
     'smoke:local-council-provider-shadow',
     'smoke:local-council-seat-contract-shadow',
@@ -134,7 +139,7 @@ console.log(
       passed: results.length - failures.length,
       failed: failures.length,
       failedScripts: failures.map((result) => result.name),
-      excludedPlaywrightE2E: group ? [] : [...EXCLUDE_ALWAYS],
+      excludedSmokeScripts: group ? [] : [...EXCLUDE_ALWAYS],
       durationSeconds,
     },
     null,

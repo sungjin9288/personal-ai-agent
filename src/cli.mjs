@@ -22,6 +22,7 @@ import {
   toCouncilBlueprintPreviewErrorPayload,
 } from './core/council-blueprint-preview.mjs';
 import { createCouncilConcurrentScheduleShadow } from './core/council-concurrent-schedule-shadow.mjs';
+import { createCouncilConcurrentEnvelopeShadow } from './core/council-concurrent-envelope-shadow.mjs';
 
 function readOption(args, name, fallback = '') {
   const index = args.indexOf(name);
@@ -142,6 +143,7 @@ Commands:
   council blueprints
   council blueprint-preview [--role <research|product|architecture|implementation|security|verification|operations>]... [--failed-stage <stageId>]...
   council concurrent-schedule-shadow [--role <research|product|architecture|implementation|security|verification|operations>]... [--completion-event '<stageId>|<attemptId>|<outcome>']...
+  council concurrent-envelope-shadow [--role <research|product|architecture|implementation|security|verification|operations>]...
 
   workspace add <path> [--name <name>]
   workspace list
@@ -253,6 +255,17 @@ Usage:
 Rules:
   Projects a synthetic, read-only four-wave schedule. Completion events are terminal records only; this command never dispatches work, creates a mission, or initializes storage.
 `);
+    return true;
+  }
+
+  if (group === 'council' && command === 'concurrent-envelope-shadow') {
+    console.log(`Personal AI Agent
+
+Usage:
+  council concurrent-envelope-shadow [--role <role>]...
+
+Rules:
+  Projects fixed synthetic latency and resource units from the v1.1b schedule. It never dispatches work, measures a runtime, creates a mission, or initializes storage.`);
     return true;
   }
 
@@ -450,6 +463,7 @@ Council commands:
   council blueprints
   council blueprint-preview [--role <role>]... [--failed-stage <stageId>]...
   council concurrent-schedule-shadow [--role <role>]... [--completion-event '<stageId>|<attemptId>|<outcome>']...
+  council concurrent-envelope-shadow [--role <role>]...
 `);
     return true;
   }
@@ -481,6 +495,11 @@ Council commands:
           roleIds,
         }),
       );
+      return true;
+    }
+    if (command === 'concurrent-envelope-shadow') {
+      const roleIds = rest.includes('--role') ? readOptions(rest, '--role') : undefined;
+      printJson(createCouncilConcurrentEnvelopeShadow({ roleIds }));
       return true;
     }
   } catch (error) {

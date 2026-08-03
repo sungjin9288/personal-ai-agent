@@ -1,12 +1,15 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-07-30T02:13:28.764Z
-- branch: codex/council-concurrent-schedule-shadow
-- commit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
-- boundImplementationCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
+- generatedAt: 2026-08-02T23:54:47.994Z
+- branch: codex/council-concurrent-envelope-shadow
+- commit: 7099a44f5459e2af91ab7f6062bea5e6317e368b
+- boundImplementationCommit: 7099a44f5459e2af91ab7f6062bea5e6317e368b
 - mode: execution-v1-verification
 - liveFlags: none
-- deterministicEvidenceStatus: current-run
+- deterministicEvidenceStatus: reused-existing-not-rerun
+- deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
+- deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
+- deterministicEvidenceReuseReason: execution-v1-ui-http-unchanged-browser-excluded
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -78,7 +81,7 @@
 - available: 2
 - missing: 0
 - visualArtifactCount: 1
-- artifactSetSha256: 673562ebc1b19279cf32c2418599341c896a7620144a37893d577dfc8563a188
+- artifactSetSha256: 08a2ee91634feaa9bae89f090d55809846b6a796cc7d6fef9043564e7a923763
 
 ## Archived Live Validation (not rerun in this refresh)
 
@@ -116,7 +119,7 @@
 
 ## Coverage and Remaining Gaps
 
-- browser interaction E2E: ready (Playwright CLI flow passed)
+- browser interaction E2E: reused existing result; not rerun (execution-v1-ui-http-unchanged-browser-excluded)
 - reference adoption gate: ready (aggregate smoke passed)
 - live provider 결과는 위 source commit에서 보존되었으며 이번 refresh에서 재실행되지 않음
 

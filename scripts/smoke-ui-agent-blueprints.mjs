@@ -51,7 +51,12 @@ try {
   assert.equal(appJs.includes('councilBlueprintSelectedRoleIds'), true);
   assert.equal(appJs.includes('/api/council/blueprint-preview'), true);
   assert.equal(appJs.includes('/api/council/concurrent-schedule-shadow'), true);
+  assert.equal(appJs.includes('/api/council/concurrent-envelope-shadow'), true);
   assert.equal(appJs.includes('Sequential baseline vs four candidate waves'), true);
+  assert.equal(appJs.includes('Deterministic synthetic concurrency envelope'), true);
+  assert.equal(appJs.includes('actualMeasurements: false'), true);
+  assert.equal(appJs.includes('actualConcurrentDispatchQualified: false'), true);
+  assert.equal(appJs.includes('envelopeShadow.decision'), true);
   assert.equal(appJs.includes('actualConcurrentDispatch: false'), true);
   assert.equal(appJs.includes('Parity — stage ids:'), true);
   assert.equal(appJs.includes('Blocker:'), true);

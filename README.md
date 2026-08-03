@@ -279,7 +279,7 @@ node src/cli.mjs provider probe openai
 
 ## Testing
 
-Full local sweep (all deterministic smoke scripts, excluding the two Playwright browser e2e checks; exits non-zero on any failure):
+Full deterministic offline sweep. Browser E2E, actual Ollama inference, and host-bound Darwin provenance remain explicit standalone gates and are not run by this aggregate command:
 
 ```bash
 npm run smoke:all
