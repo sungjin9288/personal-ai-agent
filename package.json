@@ -368,6 +368,7 @@
     "smoke:council-blueprint-preview": "node scripts/smoke-council-blueprint-preview.mjs",
     "smoke:council-concurrent-schedule-shadow": "node scripts/smoke-council-concurrent-schedule-shadow.mjs",
     "smoke:council-concurrent-envelope-shadow": "node scripts/smoke-council-concurrent-envelope-shadow.mjs",
+    "smoke:council-concurrent-retry-lineage-shadow": "node scripts/smoke-council-concurrent-retry-lineage-shadow.mjs",
     "smoke:session-history": "node scripts/smoke-session-history.mjs",
     "smoke:mission-timeline": "node scripts/smoke-mission-timeline.mjs",
     "smoke:workspace-timeline": "node scripts/smoke-workspace-timeline.mjs",

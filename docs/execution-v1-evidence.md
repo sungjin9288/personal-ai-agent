@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-02T23:54:47.994Z
-- branch: codex/council-concurrent-envelope-shadow
-- commit: 7099a44f5459e2af91ab7f6062bea5e6317e368b
-- boundImplementationCommit: 7099a44f5459e2af91ab7f6062bea5e6317e368b
+- generatedAt: 2026-08-03T01:11:29.466Z
+- branch: codex/council-retry-lineage-shadow
+- commit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
+- boundImplementationCommit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
@@ -81,7 +81,7 @@
 - available: 2
 - missing: 0
 - visualArtifactCount: 1
-- artifactSetSha256: 08a2ee91634feaa9bae89f090d55809846b6a796cc7d6fef9043564e7a923763
+- artifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
 
 ## Archived Live Validation (not rerun in this refresh)
 
