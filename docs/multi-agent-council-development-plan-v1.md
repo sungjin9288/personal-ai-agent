@@ -670,6 +670,14 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - four through seven valid specialists return `outside-default-synthetic-envelope` rather than a validation error. The result remains fail closed as `keep-dispatch-disabled`; actual measurement and dispatch qualification remain false, and external/model/download/C13 counts remain zero.
 - this adds read-only CLI, GET, and existing Council preview rendering only. It adds no POST, button, domain/store mutation, mission constraint, retry, worker, provider, model, network, or C13 evaluator path; the existing mandatory request-audit write is retained.
 
+### v1.1d — Deterministic retry lineage shadow
+
+- status: completed deterministic projection; it does not add a runtime retry observation.
+- reads a canonical v1.1b completion projection and matching v1.1c envelope, reconstructs both canonical sources, and binds their deterministic SHA-256 content digests before deriving a result.
+- the only projected lineage belongs to v1.1b's canonical first failed or timed-out blocker: parent attempt 1 / retry 0 and hypothetical attempt 2 / retry 1. Its state is `projection-only-not-authorized`; `actualRetryAuthorized` and `actualRetryExecuted` remain false.
+- no blocker remains `awaiting-terminal-outcome`, a fully completed schedule is `completed-without-retry`, and four through seven specialists remain `outside-synthetic-envelope` with no projected retry. Same-wave event order is canonicalized by v1.1b; stale, duplicate, invalid, and barrier-breaking events retain its fail-closed behavior.
+- this is core-only. It adds no CLI, HTTP, UI, store/schema, mission/provider, permission, approval, audit, worker, retry, model, Ollama, C13, network, or filesystem-write path. `retryDecision: keep-retry-disabled`, `decision: keep-dispatch-disabled`, `keep-stub-only`, and `productionReadyClaim: false` remain fixed.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.

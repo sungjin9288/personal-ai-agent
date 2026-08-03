@@ -155,10 +155,11 @@
 - `docs/council-blueprint-preview-v1.md`
 - `docs/council-concurrent-schedule-shadow-v1.md`
 - `docs/council-concurrent-envelope-shadow-v1.1c.md`
+- `docs/council-concurrent-retry-lineage-shadow-v1.1d.md`
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 285/285 passed with `npm run smoke:all` on 2026-08-03; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 286/286 passed with `npm run smoke:all` on 2026-08-03; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -201,6 +202,7 @@
 - Council blueprint preview: verified with `npm run smoke:council-blueprint-preview`; v1.1a exposes the canonical role catalog and sequential meeting graph only through deterministic read-only CLI/API surfaces, without storage initialization, mission mutation, provider calls, model selection, or runtime authority.
 - Council concurrent schedule shadow: verified with `npm run smoke:council-concurrent-schedule-shadow`; v1.1b projects the unchanged blueprint into four synthetic all-completed waves, canonicalizes same-wave completion order, preserves sequential stage/dependency/authority parity, rejects stale and out-of-barrier events, and leaves actual concurrent dispatch false.
 - Council concurrent envelope shadow: verified with `npm run smoke:council-concurrent-envelope-shadow`; v1.1c validates exact v1.1b stage-to-wave structure, stage ids, dependencies, and attempts, then calculates a deterministic content digest (v1.1b has no upstream digest) and fixed synthetic latency/resource units. The triad structural envelope is sequential 8, wave 4, wave peak 3; four through seven seats remain bounded and `keep-dispatch-disabled`. The CLI creates no files; HTTP retains mandatory request-audit history only and makes no domain/store mutation. This is not an actual concurrency, provider, model, Ollama, C13, worker, network, latency, or resource measurement.
+- Council concurrent retry lineage shadow: verified with `npm run smoke:council-concurrent-retry-lineage-shadow`; v1.1d reconstructs and exactly binds the v1.1b completion projection and v1.1c envelope before projecting only the canonical first failed/timeout stage from attempt 1/retry 0 to a hypothetical attempt 2/retry 1. The projection is not authorized, retry and dispatch remain disabled, four through seven seats stay outside the synthetic envelope, and provider/model/Ollama/C13/worker/network/filesystem/store counts remain zero.
 - Local-first v1 completion closeout: verified by the deterministic completion smoke and `evidence/output-artifacts/local-v1-completion-closeout.json`; it binds repository-local D4, local RAG, F1 protocol, Council C1–C13, and external-blocker status without treating provider, actual-user-data, training, deployment, or production evidence as complete.
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`

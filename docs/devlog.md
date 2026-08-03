@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-08-03 Council v1.1d deterministic retry lineage shadow
+
+- bound canonical v1.1b completion projection and v1.1c envelope sources through exact reconstruction and SHA-256 content digests before deriving a single hypothetical retry lineage
+- retained v1.1b same-wave canonical blocker order and fail-closed event validation; only the first failed or timed-out blocker can project attempt 1/retry 0 to attempt 2/retry 1, and that projection is explicitly not authorized
+- kept the work core-only: no CLI, HTTP, UI, store/schema, audit, provider/model/Ollama, C13, worker, retry, dispatch, network, filesystem, or store-write path was added
+
 ## 2026-08-02 Council v1.1c deterministic concurrency envelope shadow
 
 - derived a read-only structural envelope from the existing v1.1b schedule after exact stage-to-wave, stage/dependency, and fixed-attempt validation; v1.1c computes its own content digest because v1.1b has no upstream digest, and every stage receives one synthetic tick and one synthetic slot only
