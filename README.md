@@ -285,6 +285,8 @@ Full deterministic offline sweep. Browser E2E, actual Ollama inference, and host
 npm run smoke:all
 ```
 
+The sweep keeps successful child output quiet. If a smoke fails, it still runs every later command once in the declared order, then prints a bounded `FAIL_DIAGNOSTICS` record with sanitized stderr and stdout previews before returning exit code `1`. The preview is console-only troubleshooting context; it is not persisted evidence and is not a guarantee that arbitrary user data is safe to print.
+
 CI-safe documentation gate subset (the target/enterprise gates with no git-history dependency; also run by the `Docs gate smokes` GitHub Actions workflow):
 
 ```bash

@@ -3,6 +3,11 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import {
+  buildSmokeFailureDiagnostics,
+  MAX_CAPTURE_BYTES,
+} from './smoke-failure-diagnostics.mjs';
+
 const repoDir = process.cwd();
 const packageJson = JSON.parse(fs.readFileSync(path.join(repoDir, 'package.json'), 'utf8'));
 const allSmokeScripts = Object.keys(packageJson.scripts).filter((name) => name.startsWith('smoke:'));
@@ -124,10 +129,16 @@ for (const name of scriptsToRun) {
     cwd: repoDir,
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
+    maxBuffer: MAX_CAPTURE_BYTES,
   });
   const ok = outcome.status === 0;
   results.push({ name, ok });
   console.log(`${ok ? 'PASS' : 'FAIL'} ${name}`);
+  if (!ok) {
+    console.error(
+      `FAIL_DIAGNOSTICS ${name} ${JSON.stringify(buildSmokeFailureDiagnostics(outcome, { repoDir }))}`,
+    );
+  }
 }
 
 const failures = results.filter((result) => !result.ok);
