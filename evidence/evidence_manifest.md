@@ -329,3 +329,4 @@
 - Updated zip path: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - Expected package root: `personal_ai_agent_portfolio_pack/`
 - Evidence included in zip: yes
+- Public release identity: `config/public-release-v0.1.0.json` is a read-only record of the published GitHub v0.1.0 asset. Offline package smokes compare its fixed metadata with `CHANGELOG.md` and packed record parity; they do not invoke GitHub, upload, delete, or claim that the repository-local candidate was published.

@@ -198,7 +198,7 @@
 
 ## 갱신 및 검증
 
-`npm run refresh:portfolio-package`는 manifest 검증, hygiene 검사, self-reference 정규화, deterministic ZIP 생성을 모두 staging에서 끝낸 뒤 pack·ZIP·root metadata를 함께 교체한다. 중간 실패는 기존 산출물을 복구한다.
+`npm run refresh:portfolio-package`는 manifest 검증, hygiene 검사, local candidate self-reference 정규화, deterministic ZIP 생성을 모두 staging에서 끝낸 뒤 pack·ZIP·local metadata를 함께 교체한다. 중간 실패는 기존 산출물을 복구한다. `CHANGELOG.md`는 기록된 public release identity를 그대로 보존하며, 이 local candidate의 크기와 SHA-256을 갱신하지 않는다.
 
 `npm run smoke:portfolio-package-refresh`는 두 candidate가 byte-identical인지 확인하고 tracked pack·ZIP·metadata와 비교한다. 이 검증은 repository 파일을 변경하지 않는다.
 

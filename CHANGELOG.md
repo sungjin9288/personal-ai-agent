@@ -4,6 +4,7 @@ All notable public-facing changes are tracked here. This project follows an evid
 
 ## Unreleased
 
+- Corrected the public v0.1.0 release record so its published GitHub asset identity remains separate from the regenerated repository-local Portfolio ZIP candidate. Offline checks preserve the recorded release fields without GitHub mutation or a published-candidate claim.
 - Hardened the aggregate smoke runner with failure-only, bounded console diagnostics while preserving package/group order, exactly-once execution, existing PASS/FAIL lines, final summary schema, and exit behavior. Diagnostics report sanitized stderr before stdout with raw byte counts, head/tail truncation, process status, signal, and safe spawn errors; they add no retry, timeout, concurrency, persistence, provider, model, permission, or runtime authority.
 - Added a deterministic Portfolio package refresh command backed by one sorted file manifest. The command validates path containment, symlinks, source types, private paths, and secret-like content before building and checking an isolated ZIP candidate, then publishes the pack, ZIP, and root checksum metadata as one rollback-safe transaction. A mutation-free smoke verifies two byte-identical candidates and exact tracked-output parity.
 - Added Council v1.1e deterministic retry-terminality shadow. It reconstructs and exactly binds v1.1d before accepting only an exact-key hypothetical timeout attempt 2 outcome. Failed blockers are rejected for missing recoverability evidence; completed retry opens a projected next barrier only after all same-wave siblings complete, reviewer completion closes the projection, and failed/timeout retry is exhausted without attempt 3 or a configurable budget. Retry and dispatch remain disabled, and provider, model, Ollama, C13, worker, network, filesystem, and store execution counts remain zero. No public surface, schema, permission, approval, or audit flow changes.
@@ -154,9 +155,16 @@ Validated boundary:
 Public release artifact:
 
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
+- Asset ID: `455331518`
 - Asset: `personal_ai_agent_portfolio_pack.zip`
-- Size: `4,576,576 bytes`
-- SHA-256: `e80bec86ba9b78e8adc5f59f538e629393a6c5b683deeabd89e669a2aed80023`
+- Release published at: `2026-06-23T03:47:44Z`
+- Asset created at: `2026-06-23T06:09:19Z`
+- Asset updated at: `2026-06-23T06:09:20Z`
+- Size: `412,036 bytes`
+- SHA-256: `66439a6a255b17adbbc04f2489804f0870848854f9a73934b9f7bad99285e6b5`
+- Recorded observation: `2026-08-03`; GitHub metadata, downloaded asset bytes, and `unzip` verification.
+
+The repository-local Portfolio ZIP is a separately regenerated candidate. Its current size and SHA-256 are recorded in `portfolio_manifest.md` and `docs/evidence-checklist.md`; they do not identify the published v0.1.0 asset.
 
 Included public surfaces:
 

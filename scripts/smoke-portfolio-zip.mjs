@@ -15,6 +15,7 @@ const packageJsonPath = path.join(repoDir, 'package.json');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
 const evidenceChecklistPath = path.join(repoDir, 'docs', 'evidence-checklist.md');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
+const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
 const zipPath = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack.zip');
 const packDir = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack');
 
@@ -22,6 +23,7 @@ const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const changelog = readRequiredFile(changelogPath);
 const evidenceChecklist = readRequiredFile(evidenceChecklistPath);
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
+const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
 
 assert.equal(packageJson.scripts['smoke:portfolio-zip'], 'node scripts/smoke-portfolio-zip.mjs');
 assert.equal(fs.existsSync(zipPath), true, 'portfolio ZIP missing');
@@ -36,8 +38,6 @@ const zipBytes = fs.statSync(zipPath).size;
 const zipSha = crypto.createHash('sha256').update(fs.readFileSync(zipPath)).digest('hex');
 assert.equal(expectedSize, `${zipBytes.toLocaleString('en-US')} bytes`);
 assert.equal(expectedSha, zipSha);
-assertContains(changelog, expectedSha, 'CHANGELOG missing current portfolio ZIP SHA');
-assertContains(changelog, expectedSize, 'CHANGELOG missing current portfolio ZIP size');
 assertContains(evidenceChecklist, expectedSha, 'evidence checklist missing current portfolio ZIP SHA');
 assertContains(evidenceChecklist, expectedSize, 'evidence checklist missing current portfolio ZIP size');
 
@@ -48,6 +48,7 @@ const zipEntries = runRequired('zipinfo', ['-1', zipPath]).stdout.trim().split('
 const configuredFiles = loadPortfolioFileManifest({ rootDir: repoDir });
 for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/README.md',
+  'personal_ai_agent_portfolio_pack/config/public-release-v0.1.0.json',
   'personal_ai_agent_portfolio_pack/links.md',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/bug_report.yml',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/security_report.yml',
@@ -183,12 +184,10 @@ assert.deepEqual(packedFiles, configuredFiles, 'portfolio pack files must exactl
 const packedManifest = readRequiredFile(path.join(packDir, 'portfolio_manifest.md'));
 const packedChangelog = readRequiredFile(path.join(packDir, 'CHANGELOG.md'));
 const packedEvidenceChecklist = readRequiredFile(path.join(packDir, 'docs', 'evidence-checklist.md'));
+const packedPublicRelease = JSON.parse(readRequiredFile(path.join(packDir, 'config', 'public-release-v0.1.0.json')));
 assertContains(packedManifest, '루트 `portfolio_manifest.md` 기준', 'packed manifest must avoid self-referential ZIP checksum');
-assertContains(
-  packedChangelog,
-  'Size and SHA-256 are tracked in the repository root `portfolio_manifest.md` after the ZIP is generated.',
-  'packed changelog must avoid self-referential ZIP checksum',
-);
+assert.deepEqual(packedChangelog, changelog, 'packed changelog must preserve the public release record exactly');
+assert.deepEqual(packedPublicRelease, publicRelease, 'packed public release record must match the root record exactly');
 assertContains(
   packedEvidenceChecklist,
   '최종 size/SHA-256은 루트 `portfolio_manifest.md` 기준',
@@ -232,7 +231,7 @@ function scanPackedTextFiles(rootDir) {
 }
 
 function assertPackedFilesMatchSource() {
-  const selfReferentialFiles = new Set(['CHANGELOG.md', 'portfolio_manifest.md', 'docs/evidence-checklist.md']);
+  const selfReferentialFiles = new Set(['portfolio_manifest.md', 'docs/evidence-checklist.md']);
   for (const packedPath of listFiles(packDir)) {
     const relativePath = path.relative(packDir, packedPath);
     if (selfReferentialFiles.has(relativePath)) {
