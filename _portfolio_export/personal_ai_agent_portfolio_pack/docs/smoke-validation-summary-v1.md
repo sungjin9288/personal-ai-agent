@@ -20,10 +20,13 @@ This summary gives reviewers one stable index for the core smoke commands used t
 
 The safe claim is that the local deterministic verification suite passes for the documented local-first pilot and portfolio evidence boundary. This is not live all-provider validation, not hosted SaaS validation, and not production readiness evidence.
 
+The aggregate runner keeps its command order and final summary contract unchanged. A failed command now emits console-only diagnostics with stderr before stdout, raw byte counts, bounded head/tail previews, process status, signal, and spawn error metadata. ANSI and unsafe control characters, sufficiently long sensitive environment values, common token forms, secret assignments, and machine-local paths are redacted. This makes CI failures actionable without treating the preview as stored evidence or claiming that arbitrary user data is safe to print.
+
 ## Core Verification Matrix
 
 | Area | Command | Evidence boundary |
 |---|---|---|
+| Aggregate smoke failure diagnostics | `npm run smoke:all` | Runs every included smoke exactly once in package order, keeps successful child output quiet, and reports bounded sanitized failure context before exiting `1`; it does not retry, run concurrently, persist output, or expand runtime authority |
 | Pilot export package | `npm run package:pilot-export` | Regenerates the manifest-only pilot export package with repository-relative paths |
 | Doctor diagnostics | `npm run smoke:doctor` | Verifies local setup diagnostics and required files/scripts |
 | Web doctor surface | `npm run smoke:ui-doctor-surface` | Verifies the local web diagnostics surface without a hosted URL |

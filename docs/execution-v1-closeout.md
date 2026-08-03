@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-03T03:50:33.434Z
-- branch: codex/portfolio-package-refresh
-- commit: 5c28b488d10798270f20f6bbedc4ca371aa8e381
-- boundImplementationCommit: 5c28b488d10798270f20f6bbedc4ca371aa8e381
+- generatedAt: 2026-08-03T04:26:54.470Z
+- branch: codex/smoke-failure-diagnostics
+- commit: 42aef644264ce7a447715da08d80e28cfdd27d4c
+- boundImplementationCommit: 42aef644264ce7a447715da08d80e28cfdd27d4c
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z

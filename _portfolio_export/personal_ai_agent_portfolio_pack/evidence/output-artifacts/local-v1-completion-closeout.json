@@ -41,18 +41,18 @@
     "actual-pilot-feedback-and-metrics",
     "hosted-saas-or-production-deployment"
   ],
-  "implementationCommit": "5c28b488d10798270f20f6bbedc4ca371aa8e381",
+  "implementationCommit": "42aef644264ce7a447715da08d80e28cfdd27d4c",
   "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v1",
   "sourceDocumentSha256": {
-    "README.md": "6007a12ce3ee0e9892001de33e5d176d3a4118235d93c0ee638efb8927a54d7c",
+    "README.md": "f27dc7b3de67764a025159971fd0850a92611145af5cbc2df654ae4eaf3dce44",
     "docs/refactoring-development-plan-v1.md": "e90e4814d8b140ba429e1d798cde55fe800e761de2f271f3a24b33cb90429dbf",
     "docs/ml-rag-development-plan-v1.md": "ab101a982d2753ed99840e0cc73af7397bb3babef71a26d0e7883f5221eb9ac9",
     "docs/multi-agent-council-development-plan-v1.md": "bb35537fb9f720368d7fa91c3b09f28a09159a22a77d31dc44842e7919f457ab",
     "docs/external-evidence-blockers-v1.md": "1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a",
-    "docs/roadmap.md": "73c3c2aefdd8921e1d4fd7bebe570dea2379ffb85a375dce9508779500a56eb3",
+    "docs/roadmap.md": "3c69487977fe71d6cefa1ba1e7352d947979163fc9a6c8783906f151b4a907d8",
     "docs/product-plan-v1.md": "1b6443d3fed754c3e737171fd0e8c0c155e8ca9fd9437e82da81067e7e38039b",
     "docs/local-v1-completion-closeout-v1.md": "d2446625cf22f3fca103d8896dbdc136c740d7884dd7aef9122e83cbbfbd3137",
-    "docs/smoke-validation-summary-v1.md": "80d27ac0a5b4c9f2c2f5310f07f191200483856da78a89b27f5eef011ab9b933",
+    "docs/smoke-validation-summary-v1.md": "0c1d385c7c0543eed74988861bfa113ab13e13ba6e9dfce4f3728ebf6c3c3d6a",
     "evidence/evidence_manifest.md": "7652597b0652999bf99abaed881a858fe071a2abbfdf123e2bf65ccecea09234"
   },
   "status": "local-v1-complete-external-evidence-open",
@@ -61,7 +61,7 @@
       {
         "failed": 0,
         "id": "unit-tests",
-        "passed": 1895,
+        "passed": 1900,
         "skipped": 1,
         "status": "passed"
       },
@@ -101,10 +101,10 @@
         "status": "passed"
       }
     ],
-    "reportSha256": "69f27caf8cab36c4e1863c86d8116f9334513c8a2a5d80225e9d0f8c56548d19",
+    "reportSha256": "7e4e4c8090bd356e37e9ad909ede945522171bff93b6c569d7daf21fc3adbe53",
     "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v1",
     "status": "passed"
   },
-  "id": "local-v1-completion-closeout-9a981e8bb97b06eb07495ea971fdce390a6fad8c2d1d051f8f84f609baa612a8",
-  "integrityHash": "9a981e8bb97b06eb07495ea971fdce390a6fad8c2d1d051f8f84f609baa612a8"
+  "id": "local-v1-completion-closeout-068c58ba905fed836cda0f971528daa3f417775c4a9620e115cdcf1775fcdfb8",
+  "integrityHash": "068c58ba905fed836cda0f971528daa3f417775c4a9620e115cdcf1775fcdfb8"
 }
