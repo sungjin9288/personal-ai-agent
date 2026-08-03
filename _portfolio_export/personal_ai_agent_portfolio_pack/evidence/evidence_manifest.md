@@ -4,9 +4,9 @@
 
 - Project: Personal AI Agent
 - Initial generated at: 2026-07-23
-- Last updated at: 2026-07-30
+- Last updated at: 2026-08-02
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, Council C6–C13 content-free local observations, and the read-only Council v1.1a/v1.1b structural projections. C13 records one `actual-incompatible` v6 observation and remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, external-provider, concurrent dispatch, deployment, or production authority.
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, Council C6–C13 content-free local observations, v1.1a/v1.1b read-only projections, and the v1.1c deterministic structural envelope shadow. C13 records one `actual-incompatible` v6 observation and remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, external-provider, concurrent dispatch, deployment, or production authority.
 - F1.25 private collection-gap replan shadow: trusted F1.24 authority is independently rebuilt before the F1.2 collection plan is recalculated in memory; projected 15 reviewed examples, 5 scopes, and 7 cases leave tracked F1.2 evidence, intake, collection, audit, training, provider, submission, deployment, and production boundaries unchanged or false
 - F1.24 private combined readiness impact shadow: one exact reconstructed F1.21 record and one exact F1.20 replay case are composed only in the deterministic in-memory projection; five sufficiency failures remain and all mutation, audit, training, provider, submission, deployment, and production boundaries remain false
 - F1.23 private answer-quality readiness impact shadow: final F1.20 replay lineage is revalidated and its frozen case is projected only in the deterministic in-memory suite; dataset/export digests and all training, provider, submission, deployment, and production boundaries remain unchanged or false
@@ -154,10 +154,11 @@
 - `docs/local-v1-completion-closeout-v1.md`
 - `docs/council-blueprint-preview-v1.md`
 - `docs/council-concurrent-schedule-shadow-v1.md`
+- `docs/council-concurrent-envelope-shadow-v1.1c.md`
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 286/286 passed with `npm run smoke:all` on 2026-07-30; browser E2E commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 285/285 passed with `npm run smoke:all` on 2026-08-03; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -199,6 +200,7 @@
 - Council C13 actual compatibility observation: verified with `npm run smoke:local-council-v6-actual-compatibility-observation`; one owner-authorized loopback `qwen2.5:3b` request, retry 0, stopped at research opening with `structured-output` / `council-contract:invalid-output`. The content-free receipt and observation bind C6–C12 integrity and prompt hashes, record `actual-incompatible` with `chairReachability: not-reached`, and retain `keep-stub-only` plus false promotion, activation, training, private-data, deployment, and production authority. No external provider, API cost, service start, preload, or model download occurred.
 - Council blueprint preview: verified with `npm run smoke:council-blueprint-preview`; v1.1a exposes the canonical role catalog and sequential meeting graph only through deterministic read-only CLI/API surfaces, without storage initialization, mission mutation, provider calls, model selection, or runtime authority.
 - Council concurrent schedule shadow: verified with `npm run smoke:council-concurrent-schedule-shadow`; v1.1b projects the unchanged blueprint into four synthetic all-completed waves, canonicalizes same-wave completion order, preserves sequential stage/dependency/authority parity, rejects stale and out-of-barrier events, and leaves actual concurrent dispatch false.
+- Council concurrent envelope shadow: verified with `npm run smoke:council-concurrent-envelope-shadow`; v1.1c validates exact v1.1b stage-to-wave structure, stage ids, dependencies, and attempts, then calculates a deterministic content digest (v1.1b has no upstream digest) and fixed synthetic latency/resource units. The triad structural envelope is sequential 8, wave 4, wave peak 3; four through seven seats remain bounded and `keep-dispatch-disabled`. The CLI creates no files; HTTP retains mandatory request-audit history only and makes no domain/store mutation. This is not an actual concurrency, provider, model, Ollama, C13, worker, network, latency, or resource measurement.
 - Local-first v1 completion closeout: verified by the deterministic completion smoke and `evidence/output-artifacts/local-v1-completion-closeout.json`; it binds repository-local D4, local RAG, F1 protocol, Council C1–C13, and external-blocker status without treating provider, actual-user-data, training, deployment, or production evidence as complete.
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`

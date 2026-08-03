@@ -1,12 +1,12 @@
 # Smoke Validation Summary v1
 
 - status: smoke-validation-summary-current
-- localDate: 2026-07-30
+- localDate: 2026-08-03
 - productionReadyClaim: false
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 286/286 passed with `npm run smoke:all` on 2026-07-30
+- lastFullSweep: 285/285 passed with `npm run smoke:all` on 2026-08-03
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -58,6 +58,7 @@ The safe claim is that the local deterministic verification suite passes for the
 | Council C13 actual compatibility observation | `npm run smoke:local-council-v6-actual-compatibility-observation` | Verifies the existing content-free one-attempt receipt and `actual-incompatible` observation without rerunning the evaluator, provider, or model |
 | Council blueprint preview | `npm run smoke:council-blueprint-preview` | Verifies the deterministic v1.1a role catalog and sequential meeting graph through read-only CLI/API surfaces without creating storage or execution authority |
 | Council concurrent schedule shadow | `npm run smoke:council-concurrent-schedule-shadow` | Verifies v1.1b four-wave barriers, canonical completion order, sequential parity, fail-closed completion handling, CLI/API equivalence, and empty-root no-write behavior without dispatching work |
+| Council concurrent envelope shadow | `npm run smoke:council-concurrent-envelope-shadow` | Verifies v1.1c exact v1.1b stage-to-wave/stage/dependency/attempt validation plus deterministic content digest calculation, triad 8/4/3 envelope, bounded 4–7-seat denial, CLI no-write, and API request-audit-only/no-domain-mutation behavior without provider/model/Ollama/C13/workers/network |
 | Local-first v1 completion closeout | `npm run smoke:local-v1-completion-closeout` | Verifies the implementation SHA, source document hashes, C13 result, six external blockers, false authority fields, and measured repository-local verification results |
 | Retrieval corpus contract | `npm run smoke:retrieval-corpus-contract` | Verifies deterministic memory, attachment, and fact corpus identity, revision, scope, hash, and provenance |
 | Retrieval quality evaluation | `npm run smoke:retrieval-quality-evaluation` | Verifies controlled precision, recall, noise, source diversity, frozen baseline replay, and candidate regression rejection |
