@@ -167,6 +167,7 @@
 - 외부 작업: 실제 trained candidate evidence와 target runtime 결과 확보 후 reviewer 승인 기반 model rollout 검토
 - 외부 작업: 선택된 qwen2.5 3B의 license owner 검토, OS-level egress isolation, 승인된 resource·cold-start·concurrency limit, long-duration soak·thermal telemetry, rollback owner와 provider-input activation 승인
 - 완료: core smoke validation summary와 command guard
+- 완료: aggregate smoke runner의 순서·exactly-once·summary contract를 유지하면서 실패한 command에만 bounded console diagnostics를 제공하는 maintenance hardening
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
 - 남은 polish: published private/public walkthrough URL, actual pilot feedback and metric evidence
