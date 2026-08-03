@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-03T02:26:09.025Z
+- generatedAt: 2026-08-03T03:50:40.944Z
 - localDate: 2026-08-03
-- branch: codex/council-retry-terminality-shadow
-- commit: 1faabcec7a447600a00123ede010194c1242e9cd
-- boundImplementationCommit: 1faabcec7a447600a00123ede010194c1242e9cd
+- branch: codex/portfolio-package-refresh
+- commit: 5c28b488d10798270f20f6bbedc4ca371aa8e381
+- boundImplementationCommit: 5c28b488d10798270f20f6bbedc4ca371aa8e381
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1faabcec7a447600a00123ede010194c1242e9cd](releases/execution-v1/1faabcec7a447600a00123ede010194c1242e9cd)
+- immutableSnapshot: [releases/execution-v1/5c28b488d10798270f20f6bbedc4ca371aa8e381](releases/execution-v1/5c28b488d10798270f20f6bbedc4ca371aa8e381)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/council-retry-terminality-shadow not found
+- commitPushStatus: not pushed, origin/codex/portfolio-package-refresh not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-03T02:26:01.006Z
-- branch: codex/council-retry-terminality-shadow
-- commit: 1faabcec7a447600a00123ede010194c1242e9cd
-- boundImplementationCommit: 1faabcec7a447600a00123ede010194c1242e9cd
+- generatedAt: 2026-08-03T03:50:33.373Z
+- branch: codex/portfolio-package-refresh
+- commit: 5c28b488d10798270f20f6bbedc4ca371aa8e381
+- boundImplementationCommit: 5c28b488d10798270f20f6bbedc4ca371aa8e381
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
