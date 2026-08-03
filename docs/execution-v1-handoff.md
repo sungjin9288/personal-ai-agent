@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-02T23:55:01.232Z
+- generatedAt: 2026-08-03T01:11:40.326Z
 - localDate: 2026-08-03
-- branch: codex/council-concurrent-envelope-shadow
-- commit: 7099a44f5459e2af91ab7f6062bea5e6317e368b
-- boundImplementationCommit: 7099a44f5459e2af91ab7f6062bea5e6317e368b
+- branch: codex/council-retry-lineage-shadow
+- commit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
+- boundImplementationCommit: 3df195e12f2f7089e05ad73b9368f0f8f71df0b7
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7099a44f5459e2af91ab7f6062bea5e6317e368b](releases/execution-v1/7099a44f5459e2af91ab7f6062bea5e6317e368b)
-- visualArtifactSetSha256: 08a2ee91634feaa9bae89f090d55809846b6a796cc7d6fef9043564e7a923763
-- commitPushStatus: not pushed, origin/codex/council-concurrent-envelope-shadow not found
+- immutableSnapshot: [releases/execution-v1/3df195e12f2f7089e05ad73b9368f0f8f71df0b7](releases/execution-v1/3df195e12f2f7089e05ad73b9368f0f8f71df0b7)
+- visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
+- commitPushStatus: not pushed, origin/codex/council-retry-lineage-shadow not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
@@ -62,7 +62,7 @@
 - smoke:production-readiness-gate: passed
 - reference adoption aggregate: 31 scripts, ok=true
 - deterministic runtime rows: 8
-- visual artifact set: 08a2ee91634feaa9bae89f090d55809846b6a796cc7d6fef9043564e7a923763
+- visual artifact set: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
 
 ## Live Provider Handoff
 
