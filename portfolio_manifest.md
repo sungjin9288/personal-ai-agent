@@ -20,6 +20,7 @@
 - .github/ISSUE_TEMPLATE/config.yml
 - DEV_LOG.md
 - links.md
+- config/portfolio-package-files.json
 - docs/project-card.md
 - docs/case-study.md
 - docs/resume-bullets.md
@@ -193,7 +194,13 @@
 - evidence/screenshots/local-training-permission-surface.png
 - evidence/architecture/
 - evidence/evidence_manifest.md
-- screenshots 폴더: 기존 이미지가 없어 `screenshots/screenshots_placeholder.md` 포함
+- `config/portfolio-package-files.json`에 고정된 repository-relative file manifest
+
+## 갱신 및 검증
+
+`npm run refresh:portfolio-package`는 manifest 검증, hygiene 검사, self-reference 정규화, deterministic ZIP 생성을 모두 staging에서 끝낸 뒤 pack·ZIP·root metadata를 함께 교체한다. 중간 실패는 기존 산출물을 복구한다.
+
+`npm run smoke:portfolio-package-refresh`는 두 candidate가 byte-identical인지 확인하고 tracked pack·ZIP·metadata와 비교한다. 이 검증은 repository 파일을 변경하지 않는다.
 
 ## 제외한 파일/폴더
 
@@ -219,6 +226,6 @@
 - 압축 파일 생성 여부: 생성 완료
 - 압축 파일 경로: `_portfolio_export/personal_ai_agent_portfolio_pack.zip`
 - 압축 파일명: `personal_ai_agent_portfolio_pack.zip`
-- 압축 파일 크기: 4,588,524 bytes
-- 압축 파일 SHA-256: `08d47754c60a7b05b7785993f61f66a8ce7d648316738d818ffb0b5bb59628d9`
+- 압축 파일 크기: 4,575,783 bytes
+- 압축 파일 SHA-256: `b781f27063c1185fa7f5752c32cbedbeaf15e945d93a569ff74cad0ff8748eec`
 - 압축 파일 내용 확인 여부: `unzip -l` 기준으로 확인 완료

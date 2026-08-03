@@ -130,6 +130,7 @@ const expectedCommands = [
   'npm run smoke:representative-demo-evidence',
   'npm run smoke:operator-surface-demo-evidence',
   'npm run smoke:pilot-export-package',
+  'npm run smoke:portfolio-package-refresh',
   'npm run smoke:portfolio-zip',
   'npm run smoke:release-artifact-hygiene',
 ];
