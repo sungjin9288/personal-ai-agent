@@ -22,6 +22,12 @@ The repository-local, no-cost v1 scope is complete when its deterministic closeo
 | Council C1–C13 | Complete as deterministic contracts and recorded local observations; C13 is `actual-incompatible`, `chairReachability: not-reached`, and `keep-stub-only` | No retry, repair, promotion, runtime activation, training, or private-data authority follows from C13 |
 | Portfolio and release evidence | Complete for local review after artifact synchronization | Six external evidence blockers remain open |
 
+## Public Release Source Binding
+
+The closeout source-binding contract fixes the published v0.1.0 identity to both `CHANGELOG.md` and `config/public-release-v0.1.0.json`. A current completion artifact therefore detects a change to either historical public-release source without making a network request.
+
+This is separate from the repository-local Portfolio candidate. `portfolio_manifest.md` and `_portfolio_export/personal_ai_agent_portfolio_pack.zip` describe the local candidate refreshed by the Portfolio workflow, and `npm run smoke:portfolio-zip` validates that candidate. Refreshing or validating that ZIP neither rewrites nor replaces the fixed published v0.1.0 asset record.
+
 ## External Evidence Still Required
 
 The completion artifact must retain the blocker register without treating any row as locally completed:
