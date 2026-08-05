@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-05T00:22:31.004Z
-- branch: codex/local-v1-public-release-source-binding
-- commit: 2e87073bf4cbab069a958f522dfb74d8332f59ec
-- boundImplementationCommit: 2e87073bf4cbab069a958f522dfb74d8332f59ec
+- generatedAt: 2026-08-05T01:18:32.873Z
+- branch: codex/local-v1-verification-provenance
+- commit: c69aa2cd1a5aeb76d0992d636531dbbba706a7c1
+- boundImplementationCommit: c69aa2cd1a5aeb76d0992d636531dbbba706a7c1
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
