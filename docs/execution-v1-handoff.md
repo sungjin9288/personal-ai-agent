@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-05T01:18:44.181Z
+- generatedAt: 2026-08-05T04:15:37.961Z
 - localDate: 2026-08-05
-- branch: codex/local-v1-verification-provenance
-- commit: c69aa2cd1a5aeb76d0992d636531dbbba706a7c1
-- boundImplementationCommit: c69aa2cd1a5aeb76d0992d636531dbbba706a7c1
+- branch: codex/execution-v1-freshness-ci-gate
+- commit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
+- boundImplementationCommit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c69aa2cd1a5aeb76d0992d636531dbbba706a7c1](releases/execution-v1/c69aa2cd1a5aeb76d0992d636531dbbba706a7c1)
+- immutableSnapshot: [releases/execution-v1/eb4fef6cbf8e1608e7d135545ddda0a96691ec2e](releases/execution-v1/eb4fef6cbf8e1608e7d135545ddda0a96691ec2e)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/local-v1-verification-provenance not found
+- commitPushStatus: not pushed to origin/codex/execution-v1-freshness-ci-gate
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
