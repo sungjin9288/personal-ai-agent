@@ -24,6 +24,10 @@ const implementationCommit = 'a'.repeat(40);
 const sourceDocumentTexts = Object.fromEntries(
   LOCAL_V1_SOURCE_DOCUMENTS.map((document) => [document, `${document} source\n`]),
 );
+const publicReleaseSources = [
+  'CHANGELOG.md',
+  'config/public-release-v0.1.0.json',
+];
 
 test('local v1 closeout binds completed local scope without expanding authority', () => {
   const verificationReport = buildVerificationReport();
@@ -47,6 +51,10 @@ test('local v1 closeout binds completed local scope without expanding authority'
   assert.equal(artifact.c13.retryCount, 0);
   assert.equal(artifact.c13.failureStage, 'structured-output');
   assert.equal(artifact.c13.failureKind, 'council-contract:invalid-output');
+  for (const document of publicReleaseSources) {
+    assert.ok(LOCAL_V1_SOURCE_DOCUMENTS.includes(document));
+    assert.equal(artifact.sourceDocumentSha256[document], sha256Text(sourceDocumentTexts[document]));
+  }
   assert.ok(Object.values(artifact.activity).every((value) => value === 0));
   assert.ok(Object.values(artifact.authority).every((value) => value === false));
   assertLocalV1CompletionArtifact(artifact, {
@@ -82,19 +90,22 @@ test('local v1 closeout rejects blocker, source, and implementation drift', () =
   const blockerDrift = reseal(artifact, (content) => {
     content.externalBlockerIds.pop();
   });
-  const changedSources = {
-    ...sourceDocumentTexts,
-    'README.md': 'changed public claim surface\n',
-  };
 
   assert.throws(
     () => assertLocalV1CompletionArtifact(blockerDrift),
     /external blocker ids are invalid/,
   );
-  assert.throws(
-    () => assertLocalV1CompletionArtifact(artifact, { sourceDocumentTexts: changedSources }),
-    /source document binding failed/,
-  );
+  for (const document of LOCAL_V1_SOURCE_DOCUMENTS) {
+    const changedSources = {
+      ...sourceDocumentTexts,
+      [document]: `changed ${document} source\n`,
+    };
+    assert.throws(
+      () => assertLocalV1CompletionArtifact(artifact, { sourceDocumentTexts: changedSources }),
+      /source document binding failed/,
+      `${document} mutation must invalidate the source binding`,
+    );
+  }
   assert.throws(
     () => assertLocalV1CompletionArtifact(artifact, { implementationCommit: 'b'.repeat(40) }),
     /implementation commit binding failed/,

@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-03T05:37:39.706Z
-- branch: codex/public-release-asset-identity
-- commit: da6b9f39a566dc96223d99f4887bae53cecd3425
-- boundImplementationCommit: da6b9f39a566dc96223d99f4887bae53cecd3425
+- generatedAt: 2026-08-05T00:22:31.115Z
+- branch: codex/local-v1-public-release-source-binding
+- commit: 2e87073bf4cbab069a958f522dfb74d8332f59ec
+- boundImplementationCommit: 2e87073bf4cbab069a958f522dfb74d8332f59ec
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
