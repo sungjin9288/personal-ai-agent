@@ -27,6 +27,7 @@
 - [ ] `npm run smoke:portfolio-docs-claim-boundary`
 - [ ] `npm run smoke:release-artifact-hygiene`
 - [ ] `npm run smoke:provider-fallback-policy`
+- [ ] `npm run smoke:execution-v1-snapshot`
 - [ ] `npm run smoke:execution-v1-artifact-refresh`
 - [ ] `npm run smoke:provider-attention-remediation`
 - [ ] `npm run smoke:provider-capability-rate-guard`
