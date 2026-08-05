@@ -3,22 +3,30 @@ import path from 'node:path';
 
 import {
   LOCAL_V1_SOURCE_DOCUMENTS,
-  assertLocalV1VerificationReport,
   buildLocalV1CompletionArtifact,
 } from '../src/core/local-v1-completion-closeout.mjs';
+import {
+  assertLocalV1BuilderState,
+  runLocalV1PrecloseoutVerification,
+} from './local-v1-precloseout-verification.mjs';
 import { writeEvidenceJson } from './evidence-gated-answer-output.mjs';
 
 const repoDir = process.cwd();
 const args = parseArgs(process.argv.slice(2));
-const verificationReportPath = resolveRequiredPath(args.verificationReport, '--verification-report');
-if (!args.output) throw new Error('--output is required.');
 
+if (!args.output) throw new Error('--output is required.');
 if (!/^[a-f0-9]{40}$/.test(args.implementationCommit || '')) {
   throw new Error('--implementation-commit must be a 40-character SHA-1.');
 }
 
-const verificationReport = readJson(verificationReportPath, 'verification report');
-assertLocalV1VerificationReport(verificationReport);
+assertLocalV1BuilderState({ implementationCommit: args.implementationCommit });
+const packageJson = readJson(path.join(repoDir, 'package.json'), 'package.json');
+const verificationReport = runLocalV1PrecloseoutVerification({
+  implementationCommit: args.implementationCommit,
+  packageJson,
+  repoDir,
+});
+assertLocalV1BuilderState({ implementationCommit: args.implementationCommit });
 const sourceDocumentTexts = Object.fromEntries(
   LOCAL_V1_SOURCE_DOCUMENTS.map((document) => [document, readText(path.join(repoDir, document), document)]),
 );
@@ -46,27 +54,21 @@ const outputPath = writeEvidenceJson({
 console.log(JSON.stringify({ id: artifact.id, ok: true, outputPath, status: artifact.status }, null, 2));
 
 function parseArgs(argv) {
-  const parsed = { implementationCommit: null, output: null, verificationReport: null };
+  const parsed = { implementationCommit: null, output: null };
   const known = new Map([
     ['--implementation-commit', 'implementationCommit'],
     ['--output', 'output'],
-    ['--verification-report', 'verificationReport'],
   ]);
   for (let index = 0; index < argv.length; index += 1) {
     const key = known.get(argv[index]);
     if (!key || !argv[index + 1] || argv[index + 1].startsWith('--')) {
-      throw new Error('Expected --verification-report, --implementation-commit, and --output.');
+      throw new Error('Expected --implementation-commit and --output.');
     }
     if (parsed[key] !== null) throw new Error(`Duplicate argument: ${argv[index]}.`);
     parsed[key] = argv[index + 1];
     index += 1;
   }
   return parsed;
-}
-
-function resolveRequiredPath(value, flag) {
-  if (!value) throw new Error(`${flag} is required.`);
-  return path.resolve(repoDir, value);
 }
 
 function readText(filePath, label) {
