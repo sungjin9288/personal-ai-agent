@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.4.0
@@ -29,3 +31,6 @@ jobs:
 
       - name: Run target and enterprise documentation gate smokes
         run: npm run smoke:docs-gates
+
+      - name: Run execution-v1 artifact freshness smoke
+        run: npm run smoke:execution-v1-snapshot

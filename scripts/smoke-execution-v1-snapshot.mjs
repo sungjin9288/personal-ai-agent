@@ -23,6 +23,8 @@ const closeoutCommit = extractBulletValue(closeoutMarkdown, 'commit');
 const handoffCommit = extractBulletValue(handoffMarkdown, 'commit');
 const deterministicEvidenceStatus = extractBulletValue(evidenceMarkdown, 'deterministicEvidenceStatus');
 const boundImplementationCommit = extractBulletValue(evidenceMarkdown, 'boundImplementationCommit');
+const closeoutBoundImplementationCommit = extractBulletValue(closeoutMarkdown, 'boundImplementationCommit');
+const handoffBoundImplementationCommit = extractBulletValue(handoffMarkdown, 'boundImplementationCommit');
 const verifiedCommit = closeoutCommit || evidenceCommit;
 const artifactSyncCommit = buildArtifactSyncCommit(currentCommit, verifiedCommit);
 const effectiveVerifiedCommit = artifactSyncCommit.detected ? artifactSyncCommit.verifiedCommit : currentCommit;
@@ -31,6 +33,9 @@ assert.equal(evidenceCommit, effectiveVerifiedCommit);
 assert.equal(closeoutCommit, effectiveVerifiedCommit);
 assert.equal(handoffCommit, effectiveVerifiedCommit);
 assert.equal(verifiedCommit, effectiveVerifiedCommit);
+assert.equal(boundImplementationCommit, effectiveVerifiedCommit);
+assert.equal(closeoutBoundImplementationCommit, effectiveVerifiedCommit);
+assert.equal(handoffBoundImplementationCommit, effectiveVerifiedCommit);
 if (artifactSyncCommit.detected) {
   assert.notEqual(currentCommit, effectiveVerifiedCommit);
   assert.equal(artifactSyncCommit.changedPaths.length > 0, true);
