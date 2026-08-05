@@ -326,10 +326,11 @@ test('CLI ignores lifecycle history owned by a different workspace namespace', (
   withSyntheticLifecycleFixture((fixture) => {
     const inputs = prepareInputs(fixture);
     writeJson(inputs.request, requestFor(fixture));
+    const input = writeLifecycleDecision(fixture, 'withdraw');
     const decision = buildFineTuningPrivateCollectionItemLifecycleDecision({
       admission: fixture.admission,
-      executionAt: new Date().toISOString(),
-      input: writeLifecycleDecision(fixture, 'withdraw'),
+      executionAt: input.decidedAt,
+      input,
       item: fixture.item,
       workspace: fixture.workspace,
     });
