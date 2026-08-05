@@ -10,7 +10,9 @@ export const LOCAL_V1_COMPLETION_STATUS = 'local-v1-complete-external-evidence-o
 export const LOCAL_V1_VERIFICATION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-verification/v1';
 
 export const LOCAL_V1_SOURCE_DOCUMENTS = [
+  'CHANGELOG.md',
   'README.md',
+  'config/public-release-v0.1.0.json',
   'docs/refactoring-development-plan-v1.md',
   'docs/ml-rag-development-plan-v1.md',
   'docs/multi-agent-council-development-plan-v1.md',

@@ -90,15 +90,14 @@
   - interview story
   - screenshots/demo notes
 
-## 6. 우선순위 높은 다음 작업 5개
+## 6. 보류·외부 증거 Backlog
 
-| 우선순위 | 작업 | 이유 | 예상 산출물 |
+| 상태 | 항목 | 경계 | 필요한 산출물 |
 |---|---|---|---|
-| 1 | Local-first v1 completion artifact 동기화 | repository-local complete claim을 source hash와 deterministic verification에만 묶기 위함 | content-free closeout artifact, current manifest |
-| 2 | F1.3 request의 owner/private-data 승인 판단 | 완료된 deterministic protocol과 실제 private data authority를 분리하기 위함 | owner-only private decision 또는 explicit deferral |
-| 3 | Anthropic/Hermes/target local provider 증거 | provider adapter와 live readiness claim을 구분하기 위함 | target-boundary provider evidence |
-| 4 | Walkthrough URL와 pilot feedback 증거 | local replay와 외부 사용성·효과 claim을 구분하기 위함 | accessible URL, sanitized feedback evidence |
-| 5 | Hosted deployment evidence | local pilot preparation과 hosted production claim을 구분하기 위함 | deployment, identity, tenant, rollback, observability evidence |
+| 보류 | F1.3 request의 owner/private-data 승인 판단 | deterministic protocol은 완료됐지만 actual private-data authority는 보류 | owner-only private decision 또는 explicit deferral |
+| 외부 증거 필요 | Anthropic/Hermes/target local provider 증거 | provider adapter와 live readiness claim을 구분 | target-boundary provider evidence |
+| 외부 증거 필요 | Walkthrough URL와 pilot feedback 증거 | local replay와 외부 사용성·효과 claim을 구분 | accessible URL, sanitized feedback evidence |
+| 외부 증거 필요 | Hosted deployment evidence | local pilot preparation과 hosted production claim을 구분 | deployment, identity, tenant, rollback, observability evidence |
 
 ## 7. 대표 demo 보조 증거 현황
 
