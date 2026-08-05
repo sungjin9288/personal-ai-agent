@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-05T01:18:33.051Z
-- branch: codex/local-v1-verification-provenance
-- commit: c69aa2cd1a5aeb76d0992d636531dbbba706a7c1
-- boundImplementationCommit: c69aa2cd1a5aeb76d0992d636531dbbba706a7c1
+- generatedAt: 2026-08-05T04:15:30.276Z
+- branch: codex/execution-v1-freshness-ci-gate
+- commit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
+- boundImplementationCommit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z

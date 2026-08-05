@@ -209,6 +209,15 @@ assertWorkflowContract({
   jobName: 'Target and enterprise documentation gate smokes',
   label: 'Docs gate smoke workflow',
 });
+assert.equal(
+  extractCheckoutBlock(docsGateWorkflow),
+  `      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+`,
+  'Docs gate smoke workflow must retain the full checkout required for execution-v1 ancestry validation',
+);
 
 assert.deepEqual(
   pullRequestVerificationCommands,
@@ -223,10 +232,11 @@ assert.deepEqual(
 assertNoDuplicates(pullRequestVerificationCommands, 'PR template verification checklist');
 assert.deepEqual(
   docsGateWorkflowRunCommands,
-  ['npm run smoke:docs-gates'],
-  'Docs gate smoke workflow commands must remain canonical',
+  ['npm run smoke:docs-gates', 'npm run smoke:execution-v1-snapshot'],
+  'Docs gate smoke workflow must run canonical documentation gates before execution-v1 freshness validation',
 );
 assertNoDuplicates(providerWorkflowRunCommands, 'provider smoke workflow commands');
+assertNoDuplicates(docsGateWorkflowRunCommands, 'docs gate smoke workflow commands');
 
 for (const risky of [
   'production-ready AI agent platform',
@@ -316,6 +326,16 @@ function extractWorkflowTriggerBlock(workflow) {
   assert.ok(end >= 0, 'workflow trigger block must end before top-level jobs');
 
   return workflow.slice(start, end + 1);
+}
+
+function extractCheckoutBlock(workflow) {
+  const start = workflow.indexOf('      - name: Checkout\n');
+  const end = workflow.indexOf('\n      - ', start + 1);
+
+  assert.ok(start >= 0, 'workflow must include a checkout step');
+  assert.ok(end >= 0, 'checkout step must end before the next workflow step');
+
+  return workflow.slice(start, end);
 }
 
 function escapeRegExp(value) {
