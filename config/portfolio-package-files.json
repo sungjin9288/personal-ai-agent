@@ -169,6 +169,8 @@
     "scripts/evaluate-local-council-rebuttal-stability-shadow.mjs",
     "scripts/evaluate-local-council-v6-actual-compatibility-observation.mjs",
     "scripts/evaluate-local-evidence-gated-answer-claim-attribution.mjs",
+    "scripts/local-v1-precloseout-verification.mjs",
+    "scripts/run-all-smokes.mjs",
     "scripts/smoke-council-blueprint-preview.mjs",
     "scripts/smoke-council-concurrent-envelope-shadow.mjs",
     "scripts/smoke-council-concurrent-retry-lineage-shadow.mjs",
@@ -220,6 +222,7 @@
     "test/local-council-seat-contract-shadow.test.mjs",
     "test/local-council-strict-prompt-candidate-qualification.test.mjs",
     "test/local-council-v6-actual-compatibility-observation.test.mjs",
-    "test/local-v1-completion-closeout.test.mjs"
+    "test/local-v1-completion-closeout.test.mjs",
+    "test/local-v1-precloseout-verification.test.mjs"
   ]
 }

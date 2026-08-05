@@ -94,18 +94,45 @@ const GROUPS = {
   ],
 };
 
+const GROUP_EXCLUSIONS = {
+  'docs-gates': new Set(['smoke:local-v1-completion-closeout']),
+};
+
 function parseArgs(argv) {
-  const args = { group: null };
+  const args = { excludedScripts: [], group: null };
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--group') {
+      if (args.group || !argv[index + 1] || argv[index + 1].startsWith('--')) {
+        throw new Error('--group requires one value.');
+      }
       args.group = argv[index + 1];
       index += 1;
+    } else if (argv[index] === '--exclude') {
+      if (!argv[index + 1] || argv[index + 1].startsWith('--')) {
+        throw new Error('--exclude requires one smoke script.');
+      }
+      args.excludedScripts.push(argv[index + 1]);
+      index += 1;
+    } else {
+      throw new Error(`Unknown argument: ${argv[index]}.`);
     }
   }
   return args;
 }
 
-const { group } = parseArgs(process.argv.slice(2));
+const { excludedScripts, group } = parseArgs(process.argv.slice(2));
+if (new Set(excludedScripts).size !== excludedScripts.length) {
+  throw new Error('Duplicate smoke exclusion.');
+}
+if (excludedScripts.length > 0 && !group) {
+  throw new Error('--exclude requires --group.');
+}
+const allowedExclusions = GROUP_EXCLUSIONS[group] || new Set();
+for (const excludedScript of excludedScripts) {
+  if (!allowedExclusions.has(excludedScript)) {
+    throw new Error(`Unsupported smoke exclusion: ${excludedScript}.`);
+  }
+}
 
 let scriptsToRun;
 if (group) {
@@ -117,7 +144,7 @@ if (group) {
       `Group ${group} references missing script ${name}; update GROUPS in scripts/run-all-smokes.mjs`,
     );
   }
-  scriptsToRun = groupScripts;
+  scriptsToRun = groupScripts.filter((name) => !excludedScripts.includes(name));
 } else {
   scriptsToRun = allSmokeScripts.filter((name) => !EXCLUDE_ALWAYS.has(name));
 }
@@ -152,7 +179,7 @@ console.log(
       passed: results.length - failures.length,
       failed: failures.length,
       failedScripts: failures.map((result) => result.name),
-      excludedSmokeScripts: group ? [] : [...EXCLUDE_ALWAYS],
+      excludedSmokeScripts: group ? excludedScripts : [...EXCLUDE_ALWAYS],
       durationSeconds,
     },
     null,

@@ -41,4 +41,6 @@ The completion artifact must retain the blocker register without treating any ro
 
 ## Verification Boundary
 
-The closeout is current only after the completion smoke, `npm test`, `npm run smoke:docs-gates`, `npm run smoke:all`, `npm run smoke:release-artifact-hygiene`, `git diff --check`, and `artifact-sync-current` pass. These commands validate repository-local contracts and artifacts only; they do not invoke an external provider, rerun C13, download a model, use actual user data, or deploy the product.
+The builder records only its own pre-closeout receipt: current `HEAD` and a clean tracked worktree, `npm test`, `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout`, `npm run smoke:release-artifact-hygiene`, and `git diff --check`. It binds `package.json` as a source document and stores canonical command identity, package-script binding, exit status, timeout boundary, duration, and output hashes without raw command output.
+
+After the artifact is written, `npm run smoke:local-v1-completion-closeout`, `npm run smoke:docs-gates`, `npm run smoke:all`, and `artifact-sync-current` remain final gates. They are intentionally not claimed inside the artifact because they depend on that artifact already existing. These commands validate repository-local contracts and artifacts only; they do not invoke an external provider, rerun C13, download a model, use actual user data, or deploy the product.

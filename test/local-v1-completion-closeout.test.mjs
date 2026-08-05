@@ -5,7 +5,7 @@ import test from 'node:test';
 
 import {
   LOCAL_V1_SOURCE_DOCUMENTS,
-  LOCAL_V1_VERIFICATION_CHECK_IDS,
+  LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS,
   LOCAL_V1_VERIFICATION_SCHEMA_VERSION,
   assertLocalV1CompletionArtifact,
   assertLocalV1VerificationReport,
@@ -22,7 +22,10 @@ const c13FinalText = read(
 );
 const implementationCommit = 'a'.repeat(40);
 const sourceDocumentTexts = Object.fromEntries(
-  LOCAL_V1_SOURCE_DOCUMENTS.map((document) => [document, `${document} source\n`]),
+  LOCAL_V1_SOURCE_DOCUMENTS.map((document) => [
+    document,
+    document === 'package.json' ? '{"scripts":"canonical"}' : `${document} source\n`,
+  ]),
 );
 const publicReleaseSources = [
   'CHANGELOG.md',
@@ -112,15 +115,13 @@ test('local v1 closeout rejects blocker, source, and implementation drift', () =
   );
 });
 
-test('local v1 verification requires exact passed checks and measured counts', () => {
+test('local v1 verification requires exact successful command receipts', () => {
   const failedReport = buildVerificationReport();
-  failedReport.checks[2].status = 'failed';
-  failedReport.checks[2].failed = 1;
-  failedReport.checks[2].passed = 0;
+  failedReport.checks[2].exitCode = 1;
 
   assert.throws(
     () => assertLocalV1VerificationReport(failedReport),
-    /verification check is not passed: smoke-all/,
+    /verification check is not passed: release-artifact-hygiene/,
   );
 });
 
@@ -130,7 +131,7 @@ test('local v1 closeout rejects resealed verification report hash and summary ta
     content.verification.reportSha256 = 'b'.repeat(64);
   });
   const summaryDrift = reseal(artifact, (content) => {
-    content.verification.checks[0].passed = 1813;
+    content.verification.checks[0].stdoutSha256 = 'b'.repeat(64);
   });
 
   assert.throws(
@@ -141,6 +142,35 @@ test('local v1 closeout rejects resealed verification report hash and summary ta
     () => assertLocalV1CompletionArtifact(summaryDrift),
     /verification report integrity failed/,
   );
+});
+
+test('local v1 verification binding is stable across input property order', () => {
+  const report = buildVerificationReport();
+  const reorderedReport = {
+    status: report.status,
+    schemaVersion: report.schemaVersion,
+    packageJsonSha256: report.packageJsonSha256,
+    implementationCommit: report.implementationCommit,
+    checks: report.checks.map((check) => Object.fromEntries(Object.entries(check).reverse())),
+  };
+
+  const artifact = buildLocalV1CompletionArtifact({
+    c13AttemptText,
+    c13FinalText,
+    implementationCommit,
+    sourceDocumentTexts,
+    verificationReport: report,
+  });
+  const reorderedArtifact = buildLocalV1CompletionArtifact({
+    c13AttemptText,
+    c13FinalText,
+    implementationCommit,
+    sourceDocumentTexts,
+    verificationReport: reorderedReport,
+  });
+
+  assert.equal(reorderedArtifact.verification.reportSha256, artifact.verification.reportSha256);
+  assert.equal(reorderedArtifact.id, artifact.id);
 });
 
 test('local v1 artifact rejects content-bearing local paths', () => {
@@ -167,13 +197,23 @@ function buildArtifact() {
 
 function buildVerificationReport() {
   return {
-    checks: LOCAL_V1_VERIFICATION_CHECK_IDS.map((id, index) => ({
-      failed: 0,
-      id,
-      passed: index === 0 ? 1812 : 1,
-      skipped: index === 0 ? 1 : 0,
-      status: 'passed',
+    checks: LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS.map((definition) => ({
+      command: definition.command.join(' '),
+      commandSha256: sha256Text(definition.command.join(' ')),
+      durationMs: 10,
+      exitCode: 0,
+      id: definition.id,
+      packageScript: definition.packageScript,
+      packageScriptSha256: definition.packageScriptCommand === null
+        ? null
+        : sha256Text(definition.packageScriptCommand),
+      stderrSha256: sha256Text(''),
+      stdoutSha256: sha256Text(definition.id),
+      timedOut: false,
+      timeoutMs: definition.timeoutMs,
     })),
+    implementationCommit,
+    packageJsonSha256: sha256Text('{"scripts":"canonical"}'),
     schemaVersion: LOCAL_V1_VERIFICATION_SCHEMA_VERSION,
     status: 'passed',
   };
