@@ -10,10 +10,21 @@ const forkGuidePath = path.join(repoDir, 'docs', 'fork-onboarding-v1.md');
 const readmePath = path.join(repoDir, 'README.md');
 const packageJsonPath = path.join(repoDir, 'package.json');
 const pullRequestTemplatePath = path.join(repoDir, '.github', 'pull_request_template.md');
-const workflowPath = path.join(repoDir, '.github', 'workflows', 'provider-smoke.yml');
+const providerWorkflowPath = path.join(repoDir, '.github', 'workflows', 'provider-smoke.yml');
+const docsGateWorkflowPath = path.join(repoDir, '.github', 'workflows', 'docs-gate-smokes.yml');
 const issueTemplateDir = path.join(repoDir, '.github', 'ISSUE_TEMPLATE');
 const envExamplePath = path.join(repoDir, '.env.example');
 const gitignorePath = path.join(repoDir, '.gitignore');
+const expectedWorkflowTrigger = `on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+`;
 
 const contributing = readRequiredFile(contributingPath);
 const security = readRequiredFile(securityPath);
@@ -22,7 +33,8 @@ const forkGuide = readRequiredFile(forkGuidePath);
 const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const pullRequestTemplate = readRequiredFile(pullRequestTemplatePath);
-const workflow = readRequiredFile(workflowPath);
+const providerWorkflow = readRequiredFile(providerWorkflowPath);
+const docsGateWorkflow = readRequiredFile(docsGateWorkflowPath);
 const bugTemplate = readRequiredFile(path.join(issueTemplateDir, 'bug_report.yml'));
 const securityTemplate = readRequiredFile(path.join(issueTemplateDir, 'security_report.yml'));
 const issueTemplateConfig = readRequiredFile(path.join(issueTemplateDir, 'config.yml'));
@@ -180,7 +192,23 @@ const pullRequestVerificationCommands = Array.from(
   pullRequestTemplate.matchAll(/- \[ \] `(npm run [^`]+)`/g),
   (match) => match[1],
 );
-const workflowRunCommands = Array.from(workflow.matchAll(/^\s*run:\s+(npm run .+)$/gm), (match) => match[1].trim());
+const providerWorkflowRunCommands = extractWorkflowRunCommands(providerWorkflow);
+const docsGateWorkflowRunCommands = extractWorkflowRunCommands(docsGateWorkflow);
+
+assertWorkflowContract({
+  workflow: providerWorkflow,
+  workflowName: 'Provider smoke',
+  jobId: 'provider-smoke',
+  jobName: 'Provider fallback and attention smoke',
+  label: 'Provider smoke workflow',
+});
+assertWorkflowContract({
+  workflow: docsGateWorkflow,
+  workflowName: 'Docs gate smokes',
+  jobId: 'docs-gate-smokes',
+  jobName: 'Target and enterprise documentation gate smokes',
+  label: 'Docs gate smoke workflow',
+});
 
 assert.deepEqual(
   pullRequestVerificationCommands,
@@ -188,12 +216,17 @@ assert.deepEqual(
   'PR template verification checklist must match provider smoke workflow commands',
 );
 assert.deepEqual(
-  workflowRunCommands,
+  providerWorkflowRunCommands,
   expectedProviderSmokeCommands,
   'Provider smoke workflow commands must match PR template verification checklist',
 );
 assertNoDuplicates(pullRequestVerificationCommands, 'PR template verification checklist');
-assertNoDuplicates(workflowRunCommands, 'provider smoke workflow commands');
+assert.deepEqual(
+  docsGateWorkflowRunCommands,
+  ['npm run smoke:docs-gates'],
+  'Docs gate smoke workflow commands must remain canonical',
+);
+assertNoDuplicates(providerWorkflowRunCommands, 'provider smoke workflow commands');
 
 for (const risky of [
   'production-ready AI agent platform',
@@ -225,6 +258,8 @@ console.log(
         'docs/fork-onboarding-v1.md',
         '.github/ISSUE_TEMPLATE/config.yml',
         '.github/ISSUE_TEMPLATE/bug_report.yml',
+        '.github/workflows/provider-smoke.yml',
+        '.github/workflows/docs-gate-smokes.yml',
       ],
     },
     null,
@@ -253,6 +288,38 @@ function assertNoDuplicates(items, label) {
     seen.add(item);
   }
   assert.deepEqual([...duplicates], [], `${label} must not contain duplicate commands`);
+}
+
+function extractWorkflowRunCommands(workflow) {
+  return Array.from(workflow.matchAll(/^\s*run:\s+(npm run .+)$/gm), (match) => match[1].trim());
+}
+
+function assertWorkflowContract({ workflow, workflowName, jobId, jobName, label }) {
+  assert.equal(
+    extractWorkflowTriggerBlock(workflow),
+    expectedWorkflowTrigger,
+    `${label} trigger contract must preserve pull-request coverage and limit push coverage to main`,
+  );
+  assert.match(workflow, new RegExp(`^name: ${escapeRegExp(workflowName)}\\n\\non:`, 'm'), `${label} name must remain stable`);
+  assert.match(
+    workflow,
+    new RegExp(`^jobs:\\n  ${escapeRegExp(jobId)}:\\n    name: ${escapeRegExp(jobName)}$`, 'm'),
+    `${label} job id and check name must remain stable`,
+  );
+}
+
+function extractWorkflowTriggerBlock(workflow) {
+  const start = workflow.indexOf('on:\n');
+  const end = workflow.indexOf('\njobs:', start);
+
+  assert.ok(start >= 0, 'workflow trigger block must start with top-level on');
+  assert.ok(end >= 0, 'workflow trigger block must end before top-level jobs');
+
+  return workflow.slice(start, end + 1);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function assertNoLocalPaths(text) {
