@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-05T04:15:30.219Z
-- branch: codex/execution-v1-freshness-ci-gate
-- commit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
-- boundImplementationCommit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
+- generatedAt: 2026-08-05T06:20:08.821Z
+- branch: codex/f1-review-projection-clock-determinism
+- commit: 7b6f937369675d6d557a443eecc74e5c589ff099
+- boundImplementationCommit: 7b6f937369675d6d557a443eecc74e5c589ff099
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun

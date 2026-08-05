@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-05T04:15:37.961Z
+- generatedAt: 2026-08-05T06:20:16.721Z
 - localDate: 2026-08-05
-- branch: codex/execution-v1-freshness-ci-gate
-- commit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
-- boundImplementationCommit: eb4fef6cbf8e1608e7d135545ddda0a96691ec2e
+- branch: codex/f1-review-projection-clock-determinism
+- commit: 7b6f937369675d6d557a443eecc74e5c589ff099
+- boundImplementationCommit: 7b6f937369675d6d557a443eecc74e5c589ff099
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/eb4fef6cbf8e1608e7d135545ddda0a96691ec2e](releases/execution-v1/eb4fef6cbf8e1608e7d135545ddda0a96691ec2e)
+- immutableSnapshot: [releases/execution-v1/7b6f937369675d6d557a443eecc74e5c589ff099](releases/execution-v1/7b6f937369675d6d557a443eecc74e5c589ff099)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed to origin/codex/execution-v1-freshness-ci-gate
+- commitPushStatus: not pushed, origin/codex/f1-review-projection-clock-determinism not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
