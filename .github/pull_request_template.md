@@ -36,6 +36,13 @@
 - [ ] `npm run smoke:provider-overview`
 - [ ] `npm run smoke:target-provider-operations`
 - [ ] `npm run smoke:production-provider-readiness`
+- [ ] `npm run smoke:council-blueprint-preview`
+- [ ] `npm run smoke:council-concurrent-schedule-shadow`
+- [ ] `npm run smoke:council-concurrent-envelope-shadow`
+- [ ] `npm run smoke:council-concurrent-retry-lineage-shadow`
+- [ ] `npm run smoke:council-concurrent-retry-terminality-shadow`
+- [ ] `npm run smoke:council-concurrent-retry-surface`
+- [ ] `npm run smoke:ui-agent-blueprints`
 - [ ] GitHub Actions `Provider fallback and attention smoke`
 
 ## Notes

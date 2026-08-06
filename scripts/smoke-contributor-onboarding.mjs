@@ -187,6 +187,28 @@ const expectedProviderSmokeCommands = [
   'npm run smoke:provider-overview',
   'npm run smoke:target-provider-operations',
   'npm run smoke:production-provider-readiness',
+  'npm run smoke:council-blueprint-preview',
+  'npm run smoke:council-concurrent-schedule-shadow',
+  'npm run smoke:council-concurrent-envelope-shadow',
+  'npm run smoke:council-concurrent-retry-lineage-shadow',
+  'npm run smoke:council-concurrent-retry-terminality-shadow',
+  'npm run smoke:council-concurrent-retry-surface',
+  'npm run smoke:ui-agent-blueprints',
+];
+
+const expectedCouncilWorkflowSteps = [
+  {
+    name: 'Run Council v1.1f focused unit gate',
+    command:
+      'node --test test/council-blueprint-preview.test.mjs test/council-concurrent-schedule-shadow.test.mjs test/council-concurrent-envelope-shadow.test.mjs test/council-concurrent-retry-lineage-shadow.test.mjs test/council-concurrent-retry-terminality-shadow.test.mjs test/council-concurrent-retry-surface.test.mjs',
+  },
+  { name: 'Run Council v1.1f blueprint smoke', command: 'npm run smoke:council-blueprint-preview' },
+  { name: 'Run Council v1.1f concurrent schedule smoke', command: 'npm run smoke:council-concurrent-schedule-shadow' },
+  { name: 'Run Council v1.1f concurrent envelope smoke', command: 'npm run smoke:council-concurrent-envelope-shadow' },
+  { name: 'Run Council v1.1f retry lineage smoke', command: 'npm run smoke:council-concurrent-retry-lineage-shadow' },
+  { name: 'Run Council v1.1f retry terminality smoke', command: 'npm run smoke:council-concurrent-retry-terminality-shadow' },
+  { name: 'Run Council v1.1f retry operator surface smoke', command: 'npm run smoke:council-concurrent-retry-surface' },
+  { name: 'Run Council v1.1f UI blueprint smoke', command: 'npm run smoke:ui-agent-blueprints' },
 ];
 
 const pullRequestVerificationCommands = Array.from(
@@ -203,6 +225,8 @@ assertWorkflowContract({
   jobName: 'Provider fallback and attention smoke',
   label: 'Provider smoke workflow',
 });
+assertCouncilWorkflowContract(providerWorkflow);
+const councilNegativeCheckCount = assertCouncilWorkflowNegativeChecks(providerWorkflow);
 assertWorkflowContract({
   workflow: docsGateWorkflow,
   workflowName: 'Docs gate smokes',
@@ -281,6 +305,12 @@ console.log(
         '.github/workflows/provider-smoke.yml',
         '.github/workflows/docs-gate-smokes.yml',
       ],
+      councilGate: {
+        focusedUnitCommand: expectedCouncilWorkflowSteps[0].command,
+        smokeCommands: expectedCouncilWorkflowSteps.slice(1).map(({ command }) => command),
+        negativeChecks: councilNegativeCheckCount,
+        mutation: 'in-memory removal only; repository workflow restored unchanged',
+      },
     },
     null,
     2,
@@ -312,6 +342,51 @@ function assertNoDuplicates(items, label) {
 
 function extractWorkflowRunCommands(workflow) {
   return Array.from(workflow.matchAll(/^\s*run:\s+(npm run .+)$/gm), (match) => match[1].trim());
+}
+
+function councilWorkflowStepText({ name, command }) {
+  return `      - name: ${name}\n        run: ${command}`;
+}
+
+function assertCouncilWorkflowContract(workflow) {
+  const expectedBlock = expectedCouncilWorkflowSteps.map(councilWorkflowStepText).join('\n\n');
+  assertContains(
+    workflow,
+    expectedBlock,
+    'Provider smoke workflow must retain the contiguous Council v1.1f deterministic gate block',
+  );
+  const commandPositions = expectedCouncilWorkflowSteps.map((step) => {
+    const position = workflow.indexOf(councilWorkflowStepText(step));
+    assert.ok(position >= 0, `Provider smoke workflow must include Council step: ${step.name}`);
+    return position;
+  });
+  assert.deepEqual(
+    [...commandPositions].sort((left, right) => left - right),
+    commandPositions,
+    'Council v1.1f workflow steps must remain in the canonical unit-then-smoke order',
+  );
+}
+
+function assertCouncilWorkflowNegativeChecks(workflow) {
+  assertCouncilWorkflowContract(workflow);
+  let checks = 0;
+  for (const step of expectedCouncilWorkflowSteps) {
+    const stepText = councilWorkflowStepText(step);
+    const mutatedWorkflow = workflow.replace(stepText, '');
+    assert.notEqual(mutatedWorkflow, workflow, `negative check must remove ${step.name}`);
+    assert.throws(
+      () => assertCouncilWorkflowContract(mutatedWorkflow),
+      /Council v1\.1f|Council step|contiguous/,
+      `Council contract must fail closed when ${step.name} is removed`,
+    );
+    checks += 1;
+  }
+  assert.equal(
+    readRequiredFile(providerWorkflowPath),
+    workflow,
+    'Council negative checks must restore the repository workflow without filesystem mutation',
+  );
+  return checks;
 }
 
 function assertWorkflowContract({ workflow, workflowName, jobId, jobName, label }) {
