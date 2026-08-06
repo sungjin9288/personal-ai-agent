@@ -157,10 +157,11 @@
 - `docs/council-concurrent-envelope-shadow-v1.1c.md`
 - `docs/council-concurrent-retry-lineage-shadow-v1.1d.md`
 - `docs/council-concurrent-retry-terminality-shadow-v1.1e.md`
+- `docs/council-concurrent-retry-surface-v1.1f.md`
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 288/288 passed with `npm run smoke:all` on 2026-08-03; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 289/289 passed with `npm run smoke:all` on 2026-08-06; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -205,6 +206,7 @@
 - Council concurrent envelope shadow: verified with `npm run smoke:council-concurrent-envelope-shadow`; v1.1c validates exact v1.1b stage-to-wave structure, stage ids, dependencies, and attempts, then calculates a deterministic content digest (v1.1b has no upstream digest) and fixed synthetic latency/resource units. The triad structural envelope is sequential 8, wave 4, wave peak 3; four through seven seats remain bounded and `keep-dispatch-disabled`. The CLI creates no files; HTTP retains mandatory request-audit history only and makes no domain/store mutation. This is not an actual concurrency, provider, model, Ollama, C13, worker, network, latency, or resource measurement.
 - Council concurrent retry lineage shadow: verified with `npm run smoke:council-concurrent-retry-lineage-shadow`; v1.1d reconstructs and exactly binds the v1.1b completion projection and v1.1c envelope before projecting only the canonical first failed/timeout stage from attempt 1/retry 0 to a hypothetical attempt 2/retry 1. The projection is not authorized, retry and dispatch remain disabled, four through seven seats stay outside the synthetic envelope, and provider/model/Ollama/C13/worker/network/filesystem/store counts remain zero.
 - Council concurrent retry terminality shadow: verified with `npm run smoke:council-concurrent-retry-terminality-shadow`; v1.1e reconstructs and exactly binds v1.1d before interpreting one exact-key hypothetical attempt 2 outcome. Failed blockers are rejected without recoverability evidence; timeout retry completion opens a projected barrier only after every sibling completes, reviewer completion ends the projection, and failed/timeout retry is exhausted without attempt 3. Retry and dispatch remain disabled, and provider/model/Ollama/C13/worker/network/filesystem/store counts remain zero.
+- Council concurrent retry terminality operator surface: verified with `npm run smoke:council-concurrent-retry-surface`; v1.1f exposes the unchanged v1.1e projection through additive CLI and GET surfaces and the existing Council preview. CLI/API parity, malformed·duplicate·stale fail-closed inputs, request-audit-only HTTP writes, zero CLI filesystem writes, three-seat terminality cases, and four-through-seven-seat envelope denial are covered. The UI has no retry, completion, dispatch, POST, or action control; retry/dispatch/provider/model/Ollama/C13/worker/network/store-domain counts remain zero.
 - Local-first v1 completion closeout: the builder-owned receipt directly runs and binds the allowlisted unit, pre-closeout docs, release-hygiene, and diff gates to the clean implementation commit and `package.json`; the completion smoke, full smoke, and artifact freshness remain post-artifact gates. `evidence/output-artifacts/local-v1-completion-closeout.json` binds repository-local D4, local RAG, F1 protocol, Council C1–C13, and external-blocker status without treating provider, actual-user-data, training, deployment, or production evidence as complete.
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
