@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.4.0
@@ -77,6 +79,9 @@ jobs:
 
       - name: Run provider fallback policy smoke
         run: npm run smoke:provider-fallback-policy
+
+      - name: Run execution-v1 snapshot smoke
+        run: npm run smoke:execution-v1-snapshot
 
       - name: Run execution-v1 artifact refresh smoke
         run: npm run smoke:execution-v1-artifact-refresh
