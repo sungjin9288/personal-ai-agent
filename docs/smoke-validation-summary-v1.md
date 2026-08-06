@@ -1,12 +1,12 @@
 # Smoke Validation Summary v1
 
 - status: smoke-validation-summary-current
-- localDate: 2026-08-03
+- localDate: 2026-08-06
 - productionReadyClaim: false
 - allProviderComplete: false
 - publicHostedDemoUrl: none
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 288/288 passed with `npm run smoke:all` on 2026-08-03
+- lastFullSweep: 289/289 passed with `npm run smoke:all` on 2026-08-06
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -64,6 +64,7 @@ The aggregate runner keeps its command order and final summary contract unchange
 | Council concurrent envelope shadow | `npm run smoke:council-concurrent-envelope-shadow` | Verifies v1.1c exact v1.1b stage-to-wave/stage/dependency/attempt validation plus deterministic content digest calculation, triad 8/4/3 envelope, bounded 4–7-seat denial, CLI no-write, and API request-audit-only/no-domain-mutation behavior without provider/model/Ollama/C13/workers/network |
 | Council concurrent retry lineage shadow | `npm run smoke:council-concurrent-retry-lineage-shadow` | Verifies v1.1d core-only canonical v1.1b/v1.1c source binding, deterministic first-blocker attempt 2 projection, completed and envelope-denied states, and zero retry/dispatch/provider/model/C13/network/filesystem/store execution |
 | Council concurrent retry terminality shadow | `npm run smoke:council-concurrent-retry-terminality-shadow` | Verifies v1.1e exact v1.1d digest/source binding, failed recoverability rejection, timeout attempt 2 terminality, same-wave barrier reopening or blocking, reviewer completion, retry exhaustion, and zero execution counts |
+| Council concurrent retry terminality operator surface | `npm run smoke:council-concurrent-retry-surface` | Verifies v1.1f CLI/GET exact parity, malformed·duplicate·stale fail-closed inputs, request-audit-only HTTP writes, zero CLI filesystem writes, 3-role terminality projection, and 4–7 role envelope denial without retry or dispatch authority |
 | Local-first v1 completion closeout | `npm run smoke:local-v1-completion-closeout` | Verifies the implementation SHA, source document hashes, C13 result, six external blockers, false authority fields, and builder-owned pre-closeout command receipt; full smoke and artifact-sync remain post-artifact gates |
 | Retrieval corpus contract | `npm run smoke:retrieval-corpus-contract` | Verifies deterministic memory, attachment, and fact corpus identity, revision, scope, hash, and provenance |
 | Retrieval quality evaluation | `npm run smoke:retrieval-quality-evaluation` | Verifies controlled precision, recall, noise, source diversity, frozen baseline replay, and candidate regression rejection |

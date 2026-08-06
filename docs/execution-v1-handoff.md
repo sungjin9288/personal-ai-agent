@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-05T07:09:28.153Z
-- localDate: 2026-08-05
-- branch: codex/require-execution-v1-freshness-gate
-- commit: a1202921b9a6d72112ae1f17fd19ee7bb429d719
-- boundImplementationCommit: a1202921b9a6d72112ae1f17fd19ee7bb429d719
+- generatedAt: 2026-08-06T01:22:25.182Z
+- localDate: 2026-08-06
+- branch: codex/council-retry-operator-surface-v1-1f
+- commit: 521ef6dec85bcd07076c2c7aadb2589c9ad4821e
+- boundImplementationCommit: 521ef6dec85bcd07076c2c7aadb2589c9ad4821e
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/a1202921b9a6d72112ae1f17fd19ee7bb429d719](releases/execution-v1/a1202921b9a6d72112ae1f17fd19ee7bb429d719)
+- immutableSnapshot: [releases/execution-v1/521ef6dec85bcd07076c2c7aadb2589c9ad4821e](releases/execution-v1/521ef6dec85bcd07076c2c7aadb2589c9ad4821e)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/require-execution-v1-freshness-gate not found
+- commitPushStatus: not pushed, origin/codex/council-retry-operator-surface-v1-1f not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

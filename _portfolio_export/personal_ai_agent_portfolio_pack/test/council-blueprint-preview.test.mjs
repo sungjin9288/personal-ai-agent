@@ -12,6 +12,7 @@ import {
 import { renderCouncilBlueprintPreview } from '../src/web/public/lib/council-blueprint-preview.js';
 import { createCouncilConcurrentEnvelopeShadow } from '../src/core/council-concurrent-envelope-shadow.mjs';
 import { createCouncilConcurrentScheduleShadow } from '../src/core/council-concurrent-schedule-shadow.mjs';
+import { createCouncilConcurrentRetryTerminalityShadow } from '../src/core/council-concurrent-retry-terminality-shadow.mjs';
 
 const DEFAULT_ROLES = ['research', 'implementation', 'verification'];
 
@@ -179,6 +180,31 @@ test('council blueprint renderer keeps controls accessible and has no execution 
   assert.match(envelopeMarkup, /actualMeasurements: false/);
   assert.match(envelopeMarkup, /actualConcurrentDispatchQualified: false/);
   assert.match(envelopeMarkup, /No runtime measurement or dispatch action is available here/);
+
+  const retryMarkup = renderCouncilBlueprintPreview({
+    catalog,
+    envelopeShadow: createCouncilConcurrentEnvelopeShadow({ roleIds: DEFAULT_ROLES }),
+    preview,
+    retryTerminalityShadow: createCouncilConcurrentRetryTerminalityShadow({
+      completionEvents: [
+        { attemptId: 'attempt:opening:research:1', outcome: 'timeout', stageId: 'opening:research' },
+        { attemptId: 'attempt:opening:implementation:1', outcome: 'completed', stageId: 'opening:implementation' },
+        { attemptId: 'attempt:opening:verification:1', outcome: 'completed', stageId: 'opening:verification' },
+      ],
+      projectedRetryOutcome: {
+        attemptId: 'attempt:opening:research:2',
+        outcome: 'completed',
+        stageId: 'opening:research',
+      },
+    }),
+    selectedRoleIds: DEFAULT_ROLES,
+  });
+  assert.match(retryMarkup, /Retry lineage and terminality projection/);
+  assert.match(retryMarkup, /attempt 1 \/ retry 0 → virtual attempt 2 \/ retry 1/);
+  assert.match(retryMarkup, /projected-ready/);
+  assert.match(retryMarkup, /retryDecision: keep-retry-disabled/);
+  assert.match(retryMarkup, /decision: keep-dispatch-disabled/);
+  assert.equal((retryMarkup.match(/<button/g) || []).length, 7);
 });
 
 test('council preview leaves the mission constraint payload builder byte-equivalent', () => {

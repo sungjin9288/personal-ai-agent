@@ -40,6 +40,7 @@ const GROUPS = {
     'smoke:council-concurrent-envelope-shadow',
     'smoke:council-concurrent-retry-lineage-shadow',
     'smoke:council-concurrent-retry-terminality-shadow',
+    'smoke:council-concurrent-retry-surface',
     'smoke:council-closeout',
     'smoke:local-council-provider-shadow',
     'smoke:local-council-seat-contract-shadow',

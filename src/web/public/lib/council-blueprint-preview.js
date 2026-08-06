@@ -58,7 +58,31 @@ function renderEnvelopeShadow(envelopeShadow) {
   </section>`;
 }
 
-export function renderCouncilBlueprintPreview({ catalog, envelopeShadow, error = '', loading = false, preview, scheduleShadow, selectedRoleIds = [] } = {}) {
+function renderRetryTerminalityShadow(retryTerminalityShadow) {
+  if (!retryTerminalityShadow) return '';
+
+  const lineage = retryTerminalityShadow.retryLineage;
+  const terminality = retryTerminalityShadow.retryTerminality;
+  const parentAttempt = lineage?.parentAttempt;
+  const projectedAttempt = lineage?.projectedAttempt;
+  const nextBarrier = terminality?.nextBarrier;
+  const lineageText = lineage
+    ? `${escapeHtml(lineage.stageId)} · attempt ${escapeHtml(parentAttempt.attemptNumber)} / retry ${escapeHtml(parentAttempt.retryCount)} → virtual attempt ${escapeHtml(projectedAttempt.attemptNumber)} / retry ${escapeHtml(projectedAttempt.retryCount)}`
+    : 'No retry candidate until a canonical timeout projection is supplied through CLI or GET.';
+  const barrierText = nextBarrier
+    ? `${escapeHtml(nextBarrier.state)}${nextBarrier.waveId ? ` · ${escapeHtml(nextBarrier.waveId)}` : ''}${nextBarrier.blockedBy ? ` · ${escapeHtml(nextBarrier.blockedBy)}` : ''}${nextBarrier.readyStageIds ? ` · ready: ${escapeHtml(nextBarrier.readyStageIds.join(', '))}` : ''}`
+    : 'none';
+
+  return `<section class="council-blueprint-plan council-retry-terminality-shadow" aria-label="Retry terminality projection">
+    <h5>Retry lineage and terminality projection</h5>
+    <p>Projection status: ${escapeHtml(retryTerminalityShadow.state)} · terminality: ${escapeHtml(terminality?.status || 'not-started')}.</p>
+    <p>Lineage: ${lineageText}</p>
+    <p>Next barrier: ${barrierText}</p>
+    <p class="council-blueprint-no-execution">retryDecision: ${escapeHtml(retryTerminalityShadow.retryDecision)} · decision: ${escapeHtml(retryTerminalityShadow.decision)} · actualRetryAuthorized: false · actualRetryExecuted: false · actualConcurrentDispatchQualified: false.</p>
+  </section>`;
+}
+
+export function renderCouncilBlueprintPreview({ catalog, envelopeShadow, error = '', loading = false, preview, retryTerminalityShadow, scheduleShadow, selectedRoleIds = [] } = {}) {
   const selectableRoles = catalog?.selectableRoles || [];
   const selected = new Set(selectedRoleIds);
   const selectedRoles = preview?.specialists || selectableRoles.filter((role) => selected.has(role.id));
@@ -99,6 +123,7 @@ export function renderCouncilBlueprintPreview({ catalog, envelopeShadow, error =
     </section>
     ${renderScheduleComparison(preview, scheduleShadow)}
     ${renderEnvelopeShadow(envelopeShadow)}
+    ${renderRetryTerminalityShadow(retryTerminalityShadow)}
     <p class="council-blueprint-no-execution">No execution action is available here. This panel has read-only authority only.</p>
   </div>`;
 }

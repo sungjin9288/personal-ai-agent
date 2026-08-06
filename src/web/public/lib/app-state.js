@@ -23,6 +23,7 @@ export const state = {
   councilBlueprintSelectedRoleIds: ['research', 'implementation', 'verification'],
   councilConcurrentScheduleShadow: null,
   councilConcurrentEnvelopeShadow: null,
+  councilConcurrentRetryTerminalityShadow: null,
   currentViewLinkCopied: false,
   currentViewLinkCopiedTimer: null,
   doctor: null,

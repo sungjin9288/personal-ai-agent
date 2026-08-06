@@ -20,6 +20,7 @@ import {
 } from '../core/council-blueprint-preview.mjs';
 import { createCouncilConcurrentScheduleShadow } from '../core/council-concurrent-schedule-shadow.mjs';
 import { createCouncilConcurrentEnvelopeShadow } from '../core/council-concurrent-envelope-shadow.mjs';
+import { createCouncilConcurrentRetryTerminalityShadow } from '../core/council-concurrent-retry-terminality-shadow.mjs';
 import { createMissionService } from '../core/mission-service.mjs';
 import { evaluateApiRbac, normalizeRbacMode, normalizeRbacRole } from '../core/rbac-policy.mjs';
 import { createReleaseCommandOrchestrator } from '../core/release-command-orchestrator.mjs';
@@ -79,6 +80,15 @@ function parseCouncilCompletionEvent(value) {
   const parts = String(value || '').split('|');
   if (parts.length !== 3 || parts.some((part) => !part.trim())) {
     throw new CouncilBlueprintPreviewValidationError('council-concurrent-schedule-shadow: completion events must use stageId|attemptId|outcome.');
+  }
+  const [stageId, attemptId, outcome] = parts;
+  return { attemptId, outcome, stageId };
+}
+
+function parseCouncilProjectedRetryOutcome(value) {
+  const parts = String(value || '').split('|');
+  if (parts.length !== 3 || parts.some((part) => !part.trim())) {
+    throw new CouncilBlueprintPreviewValidationError('council-concurrent-retry-terminality-shadow: projected retry outcome must use stageId|attemptId|outcome.');
   }
   const [stageId, attemptId, outcome] = parts;
   return { attemptId, outcome, stageId };
@@ -2241,6 +2251,30 @@ async function handleApi(request, response, url) {
     try {
       const roleIds = url.searchParams.has('role') ? url.searchParams.getAll('role') : undefined;
       sendJson(response, 200, createCouncilConcurrentEnvelopeShadow({ roleIds }));
+    } catch (error) {
+      if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
+        throw error;
+      }
+      sendJson(response, 400, toCouncilBlueprintPreviewErrorPayload(error));
+    }
+  });
+
+  registerExactRoute('GET', '/api/council/concurrent-retry-terminality-shadow', async () => {
+    try {
+      const projectedRetryOutcomeValues = url.searchParams.getAll('projectedRetryOutcome');
+      if (projectedRetryOutcomeValues.length > 1) {
+        throw new CouncilBlueprintPreviewValidationError('council-concurrent-retry-terminality-shadow: projected retry outcome may be supplied once.');
+      }
+      const roleIds = url.searchParams.has('role') ? url.searchParams.getAll('role') : undefined;
+      const completionEvents = url.searchParams.getAll('completionEvent').map(parseCouncilCompletionEvent);
+      const projectedRetryOutcome = projectedRetryOutcomeValues.length
+        ? parseCouncilProjectedRetryOutcome(projectedRetryOutcomeValues[0])
+        : undefined;
+      sendJson(response, 200, createCouncilConcurrentRetryTerminalityShadow({
+        completionEvents,
+        projectedRetryOutcome,
+        roleIds,
+      }));
     } catch (error) {
       if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
         throw error;
