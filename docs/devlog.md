@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-08-06 Council v1.1f deterministic CI closeout
+
+- kept the existing Provider workflow name, `provider-smoke` job, check name, triggers, checkout, and setup while adding the six focused Council unit files and seven deterministic Council/UI smoke commands directly to that job
+- extended contributor onboarding to bind the exact unit command, command order, PR checklist parity, and required-job identity; each of the eight Council steps is removed in memory for a fail-closed negative check and the original workflow bytes are re-read unchanged
+- kept the gate repository-local and cost-free: no branch-protection mutation, required-check inference, runtime/public contract, provider/model/Ollama/C13/evaluator call, retry/dispatch/worker path, schema, permission, approval, or audit-order change
+- preserved `productionReadyClaim: false`, `keep-stub-only`, `keep-retry-disabled`, `keep-dispatch-disabled`, and the existing C13 receipt and observation bytes
+
 ## 2026-08-06 Council v1.1f retry terminality read-only operator surface
 
 - exposed the existing v1.1e deterministic retry terminality projection through an additive CLI command, GET endpoint, and the Council blueprint preview

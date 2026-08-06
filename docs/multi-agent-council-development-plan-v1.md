@@ -693,6 +693,14 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - malformed, empty, duplicate, stale, and unknown inputs fail closed. Three-seat timeout/retry-complete, failed-recoverability-reject, sibling-blocked, retry-exhausted, reviewer-complete, and four-through-seven-seat envelope denial remain deterministic.
 - existing web auth, RBAC, mandatory request audit, v1.1b–e source binding, C13 bytes, `keep-stub-only`, and `productionReadyClaim: false` remain unchanged. CLI writes zero files; GET adds only the existing request-audit record. No scheduler, retry executor, POST, store schema, mission/provider route, provider/model/Ollama/C13/network/worker path is added.
 
+### v1.1f CI closeout — Deterministic Provider gate
+
+- status: completed deterministic CI contract; this is a workflow and onboarding guard, not a new Council runtime version or execution path.
+- the existing `Provider fallback and attention smoke` job keeps its workflow name, job id, check name, triggers, checkout, and setup. It now runs the six v1.1a–f focused Council unit files followed by the seven Council and UI blueprint smoke commands directly in the same required job.
+- `smoke:contributor-onboarding` binds the exact unit command, smoke command order, required job identity, and pull-request checklist. It removes each of the eight Council steps in memory and requires the contract to fail closed, then confirms the tracked workflow bytes were not changed.
+- this gate does not configure branch protection or claim that the Provider job is required beyond live GitHub status. It calls no provider, model, Ollama, evaluator, network, retry, dispatch, or worker path and changes no runtime, public API, CLI payload, store/schema, permission, approval, or audit ordering.
+- `productionReadyClaim: false`, `keep-stub-only`, `keep-retry-disabled`, and `keep-dispatch-disabled` remain fixed. C13 receipt and observation bytes are reused and are not rerun or rewritten.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.

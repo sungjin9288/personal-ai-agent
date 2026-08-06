@@ -106,3 +106,27 @@ jobs:
 
       - name: Run production provider readiness smoke
         run: npm run smoke:production-provider-readiness
+
+      - name: Run Council v1.1f focused unit gate
+        run: node --test test/council-blueprint-preview.test.mjs test/council-concurrent-schedule-shadow.test.mjs test/council-concurrent-envelope-shadow.test.mjs test/council-concurrent-retry-lineage-shadow.test.mjs test/council-concurrent-retry-terminality-shadow.test.mjs test/council-concurrent-retry-surface.test.mjs
+
+      - name: Run Council v1.1f blueprint smoke
+        run: npm run smoke:council-blueprint-preview
+
+      - name: Run Council v1.1f concurrent schedule smoke
+        run: npm run smoke:council-concurrent-schedule-shadow
+
+      - name: Run Council v1.1f concurrent envelope smoke
+        run: npm run smoke:council-concurrent-envelope-shadow
+
+      - name: Run Council v1.1f retry lineage smoke
+        run: npm run smoke:council-concurrent-retry-lineage-shadow
+
+      - name: Run Council v1.1f retry terminality smoke
+        run: npm run smoke:council-concurrent-retry-terminality-shadow
+
+      - name: Run Council v1.1f retry operator surface smoke
+        run: npm run smoke:council-concurrent-retry-surface
+
+      - name: Run Council v1.1f UI blueprint smoke
+        run: npm run smoke:ui-agent-blueprints
