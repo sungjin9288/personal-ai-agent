@@ -685,6 +685,14 @@ public API·CLI·storage·permission·approval·audit ordering도 변경하지 �
 - a completed attempt 2 opens the next barrier only when all same-wave siblings completed; sibling failure, timeout, or pending completion remains blocked. A reviewer retry completion is projection-complete, while failed/timeout attempt 2 is retry-exhausted without attempt 3 or a configurable budget.
 - this is core-only. It adds no CLI, HTTP, UI, store/schema, mission/provider, permission, approval, audit, worker, retry, clock, model, Ollama, C13, network, filesystem, or store-write path. `retryDecision: keep-retry-disabled`, `decision: keep-dispatch-disabled`, `keep-stub-only`, and `productionReadyClaim: false` remain fixed.
 
+### v1.1f — Retry terminality read-only operator surface
+
+- status: completed additive operator projection; it does not add a retry runtime or change the v1.1e core contract.
+- exposes the existing `createCouncilConcurrentRetryTerminalityShadow()` result through `council concurrent-retry-terminality-shadow`, `GET /api/council/concurrent-retry-terminality-shadow`, and the existing Council blueprint preview.
+- CLI and GET accept the existing role/completion-event inputs plus one exact projected attempt 2 outcome. The UI consumes only the default read-only projection and renders status, attempt 1 → virtual attempt 2 lineage when present, terminality, next barrier, `keep-retry-disabled`, and `keep-dispatch-disabled`; it exposes no scenario editor or action control.
+- malformed, empty, duplicate, stale, and unknown inputs fail closed. Three-seat timeout/retry-complete, failed-recoverability-reject, sibling-blocked, retry-exhausted, reviewer-complete, and four-through-seven-seat envelope denial remain deterministic.
+- existing web auth, RBAC, mandatory request audit, v1.1b–e source binding, C13 bytes, `keep-stub-only`, and `productionReadyClaim: false` remain unchanged. CLI writes zero files; GET adds only the existing request-audit record. No scheduler, retry executor, POST, store schema, mission/provider route, provider/model/Ollama/C13/network/worker path is added.
+
 ## 검증 계획
 
 각 `/goal`은 작은 검증에서 전체 검증 순서로 실행한다.

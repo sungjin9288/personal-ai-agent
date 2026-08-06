@@ -1,5 +1,12 @@
 # Devlog
 
+## 2026-08-06 Council v1.1f retry terminality read-only operator surface
+
+- exposed the existing v1.1e deterministic retry terminality projection through an additive CLI command, GET endpoint, and the Council blueprint preview
+- kept the operator surface read-only: the UI renders projection status, attempt 1 → virtual attempt 2 lineage, terminality, next barrier, and disabled retry/dispatch decisions without scenario controls or action buttons
+- added exact CLI/API parity and fail-closed malformed, duplicate, stale, and outside-envelope checks; HTTP keeps the existing auth/RBAC/request-audit path and CLI writes zero files
+- preserved v1.1b–e bindings, C13 `keep-stub-only`, `productionReadyClaim: false`, and zero retry, provider, model, Ollama, worker, network, and store-domain execution
+
 ## 2026-08-03 Council v1.1e deterministic retry terminality shadow
 
 - reconstructed the canonical v1.1d retry-lineage result and bound its exact SHA-256 source digest plus inherited v1.1b/v1.1c binding before interpreting a hypothetical attempt 2 outcome

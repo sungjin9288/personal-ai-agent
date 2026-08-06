@@ -372,6 +372,7 @@
     "smoke:council-concurrent-envelope-shadow": "node scripts/smoke-council-concurrent-envelope-shadow.mjs",
     "smoke:council-concurrent-retry-lineage-shadow": "node scripts/smoke-council-concurrent-retry-lineage-shadow.mjs",
     "smoke:council-concurrent-retry-terminality-shadow": "node scripts/smoke-council-concurrent-retry-terminality-shadow.mjs",
+    "smoke:council-concurrent-retry-surface": "node scripts/smoke-council-concurrent-retry-surface.mjs",
     "smoke:session-history": "node scripts/smoke-session-history.mjs",
     "smoke:mission-timeline": "node scripts/smoke-mission-timeline.mjs",
     "smoke:workspace-timeline": "node scripts/smoke-workspace-timeline.mjs",

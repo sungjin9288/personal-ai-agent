@@ -761,6 +761,7 @@ function renderCouncilBlueprintPreview() {
     error: state.councilBlueprintPreviewError,
     loading: state.councilBlueprintPreviewLoading,
     preview: state.councilBlueprintPreview,
+    retryTerminalityShadow: state.councilConcurrentRetryTerminalityShadow,
     envelopeShadow: state.councilConcurrentEnvelopeShadow,
     scheduleShadow: state.councilConcurrentScheduleShadow,
     selectedRoleIds: state.councilBlueprintSelectedRoleIds,
@@ -778,16 +779,18 @@ async function loadCouncilBlueprintPreview({ focusRoleId = '' } = {}) {
     }
     const params = new URLSearchParams();
     state.councilBlueprintSelectedRoleIds.forEach((roleId) => params.append('role', roleId));
-    [state.councilBlueprintPreview, state.councilConcurrentScheduleShadow, state.councilConcurrentEnvelopeShadow] = await Promise.all([
+    [state.councilBlueprintPreview, state.councilConcurrentScheduleShadow, state.councilConcurrentEnvelopeShadow, state.councilConcurrentRetryTerminalityShadow] = await Promise.all([
       api(`/api/council/blueprint-preview?${params.toString()}`),
       api(`/api/council/concurrent-schedule-shadow?${params.toString()}`),
       api(`/api/council/concurrent-envelope-shadow?${params.toString()}`),
+      api(`/api/council/concurrent-retry-terminality-shadow?${params.toString()}`),
     ]);
     state.councilBlueprintSelectedRoleIds = [...state.councilBlueprintPreview.selectedRoleIds];
   } catch (error) {
     state.councilBlueprintPreview = null;
     state.councilConcurrentScheduleShadow = null;
     state.councilConcurrentEnvelopeShadow = null;
+    state.councilConcurrentRetryTerminalityShadow = null;
     state.councilBlueprintPreviewError = error.message || 'Council preview를 불러오지 못했습니다.';
   } finally {
     state.councilBlueprintPreviewLoading = false;

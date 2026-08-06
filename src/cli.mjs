@@ -23,6 +23,7 @@ import {
 } from './core/council-blueprint-preview.mjs';
 import { createCouncilConcurrentScheduleShadow } from './core/council-concurrent-schedule-shadow.mjs';
 import { createCouncilConcurrentEnvelopeShadow } from './core/council-concurrent-envelope-shadow.mjs';
+import { createCouncilConcurrentRetryTerminalityShadow } from './core/council-concurrent-retry-terminality-shadow.mjs';
 
 function readOption(args, name, fallback = '') {
   const index = args.indexOf(name);
@@ -144,6 +145,7 @@ Commands:
   council blueprint-preview [--role <research|product|architecture|implementation|security|verification|operations>]... [--failed-stage <stageId>]...
   council concurrent-schedule-shadow [--role <research|product|architecture|implementation|security|verification|operations>]... [--completion-event '<stageId>|<attemptId>|<outcome>']...
   council concurrent-envelope-shadow [--role <research|product|architecture|implementation|security|verification|operations>]...
+  council concurrent-retry-terminality-shadow [--role <research|product|architecture|implementation|security|verification|operations>]... [--completion-event '<stageId>|<attemptId>|<outcome>']... [--projected-retry-outcome '<stageId>|<attemptId>|<outcome>']
 
   workspace add <path> [--name <name>]
   workspace list
@@ -266,6 +268,17 @@ Usage:
 
 Rules:
   Projects fixed synthetic latency and resource units from the v1.1b schedule. It never dispatches work, measures a runtime, creates a mission, or initializes storage.`);
+    return true;
+  }
+
+  if (group === 'council' && command === 'concurrent-retry-terminality-shadow') {
+    console.log(`Personal AI Agent
+
+Usage:
+  council concurrent-retry-terminality-shadow [--role <role>]... [--completion-event '<stageId>|<attemptId>|<outcome>']... [--projected-retry-outcome '<stageId>|<attemptId>|<outcome>']
+
+Rules:
+  Projects one read-only hypothetical retry terminality outcome. It never retries, dispatches work, creates a mission, or initializes storage.`);
     return true;
   }
 
@@ -464,6 +477,7 @@ Council commands:
   council blueprint-preview [--role <role>]... [--failed-stage <stageId>]...
   council concurrent-schedule-shadow [--role <role>]... [--completion-event '<stageId>|<attemptId>|<outcome>']...
   council concurrent-envelope-shadow [--role <role>]...
+  council concurrent-retry-terminality-shadow [--role <role>]... [--completion-event '<stageId>|<attemptId>|<outcome>']... [--projected-retry-outcome '<stageId>|<attemptId>|<outcome>']
 `);
     return true;
   }
@@ -502,6 +516,17 @@ Council commands:
       printJson(createCouncilConcurrentEnvelopeShadow({ roleIds }));
       return true;
     }
+    if (command === 'concurrent-retry-terminality-shadow') {
+      const roleIds = rest.includes('--role') ? readOptions(rest, '--role') : undefined;
+      printJson(
+        createCouncilConcurrentRetryTerminalityShadow({
+          completionEvents: readCouncilCompletionEvents(rest),
+          projectedRetryOutcome: readCouncilProjectedRetryOutcome(rest),
+          roleIds,
+        }),
+      );
+      return true;
+    }
   } catch (error) {
     if (!(error instanceof CouncilBlueprintPreviewValidationError)) {
       throw error;
@@ -533,6 +558,33 @@ function parseCouncilCompletionEvent(value) {
   const parts = String(value || '').split('|');
   if (parts.length !== 3 || parts.some((part) => !part.trim())) {
     throw new CouncilBlueprintPreviewValidationError('council-concurrent-schedule-shadow: completion events must use stageId|attemptId|outcome.');
+  }
+  const [stageId, attemptId, outcome] = parts;
+  return { attemptId, outcome, stageId };
+}
+
+function readCouncilProjectedRetryOutcome(args) {
+  const values = [];
+  const occurrences = args.filter((value) => value === '--projected-retry-outcome').length;
+
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] !== '--projected-retry-outcome') continue;
+    const value = args[index + 1];
+    if (value && !value.startsWith('--')) values.push(value);
+  }
+  if (occurrences > 1) {
+    throw new CouncilBlueprintPreviewValidationError('council-concurrent-retry-terminality-shadow: projected retry outcome may be supplied once.');
+  }
+  if (values.length !== occurrences) {
+    throw new CouncilBlueprintPreviewValidationError('council-concurrent-retry-terminality-shadow: projected retry outcome must use stageId|attemptId|outcome.');
+  }
+  return values.length ? parseCouncilProjectedRetryOutcome(values[0]) : undefined;
+}
+
+function parseCouncilProjectedRetryOutcome(value) {
+  const parts = String(value || '').split('|');
+  if (parts.length !== 3 || parts.some((part) => !part.trim())) {
+    throw new CouncilBlueprintPreviewValidationError('council-concurrent-retry-terminality-shadow: projected retry outcome must use stageId|attemptId|outcome.');
   }
   const [stageId, attemptId, outcome] = parts;
   return { attemptId, outcome, stageId };
