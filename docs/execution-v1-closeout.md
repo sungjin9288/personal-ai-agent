@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-06T01:22:17.449Z
-- branch: codex/council-retry-operator-surface-v1-1f
-- commit: 521ef6dec85bcd07076c2c7aadb2589c9ad4821e
-- boundImplementationCommit: 521ef6dec85bcd07076c2c7aadb2589c9ad4821e
+- generatedAt: 2026-08-06T01:57:01.665Z
+- branch: codex/council-deterministic-ci-gate
+- commit: efd4b611fc5b130be617f2ddd768225db399188d
+- boundImplementationCommit: efd4b611fc5b130be617f2ddd768225db399188d
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z

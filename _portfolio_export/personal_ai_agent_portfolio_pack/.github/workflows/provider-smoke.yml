@@ -1,0 +1,132 @@
+name: Provider smoke
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  provider-smoke:
+    name: Provider fallback and attention smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version: '24'
+
+      - name: Show Node.js version
+        run: node --version
+
+      - name: Run local demo onboarding smoke
+        run: npm run smoke:demo-local
+
+      - name: Run doctor smoke
+        run: npm run smoke:doctor
+
+      - name: Run doctor summary
+        run: npm run doctor:summary
+
+      - name: Run UI doctor surface smoke
+        run: npm run smoke:ui-doctor-surface
+
+      - name: Run env example smoke
+        run: npm run smoke:env-example
+
+      - name: Run contributor onboarding smoke
+        run: npm run smoke:contributor-onboarding
+
+      - name: Run changelog smoke
+        run: npm run smoke:changelog
+
+      - name: Run portfolio ZIP smoke
+        run: npm run smoke:portfolio-zip
+
+      - name: Run support policy smoke
+        run: npm run smoke:support-policy
+
+      - name: Run demo evidence index smoke
+        run: npm run smoke:demo-evidence-index
+
+      - name: Run representative demo evidence smoke
+        run: npm run smoke:representative-demo-evidence
+
+      - name: Run operator surface demo evidence smoke
+        run: npm run smoke:operator-surface-demo-evidence
+
+      - name: Run pilot export package smoke
+        run: npm run smoke:pilot-export-package
+
+      - name: Run README portfolio overview smoke
+        run: npm run smoke:readme-portfolio-overview
+
+      - name: Run portfolio claim boundary smoke
+        run: npm run smoke:portfolio-docs-claim-boundary
+
+      - name: Run release artifact hygiene smoke
+        run: npm run smoke:release-artifact-hygiene
+
+      - name: Run provider fallback policy smoke
+        run: npm run smoke:provider-fallback-policy
+
+      - name: Run execution-v1 snapshot smoke
+        run: npm run smoke:execution-v1-snapshot
+
+      - name: Run execution-v1 artifact refresh smoke
+        run: npm run smoke:execution-v1-artifact-refresh
+
+      - name: Run provider attention remediation smoke
+        run: npm run smoke:provider-attention-remediation
+
+      - name: Run provider failure classification smoke
+        run: npm run smoke:provider-capability-rate-guard
+
+      - name: Run provider action inbox smoke
+        run: npm run smoke:provider-action-inbox
+
+      - name: Run provider events smoke
+        run: npm run smoke:provider-events
+
+      - name: Run provider overview smoke
+        run: npm run smoke:provider-overview
+
+      - name: Run target provider operations smoke
+        run: npm run smoke:target-provider-operations
+
+      - name: Run production provider readiness smoke
+        run: npm run smoke:production-provider-readiness
+
+      - name: Run Council v1.1f focused unit gate
+        run: node --test test/council-blueprint-preview.test.mjs test/council-concurrent-schedule-shadow.test.mjs test/council-concurrent-envelope-shadow.test.mjs test/council-concurrent-retry-lineage-shadow.test.mjs test/council-concurrent-retry-terminality-shadow.test.mjs test/council-concurrent-retry-surface.test.mjs
+
+      - name: Run Council v1.1f blueprint smoke
+        run: npm run smoke:council-blueprint-preview
+
+      - name: Run Council v1.1f concurrent schedule smoke
+        run: npm run smoke:council-concurrent-schedule-shadow
+
+      - name: Run Council v1.1f concurrent envelope smoke
+        run: npm run smoke:council-concurrent-envelope-shadow
+
+      - name: Run Council v1.1f retry lineage smoke
+        run: npm run smoke:council-concurrent-retry-lineage-shadow
+
+      - name: Run Council v1.1f retry terminality smoke
+        run: npm run smoke:council-concurrent-retry-terminality-shadow
+
+      - name: Run Council v1.1f retry operator surface smoke
+        run: npm run smoke:council-concurrent-retry-surface
+
+      - name: Run Council v1.1f UI blueprint smoke
+        run: npm run smoke:ui-agent-blueprints
