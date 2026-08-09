@@ -4,6 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 import {
+  LOCAL_V1_COMPLETION_SCHEMA_VERSION,
   LOCAL_V1_SOURCE_DOCUMENTS,
   LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS,
   LOCAL_V1_VERIFICATION_SCHEMA_VERSION,
@@ -43,6 +44,17 @@ test('local v1 closeout binds completed local scope without expanding authority'
   });
 
   assert.equal(artifact.status, 'local-v1-complete-external-evidence-open');
+  assert.equal(
+    LOCAL_V1_COMPLETION_SCHEMA_VERSION,
+    'personal-ai-agent-local-v1-completion-closeout/v2',
+  );
+  assert.deepEqual(artifact.completionMatrix, {
+    localProduct: 'complete',
+    provider: 'partial-external-blocked',
+    deployment: 'external-blocked',
+    privateDataTraining: 'approval-blocked-unverified',
+    rollout: 'approval-blocked-unverified',
+  });
   assert.equal(artifact.deliveryStatus.d4, 'completed');
   assert.equal(artifact.deliveryStatus.localRag, 'completed-default-path-unchanged');
   assert.equal(
@@ -67,6 +79,32 @@ test('local v1 closeout binds completed local scope without expanding authority'
     sourceDocumentTexts,
     verificationReport,
   });
+});
+
+test('local v1 closeout requires the release-readiness source and exact decision matrix', () => {
+  assert.ok(LOCAL_V1_SOURCE_DOCUMENTS.includes('docs/release-readiness-v1.md'));
+  const artifact = buildArtifact();
+
+  for (const mutation of [
+    (content) => { delete content.completionMatrix.provider; },
+    (content) => { content.completionMatrix.extra = 'complete'; },
+    (content) => { content.completionMatrix.provider = 'complete'; },
+    (content) => { content.completionMatrix.rollout = 'external-blocked'; },
+  ]) {
+    assert.throws(
+      () => assertLocalV1CompletionArtifact(reseal(artifact, mutation)),
+      /completion matrix/i,
+    );
+  }
+
+  const changedReadiness = {
+    ...sourceDocumentTexts,
+    'docs/release-readiness-v1.md': 'changed release readiness source\n',
+  };
+  assert.throws(
+    () => assertLocalV1CompletionArtifact(artifact, { sourceDocumentTexts: changedReadiness }),
+    /source document binding failed/,
+  );
 });
 
 test('local v1 closeout rejects authority and C13 outcome drift after resealing', () => {

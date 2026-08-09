@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-06T01:57:01.665Z
-- branch: codex/council-deterministic-ci-gate
-- commit: efd4b611fc5b130be617f2ddd768225db399188d
-- boundImplementationCommit: efd4b611fc5b130be617f2ddd768225db399188d
+- generatedAt: 2026-08-09T03:30:57.928Z
+- branch: codex/local-v1-completion-matrix-v2
+- commit: 986b218c902a38dce1d2161acaaf7b86c85cc88a
+- boundImplementationCommit: 986b218c902a38dce1d2161acaaf7b86c85cc88a
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z

@@ -5,9 +5,17 @@ import {
   assertC13AttemptReceipt,
 } from './local-council-v6-actual-compatibility-observation.mjs';
 
-export const LOCAL_V1_COMPLETION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-closeout/v1';
+export const LOCAL_V1_COMPLETION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-closeout/v2';
 export const LOCAL_V1_COMPLETION_STATUS = 'local-v1-complete-external-evidence-open';
 export const LOCAL_V1_VERIFICATION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-verification/v2';
+
+export const LOCAL_V1_COMPLETION_MATRIX = Object.freeze({
+  localProduct: 'complete',
+  provider: 'partial-external-blocked',
+  deployment: 'external-blocked',
+  privateDataTraining: 'approval-blocked-unverified',
+  rollout: 'approval-blocked-unverified',
+});
 
 export const LOCAL_V1_SOURCE_DOCUMENTS = [
   'CHANGELOG.md',
@@ -18,6 +26,7 @@ export const LOCAL_V1_SOURCE_DOCUMENTS = [
   'docs/multi-agent-council-development-plan-v1.md',
   'docs/external-evidence-blockers-v1.md',
   'docs/roadmap.md',
+  'docs/release-readiness-v1.md',
   'docs/product-plan-v1.md',
   'docs/local-v1-completion-closeout-v1.md',
   'docs/smoke-validation-summary-v1.md',
@@ -107,6 +116,7 @@ export function buildLocalV1CompletionArtifact({
     activity: Object.fromEntries(ACTIVITY_KEYS.map((key) => [key, 0])),
     authority: Object.fromEntries(AUTHORITY_KEYS.map((key) => [key, false])),
     c13: buildC13Binding({ c13AttemptText, c13FinalText }),
+    completionMatrix: { ...LOCAL_V1_COMPLETION_MATRIX },
     deliveryStatus: {
       council: 'completed-keep-stub-only',
       d4: 'completed',
@@ -132,7 +142,7 @@ export function assertLocalV1CompletionArtifact(artifact, {
   verificationReport,
 } = {}) {
   exactKeys(artifact, [
-    'activity', 'authority', 'c13', 'deliveryStatus', 'externalBlockerIds', 'id',
+    'activity', 'authority', 'c13', 'completionMatrix', 'deliveryStatus', 'externalBlockerIds', 'id',
     'implementationCommit', 'integrityHash', 'schemaVersion', 'sourceDocumentSha256',
     'status', 'verification',
   ], 'Local v1 completion artifact');
@@ -145,6 +155,7 @@ export function assertLocalV1CompletionArtifact(artifact, {
     id !== `local-v1-completion-closeout-${integrityHash}`
   ) throw new Error('Local v1 completion artifact integrity failed.');
   assertImplementationCommit(artifact.implementationCommit);
+  assertCompletionMatrix(artifact.completionMatrix);
   exactKeys(artifact.deliveryStatus, [
     'council', 'd4', 'fineTuningProtocols', 'localRag',
   ], 'Local v1 delivery status');
@@ -176,6 +187,13 @@ export function assertLocalV1CompletionArtifact(artifact, {
     throw new Error('Local v1 implementation commit binding failed.');
   }
   return artifact;
+}
+
+function assertCompletionMatrix(matrix) {
+  exactKeys(matrix, Object.keys(LOCAL_V1_COMPLETION_MATRIX), 'Local v1 completion matrix');
+  for (const [key, expected] of Object.entries(LOCAL_V1_COMPLETION_MATRIX)) {
+    if (matrix[key] !== expected) throw new Error(`Local v1 completion matrix drifted: ${key}.`);
+  }
 }
 
 export function assertLocalV1VerificationReport(report) {

@@ -1,5 +1,11 @@
 # Devlog
 
+## 2026-08-09 Local v1 completion matrix v2
+
+- raised the repository-local completion artifact to schema v2 and added one exact decision matrix so `localProduct: complete` cannot be read as provider, deployment, private-data/training, or rollout completion
+- bound the current `docs/release-readiness-v1.md` bytes and SHA-256 to the same content-free artifact; missing, extra, relaxed, and source-drifted entries fail closed
+- preserved C13 `actual-incompatible` / `keep-stub-only`, six external blockers, `productionReadyClaim: false`, zero external calls, and all existing public/runtime/store/permission/approval/audit contracts
+
 ## 2026-08-06 Council v1.1f deterministic CI closeout
 
 - kept the existing Provider workflow name, `provider-smoke` job, check name, triggers, checkout, and setup while adding the six focused Council unit files and seven deterministic Council/UI smoke commands directly to that job

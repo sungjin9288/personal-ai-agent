@@ -1,9 +1,11 @@
 # Local-first v1 Completion Closeout
 
 - status: `local-v1-complete-external-evidence-open`
-- localDate: 2026-07-29
+- localDate: 2026-08-09
 - productionReadyClaim: false
+- artifactSchemaVersion: `personal-ai-agent-local-v1-completion-closeout/v2`
 - completionArtifact: `evidence/output-artifacts/local-v1-completion-closeout.json`
+- canonicalReleaseReadinessSource: `docs/release-readiness-v1.md` (current bytes and SHA-256 are bound in the artifact)
 - relatedRoadmap: [roadmap.md](roadmap.md)
 - relatedProductPlan: [product-plan-v1.md](product-plan-v1.md)
 - relatedExternalBlockers: [external-evidence-blockers-v1.md](external-evidence-blockers-v1.md)
@@ -11,6 +13,17 @@
 ## Decision
 
 The repository-local, no-cost v1 scope is complete when its deterministic closeout smoke and the linked completion artifact are current. This is not a production, deployment, provider-readiness, training, or actual-user-data claim.
+
+The machine-readable v2 decision matrix separates the completed repository-local product from every provider, deployment, private-data/training, and rollout decision that still requires external evidence or approval. `localProduct: complete` does not imply that any other matrix entry is complete.
+
+```yaml
+completionMatrix:
+  localProduct: complete
+  provider: partial-external-blocked
+  deployment: external-blocked
+  privateDataTraining: approval-blocked-unverified
+  rollout: approval-blocked-unverified
+```
 
 ## Completion Matrix
 
@@ -27,6 +40,8 @@ The repository-local, no-cost v1 scope is complete when its deterministic closeo
 The closeout source-binding contract fixes the published v0.1.0 identity to both `CHANGELOG.md` and `config/public-release-v0.1.0.json`. A current completion artifact therefore detects a change to either historical public-release source without making a network request.
 
 This is separate from the repository-local Portfolio candidate. `portfolio_manifest.md` and `_portfolio_export/personal_ai_agent_portfolio_pack.zip` describe the local candidate refreshed by the Portfolio workflow, and `npm run smoke:portfolio-zip` validates that candidate. Refreshing or validating that ZIP neither rewrites nor replaces the fixed published v0.1.0 asset record.
+
+The v2 artifact also binds the current bytes and SHA-256 of [release-readiness-v1.md](release-readiness-v1.md). A change to the readiness decision record therefore invalidates the closeout until the official builder is rerun; no release or deployment authority follows from this binding.
 
 ## External Evidence Still Required
 
