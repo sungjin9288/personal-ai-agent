@@ -27,6 +27,13 @@
     "observationAttemptCount": 1,
     "retryCount": 0
   },
+  "completionMatrix": {
+    "localProduct": "complete",
+    "provider": "partial-external-blocked",
+    "deployment": "external-blocked",
+    "privateDataTraining": "approval-blocked-unverified",
+    "rollout": "approval-blocked-unverified"
+  },
   "deliveryStatus": {
     "council": "completed-keep-stub-only",
     "d4": "completed",
@@ -41,21 +48,22 @@
     "actual-pilot-feedback-and-metrics",
     "hosted-saas-or-production-deployment"
   ],
-  "implementationCommit": "efd4b611fc5b130be617f2ddd768225db399188d",
-  "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v1",
+  "implementationCommit": "986b218c902a38dce1d2161acaaf7b86c85cc88a",
+  "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v2",
   "sourceDocumentSha256": {
-    "CHANGELOG.md": "47f76141d797ba5524091ca890100f9dec4d022779612f6dedd804a3a99ed8e4",
+    "CHANGELOG.md": "c4bd6e7de5d65069a089922bfaa381e4fe048c7799d47a04b80df79ca32ad582",
     "README.md": "0184ce6578a0c1ab9503187386d98f27b76825a6d5145935399effa76e9df924",
     "config/public-release-v0.1.0.json": "02963539e1f7d1c38b585ee762188e4569a9c0072c7742ecf48c2900f558e0e8",
     "docs/refactoring-development-plan-v1.md": "e90e4814d8b140ba429e1d798cde55fe800e761de2f271f3a24b33cb90429dbf",
     "docs/ml-rag-development-plan-v1.md": "ab101a982d2753ed99840e0cc73af7397bb3babef71a26d0e7883f5221eb9ac9",
     "docs/multi-agent-council-development-plan-v1.md": "28b8b9ab67d521558f14802afbe9f0ca311653488f41860595f08a069a4b2f0e",
     "docs/external-evidence-blockers-v1.md": "1ab0bdaee3c6b3deca6b6232d8f6db488b27f1641976e9248815cf533198189a",
-    "docs/roadmap.md": "ab53a600174840ee13e9b09503711327be7916ca0a476305096040be4ffc18fa",
+    "docs/roadmap.md": "3f6ab573574e9ac389b91ad913bc84050d11700c9ae008a64064094dbc414591",
+    "docs/release-readiness-v1.md": "5c65024e30def571fe6d43b96c271c1ccc7c07e156695c8418da7526022bc4f0",
     "docs/product-plan-v1.md": "1b6443d3fed754c3e737171fd0e8c0c155e8ca9fd9437e82da81067e7e38039b",
-    "docs/local-v1-completion-closeout-v1.md": "53b8c91d38856444cae4ff86dc5ab9e683647a150fe196da076b7c006ad7c910",
-    "docs/smoke-validation-summary-v1.md": "6b8ceecd7b51c9944e495e546fd5d525a83380de51c47256633a2564b2f94ede",
-    "evidence/evidence_manifest.md": "b95d2972ae1e8eb8c1c10e890055d3d3865788d087007efcc90457ef891c2760",
+    "docs/local-v1-completion-closeout-v1.md": "5aa447deb4799ae75499fdc4a7dcc757f54d73266ad961b542225319949f5565",
+    "docs/smoke-validation-summary-v1.md": "96ed3c9b1514ae95cb1c99f694293076ad7b2a930293677cad06fce4626ce4f6",
+    "evidence/evidence_manifest.md": "ed95ff92cf35fad095314c192208b12cc570e24f8c69ce9c15d932b1d453b53e",
     "package.json": "1520dbc33df13da003782b5935dc433ba036334a6ffeea79701484ce718c000d"
   },
   "status": "local-v1-complete-external-evidence-open",
@@ -64,46 +72,46 @@
       {
         "command": "npm test",
         "commandSha256": "328e123c63857fd8473bd4bd3581e655b08b7440d7f5d2c31cc375607582f539",
-        "durationMs": 68913,
+        "durationMs": 68529,
         "exitCode": 0,
         "id": "unit-tests",
         "packageScript": "test",
         "packageScriptSha256": "910f73d25bb3adcd13e50bb0d5991f3cd22f2d0170104a6c14cf2d8563286369",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "c675c4c26552cbd83f631494a6a61ff9bf0e2bf8ea607a96f4f57570dac0ddf4",
+        "stdoutSha256": "9a6b5a6704f0a0e7d93aef27e518afde09b925cca7bb4d7213be856bb93e5731",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout",
         "commandSha256": "b2b79ebbc595df499ab5603094cb3335ea81ddbe19386c5432ea9d9b80da2541",
-        "durationMs": 9642,
+        "durationMs": 9413,
         "exitCode": 0,
         "id": "docs-gates-precloseout",
         "packageScript": "smoke:docs-gates",
         "packageScriptSha256": "e2a760d6349ef788b72ed27ed07759b0d9ad3d359797f28740b5912c99f23ff9",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "84f67a43b29b05c11f48f34ac6b265bcede641462fa35ad3db8b8e971c229d52",
+        "stdoutSha256": "233ab465990afd088552559ada47587ede803ff1e09bd6f7b195e7fc7c2ef05b",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "npm run smoke:release-artifact-hygiene",
         "commandSha256": "93c15f412966f4ec775719b634a6e54c43ea2e547c4ad80ee029cb5e2f49b35b",
-        "durationMs": 183,
+        "durationMs": 192,
         "exitCode": 0,
         "id": "release-artifact-hygiene",
         "packageScript": "smoke:release-artifact-hygiene",
         "packageScriptSha256": "c50a6a14c86206caae7e3f6f35179e4f5ffdf7f2ea6f39e5ea75da6ce57b4e71",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "3ce152346793837752d6b8ec469b851992caaa089ef378f8be21780852bbdba9",
+        "stdoutSha256": "f4ad3bc4c3fafb868332a3c2a25e4489ef84dec838521127d6b63c09bce0e924",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "git diff --check",
         "commandSha256": "466c2f308b48c7661d646fdd068fbecea974c665fe65dbf8ed508f224180ce0b",
-        "durationMs": 49,
+        "durationMs": 47,
         "exitCode": 0,
         "id": "git-diff-check",
         "packageScript": null,
@@ -114,12 +122,12 @@
         "timeoutMs": 60000
       }
     ],
-    "implementationCommit": "efd4b611fc5b130be617f2ddd768225db399188d",
+    "implementationCommit": "986b218c902a38dce1d2161acaaf7b86c85cc88a",
     "packageJsonSha256": "603c271293a786306c08879ee8a525478033254308d71fa05cdbf911dbd96653",
-    "reportSha256": "07cc6870113ef298b7c01a64c36342668f6503cfe9c349330ab33423af091186",
+    "reportSha256": "47caa549e6c27b62bff42f6ba8c840afac597ea262b9330e07eec052125380c1",
     "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v2",
     "status": "passed"
   },
-  "id": "local-v1-completion-closeout-47088f8be3e7cab94a6410d05be4c82a3fb1ac07a5c131aacb6f34b8939420de",
-  "integrityHash": "47088f8be3e7cab94a6410d05be4c82a3fb1ac07a5c131aacb6f34b8939420de"
+  "id": "local-v1-completion-closeout-eb6bcdafd4d2a7ef40be9a980bb3312a05d419e8c3c3454c8f5493c0cee2f52e",
+  "integrityHash": "eb6bcdafd4d2a7ef40be9a980bb3312a05d419e8c3c3454c8f5493c0cee2f52e"
 }

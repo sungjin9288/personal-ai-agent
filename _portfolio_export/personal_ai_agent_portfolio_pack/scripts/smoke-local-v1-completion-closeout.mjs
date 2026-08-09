@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  LOCAL_V1_COMPLETION_MATRIX,
+  LOCAL_V1_COMPLETION_SCHEMA_VERSION,
   LOCAL_V1_EXTERNAL_BLOCKER_IDS,
   LOCAL_V1_SOURCE_DOCUMENTS,
   assertLocalV1CompletionArtifact,
@@ -25,8 +27,11 @@ const packageJson = readJson('package.json');
 const readme = sourceDocumentTexts['README.md'];
 const refactoringPlan = sourceDocumentTexts['docs/refactoring-development-plan-v1.md'];
 const roadmap = sourceDocumentTexts['docs/roadmap.md'];
+const releaseReadiness = sourceDocumentTexts['docs/release-readiness-v1.md'];
 
 assert.match(implementationCommit, /^[a-f0-9]{40}$/);
+assert.equal(artifact.schemaVersion, LOCAL_V1_COMPLETION_SCHEMA_VERSION);
+assert.deepEqual(artifact.completionMatrix, LOCAL_V1_COMPLETION_MATRIX);
 const historyValidation = validateImplementationHistory(implementationCommit, sourceDocumentTexts);
 assertLocalV1CompletionArtifact(artifact, {
   c13AttemptText,
@@ -39,6 +44,13 @@ assert.equal(
   'node scripts/smoke-local-v1-completion-closeout.mjs',
 );
 assert.match(closeout, /status: `local-v1-complete-external-evidence-open`/);
+assert.match(closeout, /completionMatrix/);
+assert.match(closeout, /localProduct: complete/);
+assert.match(closeout, /provider: partial-external-blocked/);
+assert.match(closeout, /deployment: external-blocked/);
+assert.match(closeout, /privateDataTraining: approval-blocked-unverified/);
+assert.match(closeout, /rollout: approval-blocked-unverified/);
+assert.match(releaseReadiness, /productionReadyClaim: false/);
 assert.match(closeout, /productionReadyClaim: false/);
 assert.match(closeout, /C13 is `actual-incompatible`[\s\S]*`keep-stub-only`/);
 for (const blockerId of LOCAL_V1_EXTERNAL_BLOCKER_IDS) {
