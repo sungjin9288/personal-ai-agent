@@ -29,7 +29,7 @@ The walkthrough should show the repository's strongest verified path: a credenti
 - Do not show `.env`, provider keys, personal filesystem paths, private issue trackers, or external customer data.
 - Keep `productionReadyClaim: false` visible in the narration and evidence.
 - State that the public asset is a recorded walkthrough, not a hosted interactive demo.
-- Treat Anthropic, Hermes, target local provider, hosted SaaS, production identity/session, tenant isolation, secret manager, observability/SLO, public demo URL, pilot feedback, and operating metrics as unverified or blocked unless new evidence is added.
+- Treat Anthropic, Hermes, target local provider, hosted SaaS, production identity/session, tenant isolation, secret manager, observability/SLO, hosted interactive demo or production service URL, pilot feedback, and operating metrics as unverified or blocked unless new evidence is added.
 
 ## Pre-Recording Checklist
 

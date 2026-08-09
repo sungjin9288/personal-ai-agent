@@ -7,6 +7,9 @@ const docPath = path.join(repoDir, 'docs', 'recorded-walkthrough-v1.md');
 const readmePath = path.join(repoDir, 'README.md');
 const demoIndexPath = path.join(repoDir, 'docs', 'demo-evidence-index-v1.md');
 const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
+const implementationEvidencePath = path.join(repoDir, 'docs', 'implementation-evidence.md');
+const roadmapPath = path.join(repoDir, 'docs', 'roadmap.md');
+const evidenceManifestPath = path.join(repoDir, 'evidence', 'evidence_manifest.md');
 const packageJsonPath = path.join(repoDir, 'package.json');
 const publicRecordPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
 
@@ -14,6 +17,9 @@ const doc = readRequiredFile(docPath);
 const readme = readRequiredFile(readmePath);
 const demoIndex = readRequiredFile(demoIndexPath);
 const demoScenarios = readRequiredFile(demoScenariosPath);
+const implementationEvidence = readRequiredFile(implementationEvidencePath);
+const roadmap = readRequiredFile(roadmapPath);
+const evidenceManifest = readRequiredFile(evidenceManifestPath);
 const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const publicRecord = JSON.parse(readRequiredFile(publicRecordPath));
 
@@ -87,6 +93,24 @@ for (const scenarioTerm of [
   publicUrl,
 ]) {
   assertContains(demoScenarios, scenarioTerm, `demo scenarios missing recorded walkthrough term: ${scenarioTerm}`);
+}
+
+for (const [document, term] of [
+  [doc, 'hosted interactive demo or production service URL'],
+  [roadmap, 'hosted interactive demo or production service link'],
+  [implementationEvidence, 'hosted interactive demo URL과 실제 사용자 feedback'],
+  [evidenceManifest, 'Hosted interactive demo or production service URL'],
+]) {
+  assertContains(document, term, `walkthrough claim boundary missing: ${term}`);
+}
+
+for (const [document, stale] of [
+  [doc, 'public demo URL'],
+  [roadmap, 'public demo link'],
+  [implementationEvidence, 'public demo URL과 실제 사용자 feedback'],
+  [evidenceManifest, '\n- Public demo URL\n'],
+]) {
+  assert.equal(document.includes(stale), false, `stale walkthrough claim remains: ${stale}`);
 }
 
 for (const stale of [
