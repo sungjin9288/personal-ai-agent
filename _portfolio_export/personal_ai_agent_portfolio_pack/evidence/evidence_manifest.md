@@ -314,7 +314,6 @@
 - Hosted SaaS production readiness
 - Hosted tenant isolation
 - Production secret manager and observability/SLO operations
-- Public demo URL
 - Hosted interactive demo or production service URL
 
 ## Sensitive Information Check

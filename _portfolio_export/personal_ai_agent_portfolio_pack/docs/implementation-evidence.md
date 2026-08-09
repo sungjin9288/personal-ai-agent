@@ -95,7 +95,7 @@
 
 - real OpenAI/Anthropic/Hermes/live local provider credentials를 사용하는 live provider validation
 - hosted SaaS, hosted tenant isolation, production secret manager, production observability/SLO
-- public demo URL과 실제 사용자 feedback
+- hosted interactive demo URL과 실제 사용자 feedback
 
 ## 7. Evidence Boundaries
 

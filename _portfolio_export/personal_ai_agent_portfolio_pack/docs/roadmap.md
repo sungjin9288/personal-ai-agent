@@ -6,7 +6,7 @@
 - 현재 closeout: `local-v1-complete-external-evidence-open`. [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md)의 v2 `completionMatrix`에서 `localProduct: complete`만 repository-local no-cost v1의 완료를 뜻한다. `provider: partial-external-blocked`, `deployment: external-blocked`, `privateDataTraining: approval-blocked-unverified`, `rollout: approval-blocked-unverified`는 각각 외부 증거 또는 owner approval 전까지 닫혀 있다. builder-owned pre-closeout receipt와 post-artifact final gates로 닫으며 self-referential verification은 주장하지 않는다. C13은 `actual-incompatible`, `keep-stub-only`다. F1.3 request protocol은 완료됐고 실제 owner decision, private-data evaluation과 training authority는 보류한다.
 - maintenance closure: published GitHub v0.1.0 asset identity는 검증 시점의 fixed observation record로 보존하고, repository-local Portfolio ZIP candidate와 size/SHA-256 metadata를 분리한다. 이 offline regression은 release upload, download, or deletion authority를 만들지 않는다.
 - 외부 증거 필요: Anthropic billing/credit과 live validation, Hermes target architecture/live validation, target local provider architecture, actual pilot feedback/metrics, hosted SaaS or production deployment
-- 미구현 또는 미검증: hosted production SaaS, full production multi-tenant isolation, production-ready all-provider deployment, public demo link
+- 미구현 또는 미검증: hosted production SaaS, full production multi-tenant isolation, production-ready all-provider deployment, hosted interactive demo or production service link
 
 ## 2. Phase 1 - MVP 완성
 
