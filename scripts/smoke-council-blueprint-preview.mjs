@@ -49,7 +49,7 @@ try {
   });
   try {
     await waitForServer(baseUrl, server);
-    const beforeRead = snapshotFiles(rootDir);
+    const beforeRead = await waitForStableSnapshot(rootDir);
     const catalogResponse = await fetch(`${baseUrl}/api/council/blueprints`);
     assert.equal(catalogResponse.status, 200);
     assert.equal((await catalogResponse.json()).authority.missionMutationAuthorized, false);
@@ -64,7 +64,7 @@ try {
       error: 'invalid-council-blueprint-preview',
       message: 'council-blueprint-preview: chair is fixed and cannot be selected.',
     });
-    assert.deepEqual(snapshotFiles(rootDir), beforeRead);
+    assert.deepEqual(await waitForStableSnapshot(rootDir), beforeRead);
   } finally {
     server.kill('SIGTERM');
     await onceExit(server);
@@ -117,6 +117,23 @@ function onceExit(child) {
   return new Promise((resolve) => child.once('exit', resolve));
 }
 
+async function waitForStableSnapshot(directory) {
+  let lastSnapshot = [];
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    const before = snapshotFiles(directory);
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    const after = snapshotFiles(directory);
+    lastSnapshot = after;
+    if (before.some(isTemporaryFile) || after.some(isTemporaryFile)) continue;
+    if (JSON.stringify(before) === JSON.stringify(after)) return after;
+  }
+  throw new Error(`request-audit filesystem state did not stabilize: ${lastSnapshot.join(', ')}`);
+}
+
 function snapshotFiles(directory) {
   return fs.readdirSync(directory, { recursive: true }).sort();
+}
+
+function isTemporaryFile(filePath) {
+  return path.basename(filePath).endsWith('.tmp');
 }
