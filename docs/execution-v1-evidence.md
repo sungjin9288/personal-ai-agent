@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-09T04:45:55.967Z
-- branch: codex/council-blueprint-preview-stable-snapshot
-- commit: f69cd5f52beaf8486ffa27fda0e4199a337380ff
-- boundImplementationCommit: f69cd5f52beaf8486ffa27fda0e4199a337380ff
+- generatedAt: 2026-08-09T11:36:41.419Z
+- branch: codex/council-preview-regression-ci-gate
+- commit: 1d71ece9783d0b701c6fda2fffe6686741c4522b
+- boundImplementationCommit: 1d71ece9783d0b701c6fda2fffe6686741c4522b
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
