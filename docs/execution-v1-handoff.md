@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-09T03:31:05.324Z
+- generatedAt: 2026-08-09T04:46:10.566Z
 - localDate: 2026-08-09
-- branch: codex/local-v1-completion-matrix-v2
-- commit: 986b218c902a38dce1d2161acaaf7b86c85cc88a
-- boundImplementationCommit: 986b218c902a38dce1d2161acaaf7b86c85cc88a
+- branch: codex/council-blueprint-preview-stable-snapshot
+- commit: f69cd5f52beaf8486ffa27fda0e4199a337380ff
+- boundImplementationCommit: f69cd5f52beaf8486ffa27fda0e4199a337380ff
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/986b218c902a38dce1d2161acaaf7b86c85cc88a](releases/execution-v1/986b218c902a38dce1d2161acaaf7b86c85cc88a)
+- immutableSnapshot: [releases/execution-v1/f69cd5f52beaf8486ffa27fda0e4199a337380ff](releases/execution-v1/f69cd5f52beaf8486ffa27fda0e4199a337380ff)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/local-v1-completion-matrix-v2 not found
+- commitPushStatus: not pushed, origin/codex/council-blueprint-preview-stable-snapshot not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

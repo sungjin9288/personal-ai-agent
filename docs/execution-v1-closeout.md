@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-09T03:30:57.928Z
-- branch: codex/local-v1-completion-matrix-v2
-- commit: 986b218c902a38dce1d2161acaaf7b86c85cc88a
-- boundImplementationCommit: 986b218c902a38dce1d2161acaaf7b86c85cc88a
+- generatedAt: 2026-08-09T04:45:56.083Z
+- branch: codex/council-blueprint-preview-stable-snapshot
+- commit: f69cd5f52beaf8486ffa27fda0e4199a337380ff
+- boundImplementationCommit: f69cd5f52beaf8486ffa27fda0e4199a337380ff
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
