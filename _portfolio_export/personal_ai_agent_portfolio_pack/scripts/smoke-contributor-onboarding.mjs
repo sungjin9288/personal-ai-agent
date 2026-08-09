@@ -200,7 +200,7 @@ const expectedCouncilWorkflowSteps = [
   {
     name: 'Run Council v1.1f focused unit gate',
     command:
-      'node --test test/council-blueprint-preview.test.mjs test/council-concurrent-schedule-shadow.test.mjs test/council-concurrent-envelope-shadow.test.mjs test/council-concurrent-retry-lineage-shadow.test.mjs test/council-concurrent-retry-terminality-shadow.test.mjs test/council-concurrent-retry-surface.test.mjs',
+      'node --test test/council-blueprint-preview.test.mjs test/council-concurrent-schedule-shadow.test.mjs test/council-concurrent-envelope-shadow.test.mjs test/council-concurrent-retry-lineage-shadow.test.mjs test/council-concurrent-retry-terminality-shadow.test.mjs test/council-concurrent-retry-surface.test.mjs test/smoke-council-blueprint-preview-stable-snapshot.test.mjs',
   },
   { name: 'Run Council v1.1f blueprint smoke', command: 'npm run smoke:council-blueprint-preview' },
   { name: 'Run Council v1.1f concurrent schedule smoke', command: 'npm run smoke:council-concurrent-schedule-shadow' },
