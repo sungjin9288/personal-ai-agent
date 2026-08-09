@@ -70,7 +70,7 @@ assert.match(
 );
 assert.match(readme, /Council local compatibility[\s\S]*actual-incompatible/);
 assert.match(readme, /default answer path remains unchanged/);
-assert.match(externalBlockers, /publicHostedDemoUrl: none/);
+assert.match(externalBlockers, /publicHostedDemoUrl: https:\/\/github\.com\/sungjin9288\/personal-ai-agent\/releases\/download\/walkthrough-v1\/personal-ai-agent-recorded-walkthrough-v1\.mp4/);
 assert.match(externalBlockers, /productionReadyClaim: false/);
 
 console.log(JSON.stringify({

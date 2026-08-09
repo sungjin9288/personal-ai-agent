@@ -55,7 +55,7 @@ npm run evidence:operator-surface-demo
 
 ## Follow-Up Evidence Gaps
 
-- Recorded walkthrough or private hosted demo URL
+- Hosted interactive demo or production service URL; the public recorded walkthrough is access-verified separately
 - Actual pilot feedback and metric evidence
 
 These gaps should stay visible until captured. They do not block the current representative demo because the release readiness walkthrough and operator surface support evidence already have screenshot, replay log, browser report, and smoke evidence.

@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-09T11:36:41.419Z
-- branch: codex/council-preview-regression-ci-gate
-- commit: 1d71ece9783d0b701c6fda2fffe6686741c4522b
-- boundImplementationCommit: 1d71ece9783d0b701c6fda2fffe6686741c4522b
+- generatedAt: 2026-08-09T15:04:06.804Z
+- branch: codex/published-walkthrough-evidence
+- commit: b3a1047cb02e7b17f53e73d0c21557fb78bcf552
+- boundImplementationCommit: b3a1047cb02e7b17f53e73d0c21557fb78bcf552
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun

@@ -4,7 +4,7 @@
 - localDate: 2026-08-06
 - productionReadyClaim: false
 - allProviderComplete: false
-- publicHostedDemoUrl: none
+- publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
 - verificationMode: deterministic local smoke summary
 - lastFullSweep: 289/289 passed with `npm run smoke:all` on 2026-08-06
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
@@ -32,11 +32,11 @@ The aggregate runner keeps its command order and final summary contract unchange
 | Web doctor surface | `npm run smoke:ui-doctor-surface` | Verifies the local web diagnostics surface without a hosted URL |
 | Changelog metadata | `npm run smoke:changelog` | Verifies current release artifact size and SHA-256 references |
 | Support policy | `npm run smoke:support-policy` | Verifies public support boundary and issue routing |
-| Contributor onboarding | `npm run smoke:contributor-onboarding` | Verifies fork/onboarding guidance and non-hosted-demo boundaries |
+| Contributor onboarding | `npm run smoke:contributor-onboarding` | Verifies fork/onboarding guidance, public recorded walkthrough evidence, and non-hosted-interactive-demo boundaries |
 | Environment example | `npm run smoke:env-example` | Verifies documented environment keys remain aligned |
 | Local demo replay | `npm run smoke:demo-local` | Verifies the credential-free local replay command plan |
 | Demo evidence index | `npm run smoke:demo-evidence-index` | Verifies replay log, summary, screenshot, and browser report references |
-| Recorded walkthrough | `npm run smoke:recorded-walkthrough` | Verifies recording script readiness and no-hosted-demo boundary |
+| Recorded walkthrough | `npm run smoke:recorded-walkthrough` | Verifies the public release asset identity, access evidence, storyboard, privacy boundary, and no-hosted-interactive-demo claim |
 | Architecture walkthrough | `npm run smoke:architecture-code-walkthrough` | Verifies code walkthrough symbols and source paths |
 | Provider readiness | `npm run smoke:provider-readiness-matrix` | Verifies provider catalog, env keys, blockers, and safe claim boundary |
 | Provider recovery | `npm run smoke:provider-failure-recovery-demo` | Verifies fallback/remediation demo linkage and claim boundary |
@@ -66,7 +66,7 @@ The aggregate runner keeps its command order and final summary contract unchange
 | Council concurrent retry terminality shadow | `npm run smoke:council-concurrent-retry-terminality-shadow` | Verifies v1.1e exact v1.1d digest/source binding, failed recoverability rejection, timeout attempt 2 terminality, same-wave barrier reopening or blocking, reviewer completion, retry exhaustion, and zero execution counts |
 | Council concurrent retry terminality operator surface | `npm run smoke:council-concurrent-retry-surface` | Verifies v1.1f CLI/GET exact parity, malformed·duplicate·stale fail-closed inputs, request-audit-only HTTP writes, zero CLI filesystem writes, 3-role terminality projection, and 4–7 role envelope denial without retry or dispatch authority |
 | Council v1.1f deterministic CI closeout | `npm run smoke:contributor-onboarding` plus the Provider workflow gate | Verifies the required Provider job identity, exact seven-file focused command (six Council unit files plus one deterministic stable-snapshot regression), seven-command Council/UI smoke order, and eight in-memory missing-step negative checks; it does not configure branch protection, invoke providers/models/Ollama/C13, or change runtime authority |
-| Local-first v1 completion closeout v2 | `npm run smoke:local-v1-completion-closeout` | Verifies the implementation SHA, exact completion matrix, current `docs/release-readiness-v1.md` source binding, C13 result, six external blockers, false authority fields, and builder-owned pre-closeout command receipt; full smoke and artifact-sync remain post-artifact gates |
+| Local-first v1 completion closeout v2 | `npm run smoke:local-v1-completion-closeout` | Verifies the implementation SHA, exact completion matrix, current source binding including the public walkthrough record, C13 result, five remaining external blockers, false authority fields, and builder-owned pre-closeout command receipt; full smoke and artifact-sync remain post-artifact gates |
 | Retrieval corpus contract | `npm run smoke:retrieval-corpus-contract` | Verifies deterministic memory, attachment, and fact corpus identity, revision, scope, hash, and provenance |
 | Retrieval quality evaluation | `npm run smoke:retrieval-quality-evaluation` | Verifies controlled precision, recall, noise, source diversity, frozen baseline replay, and candidate regression rejection |
 | Semantic retrieval experiment | `npm run smoke:semantic-retrieval-experiment` | Verifies bounded local embedding protocol, scope lock, controlled synonym comparison, and runtimeActivation=false boundary |

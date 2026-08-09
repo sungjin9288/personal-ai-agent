@@ -31,6 +31,7 @@ const sourceDocumentTexts = Object.fromEntries(
 const publicReleaseSources = [
   'CHANGELOG.md',
   'config/public-release-v0.1.0.json',
+  'config/public-walkthrough-v1.json',
 ];
 
 test('local v1 closeout binds completed local scope without expanding authority', () => {

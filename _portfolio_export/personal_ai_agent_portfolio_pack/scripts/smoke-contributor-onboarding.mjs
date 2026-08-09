@@ -47,7 +47,7 @@ for (const term of [
   '# Contributing',
   'Current validated claim: `provider-scoped pilot-ready`',
   'Do not describe this project as production-ready',
-  'not a public hosted demo URL',
+  'not a hosted interactive service',
   'cp .env.example .env',
   'npm run bootstrap:local',
   'npm run demo:local -- --plan',
@@ -73,7 +73,7 @@ for (const term of [
   '# Security Policy',
   'local-first PoC/MVP harness',
   'not a hosted SaaS product',
-  'no production service endpoint or public hosted demo URL',
+  'no production service endpoint or hosted interactive demo',
   'Do not include provider API keys',
   'npm run smoke:release-artifact-hygiene',
   '[SUPPORT.md](SUPPORT.md)',
@@ -88,21 +88,21 @@ for (const term of [
   'npm run doctor',
   'npm run smoke:doctor',
   'npm run smoke:support-policy',
-  'There is no public hosted demo URL',
+  'The public recorded walkthrough is access-verified',
 ]) {
   assertContains(support, term, `SUPPORT missing ${term}`);
 }
 
 for (const term of [
   '# Fork Onboarding v1',
-  'publicHostedDemoUrl: none',
+  'publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4',
   'productionReadyClaim: false',
   'relatedContributing: [CONTRIBUTING.md](../CONTRIBUTING.md)',
   'relatedSecurity: [SECURITY.md](../SECURITY.md)',
   'relatedSupport: [SUPPORT.md](../SUPPORT.md)',
   'relatedEnvTemplate: [.env.example](../.env.example)',
   'credential-free local replay',
-  'There is no public hosted demo URL',
+  'The public recorded walkthrough URL is access-verified',
   '`.env` is ignored by git',
   'npm run smoke:contributor-onboarding',
   'npm run smoke:env-example',
@@ -134,7 +134,7 @@ for (const readmeTerm of [
 for (const templateTerm of [
   'Do not include secrets',
   'machine-local paths',
-  'no public hosted demo URL',
+  'public recorded walkthrough is not a hosted interactive demo',
 ]) {
   assertContains(bugTemplate, templateTerm, `bug report template missing ${templateTerm}`);
 }

@@ -6,7 +6,7 @@ Thanks for taking a look at Personal AI Agent. This repository is intentionally 
 
 Current validated claim: `provider-scoped pilot-ready` for an OpenAI-backed local-first/self-hosted path.
 
-Do not describe this project as production-ready, all-provider-complete, or a hosted SaaS product. The current public demo is the credential-free representative replay and evidence package, not a public hosted demo URL.
+Do not describe this project as production-ready, all-provider-complete, or a hosted SaaS product. The public recorded walkthrough shows the credential-free representative replay; it is not a hosted interactive service.
 
 ## Local Setup
 
@@ -58,7 +58,7 @@ For provider, release, or evidence changes, also run the relevant focused smoke 
 
 - Use evidence-backed wording only.
 - Keep `productionReadyClaim: false` boundaries intact unless the required target evidence is added and verified.
-- Keep public demo wording explicit: there is no public hosted demo URL.
+- Keep public demo wording explicit: the recorded walkthrough is public and access-verified, while no hosted interactive demo or production service exists.
 - When adding metrics, include the command, log, or method used to produce them in the same documentation area.
 - Read [SUPPORT.md](SUPPORT.md) before opening support, setup, or provider configuration questions.
 

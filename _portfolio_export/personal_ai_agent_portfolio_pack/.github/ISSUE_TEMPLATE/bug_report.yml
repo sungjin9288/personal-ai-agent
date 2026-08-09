@@ -87,5 +87,5 @@ body:
           required: true
         - label: I did not include machine-local paths from my environment.
           required: true
-        - label: I understand there is no public hosted demo URL for this repository.
+        - label: I understand the public recorded walkthrough is not a hosted interactive demo or production service.
           required: true

@@ -2,7 +2,7 @@
 
 - status: provider-failure-recovery-demo-current
 - productionReadyClaim: false
-- publicHostedDemoUrl: none
+- publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
 - credentialFreeReplay: yes
 - scope: provider execution failure, provider attention inbox, fallback remediation, timeline/event audit, claim boundary
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
