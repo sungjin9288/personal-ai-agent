@@ -16,6 +16,7 @@ const changelogPath = path.join(repoDir, 'CHANGELOG.md');
 const evidenceChecklistPath = path.join(repoDir, 'docs', 'evidence-checklist.md');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
+const publicWalkthroughPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
 const zipPath = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack.zip');
 const packDir = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack');
 
@@ -24,6 +25,7 @@ const changelog = readRequiredFile(changelogPath);
 const evidenceChecklist = readRequiredFile(evidenceChecklistPath);
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
 const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
+const publicWalkthrough = JSON.parse(readRequiredFile(publicWalkthroughPath));
 
 assert.equal(packageJson.scripts['smoke:portfolio-zip'], 'node scripts/smoke-portfolio-zip.mjs');
 assert.equal(fs.existsSync(zipPath), true, 'portfolio ZIP missing');
@@ -49,6 +51,7 @@ const configuredFiles = loadPortfolioFileManifest({ rootDir: repoDir });
 for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/README.md',
   'personal_ai_agent_portfolio_pack/config/public-release-v0.1.0.json',
+  'personal_ai_agent_portfolio_pack/config/public-walkthrough-v1.json',
   'personal_ai_agent_portfolio_pack/links.md',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/bug_report.yml',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/security_report.yml',
@@ -196,9 +199,11 @@ const packedManifest = readRequiredFile(path.join(packDir, 'portfolio_manifest.m
 const packedChangelog = readRequiredFile(path.join(packDir, 'CHANGELOG.md'));
 const packedEvidenceChecklist = readRequiredFile(path.join(packDir, 'docs', 'evidence-checklist.md'));
 const packedPublicRelease = JSON.parse(readRequiredFile(path.join(packDir, 'config', 'public-release-v0.1.0.json')));
+const packedPublicWalkthrough = JSON.parse(readRequiredFile(path.join(packDir, 'config', 'public-walkthrough-v1.json')));
 assertContains(packedManifest, '루트 `portfolio_manifest.md` 기준', 'packed manifest must avoid self-referential ZIP checksum');
 assert.deepEqual(packedChangelog, changelog, 'packed changelog must preserve the public release record exactly');
 assert.deepEqual(packedPublicRelease, publicRelease, 'packed public release record must match the root record exactly');
+assert.deepEqual(packedPublicWalkthrough, publicWalkthrough, 'packed public walkthrough record must match the root record exactly');
 assertContains(
   packedEvidenceChecklist,
   '최종 size/SHA-256은 루트 `portfolio_manifest.md` 기준',

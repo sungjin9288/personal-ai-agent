@@ -13,6 +13,9 @@ const providerMatrix = readRequiredFile('docs/provider-readiness-matrix-v1.md');
 const smokeSummary = readRequiredFile('docs/smoke-validation-summary-v1.md');
 const recordedWalkthrough = readRequiredFile('docs/recorded-walkthrough-v1.md');
 const releaseReadiness = readRequiredFile('docs/release-readiness-v1.md');
+const publicRecord = JSON.parse(readRequiredFile('config/public-walkthrough-v1.json'));
+const publicUrl =
+  'https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4';
 
 assert.equal(
   packageJson.scripts['smoke:external-evidence-blockers'],
@@ -24,7 +27,7 @@ for (const term of [
   'status: external-evidence-blockers-current',
   'productionReadyClaim: false',
   'allProviderComplete: false',
-  'publicHostedDemoUrl: none',
+  `publicHostedDemoUrl: ${publicUrl}`,
   'externalEvidenceRequired: true',
   'Blocker Register',
   'Allowed claim impact',
@@ -45,7 +48,6 @@ for (const blocker of [
   'Anthropic billing and live validation',
   'Hermes target provider architecture and live validation',
   'Target local provider architecture',
-  'Public or private walkthrough URL',
   'Actual pilot feedback and metrics',
   'Hosted SaaS or production deployment',
 ]) {
@@ -85,7 +87,7 @@ for (const [sourceName, sourceText, requiredTerms] of [
   [
     'recorded walkthrough',
     recordedWalkthrough,
-    ['publicHostedDemoUrl: none', 'privateRecordedWalkthroughUrl: pending'],
+    [`publicHostedDemoUrl: ${publicUrl}`, 'privateRecordedWalkthroughUrl: none'],
   ],
   ['release readiness', releaseReadiness, ['productionReadyClaim: false', 'Anthropic failed with API billing/credit blocker']],
 ]) {
@@ -98,7 +100,6 @@ for (const risky of [
   'Anthropic readiness is complete',
   'Hermes live readiness is complete',
   'target local provider production readiness is complete',
-  'public or private walkthrough URL has been verified',
   'pilot feedback, customer impact, cost, SLA, or productivity metrics are proven',
   'hosted SaaS or production deployment readiness is complete',
 ]) {
@@ -113,7 +114,6 @@ for (const riskyAchievement of [
   'Anthropic readiness achieved',
   'Hermes live readiness achieved',
   'target local provider production readiness achieved',
-  'walkthrough URL verified',
   'customer impact metrics proven',
   'hosted SaaS readiness achieved',
   'production deployment readiness achieved',
@@ -126,11 +126,16 @@ for (const riskyAchievement of [
 }
 
 assertNoLocalPaths(doc);
+assertContains(doc, '| Public recorded walkthrough URL |', 'closed walkthrough evidence row missing');
+assertContains(doc, publicUrl, 'closed walkthrough URL missing');
+assert.equal(publicRecord.asset.id, 507595206);
+assert.equal(publicRecord.asset.sizeBytes, 45936551);
+assert.equal(publicRecord.productionReadyClaim, false);
 
 console.log(
   JSON.stringify(
     {
-      blockerCount: 6,
+      blockerCount: 5,
       mode: 'external-evidence-blockers-smoke',
       ok: true,
       productionReadyClaim: false,

@@ -81,7 +81,7 @@ Representative demo evidence:
 - summary: `evidence/output-artifacts/representative-release-demo-summary.json`
 - screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
 - walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
-- Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
+- Recorded walkthrough evidence: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
 - operator surface support map: [docs/operator-surface-demo-evidence-v1.md](docs/operator-surface-demo-evidence-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
@@ -92,7 +92,8 @@ Representative demo evidence:
 - External evidence blockers: [docs/external-evidence-blockers-v1.md](docs/external-evidence-blockers-v1.md)
 - operator surface screenshots: `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, `evidence/screenshots/operator-surface-action-inbox.png`
 - operator surface refresh command: `npm run evidence:operator-surface-demo`
-- There is no public hosted demo URL.
+- Recorded walkthrough: [public video](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4)
+- The public recorded walkthrough is access-verified; there is no hosted interactive demo.
 
 ![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)
 
@@ -539,7 +540,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Evidence checklist: [docs/evidence-checklist.md](docs/evidence-checklist.md)
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
-- Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
+- Recorded walkthrough evidence: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
 - Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
@@ -578,8 +579,8 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - The local target provider operations can be verified with `npm run smoke:target-provider-operations`; it proves provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, and evidence retention proof requirements are present.
 - The target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence.
 - Hosted identity/session, hosted tenant isolation, target secret manager, target observability/SLO, and production clean deployment remain target evidence work.
-- There is no public hosted demo URL. The current demo is the credential-free representative replay and evidence package.
-- The recorded walkthrough is currently a recording script and acceptance checklist, not a published video URL.
+- The public recorded walkthrough is access-verified; there is no hosted interactive demo. The underlying demo remains the credential-free representative replay and evidence package.
+- The published video is bound to tag `walkthrough-v1`, capture commit `a4034fde5a47b7d246eab9573763663a366ca8ab`, 45,936,551 bytes, and SHA-256 `9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47`; it does not expand the production-ready, all-provider, hosted SaaS, pilot-feedback, or metrics claim boundary.
 - Customer usage metrics, cost reduction claims, and production SLA claims are intentionally not included because this repository does not contain supporting evidence for them.
 - Council C13 made one unretried local `qwen2.5:3b` compatibility observation and stopped at research opening with `council-contract:invalid-output`; the result is `actual-incompatible`, chair reachability is `not-reached`, and the default remains `keep-stub-only`. It grants no repair, promotion, activation, training, private-data, deployment, or production authority.
 - Council v1.1e is a deterministic core-only retry-terminality projection. It exact-binds v1.1d before accepting a timeout-only hypothetical attempt 2 outcome; failed blockers are rejected without recoverability evidence, and a completed retry opens a projected next barrier only after every sibling completes. It does not authorize or execute retry, dispatch, provider/model/Ollama/C13/network work, or filesystem/store writes. The current full sweep passes 288/288 commands with `npm run smoke:all`.
@@ -657,7 +658,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Repository: [github.com/sungjin9288/personal-ai-agent](https://github.com/sungjin9288/personal-ai-agent)
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Demo walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
-- Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
+- Recorded walkthrough: [public video](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4) · [evidence record](docs/recorded-walkthrough-v1.md)
 - Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)

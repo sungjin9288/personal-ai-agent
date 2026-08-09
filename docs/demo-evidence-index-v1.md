@@ -1,7 +1,8 @@
 # Demo Evidence Index v1
 
-- status: current-local-recorded-evidence
-- publicHostedDemoUrl: none
+- status: current-public-recorded-evidence
+- publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
+- publicRecordedWalkthrough: [Recorded Walkthrough v1](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4)
 - productionReadyClaim: false
 - sourceSummary: [representative-release-demo-summary.json](../evidence/output-artifacts/representative-release-demo-summary.json)
 - sourceReplayLog: [representative-release-demo-replay.log](../evidence/cli-logs/representative-release-demo-replay.log)
@@ -13,11 +14,23 @@
 
 ## Purpose
 
-This index gives reviewers one stable entry point for the current representative demo evidence. It is a recorded local replay, not a public hosted demo URL.
+This index gives reviewers one stable entry point for the current representative demo evidence and its access-verified public recorded walkthrough. The video shows the recorded local replay; it is not a hosted interactive demo or production service.
 
 The evidence supports the scoped claim that this repository has a credential-free representative walkthrough for a provider-scoped local-first pilot boundary. It does not support a production-ready, all-provider-complete, or hosted SaaS claim.
 
-The current repository includes a recording script, not a published walkthrough URL.
+The current repository includes a published recorded walkthrough URL plus the recording script and exact release-asset evidence.
+
+## Public Recorded Walkthrough
+
+| Field | Value |
+|---|---|
+| Video | [Personal AI Agent Recorded Walkthrough v1](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4) |
+| Release tag | `walkthrough-v1` |
+| Capture commit | `a4034fde5a47b7d246eab9573763663a366ca8ab` |
+| Asset identity | ID `507595206`, 45,936,551 bytes |
+| SHA-256 | `9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47` |
+| Access verification | unauthenticated HTTP 200 and exact byte/SHA match at `2026-08-09T14:39:41Z` |
+| Claim boundary | `productionReadyClaim: false`; no hosted interactive demo, all-provider completion, deployment, pilot-feedback, or metric claim |
 
 ## Current Recorded Replay
 
@@ -74,9 +87,9 @@ npm run smoke:representative-demo-evidence
 
 ## Claim Boundary
 
-- There is no public hosted demo URL.
+- The public recorded walkthrough URL is access-verified; there is no hosted interactive demo URL.
 - The current evidence is a local recorded replay plus screenshot and browser report.
-- The recorded walkthrough state is `recording-script-ready`; no video URL is verified yet.
+- The recorded walkthrough state is `published-walkthrough-verified`; its release asset identity is recorded in `config/public-walkthrough-v1.json`.
 - The demo remains credential-free and should not require OpenAI, Anthropic, local provider, or Hermes credentials.
 - Production readiness remains explicitly blocked by release readiness evidence.
 - Anthropic, Hermes, hosted SaaS, and target local provider production claims remain outside the current evidence boundary.

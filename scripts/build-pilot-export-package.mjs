@@ -12,6 +12,7 @@ const BASE_PACKAGE_FILES = [
   'README.md',
   'CHANGELOG.md',
   'config/public-release-v0.1.0.json',
+  'config/public-walkthrough-v1.json',
   'links.md',
   'SUPPORT.md',
   'CONTRIBUTING.md',

@@ -42,7 +42,7 @@ for (const term of [
   'Do not claim',
   'Production-ready deployment',
   'All-provider live validation',
-  'Published public demo URL',
+  'Hosted interactive demo or production service URL',
 ]) {
   assertContains(doc, term, `architecture walkthrough missing ${term}`);
 }
@@ -98,7 +98,7 @@ for (const risky of [
   'hosted demo is live',
   'all-provider-complete achieved',
   'all providers are live validated',
-  'published recorded walkthrough URL is verified',
+  'recorded walkthrough proves production readiness',
 ]) {
   assert.equal(combinedText().toLowerCase().includes(risky.toLowerCase()), false, `architecture walkthrough contains risky claim: ${risky}`);
 }

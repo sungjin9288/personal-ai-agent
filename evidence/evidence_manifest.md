@@ -173,7 +173,7 @@
 - Representative release readiness demo: verified with `npm run evidence:representative-demo` and `npm run smoke:representative-demo-evidence`
 - Operator surface demo evidence: verified with `npm run smoke:operator-surface-demo-evidence`
 - Operator surface browser screenshots: generated with `npm run evidence:operator-surface-demo`
-- Recorded walkthrough script: verified with `npm run smoke:recorded-walkthrough`
+- Published recorded walkthrough: public `walkthrough-v1` GitHub release asset verified with unauthenticated HTTP 200, exact byte/SHA identity, privacy review, and `npm run smoke:recorded-walkthrough`
 - Architecture code walkthrough: verified with `npm run smoke:architecture-code-walkthrough`
 - Provider readiness matrix: verified with `npm run smoke:provider-readiness-matrix`
 - Provider failure recovery demo: verified with `npm run smoke:provider-failure-recovery-demo`
@@ -208,7 +208,7 @@
 - Council concurrent retry terminality shadow: verified with `npm run smoke:council-concurrent-retry-terminality-shadow`; v1.1e reconstructs and exactly binds v1.1d before interpreting one exact-key hypothetical attempt 2 outcome. Failed blockers are rejected without recoverability evidence; timeout retry completion opens a projected barrier only after every sibling completes, reviewer completion ends the projection, and failed/timeout retry is exhausted without attempt 3. Retry and dispatch remain disabled, and provider/model/Ollama/C13/worker/network/filesystem/store counts remain zero.
 - Council concurrent retry terminality operator surface: verified with `npm run smoke:council-concurrent-retry-surface`; v1.1f exposes the unchanged v1.1e projection through additive CLI and GET surfaces and the existing Council preview. CLI/API parity, malformed·duplicate·stale fail-closed inputs, request-audit-only HTTP writes, zero CLI filesystem writes, three-seat terminality cases, and four-through-seven-seat envelope denial are covered. The UI has no retry, completion, dispatch, POST, or action control; retry/dispatch/provider/model/Ollama/C13/worker/network/store-domain counts remain zero.
 - Council v1.1f deterministic CI closeout: verified with `npm run smoke:contributor-onboarding` and the Provider workflow contract; the unchanged `Provider fallback and attention smoke` job directly runs six focused Council unit files plus one deterministic stable-snapshot regression, six Council deterministic smokes, and the UI blueprint smoke. The onboarding smoke binds the exact seven-file command and smoke order, required job identity, and PR checklist parity, then performs eight in-memory missing-step negative checks and confirms the workflow bytes remain unchanged. Branch protection is not modified and required-check status is not inferred; provider/model/Ollama/C13/evaluator/network/retry/dispatch/worker counts remain zero.
-- Local-first v1 completion closeout v2: the builder-owned receipt directly runs and binds the allowlisted unit, pre-closeout docs, release-hygiene, and diff gates to the clean implementation commit and `package.json`; the completion smoke, full smoke, and artifact freshness remain post-artifact gates. `evidence/output-artifacts/local-v1-completion-closeout.json` binds the current `docs/release-readiness-v1.md` bytes/SHA and exact decision matrix (`localProduct: complete`, provider/deployment/privateDataTraining/rollout externally or approval blocked) alongside repository-local D4, local RAG, F1 protocol, Council C1–C13, and six external blockers. It does not treat provider, actual-user-data, training, deployment, rollout, or production evidence as complete.
+- Local-first v1 completion closeout v2: the builder-owned receipt directly runs and binds the allowlisted unit, pre-closeout docs, release-hygiene, and diff gates to the clean implementation commit and `package.json`; the completion smoke, full smoke, and artifact freshness remain post-artifact gates. `evidence/output-artifacts/local-v1-completion-closeout.json` binds the current `docs/release-readiness-v1.md` bytes/SHA, `config/public-walkthrough-v1.json`, and exact decision matrix (`localProduct: complete`, provider/deployment/privateDataTraining/rollout externally or approval blocked) alongside repository-local D4, local RAG, F1 protocol, Council C1–C13, and five remaining external blockers. It does not treat provider, actual-user-data, training, deployment, rollout, or production evidence as complete.
 - Multi-scenario shadow replay: verified with `npm run smoke:local-relevance-shadow-replay`
 - Bounded shadow score cache: verified with `npm run smoke:local-relevance-shadow-cache`
 - Shadow cache lifecycle stress: verified with `npm run smoke:local-relevance-shadow-cache-lifecycle`
@@ -302,7 +302,7 @@
 - Actual user-query evaluation protocol: verified with `npm run smoke:actual-user-query-evaluation-readiness`; actual user data and quality remain unverified
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
-- External evidence remaining after local-v1 closeout: `anthropic-billing-live-validation`, `hermes-target-provider-architecture-live-validation`, `target-local-provider-architecture`, `public-or-private-walkthrough-url`, `actual-pilot-feedback-and-metrics`, and `hosted-saas-or-production-deployment`.
+- External evidence remaining after local-v1 closeout: `anthropic-billing-live-validation`, `hermes-target-provider-architecture-live-validation`, `target-local-provider-architecture`, `actual-pilot-feedback-and-metrics`, and `hosted-saas-or-production-deployment`. The former `public-or-private-walkthrough-url` blocker is closed by the exact public asset record in `config/public-walkthrough-v1.json`.
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot
 - Architecture/sequence evidence: generated from inspected code structure
@@ -315,7 +315,7 @@
 - Hosted tenant isolation
 - Production secret manager and observability/SLO operations
 - Public demo URL
-- Published recorded walkthrough URL
+- Hosted interactive demo or production service URL
 
 ## Sensitive Information Check
 
@@ -333,3 +333,4 @@
 - Expected package root: `personal_ai_agent_portfolio_pack/`
 - Evidence included in zip: yes
 - Public release identity: `config/public-release-v0.1.0.json` is a read-only record of the published GitHub v0.1.0 asset. Offline package smokes compare its fixed metadata with `CHANGELOG.md` and packed record parity; they do not invoke GitHub, upload, delete, or claim that the repository-local candidate was published.
+- Public walkthrough identity: `config/public-walkthrough-v1.json` records the published `walkthrough-v1` MP4 asset separately from both the v0.1.0 Portfolio ZIP and repository-local ZIP candidate. Offline smokes bind its release URL, asset ID, byte size, SHA-256, capture commit, privacy review, public access check, and false production claim without making network calls.

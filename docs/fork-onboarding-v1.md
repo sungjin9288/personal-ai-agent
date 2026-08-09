@@ -2,7 +2,7 @@
 
 - status: current
 - audience: developers evaluating or forking the local-first harness
-- publicHostedDemoUrl: none
+- publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
 - productionReadyClaim: false
 - relatedReadme: [README.md](../README.md)
 - relatedContributing: [CONTRIBUTING.md](../CONTRIBUTING.md)
@@ -33,7 +33,7 @@ Expected boundary:
 - `.env` is ignored by git
 - `demo:local` verifies the representative demo contract and evidence links
 - release artifact hygiene checks for secrets and machine-local paths
-- production readiness and public hosted demo claims remain blocked
+- production readiness and hosted interactive demo claims remain blocked; the public recorded walkthrough proves only the documented local replay
 
 ## Recommended First Changes
 
@@ -59,7 +59,7 @@ Expected boundary:
 Forks should keep these statements true until their own evidence says otherwise:
 
 - This is a local-first PoC/MVP harness.
-- There is no public hosted demo URL unless the URL is deployed and access-verified.
+- The public recorded walkthrough URL is access-verified; there is no hosted interactive demo or production service.
 - The representative demo is a credential-free local replay.
 - Production readiness requires target deployment, identity/session, tenant isolation, secret management, observability/SLO, provider, and release evidence.
 

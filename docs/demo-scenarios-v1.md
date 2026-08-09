@@ -68,7 +68,7 @@ Narration checklist:
 - identify the selected demo as `Representative Demo: Release Readiness Evidence Walkthrough`
 - show current release evidence and immutable snapshot before discussing provider claims
 - use `Operator Surface Demo Evidence` in `docs/operator-surface-demo-evidence-v1.md` when the audience asks for mission/provider/action support evidence beyond the release tab
-- use the Recorded walkthrough script in `docs/recorded-walkthrough-v1.md` when preparing a private or public video recording
+- use the published Recorded Walkthrough evidence in `docs/recorded-walkthrough-v1.md` when showing or replacing the public video asset
 - use `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, and `evidence/screenshots/operator-surface-action-inbox.png` for browser proof of the mission/provider/action operator surfaces
 - explain Anthropic, Hermes, and target local provider gaps as stop conditions, not hidden failures
 - point to `docs/execution-v1-handoff.md` for the current operator handoff
@@ -79,7 +79,7 @@ Success criteria:
 
 - `smoke:representative-demo` passes
 - execution-v1 status, snapshot, handoff, and release artifact hygiene smokes pass
-- `smoke:recorded-walkthrough` passes for the recording script, storyboard, evidence paths, and no-hosted-demo boundary
+- `smoke:recorded-walkthrough` passes for the published asset record, storyboard, evidence paths, access evidence, and no-hosted-interactive-demo boundary
 - `smoke:operator-surface-demo-evidence` passes for the mission/provider/action evidence map
 - `evidence:operator-surface-demo` refreshes mission/provider/action browser screenshots and `operator-surface-demo-browser-report.json`
 - the demo does not require live credentials
@@ -93,13 +93,14 @@ Stop criteria:
 - mission/provider/action support evidence files are missing or contradict the claim boundary
 - the presenter cannot explain why production-ready and all-provider-complete are still blocked
 
-Recorded walkthrough script:
+Published recorded walkthrough:
 
-- The current recording script is `docs/recorded-walkthrough-v1.md`.
+- Public GitHub release asset: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
+- The storyboard and publication record are maintained in `docs/recorded-walkthrough-v1.md`.
 - The mission/provider/action browser screenshots are captured and referenced by the script.
-- Remaining walkthrough gap: no public or private video URL has been published and access-verified.
+- The URL was verified with unauthenticated HTTP 200 and exact byte/SHA matching; this closes only the recorded-walkthrough URL gap.
 
-The current representative demo remains evidence-backed by release status screenshot, replay log, browser E2E report, CLI/API evidence, the `Operator Surface Demo Evidence` map, and a recording-ready walkthrough script. It remains a local replay, not a hosted demo.
+The current representative demo remains evidence-backed by release status screenshot, replay log, browser E2E report, CLI/API evidence, the `Operator Surface Demo Evidence` map, and an access-verified recorded walkthrough. The demonstrated runtime remains a local replay, not a hosted interactive service.
 
 ## Scenario 1: Release Readiness
 

@@ -19,7 +19,7 @@
 | API 응답 저장 | 완료 | `evidence/api-responses/*.json` | health/meta/providers/execution status |
 | Web UI screenshot | 완료 | `evidence/screenshots/operator-console-home.png` | Playwright screenshot |
 | Operator surface browser screenshots | 완료 | `evidence/screenshots/operator-surface-mission-run.png`, `operator-surface-provider-readiness.png`, `operator-surface-action-inbox.png` | mission/provider/action support evidence captured by `npm run evidence:operator-surface-demo` |
-| Recorded walkthrough script | 완료 | `docs/recorded-walkthrough-v1.md` | recording script and acceptance gate verified by `npm run smoke:recorded-walkthrough`; no published video URL yet |
+| Published recorded walkthrough | 완료 | `docs/recorded-walkthrough-v1.md`, `config/public-walkthrough-v1.json` | public `walkthrough-v1` asset verified by unauthenticated HTTP 200, exact 45,936,551 bytes and SHA-256, privacy review, and `npm run smoke:recorded-walkthrough`; `productionReadyClaim: false` preserved |
 | Architecture code walkthrough | 완료 | `docs/architecture-code-walkthrough-v1.md` | code-level navigation verified by `npm run smoke:architecture-code-walkthrough` |
 | Provider readiness matrix | 완료 | `docs/provider-readiness-matrix-v1.md` | provider catalog/env/blocker boundary verified by `npm run smoke:provider-readiness-matrix` |
 | Provider failure recovery demo | 완료 | `docs/provider-failure-recovery-demo-v1.md` | attention remediation, fallback policy, timeline/event audit verified by `npm run smoke:provider-failure-recovery-demo` |
@@ -156,5 +156,5 @@
 | Anthropic live validation | 검증 필요 | 외부 provider credential/billing 검증은 이번 작업 범위 밖 | provider 계정 준비 후 live validation |
 | Hermes live validation | 검증 필요 | target Hermes model/env/evidence blocker 존재 | target architecture evidence와 env proof 확보 |
 | Hosted SaaS production readiness | 미구현 | 현재 release docs가 production-ready claim을 금지 | hosted identity/session, tenant isolation, target deployment evidence 필요 |
-| Public demo URL | 미구현 | 현재 repo에 demo link 없음 | recorded demo 또는 self-hosted preview 준비 |
-| Published recorded walkthrough URL | 미구현 | recording script는 준비됐지만 접근 검증된 video URL 없음 | private/public recording URL 생성 후 접근 검증 |
+| Hosted interactive demo URL | 미구현 | public recorded walkthrough은 존재하지만 interactive hosted service는 없음 | target deployment와 별도 hosted demo 승인·접근 검증 |
+| Published recorded walkthrough URL | 완료 | `walkthrough-v1` public GitHub release asset | URL, access policy, reviewer visibility, timestamp, byte size, SHA-256, privacy review 검증 완료 |

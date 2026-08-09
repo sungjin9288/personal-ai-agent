@@ -18,6 +18,7 @@ const browserReportPath = path.join(
 const previewPath = path.join(repoDir, 'evidence', 'screenshots', 'representative-release-demo-preview.png');
 const screenshotPath = path.join(repoDir, 'evidence', 'screenshots', 'representative-release-demo-release-status.png');
 const recordedWalkthroughPath = path.join(repoDir, 'docs', 'recorded-walkthrough-v1.md');
+const publicRecordPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
 
 const doc = readRequiredFile(docPath);
 const readme = readRequiredFile(readmePath);
@@ -26,8 +27,11 @@ const summary = JSON.parse(readRequiredFile(summaryPath));
 const browserReport = JSON.parse(readRequiredFile(browserReportPath));
 const replayLog = readRequiredFile(replayLogPath);
 const recordedWalkthrough = readRequiredFile(recordedWalkthroughPath);
+const publicRecord = JSON.parse(readRequiredFile(publicRecordPath));
 const preview = fs.readFileSync(previewPath);
 const screenshot = fs.readFileSync(screenshotPath);
+const publicUrl =
+  'https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4';
 
 assert.equal(packageJson.scripts['smoke:demo-evidence-index'], 'node scripts/smoke-demo-evidence-index.mjs');
 
@@ -79,15 +83,15 @@ for (const command of summary.commands.map((entry) => entry.command)) {
 
 for (const term of [
   '# Demo Evidence Index v1',
-  'publicHostedDemoUrl: none',
+  `publicHostedDemoUrl: ${publicUrl}`,
+  `publicRecordedWalkthrough: [Recorded Walkthrough v1](${publicUrl})`,
   'productionReadyClaim: false',
   summary.generatedAt,
   summary.commit,
   'Credential-free',
-  'There is no public hosted demo URL.',
-  'not a public hosted demo URL',
+  'The public recorded walkthrough URL is access-verified; there is no hosted interactive demo URL.',
   'relatedRecordedWalkthrough: [recorded-walkthrough-v1.md](recorded-walkthrough-v1.md)',
-  'The current repository includes a recording script, not a published walkthrough URL.',
+  'The current repository includes a published recorded walkthrough URL plus the recording script and exact release-asset evidence.',
   'The current evidence is a local recorded replay plus screenshot and browser report.',
   '![Representative demo preview](../evidence/screenshots/representative-release-demo-preview.png)',
   'Production readiness remains explicitly blocked',
@@ -99,11 +103,11 @@ for (const term of [
 
 for (const readmeTerm of [
   'Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)',
-  'Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)',
+  `Recorded walkthrough: [public video](${publicUrl})`,
   '![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)',
   'npm run smoke:demo-evidence-index',
   'npm run smoke:recorded-walkthrough',
-  'There is no public hosted demo URL.',
+  'The public recorded walkthrough is access-verified; there is no hosted interactive demo.',
 ]) {
   assertContains(readme, readmeTerm, `README missing demo evidence index term: ${readmeTerm}`);
 }
@@ -122,6 +126,9 @@ assertNoLocalPaths(doc);
 assertNoLocalPaths(recordedWalkthrough);
 assertNoLocalPaths(JSON.stringify(summary));
 assertNoLocalPaths(JSON.stringify(browserReport));
+assert.equal(publicRecord.asset.sha256, '9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47');
+assert.equal(publicRecord.asset.sizeBytes, 45936551);
+assert.equal(publicRecord.productionReadyClaim, false);
 
 console.log(
   JSON.stringify(
@@ -131,6 +138,7 @@ console.log(
       ok: true,
       previewBytes: preview.length,
       screenshotBytes: screenshot.length,
+      publicRecordedWalkthroughUrl: publicUrl,
     },
     null,
     2,

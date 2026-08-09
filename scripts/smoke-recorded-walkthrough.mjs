@@ -8,25 +8,33 @@ const readmePath = path.join(repoDir, 'README.md');
 const demoIndexPath = path.join(repoDir, 'docs', 'demo-evidence-index-v1.md');
 const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
 const packageJsonPath = path.join(repoDir, 'package.json');
+const publicRecordPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
 
 const doc = readRequiredFile(docPath);
 const readme = readRequiredFile(readmePath);
 const demoIndex = readRequiredFile(demoIndexPath);
 const demoScenarios = readRequiredFile(demoScenariosPath);
 const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
+const publicRecord = JSON.parse(readRequiredFile(publicRecordPath));
+
+const publicUrl =
+  'https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4';
+const expectedSha256 = '9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47';
 
 assert.equal(packageJson.scripts['smoke:recorded-walkthrough'], 'node scripts/smoke-recorded-walkthrough.mjs');
 assert.equal(packageJson.scripts['demo:local'], 'node scripts/demo-local.mjs');
 
 for (const term of [
   '# Recorded Walkthrough v1',
-  'status: recording-script-ready',
-  'publicHostedDemoUrl: none',
-  'privateRecordedWalkthroughUrl: pending',
+  'status: published-walkthrough-verified',
+  `publicHostedDemoUrl: ${publicUrl}`,
+  'privateRecordedWalkthroughUrl: none',
   'productionReadyClaim: false',
   'provider-scoped pilot-ready',
-  'not a hosted demo link',
-  'does not claim that a recorded video has already been published',
+  'releaseTag: walkthrough-v1',
+  `assetSha256: ${expectedSha256}`,
+  'accessPolicy: public GitHub release asset',
+  'accessVerification: unauthenticated HTTP 200 and exact byte/SHA match',
   'npm run demo:local -- --plan',
   'npm run smoke:recorded-walkthrough',
   'npm run smoke:demo-evidence-index',
@@ -59,24 +67,24 @@ for (const requiredPath of [
 }
 
 for (const readmeTerm of [
-  'Recorded walkthrough script: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)',
+  `Recorded walkthrough: [public video](${publicUrl})`,
   'npm run smoke:recorded-walkthrough',
-  'There is no public hosted demo URL.',
+  'The public recorded walkthrough is access-verified; there is no hosted interactive demo.',
 ]) {
   assertContains(readme, readmeTerm, `README missing recorded walkthrough term: ${readmeTerm}`);
 }
 
 for (const indexTerm of [
   'relatedRecordedWalkthrough: [recorded-walkthrough-v1.md](recorded-walkthrough-v1.md)',
-  'The current repository includes a recording script, not a published walkthrough URL.',
+  `publicRecordedWalkthrough: [Recorded Walkthrough v1](${publicUrl})`,
 ]) {
   assertContains(demoIndex, indexTerm, `demo evidence index missing recorded walkthrough term: ${indexTerm}`);
 }
 
 for (const scenarioTerm of [
-  'Recorded walkthrough script',
+  'Published recorded walkthrough',
   'docs/recorded-walkthrough-v1.md',
-  'Remaining walkthrough gap',
+  publicUrl,
 ]) {
   assertContains(demoScenarios, scenarioTerm, `demo scenarios missing recorded walkthrough term: ${scenarioTerm}`);
 }
@@ -91,7 +99,6 @@ for (const stale of [
 for (const risky of [
   'public hosted demo: yes',
   'hosted demo is live',
-  'recorded video has been published',
   'production-ready AI agent platform',
   'all-provider-complete achieved',
   'all providers are live validated',
@@ -101,6 +108,27 @@ for (const risky of [
 
 assertNoLocalPaths(doc);
 
+assert.deepEqual(publicRecord, {
+  schemaVersion: 'personal-ai-agent-public-walkthrough-record/v1',
+  tag: 'walkthrough-v1',
+  releaseUrl: 'https://github.com/sungjin9288/personal-ai-agent/releases/tag/walkthrough-v1',
+  releasePublishedAt: '2026-08-09T14:36:55Z',
+  asset: {
+    id: 507595206,
+    name: 'personal-ai-agent-recorded-walkthrough-v1.mp4',
+    sizeBytes: 45936551,
+    sha256: expectedSha256,
+    createdAt: '2026-08-09T14:36:50Z',
+  },
+  captureCommit: 'a4034fde5a47b7d246eab9573763663a366ca8ab',
+  durationSeconds: 390,
+  accessPolicy: 'public-github-release-asset',
+  accessVerifiedAt: '2026-08-09T14:39:41Z',
+  accessVerification: 'unauthenticated HTTP 200 and exact byte/SHA match',
+  privacyReview: '17 representative frames, Korean/English OCR, and full-stream decode passed',
+  productionReadyClaim: false,
+});
+
 console.log(
   JSON.stringify(
     {
@@ -108,7 +136,7 @@ console.log(
       ok: true,
       storyboardSegments: 7,
       productionReadyClaim: false,
-      publicHostedDemoUrl: 'none',
+      publicHostedDemoUrl: publicUrl,
     },
     null,
     2,

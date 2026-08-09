@@ -10,6 +10,7 @@ const packageJsonPath = path.join(repoDir, 'package.json');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const portfolioZipPath = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack.zip');
 const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
+const publicWalkthroughPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
 const releaseHygienePath = path.join(repoDir, 'scripts', 'release-artifact-hygiene-utils.mjs');
 const pilotExportBuilderPath = path.join(repoDir, 'scripts', 'build-pilot-export-package.mjs');
 
@@ -18,6 +19,7 @@ const readme = readRequiredFile(readmePath);
 const packageJson = JSON.parse(readRequiredFile(packageJsonPath));
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
 const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
+const publicWalkthrough = JSON.parse(readRequiredFile(publicWalkthroughPath));
 const releaseHygiene = readRequiredFile(releaseHygienePath);
 const pilotExportBuilder = readRequiredFile(pilotExportBuilderPath);
 
@@ -33,6 +35,12 @@ const actualZipSha = crypto.createHash('sha256').update(fs.readFileSync(portfoli
 assert.equal(zipSize, `${zipBytes.toLocaleString('en-US')} bytes`);
 assert.equal(zipSha, actualZipSha);
 assertPublicReleaseRecord(publicRelease);
+assert.equal(publicWalkthrough.tag, 'walkthrough-v1');
+assert.equal(publicWalkthrough.asset.id, 507595206);
+assert.equal(publicWalkthrough.asset.sizeBytes, 45936551);
+assert.equal(publicWalkthrough.asset.sha256, '9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47');
+assert.equal(publicWalkthrough.captureCommit, 'a4034fde5a47b7d246eab9573763663a366ca8ab');
+assert.equal(publicWalkthrough.productionReadyClaim, false);
 
 const publishedSize = `${publicRelease.asset.sizeBytes.toLocaleString('en-US')} bytes`;
 const publishedReleaseSection = extractMarkdownSection(changelog, '## v0.1.0 - 2026-06-23');
@@ -40,6 +48,10 @@ const publishedReleaseSection = extractMarkdownSection(changelog, '## v0.1.0 - 2
 for (const term of [
   '# Changelog',
   '## Unreleased',
+  'walkthrough-v1',
+  'asset ID `507595206`',
+  '45,936,551 bytes',
+  publicWalkthrough.asset.sha256,
   '## v0.1.0 - 2026-06-23',
   'provider-scoped pilot-ready',
   'productionReadyClaim: false',
@@ -82,7 +94,7 @@ for (const readmeTerm of [
   assertContains(readme, readmeTerm, `README missing changelog term ${readmeTerm}`);
 }
 
-for (const fileListTerm of ['CHANGELOG.md']) {
+for (const fileListTerm of ['CHANGELOG.md', 'config/public-walkthrough-v1.json']) {
   assertContains(releaseHygiene, `'${fileListTerm}'`, `release artifact hygiene missing ${fileListTerm}`);
   assertContains(pilotExportBuilder, `'${fileListTerm}'`, `pilot export package missing ${fileListTerm}`);
 }
@@ -106,6 +118,7 @@ console.log(
       ok: true,
       localPortfolioZipSha256: zipSha,
       publicReleaseAssetSha256: publicRelease.asset.sha256,
+      publicWalkthroughAssetSha256: publicWalkthrough.asset.sha256,
     },
     null,
     2,

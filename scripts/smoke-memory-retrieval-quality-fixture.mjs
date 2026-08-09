@@ -122,7 +122,7 @@ for (const term of [
   '# Memory Retrieval Quality Fixture v1',
   'status: memory-retrieval-quality-fixture-current',
   'productionReadyClaim: false',
-  'publicHostedDemoUrl: none',
+  'publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4',
   'credentialFreeReplay: yes',
   'retrieval ranking',
   'source diversity',
