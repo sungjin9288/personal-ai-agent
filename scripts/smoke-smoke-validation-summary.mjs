@@ -151,6 +151,11 @@ assertContains(
   `Full deterministic smoke sweep: ${fullSweep.passed}/${fullSweep.total} passed with \`npm run smoke:all\` on ${fullSweep.date}`,
   'evidence manifest full sweep must match smoke validation summary',
 );
+assertContains(
+  readme,
+  `The current full sweep passes ${fullSweep.passed}/${fullSweep.total} commands with \`npm run smoke:all\`.`,
+  'README full sweep count must match the current runner inventory',
+);
 
 for (const command of expectedCommands) {
   assertContains(doc, command, `smoke validation summary missing command ${command}`);

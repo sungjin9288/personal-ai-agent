@@ -13,9 +13,17 @@ const providerMatrix = readRequiredFile('docs/provider-readiness-matrix-v1.md');
 const smokeSummary = readRequiredFile('docs/smoke-validation-summary-v1.md');
 const recordedWalkthrough = readRequiredFile('docs/recorded-walkthrough-v1.md');
 const releaseReadiness = readRequiredFile('docs/release-readiness-v1.md');
+const productPlan = readRequiredFile('docs/product-plan-v1.md');
 const publicRecord = JSON.parse(readRequiredFile('config/public-walkthrough-v1.json'));
 const publicUrl =
   'https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4';
+const expectedBlockers = [
+  'Anthropic billing and live validation',
+  'Hermes target provider architecture and live validation',
+  'Target local provider architecture',
+  'Actual pilot feedback and metrics',
+  'Hosted SaaS or production deployment',
+];
 
 assert.equal(
   packageJson.scripts['smoke:external-evidence-blockers'],
@@ -44,15 +52,22 @@ for (const term of [
   assertContains(doc, term, `external evidence blockers missing ${term}`);
 }
 
-for (const blocker of [
-  'Anthropic billing and live validation',
-  'Hermes target provider architecture and live validation',
-  'Target local provider architecture',
-  'Actual pilot feedback and metrics',
-  'Hosted SaaS or production deployment',
-]) {
+const blockerRows = extractTableRows(doc, '## Blocker Register', '## Closed External Evidence');
+assert.deepEqual(
+  blockerRows.map((row) => row[0]),
+  expectedBlockers,
+  'external blocker rows must keep the expected count and order',
+);
+
+for (const blocker of expectedBlockers) {
   assertContains(doc, `| ${blocker} |`, `external evidence blockers missing row ${blocker}`);
 }
+
+assertContains(
+  productPlan,
+  `the remaining ${blockerRows.length} rows in [external-evidence-blockers-v1.md](external-evidence-blockers-v1.md)`,
+  'product plan external blocker count must match the current blocker register',
+);
 
 for (const readmeTerm of [
   'External evidence blockers: [docs/external-evidence-blockers-v1.md](docs/external-evidence-blockers-v1.md)',
@@ -135,7 +150,7 @@ assert.equal(publicRecord.productionReadyClaim, false);
 console.log(
   JSON.stringify(
     {
-      blockerCount: 5,
+      blockerCount: blockerRows.length,
       mode: 'external-evidence-blockers-smoke',
       ok: true,
       productionReadyClaim: false,
@@ -162,6 +177,19 @@ function assertNoLocalPaths(text) {
   assert.doesNotMatch(String(text || ''), /\/Users\//);
   assert.doesNotMatch(String(text || ''), /\/private\/var\/folders\//);
   assert.doesNotMatch(String(text || ''), /\/var\/folders\//);
+}
+
+function extractTableRows(markdown, startHeading, endHeading) {
+  const start = markdown.indexOf(startHeading);
+  const end = markdown.indexOf(endHeading, start + startHeading.length);
+  assert.notEqual(start, -1, `missing heading ${startHeading}`);
+  assert.notEqual(end, -1, `missing heading ${endHeading}`);
+
+  return markdown
+    .slice(start + startHeading.length, end)
+    .split('\n')
+    .filter((line) => line.startsWith('| ') && !line.startsWith('|---') && !line.startsWith('| Blocker |'))
+    .map((line) => line.slice(2, -1).split(' | '));
 }
 
 function combinedText() {
