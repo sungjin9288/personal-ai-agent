@@ -142,6 +142,31 @@ test('CLI exposes exact retry terminality parity without filesystem writes', () 
   }
 });
 
+test('stable request audit snapshots wait for active requests to become terminal', async () => {
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-council-retry-audit-stability-'));
+  const auditPath = path.join(rootDir, 'var', 'runtime-requests.json');
+  const terminalAudit = {
+    active: [],
+    terminal: [{ id: 'request-1', method: 'GET', path: '/example', statusCode: 200 }],
+  };
+  fs.mkdirSync(path.dirname(auditPath), { recursive: true });
+  fs.writeFileSync(auditPath, JSON.stringify({
+    active: [{ id: 'request-1', method: 'GET', path: '/example', status: 'active' }],
+    terminal: [],
+  }));
+  const terminalRewrite = setTimeout(() => {
+    fs.writeFileSync(auditPath, JSON.stringify(terminalAudit));
+  }, 100);
+
+  try {
+    await waitForStableSnapshot(rootDir);
+    assert.deepEqual(JSON.parse(fs.readFileSync(auditPath, 'utf8')), terminalAudit);
+  } finally {
+    clearTimeout(terminalRewrite);
+    fs.rmSync(rootDir, { force: true, recursive: true });
+  }
+});
+
 test('GET retry terminality preserves auth boundary and request-audit-only writes', async () => {
   const { completionEvents, projectedRetryOutcome, value: expected } = createExpected();
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'personal-ai-agent-council-retry-surface-http-'));
@@ -233,7 +258,7 @@ async function waitForStableSnapshot(directory) {
     const after = snapshotFiles(directory);
     lastSnapshot = after;
     if (Object.keys(before).some((entry) => path.basename(entry).includes('.tmp')) || Object.keys(after).some((entry) => path.basename(entry).includes('.tmp'))) continue;
-    if (JSON.stringify(before) === JSON.stringify(after)) return after;
+    if (JSON.stringify(before) === JSON.stringify(after) && requestAuditIsSettled(directory)) return after;
   }
   throw new Error(`request-audit filesystem state did not stabilize: ${Object.keys(lastSnapshot).join(', ')}`);
 }
@@ -247,6 +272,17 @@ function snapshotFiles(directory) {
     snapshot[relativePath] = createHash('sha256').update(fs.readFileSync(path.join(directory, relativePath))).digest('hex');
   }
   return snapshot;
+}
+
+function requestAuditIsSettled(directory) {
+  const auditPath = path.join(directory, 'var', 'runtime-requests.json');
+  if (!fs.existsSync(auditPath)) return true;
+  try {
+    const audit = JSON.parse(fs.readFileSync(auditPath, 'utf8'));
+    return Array.isArray(audit.active) && audit.active.length === 0;
+  } catch {
+    return false;
+  }
 }
 
 function assertAuditContains(rootDir, requestPath, statusCode) {
