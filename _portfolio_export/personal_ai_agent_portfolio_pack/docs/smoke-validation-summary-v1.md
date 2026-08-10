@@ -163,7 +163,7 @@ The aggregate runner keeps its command order and final summary contract unchange
 | Reviewer action generalization | `npm run smoke:local-answer-review-action-generalization` | Verifies v5 prompt binding, Q4 10/10 parity, synthetic Q6 12/12, content-free evidence, unchanged thresholds, and no answer-path activation |
 | Actual user-query evaluation readiness | `npm run smoke:actual-user-query-evaluation-readiness` | Verifies owner-only no-follow inputs, atomic private outputs, frozen all-pass thresholds, tracked-path refusal, Q7 v5 selection, per-case authorization reload, withdrawal fail-closed, and unchanged actual-data and activation claims |
 | README overview | `npm run smoke:readme-portfolio-overview` | Verifies README public-readiness command list and portfolio overview order |
-| External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit |
+| External evidence blockers | `npm run smoke:external-evidence-blockers` | Verifies external account, provider architecture, pilot feedback, metrics, and hosted deployment blockers remain explicit while the public recorded walkthrough URL remains closed evidence |
 | Portfolio claim boundary | `npm run smoke:portfolio-docs-claim-boundary` | Verifies portfolio docs do not overclaim unsupported capabilities |
 | Representative demo evidence | `npm run smoke:representative-demo-evidence` | Verifies representative demo summary and evidence artifacts |
 | Operator surface evidence | `npm run smoke:operator-surface-demo-evidence` | Verifies mission/provider/action browser evidence map |
