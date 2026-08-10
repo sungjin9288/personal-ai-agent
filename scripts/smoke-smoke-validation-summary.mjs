@@ -166,7 +166,7 @@ for (const term of [
   'status: smoke-validation-summary-current',
   'productionReadyClaim: false',
   'allProviderComplete: false',
-  'publicHostedDemoUrl: none',
+  'publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4',
   'deterministic local smoke summary',
   'not live all-provider validation',
   'not hosted SaaS validation',

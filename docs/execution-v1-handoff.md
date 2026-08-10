@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-09T11:36:49.088Z
-- localDate: 2026-08-09
-- branch: codex/council-preview-regression-ci-gate
-- commit: 1d71ece9783d0b701c6fda2fffe6686741c4522b
-- boundImplementationCommit: 1d71ece9783d0b701c6fda2fffe6686741c4522b
+- generatedAt: 2026-08-09T15:19:10.919Z
+- localDate: 2026-08-10
+- branch: codex/published-walkthrough-evidence
+- commit: 316adac571a62202e5f2feca63f59edb7e5c8994
+- boundImplementationCommit: 316adac571a62202e5f2feca63f59edb7e5c8994
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/1d71ece9783d0b701c6fda2fffe6686741c4522b](releases/execution-v1/1d71ece9783d0b701c6fda2fffe6686741c4522b)
+- immutableSnapshot: [releases/execution-v1/316adac571a62202e5f2feca63f59edb7e5c8994](releases/execution-v1/316adac571a62202e5f2feca63f59edb7e5c8994)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/council-preview-regression-ci-gate not found
+- commitPushStatus: not pushed to origin/codex/published-walkthrough-evidence
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

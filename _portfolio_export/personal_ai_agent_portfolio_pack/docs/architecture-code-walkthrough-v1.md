@@ -84,8 +84,7 @@ Do not claim:
 - Hosted SaaS availability.
 - Production-ready deployment.
 - All-provider live validation.
-- Published public demo URL.
-- Published recorded walkthrough URL.
+- Hosted interactive demo or production service URL.
 - Real pilot feedback, operating metrics, or customer impact numbers.
 
 ## Verification

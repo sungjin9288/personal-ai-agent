@@ -1,6 +1,6 @@
 # Support
 
-Personal AI Agent is a local-first PoC/MVP harness. It does not currently operate a public hosted service, production support desk, paid support channel, or public hosted demo URL.
+Personal AI Agent is a local-first PoC/MVP harness. It does not currently operate a public hosted service, production support desk, paid support channel, or hosted interactive demo. An access-verified public recorded walkthrough is available from the repository release page.
 
 Use this guide to route support requests without exposing secrets or overstating the project boundary.
 
@@ -57,7 +57,7 @@ If sensitive detail is required, open a minimal public issue and state that priv
 - Current validated claim: `provider-scoped pilot-ready`.
 - `productionReadyClaim: false` remains the release evidence boundary.
 - The repository is not production-ready, not all-provider-complete, and not a hosted SaaS product.
-- There is no public hosted demo URL; use the credential-free local replay and recorded evidence package.
+- The public recorded walkthrough is access-verified; there is no hosted interactive demo or production service. Use the video together with the credential-free local replay and recorded evidence package.
 
 ## Maintainer Expectations
 

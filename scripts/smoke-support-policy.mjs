@@ -39,7 +39,8 @@ for (const term of [
   '# Support',
   'local-first PoC/MVP harness',
   'does not currently operate a public hosted service',
-  'public hosted demo URL',
+  'hosted interactive demo',
+  'access-verified public recorded walkthrough',
   'npm run demo:local',
   'npm run doctor',
   'npm run doctor:summary',
@@ -58,7 +59,7 @@ for (const term of [
   'not production-ready',
   'not all-provider-complete',
   'not a hosted SaaS product',
-  'There is no public hosted demo URL',
+  'The public recorded walkthrough is access-verified',
   'There is no response-time SLA',
 ]) {
   assertContains(support, term, `SUPPORT missing ${term}`);

@@ -2,7 +2,7 @@
 
 - status: memory-retrieval-quality-fixture-current
 - productionReadyClaim: false
-- publicHostedDemoUrl: none
+- publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
 - credentialFreeReplay: yes
 - scope: retrieval ranking, corpus identity, source diversity, fact graph provenance, fact revision lifecycle, instruction boundary
 - relatedSecurityModel: [security-model-v1.md](security-model-v1.md)

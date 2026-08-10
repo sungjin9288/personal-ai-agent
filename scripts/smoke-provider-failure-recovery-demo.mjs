@@ -27,7 +27,7 @@ for (const term of [
   '# Provider Failure Recovery Demo v1',
   'status: provider-failure-recovery-demo-current',
   'productionReadyClaim: false',
-  'publicHostedDemoUrl: none',
+  'publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4',
   'credentialFreeReplay: yes',
   'provider attention inbox',
   'fallback remediation',

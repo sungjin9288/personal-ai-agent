@@ -24,7 +24,7 @@ const steps = Object.freeze([
   },
   {
     command: 'npm run smoke:recorded-walkthrough',
-    purpose: 'Verify the recording script, storyboard, evidence paths, and no-hosted-demo boundary.',
+    purpose: 'Verify the public walkthrough record, storyboard, evidence paths, and no-hosted-interactive-demo boundary.',
   },
   {
     command: 'npm run smoke:release-artifact-hygiene',

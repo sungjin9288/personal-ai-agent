@@ -1,10 +1,16 @@
 # Devlog
 
+## 2026-08-09 Public recorded walkthrough publication
+
+- published the credential-free 6-minute-30-second walkthrough as the public `walkthrough-v1` GitHub prerelease asset
+- verified unauthenticated HTTP 200 access, exact 45,936,551-byte size, SHA-256 `9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47`, 17-frame privacy review, Korean/English OCR, and full-stream decode
+- closed only the recorded-walkthrough URL blocker; five provider, pilot, and deployment evidence blockers plus `productionReadyClaim: false` remain
+
 ## 2026-08-09 Local v1 completion matrix v2
 
 - raised the repository-local completion artifact to schema v2 and added one exact decision matrix so `localProduct: complete` cannot be read as provider, deployment, private-data/training, or rollout completion
 - bound the current `docs/release-readiness-v1.md` bytes and SHA-256 to the same content-free artifact; missing, extra, relaxed, and source-drifted entries fail closed
-- preserved C13 `actual-incompatible` / `keep-stub-only`, six external blockers, `productionReadyClaim: false`, zero external calls, and all existing public/runtime/store/permission/approval/audit contracts
+- preserved C13 `actual-incompatible` / `keep-stub-only`, the then-current six external blockers, `productionReadyClaim: false`, zero external calls, and all existing public/runtime/store/permission/approval/audit contracts; the publication follow-up above later closes only the walkthrough URL row
 
 ## 2026-08-09 Council preview stable-snapshot regression CI binding
 

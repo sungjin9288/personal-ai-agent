@@ -21,6 +21,7 @@ export const LOCAL_V1_SOURCE_DOCUMENTS = [
   'CHANGELOG.md',
   'README.md',
   'config/public-release-v0.1.0.json',
+  'config/public-walkthrough-v1.json',
   'docs/refactoring-development-plan-v1.md',
   'docs/ml-rag-development-plan-v1.md',
   'docs/multi-agent-council-development-plan-v1.md',
@@ -38,7 +39,6 @@ export const LOCAL_V1_EXTERNAL_BLOCKER_IDS = [
   'anthropic-billing-live-validation',
   'hermes-target-provider-architecture-live-validation',
   'target-local-provider-architecture',
-  'public-or-private-walkthrough-url',
   'actual-pilot-feedback-and-metrics',
   'hosted-saas-or-production-deployment',
 ];

@@ -7,6 +7,7 @@ const repoDir = process.cwd();
 const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
 const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
+const publicWalkthroughPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
 const linksPath = path.join(repoDir, 'links.md');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const supportPath = path.join(repoDir, 'SUPPORT.md');
@@ -40,6 +41,7 @@ const packagePath = path.join(repoDir, 'package.json');
 const manifest = readRequiredFile(manifestPath);
 const changelog = readRequiredFile(changelogPath);
 const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
+const publicWalkthrough = JSON.parse(readRequiredFile(publicWalkthroughPath));
 const links = readRequiredFile(linksPath);
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
 const support = readRequiredFile(supportPath);
@@ -92,6 +94,7 @@ const requiredPaths = [
   'README.md',
   'CHANGELOG.md',
   'config/public-release-v0.1.0.json',
+  'config/public-walkthrough-v1.json',
   'links.md',
   'SUPPORT.md',
   'CONTRIBUTING.md',
@@ -314,15 +317,15 @@ assert.match(
   /target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof, target-boundary local live validation, release artifact hygiene, and regenerated execution snapshot still required for production claims/,
 );
 assert.match(demoEvidenceIndex, /# Demo Evidence Index v1/);
-assert.match(demoEvidenceIndex, /publicHostedDemoUrl: none/);
+assert.match(demoEvidenceIndex, /publicHostedDemoUrl: https:\/\/github\.com\/sungjin9288\/personal-ai-agent\/releases\/download\/walkthrough-v1\/personal-ai-agent-recorded-walkthrough-v1\.mp4/);
 assert.match(demoEvidenceIndex, /productionReadyClaim: false/);
 assert.match(demoEvidenceIndex, /Representative Demo: Release Readiness Evidence Walkthrough/);
-assert.match(demoEvidenceIndex, /not a public hosted demo URL/);
-assert.match(recordedWalkthrough, /status: recording-script-ready/);
-assert.match(recordedWalkthrough, /publicHostedDemoUrl: none/);
-assert.match(recordedWalkthrough, /privateRecordedWalkthroughUrl: pending/);
+assert.match(demoEvidenceIndex, /public recorded walkthrough URL is access-verified/);
+assert.match(recordedWalkthrough, /status: published-walkthrough-verified/);
+assert.match(recordedWalkthrough, /publicHostedDemoUrl: https:\/\/github\.com\/sungjin9288\/personal-ai-agent\/releases\/download\/walkthrough-v1\/personal-ai-agent-recorded-walkthrough-v1\.mp4/);
+assert.match(recordedWalkthrough, /privateRecordedWalkthroughUrl: none/);
 assert.match(recordedWalkthrough, /productionReadyClaim: false/);
-assert.match(recordedWalkthrough, /not a hosted demo link/);
+assert.match(recordedWalkthrough, /not a hosted interactive demo or production service/);
 assert.match(architectureCodeWalkthrough, /# Architecture Code Walkthrough v1/);
 assert.match(architectureCodeWalkthrough, /status: code-walkthrough-current/);
 assert.match(architectureCodeWalkthrough, /productionReadyClaim: false/);
@@ -501,7 +504,7 @@ assert.match(externalEvidenceBlockers, /status: external-evidence-blockers-curre
 assert.match(externalEvidenceBlockers, /externalEvidenceRequired: true/);
 assert.match(externalEvidenceBlockers, /Anthropic billing and live validation/);
 assert.match(externalEvidenceBlockers, /Hermes target provider architecture and live validation/);
-assert.match(externalEvidenceBlockers, /Public or private walkthrough URL/);
+assert.match(externalEvidenceBlockers, /Public recorded walkthrough URL/);
 assert.match(externalEvidenceBlockers, /Actual pilot feedback and metrics/);
 assert.match(externalEvidenceBlockers, /npm run smoke:external-evidence-blockers/);
 assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-demo-release-status\.png/);
@@ -511,26 +514,30 @@ assert.match(contributing, /Current validated claim: `provider-scoped pilot-read
 assert.match(contributing, /npm run smoke:changelog/);
 assert.match(contributing, /npm run smoke:support-policy/);
 assert.match(contributing, /npm run smoke:contributor-onboarding/);
-assert.match(contributing, /not a public hosted demo URL/);
+assert.match(contributing, /not a hosted interactive service/);
 assert.match(securityPolicy, /# Security Policy/);
 assert.match(securityPolicy, /local-first PoC\/MVP harness/);
-assert.match(securityPolicy, /no production service endpoint or public hosted demo URL/);
+assert.match(securityPolicy, /no production service endpoint or hosted interactive demo/);
 assert.match(securityPolicy, /\[SUPPORT\.md\]\(SUPPORT\.md\)/);
 assert.match(support, /# Support/);
 assert.match(support, /local-first PoC\/MVP harness/);
 assert.match(support, /npm run smoke:support-policy/);
 assert.match(support, /productionReadyClaim: false/);
-assert.match(support, /There is no public hosted demo URL/);
+assert.match(support, /public recorded walkthrough is access-verified/);
 assert.match(links, /- Support: SUPPORT\.md/);
 assert.match(links, /- Bug report template: \.github\/ISSUE_TEMPLATE\/bug_report\.yml/);
 assert.match(links, /Issue handoff: blank issues are disabled/);
 assert.match(links, /npm run doctor:summary/);
 assert.match(links, /Doctor diagnostics summary/);
 assert.match(forkOnboarding, /# Fork Onboarding v1/);
-assert.match(forkOnboarding, /publicHostedDemoUrl: none/);
+assert.match(forkOnboarding, /publicHostedDemoUrl: https:\/\/github\.com\/sungjin9288\/personal-ai-agent\/releases\/download\/walkthrough-v1\/personal-ai-agent-recorded-walkthrough-v1\.mp4/);
 assert.match(forkOnboarding, /productionReadyClaim: false/);
 assert.match(forkOnboarding, /npm run smoke:contributor-onboarding/);
-assert.match(forkOnboarding, /There is no public hosted demo URL/);
+assert.match(forkOnboarding, /public recorded walkthrough URL is access-verified/);
+assert.equal(publicWalkthrough.asset.id, 507595206);
+assert.equal(publicWalkthrough.asset.sizeBytes, 45936551);
+assert.equal(publicWalkthrough.asset.sha256, '9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47');
+assert.equal(publicWalkthrough.productionReadyClaim, false);
 assert.match(
   operatorRunbook,
   /target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before a production provider claim/,

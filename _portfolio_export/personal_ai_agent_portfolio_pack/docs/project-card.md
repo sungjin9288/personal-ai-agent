@@ -9,7 +9,7 @@
 - 현재 검증 claim: `provider-scoped pilot-ready` for OpenAI-backed local-first/self-hosted path
 - 내 역할: 저장소 기준 설명 범위는 제품 기획, Node.js runtime 구현, provider adapter, CLI/web operator surface, smoke/evidence 자동화, 포트폴리오 문서화
 - GitHub 링크: https://github.com/sungjin9288/personal-ai-agent
-- Demo 링크: public hosted demo 없음. 대표 demo는 `Representative Demo: Release Readiness Evidence Walkthrough`와 `evidence/` replay proof로 제공
+- Demo 링크: [Recorded Walkthrough v1](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4). `Representative Demo: Release Readiness Evidence Walkthrough`의 access-verified public video이며 hosted interactive demo나 production service는 아님
 - 핵심 기술스택: Node.js ESM, JavaScript, local JSON store, CLI, HTTP web console, OpenAI Responses API, Anthropic Messages API, OpenAI-compatible local provider, Hermes-compatible provider adapter, GitHub Actions, deterministic smoke scripts
 - 이력서 반영 가능 여부: 가능
 - 판단 이유: `src/cli.mjs`, `src/core/mission-service.mjs`, `src/harness/runtime-harness.mjs`, `src/providers/*`, `src/web/server.mjs`, `scripts/smoke-*.mjs`, `docs/release-readiness-v1.md` 기준으로 local-first multi-agent runtime, provider abstraction, approval gate, execution evidence, operator API/UI, smoke verification이 코드와 문서 양쪽에 존재한다. 단, production-ready, hosted SaaS, 모든 provider live validation 완료 주장은 위험하다.
@@ -129,7 +129,8 @@ Operator / Team
 - operator surface browser screenshots: `evidence/screenshots/operator-surface-mission-run.png`, `evidence/screenshots/operator-surface-provider-readiness.png`, `evidence/screenshots/operator-surface-action-inbox.png`
 - operator surface browser report: `evidence/output-artifacts/operator-surface-demo-browser-report.json`
 - operator surface evidence 실행 명령: `npm run evidence:operator-surface-demo`
-- 남은 demo gap: public hosted demo 없음. recorded/private walkthrough URL, 실제 pilot feedback, 운영 metric은 아직 저장소 근거가 없다.
+- 완료된 demo evidence: public recorded walkthrough URL은 unauthenticated HTTP 200과 exact byte/SHA로 접근 검증됨.
+- 남은 demo gap: hosted interactive demo, 실제 pilot feedback, 운영 metric은 아직 저장소 근거가 없다.
 
 ## 10. Consulting Angle
 

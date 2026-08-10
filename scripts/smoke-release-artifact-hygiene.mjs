@@ -9,6 +9,7 @@ assert.equal(result.secretFindingCount, 0, JSON.stringify(result.findings, null,
 assert.equal(result.machinePathFindingCount, 0, JSON.stringify(result.findings, null, 2));
 assert.equal(result.scannedFiles.includes('CHANGELOG.md'), true);
 assert.equal(result.scannedFiles.includes('config/public-release-v0.1.0.json'), true);
+assert.equal(result.scannedFiles.includes('config/public-walkthrough-v1.json'), true);
 assert.equal(result.scannedFiles.includes('SUPPORT.md'), true);
 assert.equal(result.scannedFiles.includes('CONTRIBUTING.md'), true);
 assert.equal(result.scannedFiles.includes('SECURITY.md'), true);

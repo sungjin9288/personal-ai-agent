@@ -33,11 +33,13 @@ completionMatrix:
 | Local RAG and answer-quality shadows | Complete as fixture and bounded local-observation evidence; default answer path remains unchanged | Actual-user evaluation, semantic attribution, activation, training, and rollout remain denied |
 | Fine-tuning F1.1–F1.25 protocols | Complete as deterministic, content-free governance and synthetic-shadow contracts | F1.3 owner decision, private data, collection, candidate review, training, provider submission, and rollout remain unrecorded or unauthorized |
 | Council C1–C13 | Complete as deterministic contracts and recorded local observations; C13 is `actual-incompatible`, `chairReachability: not-reached`, and `keep-stub-only` | No retry, repair, promotion, runtime activation, training, or private-data authority follows from C13 |
-| Portfolio and release evidence | Complete for local review after artifact synchronization | Six external evidence blockers remain open |
+| Portfolio and release evidence | Complete for local review after artifact synchronization | Five external evidence blockers remain open; the public recorded walkthrough URL is access-verified |
 
 ## Public Release Source Binding
 
 The closeout source-binding contract fixes the published v0.1.0 identity to both `CHANGELOG.md` and `config/public-release-v0.1.0.json`. A current completion artifact therefore detects a change to either historical public-release source without making a network request.
+
+The same contract separately binds `config/public-walkthrough-v1.json`, which records the public MP4 release identity and access/privacy verification without conflating it with the v0.1.0 Portfolio ZIP. Changing the walkthrough URL, asset identity, or claim boundary therefore invalidates the closeout until the official builder is rerun.
 
 This is separate from the repository-local Portfolio candidate. `portfolio_manifest.md` and `_portfolio_export/personal_ai_agent_portfolio_pack.zip` describe the local candidate refreshed by the Portfolio workflow, and `npm run smoke:portfolio-zip` validates that candidate. Refreshing or validating that ZIP neither rewrites nor replaces the fixed published v0.1.0 asset record.
 
@@ -50,9 +52,10 @@ The completion artifact must retain the blocker register without treating any ro
 1. `anthropic-billing-live-validation` — Anthropic billing and live validation
 2. `hermes-target-provider-architecture-live-validation` — Hermes target provider architecture and live validation
 3. `target-local-provider-architecture` — target local provider architecture
-4. `public-or-private-walkthrough-url` — accessible public or private walkthrough URL
-5. `actual-pilot-feedback-and-metrics` — actual pilot feedback and measured metrics
-6. `hosted-saas-or-production-deployment` — hosted SaaS or production deployment
+4. `actual-pilot-feedback-and-metrics` — actual pilot feedback and measured metrics
+5. `hosted-saas-or-production-deployment` — hosted SaaS or production deployment
+
+The former `public-or-private-walkthrough-url` blocker is closed by the access-verified `walkthrough-v1` GitHub release asset recorded in `config/public-walkthrough-v1.json`. This closes only the recorded-video URL evidence gap and does not change provider, deployment, private-data/training, rollout, or production authority.
 
 ## Verification Boundary
 

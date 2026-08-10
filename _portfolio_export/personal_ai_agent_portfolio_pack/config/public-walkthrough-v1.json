@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "personal-ai-agent-public-walkthrough-record/v1",
+  "tag": "walkthrough-v1",
+  "releaseUrl": "https://github.com/sungjin9288/personal-ai-agent/releases/tag/walkthrough-v1",
+  "releasePublishedAt": "2026-08-09T14:36:55Z",
+  "asset": {
+    "id": 507595206,
+    "name": "personal-ai-agent-recorded-walkthrough-v1.mp4",
+    "sizeBytes": 45936551,
+    "sha256": "9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47",
+    "createdAt": "2026-08-09T14:36:50Z"
+  },
+  "captureCommit": "a4034fde5a47b7d246eab9573763663a366ca8ab",
+  "durationSeconds": 390,
+  "accessPolicy": "public-github-release-asset",
+  "accessVerifiedAt": "2026-08-09T14:39:41Z",
+  "accessVerification": "unauthenticated HTTP 200 and exact byte/SHA match",
+  "privacyReview": "17 representative frames, Korean/English OCR, and full-stream decode passed",
+  "productionReadyClaim": false
+}

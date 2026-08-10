@@ -39,7 +39,8 @@ for (const term of [
   assertContains(combined, term, `portfolio docs missing ${term}`);
 }
 
-assertContains(docs.projectCard, 'public hosted demo 없음', 'project card must not imply hosted demo exists');
+assertContains(docs.projectCard, 'hosted interactive demo나 production service는 아님', 'project card must distinguish the public video from a hosted service');
+assertContains(docs.projectCard, 'walkthrough-v1', 'project card must link the published recorded walkthrough');
 assertContains(docs.projectCard, '저장소 기준 설명 범위', 'project card must scope contribution wording to repository evidence');
 assertContains(docs.projectCard, 'operator surface browser screenshots', 'project card must reflect completed operator surface screenshots');
 assertContains(docs.caseStudy, 'representative demo evidence smoke', 'case study must mention representative evidence verification');

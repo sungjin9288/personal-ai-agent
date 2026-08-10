@@ -1,8 +1,17 @@
 # Recorded Walkthrough v1
 
-- status: recording-script-ready
-- publicHostedDemoUrl: none
-- privateRecordedWalkthroughUrl: pending
+- status: published-walkthrough-verified
+- publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
+- privateRecordedWalkthroughUrl: none
+- releaseTag: walkthrough-v1
+- releaseUrl: https://github.com/sungjin9288/personal-ai-agent/releases/tag/walkthrough-v1
+- assetId: 507595206
+- assetSizeBytes: 45936551
+- assetSha256: 9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47
+- captureCommit: a4034fde5a47b7d246eab9573763663a366ca8ab
+- accessPolicy: public GitHub release asset
+- accessVerifiedAt: 2026-08-09T14:39:41Z
+- accessVerification: unauthenticated HTTP 200 and exact byte/SHA match
 - productionReadyClaim: false
 - relatedDemoIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedDemoScenarios: [demo-scenarios-v1.md](demo-scenarios-v1.md)
@@ -10,7 +19,7 @@
 
 ## Purpose
 
-This document is the recording script for the current portfolio walkthrough. It is not a hosted demo link and it does not claim that a recorded video has already been published.
+This document records the storyboard and publication evidence for the public portfolio walkthrough. The video is a public GitHub release asset, not a hosted interactive demo or production service.
 
 The walkthrough should show the repository's strongest verified path: a credential-free local replay backed by release evidence, operator surface screenshots, browser reports, and smoke checks. It supports the scoped `provider-scoped pilot-ready` claim for the OpenAI-backed local-first/self-hosted path only.
 
@@ -19,8 +28,8 @@ The walkthrough should show the repository's strongest verified path: a credenti
 - Use a clean local checkout and run only credential-free commands.
 - Do not show `.env`, provider keys, personal filesystem paths, private issue trackers, or external customer data.
 - Keep `productionReadyClaim: false` visible in the narration and evidence.
-- State that there is no public hosted demo URL.
-- Treat Anthropic, Hermes, target local provider, hosted SaaS, production identity/session, tenant isolation, secret manager, observability/SLO, public demo URL, pilot feedback, and operating metrics as unverified or blocked unless new evidence is added.
+- State that the public asset is a recorded walkthrough, not a hosted interactive demo.
+- Treat Anthropic, Hermes, target local provider, hosted SaaS, production identity/session, tenant isolation, secret manager, observability/SLO, hosted interactive demo or production service URL, pilot feedback, and operating metrics as unverified or blocked unless new evidence is added.
 
 ## Pre-Recording Checklist
 
@@ -76,16 +85,30 @@ Use this command only when refreshing evidence intentionally:
 npm run evidence:operator-surface-demo
 ```
 
+## Publication Evidence
+
+| Field | Verified value |
+|---|---|
+| Public asset | [Personal AI Agent Recorded Walkthrough v1](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4) |
+| Release | [Recorded Walkthrough v1](https://github.com/sungjin9288/personal-ai-agent/releases/tag/walkthrough-v1) |
+| Asset identity | ID `507595206`, 45,936,551 bytes |
+| SHA-256 | `9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47` |
+| Capture | commit `a4034fde5a47b7d246eab9573763663a366ca8ab`, 390 seconds, 1920×1080 H.264, no audio |
+| Privacy review | 17 representative frames, Korean/English OCR, full-stream decode, no machine-path or secret-pattern findings |
+| Access check | unauthenticated download returned HTTP 200 and matched the recorded byte size and SHA-256 at `2026-08-09T14:39:41Z` |
+
+The machine-readable observation is [config/public-walkthrough-v1.json](../config/public-walkthrough-v1.json). It is separate from the v0.1.0 Portfolio ZIP release identity and does not change the production-readiness boundary.
+
 ## Publication Checklist
 
-Before adding any public or private recorded walkthrough URL to README or portfolio docs:
+Before replacing or republishing the current public recorded walkthrough URL:
 
 - verify the URL is accessible in the intended access mode
 - verify the recording contains no secrets, machine-local paths, private customer data, or personal account details
 - verify the recording does not claim production readiness, hosted SaaS readiness, all-provider completion, real customer feedback, or operating metrics
-- update `publicHostedDemoUrl` or `privateRecordedWalkthroughUrl` only after access is verified
+- update `publicHostedDemoUrl` or `privateRecordedWalkthroughUrl` only after the replacement access is verified
 - rerun `npm run smoke:recorded-walkthrough`, `npm run smoke:demo-evidence-index`, and `npm run smoke:release-artifact-hygiene`
 
 ## Acceptance Rule
 
-This walkthrough is ready to record when every required evidence file exists, `npm run smoke:recorded-walkthrough` passes, and the narrative keeps the current demo as a credential-free local replay without implying a hosted demo URL.
+This walkthrough publication remains valid when every required evidence file exists, the public asset record matches the verified URL, byte size, and SHA-256, `npm run smoke:recorded-walkthrough` passes, and the narrative keeps the video inside the credential-free local replay boundary without implying an interactive hosted service or production readiness.

@@ -5,8 +5,8 @@
 - 현재 구현 완료: Node.js ESM CLI/web runtime, local JSON store, workspace/mission/session/artifact/approval model, provider registry/adapters, D4 service refactoring, local RAG fixture/shadow contracts, Council C1–C13 contracts and observations, v1.1a/v1.1b read-only schedule projections, v1.1c deterministic structural envelope shadow, v1.1d retry lineage shadow, v1.1e retry terminality shadow, v1.1f retry terminality read-only operator surface, v1.1f deterministic Provider CI gate, smoke scripts, GitHub Actions provider smoke
 - 현재 closeout: `local-v1-complete-external-evidence-open`. [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md)의 v2 `completionMatrix`에서 `localProduct: complete`만 repository-local no-cost v1의 완료를 뜻한다. `provider: partial-external-blocked`, `deployment: external-blocked`, `privateDataTraining: approval-blocked-unverified`, `rollout: approval-blocked-unverified`는 각각 외부 증거 또는 owner approval 전까지 닫혀 있다. builder-owned pre-closeout receipt와 post-artifact final gates로 닫으며 self-referential verification은 주장하지 않는다. C13은 `actual-incompatible`, `keep-stub-only`다. F1.3 request protocol은 완료됐고 실제 owner decision, private-data evaluation과 training authority는 보류한다.
 - maintenance closure: published GitHub v0.1.0 asset identity는 검증 시점의 fixed observation record로 보존하고, repository-local Portfolio ZIP candidate와 size/SHA-256 metadata를 분리한다. 이 offline regression은 release upload, download, or deletion authority를 만들지 않는다.
-- 외부 증거 필요: Anthropic billing/credit과 live validation, Hermes target architecture/live validation, target local provider architecture, accessible walkthrough URL, actual pilot feedback/metrics, hosted SaaS or production deployment
-- 미구현 또는 미검증: hosted production SaaS, full production multi-tenant isolation, production-ready all-provider deployment, public demo link
+- 외부 증거 필요: Anthropic billing/credit과 live validation, Hermes target architecture/live validation, target local provider architecture, actual pilot feedback/metrics, hosted SaaS or production deployment
+- 미구현 또는 미검증: hosted production SaaS, full production multi-tenant isolation, production-ready all-provider deployment, hosted interactive demo or production service link
 
 ## 2. Phase 1 - MVP 완성
 
@@ -104,7 +104,7 @@
 - 완료: release readiness screenshot, replay log, browser E2E report, representative demo summary
 - 완료: operator surface demo evidence 문서로 mission/provider/action support evidence를 CLI/API/evidence manifest에 연결
 - 완료: mission creation/run browser screenshot, provider readiness browser screenshot, action inbox browser screenshot
-- 완료: recorded walkthrough script와 no-hosted-demo smoke guard
+- 완료: access-verified public recorded walkthrough, exact release asset record, privacy/access smoke guard
 - 완료: architecture code walkthrough와 symbol smoke guard
 - 완료: provider readiness matrix와 catalog smoke guard
 - 완료: provider failure recovery demo와 smoke guard
@@ -170,7 +170,8 @@
 - 완료: aggregate smoke runner의 순서·exactly-once·summary contract를 유지하면서 실패한 command에만 bounded console diagnostics를 제공하는 maintenance hardening
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
-- 남은 polish: published private/public walkthrough URL, actual pilot feedback and metric evidence
+- 완료된 polish: published public recorded walkthrough URL과 exact asset identity
+- 남은 polish: actual pilot feedback and metric evidence
 
 ## 8. Council C1–C13 closeout
 

@@ -6,7 +6,7 @@ Personal AI Agent is a local-first PoC/MVP harness. It is not a hosted SaaS prod
 
 Security review currently applies to the public repository source, local runtime behavior, documentation, smoke scripts, and release evidence artifacts.
 
-The project does not currently operate a public hosted service, so there is no production service endpoint or public hosted demo URL to test.
+The project does not currently operate a public hosted service, so there is no production service endpoint or hosted interactive demo to test. The public recorded walkthrough is a static GitHub release asset and remains inside the documented local replay boundary.
 
 ## Reporting A Security Issue
 
@@ -26,7 +26,7 @@ For non-security support, setup, provider configuration, or release evidence que
 
 ## Out Of Scope
 
-- testing a non-existent public hosted demo URL
+- testing a non-existent hosted interactive demo or production endpoint
 - claims that require production deployment evidence not present in this repository
 - reports that require real provider credentials to be posted publicly
 - third-party service vulnerabilities outside this repository
