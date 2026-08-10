@@ -10,6 +10,7 @@ assert.equal(result.machinePathFindingCount, 0, JSON.stringify(result.findings, 
 assert.equal(result.scannedFiles.includes('CHANGELOG.md'), true);
 assert.equal(result.scannedFiles.includes('config/public-release-v0.1.0.json'), true);
 assert.equal(result.scannedFiles.includes('config/public-walkthrough-v1.json'), true);
+assert.equal(result.scannedFiles.includes('config/pilot-feedback-v1.json'), true);
 assert.equal(result.scannedFiles.includes('SUPPORT.md'), true);
 assert.equal(result.scannedFiles.includes('CONTRIBUTING.md'), true);
 assert.equal(result.scannedFiles.includes('SECURITY.md'), true);
@@ -21,6 +22,7 @@ assert.equal(result.scannedFiles.includes('docs/execution-v1-closeout.md'), true
 assert.equal(result.scannedFiles.includes('docs/execution-v1-handoff.md'), true);
 assert.equal(result.scannedFiles.includes('docs/demo-evidence-index-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/recorded-walkthrough-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/pilot-feedback-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/architecture-code-walkthrough-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/provider-readiness-matrix-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/provider-failure-recovery-demo-v1.md'), true);

@@ -8,6 +8,7 @@ const manifestPath = path.join(repoDir, 'docs', 'pilot-export-package-v1.md');
 const changelogPath = path.join(repoDir, 'CHANGELOG.md');
 const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
 const publicWalkthroughPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
+const pilotFeedbackRecordPath = path.join(repoDir, 'config', 'pilot-feedback-v1.json');
 const linksPath = path.join(repoDir, 'links.md');
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const supportPath = path.join(repoDir, 'SUPPORT.md');
@@ -21,6 +22,7 @@ const pilotOnboardingPath = path.join(repoDir, 'docs', 'pilot-onboarding-v1.md')
 const demoScenariosPath = path.join(repoDir, 'docs', 'demo-scenarios-v1.md');
 const demoEvidenceIndexPath = path.join(repoDir, 'docs', 'demo-evidence-index-v1.md');
 const recordedWalkthroughPath = path.join(repoDir, 'docs', 'recorded-walkthrough-v1.md');
+const pilotFeedbackPath = path.join(repoDir, 'docs', 'pilot-feedback-v1.md');
 const architectureCodeWalkthroughPath = path.join(repoDir, 'docs', 'architecture-code-walkthrough-v1.md');
 const providerReadinessMatrixPath = path.join(repoDir, 'docs', 'provider-readiness-matrix-v1.md');
 const providerFailureRecoveryDemoPath = path.join(repoDir, 'docs', 'provider-failure-recovery-demo-v1.md');
@@ -42,6 +44,7 @@ const manifest = readRequiredFile(manifestPath);
 const changelog = readRequiredFile(changelogPath);
 const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
 const publicWalkthrough = JSON.parse(readRequiredFile(publicWalkthroughPath));
+const pilotFeedbackRecord = JSON.parse(readRequiredFile(pilotFeedbackRecordPath));
 const links = readRequiredFile(linksPath);
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
 const support = readRequiredFile(supportPath);
@@ -55,6 +58,7 @@ const pilotOnboarding = readRequiredFile(pilotOnboardingPath);
 const demoScenarios = readRequiredFile(demoScenariosPath);
 const demoEvidenceIndex = readRequiredFile(demoEvidenceIndexPath);
 const recordedWalkthrough = readRequiredFile(recordedWalkthroughPath);
+const pilotFeedback = readRequiredFile(pilotFeedbackPath);
 const architectureCodeWalkthrough = readRequiredFile(architectureCodeWalkthroughPath);
 const providerReadinessMatrix = readRequiredFile(providerReadinessMatrixPath);
 const providerFailureRecoveryDemo = readRequiredFile(providerFailureRecoveryDemoPath);
@@ -95,6 +99,7 @@ const requiredPaths = [
   'CHANGELOG.md',
   'config/public-release-v0.1.0.json',
   'config/public-walkthrough-v1.json',
+  'config/pilot-feedback-v1.json',
   'links.md',
   'SUPPORT.md',
   'CONTRIBUTING.md',
@@ -110,6 +115,7 @@ const requiredPaths = [
   'docs/demo-scenarios-v1.md',
   'docs/demo-evidence-index-v1.md',
   'docs/recorded-walkthrough-v1.md',
+  'docs/pilot-feedback-v1.md',
   'docs/architecture-code-walkthrough-v1.md',
   'docs/provider-readiness-matrix-v1.md',
   'docs/provider-failure-recovery-demo-v1.md',
@@ -118,6 +124,7 @@ const requiredPaths = [
   'docs/actual-user-query-evaluation-v1.md',
   'docs/smoke-validation-summary-v1.md',
   'docs/external-evidence-blockers-v1.md',
+  'scripts/smoke-pilot-feedback.mjs',
   'docs/local-v1-completion-closeout-v1.md',
   'docs/operator-surface-demo-evidence-v1.md',
   'evidence/output-artifacts/local-v1-completion-closeout.json',
@@ -505,8 +512,14 @@ assert.match(externalEvidenceBlockers, /externalEvidenceRequired: true/);
 assert.match(externalEvidenceBlockers, /Anthropic billing and live validation/);
 assert.match(externalEvidenceBlockers, /Hermes target provider architecture and live validation/);
 assert.match(externalEvidenceBlockers, /Public recorded walkthrough URL/);
-assert.match(externalEvidenceBlockers, /Actual pilot feedback and metrics/);
+assert.match(externalEvidenceBlockers, /Sanitized single-participant deterministic pilot feedback/);
 assert.match(externalEvidenceBlockers, /npm run smoke:external-evidence-blockers/);
+assert.match(pilotFeedback, /status: sanitized-single-participant-evidence/);
+assert.match(pilotFeedback, /positiveAnswers: 4\/4/);
+assert.match(pilotFeedback, /not a generalizable result/);
+assert.equal(pilotFeedbackRecord.participant.count, 1);
+assert.equal(pilotFeedbackRecord.scope.providerMode, 'deterministic-only');
+assert.equal(pilotFeedbackRecord.authority.productionReadyClaim, false);
 assert.match(demoEvidenceIndex, /evidence\/screenshots\/representative-release-demo-release-status\.png/);
 assert.match(demoEvidenceIndex, /npm run smoke:demo-evidence-index/);
 assert.match(contributing, /# Contributing/);

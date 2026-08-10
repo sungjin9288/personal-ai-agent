@@ -176,6 +176,9 @@ async function runActualEvaluation({
       const record = orderedRecords[generationIndex];
       generationIndex += 1;
       const idHash = sha256(record.id);
+      if (withdrawAfterFirstGeneration && generationIndex === 1) {
+        fs.rmSync(intakePath);
+      }
       response.end(JSON.stringify({
         model: reviewActionBaseline.model.id,
         response: JSON.stringify({
@@ -187,9 +190,6 @@ async function runActualEvaluation({
           summary: record.expectedAnswerTerms.join(' '),
         }),
       }));
-      if (withdrawAfterFirstGeneration && generationIndex === 1) {
-        fs.rmSync(intakePath);
-      }
       return;
     }
     response.statusCode = 404;

@@ -93,6 +93,7 @@
     "smoke:representative-demo-evidence": "node scripts/smoke-representative-demo-evidence.mjs",
     "smoke:operator-surface-demo-evidence": "node scripts/smoke-operator-surface-demo-evidence.mjs",
     "smoke:recorded-walkthrough": "node scripts/smoke-recorded-walkthrough.mjs",
+    "smoke:pilot-feedback": "node scripts/smoke-pilot-feedback.mjs",
     "smoke:architecture-code-walkthrough": "node scripts/smoke-architecture-code-walkthrough.mjs",
     "smoke:provider-readiness-matrix": "node scripts/smoke-provider-readiness-matrix.mjs",
     "smoke:provider-failure-recovery-demo": "node scripts/smoke-provider-failure-recovery-demo.mjs",

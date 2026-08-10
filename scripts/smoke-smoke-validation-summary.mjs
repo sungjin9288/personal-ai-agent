@@ -23,6 +23,7 @@ const expectedCommands = [
   'npm run smoke:demo-local',
   'npm run smoke:demo-evidence-index',
   'npm run smoke:recorded-walkthrough',
+  'npm run smoke:pilot-feedback',
   'npm run smoke:architecture-code-walkthrough',
   'npm run smoke:provider-readiness-matrix',
   'npm run smoke:provider-failure-recovery-demo',
@@ -208,7 +209,7 @@ for (const risky of [
   'all providers are live validated',
   'hosted SaaS validation is complete',
   'production readiness is approved',
-  'external pilot feedback or customer metrics are proven',
+  'the single deterministic pilot proves generalized feedback, customer impact, productivity, cost savings, or SLA outcomes',
   'Anthropic, Hermes, or target local provider production readiness is complete',
 ]) {
   assert.equal(
