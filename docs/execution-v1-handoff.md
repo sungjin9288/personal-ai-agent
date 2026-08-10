@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-09T15:19:10.919Z
+- generatedAt: 2026-08-10T08:47:39.147Z
 - localDate: 2026-08-10
-- branch: codex/published-walkthrough-evidence
-- commit: 316adac571a62202e5f2feca63f59edb7e5c8994
-- boundImplementationCommit: 316adac571a62202e5f2feca63f59edb7e5c8994
+- branch: codex/post-merge-claim-count-truth-sync
+- commit: db5d2ccc570be2ce831b068df341db3edb7683fb
+- boundImplementationCommit: db5d2ccc570be2ce831b068df341db3edb7683fb
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/316adac571a62202e5f2feca63f59edb7e5c8994](releases/execution-v1/316adac571a62202e5f2feca63f59edb7e5c8994)
+- immutableSnapshot: [releases/execution-v1/db5d2ccc570be2ce831b068df341db3edb7683fb](releases/execution-v1/db5d2ccc570be2ce831b068df341db3edb7683fb)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed to origin/codex/published-walkthrough-evidence
+- commitPushStatus: not pushed, origin/codex/post-merge-claim-count-truth-sync not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

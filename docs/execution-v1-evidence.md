@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-09T15:19:02.674Z
-- branch: codex/published-walkthrough-evidence
-- commit: 316adac571a62202e5f2feca63f59edb7e5c8994
-- boundImplementationCommit: 316adac571a62202e5f2feca63f59edb7e5c8994
+- generatedAt: 2026-08-10T08:47:12.092Z
+- branch: codex/post-merge-claim-count-truth-sync
+- commit: db5d2ccc570be2ce831b068df341db3edb7683fb
+- boundImplementationCommit: db5d2ccc570be2ce831b068df341db3edb7683fb
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
