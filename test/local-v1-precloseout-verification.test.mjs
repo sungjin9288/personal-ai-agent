@@ -61,10 +61,57 @@ test('Local v1 pre-closeout verification fails closed on script drift and comman
   assert.throws(
     () => runLocalV1PrecloseoutVerification({
       implementationCommit,
+      now: sequenceClock(10, 37),
       packageJson: packageJsonFixture(),
-      runCommand: () => ({ error: '', status: 1, stderr: '', stdout: '', timedOut: false }),
+      runCommand: () => ({
+        error: 'process helper failed',
+        signal: 'SIGTERM',
+        status: 1,
+        stderr: 'stderr sentinel',
+        stdout: 'stdout sentinel',
+        timedOut: true,
+      }),
     }),
-    /pre-closeout verification failed: unit-tests/,
+    (error) => {
+      assert.match(error.message, /pre-closeout verification failed: unit-tests/);
+      assert.match(error.message, /command=npm test/);
+      assert.match(error.message, /error=process helper failed/);
+      assert.match(error.message, /signal=SIGTERM/);
+      assert.match(error.message, /status=1/);
+      assert.match(error.message, /timedOut=true/);
+      assert.match(error.message, /durationMs=27/);
+      assert.match(error.message, /timeoutMs=600000/);
+      assert.match(error.message, /stdoutBytes=15/);
+      assert.match(error.message, /stderrBytes=15/);
+      assert.match(error.message, /stdoutTail:\nstdout sentinel/);
+      assert.match(error.message, /stderrTail:\nstderr sentinel/);
+      return true;
+    },
+  );
+});
+
+test('Local v1 pre-closeout failure diagnostics keep only bounded stream tails', () => {
+  const discardedPrefix = 'discarded-prefix-'.repeat(600);
+
+  assert.throws(
+    () => runLocalV1PrecloseoutVerification({
+      implementationCommit,
+      packageJson: packageJsonFixture(),
+      runCommand: () => ({
+        error: '',
+        signal: '',
+        status: 2,
+        stderr: `${discardedPrefix}stderr sentinel`,
+        stdout: `${discardedPrefix}stdout sentinel`,
+        timedOut: false,
+      }),
+    }),
+    (error) => {
+      assert.equal(error.message.includes(discardedPrefix), false);
+      assert.match(error.message, /stdoutTail:\n[^\n]*stdout sentinel/);
+      assert.match(error.message, /stderrTail:\n[^\n]*stderr sentinel/);
+      return true;
+    },
   );
 });
 
@@ -109,4 +156,8 @@ function packageJsonFixture() {
         .map(({ packageScript, packageScriptCommand }) => [packageScript, packageScriptCommand]),
     ),
   };
+}
+
+function sequenceClock(...values) {
+  return () => values.shift();
 }

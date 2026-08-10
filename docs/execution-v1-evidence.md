@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-10T12:47:17.730Z
-- branch: codex/closed-walkthrough-blocker-truth-sync
-- commit: 5073c5aaf2ee26c63ecd638125872f43c1b00d29
-- boundImplementationCommit: 5073c5aaf2ee26c63ecd638125872f43c1b00d29
+- generatedAt: 2026-08-10T15:04:16.333Z
+- branch: codex/execution-evidence-reliability
+- commit: 60ba6e5f42413608641dc977287ed55a6817c487
+- boundImplementationCommit: 60ba6e5f42413608641dc977287ed55a6817c487
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun

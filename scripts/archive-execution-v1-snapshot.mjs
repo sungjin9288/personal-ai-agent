@@ -58,7 +58,11 @@ const archivedEvidence = injectArchiveMetadata({
   sourcePath: formatDisplayPath(currentEvidencePath),
 });
 const archivedCloseout = injectArchiveMetadata({
-  markdown: sanitizePortableMarkdown(rewriteCloseoutEvidencePath(closeoutMarkdown, snapshotEvidencePath)),
+  markdown: sanitizePortableMarkdown(rewriteCloseoutEvidencePath({
+    markdown: closeoutMarkdown,
+    snapshotCloseoutPath,
+    snapshotEvidencePath,
+  })),
   archivedAt,
   sourcePath: formatDisplayPath(currentCloseoutPath),
 });
@@ -70,6 +74,7 @@ const archivedHandoff = handoffMarkdown
           snapshotCloseoutPath,
           snapshotDir,
           snapshotEvidencePath,
+          snapshotHandoffPath,
         }),
       ),
       archivedAt,
@@ -162,25 +167,37 @@ function injectArchiveMetadata({ markdown, archivedAt, sourcePath }) {
   return [...lines.slice(0, insertAt), ...archiveLines, ...lines.slice(insertAt)].join('\n');
 }
 
-function rewriteCloseoutEvidencePath(markdown, snapshotEvidencePath) {
-  const replacement = `- evidence: [execution-v1-evidence.md](${formatDisplayPath(snapshotEvidencePath)})`;
+function rewriteCloseoutEvidencePath({ markdown, snapshotCloseoutPath, snapshotEvidencePath }) {
+  const target = formatMarkdownLinkTarget(snapshotCloseoutPath, snapshotEvidencePath);
+  const replacement = `- evidence: [execution-v1-evidence.md](${target})`;
   return String(markdown || '').replace(/^- evidence:\s+.+$/m, replacement);
 }
 
-function rewriteHandoffPaths({ markdown, snapshotCloseoutPath, snapshotDir, snapshotEvidencePath }) {
+function rewriteHandoffPaths({
+  markdown,
+  snapshotCloseoutPath,
+  snapshotDir,
+  snapshotEvidencePath,
+  snapshotHandoffPath,
+}) {
   return String(markdown || '')
     .replace(
       /^- evidence:\s+.+$/m,
-      `- evidence: [execution-v1-evidence.md](${formatDisplayPath(snapshotEvidencePath)})`,
+      `- evidence: [execution-v1-evidence.md](${formatMarkdownLinkTarget(snapshotHandoffPath, snapshotEvidencePath)})`,
     )
     .replace(
       /^- closeout:\s+.+$/m,
-      `- closeout: [execution-v1-closeout.md](${formatDisplayPath(snapshotCloseoutPath)})`,
+      `- closeout: [execution-v1-closeout.md](${formatMarkdownLinkTarget(snapshotHandoffPath, snapshotCloseoutPath)})`,
     )
     .replace(
       /^- immutableSnapshot:\s+.+$/m,
-      `- immutableSnapshot: [${formatDisplayPath(snapshotDir)}](${formatDisplayPath(snapshotDir)})`,
+      `- immutableSnapshot: [${formatDisplayPath(snapshotDir)}](${formatMarkdownLinkTarget(snapshotHandoffPath, snapshotDir)})`,
     );
+}
+
+function formatMarkdownLinkTarget(markdownPath, targetPath) {
+  const relativePath = path.relative(path.dirname(markdownPath), targetPath);
+  return relativePath ? relativePath.split(path.sep).join('/') : './';
 }
 
 function sanitizePortableMarkdown(markdown) {

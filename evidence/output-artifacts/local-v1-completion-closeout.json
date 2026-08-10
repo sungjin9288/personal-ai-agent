@@ -47,7 +47,7 @@
     "actual-pilot-feedback-and-metrics",
     "hosted-saas-or-production-deployment"
   ],
-  "implementationCommit": "5073c5aaf2ee26c63ecd638125872f43c1b00d29",
+  "implementationCommit": "60ba6e5f42413608641dc977287ed55a6817c487",
   "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v2",
   "sourceDocumentSha256": {
     "CHANGELOG.md": "81f32acd55d81923f28922d89e050fcfa8bf88b61cabd8705c4d4f41ab2220e5",
@@ -72,46 +72,46 @@
       {
         "command": "npm test",
         "commandSha256": "328e123c63857fd8473bd4bd3581e655b08b7440d7f5d2c31cc375607582f539",
-        "durationMs": 113500,
+        "durationMs": 124884,
         "exitCode": 0,
         "id": "unit-tests",
         "packageScript": "test",
         "packageScriptSha256": "910f73d25bb3adcd13e50bb0d5991f3cd22f2d0170104a6c14cf2d8563286369",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "f45165a7e6cf814af3d71142ecd17ecbf1697ea2ab7e8a4852a0e11fff22ebce",
+        "stdoutSha256": "7315ef757e694d7b09857376e413225ee2d34a7242a7eabf3a0ab9d3a420b3bb",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout",
         "commandSha256": "b2b79ebbc595df499ab5603094cb3335ea81ddbe19386c5432ea9d9b80da2541",
-        "durationMs": 16517,
+        "durationMs": 14501,
         "exitCode": 0,
         "id": "docs-gates-precloseout",
         "packageScript": "smoke:docs-gates",
         "packageScriptSha256": "e2a760d6349ef788b72ed27ed07759b0d9ad3d359797f28740b5912c99f23ff9",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "41e09675d35593cdc636ddd5e48318eca3ab58e95e6e70135d78afce685cc730",
+        "stdoutSha256": "5dd55951992976346583d449dc4f163f50aebc2f0abd759b1d8213e71649289b",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "npm run smoke:release-artifact-hygiene",
         "commandSha256": "93c15f412966f4ec775719b634a6e54c43ea2e547c4ad80ee029cb5e2f49b35b",
-        "durationMs": 302,
+        "durationMs": 277,
         "exitCode": 0,
         "id": "release-artifact-hygiene",
         "packageScript": "smoke:release-artifact-hygiene",
         "packageScriptSha256": "c50a6a14c86206caae7e3f6f35179e4f5ffdf7f2ea6f39e5ea75da6ce57b4e71",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "fe9d2e972370734fad295f92ae50df5404729c1316c93ccbb9afc8441f3f5a5a",
+        "stdoutSha256": "8c64c2e9621e913f527a21dba6374efd4f107fa5be59b52f6534180addfe35f1",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "git diff --check",
         "commandSha256": "466c2f308b48c7661d646fdd068fbecea974c665fe65dbf8ed508f224180ce0b",
-        "durationMs": 70,
+        "durationMs": 61,
         "exitCode": 0,
         "id": "git-diff-check",
         "packageScript": null,
@@ -122,12 +122,12 @@
         "timeoutMs": 60000
       }
     ],
-    "implementationCommit": "5073c5aaf2ee26c63ecd638125872f43c1b00d29",
+    "implementationCommit": "60ba6e5f42413608641dc977287ed55a6817c487",
     "packageJsonSha256": "603c271293a786306c08879ee8a525478033254308d71fa05cdbf911dbd96653",
-    "reportSha256": "858652b14d1f731bca6196ce004a85fb616c247143d0201e82cde7cc508aa276",
+    "reportSha256": "3a577b4d945ca59564566293f2bd8db1225e36f35ea993bf3b2335092fc4193c",
     "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v2",
     "status": "passed"
   },
-  "id": "local-v1-completion-closeout-30416c658ff130f38845898cf5b777b0cb5d32b64fdb49d0dd171224715001ba",
-  "integrityHash": "30416c658ff130f38845898cf5b777b0cb5d32b64fdb49d0dd171224715001ba"
+  "id": "local-v1-completion-closeout-3de7c08aa0d46984acd43052758d4ff67da42c7c133a163b4af75a1f73f150d4",
+  "integrityHash": "3de7c08aa0d46984acd43052758d4ff67da42c7c133a163b4af75a1f73f150d4"
 }
