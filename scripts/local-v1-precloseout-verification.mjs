@@ -7,6 +7,8 @@ import {
 } from '../src/core/local-v1-completion-closeout.mjs';
 import { runCommandWithHardTimeout } from './process-timeout-utils.mjs';
 
+const FAILURE_OUTPUT_TAIL_CHARACTERS = 4_000;
+
 export function assertLocalV1BuilderState({
   implementationCommit,
   runGit = defaultRunGit,
@@ -42,7 +44,7 @@ export function runLocalV1PrecloseoutVerification({
     });
     const durationMs = Math.max(0, now() - startedAt);
     if (result.timedOut || result.error || result.status !== 0) {
-      throw new Error(`Local v1 pre-closeout verification failed: ${definition.id}.`);
+      throw new Error(formatVerificationFailure({ definition, durationMs, result }));
     }
     return {
       command: definition.command.join(' '),
@@ -68,6 +70,27 @@ export function runLocalV1PrecloseoutVerification({
     schemaVersion: LOCAL_V1_VERIFICATION_SCHEMA_VERSION,
     status: 'passed',
   };
+}
+
+function formatVerificationFailure({ definition, durationMs, result }) {
+  const stderr = String(result.stderr || '');
+  const stdout = String(result.stdout || '');
+  return [
+    `Local v1 pre-closeout verification failed: ${definition.id}.`,
+    `command=${definition.command.join(' ')}`,
+    result.error ? `error=${result.error}` : null,
+    result.signal ? `signal=${result.signal}` : null,
+    `status=${result.status ?? ''}`,
+    `timedOut=${Boolean(result.timedOut)}`,
+    `durationMs=${durationMs}`,
+    `timeoutMs=${definition.timeoutMs}`,
+    `stdoutBytes=${Buffer.byteLength(stdout, 'utf8')}`,
+    `stderrBytes=${Buffer.byteLength(stderr, 'utf8')}`,
+    stdout ? `stdoutTail:\n${stdout.slice(-FAILURE_OUTPUT_TAIL_CHARACTERS)}` : null,
+    stderr ? `stderrTail:\n${stderr.slice(-FAILURE_OUTPUT_TAIL_CHARACTERS)}` : null,
+  ]
+    .filter(Boolean)
+    .join('\n');
 }
 
 function assertPackageScripts(packageJson) {

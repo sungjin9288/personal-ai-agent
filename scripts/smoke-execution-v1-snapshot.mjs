@@ -52,8 +52,6 @@ const snapshotCloseoutPath = path.join(snapshotDir, 'execution-v1-closeout.md');
 const snapshotHandoffPath = path.join(snapshotDir, 'execution-v1-handoff.md');
 const snapshotManifestPath = path.join(snapshotDir, 'snapshot.json');
 const snapshotDirDisplayPath = formatDisplayPath(snapshotDir);
-const snapshotEvidenceDisplayPath = formatDisplayPath(snapshotEvidencePath);
-const snapshotCloseoutDisplayPath = formatDisplayPath(snapshotCloseoutPath);
 const manifest = JSON.parse(readRequiredFile(snapshotManifestPath));
 const snapshotEvidenceMarkdown = readRequiredFile(snapshotEvidencePath);
 const snapshotCloseoutMarkdown = readRequiredFile(snapshotCloseoutPath);
@@ -108,20 +106,24 @@ assert.equal(
 );
 assert.equal(
   extractBulletValue(snapshotCloseoutMarkdown, 'evidence'),
-  `[execution-v1-evidence.md](${snapshotEvidenceDisplayPath})`,
+  '[execution-v1-evidence.md](execution-v1-evidence.md)',
 );
 assert.equal(
   extractBulletValue(snapshotHandoffMarkdown, 'evidence'),
-  `[execution-v1-evidence.md](${snapshotEvidenceDisplayPath})`,
+  '[execution-v1-evidence.md](execution-v1-evidence.md)',
 );
 assert.equal(
   extractBulletValue(snapshotHandoffMarkdown, 'closeout'),
-  `[execution-v1-closeout.md](${snapshotCloseoutDisplayPath})`,
+  '[execution-v1-closeout.md](execution-v1-closeout.md)',
 );
 assert.equal(
   extractBulletValue(snapshotHandoffMarkdown, 'immutableSnapshot'),
-  `[${snapshotDirDisplayPath}](${snapshotDirDisplayPath})`,
+  `[${snapshotDirDisplayPath}](./)`,
 );
+assertMarkdownLinkResolves(snapshotCloseoutPath, snapshotCloseoutMarkdown, 'evidence');
+assertMarkdownLinkResolves(snapshotHandoffPath, snapshotHandoffMarkdown, 'evidence');
+assertMarkdownLinkResolves(snapshotHandoffPath, snapshotHandoffMarkdown, 'closeout');
+assertMarkdownLinkResolves(snapshotHandoffPath, snapshotHandoffMarkdown, 'immutableSnapshot');
 assert.equal(
   extractBulletValue(snapshotEvidenceMarkdown, 'outputPath'),
   'output/playwright/execution-v1-visual-evidence-manifest.json',
@@ -337,6 +339,14 @@ function assertNoLocalAbsolutePaths(filePaths) {
     }
   }
   assert.deepEqual(offenders, [], `local absolute paths leaked into release docs: ${offenders.join(', ')}`);
+}
+
+function assertMarkdownLinkResolves(markdownPath, markdown, label) {
+  const value = extractBulletValue(markdown, label);
+  const match = value.match(/^\[[^\]]+\]\(([^)]+)\)$/);
+  assert.ok(match, `${label} must be a Markdown link`);
+  const resolvedPath = path.resolve(path.dirname(markdownPath), match[1]);
+  assert.equal(fs.existsSync(resolvedPath), true, `${label} link does not resolve: ${formatDisplayPath(resolvedPath)}`);
 }
 
 function listFiles(rootPath) {
