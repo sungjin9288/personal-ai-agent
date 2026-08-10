@@ -151,7 +151,7 @@
 | Q13 claim-source attribution shadow | `evidence/output-artifacts/evidence-gated-answer-claim-attribution.json` | Q10-first 12-row synthetic lane, eight getter-free gate exits, and four Q7 v5 flattened answers whose source-bound terms pass lexical ownership checks; content-free only |
 | Q13 local claim-source attribution observation | `evidence/output-artifacts/local-evidence-gated-answer-claim-attribution.json` | installed loopback qwen2.5:3b reached four sufficient rows and passed 4/4 lexical source-term attribution with model/runtime provenance; no semantic attribution, independent review, activation, or production claim |
 | Smoke validation summary | `docs/smoke-validation-summary-v1.md` | core public-readiness command list, replay block, and claim boundary for deterministic local verification |
-| External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register |
+| External evidence blockers | `docs/external-evidence-blockers-v1.md` | external account, provider architecture, pilot feedback, metrics, and hosted deployment blocker register; public recorded walkthrough URL is closed evidence |
 
 ## 5. Output Artifact Evidence
 
@@ -174,6 +174,6 @@
 - Use `docs/provider-failure-recovery-demo-v1.md` to explain provider failure recovery through attention actions, fallback policy, and auditable event timelines without implying all-provider live validation.
 - Use `docs/memory-retrieval-quality-fixture-v1.md` to explain retrieval ranking, memory/fact provenance, and untrusted context boundaries without claiming benchmarked retrieval accuracy.
 - Use `docs/smoke-validation-summary-v1.md` to cite the current deterministic public-readiness command set without implying hosted SaaS, production, or all-provider live validation.
-- Use `docs/external-evidence-blockers-v1.md` to explain why Anthropic, Hermes, target local provider, demo URL, pilot feedback, metrics, and hosted deployment claims remain blocked until external evidence exists.
+- Use `docs/external-evidence-blockers-v1.md` to explain why Anthropic, Hermes, target local provider, pilot feedback, metrics, and hosted deployment claims remain blocked, while the public recorded walkthrough URL is closed evidence.
 - Use release blocker evidence to avoid risky claims such as production-ready, hosted SaaS ready, or all-provider live validated.
 - Use architecture diagrams in interviews to explain how CLI/web, mission service, runtime harness, provider registry, and local store interact.

@@ -140,14 +140,14 @@
 | Private answer-quality readiness impact shadow | 완료 · synthetic fixture projection | `src/core/fine-tuning-private-answer-quality-readiness-impact.mjs` | final F1.20 replay case를 baseline suite에 memory-only로 더해 `2→3` case projection, unchanged dataset/export digest와 five remaining stop-condition failures를 확인하며 readiness·authority·evidence mutation 없음, `npm run smoke:fine-tuning-private-answer-quality-readiness-impact`로 검증 |
 | Private combined readiness impact shadow | 완료 · synthetic fixture projection | `src/core/fine-tuning-private-combined-readiness-impact.mjs` | final F1.21 record를 먼저 accepted-growth로 확인한 뒤 final F1.20 replay case를 memory-only로 더해 `4/3/1/4/2→5/4/1/5/3` projection을 만들며 state·training·provider·evidence mutation 없음, `npm run smoke:fine-tuning-private-combined-readiness-impact`로 검증 |
 | Private collection-gap replan shadow | 완료 · synthetic fixture projection | `src/core/fine-tuning-private-collection-gap-replan.mjs` | trusted authority에서 F1.24 projection을 다시 만들고 tracked F1.2 plan exact parity를 확인한 뒤 memory-only replan으로 `15/12/3`, scope `5`, case `7` gap을 계산하며 state·collection·training·provider·evidence mutation 없음, `npm run smoke:fine-tuning-private-collection-gap-replan`로 검증 |
-| External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider/demo URL/pilot feedback blockers verified by `npm run smoke:external-evidence-blockers` |
+| External evidence blockers | 완료 | `docs/external-evidence-blockers-v1.md` | external account/provider architecture/pilot feedback/hosted deployment blockers and closed public recorded walkthrough URL verified by `npm run smoke:external-evidence-blockers` |
 | CLI/agent output artifact | 완료 | `evidence/output-artifacts/*.md` | 기존 release evidence 복사 |
 | Architecture diagram | 완료 | `evidence/architecture/current-architecture.mmd` | Mermaid |
 | Sequence diagram | 완료 | `evidence/architecture/mission-run-sequence.mmd` | Mermaid |
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| Repository-local portfolio ZIP 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | local candidate: 4,882,980 bytes, SHA-256 `1a8bc3d1f2133175e599d1bb7e97df2334561d4e1788345b443599686a6db8fd`; published v0.1.0 asset과 별도 |
+| Repository-local portfolio ZIP 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | local candidate: 4,883,006 bytes, SHA-256 `4ea33c374bec024c841ce866b67d7c44c772fe760dada45f14e82adf71a532f2`; published v0.1.0 asset과 별도 |
 
 ## 검증 실패 / 보류
 

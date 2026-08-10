@@ -8,6 +8,7 @@ const doc = readRequiredFile('docs/external-evidence-blockers-v1.md');
 const readme = readRequiredFile('README.md');
 const roadmap = readRequiredFile('docs/roadmap.md');
 const evidenceGallery = readRequiredFile('docs/evidence-gallery.md');
+const evidenceChecklist = readRequiredFile('docs/evidence-checklist.md');
 const evidenceManifest = readRequiredFile('evidence/evidence_manifest.md');
 const providerMatrix = readRequiredFile('docs/provider-readiness-matrix-v1.md');
 const smokeSummary = readRequiredFile('docs/smoke-validation-summary-v1.md');
@@ -68,6 +69,58 @@ assertContains(
   `the remaining ${blockerRows.length} rows in [external-evidence-blockers-v1.md](external-evidence-blockers-v1.md)`,
   'product plan external blocker count must match the current blocker register',
 );
+
+for (const [sourceName, sourceText, expectedTerm] of [
+  [
+    'roadmap',
+    roadmap,
+    '| 외부 증거 필요 | Pilot feedback 증거 | local replay와 외부 사용성·효과 claim을 구분 | sanitized feedback evidence |',
+  ],
+  [
+    'evidence gallery',
+    evidenceGallery,
+    'external account, provider architecture, pilot feedback, metrics, and hosted deployment blocker register; public recorded walkthrough URL is closed evidence',
+  ],
+  [
+    'evidence gallery usage notes',
+    evidenceGallery,
+    'to explain why Anthropic, Hermes, target local provider, pilot feedback, metrics, and hosted deployment claims remain blocked, while the public recorded walkthrough URL is closed evidence.',
+  ],
+  [
+    'smoke validation summary',
+    smokeSummary,
+    'Verifies external account, provider architecture, pilot feedback, metrics, and hosted deployment blockers remain explicit while the public recorded walkthrough URL remains closed evidence',
+  ],
+  [
+    'evidence checklist',
+    evidenceChecklist,
+    'external account/provider architecture/pilot feedback/hosted deployment blockers and closed public recorded walkthrough URL verified by `npm run smoke:external-evidence-blockers`',
+  ],
+]) {
+  assertContains(sourceText, expectedTerm, `${sourceName} missing the current walkthrough blocker boundary`);
+}
+
+for (const [sourceName, sourceText, staleTerm] of [
+  ['roadmap', roadmap, 'Walkthrough URL와 pilot feedback 증거'],
+  [
+    'evidence gallery',
+    evidenceGallery,
+    'external account, provider, demo URL, pilot feedback, metrics, hosted deployment blocker register',
+  ],
+  [
+    'evidence gallery usage notes',
+    evidenceGallery,
+    'why Anthropic, Hermes, target local provider, demo URL, pilot feedback, metrics, and hosted deployment claims remain blocked',
+  ],
+  [
+    'smoke validation summary',
+    smokeSummary,
+    'Verifies external account, provider, demo URL, pilot feedback, metrics, and hosted deployment blockers remain explicit',
+  ],
+  ['evidence checklist', evidenceChecklist, 'external account/provider/demo URL/pilot feedback blockers'],
+]) {
+  assert.equal(sourceText.includes(staleTerm), false, `${sourceName} retains stale open walkthrough wording`);
+}
 
 for (const readmeTerm of [
   'External evidence blockers: [docs/external-evidence-blockers-v1.md](docs/external-evidence-blockers-v1.md)',
@@ -193,5 +246,16 @@ function extractTableRows(markdown, startHeading, endHeading) {
 }
 
 function combinedText() {
-  return [doc, readme, roadmap, evidenceGallery, evidenceManifest, providerMatrix, smokeSummary, recordedWalkthrough, releaseReadiness].join('\n\n');
+  return [
+    doc,
+    readme,
+    roadmap,
+    evidenceGallery,
+    evidenceChecklist,
+    evidenceManifest,
+    providerMatrix,
+    smokeSummary,
+    recordedWalkthrough,
+    releaseReadiness,
+  ].join('\n\n');
 }
