@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -12,6 +13,7 @@ const record = JSON.parse(readRequiredFile(recordPath));
 const doc = readRequiredFile(docPath);
 
 assert.equal(assertPilotFeedbackRecord(record), true);
+assertCaptureCommitProvenance(record.captureCommit);
 
 for (const term of [
   '# Pilot Feedback Evidence v1',
@@ -85,4 +87,25 @@ function readRequiredFile(filePath) {
     throw new Error(`required file not found: ${path.relative(repoDir, filePath)}`);
   }
   return fs.readFileSync(filePath, 'utf8');
+}
+
+function assertCaptureCommitProvenance(captureCommit) {
+  assert.equal(
+    gitSucceeds(['cat-file', '-e', `${captureCommit}^{commit}`]),
+    true,
+    `pilot feedback capture commit does not exist: ${captureCommit}`,
+  );
+  assert.equal(
+    gitSucceeds(['merge-base', '--is-ancestor', captureCommit, 'HEAD']),
+    true,
+    `pilot feedback capture commit is not an ancestor of HEAD: ${captureCommit}`,
+  );
+}
+
+function gitSucceeds(args) {
+  return spawnSync('git', args, {
+    cwd: repoDir,
+    encoding: 'utf8',
+    stdio: 'ignore',
+  }).status === 0;
 }

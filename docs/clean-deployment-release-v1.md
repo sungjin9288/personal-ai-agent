@@ -1,12 +1,12 @@
 # Clean Deployment Release Rehearsal v1
 
 - status: clean-local-rehearsal-current
-- generatedAt: 2026-08-11T00:10:28.171Z
+- generatedAt: 2026-08-11T00:47:22.372Z
 - sourceBranch: codex/pilot-feedback-evidence-closeout
-- sourceCommit: 8213c4972bc375640f505c971366a4178afe1506
+- sourceCommit: 470069a5942ca60c4a24a7b48fc88bce305e8a1e
 - releaseLabel: provider-scoped pilot ready for OpenAI-backed local-first path
 - cleanCheckoutMode: tracked-files-only
-- cleanCheckoutFileCount: 6535
+- cleanCheckoutFileCount: 6544
 - excludedRuntimeState: var/, output/playwright/, node_modules/, .git/
 - productionReadyClaim: false
 - relatedReleaseReadiness: [release-readiness-v1.md](release-readiness-v1.md)
@@ -27,42 +27,42 @@ Production-ready remains blocked until the approved target environment produces 
 
 | Command | Result | Exit Code | Duration Ms |
 | --- | --- | ---: | ---: |
-| `npm run smoke:incident-slo-policy` | pass | 0 | 163 |
-| `npm run smoke:identity-session-admin` | pass | 0 | 153 |
-| `npm run smoke:target-identity-session-operations` | pass | 0 | 169 |
-| `npm run smoke:tenant-storage-admin` | pass | 0 | 301 |
-| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 164 |
-| `npm run smoke:customer-support-operations` | pass | 0 | 206 |
-| `npm run smoke:support-escalation-review` | pass | 0 | 194 |
-| `npm run smoke:target-support-architecture` | pass | 0 | 184 |
-| `npm run smoke:target-support-operations` | pass | 0 | 254 |
-| `npm run smoke:secret-management` | pass | 0 | 233 |
-| `npm run smoke:target-secret-manager` | pass | 0 | 196 |
-| `npm run smoke:observability-telemetry` | pass | 0 | 258 |
-| `npm run smoke:target-observability-architecture` | pass | 0 | 306 |
-| `npm run smoke:target-observability-operations` | pass | 0 | 229 |
-| `npm run smoke:target-slo-architecture` | pass | 0 | 181 |
-| `npm run smoke:target-slo-operations` | pass | 0 | 220 |
-| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 364 |
-| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 199 |
-| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 177 |
-| `npm run smoke:target-retention-operations` | pass | 0 | 176 |
-| `npm run smoke:target-backup-operations` | pass | 0 | 154 |
-| `npm run smoke:retention-delete-policy` | pass | 0 | 165 |
-| `npm run smoke:web-auth-rbac` | pass | 0 | 1471 |
-| `npm run smoke:target-openai-provider-account` | pass | 0 | 200 |
-| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 417 |
-| `npm run smoke:target-local-provider-architecture` | pass | 0 | 287 |
-| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 226 |
-| `npm run smoke:target-provider-operations` | pass | 0 | 284 |
-| `npm run smoke:target-deployment-contract` | pass | 0 | 169 |
-| `npm run smoke:release-artifact-hygiene` | pass | 0 | 237 |
-| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 582 |
-| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 184 |
-| `npm run smoke:backup-restore-drill` | pass | 0 | 246 |
-| `npm run smoke:runtime-isolation` | pass | 0 | 1145 |
-| `npm run package:pilot-export` | pass | 0 | 264 |
-| `npm run smoke:pilot-export-package` | pass | 0 | 194 |
+| `npm run smoke:incident-slo-policy` | pass | 0 | 333 |
+| `npm run smoke:identity-session-admin` | pass | 0 | 343 |
+| `npm run smoke:target-identity-session-operations` | pass | 0 | 537 |
+| `npm run smoke:tenant-storage-admin` | pass | 0 | 425 |
+| `npm run smoke:target-tenant-isolation-operations` | pass | 0 | 268 |
+| `npm run smoke:customer-support-operations` | pass | 0 | 266 |
+| `npm run smoke:support-escalation-review` | pass | 0 | 224 |
+| `npm run smoke:target-support-architecture` | pass | 0 | 280 |
+| `npm run smoke:target-support-operations` | pass | 0 | 266 |
+| `npm run smoke:secret-management` | pass | 0 | 310 |
+| `npm run smoke:target-secret-manager` | pass | 0 | 198 |
+| `npm run smoke:observability-telemetry` | pass | 0 | 864 |
+| `npm run smoke:target-observability-architecture` | pass | 0 | 466 |
+| `npm run smoke:target-observability-operations` | pass | 0 | 309 |
+| `npm run smoke:target-slo-architecture` | pass | 0 | 292 |
+| `npm run smoke:target-slo-operations` | pass | 0 | 343 |
+| `npm run smoke:target-data-lifecycle-architecture` | pass | 0 | 222 |
+| `npm run smoke:target-clean-deployment-architecture` | pass | 0 | 200 |
+| `npm run smoke:target-clean-deployment-operations` | pass | 0 | 425 |
+| `npm run smoke:target-retention-operations` | pass | 0 | 280 |
+| `npm run smoke:target-backup-operations` | pass | 0 | 284 |
+| `npm run smoke:retention-delete-policy` | pass | 0 | 157 |
+| `npm run smoke:web-auth-rbac` | pass | 0 | 1613 |
+| `npm run smoke:target-openai-provider-account` | pass | 0 | 210 |
+| `npm run smoke:target-anthropic-provider-account` | pass | 0 | 240 |
+| `npm run smoke:target-local-provider-architecture` | pass | 0 | 175 |
+| `npm run smoke:target-hermes-provider-architecture` | pass | 0 | 176 |
+| `npm run smoke:target-provider-operations` | pass | 0 | 193 |
+| `npm run smoke:target-deployment-contract` | pass | 0 | 164 |
+| `npm run smoke:release-artifact-hygiene` | pass | 0 | 256 |
+| `npm run smoke:runtime-data-lifecycle` | pass | 0 | 693 |
+| `npm run smoke:tenant-data-lifecycle` | pass | 0 | 194 |
+| `npm run smoke:backup-restore-drill` | pass | 0 | 204 |
+| `npm run smoke:runtime-isolation` | pass | 0 | 834 |
+| `npm run package:pilot-export` | pass | 0 | 219 |
+| `npm run smoke:pilot-export-package` | pass | 0 | 170 |
 
 ## Key Signals
 
@@ -396,7 +396,7 @@ Production-ready remains blocked until the approved target environment produces 
     "machinePathFindingCount": 0,
     "scannedFileCount": 125,
     "secretFindingCount": 0,
-    "verifiedCommit": "8213c4972bc375640f505c971366a4178afe1506"
+    "verifiedCommit": "470069a5942ca60c4a24a7b48fc88bce305e8a1e"
   }
 ```
 
@@ -450,7 +450,7 @@ Production-ready remains blocked until the approved target environment produces 
     "hygiene": "passed",
     "mode": "pilot-export-package",
     "ok": true,
-    "verifiedCommit": "8213c4972bc375640f505c971366a4178afe1506"
+    "verifiedCommit": "470069a5942ca60c4a24a7b48fc88bce305e8a1e"
   }
 ```
 
@@ -460,7 +460,7 @@ Production-ready remains blocked until the approved target environment produces 
 {
     "fileCount": 142,
     "mode": "pilot-export-package",
-    "verifiedCommit": "8213c4972bc375640f505c971366a4178afe1506"
+    "verifiedCommit": "470069a5942ca60c4a24a7b48fc88bce305e8a1e"
   }
 ```
 
