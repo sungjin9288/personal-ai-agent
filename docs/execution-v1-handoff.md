@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-11T00:47:20.280Z
+- generatedAt: 2026-08-11T03:18:19.817Z
 - localDate: 2026-08-11
-- branch: codex/pilot-feedback-evidence-closeout
-- commit: 470069a5942ca60c4a24a7b48fc88bce305e8a1e
-- boundImplementationCommit: 470069a5942ca60c4a24a7b48fc88bce305e8a1e
+- branch: codex/second-workflow-deterministic-rehearsal
+- commit: 6b313657d1bad1ec2cbbeb5503178506b9fc5d70
+- boundImplementationCommit: 6b313657d1bad1ec2cbbeb5503178506b9fc5d70
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/470069a5942ca60c4a24a7b48fc88bce305e8a1e](releases/execution-v1/470069a5942ca60c4a24a7b48fc88bce305e8a1e)
+- immutableSnapshot: [releases/execution-v1/6b313657d1bad1ec2cbbeb5503178506b9fc5d70](releases/execution-v1/6b313657d1bad1ec2cbbeb5503178506b9fc5d70)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed to origin/codex/pilot-feedback-evidence-closeout
+- commitPushStatus: not pushed, origin/codex/second-workflow-deterministic-rehearsal not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

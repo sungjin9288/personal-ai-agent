@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-11T00:47:06.440Z
-- branch: codex/pilot-feedback-evidence-closeout
-- commit: 470069a5942ca60c4a24a7b48fc88bce305e8a1e
-- boundImplementationCommit: 470069a5942ca60c4a24a7b48fc88bce305e8a1e
+- generatedAt: 2026-08-11T03:18:05.462Z
+- branch: codex/second-workflow-deterministic-rehearsal
+- commit: 6b313657d1bad1ec2cbbeb5503178506b9fc5d70
+- boundImplementationCommit: 6b313657d1bad1ec2cbbeb5503178506b9fc5d70
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun

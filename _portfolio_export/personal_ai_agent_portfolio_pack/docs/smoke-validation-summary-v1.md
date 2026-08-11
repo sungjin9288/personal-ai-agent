@@ -6,7 +6,7 @@
 - allProviderComplete: false
 - publicHostedDemoUrl: https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4
 - verificationMode: deterministic local smoke summary
-- lastFullSweep: 290/290 passed with `npm run smoke:all` on 2026-08-11
+- lastFullSweep: 291/291 passed with `npm run smoke:all` on 2026-08-11
 - relatedDemoEvidenceIndex: [demo-evidence-index-v1.md](demo-evidence-index-v1.md)
 - relatedProviderReadinessMatrix: [provider-readiness-matrix-v1.md](provider-readiness-matrix-v1.md)
 - relatedProviderFailureRecoveryDemo: [provider-failure-recovery-demo-v1.md](provider-failure-recovery-demo-v1.md)
@@ -38,6 +38,7 @@ The aggregate runner keeps its command order and final summary contract unchange
 | Demo evidence index | `npm run smoke:demo-evidence-index` | Verifies replay log, summary, screenshot, and browser report references |
 | Recorded walkthrough | `npm run smoke:recorded-walkthrough` | Verifies the public release asset identity, access evidence, storyboard, privacy boundary, and no-hosted-interactive-demo claim |
 | Pilot feedback evidence | `npm run smoke:pilot-feedback` | Verifies one consenting engineering participant's sanitized deterministic-only record, predefined 4/4 feedback answers, content-free hashes, zero external calls/mutations, false production authority, and explicit n=1 non-generalizability |
+| Scenario 2 engineering approval rehearsal | `npm run smoke:engineering-approval` | Verifies one isolated temporary-workspace stub replay through create/run/show/timeline, approval and action inboxes, fixture-only approval, cleanup, content-free hashes, participant count zero, external call/cost zero, and false human/generalizability/productivity/production claims |
 | Architecture walkthrough | `npm run smoke:architecture-code-walkthrough` | Verifies code walkthrough symbols and source paths |
 | Provider readiness | `npm run smoke:provider-readiness-matrix` | Verifies provider catalog, env keys, blockers, and safe claim boundary |
 | Provider recovery | `npm run smoke:provider-failure-recovery-demo` | Verifies fallback/remediation demo linkage and claim boundary |
