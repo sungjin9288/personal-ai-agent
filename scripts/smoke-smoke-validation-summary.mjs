@@ -24,6 +24,7 @@ const expectedCommands = [
   'npm run smoke:demo-evidence-index',
   'npm run smoke:recorded-walkthrough',
   'npm run smoke:pilot-feedback',
+  'npm run smoke:engineering-approval',
   'npm run smoke:architecture-code-walkthrough',
   'npm run smoke:provider-readiness-matrix',
   'npm run smoke:provider-failure-recovery-demo',

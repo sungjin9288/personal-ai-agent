@@ -33,7 +33,9 @@ const boundReleaseAndPilotSources = [
   'config/public-release-v0.1.0.json',
   'config/public-walkthrough-v1.json',
   'config/pilot-feedback-v1.json',
+  'docs/engineering-approval-workflow-rehearsal-v1.md',
   'docs/pilot-feedback-v1.md',
+  'evidence/output-artifacts/engineering-approval-workflow-rehearsal.json',
 ];
 
 test('local v1 closeout binds completed local scope without expanding authority', () => {

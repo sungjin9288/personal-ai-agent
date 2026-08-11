@@ -6,7 +6,7 @@
 - Initial generated at: 2026-07-23
 - Last updated at: 2026-08-06
 - Project type: PoC / MVP 구현
-- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, Council C6–C13 content-free local observations, v1.1a–v1.1f deterministic read-only projections, and the v1.1f Provider CI closeout gate. C13 records one `actual-incompatible` v6 observation and remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, external-provider, concurrent dispatch, deployment, or production authority.
+- Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, Council C6–C13 content-free local observations, v1.1a–v1.1f deterministic read-only projections, the v1.1f Provider CI closeout gate, and one content-free Scenario 2 engineering approval rehearsal. The rehearsal uses an isolated temporary workspace and stub provider only; it adds no participant, human approval, feedback, generalizability, productivity, external-provider, deployment, or production authority claim. C13 records one `actual-incompatible` v6 observation and remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, external-provider, concurrent dispatch, deployment, or production authority.
 - F1.25 private collection-gap replan shadow: trusted F1.24 authority is independently rebuilt before the F1.2 collection plan is recalculated in memory; projected 15 reviewed examples, 5 scopes, and 7 cases leave tracked F1.2 evidence, intake, collection, audit, training, provider, submission, deployment, and production boundaries unchanged or false
 - F1.24 private combined readiness impact shadow: one exact reconstructed F1.21 record and one exact F1.20 replay case are composed only in the deterministic in-memory projection; five sufficiency failures remain and all mutation, audit, training, provider, submission, deployment, and production boundaries remain false
 - F1.23 private answer-quality readiness impact shadow: final F1.20 replay lineage is revalidated and its frozen case is projected only in the deterministic in-memory suite; dataset/export digests and all training, provider, submission, deployment, and production boundaries remain unchanged or false
@@ -74,6 +74,7 @@
 - `evidence/output-artifacts/local-council-strict-prompt-candidate-qualification.json`
 - `evidence/output-artifacts/local-council-v6-actual-compatibility-attempt.json`
 - `evidence/output-artifacts/local-council-v6-actual-compatibility-observation.json`
+- `evidence/output-artifacts/engineering-approval-workflow-rehearsal.json`
 - `evidence/output-artifacts/local-v1-completion-closeout.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay-full-query-baseline.json`
 - `evidence/output-artifacts/local-relevance-shadow-replay.json`
@@ -161,7 +162,7 @@
 
 ## Verified Features
 
-- Full deterministic smoke sweep: 290/290 passed with `npm run smoke:all` on 2026-08-11; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
+- Full deterministic smoke sweep: 291/291 passed with `npm run smoke:all` on 2026-08-11; browser E2E, actual Ollama inference, and host-bound Darwin provenance commands remain separately replayed as listed below
 - CLI smoke flow: verified with `npm run smoke`
 - Mission/session creation: verified with `scripts/bootstrap-local.mjs --run --provider stub`
 - Session-scoped artifact generation: verified with runtime mission artifact list
@@ -175,6 +176,7 @@
 - Operator surface browser screenshots: generated with `npm run evidence:operator-surface-demo`
 - Published recorded walkthrough: public `walkthrough-v1` GitHub release asset verified with unauthenticated HTTP 200, exact byte/SHA identity, privacy review, and `npm run smoke:recorded-walkthrough`
 - Sanitized pilot feedback: one consenting engineering participant completed one approved non-sensitive deterministic-only session; exact record integrity, 8/8 demo steps, 4/4 stub role runs, 4/4 predefined feedback answers, zero external calls/mutations, false production authority, and n=1 limitations are verified with `npm run smoke:pilot-feedback`
+- Scenario 2 engineering approval rehearsal: one isolated temporary-workspace stub replay is content-free and bound to implementation commit `a7870fac0b59ed151c47180c99686aae2aa14311`; create/run/show/timeline, approval/action inboxes, reviewer pass, fixture-only approval, cleanup, participant 0, external call/cost 0, and false human/generalizability/productivity/production claims are verified with `npm run smoke:engineering-approval`
 - Architecture code walkthrough: verified with `npm run smoke:architecture-code-walkthrough`
 - Provider readiness matrix: verified with `npm run smoke:provider-readiness-matrix`
 - Provider failure recovery demo: verified with `npm run smoke:provider-failure-recovery-demo`
@@ -304,6 +306,7 @@
 - Smoke validation summary: verified with `npm run smoke:smoke-validation-summary`
 - External evidence blockers: verified with `npm run smoke:external-evidence-blockers`
 - Pilot feedback evidence: verified with `npm run smoke:pilot-feedback`
+- Scenario 2 engineering approval rehearsal: verified with `npm run smoke:engineering-approval`; fixture approval is not human evidence and the existing n=1 pilot plus four external blockers remain unchanged
 - External evidence remaining after local-v1 closeout: `anthropic-billing-live-validation`, `hermes-target-provider-architecture-live-validation`, `target-local-provider-architecture`, and `hosted-saas-or-production-deployment`. The former `public-or-private-walkthrough-url` blocker is closed by the exact public asset record in `config/public-walkthrough-v1.json`; the former `actual-pilot-feedback-and-metrics` blocker is closed only for one consenting deterministic-only participant by `config/pilot-feedback-v1.json` and `docs/pilot-feedback-v1.md`, without a generalized usage or impact claim.
 - Web API health/meta/providers/execution status: verified with `curl`
 - Web operator console: verified with Playwright screenshot

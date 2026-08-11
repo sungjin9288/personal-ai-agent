@@ -23,6 +23,13 @@ assert.equal(result.scannedFiles.includes('docs/execution-v1-handoff.md'), true)
 assert.equal(result.scannedFiles.includes('docs/demo-evidence-index-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/recorded-walkthrough-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/pilot-feedback-v1.md'), true);
+assert.equal(result.scannedFiles.includes('docs/engineering-approval-workflow-rehearsal-v1.md'), true);
+assert.equal(
+  result.scannedFiles.includes(
+    'evidence/output-artifacts/engineering-approval-workflow-rehearsal.json',
+  ),
+  true,
+);
 assert.equal(result.scannedFiles.includes('docs/architecture-code-walkthrough-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/provider-readiness-matrix-v1.md'), true);
 assert.equal(result.scannedFiles.includes('docs/provider-failure-recovery-demo-v1.md'), true);

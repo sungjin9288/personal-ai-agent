@@ -27,6 +27,7 @@ export const LOCAL_V1_SOURCE_DOCUMENTS = [
   'docs/ml-rag-development-plan-v1.md',
   'docs/multi-agent-council-development-plan-v1.md',
   'docs/external-evidence-blockers-v1.md',
+  'docs/engineering-approval-workflow-rehearsal-v1.md',
   'docs/pilot-feedback-v1.md',
   'docs/roadmap.md',
   'docs/release-readiness-v1.md',
@@ -34,6 +35,7 @@ export const LOCAL_V1_SOURCE_DOCUMENTS = [
   'docs/local-v1-completion-closeout-v1.md',
   'docs/smoke-validation-summary-v1.md',
   'evidence/evidence_manifest.md',
+  'evidence/output-artifacts/engineering-approval-workflow-rehearsal.json',
   'package.json',
 ];
 

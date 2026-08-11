@@ -300,6 +300,7 @@
     "demo:local": "node scripts/demo-local.mjs",
     "rehearse:engineering-approval": "node scripts/rehearse-engineering-approval-workflow.mjs",
     "evidence:engineering-approval": "node scripts/rehearse-engineering-approval-workflow.mjs --output evidence/output-artifacts/engineering-approval-workflow-rehearsal.json",
+    "smoke:engineering-approval": "node scripts/smoke-engineering-approval-workflow-rehearsal.mjs",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",
