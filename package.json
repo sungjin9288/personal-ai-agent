@@ -298,6 +298,8 @@
     "smoke:external-evidence-blockers": "node scripts/smoke-external-evidence-blockers.mjs",
     "smoke:demo-local": "node scripts/smoke-demo-local.mjs",
     "demo:local": "node scripts/demo-local.mjs",
+    "rehearse:engineering-approval": "node scripts/rehearse-engineering-approval-workflow.mjs",
+    "evidence:engineering-approval": "node scripts/rehearse-engineering-approval-workflow.mjs --output evidence/output-artifacts/engineering-approval-workflow-rehearsal.json",
     "smoke:process-timeout-utils": "node scripts/smoke-process-timeout-utils.mjs",
     "verify:execution-v1": "node scripts/verify-execution-v1.mjs",
     "evidence:execution-v1": "node scripts/build-execution-v1-evidence.mjs",
