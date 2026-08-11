@@ -22,6 +22,8 @@ const implementationCommit = artifact.implementationCommit;
 const closeout = sourceDocumentTexts['docs/local-v1-completion-closeout-v1.md'];
 const councilPlan = sourceDocumentTexts['docs/multi-agent-council-development-plan-v1.md'];
 const externalBlockers = sourceDocumentTexts['docs/external-evidence-blockers-v1.md'];
+const pilotFeedback = sourceDocumentTexts['docs/pilot-feedback-v1.md'];
+const pilotFeedbackRecord = JSON.parse(sourceDocumentTexts['config/pilot-feedback-v1.json']);
 const mlRagPlan = sourceDocumentTexts['docs/ml-rag-development-plan-v1.md'];
 const packageJson = readJson('package.json');
 const readme = sourceDocumentTexts['README.md'];
@@ -72,6 +74,10 @@ assert.match(readme, /Council local compatibility[\s\S]*actual-incompatible/);
 assert.match(readme, /default answer path remains unchanged/);
 assert.match(externalBlockers, /publicHostedDemoUrl: https:\/\/github\.com\/sungjin9288\/personal-ai-agent\/releases\/download\/walkthrough-v1\/personal-ai-agent-recorded-walkthrough-v1\.mp4/);
 assert.match(externalBlockers, /productionReadyClaim: false/);
+assert.match(pilotFeedback, /status: sanitized-single-participant-evidence/);
+assert.match(pilotFeedback, /positiveAnswers: 4\/4/);
+assert.equal(pilotFeedbackRecord.participant.count, 1);
+assert.equal(pilotFeedbackRecord.authority.productionReadyClaim, false);
 
 console.log(JSON.stringify({
   implementationCommit,

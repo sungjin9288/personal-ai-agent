@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-10T15:04:27.494Z
+- generatedAt: 2026-08-11T00:10:18.839Z
 - localDate: 2026-08-11
-- branch: codex/execution-evidence-reliability
-- commit: 60ba6e5f42413608641dc977287ed55a6817c487
-- boundImplementationCommit: 60ba6e5f42413608641dc977287ed55a6817c487
+- branch: codex/pilot-feedback-evidence-closeout
+- commit: 8213c4972bc375640f505c971366a4178afe1506
+- boundImplementationCommit: 8213c4972bc375640f505c971366a4178afe1506
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/60ba6e5f42413608641dc977287ed55a6817c487](releases/execution-v1/60ba6e5f42413608641dc977287ed55a6817c487)
+- immutableSnapshot: [releases/execution-v1/8213c4972bc375640f505c971366a4178afe1506](releases/execution-v1/8213c4972bc375640f505c971366a4178afe1506)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/execution-evidence-reliability not found
+- commitPushStatus: not pushed, origin/codex/pilot-feedback-evidence-closeout not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f

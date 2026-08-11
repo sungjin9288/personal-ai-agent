@@ -28,10 +28,12 @@ const sourceDocumentTexts = Object.fromEntries(
     document === 'package.json' ? '{"scripts":"canonical"}' : `${document} source\n`,
   ]),
 );
-const publicReleaseSources = [
+const boundReleaseAndPilotSources = [
   'CHANGELOG.md',
   'config/public-release-v0.1.0.json',
   'config/public-walkthrough-v1.json',
+  'config/pilot-feedback-v1.json',
+  'docs/pilot-feedback-v1.md',
 ];
 
 test('local v1 closeout binds completed local scope without expanding authority', () => {
@@ -67,7 +69,7 @@ test('local v1 closeout binds completed local scope without expanding authority'
   assert.equal(artifact.c13.retryCount, 0);
   assert.equal(artifact.c13.failureStage, 'structured-output');
   assert.equal(artifact.c13.failureKind, 'council-contract:invalid-output');
-  for (const document of publicReleaseSources) {
+  for (const document of boundReleaseAndPilotSources) {
     assert.ok(LOCAL_V1_SOURCE_DOCUMENTS.includes(document));
     assert.equal(artifact.sourceDocumentSha256[document], sha256Text(sourceDocumentTexts[document]));
   }

@@ -5,7 +5,7 @@
 - 현재 구현 완료: Node.js ESM CLI/web runtime, local JSON store, workspace/mission/session/artifact/approval model, provider registry/adapters, D4 service refactoring, local RAG fixture/shadow contracts, Council C1–C13 contracts and observations, v1.1a/v1.1b read-only schedule projections, v1.1c deterministic structural envelope shadow, v1.1d retry lineage shadow, v1.1e retry terminality shadow, v1.1f retry terminality read-only operator surface, v1.1f deterministic Provider CI gate, smoke scripts, GitHub Actions provider smoke
 - 현재 closeout: `local-v1-complete-external-evidence-open`. [local-v1-completion-closeout-v1.md](local-v1-completion-closeout-v1.md)의 v2 `completionMatrix`에서 `localProduct: complete`만 repository-local no-cost v1의 완료를 뜻한다. `provider: partial-external-blocked`, `deployment: external-blocked`, `privateDataTraining: approval-blocked-unverified`, `rollout: approval-blocked-unverified`는 각각 외부 증거 또는 owner approval 전까지 닫혀 있다. builder-owned pre-closeout receipt와 post-artifact final gates로 닫으며 self-referential verification은 주장하지 않는다. C13은 `actual-incompatible`, `keep-stub-only`다. F1.3 request protocol은 완료됐고 실제 owner decision, private-data evaluation과 training authority는 보류한다.
 - maintenance closure: published GitHub v0.1.0 asset identity는 검증 시점의 fixed observation record로 보존하고, repository-local Portfolio ZIP candidate와 size/SHA-256 metadata를 분리한다. 이 offline regression은 release upload, download, or deletion authority를 만들지 않는다.
-- 외부 증거 필요: Anthropic billing/credit과 live validation, Hermes target architecture/live validation, target local provider architecture, actual pilot feedback/metrics, hosted SaaS or production deployment
+- 외부 증거 필요: Anthropic billing/credit과 live validation, Hermes target architecture/live validation, target local provider architecture, hosted SaaS or production deployment
 - 미구현 또는 미검증: hosted production SaaS, full production multi-tenant isolation, production-ready all-provider deployment, hosted interactive demo or production service link
 
 ## 2. Phase 1 - MVP 완성
@@ -96,7 +96,7 @@
 |---|---|---|---|
 | 보류 | F1.3 request의 owner/private-data 승인 판단 | deterministic protocol은 완료됐지만 actual private-data authority는 보류 | owner-only private decision 또는 explicit deferral |
 | 외부 증거 필요 | Anthropic/Hermes/target local provider 증거 | provider adapter와 live readiness claim을 구분 | target-boundary provider evidence |
-| 외부 증거 필요 | Pilot feedback 증거 | local replay와 외부 사용성·효과 claim을 구분 | sanitized feedback evidence |
+| 완료 | Pilot feedback 증거 | n=1 deterministic-only session과 일반화 가능한 사용성·효과 claim을 구분 | sanitized feedback evidence + fail-closed smoke |
 | 외부 증거 필요 | Hosted deployment evidence | local pilot preparation과 hosted production claim을 구분 | deployment, identity, tenant, rollback, observability evidence |
 
 ## 7. 대표 demo 보조 증거 현황
@@ -171,7 +171,7 @@
 - 완료: external evidence blocker register와 smoke guard
 - 현재 claim boundary: provider-scoped local-first pilot support evidence
 - 완료된 polish: published public recorded walkthrough URL과 exact asset identity
-- 남은 polish: actual pilot feedback and metric evidence
+- 완료된 polish: consenting engineering participant 1명의 sanitized deterministic-only feedback과 predefined metric evidence; 일반화·외부 provider·customer impact claim은 제외
 
 ## 8. Council C1–C13 closeout
 

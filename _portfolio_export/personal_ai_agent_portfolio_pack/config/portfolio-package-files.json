@@ -11,6 +11,7 @@
     "README.md",
     "SECURITY.md",
     "SUPPORT.md",
+    "config/pilot-feedback-v1.json",
     "config/portfolio-package-files.json",
     "config/public-release-v0.1.0.json",
     "config/public-walkthrough-v1.json",
@@ -38,6 +39,7 @@
     "docs/ml-rag-development-plan-v1.md",
     "docs/multi-agent-council-development-plan-v1.md",
     "docs/operator-surface-demo-evidence-v1.md",
+    "docs/pilot-feedback-v1.md",
     "docs/project-card.md",
     "docs/provider-failure-recovery-demo-v1.md",
     "docs/provider-readiness-matrix-v1.md",
@@ -195,6 +197,7 @@
     "scripts/smoke-local-council-v6-actual-compatibility-observation.mjs",
     "scripts/smoke-local-evidence-gated-answer-claim-attribution.mjs",
     "scripts/smoke-local-v1-completion-closeout.mjs",
+    "scripts/smoke-pilot-feedback.mjs",
     "src/cli.mjs",
     "src/core/council-blueprint-preview.mjs",
     "src/core/council-concurrent-envelope-shadow.mjs",
@@ -213,6 +216,7 @@
     "src/core/local-council-strict-prompt-candidate-qualification.mjs",
     "src/core/local-council-v6-actual-compatibility-observation.mjs",
     "src/core/local-v1-completion-closeout.mjs",
+    "src/core/pilot-feedback-evidence.mjs",
     "src/providers/structured-provider-utils.mjs",
     "src/web/public/app.js",
     "src/web/public/lib/app-state.js",
@@ -239,6 +243,7 @@
     "test/local-council-v6-actual-compatibility-observation.test.mjs",
     "test/local-v1-completion-closeout.test.mjs",
     "test/local-v1-precloseout-verification.test.mjs",
+    "test/pilot-feedback-evidence.test.mjs",
     "test/smoke-council-blueprint-preview-stable-snapshot.test.mjs"
   ]
 }
