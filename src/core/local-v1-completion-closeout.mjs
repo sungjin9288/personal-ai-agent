@@ -22,10 +22,12 @@ export const LOCAL_V1_SOURCE_DOCUMENTS = [
   'README.md',
   'config/public-release-v0.1.0.json',
   'config/public-walkthrough-v1.json',
+  'config/pilot-feedback-v1.json',
   'docs/refactoring-development-plan-v1.md',
   'docs/ml-rag-development-plan-v1.md',
   'docs/multi-agent-council-development-plan-v1.md',
   'docs/external-evidence-blockers-v1.md',
+  'docs/pilot-feedback-v1.md',
   'docs/roadmap.md',
   'docs/release-readiness-v1.md',
   'docs/product-plan-v1.md',
@@ -39,7 +41,6 @@ export const LOCAL_V1_EXTERNAL_BLOCKER_IDS = [
   'anthropic-billing-live-validation',
   'hermes-target-provider-architecture-live-validation',
   'target-local-provider-architecture',
-  'actual-pilot-feedback-and-metrics',
   'hosted-saas-or-production-deployment',
 ];
 

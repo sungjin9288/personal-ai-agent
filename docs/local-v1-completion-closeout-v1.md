@@ -33,7 +33,7 @@ completionMatrix:
 | Local RAG and answer-quality shadows | Complete as fixture and bounded local-observation evidence; default answer path remains unchanged | Actual-user evaluation, semantic attribution, activation, training, and rollout remain denied |
 | Fine-tuning F1.1–F1.25 protocols | Complete as deterministic, content-free governance and synthetic-shadow contracts | F1.3 owner decision, private data, collection, candidate review, training, provider submission, and rollout remain unrecorded or unauthorized |
 | Council C1–C13 | Complete as deterministic contracts and recorded local observations; C13 is `actual-incompatible`, `chairReachability: not-reached`, and `keep-stub-only` | No retry, repair, promotion, runtime activation, training, or private-data authority follows from C13 |
-| Portfolio and release evidence | Complete for local review after artifact synchronization | Five external evidence blockers remain open; the public recorded walkthrough URL is access-verified |
+| Portfolio and release evidence | Complete for local review after artifact synchronization | Four external evidence blockers remain open; the public walkthrough and bounded n=1 deterministic pilot feedback are verified |
 
 ## Public Release Source Binding
 
@@ -52,10 +52,11 @@ The completion artifact must retain the blocker register without treating any ro
 1. `anthropic-billing-live-validation` — Anthropic billing and live validation
 2. `hermes-target-provider-architecture-live-validation` — Hermes target provider architecture and live validation
 3. `target-local-provider-architecture` — target local provider architecture
-4. `actual-pilot-feedback-and-metrics` — actual pilot feedback and measured metrics
-5. `hosted-saas-or-production-deployment` — hosted SaaS or production deployment
+4. `hosted-saas-or-production-deployment` — hosted SaaS or production deployment
 
 The former `public-or-private-walkthrough-url` blocker is closed by the access-verified `walkthrough-v1` GitHub release asset recorded in `config/public-walkthrough-v1.json`. This closes only the recorded-video URL evidence gap and does not change provider, deployment, private-data/training, rollout, or production authority.
+
+The former `actual-pilot-feedback-and-metrics` blocker is closed by the sanitized n=1 deterministic-only record in `config/pilot-feedback-v1.json` and `docs/pilot-feedback-v1.md`. This closes only the existence of one consenting engineering participant's bounded feedback and predefined local metrics. It does not establish external-provider validation, customer impact, productivity, cost savings, SLA performance, generalizability, deployment, or production readiness.
 
 ## Verification Boundary
 

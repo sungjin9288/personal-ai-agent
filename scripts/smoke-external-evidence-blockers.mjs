@@ -15,6 +15,8 @@ const smokeSummary = readRequiredFile('docs/smoke-validation-summary-v1.md');
 const recordedWalkthrough = readRequiredFile('docs/recorded-walkthrough-v1.md');
 const releaseReadiness = readRequiredFile('docs/release-readiness-v1.md');
 const productPlan = readRequiredFile('docs/product-plan-v1.md');
+const pilotFeedback = readRequiredFile('docs/pilot-feedback-v1.md');
+const pilotFeedbackRecord = JSON.parse(readRequiredFile('config/pilot-feedback-v1.json'));
 const publicRecord = JSON.parse(readRequiredFile('config/public-walkthrough-v1.json'));
 const publicUrl =
   'https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4';
@@ -22,7 +24,6 @@ const expectedBlockers = [
   'Anthropic billing and live validation',
   'Hermes target provider architecture and live validation',
   'Target local provider architecture',
-  'Actual pilot feedback and metrics',
   'Hosted SaaS or production deployment',
 ];
 
@@ -30,6 +31,7 @@ assert.equal(
   packageJson.scripts['smoke:external-evidence-blockers'],
   'node scripts/smoke-external-evidence-blockers.mjs',
 );
+assert.equal(packageJson.scripts['smoke:pilot-feedback'], 'node scripts/smoke-pilot-feedback.mjs');
 
 for (const term of [
   '# External Evidence Blockers v1',
@@ -47,6 +49,7 @@ for (const term of [
   'npm run live:execution-v1:hermes',
   'npm run live:execution-v1:local',
   'npm run smoke:recorded-walkthrough',
+  'npm run smoke:pilot-feedback',
   'npm run smoke:demo-evidence-index',
   'npm run smoke:target-deployment-contract',
 ]) {
@@ -74,27 +77,27 @@ for (const [sourceName, sourceText, expectedTerm] of [
   [
     'roadmap',
     roadmap,
-    '| 외부 증거 필요 | Pilot feedback 증거 | local replay와 외부 사용성·효과 claim을 구분 | sanitized feedback evidence |',
+    '| 완료 | Pilot feedback 증거 | n=1 deterministic-only session과 일반화 가능한 사용성·효과 claim을 구분 | sanitized feedback evidence + fail-closed smoke |',
   ],
   [
     'evidence gallery',
     evidenceGallery,
-    'external account, provider architecture, pilot feedback, metrics, and hosted deployment blocker register; public recorded walkthrough URL is closed evidence',
+    'external account, provider architecture, and hosted deployment blocker register; public recorded walkthrough URL and sanitized single-participant deterministic pilot feedback are closed evidence',
   ],
   [
     'evidence gallery usage notes',
     evidenceGallery,
-    'to explain why Anthropic, Hermes, target local provider, pilot feedback, metrics, and hosted deployment claims remain blocked, while the public recorded walkthrough URL is closed evidence.',
+    'to explain why Anthropic, Hermes, target local provider, and hosted deployment claims remain blocked, while the public recorded walkthrough URL and sanitized single-participant deterministic pilot feedback are closed evidence.',
   ],
   [
     'smoke validation summary',
     smokeSummary,
-    'Verifies external account, provider architecture, pilot feedback, metrics, and hosted deployment blockers remain explicit while the public recorded walkthrough URL remains closed evidence',
+    'Verifies external account, provider architecture, and hosted deployment blockers remain explicit while the public recorded walkthrough URL and sanitized single-participant deterministic pilot feedback remain closed evidence',
   ],
   [
     'evidence checklist',
     evidenceChecklist,
-    'external account/provider architecture/pilot feedback/hosted deployment blockers and closed public recorded walkthrough URL verified by `npm run smoke:external-evidence-blockers`',
+    'external account/provider architecture/hosted deployment blockers plus closed public walkthrough and sanitized pilot feedback verified by `npm run smoke:external-evidence-blockers`',
   ],
 ]) {
   assertContains(sourceText, expectedTerm, `${sourceName} missing the current walkthrough blocker boundary`);
@@ -102,6 +105,7 @@ for (const [sourceName, sourceText, expectedTerm] of [
 
 for (const [sourceName, sourceText, staleTerm] of [
   ['roadmap', roadmap, 'Walkthrough URL와 pilot feedback 증거'],
+  ['roadmap', roadmap, '| 외부 증거 필요 | Pilot feedback 증거 |'],
   [
     'evidence gallery',
     evidenceGallery,
@@ -168,7 +172,7 @@ for (const risky of [
   'Anthropic readiness is complete',
   'Hermes live readiness is complete',
   'target local provider production readiness is complete',
-  'pilot feedback, customer impact, cost, SLA, or productivity metrics are proven',
+  'generalized pilot feedback, customer impact, cost, SLA, or productivity metrics are proven',
   'hosted SaaS or production deployment readiness is complete',
 ]) {
   assert.equal(
@@ -194,11 +198,18 @@ for (const riskyAchievement of [
 }
 
 assertNoLocalPaths(doc);
+assertNoLocalPaths(pilotFeedback);
 assertContains(doc, '| Public recorded walkthrough URL |', 'closed walkthrough evidence row missing');
+assertContains(doc, '| Sanitized single-participant deterministic pilot feedback |', 'closed pilot feedback row missing');
 assertContains(doc, publicUrl, 'closed walkthrough URL missing');
 assert.equal(publicRecord.asset.id, 507595206);
 assert.equal(publicRecord.asset.sizeBytes, 45936551);
 assert.equal(publicRecord.productionReadyClaim, false);
+assert.equal(pilotFeedbackRecord.participant.count, 1);
+assert.equal(pilotFeedbackRecord.scope.providerMode, 'deterministic-only');
+assert.equal(pilotFeedbackRecord.feedback.positiveAnswerCount, 4);
+assert.equal(pilotFeedbackRecord.feedback.questionCount, 4);
+assert.equal(pilotFeedbackRecord.authority.productionReadyClaim, false);
 
 console.log(
   JSON.stringify(
@@ -257,5 +268,6 @@ function combinedText() {
     smokeSummary,
     recordedWalkthrough,
     releaseReadiness,
+    pilotFeedback,
   ].join('\n\n');
 }

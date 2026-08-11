@@ -85,7 +85,7 @@ Do not claim:
 - Production-ready deployment.
 - All-provider live validation.
 - Hosted interactive demo or production service URL.
-- Real pilot feedback, operating metrics, or customer impact numbers.
+- Generalizable pilot feedback, operating metrics, or customer impact numbers. One sanitized n=1 deterministic-only feedback record exists separately.
 
 ## Verification
 

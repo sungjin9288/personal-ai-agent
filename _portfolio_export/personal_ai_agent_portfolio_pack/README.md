@@ -82,6 +82,7 @@ Representative demo evidence:
 - screenshot: `evidence/screenshots/representative-release-demo-release-status.png`
 - walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
 - Recorded walkthrough evidence: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
+- Sanitized pilot feedback evidence: [docs/pilot-feedback-v1.md](docs/pilot-feedback-v1.md)
 - operator surface support map: [docs/operator-surface-demo-evidence-v1.md](docs/operator-surface-demo-evidence-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
 - Memory retrieval quality fixture: [docs/memory-retrieval-quality-fixture-v1.md](docs/memory-retrieval-quality-fixture-v1.md)
@@ -106,6 +107,7 @@ Representative demo evidence:
 | Local provider pilot proof | Archived for the configured local rehearsal boundary |
 | Council local compatibility | C13 recorded `actual-incompatible`; default remains `keep-stub-only` |
 | Local RAG answer shadows | Fixture and bounded-observation evidence only; default answer path remains unchanged |
+| Deterministic pilot feedback | One consenting engineering participant; sanitized n=1 evidence only, not generalizable |
 | Anthropic live validation | Blocked by provider account billing/credit evidence |
 | Hermes live validation | Blocked until target Hermes provider architecture/model evidence is supplied |
 | Hosted SaaS / production deployment | Not implemented; target evidence only |
@@ -307,6 +309,7 @@ npm run smoke:env-example
 npm run smoke:demo-local
 npm run smoke:demo-evidence-index
 npm run smoke:recorded-walkthrough
+npm run smoke:pilot-feedback
 npm run smoke:architecture-code-walkthrough
 npm run smoke:provider-readiness-matrix
 npm run smoke:provider-failure-recovery-demo
@@ -541,6 +544,7 @@ The repository also includes many narrower smoke scripts in `package.json` for p
 - Release readiness decision: [docs/release-readiness-v1.md](docs/release-readiness-v1.md)
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
 - Recorded walkthrough evidence: [docs/recorded-walkthrough-v1.md](docs/recorded-walkthrough-v1.md)
+- Sanitized pilot feedback evidence: [docs/pilot-feedback-v1.md](docs/pilot-feedback-v1.md)
 - Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)
@@ -580,10 +584,11 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - The target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence.
 - Hosted identity/session, hosted tenant isolation, target secret manager, target observability/SLO, and production clean deployment remain target evidence work.
 - The public recorded walkthrough is access-verified; there is no hosted interactive demo. The underlying demo remains the credential-free representative replay and evidence package.
-- The published video is bound to tag `walkthrough-v1`, capture commit `a4034fde5a47b7d246eab9573763663a366ca8ab`, 45,936,551 bytes, and SHA-256 `9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47`; it does not expand the production-ready, all-provider, hosted SaaS, pilot-feedback, or metrics claim boundary.
+- The published video is bound to tag `walkthrough-v1`, capture commit `a4034fde5a47b7d246eab9573763663a366ca8ab`, 45,936,551 bytes, and SHA-256 `9b1655542dcf4f87a118d5094bd6be4743cbd9a4c3bd202cf1663e5f08c3ea47`; by itself it does not expand the production-ready, all-provider, hosted SaaS, feedback, or metrics claim boundary.
+- One consenting engineering participant completed one approved non-sensitive deterministic-only session. The sanitized record retains 8/8 demo steps, 4/4 stub role runs, 4/4 predefined binary feedback answers, content-free hashes, zero external provider calls, zero workspace mutations, and `productionReadyClaim: false`. This n=1 evidence is not external-provider validation, customer-impact/productivity/cost/SLA evidence, or a generalizable result (`npm run smoke:pilot-feedback`).
 - Customer usage metrics, cost reduction claims, and production SLA claims are intentionally not included because this repository does not contain supporting evidence for them.
 - Council C13 made one unretried local `qwen2.5:3b` compatibility observation and stopped at research opening with `council-contract:invalid-output`; the result is `actual-incompatible`, chair reachability is `not-reached`, and the default remains `keep-stub-only`. It grants no repair, promotion, activation, training, private-data, deployment, or production authority.
-- Council v1.1e is a deterministic core-only retry-terminality projection. It exact-binds v1.1d before accepting a timeout-only hypothetical attempt 2 outcome; failed blockers are rejected without recoverability evidence, and a completed retry opens a projected next barrier only after every sibling completes. It does not authorize or execute retry, dispatch, provider/model/Ollama/C13/network work, or filesystem/store writes. The current full sweep passes 289/289 commands with `npm run smoke:all`.
+- Council v1.1e is a deterministic core-only retry-terminality projection. It exact-binds v1.1d before accepting a timeout-only hypothetical attempt 2 outcome; failed blockers are rejected without recoverability evidence, and a completed retry opens a projected next barrier only after every sibling completes. It does not authorize or execute retry, dispatch, provider/model/Ollama/C13/network work, or filesystem/store writes. The current full sweep passes 290/290 commands with `npm run smoke:all`.
 - Local RAG answer-quality and evidence-gated shadows are fixture or bounded local-observation evidence. They do not activate the default answer path or establish actual-user quality, semantic attribution, independent review, training, or rollout authority.
 - The current fine-tuning packet is structurally reviewable but fails the cost-free data sufficiency gate: 4 accepted examples, a 3/1 train-validation split, 4 mission scopes, and 2 passing baseline cases. The initial 20/16/4, 10-scope, and 10-case policy is a development stop condition, not a model-quality or production-performance claim (`npm run smoke:fine-tuning-data-sufficiency`). Candidate review, training, provider submission, and rollout remain unauthorized.
 - The reviewed-data collection plan converts those deficits into one non-overlapping minimum of 16 additional reviewed examples, including 6 new mission scopes, plus 8 separate answer-quality baseline cases (`npm run smoke:fine-tuning-data-collection-plan`). It stores no training content, creates no synthetic records, and grants no collection, candidate-review, training, submission, or rollout authority.
@@ -659,6 +664,7 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Demo walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
 - Recorded walkthrough: [public video](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4) · [evidence record](docs/recorded-walkthrough-v1.md)
+- Pilot feedback: [sanitized n=1 deterministic evidence](docs/pilot-feedback-v1.md)
 - Architecture code walkthrough: [docs/architecture-code-walkthrough-v1.md](docs/architecture-code-walkthrough-v1.md)
 - Provider readiness matrix: [docs/provider-readiness-matrix-v1.md](docs/provider-readiness-matrix-v1.md)
 - Provider failure recovery demo: [docs/provider-failure-recovery-demo-v1.md](docs/provider-failure-recovery-demo-v1.md)

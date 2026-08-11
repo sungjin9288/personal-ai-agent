@@ -17,6 +17,7 @@ const evidenceChecklistPath = path.join(repoDir, 'docs', 'evidence-checklist.md'
 const portfolioManifestPath = path.join(repoDir, 'portfolio_manifest.md');
 const publicReleasePath = path.join(repoDir, 'config', 'public-release-v0.1.0.json');
 const publicWalkthroughPath = path.join(repoDir, 'config', 'public-walkthrough-v1.json');
+const pilotFeedbackRecordPath = path.join(repoDir, 'config', 'pilot-feedback-v1.json');
 const zipPath = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack.zip');
 const packDir = path.join(repoDir, '_portfolio_export', 'personal_ai_agent_portfolio_pack');
 
@@ -26,6 +27,7 @@ const evidenceChecklist = readRequiredFile(evidenceChecklistPath);
 const portfolioManifest = readRequiredFile(portfolioManifestPath);
 const publicRelease = JSON.parse(readRequiredFile(publicReleasePath));
 const publicWalkthrough = JSON.parse(readRequiredFile(publicWalkthroughPath));
+const pilotFeedbackRecord = JSON.parse(readRequiredFile(pilotFeedbackRecordPath));
 
 assert.equal(packageJson.scripts['smoke:portfolio-zip'], 'node scripts/smoke-portfolio-zip.mjs');
 assert.equal(fs.existsSync(zipPath), true, 'portfolio ZIP missing');
@@ -52,11 +54,13 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/README.md',
   'personal_ai_agent_portfolio_pack/config/public-release-v0.1.0.json',
   'personal_ai_agent_portfolio_pack/config/public-walkthrough-v1.json',
+  'personal_ai_agent_portfolio_pack/config/pilot-feedback-v1.json',
   'personal_ai_agent_portfolio_pack/links.md',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/bug_report.yml',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/security_report.yml',
   'personal_ai_agent_portfolio_pack/.github/ISSUE_TEMPLATE/config.yml',
   'personal_ai_agent_portfolio_pack/docs/recorded-walkthrough-v1.md',
+  'personal_ai_agent_portfolio_pack/docs/pilot-feedback-v1.md',
   'personal_ai_agent_portfolio_pack/docs/architecture-code-walkthrough-v1.md',
   'personal_ai_agent_portfolio_pack/docs/provider-readiness-matrix-v1.md',
   'personal_ai_agent_portfolio_pack/docs/provider-failure-recovery-demo-v1.md',
@@ -72,12 +76,15 @@ for (const requiredEntry of [
   'personal_ai_agent_portfolio_pack/docs/council-concurrent-retry-surface-v1.1f.md',
   'personal_ai_agent_portfolio_pack/docs/operator-surface-demo-evidence-v1.md',
   'personal_ai_agent_portfolio_pack/src/core/local-v1-completion-closeout.mjs',
+  'personal_ai_agent_portfolio_pack/src/core/pilot-feedback-evidence.mjs',
   'personal_ai_agent_portfolio_pack/scripts/build-local-v1-completion-closeout.mjs',
   'personal_ai_agent_portfolio_pack/scripts/local-v1-precloseout-verification.mjs',
   'personal_ai_agent_portfolio_pack/scripts/run-all-smokes.mjs',
   'personal_ai_agent_portfolio_pack/scripts/smoke-local-v1-completion-closeout.mjs',
+  'personal_ai_agent_portfolio_pack/scripts/smoke-pilot-feedback.mjs',
   'personal_ai_agent_portfolio_pack/test/local-v1-completion-closeout.test.mjs',
   'personal_ai_agent_portfolio_pack/test/local-v1-precloseout-verification.test.mjs',
+  'personal_ai_agent_portfolio_pack/test/pilot-feedback-evidence.test.mjs',
   'personal_ai_agent_portfolio_pack/evidence/output-artifacts/local-v1-completion-closeout.json',
   'personal_ai_agent_portfolio_pack/src/core/council-concurrent-envelope-shadow.mjs',
   'personal_ai_agent_portfolio_pack/scripts/smoke-council-concurrent-envelope-shadow.mjs',
@@ -200,10 +207,12 @@ const packedChangelog = readRequiredFile(path.join(packDir, 'CHANGELOG.md'));
 const packedEvidenceChecklist = readRequiredFile(path.join(packDir, 'docs', 'evidence-checklist.md'));
 const packedPublicRelease = JSON.parse(readRequiredFile(path.join(packDir, 'config', 'public-release-v0.1.0.json')));
 const packedPublicWalkthrough = JSON.parse(readRequiredFile(path.join(packDir, 'config', 'public-walkthrough-v1.json')));
+const packedPilotFeedbackRecord = JSON.parse(readRequiredFile(path.join(packDir, 'config', 'pilot-feedback-v1.json')));
 assertContains(packedManifest, '루트 `portfolio_manifest.md` 기준', 'packed manifest must avoid self-referential ZIP checksum');
 assert.deepEqual(packedChangelog, changelog, 'packed changelog must preserve the public release record exactly');
 assert.deepEqual(packedPublicRelease, publicRelease, 'packed public release record must match the root record exactly');
 assert.deepEqual(packedPublicWalkthrough, publicWalkthrough, 'packed public walkthrough record must match the root record exactly');
+assert.deepEqual(packedPilotFeedbackRecord, pilotFeedbackRecord, 'packed pilot feedback record must match the root record exactly');
 assertContains(
   packedEvidenceChecklist,
   '최종 size/SHA-256은 루트 `portfolio_manifest.md` 기준',

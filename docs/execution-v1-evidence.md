@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-10T15:04:16.333Z
-- branch: codex/execution-evidence-reliability
-- commit: 60ba6e5f42413608641dc977287ed55a6817c487
-- boundImplementationCommit: 60ba6e5f42413608641dc977287ed55a6817c487
+- generatedAt: 2026-08-11T00:47:06.440Z
+- branch: codex/pilot-feedback-evidence-closeout
+- commit: 470069a5942ca60c4a24a7b48fc88bce305e8a1e
+- boundImplementationCommit: 470069a5942ca60c4a24a7b48fc88bce305e8a1e
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun

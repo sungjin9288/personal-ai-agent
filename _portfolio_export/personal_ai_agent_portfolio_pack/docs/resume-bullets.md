@@ -25,7 +25,7 @@
 
 - 구현 후 사용 가능: Hosted identity/session, tenant isolation, target secret manager, target observability/SLO evidence를 닫아 production-like deployment readiness를 검증
 - 구현 후 사용 가능: Anthropic, local, Hermes target provider live validation을 완료한 provider 범위만 readiness matrix에 명시하고 운영 문서와 smoke evidence로 제공
-- 구현 후 사용 가능: 실제 사용자 pilot feedback과 운영 metric을 기반으로 mission completion, approval turnaround, provider failure recovery 사례를 정량화
+- 구현 후 사용 가능: 여러 참여자·workflow의 pilot feedback과 운영 metric을 기반으로 mission completion, approval turnaround, provider failure recovery 사례를 정량화
 
 ## 5. 기술스택 한 줄
 
@@ -62,12 +62,12 @@
 
 - Anthropic/Hermes/local provider live validation 완료 후: multi-provider live validation matrix 구축
 - Hosted identity/session과 tenant isolation proof 완료 후: tenant-aware hosted control plane 구현
-- 실제 pilot 운영 후: pilot feedback 기반 운영 개선 사례 확보
+- multi-participant pilot 운영 후: generalizable feedback 기반 운영 개선 사례 확보
 - 배포 URL과 demo scenario 확보 후: self-hosted pilot demo 제공
 
 ## 9. 최종 판단
 
 - 현재 이력서 반영 가능 여부: 가능
 - 이유: 핵심 runtime, provider adapter, CLI/web surfaces, local persistence, approval/evidence workflow가 코드 근거로 확인된다.
-- 이력서에 넣기 전 반드시 보완할 것: 정확한 개발 기간, public demo 여부, 실제 사용자 feedback 또는 pilot metric
-- 최근 보완 완료: README portfolio overview, representative release readiness demo, replay log, screenshot evidence, operator surface browser screenshots/report, 대표 smoke command 결과
+- 이력서에 넣기 전 반드시 보완할 것: 정확한 개발 기간, hosted interactive demo 여부, 여러 참여자·workflow의 generalizable pilot outcome metric
+- 최근 보완 완료: README portfolio overview, representative release readiness demo, replay log, screenshot evidence, operator surface browser screenshots/report, sanitized n=1 deterministic pilot feedback, 대표 smoke command 결과

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "personal-ai-agent-pilot-feedback/v1",
+  "status": "sanitized-single-participant-evidence",
+  "recordedAt": "2026-08-10T23:14:12.000Z",
+  "captureCommit": "a7f0582b63a8e3f7853a08bbf7a83bae602c323e",
+  "participant": {
+    "count": 1,
+    "role": "engineering-participant",
+    "consentRecorded": true,
+    "consentScope": "sanitized-feedback-and-predefined-metrics",
+    "identityStored": false
+  },
+  "scope": {
+    "workspaceAlias": "approved-nonsensitive-workspace",
+    "providerMode": "deterministic-only",
+    "missionTitle": "Verify release readiness for pilot workspace"
+  },
+  "runEvidence": {
+    "demoSteps": {
+      "passed": 8,
+      "total": 8
+    },
+    "missionIdSha256": "a93351e548481560aef75282720ed39daf481c83ea2c52938d796a81b572eced",
+    "sessionIdSha256": "491a629daed2d8ffdf38d937b203ec7c67fd5229e0954b55707935146af0cd1a",
+    "artifactSha256": {
+      "deliverable": "0d27e781f6b1473022d975fbe4de1a10e2b739b62a4931b34a1528c7c48e4113",
+      "executionManifest": "ffd911f63168173bf4c024cdac8002143e45226008b8aaf2ef445f8cb4fda67b",
+      "reviewerReport": "4a186e10455d3410f0dfd0616f8593273b1ef6be7373f85b22301fc28971fc95"
+    },
+    "missionStatus": "reviewed",
+    "reviewerVerdict": "pass",
+    "stubRoleRuns": {
+      "passed": 4,
+      "total": 4
+    },
+    "externalProviderCallCount": 0,
+    "apiCostUsd": 0,
+    "workspaceMutationCount": 0,
+    "externalMessagingEnabled": false,
+    "approvalBehavior": "approval-required-before-execution",
+    "pendingApprovalCount": 0
+  },
+  "feedback": {
+    "missionObjectiveClear": true,
+    "outputUsefulForReview": true,
+    "approvalPointUnderstandable": true,
+    "evidenceHandoffPossible": true,
+    "positiveAnswerCount": 4,
+    "questionCount": 4,
+    "broaderUsageBlocker": "none-observed-in-this-single-pilot",
+    "decision": "continue-deterministic-only-pilot",
+    "nextWorkflow": "another-bounded-nonsensitive-engineering-workflow"
+  },
+  "limitations": {
+    "participantCount": 1,
+    "deterministicOnly": true,
+    "externalProviderValidated": false,
+    "customerImpactMeasured": false,
+    "productivityMeasured": false,
+    "costSavingsMeasured": false,
+    "slaMeasured": false,
+    "generalizable": false,
+    "rawLocalArtifactsPublished": false
+  },
+  "authority": {
+    "externalProviderCallsAuthorized": false,
+    "productionMutationAuthorized": false,
+    "privateTrainingAuthorized": false,
+    "customerSecretsAuthorized": false,
+    "productionReadyClaim": false
+  },
+  "integrityHash": "8b2c804b73f81c30e711d5995276b5fa16dc6c3bcf89f9cd7a761bf018b64a5a"
+}

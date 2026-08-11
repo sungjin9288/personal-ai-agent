@@ -130,7 +130,8 @@ Operator / Team
 - operator surface browser report: `evidence/output-artifacts/operator-surface-demo-browser-report.json`
 - operator surface evidence 실행 명령: `npm run evidence:operator-surface-demo`
 - 완료된 demo evidence: public recorded walkthrough URL은 unauthenticated HTTP 200과 exact byte/SHA로 접근 검증됨.
-- 남은 demo gap: hosted interactive demo, 실제 pilot feedback, 운영 metric은 아직 저장소 근거가 없다.
+- 완료된 bounded pilot evidence: 한 engineering participant의 deterministic-only session과 4/4 predefined feedback을 sanitized n=1 record로 보존했다.
+- 남은 demo gap: hosted interactive demo와 여러 참여자·workflow에서 일반화 가능한 운영 metric은 아직 저장소 근거가 없다.
 
 ## 10. Consulting Angle
 

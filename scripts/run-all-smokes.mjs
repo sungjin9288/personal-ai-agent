@@ -52,6 +52,7 @@ const GROUPS = {
     'smoke:local-council-v6-actual-compatibility-observation',
     'smoke:local-v1-completion-closeout',
     'smoke:smoke-validation-summary',
+    'smoke:pilot-feedback',
     'smoke:external-evidence-blockers',
     'smoke:target-deployment-contract',
     'smoke:hosted-saas-architecture-decision',
