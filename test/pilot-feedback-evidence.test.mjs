@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import test from 'node:test';
 
 const repoDir = path.resolve(import.meta.dirname, '..');
 const contractPath = path.join(repoDir, 'src', 'core', 'pilot-feedback-evidence.mjs');
+const smokePath = path.join(repoDir, 'scripts', 'smoke-pilot-feedback.mjs');
 
 test('sanitized pilot feedback accepts the approved single-participant evidence', async () => {
   const { assertPilotFeedbackRecord } = await loadContract();
@@ -43,6 +46,43 @@ test('pilot feedback rejects local paths, extra identity fields, and integrity d
   const integrityDrift = createRecord();
   integrityDrift.feedback.nextWorkflow = 'changed-without-resealing';
   assert.throws(() => assertPilotFeedbackRecord(integrityDrift), /integrity/);
+});
+
+test('pilot feedback smoke rejects a resealed unknown capture commit', (t) => {
+  const fixtureRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'pilot-feedback-provenance-'));
+  t.after(() => fs.rmSync(fixtureRepo, { force: true, recursive: true }));
+
+  fs.mkdirSync(path.join(fixtureRepo, 'config'));
+  fs.mkdirSync(path.join(fixtureRepo, 'docs'));
+  fs.copyFileSync(
+    path.join(repoDir, 'docs', 'pilot-feedback-v1.md'),
+    path.join(fixtureRepo, 'docs', 'pilot-feedback-v1.md'),
+  );
+
+  const record = createRecord();
+  record.captureCommit = 'f'.repeat(40);
+  reseal(record);
+  fs.writeFileSync(
+    path.join(fixtureRepo, 'config', 'pilot-feedback-v1.json'),
+    `${JSON.stringify(record, null, 2)}\n`,
+  );
+
+  runGit(fixtureRepo, ['init', '--quiet']);
+  fs.writeFileSync(path.join(fixtureRepo, 'fixture.txt'), 'unrelated history\n');
+  runGit(fixtureRepo, ['add', 'fixture.txt']);
+  runGit(fixtureRepo, [
+    '-c', 'user.name=Pilot Fixture',
+    '-c', 'user.email=pilot-fixture@example.invalid',
+    'commit', '--quiet', '-m', 'fixture history',
+  ]);
+
+  const result = spawnSync(process.execPath, [smokePath], {
+    cwd: fixtureRepo,
+    encoding: 'utf8',
+  });
+
+  assert.notEqual(result.status, 0, result.stdout);
+  assert.match(result.stderr, /capture commit does not exist/);
 });
 
 async function loadContract() {
@@ -132,4 +172,9 @@ function reseal(record) {
 
 function digest(value) {
   return crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+function runGit(cwd, args) {
+  const result = spawnSync('git', args, { cwd, encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
 }
