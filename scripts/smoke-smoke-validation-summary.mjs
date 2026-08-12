@@ -140,6 +140,12 @@ const expectedCommands = [
 assert.equal(packageJson.scripts['smoke:smoke-validation-summary'], 'node scripts/smoke-smoke-validation-summary.mjs');
 
 const fullSweep = parseLastFullSweep(doc);
+const evidenceManifestLastUpdated = parseEvidenceManifestLastUpdated(evidenceManifest);
+assert.equal(
+  evidenceManifestLastUpdated,
+  fullSweep.date,
+  `evidence manifest Last updated at ${evidenceManifestLastUpdated} differs from canonical lastFullSweep date ${fullSweep.date}`,
+);
 const excludedSmokeScripts = parseRunnerExclusions(smokeRunner);
 const runnableSmokeCount = Object.keys(packageJson.scripts)
   .filter((name) => name.startsWith('smoke:'))
@@ -288,6 +294,12 @@ function parseLastFullSweep(markdown) {
     total: Number(match[2]),
     date: match[3],
   };
+}
+
+function parseEvidenceManifestLastUpdated(markdown) {
+  const match = String(markdown || '').match(/^- Last updated at: (\d{4}-\d{2}-\d{2})$/m);
+  assert.ok(match, 'evidence manifest must include Last updated at with an ISO date');
+  return match[1];
 }
 
 function parseRunnerExclusions(runnerSource) {

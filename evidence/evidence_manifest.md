@@ -4,7 +4,7 @@
 
 - Project: Personal AI Agent
 - Initial generated at: 2026-07-23
-- Last updated at: 2026-08-06
+- Last updated at: 2026-08-11
 - Project type: PoC / MVP 구현
 - Evidence scope: local implementation and portfolio evidence for controlled RAG, approved feedback and personalization, fine-tuning readiness, reviewed-data planning, bounded local training runtime, product permission surfaces, fixture-only answer-quality evaluation, Council C6–C13 content-free local observations, v1.1a–v1.1f deterministic read-only projections, the v1.1f Provider CI closeout gate, and one content-free Scenario 2 engineering approval rehearsal. The rehearsal uses an isolated temporary workspace and stub provider only; it adds no participant, human approval, feedback, generalizability, productivity, external-provider, deployment, or production authority claim. C13 records one `actual-incompatible` v6 observation and remains `keep-stub-only`: it grants no promotion, runtime activation, training, actual-user-data, external-provider, concurrent dispatch, deployment, or production authority.
 - F1.25 private collection-gap replan shadow: trusted F1.24 authority is independently rebuilt before the F1.2 collection plan is recalculated in memory; projected 15 reviewed examples, 5 scopes, and 7 cases leave tracked F1.2 evidence, intake, collection, audit, training, provider, submission, deployment, and production boundaries unchanged or false
