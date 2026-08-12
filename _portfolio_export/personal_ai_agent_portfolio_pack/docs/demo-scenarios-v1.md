@@ -232,6 +232,12 @@ Stop criteria:
 - approval request is too broad to understand
 - output suggests unapproved commit, push, deploy, or production mutation
 
+Repository-local deterministic evidence:
+
+- [engineering-approval-workflow-rehearsal-v1.md](engineering-approval-workflow-rehearsal-v1.md) replays this exact scenario in an isolated temporary workspace with the stub provider.
+- `npm run smoke:engineering-approval` verifies create/run/show/timeline, both inboxes, the fixture-only approval transition, cleanup, content-free evidence, and false authority claims.
+- The fixture approval is not a human decision. It adds no participant, feedback, productivity, external-provider, deployment, or production claim.
+
 ## Scenario 3: Provider Validation And Readiness
 
 Purpose:
