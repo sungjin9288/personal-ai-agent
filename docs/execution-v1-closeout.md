@@ -1,9 +1,9 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-12T00:53:03.056Z
-- branch: codex/goal-aa71abcc-execute-1
-- commit: 11e9baf668e127222006228a83744cde07399c51
-- boundImplementationCommit: 11e9baf668e127222006228a83744cde07399c51
+- generatedAt: 2026-08-17T00:04:11.824Z
+- branch: codex/f121-child-failure-diagnostics
+- commit: fdfabb444ee26ed6a2e624e1733a11be1f1488db
+- boundImplementationCommit: fdfabb444ee26ed6a2e624e1733a11be1f1488db
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
