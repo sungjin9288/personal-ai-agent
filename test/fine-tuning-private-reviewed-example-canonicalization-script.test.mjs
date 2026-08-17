@@ -9,6 +9,7 @@ import {
   finalizeFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade,
   prepareFineTuningPrivateReviewedExampleCanonicalizationDeletionCascade,
 } from '../scripts/helpers/fine-tuning-private-reviewed-example-canonicalization-cascade.mjs';
+import { buildSmokeFailureDiagnostics } from '../scripts/smoke-failure-diagnostics.mjs';
 import { prepareReviewedExampleCanonicalizationFixture, withReviewedExampleCanonicalizationFixture } from './helpers/fine-tuning-private-reviewed-example-canonicalization-fixture.mjs';
 import { writeJson } from './helpers/fine-tuning-private-collection-item-lifecycle-fixture.mjs';
 import { writeLifecycleDecision } from './helpers/fine-tuning-private-collection-item-lifecycle-fixture.mjs';
@@ -20,13 +21,61 @@ test('F1.21 CLI publishes an exact replayable local canonical record without out
     const prepared = prepareReviewedExampleCanonicalizationFixture(fixture);
     const first = run(fixture, prepared);
     const second = run(fixture, prepared);
-    assert.equal(first.status, 0, first.stderr);
-    assert.equal(second.status, 0, second.stderr);
+    assertChildSucceeded(first, { phase: 'initial materialization' });
+    assertChildSucceeded(second, { phase: 'replay materialization' });
     assert.equal(first.stdout, second.stdout);
     assert.equal(first.stdout.includes(fixture.item.example.response), false);
     const directory = finalDirectory(fixture);
     assert.deepEqual(fs.readdirSync(directory), ['receipt.json', 'record.json']);
     assert.equal(fs.statSync(path.join(directory, 'record.json')).mode & 0o777, 0o600);
+  });
+});
+
+test('F1.21 positive child failures report bounded sanitized diagnostics', () => {
+  withReviewedExampleCanonicalizationFixture((fixture) => {
+    const secret = 'synthetic-secret-value-1234567890';
+    const sentinel = 'synthetic-child-diagnostic-sentinel';
+    const env = {
+      ...process.env,
+      F1_21_FIXTURE_PATH: fixture.rootDir,
+      F1_21_SYNTHETIC_SECRET: secret,
+    };
+    const result = spawnSync(process.execPath, ['-e', `
+      process.stdout.write(process.env.F1_21_SYNTHETIC_SENTINEL + ' stdout ' + process.env.F1_21_FIXTURE_PATH + '\\n' + 'x'.repeat(8192));
+      process.stderr.write(process.env.F1_21_SYNTHETIC_SENTINEL + ' stderr ' + process.env.F1_21_FIXTURE_PATH + ' secret=' + process.env.F1_21_SYNTHETIC_SECRET + '\\n');
+      process.exit(17);
+    `], {
+      cwd: fixture.rootDir,
+      encoding: 'utf8',
+      env: { ...env, F1_21_SYNTHETIC_SENTINEL: sentinel },
+    });
+
+    let failure;
+    try {
+      assertChildSucceeded(result, {
+        env,
+        frontier: 'synthetic-frontier',
+        phase: 'synthetic diagnostic probe',
+        repoDir: fixture.rootDir,
+      });
+    } catch (error) {
+      failure = error;
+    }
+    assert.ok(failure);
+    assert.match(failure.message, /"phase": "synthetic diagnostic probe"/);
+    assert.match(failure.message, /"frontier": "synthetic-frontier"/);
+    assert.match(failure.message, /"status": 17/);
+    assert.match(failure.message, /"signal": null/);
+    assert.match(failure.message, /"error": null/);
+    assert.match(failure.message, /"stderr": \{/);
+    assert.match(failure.message, /"stdout": \{/);
+    assert.match(failure.message, /synthetic-child-diagnostic-sentinel/);
+    assert.match(failure.message, /<local-path>/);
+    assert.match(failure.message, /<redacted>/);
+    assert.match(failure.message, /"truncated": true/);
+    assert.ok(Buffer.byteLength(failure.message) < 8 * 1024);
+    assert.equal(failure.message.includes(fixture.rootDir), false);
+    assert.equal(failure.message.includes(secret), false);
   });
 });
 
@@ -47,7 +96,7 @@ test('F1.21 rejects content injection and recovers only an empty pending directo
     fs.mkdirSync(pending, { recursive: true, mode: 0o700 });
     fs.chmodSync(pending, 0o700);
     const result = run(fixture, prepared);
-    assert.equal(result.status, 0, result.stderr);
+    assertChildSucceeded(result, { phase: 'empty pending directory recovery' });
     assert.equal(fs.existsSync(pending), false);
   });
 });
@@ -55,7 +104,7 @@ test('F1.21 rejects content injection and recovers only an empty pending directo
 test('F1.21 lifecycle removes the canonical record before deleting the reviewed item and rejects resurrection', () => {
   withReviewedExampleCanonicalizationFixture((fixture) => {
     const prepared = prepareReviewedExampleCanonicalizationFixture(fixture);
-    assert.equal(run(fixture, prepared).status, 0);
+    assertChildSucceeded(run(fixture, prepared), { phase: 'pre-withdrawal materialization' });
     writeLifecycleDecision(fixture, 'withdraw');
     const result = spawnSync(process.execPath, [
       path.join(process.cwd(), 'scripts', 'lifecycle-fine-tuning-private-collection-item.mjs'),
@@ -64,7 +113,7 @@ test('F1.21 lifecycle removes the canonical record before deleting the reviewed 
       '--item', fs.realpathSync(fixture.itemFilename),
       '--decision', fs.realpathSync(fixture.decisionFilename),
     ], { cwd: fixture.rootDir, encoding: 'utf8' });
-    assert.equal(result.status, 0, result.stderr);
+    assertChildSucceeded(result, { phase: 'withdrawal lifecycle' });
     assert.equal(fs.existsSync(finalDirectory(fixture)), false);
     const cascade = path.join(
       fixture.rootDir,
@@ -115,9 +164,9 @@ test('F1.21 refuses copied inputs, unsafe links, missing predecessors, and termi
   withReviewedExampleCanonicalizationFixture((fixture) => {
     const prepared = prepareReviewedExampleCanonicalizationFixture(fixture);
     const backup = fs.readFileSync(fixture.itemFilename);
-    assert.equal(run(fixture, prepared).status, 0);
+    assertChildSucceeded(run(fixture, prepared), { phase: 'pre-resurrection materialization' });
     writeLifecycleDecision(fixture, 'withdraw');
-    assert.equal(runLifecycle(fixture).status, 0);
+    assertChildSucceeded(runLifecycle(fixture), { phase: 'withdrawal lifecycle before resurrection' });
     fs.mkdirSync(path.dirname(fixture.itemFilename), { recursive: true, mode: 0o700 });
     fs.chmodSync(path.dirname(fixture.itemFilename), 0o700);
     fs.writeFileSync(fixture.itemFilename, backup, { mode: 0o600 });
@@ -132,7 +181,10 @@ test('F1.21 deletion cascade resumes every durable cleanup frontier', () => {
   for (const frontier of ['record.json', 'receipt.json', 'record-directory', 'inventory.json']) {
     withReviewedExampleCanonicalizationFixture((fixture) => {
       const prepared = prepareReviewedExampleCanonicalizationFixture(fixture);
-      assert.equal(run(fixture, prepared).status, 0);
+      assertChildSucceeded(run(fixture, prepared), {
+        phase: 'durable cleanup frontier materialization',
+        frontier,
+      });
       const input = writeLifecycleDecision(fixture, 'withdraw');
       const decision = buildFineTuningPrivateCollectionItemLifecycleDecision({
         admission: fixture.admission,
@@ -201,7 +253,7 @@ test('F1.21 deletion cascade resumes every durable cleanup frontier', () => {
 test('F1.21 deletion cascade resumes after the absence receipt and final rename', () => {
   withReviewedExampleCanonicalizationFixture((fixture) => {
     const prepared = prepareReviewedExampleCanonicalizationFixture(fixture);
-    assert.equal(run(fixture, prepared).status, 0);
+    assertChildSucceeded(run(fixture, prepared), { phase: 'pre-final-rename materialization' });
     const input = writeLifecycleDecision(fixture, 'withdraw');
     const decision = buildFineTuningPrivateCollectionItemLifecycleDecision({
       admission: fixture.admission,
@@ -264,7 +316,7 @@ test('F1.21 deletion cascade resumes after the absence receipt and final rename'
 test('F1.21 deletion cascade blocks record resurrection before deleting the reviewed item', () => {
   withReviewedExampleCanonicalizationFixture((fixture) => {
     const prepared = prepareReviewedExampleCanonicalizationFixture(fixture);
-    assert.equal(run(fixture, prepared).status, 0);
+    assertChildSucceeded(run(fixture, prepared), { phase: 'resurrection guard materialization' });
     const recordDirectory = finalDirectory(fixture);
     const record = fs.readFileSync(path.join(recordDirectory, 'record.json'));
     const receipt = fs.readFileSync(path.join(recordDirectory, 'receipt.json'));
@@ -321,7 +373,7 @@ test('F1.21 deletion cascade rejects a tampered final receipt and final-pending 
   for (const attack of ['tamper', 'duplicate-pending']) {
     withReviewedExampleCanonicalizationFixture((fixture) => {
       const prepared = prepareReviewedExampleCanonicalizationFixture(fixture);
-      assert.equal(run(fixture, prepared).status, 0);
+      assertChildSucceeded(run(fixture, prepared), { phase: 'cascade integrity materialization' });
       const input = writeLifecycleDecision(fixture, 'withdraw');
       const decision = buildFineTuningPrivateCollectionItemLifecycleDecision({
         admission: fixture.admission,
@@ -396,6 +448,20 @@ function runLifecycle(fixture) {
     '--item', fixture.itemFilename,
     '--decision', fs.realpathSync(fixture.decisionFilename),
   ], { cwd: fixture.rootDir, encoding: 'utf8' });
+}
+
+function assertChildSucceeded(result, {
+  env = process.env,
+  frontier,
+  phase,
+  repoDir = process.cwd(),
+}) {
+  if (result.status === 0) return;
+  assert.equal(result.status, 0, JSON.stringify({
+    phase,
+    ...(frontier === undefined ? {} : { frontier }),
+    ...buildSmokeFailureDiagnostics(result, { env, repoDir }),
+  }, null, 2));
 }
 
 function historyRoot(fixture) {
