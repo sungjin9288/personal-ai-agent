@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-17T00:04:11.688Z
-- branch: codex/f121-child-failure-diagnostics
-- commit: fdfabb444ee26ed6a2e624e1733a11be1f1488db
-- boundImplementationCommit: fdfabb444ee26ed6a2e624e1733a11be1f1488db
+- generatedAt: 2026-08-17T23:15:06.440Z
+- branch: codex/local-training-cpu-probe-scheduling-slack
+- commit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
+- boundImplementationCommit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
