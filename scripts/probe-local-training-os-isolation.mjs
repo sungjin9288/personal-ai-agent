@@ -14,6 +14,7 @@ import {
 
 const MAX_CAPTURE_BYTES = 4_096;
 const PROBE_TIMEOUT_MS = 5_000;
+const CPU_PROBE_TIMEOUT_MS = 15_000;
 const SYSTEM_TOOLS = Object.freeze({
   python: '/usr/bin/python3',
   sandbox: '/usr/bin/sandbox-exec',
@@ -268,6 +269,7 @@ export async function probeLocalTrainingOsIsolation({
       cwd: repoDir,
       environment: cpuInvocation.environment,
       spawnProcess,
+      timeoutMs: CPU_PROBE_TIMEOUT_MS,
     });
 
     const fileInvocation = buildDarwinTrainingIsolationInvocation({
