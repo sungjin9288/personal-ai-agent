@@ -164,6 +164,7 @@ test('application event wiring keeps each form-specific error recovery callback'
   actions.createWorkspace = failure('workspace');
   actions.runMission = failure('run');
   actions.selectDocumentFile = failure('file');
+  actions.selectWorkspace = failure('workspace-selection');
   actions.createMission = failure('mission');
   actions.restoreHistory = failure('history');
 
@@ -180,6 +181,7 @@ test('application event wiring keeps each form-specific error recovery callback'
   await elements.workspaceForm.dispatch('submit');
   await elements.runMissionButton.dispatch('click');
   await elements.documentLogFile.dispatch('change');
+  await assert.doesNotReject(() => elements.workspaceSelect.dispatch('change'));
   await elements.missionForm.dispatch('submit');
   await historyTarget.dispatch('popstate');
 
@@ -190,6 +192,7 @@ test('application event wiring keeps each form-specific error recovery callback'
     ['create-workspace-error', 'workspace'],
     ['run-mission-error', 'run'],
     ['select-document-file-error', 'file'],
+    ['default-error', 'workspace-selection'],
     ['default-error', 'mission'],
     ['default-error', 'history'],
   ]);

@@ -5,6 +5,151 @@
 > D4.6 시작 커밋: `0a23fabe`
 > 현재 경계: local-first pilot이며 `production-ready` 또는 all-provider complete로 설명하지 않는다.
 
+## 0. 현재 실행 계획 — operator mission 전환 정합성
+
+계획 갱신: 2026-09-21. Astra medium이 제품 기준 문서와 대안을 검토하고, 실제 코드 재현을 반영해 우선순위를 확정했다. 아래 D4 기록은 historical baseline으로 보존하며, 이 절이 현재 local hardening의 실행 기준이다.
+
+### 제품 목표와 완료의 의미
+
+Engineering operator가 `workspace 선택 → mission 선택 → 자료·action 확인 → 승인·실행 → 결과·증거 확인`을 반복할 때, **보고 있는 대상과 실행 대상이 같아야 한다.** 늦은 응답이나 실패 때문에 이전 mission의 내용을 새 mission의 내용으로 오인해서는 안 된다.
+
+`product-plan-v1.md`와 `local-v1-completion-closeout-v1.md`의 repository-local v1 완료를 취소하거나 기능을 다시 만드는 계획은 아니다. 현재 완료된 기능 위에서 확인된 UI 정합성 결함을 보완한다. Provider, deployment, private-data training, rollout의 별도 승인·증거 경계도 바꾸지 않는다.
+
+| 사용자 단계 | 이미 있는 기반 | 현재 판단과 필요한 증거 |
+|---|---|---|
+| 실행 준비 | Node ESM CLI/web, workspace/mission, local discovery | port `0` 실제 listener 반환 회귀는 이전 단계에서 완료. 재작성하지 않음 |
+| mission·자료 탐색 | mission epoch, session/artifact token, harness/action 최신 응답 guard | 성공 응답 역전은 검증됨. pending/failed 전환의 표시 대상 일치는 추가 수정 필요 |
+| 승인·실행 | approval/RBAC/tenant, preflight/lease, 실행·rollback 감사 | 서버 권한 계약 유지. UI가 아직 준비되지 않은 mission 실행을 시작하지 않게 제한 |
+| 검토·증거 | session/artifact, reviewer, closeout/handoff | 이전 mission의 결과·action이 새 선택 아래 남지 않아야 함 |
+| 회귀 방지 | focused Node CI command, onboarding guard | 로컬 workflow 검증 완료와 실제 원격 CI 실행을 분리 |
+| 외부 운영 | provider adapter와 target evidence 계약 | Anthropic, Hermes, target-local, hosted deployment의 네 open blocker는 이번 작업으로 닫지 않음 |
+
+### 출발점과 확인된 결함
+
+시작 HEAD는 `58a5db21d56345e40dec057bd9a0ce47ccb6ab57`이며 12개 경로가 이미 미커밋 상태였다. 기존 navigation·bootstrap·CI 구현은 보존하고 이번 기능에 직접 연결되는 `app.js`와 `mission-selection.test.mjs`만 이어서 보완한다. 다른 기존 변경을 reset, stash, overwrite하지 않는다.
+
+이전 검증 기록은 focused 50 pass, full 1,962 pass / 1 Linux-only skip, docs-gates 60 pass, 실제 browser race 3/3이었다. 이는 이전 snapshot의 관찰이며 아래 새 계약의 통과 수로 재사용하지 않는다. 세부 이전 기록은 local `output/playwright/navigation-race-browser-report.md`에 있다. 해당 output은 ignored local evidence이지 공개/committed 회귀 증거가 아니다.
+
+읽기 전용으로 현재 app 함수를 실행한 재현 결과:
+
+1. A의 detail/timeline/actions를 표시한 상태에서 B를 선택한다.
+2. B 응답을 보류하면 `selectedMissionId=B`, `missionDetail.mission.id=A`, timeline/actions=A이고 summary 재렌더는 0회다.
+3. B detail을 실패시키면 같은 불일치가 남는다.
+4. 이때 `handleMissionRun`은 B를 대상으로 POST할 수 있고, execution eligibility는 A의 engineering mode를 읽는다. 이는 단순 표시 지연보다 우선순위가 높은 대상 오인 결함이다.
+5. obsolete 선택 요청의 rejection도 현재 호출자에게 전파된다. 현재 요청의 실패와 오래된 실패의 소유권을 성공 응답과 동일하게 구분해야 한다.
+
+### 대안과 선택
+
+| 대안 | 이점 | 비용·한계 | 결정 |
+|---|---|---|---|
+| 기존 내용 유지, 버튼만 임시 차단 | 작은 시각 변화 | 오래된 제목·action·artifact가 새 선택과 섞이고 차단 누락을 알아보기 어려움 | 선택하지 않음 |
+| 현재 선택의 명시적 상태와 payload 초기화 | 화면·실행의 일치 여부를 작은 predicate로 검증 가능 | loading/failed 화면과 기존 handler 연결 검증 필요 | 이번 구현 |
+| browser harness 공용화 또는 provider 기능 확장 | 재현성 또는 기능 범위 증가 | 확인된 실행 대상 결함을 먼저 닫지 못함. provider는 외부 권한도 필요 | 후속 또는 별도 승인 |
+
+### 상태·책임 계약
+
+| 상태 | 선택 ID | 화면 데이터 | 실행 제어 |
+|---|---|---|---|
+| `idle` | null | 없음 | 차단 |
+| `loading` | 사용자가 요청한 B | 이전 A payload 없음. B 읽기 진행 표시 | 차단 |
+| `failed` | B 유지 | A와 불완전한 B payload 없음. 읽기 실패 표시 | 차단 |
+| `ready` | B | 현재 epoch에서 완성된 B context | 기존 권한 규칙 적용 |
+
+- `app-state.js`는 `missionSelectionStatus`와 오류 표시값만 보유한다. persistent store/schema에는 추가하지 않는다.
+- `selectMission`이 epoch, loading/ready/failed 전이, 현재 요청의 실패 정리를 소유한다. 첫 await 전에 이전 mission-scoped payload를 비우고 관련 화면을 다시 그린다.
+- 공통 초기화가 필요하면 payload clearing만 하는 작은 helper를 사용한다. 해당 helper가 navigation, epoch, URL, 렌더링까지 암묵적으로 바꾸지 않게 한다.
+- mutation readiness는 `status === 'ready' && selectedMissionId === missionDetail.mission.id`로 결정한다. run 버튼과 `handleMissionRun`, engineering execution eligibility가 같은 기준을 사용한다.
+- 위 상태 표의 실행 차단은 현재 선택을 대상으로 하는 mission run/engineering execution을 뜻한다. 고유 approval ID와 mission label을 가진 global approval inbox, ID별 artifact cache 자체를 삭제하거나 새 권한으로 해석하지 않는다.
+- `Promise.all` 한 항목이 실패하면 현재 epoch를 무효화한 뒤 partial payload를 지운다. 늦게 성공한 actions 등 sibling 응답이 failed 화면을 다시 채우지 못해야 한다.
+- 오래된 실패는 현재 상태·URL·오류 표시에 영향을 주지 않는다. 현재 실패는 호출자가 성공 후속 작업을 진행하지 못하도록 기존 rejection 계약을 유지하고, 실제 UI event boundary에서 처리한다.
+- 기존 run의 `finally`도 현재 readiness를 따라야 한다. 과거 요청 종료가 새 loading/failed 화면의 실행 버튼을 다시 켜서는 안 된다.
+- `selectMission`은 현재 선택을 끝까지 성공시켰을 때 그 epoch를 반환한다. run 성공 후 재조회도 이 반환값을 확인해 자기 선택이 아닌 새 화면에 최종 step을 적용하지 않는다. 실패 rejection과 obsolete/no-selection의 반환 없음은 유지한다.
+- URL은 기존 successful selection 시점의 push/replace 계약을 유지한다. loading/failed 상태는 URL이 마지막 성공 화면을 가리킬 수 있음을 전제로 하며, 불일치한 URL을 mutation authority로 사용하지 않는다. 새 history entry나 query schema는 추가하지 않는다.
+
+### 구현 경로와 작업 순서
+
+| 단계 | 경로·책임 | 통과 조건 |
+|---|---|---|
+| P0 — 상세 계획 | 이 문서, `docs/roadmap.md` | 목표·상태·비목표·후속·승인 경계가 실제 재현과 일치 |
+| P1 — TDD 수정 | `src/web/public/app.js`, `src/web/public/lib/app-state.js`, `test/mission-selection.test.mjs` | 아래 8개 회귀 묶음 RED → GREEN, 기존 성공 race 계약 유지 |
+| P1 event 연결 | 필요한 경우에만 `src/web/public/lib/application-events.js`, `test/application-events.test.mjs` | 실제 workspace 선택 오류 경로를 기존 오류 callback으로 처리. 다른 이벤트는 변경하지 않음 |
+| P2 smoke 정합성 | `scripts/smoke-ui-learning-promotion-surface.mjs` | 기존 served-source signature 검사에 `errors` 인자와 safe workspace listener를 함께 확인. 검사를 제거하지 않음 |
+| P2 — 통합 | 기존 focused 명령·smoke·실제 synthetic browser | current/stale 실패, 재선택, mutation 0, URL·화면 일치 범위를 직접 확인 |
+| P3 — 독립 검토·기록 | Terra xhigh review, 이 절과 local evidence report | 해당 snapshot의 결과·한계·잔여 항목을 기록하고 종료 |
+
+RED의 핵심 assertion 형태는 실제 app-source harness를 사용한다. 기대값을 production helper로 계산하지 않는다.
+
+```js
+const pending = context.selectMission('B');
+assert.equal(state.selectedMissionId, 'B');
+assert.equal(state.missionSelectionStatus, 'loading');
+assert.equal(state.missionDetail, null);
+assert.equal(state.missionActions, null);
+await context.handleMissionRun();
+assert.equal(mutationRequests.length, 0);
+```
+
+회귀 검증 묶음:
+
+1. A ready → B pending: 이전 detail/timeline/actions/session/artifact/execution/harness가 첫 await 전에 제거되고 loading 화면과 비활성 실행 제어가 보인다.
+2. loading 중 직접 run/preflight 진입: mutation API 요청이 0회다. stale engineering detail과 selected ID가 다를 때도 차단한다.
+3. current B detail 실패: B failed, payload 없음, current rejection 유지, UI event에서 처리되어 unhandled rejection 없음.
+4. 실패 뒤 sibling 성공: late actions/timeline 성공이 failed state를 다시 채우지 않는다.
+5. detail 성공 후 harness/execution/session 등 후속 읽기 실패: partial B를 ready로 만들지 않는다.
+6. A→B→A 역전: 최신 A ready 뒤 이전 A/B 실패가 화면·오류·polling·URL을 바꾸지 않는다.
+7. 선택 해제 뒤 late success/failure: idle을 유지하고 payload·오류·실행 상태를 복구하지 않는다.
+8. failed B → B 재선택 성공: B ready로 정상 복구한다. 이전 run finally는 그 사이의 loading/failed 버튼을 켜지 않는다.
+
+독립 리뷰의 추가 회귀 조건: 이전 run의 **성공** continuation도 captured mission/epoch가 바뀌면 새 선택을 재조회하거나 step/URL을 덮어쓰지 않아야 한다. Action inbox와 approval의 `미션 열기`, quick action의 `보기 초기화` 역시 같은 current error를 한 번 처리해야 한다. 이는 다른 mutation 기능 확장이 아니라 동일 selection contract의 실제 진입·복귀 경로 보완이다.
+
+검증 순서와 목적:
+
+```sh
+node --test test/mission-selection.test.mjs test/application-events.test.mjs
+node --test test/action-inbox-ui.test.mjs test/harness-browse.test.mjs test/mission-selection.test.mjs test/server-bootstrap.test.mjs
+npm run smoke:ui-harness-browse
+npm run smoke:ui-execution-console
+npm run smoke:ui-learning-promotion-surface
+npm run smoke:contributor-onboarding
+npm test
+npm run smoke:docs-gates
+git diff --check
+```
+
+변경 JS에는 `node --check`도 실행한다. 실제 browser는 새 임시 synthetic fixture와 stub provider만 사용한다. A 표시 → B 응답 보류 → 읽기 실패 → 재선택 성공, 늦은 obsolete failure, 선택 해제를 검사한다. 요청 기록에서 mutation 0을 확인하고, 의도된 오류 dialog와 unexpected pageerror/unhandled rejection을 구분한다. 기존 browser 3/3을 이번 실패 화면의 증거로 대체하지 않는다. 테스트 프로세스·route·listener는 이번 작업 소유분만 종료하고 기록은 보존한다.
+
+### 모델·Git·증거 경계
+
+- Astra medium: 제품 범위, 대안 비교, 상태 계약과 검증 계획. 실제 재현으로 우선순위를 수정한다.
+- Sol high: 하나의 연속된 P1 code/test 묶음. 주관 agent와 같은 파일을 동시에 수정하지 않는다.
+- Terra xhigh: 상태 전이, current/stale 오류, mutation 차단, sibling 응답, 기존 계약을 독립 검토한다.
+- Luna max: 독립적으로 분리할 검증·문서 작업이 있을 때만 사용한다. 모델 수를 채우기 위한 배정은 하지 않는다.
+- 최초 구현 범위에는 commit과 외부 작업이 포함되지 않았다. 이후 사용자가 `codex/mission-navigation-consistency` branch에서 현재 18개 변경 경로의 grouped source commit, 해당 SHA의 local-v1 closeout 갱신·검증, 별도 evidence commit까지 승인했다.
+- 이 승인은 로컬 2-commit 작업에 한정된다. push, PR, merge, 배포, 새 dependency, 실제 provider/model 호출, private-data/training은 제외한다. API·RBAC·tenant·audit·persistent schema는 변경하지 않는다.
+- 공식 SHA-bound artifact는 source commit 이후 clean tracked tree에서 기존 builder로 생성한다. 이 문서는 source-stage 기록이며, 최종 결속 상태와 실행 증거는 `evidence/output-artifacts/local-v1-completion-closeout.json` 및 해당 evidence commit의 검증 결과로 판정한다.
+
+### 후속 순서와 종료 기준
+
+P1~P3이 실제로 통과하면 이번 bounded 개발은 종료한다. 다음 항목은 같은 turn에 자동 확대하지 않는다.
+
+1. Action filter 네 DOM handler의 current error 보고와 stale failure ownership: 현재 loader rejection과 UI catch 부재를 확인했지만 별도 RED와 구현이 필요하다.
+2. Browser race replay의 repository-shared optional harness: ignored local script 의존을 줄이는 후속 후보. 새 설치·CI browser 실행 권한을 추정하지 않는다.
+3. 외부 provider/target 환경 증거: blocker register의 owner와 closing evidence를 받아야 시작할 수 있다.
+4. Engineering execution preflight/start/stop의 이미 승인된 mutation 완료 후 refresh/navigation ownership: 진입 시 ready·ID 일치는 이번에 제한하지만, 모든 mutation continuation을 재설계한 것은 아니다. 별도 재현·회귀 범위로 남긴다.
+
+실행 현황:
+
+- [x] P0: canonical 문서, 12-path dirty baseline, 실제 A/B 오대상 재현, Astra 재계획
+- [x] P1: 최초 회귀와 독립 리뷰 보완 완료. 정상 run 성공·세 추가 read-navigation 오류 boundary까지 focused 28/28, CI 대상 65/65
+- [x] P2: review 보완 snapshot의 fresh full/smoke/browser 8/8 재검증 완료. Full docs-gates의 SHA-bound closeout 1개는 아래 조건으로 미완료
+- [x] P3: Terra xhigh 초기 리뷰의 세 경로 보완 후 delta re-review PASS, 최종 diff/증거 확인, 남은 조건 기록
+
+2026-09-21 최종 검증: Node v24.18.0 / macOS arm64에서 focused CI 명령 65/65, `npm test` 1,977 pass / 1 Linux-only skip / 0 fail. 위 네 개 개별 smoke도 최종 source에서 통과했다. 실제 browser 8/8은 loading 차단, current failure와 late sibling, 재선택 복구, obsolete failure, clear 후 failure, approval/action/reset-view 진입점을 확인했다. Browser mutation 요청 0개, unexpected pageerror 0개, 의도한 current error dialog는 각 진입점에서 한 번씩 총 4개다. loading/failed/ready screenshot으로 화면도 확인했다. 이는 synthetic local 검증이며 실사용자 수용이나 provider 운영 시험이 아니다.
+
+`npm run smoke:docs-gates`는 **59/60 통과, closeout freshness 1개 실패**다. 이 문서의 현재 계획이 이전 implementation SHA에 결속된 문서와 달라진 것이 원인이며, 검사 자체를 약화하거나 dirty tree를 공식 증거로 재봉인하지 않는다. 기존에 허용된 pre-closeout 명령 `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout`는 별도로 59/59 통과했다. Source commit과 해당 SHA의 closeout/evidence 갱신 승인이 있어야 full docs-gates 완료를 판정할 수 있다. 현재 관찰을 원격 CI 또는 release 완료로 확대하지 않는다.
+
+위 결과는 source commit 전 구현 검증 snapshot이다. 해당 시점의 source는 미커밋 상태였고 기존 10개 비대상 dirty 경로는 시작 hash 그대로였다. 계획·구현·로컬 검증·독립 리뷰 이후 승인된 closeout 단계를 이어가며, 위 59/60 관찰을 최종 artifact 갱신 후 상태로 오인하지 않는다. Local 상세 증거는 `output/playwright/navigation-race-browser-report.md`에 초기 실패, 두 TDD 단계, 검증 snapshot과 잔여 경계를 함께 보존한다.
+
 ## 1. 목표
 
 코드를 파일 크기만 줄이는 방향으로 쪼개지 않는다. 한 파일을 읽을 때 한 가지 책임이 자연스럽게 이어지고, 함수 이름과 호출 순서만으로 의도가 드러나게 만든다. 동작, 승인 경계, 감사 기록, 증적 생성 방식은 그대로 유지한다.

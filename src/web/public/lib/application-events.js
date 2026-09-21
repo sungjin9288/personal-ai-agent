@@ -50,9 +50,9 @@ export function wireWorkspaceComposerActions({ actions, elements, errors }) {
   listenSafely(elements.workspaceForm, 'submit', actions.createWorkspace, errors.createWorkspace);
 }
 
-export function wireMissionBrowseControls({ actions, elements }) {
+export function wireMissionBrowseControls({ actions, elements, errors }) {
   listen(elements.missionFilter, 'input', actions.filterMissions);
-  listen(elements.workspaceSelect, 'change', actions.selectWorkspace);
+  listenSafely(elements.workspaceSelect, 'change', actions.selectWorkspace, errors.default);
 }
 
 export function wireNavigationTabControls({ actions, elements }) {
@@ -74,7 +74,7 @@ export function wireThemeToggleControls({ actions, elements }) {
 
 export function wireApplicationEvents({ actions, elements, errors, historyTarget }) {
   wireWorkspaceComposerActions({ actions, elements, errors });
-  wireMissionBrowseControls({ actions, elements });
+  wireMissionBrowseControls({ actions, elements, errors });
   wireMissionFormActions({ actions, elements, errors });
   wireMemoryFormActions({ actions, elements, errors });
   wireDocumentLogFormActions({ actions, elements, errors });

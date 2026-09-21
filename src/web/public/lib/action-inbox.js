@@ -10,6 +10,22 @@ import {
 import { getLearningPromotionCandidateId } from './text-format.js';
 import { getSanitizedMissionActionsFilter, normalizeUiParam } from './ui-params.js';
 
+const missionActionsRequestTokens = new WeakMap();
+
+function createMissionActionsRequestToken(state) {
+  const token = {};
+  missionActionsRequestTokens.set(state, token);
+  return token;
+}
+
+function isCurrentMissionActionsRequest(state, token, selectedMissionIdAtStart, isCurrent) {
+  return (
+    missionActionsRequestTokens.get(state) === token &&
+    state.selectedMissionId === selectedMissionIdAtStart &&
+    isCurrent()
+  );
+}
+
 export function getMissionActionsFilterLabel(filter = 'all') {
   if (filter === 'needs-reminder') {
     return '재알림 필요';
@@ -86,11 +102,15 @@ export function buildMissionActionsUrl(
   return `/api/actions?${params.toString()}`;
 }
 
-export async function loadMissionActions({ api, missionId, state }) {
-  const selectedMissionId = missionId === undefined ? state.selectedMissionId : missionId;
+export async function loadMissionActions({ api, isCurrent = () => true, missionId, state }) {
+  const selectedMissionIdAtStart = state.selectedMissionId;
+  const requestToken = createMissionActionsRequestToken(state);
+  const selectedMissionId = missionId === undefined ? selectedMissionIdAtStart : missionId;
   if (!selectedMissionId) {
-    state.missionActions = null;
-    state.missionActionsView = null;
+    if (isCurrentMissionActionsRequest(state, requestToken, selectedMissionIdAtStart, isCurrent)) {
+      state.missionActions = null;
+      state.missionActionsView = null;
+    }
     return null;
   }
 
@@ -108,8 +128,10 @@ export async function loadMissionActions({ api, missionId, state }) {
       : api(buildMissionActionsUrl(state, selectedMissionId, { filter }));
   const [fullPayload, viewPayload] = await Promise.all([fullPayloadPromise, viewPayloadPromise]);
 
-  state.missionActions = fullPayload;
-  state.missionActionsView = viewPayload;
+  if (isCurrentMissionActionsRequest(state, requestToken, selectedMissionIdAtStart, isCurrent)) {
+    state.missionActions = fullPayload;
+    state.missionActionsView = viewPayload;
+  }
   return { fullPayload, viewPayload };
 }
 

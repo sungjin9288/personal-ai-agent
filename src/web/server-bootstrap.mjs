@@ -29,7 +29,7 @@ export async function listenWithPortFallback(server, {
       await listenOnce(server, port, host);
       return {
         fallback: offset > 0,
-        port,
+        port: server.address().port,
       };
     } catch (error) {
       if (error?.code !== 'EADDRINUSE' || offset >= maxAttempts) {

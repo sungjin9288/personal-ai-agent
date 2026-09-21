@@ -135,6 +135,73 @@ test('action inbox loader avoids duplicate requests and clears stale mission sta
   assert.equal(paths.length, 1);
 });
 
+test('action inbox loader keeps only the latest per-state request across explicit A-B-A loads', async () => {
+  const pending = [];
+  const state = {
+    missionActionsFallbackStopReasonFilter: '',
+    missionActionsFilter: 'all',
+    selectedMissionId: 'mission-A',
+  };
+  const api = (path) => {
+    let resolve;
+    const promise = new Promise((resolvePromise) => {
+      resolve = resolvePromise;
+    });
+    pending.push({ path, resolve });
+    return promise;
+  };
+
+  const firstA = loadMissionActions({ api, missionId: 'mission-A', state });
+  const staleB = loadMissionActions({ api, missionId: 'mission-B', state });
+  const latestA = loadMissionActions({ api, missionId: 'mission-A', state });
+  pending[2].resolve({ marker: 'latest-A' });
+  const latestResult = await latestA;
+  pending[1].resolve({ marker: 'stale-B' });
+  pending[0].resolve({ marker: 'first-A' });
+  const [firstResult, staleResult] = await Promise.all([firstA, staleB]);
+
+  assert.deepEqual(
+    pending.map(({ path }) => path),
+    [
+      '/api/actions?missionId=mission-A&promotionStatus=operator-active',
+      '/api/actions?missionId=mission-B&promotionStatus=operator-active',
+      '/api/actions?missionId=mission-A&promotionStatus=operator-active',
+    ],
+  );
+  assert.deepEqual(latestResult.fullPayload, { marker: 'latest-A' });
+  assert.deepEqual(firstResult.fullPayload, { marker: 'first-A' });
+  assert.deepEqual(staleResult.fullPayload, { marker: 'stale-B' });
+  assert.deepEqual(state.missionActions, { marker: 'latest-A' });
+});
+
+test('action inbox loader honors the optional current guard and propagates API rejection', async () => {
+  const state = {
+    missionActions: { marker: 'current' },
+    missionActionsFallbackStopReasonFilter: '',
+    missionActionsFilter: 'all',
+    missionActionsView: null,
+    selectedMissionId: 'mission-A',
+  };
+
+  const staleResult = await loadMissionActions({
+    api: async () => ({ marker: 'stale' }),
+    isCurrent: () => false,
+    state,
+  });
+  assert.deepEqual(staleResult.fullPayload, { marker: 'stale' });
+  assert.deepEqual(state.missionActions, { marker: 'current' });
+
+  await assert.rejects(
+    loadMissionActions({
+      api: async () => {
+        throw new Error('action load failed');
+      },
+      state,
+    }),
+    /action load failed/,
+  );
+});
+
 test('action inbox summary helpers preserve fallback counts and visible labels', () => {
   const payload = {
     items: [

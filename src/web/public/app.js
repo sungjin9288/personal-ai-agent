@@ -2281,6 +2281,66 @@ async function applyReleaseHandoffPreviewUrlState(previewArtifactId = '') {
   await loadReleaseHandoffPreview(normalizedPreviewArtifactId, { syncUrl: false });
 }
 
+let missionSelectionEpoch = 0;
+let sessionSelectionRequestToken = 0;
+let artifactSelectionRequestToken = 0;
+
+function isCurrentMissionSelection(missionId, selectionEpoch) {
+  return state.selectedMissionId === missionId && missionSelectionEpoch === selectionEpoch;
+}
+
+function isMissionSelectionReady() {
+  return (
+    state.missionSelectionStatus === 'ready' &&
+    Boolean(state.selectedMissionId) &&
+    state.missionDetail?.mission?.id === state.selectedMissionId
+  );
+}
+
+function syncMissionRunControl() {
+  if (elements.runMissionButton) {
+    elements.runMissionButton.disabled = !isMissionSelectionReady();
+  }
+}
+
+function clearMissionSelectionPayload() {
+  state.currentSessionPayload = null;
+  state.councilBoardFocusKey = '';
+  state.executionLogs = null;
+  state.executionStatus = null;
+  state.harnessDocumentResult = null;
+  state.harnessMemoryResult = null;
+  state.missionActions = null;
+  state.missionActionsView = null;
+  state.missionDetail = null;
+  state.missionTimeline = null;
+  state.selectedArtifactId = null;
+  state.selectedSessionId = null;
+}
+
+function isCurrentSessionSelection(missionId, sessionId, selectionEpoch, requestToken) {
+  return (
+    isCurrentMissionSelection(missionId, selectionEpoch) &&
+    state.selectedSessionId === sessionId &&
+    sessionSelectionRequestToken === requestToken
+  );
+}
+
+function isCurrentArtifactSelection(
+  missionId,
+  sessionId,
+  selectionEpoch,
+  sessionRequestToken,
+  artifactRequestToken,
+) {
+  return (
+    isCurrentMissionSelection(missionId, selectionEpoch) &&
+    state.selectedSessionId === sessionId &&
+    sessionSelectionRequestToken === sessionRequestToken &&
+    artifactSelectionRequestToken === artifactRequestToken
+  );
+}
+
 function stopExecutionPolling() {
   if (state.executionPollTimer) {
     clearInterval(state.executionPollTimer);
@@ -2348,7 +2408,7 @@ function buildOperatorHandoffItems({
 }
 
 function isExecutionMissionSelected() {
-  return state.missionDetail?.mission?.mode === 'engineering';
+  return isMissionSelectionReady() && state.missionDetail.mission.mode === 'engineering';
 }
 
 function getHarnessRecommendationAction(recommendation) {
@@ -3306,7 +3366,7 @@ function wireQuickActions(scope = document) {
       }
 
       if (action === 'reset-view') {
-        void resetCurrentView();
+        void resetCurrentView().catch(showApplicationError);
         return;
       }
 
@@ -3864,6 +3924,36 @@ async function resetCurrentView() {
 }
 
 function getFlowState() {
+  if (state.selectedMissionId && state.missionSelectionStatus === 'loading') {
+    return {
+      buttonLabel: '미션을 불러오는 중',
+      completedSteps: [],
+      copy: '선택한 미션의 자료, 후속 작업, 실행 상태를 확인하고 있습니다.',
+      currentStepLabel: '미션 전환 중',
+      blocker: '미션 정보를 모두 확인할 때까지 실행할 수 없습니다.',
+      label: '선택한 미션을 불러오고 있습니다',
+      pendingActionCount: 0,
+      pendingApprovalCount: 0,
+      recommendedStep: 'step-setup',
+      secondaryActionLabel: '입력값과 설정 보기',
+      secondaryActionTab: 'config',
+    };
+  }
+  if (state.selectedMissionId && state.missionSelectionStatus === 'failed') {
+    return {
+      buttonLabel: '1단계에서 다시 선택',
+      completedSteps: [],
+      copy: state.missionSelectionError || '미션 정보를 불러오지 못했습니다.',
+      currentStepLabel: '미션 전환 실패',
+      blocker: '미션 정보를 다시 불러와야 실행할 수 있습니다.',
+      label: '미션을 다시 선택해 주세요',
+      pendingActionCount: 0,
+      pendingApprovalCount: 0,
+      recommendedStep: 'step-setup',
+      secondaryActionLabel: '입력값과 설정 보기',
+      secondaryActionTab: 'config',
+    };
+  }
   if (!state.selectedMissionId || !state.missionDetail) {
     return {
       buttonLabel: '1단계에서 시작',
@@ -4877,7 +4967,9 @@ export function getSelectedMissionRecord() {
 
 function wireMissionListSelectionButtons() {
   elements.missionList.querySelectorAll('[data-mission-id]').forEach((button) => {
-    button.addEventListener('click', () => selectMission(button.dataset.missionId, { urlMode: 'push' }));
+    button.addEventListener('click', () => {
+      void selectMission(button.dataset.missionId, { urlMode: 'push' }).catch(showApplicationError);
+    });
   });
 }
 
@@ -5270,6 +5362,20 @@ function renderAgentLane() {
 }
 
 function renderMissionSummaryEmptyState() {
+  if (state.missionSelectionStatus === 'loading') {
+    return emptyStateCard({
+      icon: 'LD',
+      message: '이전 미션의 자료를 비우고 선택한 미션의 최신 상태를 확인하고 있습니다.',
+      title: '미션을 불러오는 중입니다',
+    });
+  }
+  if (state.missionSelectionStatus === 'failed') {
+    return emptyStateCard({
+      icon: 'ER',
+      message: state.missionSelectionError || '왼쪽 목록에서 미션을 다시 선택해 주세요.',
+      title: '미션을 불러오지 못했습니다',
+    });
+  }
   return emptyStateCard({
     action: 'open-create',
     actionLabel: '새 미션 작성',
@@ -5280,11 +5386,19 @@ function renderMissionSummaryEmptyState() {
 }
 
 function renderMissionSummary() {
-  if (!state.missionDetail) {
-    elements.missionTitle.textContent = '미션을 선택하세요';
-    elements.missionSubtitle.textContent = '왼쪽 목록에서 미션을 선택하면 개요, 산출물, 타임라인을 바로 확인할 수 있습니다.';
+  if (!isMissionSelectionReady()) {
+    if (state.missionSelectionStatus === 'loading') {
+      elements.missionTitle.textContent = '미션을 불러오는 중입니다';
+      elements.missionSubtitle.textContent = '선택한 미션의 자료, 후속 작업, 실행 상태를 확인하고 있습니다.';
+    } else if (state.missionSelectionStatus === 'failed') {
+      elements.missionTitle.textContent = '미션을 불러오지 못했습니다';
+      elements.missionSubtitle.textContent = state.missionSelectionError || '미션 정보를 다시 불러와 주세요.';
+    } else {
+      elements.missionTitle.textContent = '미션을 선택하세요';
+      elements.missionSubtitle.textContent = '왼쪽 목록에서 미션을 선택하면 개요, 산출물, 타임라인을 바로 확인할 수 있습니다.';
+    }
     elements.missionSummary.innerHTML = renderMissionSummaryEmptyState();
-    elements.runMissionButton.disabled = true;
+    syncMissionRunControl();
     renderSelectionBridge();
     renderHeroMetrics();
     renderHeroSignals();
@@ -5309,7 +5423,7 @@ function renderMissionSummary() {
     mission.objective,
     latestSession?.reviewerSummary || '목표가 없습니다.',
   );
-  elements.runMissionButton.disabled = false;
+  syncMissionRunControl();
   renderSelectionBridge();
 
   if (state.activeStep === 'step-output') {
@@ -6880,20 +6994,8 @@ function wireMemoryRowActions() {
 }
 
 function resetHarnessFilterState() {
-  state.harnessAttachmentFocus = '';
-  state.retrievalSourceFocusLabel = '';
-  state.retrievalSourceFocusType = '';
-  state.harnessDocumentFilter = 'all';
-  state.harnessDocumentOffset = 0;
-  state.harnessDocumentQuery = '';
-  state.harnessDocumentSort = 'latest';
-  state.harnessDocumentVisibleCount = 12;
-  state.harnessMemoryFilterKind = 'all';
-  state.harnessMemoryFilterScope = 'all';
-  state.harnessMemoryOffset = 0;
-  state.harnessMemoryQuery = '';
-  state.harnessMemorySort = 'latest';
-  state.harnessMemoryVisibleCount = 12;
+  resetHarnessDocumentBrowseStateValues(state);
+  resetHarnessMemoryBrowseStateValues(state);
 }
 
 function resetHarnessDocumentBrowseState() {
@@ -7035,11 +7137,15 @@ function applyMissionActionsFilterUrlState({ actionInboxFilter = 'all', actionIn
 }
 
 async function handleActionInboxOpenMission(missionId) {
-  await selectMission(missionId, {
-    preferredDetailTab: 'reviews',
-    preferredStep: 'step-review',
-    urlMode: 'push',
-  });
+  try {
+    await selectMission(missionId, {
+      preferredDetailTab: 'reviews',
+      preferredStep: 'step-review',
+      urlMode: 'push',
+    });
+  } catch (error) {
+    showApplicationError(error);
+  }
 }
 
 async function handleActionInboxRerun(item) {
@@ -7346,11 +7452,15 @@ function wireApprovalOpenButtons() {
   elements.approvalList.querySelectorAll('[data-approval-open]').forEach((button) => {
     button.addEventListener('click', async () => {
       if (button.dataset.approvalOpen) {
-        await selectMission(button.dataset.approvalOpen, {
-          preferredDetailTab: 'reviews',
-          preferredStep: 'step-review',
-          urlMode: 'push',
-        });
+        try {
+          await selectMission(button.dataset.approvalOpen, {
+            preferredDetailTab: 'reviews',
+            preferredStep: 'step-review',
+            urlMode: 'push',
+          });
+        } catch (error) {
+          showApplicationError(error);
+        }
       }
     });
   });
@@ -7775,6 +7885,20 @@ export async function loadArtifact(artifactId, { activateTab = true, syncUrl = t
     return;
   }
 
+  const missionId = state.selectedMissionId;
+  const sessionId = state.selectedSessionId;
+  const selectionEpoch = missionSelectionEpoch;
+  const sessionRequestToken = sessionSelectionRequestToken;
+  const artifactRequestToken = ++artifactSelectionRequestToken;
+  const isCurrent = () =>
+    isCurrentArtifactSelection(
+      missionId,
+      sessionId,
+      selectionEpoch,
+      sessionRequestToken,
+      artifactRequestToken,
+    );
+
   if (state.artifactsById.has(artifactId)) {
     state.selectedArtifactId = artifactId;
     state.outputArtifactMetaExpanded = false;
@@ -7791,6 +7915,9 @@ export async function loadArtifact(artifactId, { activateTab = true, syncUrl = t
   }
 
   const payload = await api(`/api/artifacts/${encodeURIComponent(artifactId)}`);
+  if (!isCurrent()) {
+    return;
+  }
   state.artifactsById.set(artifactId, payload);
   state.selectedArtifactId = artifactId;
   state.outputArtifactMetaExpanded = false;
@@ -7930,6 +8057,11 @@ export async function selectSession(
     return;
   }
 
+  const missionId = state.selectedMissionId;
+  const selectionEpoch = missionSelectionEpoch;
+  const requestToken = ++sessionSelectionRequestToken;
+  const isCurrent = () =>
+    isCurrentSessionSelection(missionId, sessionId, selectionEpoch, requestToken);
   state.selectedSessionId = sessionId;
   state.currentSessionPayload = null;
   renderCouncilBoard({ loading: true });
@@ -7939,8 +8071,11 @@ export async function selectSession(
   renderSessionList();
 
   const payload = await api(
-    `/api/missions/${encodeURIComponent(state.selectedMissionId)}/session?sessionId=${encodeURIComponent(sessionId)}`,
+    `/api/missions/${encodeURIComponent(missionId)}/session?sessionId=${encodeURIComponent(sessionId)}`,
   );
+  if (!isCurrent()) {
+    return;
+  }
   state.currentSessionPayload = payload;
   renderSelectionBridge();
   renderSessionDetail(payload);
@@ -7961,6 +8096,9 @@ export async function selectSession(
 
   if (targetArtifactId) {
     await loadArtifact(targetArtifactId, { activateTab: false, syncUrl: false });
+    if (!isCurrent()) {
+      return;
+    }
   } else {
     state.selectedArtifactId = null;
     renderArtifact(null);
@@ -7973,21 +8111,14 @@ export async function selectSession(
 }
 
 export function clearMissionSelection({ syncUrl = true, urlMode = 'replace' } = {}) {
+  missionSelectionEpoch += 1;
   stopExecutionPolling();
-  state.currentSessionPayload = null;
-  state.councilBoardFocusKey = '';
-  state.executionLogs = null;
-  state.executionStatus = null;
-  state.harnessDocumentResult = null;
-  state.harnessMemoryResult = null;
   resetHarnessFilterState();
-  state.missionActions = null;
-  state.missionActionsView = null;
-  state.missionDetail = null;
-  state.missionTimeline = null;
-  state.selectedArtifactId = null;
+  clearMissionSelectionPayload();
+  state.missionSelectionError = '';
+  state.missionSelectionStatus = 'idle';
   state.selectedMissionId = null;
-  state.selectedSessionId = null;
+  syncMissionRunControl();
 
   resetHarnessFilterInputs();
   resetDocumentLogForm();
@@ -8032,32 +8163,21 @@ async function selectMission(
     return;
   }
 
+  const selectionEpoch = ++missionSelectionEpoch;
+  const isCurrent = () => isCurrentMissionSelection(missionId, selectionEpoch);
+  stopExecutionPolling();
   resetHarnessFilterState();
   state.selectedMissionId = missionId;
-  state.selectedArtifactId = null;
-  state.currentSessionPayload = null;
-  renderCouncilBoard({ loading: true });
-  state.harnessDocumentResult = null;
-  state.harnessMemoryResult = null;
+  state.missionSelectionError = '';
+  state.missionSelectionStatus = 'loading';
+  clearMissionSelectionPayload();
+  syncMissionRunControl();
   resetHarnessFilterInputs();
   resetDocumentLogForm();
   resetMemoryForm('mission');
   resetMemoryForm('workspace');
   renderMissionList();
   renderSelectionBridge();
-
-  const [detail, timelinePayload] = await Promise.all([
-    api(`/api/missions/${encodeURIComponent(missionId)}`),
-    api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
-    loadMissionActions(missionId),
-  ]);
-
-  state.missionDetail = detail;
-  state.missionTimeline = timelinePayload;
-  await loadHarnessBrowsers(missionId);
-  await loadExecutionStatus(missionId);
-  ensureExecutionPolling();
-
   renderMissionSummary();
   renderSetupHarnessSummary();
   renderStageSummaries();
@@ -8066,44 +8186,127 @@ async function selectMission(
   renderHarnessPanel();
   renderTimeline();
   renderSessionList();
+  renderSessionDetail(null);
+  renderCouncilBoard({ loading: true });
+  renderArtifact(null);
+  renderFlowState();
+  renderAgentBlueprintBuilder();
+  renderDetailTabLabels();
+  renderDetailContextbar();
+  renderDetailToolbarActions();
 
-  const latestSession = (detail.sessions || []).at(-1) || null;
-  const targetSessionId =
-    preferredSessionId && (detail.sessions || []).some((session) => session.id === preferredSessionId)
-      ? preferredSessionId
-      : latestSession?.id || null;
+  try {
+    const [detail, timelinePayload] = await Promise.all([
+      api(`/api/missions/${encodeURIComponent(missionId)}`),
+      api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
+      loadMissionActions(missionId, { selectionEpoch }),
+    ]);
 
-  if (targetSessionId) {
-    await selectSession(targetSessionId, {
-      focusRuns: false,
-      preferredArtifactId,
-      syncUrl: false,
-    });
-  } else {
-    state.selectedSessionId = null;
-    state.currentSessionPayload = null;
+    if (!isCurrent()) {
+      return;
+    }
+    state.missionDetail = detail;
+    state.missionTimeline = timelinePayload;
+    await loadHarnessBrowsers(missionId);
+    if (!isCurrent()) {
+      return;
+    }
+    await loadExecutionStatus(missionId, { selectionEpoch });
+    if (!isCurrent()) {
+      return;
+    }
+    const latestSession = (detail.sessions || []).at(-1) || null;
+    const targetSessionId =
+      preferredSessionId && (detail.sessions || []).some((session) => session.id === preferredSessionId)
+        ? preferredSessionId
+        : latestSession?.id || null;
+
+    if (targetSessionId) {
+      await selectSession(targetSessionId, {
+        focusRuns: false,
+        preferredArtifactId,
+        syncUrl: false,
+      });
+      if (!isCurrent()) {
+        return;
+      }
+    } else {
+      state.selectedSessionId = null;
+      state.currentSessionPayload = null;
+      renderSessionDetail(null);
+      renderCouncilBoard();
+      renderArtifact(null);
+    }
+
+    if (!isCurrent()) {
+      return;
+    }
+    state.missionSelectionStatus = 'ready';
+    state.missionSelectionError = '';
+    syncMissionRunControl();
+    const flow = getFlowState();
+    const resolvedStep =
+      getSanitizedStepId(preferredStep) ||
+      (preferredArtifactId ? 'step-output' : null) ||
+      flow.recommendedStep;
+    const resolvedDetailTab =
+      getSanitizedDetailTab(preferredDetailTab) ||
+      (preferredArtifactId ? 'artifacts' : null) ||
+      STEP_TO_DETAIL_TAB[resolvedStep] ||
+      'artifacts';
+
+    setActiveStep(resolvedStep, { syncDetailTab: false, syncUrl: false });
+    setActiveDetailTab(resolvedDetailTab, { syncUrl: false });
+    if (!isCurrent()) {
+      return;
+    }
+    ensureExecutionPolling({ missionId, selectionEpoch });
+
+    renderMissionSummary();
+    renderSetupHarnessSummary();
+    renderStageSummaries();
+    renderMissionActions();
+    renderReviewReadiness();
+    renderHarnessPanel();
+    renderTimeline();
+    renderSessionList();
+    renderFlowState();
+
+    if (syncUrl) {
+      writeUiStateToUrl({ historyMode: urlMode });
+    }
+    return selectionEpoch;
+  } catch (error) {
+    if (!isCurrent()) {
+      return;
+    }
+    missionSelectionEpoch += 1;
+    stopExecutionPolling();
+    resetHarnessFilterState();
+    clearMissionSelectionPayload();
+    state.missionSelectionStatus = 'failed';
+    state.missionSelectionError = error.message || '미션 정보를 불러오지 못했습니다.';
+    syncMissionRunControl();
+    resetHarnessFilterInputs();
+    renderMissionList();
+    renderSelectionBridge();
+    renderMissionSummary();
+    renderSetupHarnessSummary();
+    renderStageSummaries();
+    renderMissionActions();
+    renderReviewReadiness();
+    renderHarnessPanel();
+    renderTimeline();
+    renderSessionList();
     renderSessionDetail(null);
     renderCouncilBoard();
     renderArtifact(null);
-  }
-
-  const flow = getFlowState();
-  const resolvedStep =
-    getSanitizedStepId(preferredStep) ||
-    (preferredArtifactId ? 'step-output' : null) ||
-    flow.recommendedStep;
-  const resolvedDetailTab =
-    getSanitizedDetailTab(preferredDetailTab) ||
-    (preferredArtifactId ? 'artifacts' : null) ||
-    STEP_TO_DETAIL_TAB[resolvedStep] ||
-    'artifacts';
-
-  setActiveStep(resolvedStep, { syncDetailTab: false, syncUrl: false });
-  setActiveDetailTab(resolvedDetailTab, { syncUrl: false });
-  renderFlowState();
-
-  if (syncUrl) {
-    writeUiStateToUrl({ historyMode: urlMode });
+    renderFlowState();
+    renderAgentBlueprintBuilder();
+    renderDetailTabLabels();
+    renderDetailContextbar();
+    renderDetailToolbarActions();
+    throw error;
   }
 }
 
@@ -8160,25 +8363,37 @@ export async function loadMissions() {
   renderMissionList();
 }
 
-async function loadExecutionStatus(missionId = state.selectedMissionId) {
+async function loadExecutionStatus(
+  missionId = state.selectedMissionId,
+  { selectionEpoch = missionSelectionEpoch } = {},
+) {
   if (!missionId) {
-    state.executionStatus = null;
-    state.executionLogs = null;
-    stopExecutionPolling();
-    renderExecutionConsole();
+    if (!state.selectedMissionId && selectionEpoch === missionSelectionEpoch) {
+      state.executionStatus = null;
+      state.executionLogs = null;
+      stopExecutionPolling();
+      renderExecutionConsole();
+    }
     return null;
   }
 
   const payload = await api(`/api/missions/${encodeURIComponent(missionId)}/execution`);
+  if (!isCurrentMissionSelection(missionId, selectionEpoch)) {
+    return payload;
+  }
   state.executionStatus = payload;
   if (state.missionDetail?.mission?.id === missionId) {
     state.missionDetail.execution = payload.execution;
   }
   const executionId = payload.execution?.latestExecutionSession?.id || '';
   if (executionId) {
-    state.executionLogs = await api(
+    const logs = await api(
       `/api/missions/${encodeURIComponent(missionId)}/execution/logs?executionId=${encodeURIComponent(executionId)}`,
     );
+    if (!isCurrentMissionSelection(missionId, selectionEpoch)) {
+      return payload;
+    }
+    state.executionLogs = logs;
   } else {
     state.executionLogs = {
       execution: null,
@@ -8558,25 +8773,45 @@ async function archiveReleaseSnapshot({ confirmSnapshotFreeze = false } = {}) {
   }
 }
 
-function ensureExecutionPolling() {
+function ensureExecutionPolling({ missionId = state.selectedMissionId, selectionEpoch = missionSelectionEpoch } = {}) {
+  if (!missionId || !isCurrentMissionSelection(missionId, selectionEpoch)) {
+    return;
+  }
   stopExecutionPolling();
   const execution = getExecutionStatusPayload()?.latestExecutionSession;
-  if (!execution || execution.status !== 'running' || !state.selectedMissionId) {
+  if (!execution || execution.status !== 'running') {
     return;
   }
 
-  state.executionPollTimer = setInterval(async () => {
-    if (!state.selectedMissionId) {
-      stopExecutionPolling();
+  const pollTimer = setInterval(async () => {
+    if (
+      state.executionPollTimer !== pollTimer ||
+      !isCurrentMissionSelection(missionId, selectionEpoch)
+    ) {
+      clearInterval(pollTimer);
+      if (state.executionPollTimer === pollTimer) {
+        state.executionPollTimer = null;
+      }
       return;
     }
     try {
-      await Promise.all([loadExecutionStatus(state.selectedMissionId), loadApprovals()]);
+      await Promise.all([loadExecutionStatus(missionId, { selectionEpoch }), loadApprovals()]);
+      if (
+        state.executionPollTimer !== pollTimer ||
+        !isCurrentMissionSelection(missionId, selectionEpoch)
+      ) {
+        return;
+      }
       await refreshSelectedMissionContext({ preserveHarnessBrowse: true });
     } catch {
-      stopExecutionPolling();
+      if (state.executionPollTimer === pollTimer) {
+        stopExecutionPolling();
+      } else {
+        clearInterval(pollTimer);
+      }
     }
   }, 2000);
+  state.executionPollTimer = pollTimer;
 }
 
 function resolveRestoredMissionId(urlState, visibleMission = []) {
@@ -8712,9 +8947,15 @@ async function loadHarnessBrowsers(missionId = state.selectedMissionId) {
   return { documents, memory };
 }
 
-async function loadMissionActions(missionId = state.selectedMissionId) {
+async function loadMissionActions(
+  missionId = state.selectedMissionId,
+  { selectionEpoch = missionSelectionEpoch } = {},
+) {
+  const selectedMissionIdAtStart = state.selectedMissionId;
   return loadMissionActionsFromState({
     api,
+    isCurrent: () =>
+      missionSelectionEpoch === selectionEpoch && state.selectedMissionId === selectedMissionIdAtStart,
     missionId,
     state,
   });
@@ -8726,20 +8967,32 @@ export async function refreshSelectedMissionContext({ preserveHarnessBrowse = fa
   }
 
   const missionId = state.selectedMissionId;
+  const selectionEpoch = missionSelectionEpoch;
+  const isCurrent = () => isCurrentMissionSelection(missionId, selectionEpoch);
   const [detail, timelinePayload] = await Promise.all([
     api(`/api/missions/${encodeURIComponent(missionId)}`),
     api(`/api/missions/${encodeURIComponent(missionId)}/timeline`),
-    loadMissionActions(missionId),
+    loadMissionActions(missionId, { selectionEpoch }),
   ]);
 
+  if (!isCurrent()) {
+    return;
+  }
   state.missionDetail = detail;
   state.missionTimeline = timelinePayload;
-  await loadExecutionStatus(missionId);
-  ensureExecutionPolling();
+  await loadExecutionStatus(missionId, { selectionEpoch });
+  if (!isCurrent()) {
+    return;
+  }
 
   if (preserveHarnessBrowse) {
     await loadHarnessBrowsers(missionId);
+    if (!isCurrent()) {
+      return;
+    }
   }
+
+  ensureExecutionPolling({ missionId, selectionEpoch });
 
   renderSelectionBridge();
   renderMissionSummary();
@@ -8788,10 +9041,14 @@ async function handleMissionCreate(event) {
 }
 
 async function handleMissionRun() {
-  if (!state.selectedMissionId) {
+  if (!isMissionSelectionReady()) {
     return;
   }
 
+  const missionId = state.selectedMissionId;
+  const selectionEpoch = missionSelectionEpoch;
+  const isCurrentRunSelection = () =>
+    isCurrentMissionSelection(missionId, selectionEpoch) && isMissionSelectionReady();
   const provider = String(elements.runProviderSelect.value || '').trim();
   const fallbackProvider = String(elements.runFallbackProviderSelect?.value || '').trim();
   const fallbackPolicy = fallbackProvider
@@ -8801,17 +9058,30 @@ async function handleMissionRun() {
   elements.runMissionButton.textContent = '실행 중...';
 
   try {
-    await api(`/api/missions/${encodeURIComponent(state.selectedMissionId)}/run`, {
+    await api(`/api/missions/${encodeURIComponent(missionId)}/run`, {
       body: JSON.stringify({ fallbackPolicy, fallbackProvider, provider }),
       method: 'POST',
     });
+    if (!isCurrentRunSelection()) {
+      return;
+    }
     await Promise.all([loadMissions(), loadApprovals()]);
-    await selectMission(state.selectedMissionId, { urlMode: 'replace' });
-    const pendingApproval = state.approvals.some((item) => item.missionId === state.selectedMissionId);
+    if (!isCurrentRunSelection()) {
+      return;
+    }
+    const refreshedSelectionEpoch = await selectMission(missionId, { urlMode: 'replace' });
+    if (
+      !refreshedSelectionEpoch ||
+      !isCurrentMissionSelection(missionId, refreshedSelectionEpoch) ||
+      !isMissionSelectionReady()
+    ) {
+      return;
+    }
+    const pendingApproval = state.approvals.some((item) => item.missionId === missionId);
     const pendingActionCount = Number(state.missionActions?.summary?.pendingActionCount || 0);
     setActiveStep(pendingApproval || pendingActionCount ? 'step-review' : 'step-output', { urlMode: 'push' });
   } finally {
-    elements.runMissionButton.disabled = false;
+    syncMissionRunControl();
     elements.runMissionButton.textContent = '이 미션 실행';
   }
 }
@@ -9326,7 +9596,7 @@ function attachApplicationEvents() {
       default: showApplicationError,
       runMission: (error) => {
         showApplicationError(error);
-        elements.runMissionButton.disabled = false;
+        syncMissionRunControl();
         elements.runMissionButton.textContent = '이 미션 실행';
       },
       selectDocumentFile: (error) => {
