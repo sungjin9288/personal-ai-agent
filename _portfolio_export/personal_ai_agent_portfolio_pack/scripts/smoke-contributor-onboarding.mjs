@@ -161,6 +161,7 @@ for (const ignored of ['.env', '.env.local', 'var/']) {
 }
 
 const expectedProviderSmokeCommands = [
+  'npm run test:delivery-evidence',
   'npm run smoke:demo-local',
   'npm run smoke:doctor',
   'npm run doctor:summary',
@@ -211,6 +212,18 @@ const expectedCouncilWorkflowSteps = [
   { name: 'Run Council v1.1f UI blueprint smoke', command: 'npm run smoke:ui-agent-blueprints' },
 ];
 
+const expectedNavigationWorkflowStep = {
+  name: 'Run navigation and bootstrap regression gate',
+  command:
+    'node --test test/action-inbox-ui.test.mjs test/harness-browse.test.mjs test/mission-selection.test.mjs test/server-bootstrap.test.mjs',
+  testFiles: [
+    'test/action-inbox-ui.test.mjs',
+    'test/harness-browse.test.mjs',
+    'test/mission-selection.test.mjs',
+    'test/server-bootstrap.test.mjs',
+  ],
+};
+
 const pullRequestVerificationCommands = Array.from(
   pullRequestTemplate.matchAll(/- \[ \] `(npm run [^`]+)`/g),
   (match) => match[1],
@@ -225,6 +238,18 @@ assertWorkflowContract({
   jobName: 'Provider fallback and attention smoke',
   label: 'Provider smoke workflow',
 });
+assertNavigationWorkflowContract(providerWorkflow);
+const navigationNegativeCheckCount = assertNavigationWorkflowNegativeChecks(providerWorkflow);
+assertContains(
+  contributing,
+  expectedNavigationWorkflowStep.command,
+  'CONTRIBUTING must include the exact navigation and bootstrap regression gate command',
+);
+assertContains(
+  pullRequestTemplate,
+  `- [ ] \`${expectedNavigationWorkflowStep.command}\``,
+  'PR template must include the exact navigation and bootstrap regression gate command',
+);
 assertCouncilWorkflowContract(providerWorkflow);
 const councilNegativeCheckCount = assertCouncilWorkflowNegativeChecks(providerWorkflow);
 assertWorkflowContract({
@@ -305,6 +330,11 @@ console.log(
         '.github/workflows/provider-smoke.yml',
         '.github/workflows/docs-gate-smokes.yml',
       ],
+      navigationGate: {
+        command: expectedNavigationWorkflowStep.command,
+        testFileCount: expectedNavigationWorkflowStep.testFiles.length,
+        negativeChecks: navigationNegativeCheckCount,
+      },
       councilGate: {
         focusedUnitCommand: expectedCouncilWorkflowSteps[0].command,
         smokeCommands: expectedCouncilWorkflowSteps.slice(1).map(({ command }) => command),
@@ -342,6 +372,84 @@ function assertNoDuplicates(items, label) {
 
 function extractWorkflowRunCommands(workflow) {
   return Array.from(workflow.matchAll(/^\s*run:\s+(npm run .+)$/gm), (match) => match[1].trim());
+}
+
+function navigationWorkflowStepText() {
+  return `      - name: ${expectedNavigationWorkflowStep.name}\n        run: ${expectedNavigationWorkflowStep.command}`;
+}
+
+function assertNavigationWorkflowContract(workflow) {
+  const providerJob = extractWorkflowJob(workflow, 'provider-smoke');
+  const stepHeader = `      - name: ${expectedNavigationWorkflowStep.name}\n`;
+  const occurrences = Array.from(providerJob.matchAll(new RegExp(`^${escapeRegExp(stepHeader)}`, 'gm')));
+  assert.equal(occurrences.length, 1, 'Provider smoke job must include exactly one navigation and bootstrap regression gate');
+
+  const start = occurrences[0].index;
+  const end = providerJob.indexOf('\n      - ', start + stepHeader.length);
+  const completeStep = providerJob.slice(start, end >= 0 ? end : providerJob.length).replace(/\n$/, '');
+  assert.equal(
+    completeStep,
+    navigationWorkflowStepText(),
+    'Navigation and bootstrap regression gate must match the exact canonical step',
+  );
+
+  const councilStart = providerJob.indexOf(councilWorkflowStepText(expectedCouncilWorkflowSteps[0]));
+  assert.ok(councilStart >= 0, 'Provider smoke job must include the Council v1.1f focused unit gate');
+  assert.ok(start < councilStart, 'Navigation and bootstrap regression gate must run before the Council v1.1f block');
+}
+
+function assertNavigationWorkflowNegativeChecks(workflow) {
+  assertNavigationWorkflowContract(workflow);
+  const canonicalStep = navigationWorkflowStepText();
+  const mutations = [
+    ['the step is removed', workflow.replace(`\n${canonicalStep}`, '')],
+    ...expectedNavigationWorkflowStep.testFiles.map((testFile) => [
+      `${testFile} is removed`,
+      workflow.replace(` ${testFile}`, ''),
+    ]),
+    ['the step is duplicated', workflow.replace(canonicalStep, `${canonicalStep}\n\n${canonicalStep}`)],
+    ['if false disables the step', workflow.replace(canonicalStep, `${canonicalStep}\n        if: false`)],
+    [
+      'continue-on-error weakens the step',
+      workflow.replace(canonicalStep, `${canonicalStep}\n        continue-on-error: true`),
+    ],
+    ['the run key is commented out', workflow.replace(canonicalStep, canonicalStep.replace('        run:', '        # run:'))],
+    [
+      'the run command is replaced with echo',
+      workflow.replace(canonicalStep, canonicalStep.replace(expectedNavigationWorkflowStep.command, 'echo navigation gate skipped')),
+    ],
+    ['the run command tolerates failure', workflow.replace(canonicalStep, `${canonicalStep} || true`)],
+    [
+      'the step is moved to another job',
+      `${workflow.replace(`\n${canonicalStep}`, '')}\n  detached-navigation-gate:\n    steps:\n${canonicalStep}\n`,
+    ],
+  ];
+
+  for (const [label, mutatedWorkflow] of mutations) {
+    assert.notEqual(mutatedWorkflow, workflow, `negative check must mutate workflow when ${label}`);
+    assert.throws(
+      () => assertNavigationWorkflowContract(mutatedWorkflow),
+      /navigation and bootstrap|Navigation and bootstrap/,
+      `Navigation gate contract must fail closed when ${label}`,
+    );
+  }
+
+  assert.equal(
+    readRequiredFile(providerWorkflowPath),
+    workflow,
+    'Navigation gate negative checks must not mutate the repository workflow',
+  );
+  return mutations.length;
+}
+
+function extractWorkflowJob(workflow, jobId) {
+  const startMarker = `  ${jobId}:\n`;
+  const startMatch = new RegExp(`^${escapeRegExp(startMarker)}`, 'm').exec(workflow);
+  assert.ok(startMatch, `workflow must include job ${jobId}`);
+  const start = startMatch.index;
+  const nextJob = workflow.slice(start + startMarker.length).search(/^  [A-Za-z0-9_-]+:\n/m);
+  const end = nextJob >= 0 ? start + startMarker.length + nextJob : workflow.length;
+  return workflow.slice(start, end);
 }
 
 function councilWorkflowStepText({ name, command }) {

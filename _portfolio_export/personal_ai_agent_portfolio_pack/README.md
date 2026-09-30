@@ -136,6 +136,20 @@ The one-command demo currently runs:
 
 Use `npm run demo:local -- --plan` to print the command plan without executing it.
 
+## Delivery Evidence Case Study — Local Prototype
+
+별도의 포트폴리오 기술 사례로, 요구사항과 현재 revision·test/config·environment 근거의 binding을 확인하고 선언된 변경 영향을 설명합니다. 범용 coding agent 대체나 고객 인수 인증 기능은 아닙니다.
+
+```bash
+node scripts/demo-delivery-evidence.mjs --format markdown
+node scripts/evaluate-delivery-evidence.mjs --format markdown
+npm run test:delivery-evidence
+```
+
+평가 명령은 별도 oracle의 synthetic 12개 사례(정상 4 / 오류 8)를 실제 실행해 상태를 비교합니다. 이는 test 함수 수나 사람의 생산성 측정이 아닙니다. 현재 binding에 맞는 reported pass, stale evidence, 선언된 영향의 `recheck-required`·`unknown`을 구분하지만 PASS 재사용·CI 생략·배포는 허가하지 않습니다. 기존 recorded walkthrough는 이 추가 기능의 증거가 아닙니다.
+
+설계·재현·측정 결과와 미측정 범위: [Delivery evidence case study](docs/delivery-evidence-case-study.md). 구현과 검증 기록: [개발 계획](docs/delivery-evidence-development-plan.md).
+
 ## Features
 
 - Workspace and mission model for repository-based work
@@ -281,6 +295,15 @@ node src/cli.mjs provider probe openai
 ```
 
 ## Testing
+
+Node regression gates:
+
+```bash
+npm test
+npm run test:delivery-evidence
+```
+
+Both commands use `--test-concurrency=4` to bound file-level scheduling; the full command still runs `test/*.test.mjs`. This does not skip tests, change probe timeouts, or prove runtime safety under unbounded host load. The delivery evidence gate is also declared in the existing Node 24 Provider smoke CI job; a local pass is not a remote CI result.
 
 Full deterministic offline sweep. Browser E2E, actual Ollama inference, and host-bound Darwin provenance remain explicit standalone gates and are not run by this aggregate command:
 

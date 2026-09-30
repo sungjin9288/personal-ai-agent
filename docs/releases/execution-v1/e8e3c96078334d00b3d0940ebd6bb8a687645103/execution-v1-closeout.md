@@ -1,5 +1,8 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-09-30T23:22:37.526Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-09-30T23:22:23.968Z
 - branch: codex/delivery-evidence-portfolio-closeout
 - commit: e8e3c96078334d00b3d0940ebd6bb8a687645103

@@ -10,6 +10,7 @@
 
 ## Verification
 
+- [ ] `npm run test:delivery-evidence`
 - [ ] `npm run smoke:demo-local`
 - [ ] `npm run smoke:doctor`
 - [ ] `npm run doctor:summary`
@@ -43,6 +44,7 @@
 - [ ] `npm run smoke:council-concurrent-retry-terminality-shadow`
 - [ ] `npm run smoke:council-concurrent-retry-surface`
 - [ ] `npm run smoke:ui-agent-blueprints`
+- [ ] `node --test test/action-inbox-ui.test.mjs test/harness-browse.test.mjs test/mission-selection.test.mjs test/server-bootstrap.test.mjs`
 - [ ] GitHub Actions `Provider fallback and attention smoke`
 
 ## Notes

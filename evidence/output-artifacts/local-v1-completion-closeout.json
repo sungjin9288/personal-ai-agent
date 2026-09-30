@@ -46,11 +46,11 @@
     "target-local-provider-architecture",
     "hosted-saas-or-production-deployment"
   ],
-  "implementationCommit": "7d5197dd43afaf7d099f31195a8089b19ba3c013",
+  "implementationCommit": "e8e3c96078334d00b3d0940ebd6bb8a687645103",
   "schemaVersion": "personal-ai-agent-local-v1-completion-closeout/v2",
   "sourceDocumentSha256": {
     "CHANGELOG.md": "81f32acd55d81923f28922d89e050fcfa8bf88b61cabd8705c4d4f41ab2220e5",
-    "README.md": "d867598c019630f685d08a9623cc7be4c7c51db589b68e60009d6d5a9cc156be",
+    "README.md": "5f889d85110d7341a0be75ea8a54a305e23fc5e4062869e3ef6980db848089b9",
     "config/public-release-v0.1.0.json": "02963539e1f7d1c38b585ee762188e4569a9c0072c7742ecf48c2900f558e0e8",
     "config/public-walkthrough-v1.json": "3b24d3bc36d60a759d3ff152851ff72c8277de868b3ce7764f5a0e3a59c30e31",
     "config/pilot-feedback-v1.json": "320bb650c9cccd35801f6b9a29cadc6721e0daa06bf2f7581851f1cbe33704ee",
@@ -67,7 +67,7 @@
     "docs/smoke-validation-summary-v1.md": "797bdebaf288891d5abff8b3b62dff1355016a0d0c66ebcafd5e5c2e3557e2f0",
     "evidence/evidence_manifest.md": "6d1596ad66d7f4b8017562f761491951e41aa3fb83da9eabe3c67a4f6c7e4baa",
     "evidence/output-artifacts/engineering-approval-workflow-rehearsal.json": "86119fddbf98c7bd859076fb6011cf5647c40873a654bb38c8bf58a443ea26e1",
-    "package.json": "73061a7edc659da873fa9aacc4da3ec383f001c13bc242cb1897acfa2a86237a"
+    "package.json": "00cc4334a8467ca45fc301be8788520cd3400090bb37e9101371a39b7ed6d4ee"
   },
   "status": "local-v1-complete-external-evidence-open",
   "verification": {
@@ -75,33 +75,33 @@
       {
         "command": "npm test",
         "commandSha256": "328e123c63857fd8473bd4bd3581e655b08b7440d7f5d2c31cc375607582f539",
-        "durationMs": 105905,
+        "durationMs": 154247,
         "exitCode": 0,
         "id": "unit-tests",
         "packageScript": "test",
-        "packageScriptSha256": "910f73d25bb3adcd13e50bb0d5991f3cd22f2d0170104a6c14cf2d8563286369",
+        "packageScriptSha256": "35b79cad8e6247ec62d309bb90d327d3cf7ac05d4a84184e92767f658f63c74b",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "55c72d6988f5f6a49ce3b63e7910a9c77f4cd03bac88785a069cb70ef9f17762",
+        "stdoutSha256": "251b1becf10114b5d070bfe6fe05a717e7ae099905557d087446c229f71dc196",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout",
         "commandSha256": "b2b79ebbc595df499ab5603094cb3335ea81ddbe19386c5432ea9d9b80da2541",
-        "durationMs": 17724,
+        "durationMs": 14391,
         "exitCode": 0,
         "id": "docs-gates-precloseout",
         "packageScript": "smoke:docs-gates",
         "packageScriptSha256": "e2a760d6349ef788b72ed27ed07759b0d9ad3d359797f28740b5912c99f23ff9",
         "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "stdoutSha256": "af63dfc09b33f344c6a64cd6bdf82b43388f8c6aac318c9a922edd1804af656f",
+        "stdoutSha256": "89863fe95521c17eccbff27fb859bee52c1065a134b5c1f70eabecf18e7456fc",
         "timedOut": false,
         "timeoutMs": 600000
       },
       {
         "command": "npm run smoke:release-artifact-hygiene",
         "commandSha256": "93c15f412966f4ec775719b634a6e54c43ea2e547c4ad80ee029cb5e2f49b35b",
-        "durationMs": 348,
+        "durationMs": 286,
         "exitCode": 0,
         "id": "release-artifact-hygiene",
         "packageScript": "smoke:release-artifact-hygiene",
@@ -114,7 +114,7 @@
       {
         "command": "git diff --check",
         "commandSha256": "466c2f308b48c7661d646fdd068fbecea974c665fe65dbf8ed508f224180ce0b",
-        "durationMs": 64,
+        "durationMs": 122,
         "exitCode": 0,
         "id": "git-diff-check",
         "packageScript": null,
@@ -125,12 +125,12 @@
         "timeoutMs": 60000
       }
     ],
-    "implementationCommit": "7d5197dd43afaf7d099f31195a8089b19ba3c013",
-    "packageJsonSha256": "db878b9af1f3ed6603b16e381b6a05527be6121aacee583c970c4955ea054991",
-    "reportSha256": "43f986a57f29babf0cf25893121353e961aa1795fb9db6037a00b07c117b4c06",
-    "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v2",
+    "implementationCommit": "e8e3c96078334d00b3d0940ebd6bb8a687645103",
+    "packageJsonSha256": "2a7415f303da51f08b4790c8980d02a7b254f9b6a4800adbf537c0873fc27f90",
+    "reportSha256": "4cc125236e36136d35920ae2dce1487687e016ed9d25b3213e73928b726f00d5",
+    "schemaVersion": "personal-ai-agent-local-v1-completion-verification/v3",
     "status": "passed"
   },
-  "id": "local-v1-completion-closeout-05b365a9e3b6520cd7853d4e3d50facae1aa5b2ef8cc308da49efb5d5716c3fd",
-  "integrityHash": "05b365a9e3b6520cd7853d4e3d50facae1aa5b2ef8cc308da49efb5d5716c3fd"
+  "id": "local-v1-completion-closeout-e001720369dc295e315442514117e6eb06b370b6a0ae4efdc59f3da968e81868",
+  "integrityHash": "e001720369dc295e315442514117e6eb06b370b6a0ae4efdc59f3da968e81868"
 }
