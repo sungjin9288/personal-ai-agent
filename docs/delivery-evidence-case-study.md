@@ -111,7 +111,7 @@ server가 표시한 실제 local URL을 연다. port 0은 비어 있는 port를 
 | 간접 의존 config 변경 | blocked / stale | recheck-required | 선언된 test → source → config 연결에 변경 존재 |
 | graph 밖 신규 파일 변경 | blocked / stale | unknown | 모델에 없는 영향은 모른다고 남김 |
 
-이전 public recorded walkthrough는 기존 harness의 별도 증거다. 새 D1–D5 기능의 영상·hosted demo로 재사용하지 않는다. D3의 이전 browser 검증 기록은 [개발 기록](delivery-evidence-development-plan.md)의 D3 실행 기록에서 별도로 확인할 수 있다. 이번 추가 구현은 web UI를 수정하지 않았다.
+이전 public recorded walkthrough는 기존 harness의 별도 증거다. 새 D1–D5 기능의 영상·hosted demo로 재사용하지 않는다. D3의 이전 browser 검증 기록은 [개발 기록](delivery-evidence-development-plan.md)의 D3 실행 기록에서 별도로 확인할 수 있다. D4/D5 구현에는 web UI 동작 변경이 없었으며, 후속 마감에서 D3 control의 명시적 ARIA/title metadata 계약만 보완했다. 이 보완은 fresh browser·screen-reader 실사용 검증으로 표시하지 않는다.
 
 ## Synthetic 평가 결과와 한계
 
@@ -130,7 +130,7 @@ always-block은 정상 처리를 놓치고 always-current는 오류를 current�
 
 ## 로컬 검증 상태
 
-Node `v24.18.0` / Darwin arm64, 2026-09-30 source commit 전의 실행이다. 아래 수치는 정의된 test 함수 수가 아니라 실제 runner 결과다. 이 기록 시점에 원격 CI는 실행하지 않았다. source SHA에 결속한 후속 closeout과 원격 CI는 generated evidence와 해당 PR에서 구분해 기록한다.
+Node `v24.18.0` / Darwin arm64, 2026-09-30~2026-10-01 source 단계의 실행 기록이다. 아래 수치는 정의된 test 함수 수가 아니라 각 명령의 실제 runner 결과다. 이 기록 시점에 원격 CI는 실행하지 않았다. source SHA에 결속한 후속 closeout과 원격 CI는 generated evidence와 해당 PR에서 구분해 기록한다.
 
 ### 최종 마감 검사
 
@@ -138,8 +138,10 @@ Node `v24.18.0` / Darwin arm64, 2026-09-30 source commit 전의 실행이다. �
 
 | 명령 | 실제 결과 | 범위·제한 |
 |---|---|---|
-| `npm test` | 총 2,157 / 2,156 PASS / 실패 0 / skip 1, exit 0 | 전체 regression, 기존 Linux 전용 1개 skip |
-| `npm run test:delivery-evidence` | 170/170 PASS, exit 0 | 실제 receipt → importer → HTTP 검토/export 및 과거 revision 거부 포함 |
+| `npm test` | 총 2,158 / 2,157 PASS / 실패 0 / skip 1, exit 0 | 2026-10-01 전체 regression, 기존 Linux 전용 1개 skip |
+| `npm run test:delivery-evidence` | 171/171 PASS, exit 0 | 2026-10-01 실제 receipt → importer → HTTP 검토/export 및 과거 revision 거부 포함 |
+| `node --test test/delivery-evidence-ui.test.mjs` | 10/10 PASS, exit 0 | 실제 HTML의 D3 control 10개 metadata와 기존 UI 상태·export 회귀 |
+| `npm run smoke:ui-harness-browse` | PASS, exit 0 | 기존 static metadata 계약과 local HTTP/fixture 검사; 새 browser 실행 아님 |
 | `node --test --test-concurrency=4 test/local-v1-precloseout-verification.test.mjs test/local-v1-completion-closeout.test.mjs` | 19/19 PASS, exit 0 | 현재 verification/v3, 과거 v2 보존, policy substitution·현재 package에 과거 receipt 재결속 거부 |
 | `node --test test/execution-v1-deterministic-evidence-utils.test.mjs` | 5/5 PASS, exit 0 | 중립적인 archive 재사용 사유, 원본 source/time/status 유지, 네 문서·snapshot의 잘못된 unchanged 사유와 current-run 잔존 metadata 거부 |
 | `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout` | 59/59 PASS, exit 0 | source commit 전 계약상 precloseout; 새 SHA의 closeout은 이후 official builder로 생성 |
@@ -160,6 +162,8 @@ focused gate를 기존 Node 24 CI job에 선언했으며 이 연결을 static re
 syntax·whitespace·관련 smoke와 독립 code/document review도 수행했다. source commit 전에는 기존 dirty 변경을 보존하면서 integration test·재현 안내·test command/CI 선언과 필요한 closeout·Portfolio 계약만 보완했다. 과거 closeout을 덮어쓰지 않고 현재 builder와 역사 검증을 분리했으며, actual historical artifact도 당시 Git source와 검증했다. 상세 명령·권한·후속 generated evidence 범위는 [실행 기록](delivery-evidence-development-plan.md)에 남긴다. 현재 scheduling에서의 통과를 무제한 병렬 안정화나 공개 release 완료로 해석하지 않는다.
 
 첫 source commit 이후 generated review에서 기존 재사용 사유의 `ui-http-unchanged`가 실제 변경과 충돌하는 오류를 발견했다. 과거 source/time/not-rerun은 유지하되 사유를 `execution-v1-archived-evidence-browser-excluded`로 정정했다. 위 최종 full 수치는 이 보완까지 포함한다. 과거 browser·live 결과 자체를 다시 실행하거나 최신 UI의 검증으로 재분류하지 않았다.
+
+`c51226ed`의 최종 full smoke는 287/291 PASS, 실패 4개로 공개 마감을 중단했다. D3의 metadata 계약 누락과 host-bound 관측 증거 3개의 불일치였다. 승인 후 UI의 명시적 metadata만 보완하고 기존 host builder 3개와 대응 독립 replay를 각각 1회 실행해 모두 통과했다. 관측값·hash/id 외 권한·guard·계약은 유지했으며 원본과 생성 후보를 보존했다. Host 증거는 release artifact allowlist 밖이므로 별도 integration commit으로 고정한다. 이 source 기록은 후속 SHA의 final full smoke·원격 CI 성공을 예고하지 않는다.
 
 ## Scope & Limitations
 

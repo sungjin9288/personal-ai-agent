@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createDeliveryReviewController, mountDeliveryReview, renderDeliveryReview } from '../src/web/public/lib/delivery-evidence-review.js';
 
@@ -22,6 +23,33 @@ function setup(api) {
     onChange() {}, download: (...args) => downloads.push(args) });
   return { controller, downloads, select(value) { workspace = value; controller.syncWorkspace(); } };
 }
+
+test('D3 HTML shell keeps explicit accessible metadata on all ten review controls', () => {
+  const html = readFileSync(new URL('../src/web/public/index.html', import.meta.url), 'utf8');
+  const section = /<section\b[^>]*\bid="delivery-review"[^>]*>([\s\S]*?)<\/section>/.exec(html);
+  assert.ok(section, 'D3 review section must exist in the actual HTML shell');
+  const controls = [...section[1].matchAll(/<(button|input|select|textarea)\b([^>]*)>/g)];
+  const expected = [
+    { tag: 'button', id: 'delivery-current', name: '현재 기준 읽기', title: '현재 기준 읽기' },
+    { tag: 'textarea', id: 'delivery-input', name: 'D1 packet 또는 D2 importer 출력 JSON' },
+    { tag: 'button', id: 'delivery-evaluate', name: '증거 판정하기', title: '증거 판정하기' },
+    { tag: 'input', id: 'delivery-reviewer', name: '검토자 이름 — 자기 선언' },
+    { tag: 'select', id: 'delivery-requirement', name: '요구사항' },
+    { tag: 'select', id: 'delivery-kind', name: '메모 종류' },
+    { tag: 'input', id: 'delivery-reason', name: '검토 이유와 다음 조치' },
+    { tag: 'button', name: '검토 메모 반영', title: '검토 메모 반영' },
+    { tag: 'button', id: 'delivery-json', name: '현재 결과 JSON 다운로드', title: '현재 결과 JSON 다운로드' },
+    { tag: 'button', id: 'delivery-markdown', name: '현재 결과 Markdown 다운로드', title: '현재 결과 Markdown 다운로드' },
+  ];
+  assert.equal(controls.length, 10, 'D3 review must contain exactly ten controls');
+  const actual = controls.map(([, tag, attributes]) => {
+    const values = new Map([...attributes.matchAll(/\b([\w:-]+)="([^"]*)"/g)].map(([, key, value]) => [key, value]));
+    return { tag, ...(values.has('id') ? { id: values.get('id') } : {}),
+      name: values.get('aria-label')?.trim(),
+      ...(tag === 'button' ? { title: values.get('title')?.trim() } : {}) };
+  });
+  assert.deepEqual(actual, expected, 'Each control needs its explicit non-empty name, and each button its non-empty title');
+});
 
 test('new packet invalidates previous review and export even when JSON is malformed', async () => {
   const { controller, downloads } = setup(async () => result());
