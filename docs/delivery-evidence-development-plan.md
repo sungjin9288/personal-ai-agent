@@ -410,3 +410,20 @@ Generated commit은 `scripts/smoke-execution-v1-snapshot.mjs`의 `isReleaseArtif
 - 원격 main 이후의 기존 두 commit은 별도 read-only Agent가 전체 19-path range를 검토했다. mission epoch·readiness·늦은 결과·실행 대상·port 0 처리와 회귀 계약에서 actionable finding이 없었다. 이 정적 review는 새 browser replay나 CI 실행, 공개·merge 승인을 대신하지 않는다.
 
 Source 문서·코드·test를 commit 전에 검토·검증해 고정한다. source SHA 생성 후의 실행 결과와 공개 head·CI 상태는 해당 SHA의 official generated evidence와 PR에 기록하며, artifact-only commit에 source 계획 변경을 섞지 않는다.
+
+### 재사용 provenance truth-sync 실행 — 2026-09-30
+
+41-path source는 `3dd66ef00be8785814ba03b9322f26c1a73f5494`로 commit했다. 그 SHA의 official local-v1 검증 4개, docs 60개, clean rehearsal 36개, production-like drill 45개, pilot·Portfolio refresh/check는 로컬에서 통과했다. 그러나 별도 read-only review에서 기존 재사용 사유 `execution-v1-ui-http-unchanged-browser-excluded`가 실제 UI·HTTP 변경과 충돌하는 P2를 발견해 generated-evidence commit·push·PR을 보류했다. 과거 원본 SHA·시각·`reused-existing-not-rerun` 표기 보존은 통과했지만, 검사되지 않은 unchanged 사유까지 사실이 되는 것은 아니다.
+
+사용자는 추가 3개 source와 관련 문서 정합성, 생성 후보 보존·해당 경로만의 baseline 복원, 별도 fix source commit → 최신 SHA 증거 commit → 기존 미게시 `7d5197dd`·`9fe2a2aa`를 포함한 같은 PR의 push·ready PR·CI 진행을 승인했다. `3dd66ef0`과 기존 commit은 그대로 보존한다. merge·deploy·publish·provider 호출·기존 resource cleanup·history 재작성은 계속 제외한다.
+
+- 추가 source는 `scripts/execution-v1-deterministic-evidence-utils.mjs`, `test/execution-v1-deterministic-evidence-utils.test.mjs`, `scripts/smoke-execution-v1-reuse-provenance.mjs`뿐이다. 원본 source/time/status와 current-run 경계는 유지하고, 사유를 과거 증거 보존이라는 중립적 사실로 바꾼다. source identity를 검사하지 않는 코드에 unchanged 주장을 남기지 않는다.
+- 생성 후보 31개는 archive SHA-256과 각 regular entry의 byte hash, exact inventory, path traversal 부재를 재검증했다. 그 후 tracked 생성 파일 25개만 exact `3dd66ef0` baseline으로 복원하고 신규 6개는 외부 보존 위치로 이동했다. archive와 신규 byte는 보존했고 source 41개·HEAD·branch·index·기존 snapshot은 변경하지 않았다. 복원 후 worktree는 clean이었다.
+- 원격 main은 실행 직전에도 `58a5db21d56345e40dec057bd9a0ce47ccb6ab57`이며 같은 remote branch·PR은 없었다. branch protection의 strict required check는 `Provider fallback and attention smoke`다. 같은 PR에서 기존 `Target and enterprise documentation gate smokes`도 실제 head 결과를 확인한다. 이 조회는 CI 실행·성공이나 merge 승인을 뜻하지 않는다.
+
+이 단계의 source 검증을 아래에 기록한 뒤 관련 문서를 함께 fix commit으로 고정한다. 이후 official builder와 기존 generated pipeline을 다시 실행하고 current full smoke·artifact parity·provenance·hygiene를 확인한다. 재사용한 과거 browser/live 결과는 이번 source SHA의 fresh 검증으로 표시하지 않는다.
+
+- TDD는 `node --test test/execution-v1-deterministic-evidence-utils.test.mjs`로 literal 기대값을 먼저 고정했다. 구현 수정 전 총 5개 중 2 PASS / 3 FAIL(exit 1), 수정 후 5/5 PASS(exit 0)다. disposable cwd에서 실제 smoke를 실행해 중립 사유의 네 문서·snapshot 수용, 각각의 잘못된 unchanged 사유 거부, current-run에 남은 재사용 metadata 거부를 확인했다. oracle은 production 상수를 가져오지 않는다.
+- 구현 변경은 utility와 smoke의 reason literal 세 곳뿐이다. source metadata 우선순위·timestamp·status·binding·browser 제외와 current-run guard는 그대로다. 세 파일의 `node --check`, `git diff --check`가 통과했다. 별도 read-only review도 actionable finding 없이 통과했고 실제 diff를 주관 Agent가 확인했다. 리뷰는 test·browser·provider 실행을 대신하지 않는다.
+- Node `v24.18.0` / Darwin arm64에서 `npm test`는 총 2,157 / 2,156 PASS / fail 0 / cancelled 0 / skip 1, exit 0, 약 130.14초다. 기존 Linux 전용 skip은 유지했다. `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout`은 59/59 PASS, exit 0이다. 이 source 단계에서는 새 SHA의 closeout을 아직 생성하지 않았고 canonical reuse smoke는 후속 official refresh 뒤에 확인한다.
+- `npm run test:delivery-evidence`는 170/170 PASS, exit 0, 약 8.26초다. README overview·Portfolio claim-boundary smoke와 최종 source diff 검사가 통과했다. 이 결과까지 source 문서를 고정하고 이후 generated 결과와 실제 공개 head·CI는 별도 evidence/PR에 기록한다.
