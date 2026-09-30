@@ -29,6 +29,9 @@ jobs:
       - name: Show Node.js version
         run: node --version
 
+      - name: Run delivery evidence regression gate
+        run: npm run test:delivery-evidence
+
       - name: Run local demo onboarding smoke
         run: npm run smoke:demo-local
 

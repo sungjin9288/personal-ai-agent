@@ -10,6 +10,7 @@
 
 ## Verification
 
+- [ ] `npm run test:delivery-evidence`
 - [ ] `npm run smoke:demo-local`
 - [ ] `npm run smoke:doctor`
 - [ ] `npm run doctor:summary`

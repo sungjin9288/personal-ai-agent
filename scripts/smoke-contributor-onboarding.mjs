@@ -161,6 +161,7 @@ for (const ignored of ['.env', '.env.local', 'var/']) {
 }
 
 const expectedProviderSmokeCommands = [
+  'npm run test:delivery-evidence',
   'npm run smoke:demo-local',
   'npm run smoke:doctor',
   'npm run doctor:summary',

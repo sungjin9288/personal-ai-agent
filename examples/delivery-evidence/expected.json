@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "delivery-evaluation-oracle/v1",
+  "cases": [
+    { "id": "current-single", "kind": "normal", "status": "evidence-current", "requirements": [{ "id": "REQ-1", "status": "evidence-current", "checks": [{ "id": "approval-suite", "status": "current" }] }] },
+    { "id": "current-multiple", "kind": "normal", "status": "evidence-current", "requirements": [
+      { "id": "REQ-1", "status": "evidence-current", "checks": [{ "id": "approval-suite", "status": "current" }, { "id": "receipt-suite", "status": "current" }] },
+      { "id": "REQ-2", "status": "evidence-current", "checks": [{ "id": "approval-suite", "status": "current" }, { "id": "receipt-suite", "status": "current" }] }
+    ] },
+    { "id": "current-after-old-failure", "kind": "normal", "status": "evidence-current", "requirements": [{ "id": "REQ-1", "status": "evidence-current", "checks": [{ "id": "approval-suite", "status": "current" }] }] },
+    { "id": "current-sha256", "kind": "normal", "status": "evidence-current", "requirements": [{ "id": "REQ-1", "status": "evidence-current", "checks": [{ "id": "approval-suite", "status": "current" }] }] },
+    { "id": "missing", "kind": "error", "status": "blocked", "requirements": [{ "id": "REQ-1", "status": "blocked", "checks": [{ "id": "approval-suite", "status": "missing" }] }] },
+    { "id": "stale-revision", "kind": "error", "status": "blocked", "requirements": [{ "id": "REQ-1", "status": "blocked", "checks": [{ "id": "approval-suite", "status": "stale" }] }] },
+    { "id": "changed-criterion", "kind": "error", "status": "blocked", "requirements": [{ "id": "REQ-1", "status": "blocked", "checks": [{ "id": "approval-suite", "status": "stale" }] }] },
+    { "id": "changed-definition", "kind": "error", "status": "blocked", "requirements": [{ "id": "REQ-1", "status": "blocked", "checks": [{ "id": "approval-suite", "status": "stale" }] }] },
+    { "id": "changed-environment", "kind": "error", "status": "blocked", "requirements": [{ "id": "REQ-1", "status": "blocked", "checks": [{ "id": "approval-suite", "status": "stale" }] }] },
+    { "id": "foreign-project", "kind": "error", "status": "blocked", "requirements": [{ "id": "REQ-1", "status": "blocked", "checks": [{ "id": "approval-suite", "status": "missing" }] }] },
+    { "id": "conflicting-current", "kind": "error", "status": "blocked", "requirements": [{ "id": "REQ-1", "status": "blocked", "checks": [{ "id": "approval-suite", "status": "conflicting" }] }] },
+    { "id": "mapping-unconfirmed", "kind": "error", "status": "needs-review", "requirements": [{ "id": "REQ-1", "status": "needs-review", "checks": [{ "id": "approval-suite", "status": "current" }] }] }
+  ]
+}

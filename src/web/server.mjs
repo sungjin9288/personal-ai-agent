@@ -34,6 +34,7 @@ import { createRuntimeStatusService } from '../core/runtime-status-service.mjs';
 import { createStore } from '../core/store.mjs';
 import { evaluateOidcWebAuth, evaluateWebAuth, normalizeWebAuthMode } from '../core/web-auth-policy.mjs';
 import { createActionHandlerFactory } from './action-handlers.mjs';
+import { createDeliveryEvidenceHandlers } from './delivery-evidence-handlers.mjs';
 import { createMissionHandlerFactory } from './mission-handlers.mjs';
 import { resolveWithinRoot } from './path-guard.mjs';
 import { createExecutionV1ReleaseArtifactResolver } from './release-artifact-resolver.mjs';
@@ -2188,6 +2189,11 @@ async function handleApi(request, response, url) {
   const actionHandlers = buildActionHandlers({ auth, request, response, url });
   const missionHandlers = buildMissionHandlers({ auth, request, response, url });
   const releaseHandlers = buildExecutionV1ReleaseHandlers({ request, response, url });
+  const deliveryHandlers = createDeliveryEvidenceHandlers({
+    request, response, auth, evaluateWorkspaceTenantAccess, sendTenantDenied, sendJson,
+  });
+  registerParamRoute('GET', '/api/workspaces/:workspaceId/delivery-evidence', deliveryHandlers.getCurrent);
+  registerParamRoute('POST', '/api/workspaces/:workspaceId/delivery-evidence', deliveryHandlers.review);
 
   registerExactRoute('GET', '/api/meta', async () => {
     sendJson(response, 200, {

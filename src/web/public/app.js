@@ -90,6 +90,7 @@ import {
 } from './lib/render-fragments.js';
 import { state, elements } from './lib/app-state.js';
 import { bootstrapApplication } from './lib/application-bootstrap.js';
+import { mountDeliveryReview, syncDeliveryWorkspaceSelection } from './lib/delivery-evidence-review.js';
 import { wireApplicationEvents } from './lib/application-events.js';
 import { renderSessionLineage } from './lib/session-lineage.js';
 import { buildCouncilReadModel } from './lib/council-read-model.js';
@@ -9524,6 +9525,7 @@ function wireMissionAttachmentActions() {
 }
 
 async function handleWorkspaceSelectionChange() {
+  syncDeliveryWorkspaceSelection();
   renderMissionList();
   const visibleMission = filteredMissions();
   if (!visibleMission.length) {
@@ -9543,6 +9545,7 @@ function showApplicationError(error) {
 }
 
 function attachApplicationEvents() {
+  mountDeliveryReview({ root: document.getElementById('delivery-review'), api, getWorkspaceId: getSelectedWorkspaceId });
   wireApplicationEvents({
     actions: {
       cancelDocument: resetDocumentLogForm,
