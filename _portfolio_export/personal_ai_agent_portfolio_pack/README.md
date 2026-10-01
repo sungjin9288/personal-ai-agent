@@ -140,6 +140,8 @@ Use `npm run demo:local -- --plan` to print the command plan without executing i
 
 별도의 포트폴리오 기술 사례로, 요구사항과 현재 revision·test/config·environment 근거의 binding을 확인하고 선언된 변경 영향을 설명합니다. 범용 coding agent 대체나 고객 인수 인증 기능은 아닙니다.
 
+로컬 web 검토 화면에서는 저장한 JSON bundle을 다시 열어 현재 source를 재확인하고, 메모·자기 선언 시각·선언된 변경 영향을 함께 검토한 뒤 JSON/Markdown으로 내보낼 수 있습니다. 서버 영속 이력·서명·자동 dependency 추론은 제공하지 않습니다. [실제 Node 결과부터 복원까지의 사용 안내](docs/delivery-evidence-case-study.md#실제-node-결과를-web-검토로-연결하기)를 참고하세요.
+
 ```bash
 node scripts/demo-delivery-evidence.mjs --format markdown
 node scripts/evaluate-delivery-evidence.mjs --format markdown

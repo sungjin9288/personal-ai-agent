@@ -1,5 +1,8 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-10-01T02:33:36.618Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-10-01T02:33:34.642Z
 - localDate: 2026-10-01
 - branch: codex/delivery-review-roundtrip
@@ -7,7 +10,7 @@
 - boundImplementationCommit: b7f6c81fe269ef5be983d39b55f76b06285a0683
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/b7f6c81fe269ef5be983d39b55f76b06285a0683](releases/execution-v1/b7f6c81fe269ef5be983d39b55f76b06285a0683)
+- immutableSnapshot: [docs/releases/execution-v1/b7f6c81fe269ef5be983d39b55f76b06285a0683](./)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
 - commitPushStatus: not pushed, origin/codex/delivery-review-roundtrip not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
