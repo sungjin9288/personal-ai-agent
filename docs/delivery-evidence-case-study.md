@@ -23,14 +23,14 @@
   → D5 oracle와 상태 분류 비교
 ```
 
-D4는 D1의 판정을 수정하지 않는다. `no-declared-impact`여도 과거 revision의 PASS는 계속 stale이다. D4/D5는 별도의 CLI 표면이며 web 검토 화면에 자동 연결되지 않는다. D5는 D1의 상태 분류를 검사하며 사용자 효과나 증거의 진위를 대신 검사하지 않는다.
+D4는 D1의 판정을 수정하지 않는다. `no-declared-impact`여도 과거 revision의 PASS는 계속 stale이다. D4는 CLI와 기존 web 검토 화면에서 선택적으로 사용하며, D5는 별도 CLI다. D5는 D1의 상태 분류를 검사하며 사용자 효과나 증거의 진위를 대신 검사하지 않는다.
 
 | 구성 | 실제 구현 | 중요한 경계 |
 |---|---|---|
 | D1 | [gate](../src/core/delivery-evidence-gate.mjs), [CLI](../scripts/check-delivery-evidence.mjs) | project·revision·criterion·check digest·environment 일치, 실패·누락·충돌·미확정 mapping 구분 |
 | D2 | [reporter](../scripts/delivery-node-test-reporter.mjs), [importer](../src/core/delivery-evidence-import.mjs), [CLI](../scripts/import-delivery-evidence.mjs) | Node 24 native runner와 clean committed source; suite-wide mapping이지 assertion별 요구 추적은 아님 |
-| D3 | [review core](../src/core/delivery-evidence-review.mjs), [HTTP handler](../src/web/delivery-evidence-handlers.mjs), [UI](../src/web/public/lib/delivery-evidence-review.js) | workspace/tenant/role 및 현재 source 확인; self-declared reviewer, JSON/Markdown export. 서명·영속 review history는 없음 |
-| D4 | [impact core](../src/core/delivery-evidence-impact.mjs), [stdin CLI](../scripts/check-delivery-impact.mjs) | graph·mapping은 self-declared. 자동 의존성 추론·시험 생략·PASS 재binding 없음 |
+| D3 | [review core](../src/core/delivery-evidence-review.mjs), [HTTP handler](../src/web/delivery-evidence-handlers.mjs), [UI](../src/web/public/lib/delivery-evidence-review.js) | workspace/tenant/role 및 현재 source 확인; self-declared reviewer, portable bundle 복원, JSON/Markdown export. 서명·서버 영속 review history는 없음 |
+| D4 | [impact core](../src/core/delivery-evidence-impact.mjs), [stdin CLI](../scripts/check-delivery-impact.mjs), web 검토 panel | graph·mapping은 self-declared. packet과 project/revision/requirement criterion을 함께 확인. 자동 의존성 추론·시험 생략·PASS 재binding 없음 |
 | D5 | [evaluation core](../src/core/delivery-evidence-evaluation.mjs), [evaluation CLI](../scripts/evaluate-delivery-evidence.mjs) | 별도 [입력](../examples/delivery-evidence/cases.mjs)·[정답표](../examples/delivery-evidence/expected.json); 상태 분류만 비교 |
 
 ### 주요 설계 판단
@@ -94,9 +94,13 @@ server가 표시한 실제 local URL을 연다. port 0은 비어 있는 port를 
 
 1. 등록한 workspace를 선택하고 `검토하기`의 `변경 인계 근거`로 이동한다.
 2. `현재 기준 읽기`는 근거 없는 현재 packet을 보여 주므로 처음에는 blocked다. 새 시험을 실행하는 버튼이 아니다.
-3. `imported.json` 전체를 `D1 packet 또는 D2 importer 출력 JSON`에 넣고 `증거 판정하기`를 누른다. 업로드한 report는 버리고 서버에서 packet과 현재 source를 다시 판정한다.
+3. `imported.json` 전체를 `Packet, importer 출력 또는 검토 bundle JSON`에 넣고 `증거 판정하기`를 누르거나 JSON 파일 열기를 사용한다. 업로드한 report는 버리고 서버에서 packet과 현재 source를 다시 판정한다.
 4. 검토자 이름, 요구사항, 메모 종류, 이유를 입력하고 `검토 메모 반영`을 누른다. self-declared 메모는 상태나 권한을 올리지 않는다. 미반영 초안이 있으면 다운로드할 수 없다.
-5. `현재 결과 JSON 다운로드`와 `현재 결과 Markdown 다운로드`로 같은 검토 결과를 받는다. source는 다운로드 직전 다시 확인한다. 입력·workspace·revision이 바뀌면 이전 검토를 자동 적용하지 않으며 새로고침 전에 필요한 파일을 보존한다.
+5. 선택적으로 `선언된 변경 영향 JSON`에 D4 입력을 넣고 `변경 영향 반영`을 누른다. [입력 예](../examples/delivery-evidence/impact.json)의 project/current revision과 모든 requirement ID·criterion SHA-256을 현재 packet에 맞춰야 한다. baseRevision과 mapping은 과거 선언 기준이며, 변경 경로·graph를 자동으로 수집하지 않는다. 빈 입력 반영은 영향을 제거한다. 실패하거나 unknown이어도 메모가 인계 승인으로 바뀌지 않는다.
+6. `현재 결과 JSON 다운로드`는 다시 열 수 있는 `delivery-review-bundle/v1`을, Markdown은 같은 화면의 판정·메모·영향을 내려받는다. source는 다운로드 직전 다시 확인한다. JSON은 업로드 한도를 지키기 위해 compact 형식이다.
+7. 새로고침 뒤 같은 workspace에서 저장한 JSON 파일을 열면 현재 source를 다시 확인하고 메모·원래 자기 선언 시각·영향을 복원한다. workspace·revision·기준이 달라진 저장본은 자동 재binding하지 않는다. 이전 형식의 메모 포함 export는 조용히 메모를 버리지 않고 안내와 함께 거부한다. 원본을 보존한 뒤 packet만 별도로 입력할 수 있다.
+
+bundle의 digest는 packet·메모·시각·impact 입력의 수정 탐지용이다. 누구나 다시 계산할 수 있으므로 서명·공식 검토 이력·실행 진위 인증이 아니다. 복원한 report와 Markdown을 신뢰하는 대신 서버가 다시 계산하며, 메모 편집 시 새 검토 시각을 기록한다. 잘못된 영향 입력이나 HTTP 실패에는 마지막 결과를 보존하지만 재확인 전 export는 막는다.
 
 공유 전 기준·식별자·이름·메모를 직접 확인한다. 자동 비식별화·외부 전송·영속 review history는 제공하지 않는다. 사용을 마치면 **자신이 이 예제로 시작한 server만** Ctrl+C로 종료하며, 기존 server·source·artifact는 정리하지 않는다.
 
@@ -111,7 +115,7 @@ server가 표시한 실제 local URL을 연다. port 0은 비어 있는 port를 
 | 간접 의존 config 변경 | blocked / stale | recheck-required | 선언된 test → source → config 연결에 변경 존재 |
 | graph 밖 신규 파일 변경 | blocked / stale | unknown | 모델에 없는 영향은 모른다고 남김 |
 
-이전 public recorded walkthrough는 기존 harness의 별도 증거다. 새 D1–D5 기능의 영상·hosted demo로 재사용하지 않는다. D3의 이전 browser 검증 기록은 [개발 기록](delivery-evidence-development-plan.md)의 D3 실행 기록에서 별도로 확인할 수 있다. D4/D5 구현에는 web UI 동작 변경이 없었으며, 후속 마감에서 D3 control의 명시적 ARIA/title metadata 계약만 보완했다. 이 보완은 fresh browser·screen-reader 실사용 검증으로 표시하지 않는다.
+이전 public recorded walkthrough는 기존 harness의 별도 증거다. 새 D1–D5 기능의 영상·hosted demo로 재사용하지 않는다. D3의 이전 browser 검증과 이후 metadata 보완은 [개발 기록](delivery-evidence-development-plan.md)에 남긴다. 이번 portable round-trip과 D4 web 통합의 새 검증은 같은 문서의 추가 완성 범위에 별도로 기록하며 과거 영상·metadata 검사를 fresh browser 검증으로 표시하지 않는다.
 
 ## Synthetic 평가 결과와 한계
 

@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-10-01T02:33:36.618Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-10-01T02:31:56.868Z
 - branch: codex/delivery-review-roundtrip
 - commit: b7f6c81fe269ef5be983d39b55f76b06285a0683

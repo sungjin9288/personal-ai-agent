@@ -1,5 +1,8 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-10-01T02:33:36.618Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-10-01T02:31:57.389Z
 - branch: codex/delivery-review-roundtrip
 - commit: b7f6c81fe269ef5be983d39b55f76b06285a0683

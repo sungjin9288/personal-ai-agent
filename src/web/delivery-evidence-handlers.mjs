@@ -1,7 +1,7 @@
 import { isDeepStrictEqual } from 'node:util';
 
 import { captureDeliverySource } from '../core/delivery-evidence-import.mjs';
-import { buildDeliveryEvidenceReview } from '../core/delivery-evidence-review.mjs';
+import { buildDeliveryEvidenceReview, restoreDeliveryEvidenceBundle } from '../core/delivery-evidence-review.mjs';
 
 const MAX_BODY_BYTES = 1024 * 1024;
 
@@ -28,10 +28,12 @@ async function readBody(request) {
   let body;
   try { body = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks))); }
   catch { reject(400, 'delivery-evidence-invalid-input'); }
-  if (body === null || typeof body !== 'object' || Array.isArray(body) ||
-    !Object.hasOwn(body, 'packet') || Object.keys(body).some(key => !['packet', 'review'].includes(key))) {
+  if (body === null || typeof body !== 'object' || Array.isArray(body)) {
     reject(400, 'delivery-evidence-invalid-input');
   }
+  const keys = Object.hasOwn(body, 'bundle') ? ['bundle', 'impactInput'] : ['packet', 'review', 'impactInput'];
+  if ((!Object.hasOwn(body, 'bundle') && !Object.hasOwn(body, 'packet')) ||
+    Object.keys(body).some(key => !keys.includes(key))) reject(400, 'delivery-evidence-invalid-input');
   return body;
 }
 
@@ -56,12 +58,14 @@ export function createDeliveryEvidenceHandlers({
       }
       const body = currentOnly ? null : await readBody(request);
       // Validate untrusted packet/review before reading the registered source.
-      const submitted = body ? buildDeliveryEvidenceReview({ workspaceId, ...body }) : null;
+      const submitted = body ? (Object.hasOwn(body, 'bundle')
+        ? restoreDeliveryEvidenceBundle({ workspaceId, ...body })
+        : buildDeliveryEvidenceReview({ workspaceId, ...body })) : null;
       const source = capture(tenant.workspace.path);
       const packet = currentOnly ? {
         schemaVersion: 'delivery-evidence-input/v1', target: source.target,
         requirements: source.requirements, evidence: [],
-      } : body.packet;
+      } : submitted.packet;
       if (!isDeepStrictEqual(packet.target, source.target) || !isDeepStrictEqual(packet.requirements, source.requirements)) {
         reject(409, 'delivery-evidence-source-mismatch');
       }
