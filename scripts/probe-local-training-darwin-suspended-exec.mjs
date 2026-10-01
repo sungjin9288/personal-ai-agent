@@ -236,8 +236,14 @@ function resolveSystemPython() {
     !path.isAbsolute(selected) ||
     /[\r\n\0]/u.test(selected)
   ) {
+    let reason = 'invalid-path';
+    if (result.error) {
+      reason = result.error.code === 'ETIMEDOUT' ? 'timeout' : 'spawn-error';
+    } else if (result.status !== 0) {
+      reason = 'exit-failure';
+    }
     throw new Error(
-      'Local training Darwin suspended exec could not resolve Python.',
+      `Local training Darwin suspended exec could not resolve Python: ${reason}.`,
     );
   }
   return fs.realpathSync(selected);

@@ -112,6 +112,22 @@
 
 그 SHA의 clean tracked tree에서 official local-v1 closeout이 full test·docs precloseout·hygiene·diff 검사를 새로 실행한다. 이어 `refresh:execution-v1-artifacts -- --reuse-existing-deterministic` → clean rehearsal → production-like drill → final pilot export → Portfolio refresh/check → full smoke를 수행한다. 재사용 증거의 원래 source·시각·not-rerun 표시는 유지하며, 기존 visual manifest는 외부에 보존한 후 pipeline이 해당 경로를 재생성하도록 한다. Generated allowlist만 두 번째 commit으로 고정하고 두 commit을 push한 뒤 ready PR과 해당 head의 required CI를 확인한다. 후속 결과와 SHA는 generated evidence·PR에 기록한다. merge·deploy·publish·새 provider 호출·실제 학습·실데이터·기존 resource cleanup·history 재작성은 제외한다.
 
+**진행 결과와 중단 지점:** 6개 source/test/docs는 `a162a0e851d2ae2d7535a187b47e072ea2beaa5b`로 commit했다. exact staged scope·문법·diff·독립 정적 review와 새 docs precloseout 59/59는 통과했다. 그러나 그 SHA의 `npm run build:local-v1-completion-closeout -- --implementation-commit a162a0e851d2ae2d7535a187b47e072ea2beaa5b --output evidence/output-artifacts/local-v1-completion-closeout.json`은 내부 `npm test`가 600,000ms 한도를 넘겨 `timedOut:true`, `signal:SIGKILL`, exit 1로 중단됐다. 전체 PASS 수는 회수하지 못했으며 새 closeout artifact는 쓰지 않았다. 중간 출력의 HTTP 영향·bundle 사례 1건은 약 21.00초에 실패했다. 전체 종료 전에는 그 실패의 assertion stack이 출력되지 않아 원인을 확정하지 않는다.
+
+이후 `node --test --test-name-pattern='roundtrip declared impact' test/delivery-evidence-http.test.mjs`는 **1/1 PASS**, exit 0, 약 9.97초였다. 단독 결과로 전체 실패를 대체하지 않는다. Node v24.18.0 / Darwin arm64, logical CPU 10개에서 전체 실행 전후 load average 첫 값 33.52→53.67, 이후 68.10과 free memory 14%를 관측했지만 host 부하만을 단일 원인으로 확정하지 않는다. 다른 작업 종료·전역 설정 변경·timeout 증가·검사 제외·반복 full 실행은 하지 않았다. 기존 artifact와 visual manifest는 그대로이며 generated commit·push·PR·원격 CI는 미실행이다. 이 중단 기록만 source commit 이후 미커밋으로 남긴다. 재개 시 실패 상세를 회수할 수 있는 bounded 진단과 로컬 실행 여건을 먼저 확인하고, 관련 보완을 묶은 source 상태에 official gate가 실제 통과한 뒤에만 evidence phase로 넘어간다. 기존 승인 범위는 유지하며 merge·배포·provider·cleanup 권한으로 확대하지 않는다.
+
+### Darwin 경로 조회 실패의 진단 보완 — 2026-10-01
+
+사용자의 재개 요청에 따라 외부 임시 runner로 native TAP 출력 전체를 보존했다. 테스트 목록·file-level 병렬도 4·600초 한도는 canonical 검사와 같고 reporter만 진단용 TAP으로 지정했다. HTTP 세 사례는 단독 **3/3 PASS**, 전체 진단에서도 모두 PASS였다. 전체 진단은 약 469.48초에 **2,204건 / PASS 2,202 / fail 1 / skip 1**, exit 1로 끝났으며 timeout이 아니었다. 이 실행은 공식 SHA-bound closeout의 대체 증거가 아니다.
+
+이번 실패는 `test/local-training-darwin-suspended-exec.test.mjs`의 실제 signed fixture 검사였다. 약 5,008ms 뒤 `resolveSystemPython`에서 `could not resolve Python`을 반환했다. 고정 `/usr/bin/xcrun --find python3`의 5초 예산과 일치하는 시간이나 원래 오류에는 spawn error/status가 없어 timeout으로 확정하지 않는다. 단독 해당 파일은 **5/5 PASS**, 같은 제한·환경의 경로 조회는 약 75ms에 exit 0이었다. 전체 지연과 host 부하·메모리 관측은 함께 기록하되 단독 PASS나 load average로 과거 실패의 원인을 확정하지 않는다.
+
+후속 source 범위는 `scripts/probe-local-training-darwin-suspended-exec.mjs`, 대응 test와 이 기록이다. 기존 거부 조건 안에서 오류를 `timeout`, `spawn-error`, `exit-failure`, `invalid-path`로 구분하며 raw stdout/stderr·native error message는 노출하지 않는다. 5초 제한·깨끗한 환경·capture 한도·shell 비활성·서명/CDHash 검증·실제 fixture·권한은 바꾸지 않고 fallback/retry를 추가하지 않는다. 여섯 mock 오류 사례는 구현 전 **0 PASS / 6 FAIL**을 확인했고, 최소 수정 후 실제 fixture를 포함한 해당 파일은 **11/11 PASS**, exit 0이었다. 두 실행 파일의 `node --check`와 `git diff --check`도 통과했다. 이 변경은 진단 공백 보완이지 경로 조회 지연이나 전체 회귀 안정성 해결의 증명이 아니다.
+
+문서 precloseout은 **58/59 PASS**, exit 1이었다. 변경하지 않은 `smoke:target-secret-manager`의 npm child가 stdout/stderr 없이 `SIGABRT`로 종료됐으며 assertion 실패나 원인은 확인되지 않았다. 같은 command의 단독 진단은 약 1.21초에 exit 0이었다. 이 결과로 실패한 sweep을 PASS로 바꾸지 않고, 관련 문서나 검사 조건도 수정하지 않는다. 다른 프로세스를 종료하거나 전역 환경을 변경하지 않았다.
+
+기존 source commit은 보존하고 이 후속 검증 보완과 실패 이력을 하나의 source commit으로 묶는다. 새 SHA의 clean tracked tree에서 공식 closeout을 수행하며 통과할 때만 기존 evidence pipeline을 이어간다. 따라서 기존 source·후속 source·generated evidence의 이력으로 구성하고 amend/rebase는 하지 않는다. 원래 source/test 네 파일은 `a162a0e8`과 byte-identical이며 추가 기능·학습·provider·배포·기존 resource 변경은 없다.
+
 ## 목표와 개발 지속 조건
 
 여러 개발 도구가 만든 변경을 인계하는 사람이 현재 요구사항에 어떤 검증 근거가 있고 무엇을 더 확인해야 하는지 빠르게 판단하도록 돕는다. 범용 Agent runtime을 추가하지 않는다. 정확성·권한·이력 경계를 유지하되 문서와 승인 절차의 양을 성과로 삼지 않는다.
