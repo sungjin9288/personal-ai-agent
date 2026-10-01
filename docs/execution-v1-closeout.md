@@ -1,14 +1,14 @@
 # Execution v1 Closeout
 
-- generatedAt: 2026-08-17T23:15:06.495Z
-- branch: codex/local-training-cpu-probe-scheduling-slack
-- commit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
-- boundImplementationCommit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
+- generatedAt: 2026-09-30T23:22:23.968Z
+- branch: codex/delivery-evidence-portfolio-closeout
+- commit: e8e3c96078334d00b3d0940ebd6bb8a687645103
+- boundImplementationCommit: e8e3c96078334d00b3d0940ebd6bb8a687645103
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
-- deterministicEvidenceReuseReason: execution-v1-ui-http-unchanged-browser-excluded
+- deterministicEvidenceReuseReason: execution-v1-archived-evidence-browser-excluded
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -35,7 +35,7 @@
 
 - live validation evidence mode: archived-preserved-not-rerun; providers=openai, anthropic, local; sourceCommit=cc19deb60f3d6f948f5be7b1991df532298be922; sourceGeneratedAt=2026-07-22T14:21:18.412Z
 - deterministic smoke: ready
-- deterministic evidence: reused-existing-not-rerun; sourceCommit=05e5daa76c82d3204be9fbf7adac342c8bff653f; sourceGeneratedAt=2026-07-30T02:13:28.764Z; reason=execution-v1-ui-http-unchanged-browser-excluded
+- deterministic evidence: reused-existing-not-rerun; sourceCommit=05e5daa76c82d3204be9fbf7adac342c8bff653f; sourceGeneratedAt=2026-07-30T02:13:28.764Z; reason=execution-v1-archived-evidence-browser-excluded
 - reference adoption gate: ready
 - deterministic runtime summary: ready
 - handoff generator: ready

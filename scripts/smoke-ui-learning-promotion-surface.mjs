@@ -307,7 +307,8 @@ try {
   assert.equal(appJs.includes('export function wireWorkspaceComposerActions({ actions, elements, errors })'), true);
   assert.equal(appJs.includes('createWorkspace: handleWorkspaceCreate'), true);
   assert.equal(appJs.includes('function handleWorkspaceSelectionChange()'), true);
-  assert.equal(appJs.includes('export function wireMissionBrowseControls({ actions, elements })'), true);
+  assert.equal(appJs.includes('export function wireMissionBrowseControls({ actions, elements, errors })'), true);
+  assert.equal(appJs.includes("listenSafely(elements.workspaceSelect, 'change', actions.selectWorkspace, errors.default)"), true);
   assert.equal(appJs.includes('selectWorkspace: handleWorkspaceSelectionChange'), true);
   assert.equal(appJs.includes("clearMissionSelection({ urlMode: 'push' })"), true);
   assert.equal(appJs.includes('export function wireNavigationTabControls({ actions, elements })'), true);

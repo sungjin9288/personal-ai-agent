@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "delivery-impact-input/v1",
+  "target": {
+    "projectId": "purchasing",
+    "baseRevision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sourceRevision": "cccccccccccccccccccccccccccccccccccccccc"
+  },
+  "changedPaths": ["config/approval.json"],
+  "graph": [
+    { "path": "test/approval.test.mjs", "dependencies": ["src/approval.mjs"], "complete": true },
+    { "path": "src/approval.mjs", "dependencies": ["config/approval.json"], "complete": true },
+    { "path": "config/approval.json", "dependencies": [], "complete": true },
+    { "path": "README.md", "dependencies": [], "complete": true }
+  ],
+  "requirements": [{
+    "id": "REQ-1",
+    "criterionDigest": "d46f678b5f95558bc9284ff3a7d478dd61632bbe59732990fef83feaf620be39",
+    "roots": ["test/approval.test.mjs"],
+    "mapping": {
+      "projectId": "purchasing",
+      "sourceRevision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "criterionDigest": "d46f678b5f95558bc9284ff3a7d478dd61632bbe59732990fef83feaf620be39",
+      "confirmed": true
+    }
+  }]
+}

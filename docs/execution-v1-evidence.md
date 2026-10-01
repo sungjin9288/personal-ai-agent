@@ -1,15 +1,15 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-08-17T23:15:06.440Z
-- branch: codex/local-training-cpu-probe-scheduling-slack
-- commit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
-- boundImplementationCommit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
+- generatedAt: 2026-09-30T23:22:23.856Z
+- branch: codex/delivery-evidence-portfolio-closeout
+- commit: e8e3c96078334d00b3d0940ebd6bb8a687645103
+- boundImplementationCommit: e8e3c96078334d00b3d0940ebd6bb8a687645103
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
-- deterministicEvidenceReuseReason: execution-v1-ui-http-unchanged-browser-excluded
+- deterministicEvidenceReuseReason: execution-v1-archived-evidence-browser-excluded
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -119,7 +119,7 @@
 
 ## Coverage and Remaining Gaps
 
-- browser interaction E2E: reused existing result; not rerun (execution-v1-ui-http-unchanged-browser-excluded)
+- browser interaction E2E: reused existing result; not rerun (execution-v1-archived-evidence-browser-excluded)
 - reference adoption gate: ready (aggregate smoke passed)
 - live provider 결과는 위 source commit에서 보존되었으며 이번 refresh에서 재실행되지 않음
 

@@ -510,6 +510,49 @@
                 <div id="review-readiness" class="readiness-grid empty-state">리뷰 준비 상태가 여기에 표시됩니다.</div>
               </section>
 
+              <section id="delivery-review" class="surface panel-span-full delivery-review" aria-labelledby="delivery-title" aria-busy="false">
+                <div class="mini-head">
+                  <div>
+                    <p class="section-kicker">변경 인계 근거</p>
+                    <h4 id="delivery-title">요구사항과 검사 결과를 함께 검토</h4>
+                    <p>선택한 workspace의 clean Git revision과 delivery-evidence.json을 확인합니다. 테스트를 실행하지 않습니다.</p>
+                  </div>
+                </div>
+                <p class="field-hint">Node 24 · commit된 manifest 필요. 증거 진위와 의미적 요구 충족은 별도 검토입니다. 서버 저장 이력·승인 증명은 없으며, 입력 변경·workspace 전환·새로고침 전에 필요한 결과를 다운로드하세요.</p>
+                <button id="delivery-current" class="secondary-button" type="button" aria-label="현재 기준 읽기" title="현재 기준 읽기">현재 기준 읽기</button>
+                <form id="delivery-evaluate-form">
+                  <label class="compact-label" for="delivery-input">D1 packet 또는 D2 importer 출력 JSON</label>
+                  <textarea id="delivery-input" rows="7" maxlength="1048576" spellcheck="false" aria-label="D1 packet 또는 D2 importer 출력 JSON" aria-describedby="delivery-input-hint"></textarea>
+                  <p id="delivery-input-hint" class="field-hint">최대 1 MiB. 제출한 report는 신뢰하지 않고 서버에서 다시 판정합니다. 기준이나 증거를 수정하면 기존 검토는 무효화됩니다.</p>
+                  <button id="delivery-evaluate" class="secondary-button" type="submit" aria-label="증거 판정하기" title="증거 판정하기">증거 판정하기</button>
+                </form>
+                <p id="delivery-status" role="status" aria-live="polite" tabindex="-1">현재 기준을 읽거나 packet을 입력하세요.</p>
+                <div id="delivery-result"></div>
+                <form id="delivery-record-form">
+                  <fieldset id="delivery-record-fields" disabled>
+                    <legend>검토 메모 초안</legend>
+                    <label class="compact-label" for="delivery-reviewer">검토자 이름 — 자기 선언</label>
+                    <input id="delivery-reviewer" maxlength="100" required autocomplete="off" aria-label="검토자 이름 — 자기 선언" />
+                    <label class="compact-label" for="delivery-requirement">요구사항</label>
+                    <select id="delivery-requirement" required aria-label="요구사항"></select>
+                    <label class="compact-label" for="delivery-kind">메모 종류</label>
+                    <select id="delivery-kind" aria-label="메모 종류">
+                      <option value="mapping-review">요구사항 연결 검토</option>
+                      <option value="exception-recorded">예외와 남은 조치 기록</option>
+                    </select>
+                    <label class="compact-label" for="delivery-reason">검토 이유와 다음 조치</label>
+                    <input id="delivery-reason" maxlength="1000" required autocomplete="off" aria-label="검토 이유와 다음 조치" />
+                    <p class="field-hint">같은 요구사항의 메모를 다시 반영하면 현재 초안을 교체합니다. 실패·누락 판정이나 실행 권한은 바뀌지 않습니다.</p>
+                    <button class="secondary-button" type="submit" aria-label="검토 메모 반영" title="검토 메모 반영">검토 메모 반영</button>
+                  </fieldset>
+                </form>
+                <div class="action-row">
+                  <button id="delivery-json" class="secondary-button" type="button" disabled aria-label="현재 결과 JSON 다운로드" title="현재 결과 JSON 다운로드">현재 결과 JSON 다운로드</button>
+                  <button id="delivery-markdown" class="secondary-button" type="button" disabled aria-label="현재 결과 Markdown 다운로드" title="현재 결과 Markdown 다운로드">현재 결과 Markdown 다운로드</button>
+                </div>
+                <p class="field-hint">현재 기준을 재확인한 뒤 화면과 같은 결과를 다운로드합니다. 외부 전송은 하지 않으며 공유 전 기준·이름·메모의 민감정보를 확인하세요.</p>
+              </section>
+
               <section class="surface panel-span-full council-board-surface" aria-labelledby="council-board-title">
                 <div class="mini-head council-board-heading">
                   <div>

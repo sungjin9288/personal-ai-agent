@@ -10,6 +10,8 @@
 
 ## 2. Phase 1 - MVP 완성
 
+현재 local hardening 작업은 [operator mission 전환 정합성 실행 계획](refactoring-development-plan-v1.md#0-현재-실행-계획--operator-mission-전환-정합성)에서 관리한다. 기존 repository-local v1 완료와 외부 blocker 경계는 유지하며, mission 전환 중 이전 화면과 새 실행 대상이 어긋나는 확인된 결함을 우선 수정한다. loading/failed 상태의 실행 차단, 늦은 응답·실패의 ownership, 실제 browser 복구 검증이 완료 기준이다. 아래 기존 Phase 항목을 모두 새로운 미완료 backlog로 해석하지 않는다.
+
 - 목표: portfolio에서 설명 가능한 local-first AI agent MVP를 안정화한다.
 - 현재 대표 demo: `Release Readiness Evidence Walkthrough`를 기본 portfolio/pilot walkthrough로 사용한다.
 - 해야 할 작업:

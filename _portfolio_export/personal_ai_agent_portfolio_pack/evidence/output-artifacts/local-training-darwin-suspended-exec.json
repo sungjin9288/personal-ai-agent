@@ -44,7 +44,7 @@
   "mode": "actual-darwin-suspended-signed-fixture-exec",
   "observation": {
     "childEntrypointSha256": "ae60e0986aa9830511cdeec2d208e48a119841da6ac6686c2fee12e289e6c408",
-    "executableCdHashSetSha256": "ced4dfe804aac2ab1c701acdcd424b0648e41ad291115fe979987694ec49e29c",
+    "executableCdHashSetSha256": "35a8b92a4a34a5eb1e255d278842cfdf4fb088fb6268f2bdd9002a4aea445f4e",
     "outputBoundsPreserved": true,
     "successfulChildExitCode": 0
   },
@@ -55,6 +55,6 @@
     "runtimeImageProvenanceContractHash": "c0ee725637f0438c98ba33306a0a1c6b3882e4ff1e71f68aacf1463cb7cea65a",
     "schemaVersion": "personal-ai-agent-local-training-darwin-suspended-exec/v1"
   },
-  "evidenceHash": "344a76bc5a3e9500f7996b1c9066fc8b694ba09f0b0d365aaeb152ee86602399",
-  "id": "local-training-darwin-suspended-exec-evidence-344a76bc5a3e9500f7996b1c9066fc8b694ba09f0b0d365aaeb152ee86602399"
+  "evidenceHash": "9bfcc6b4dc69dee31474a4a5d812b39120761620909ed721158aefc105473df3",
+  "id": "local-training-darwin-suspended-exec-evidence-9bfcc6b4dc69dee31474a4a5d812b39120761620909ed721158aefc105473df3"
 }

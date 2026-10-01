@@ -1,19 +1,19 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-08-17T23:15:13.674Z
-- localDate: 2026-08-18
-- branch: codex/local-training-cpu-probe-scheduling-slack
-- commit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
-- boundImplementationCommit: 7f130a5e87ef0cfa3426582263b1e96c854e82c1
+- generatedAt: 2026-09-30T23:22:36.235Z
+- localDate: 2026-10-01
+- branch: codex/delivery-evidence-portfolio-closeout
+- commit: e8e3c96078334d00b3d0940ebd6bb8a687645103
+- boundImplementationCommit: e8e3c96078334d00b3d0940ebd6bb8a687645103
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/7f130a5e87ef0cfa3426582263b1e96c854e82c1](releases/execution-v1/7f130a5e87ef0cfa3426582263b1e96c854e82c1)
+- immutableSnapshot: [releases/execution-v1/e8e3c96078334d00b3d0940ebd6bb8a687645103](releases/execution-v1/e8e3c96078334d00b3d0940ebd6bb8a687645103)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/local-training-cpu-probe-scheduling-slack not found
+- commitPushStatus: not pushed, origin/codex/delivery-evidence-portfolio-closeout not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
-- deterministicEvidenceReuseReason: execution-v1-ui-http-unchanged-browser-excluded
+- deterministicEvidenceReuseReason: execution-v1-archived-evidence-browser-excluded
 - liveValidationMode: archived-preserved-not-rerun
 - archivedLiveValidationSourceGeneratedAt: 2026-07-22T14:21:18.412Z
 - archivedLiveValidationSourceCommit: cc19deb60f3d6f948f5be7b1991df532298be922
@@ -22,7 +22,7 @@
 ## Operational State
 
 - live validation evidence: archived-preserved-not-rerun; providers=openai, anthropic, local; sourceCommit=cc19deb60f3d6f948f5be7b1991df532298be922; sourceGeneratedAt=2026-07-22T14:21:18.412Z
-- deterministic evidence: reused-existing-not-rerun; sourceCommit=05e5daa76c82d3204be9fbf7adac342c8bff653f; sourceGeneratedAt=2026-07-30T02:13:28.764Z; reason=execution-v1-ui-http-unchanged-browser-excluded
+- deterministic evidence: reused-existing-not-rerun; sourceCommit=05e5daa76c82d3204be9fbf7adac342c8bff653f; sourceGeneratedAt=2026-07-30T02:13:28.764Z; reason=execution-v1-archived-evidence-browser-excluded
 - deterministic execution flow: ready
 - CLI execution contract: ready
 - operator console execution contract: ready

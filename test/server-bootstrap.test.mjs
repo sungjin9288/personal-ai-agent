@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import fs from 'node:fs';
+import { createServer } from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -10,8 +11,17 @@ import { createServerBootstrap, listenWithPortFallback } from '../src/web/server
 class PortSequenceServer extends EventEmitter {
   constructor(occupiedPorts = []) {
     super();
+    this.activePort = null;
     this.occupiedPorts = new Set(occupiedPorts);
     this.ports = [];
+  }
+
+  address() {
+    return {
+      address: '127.0.0.1',
+      family: 'IPv4',
+      port: this.activePort,
+    };
   }
 
   listen(port) {
@@ -23,10 +33,30 @@ class PortSequenceServer extends EventEmitter {
         this.emit('error', error);
         return;
       }
+      this.activePort = port;
       this.emit('listening');
     });
   }
 }
+
+test('ephemeral port listening reports the port assigned by the server', async (t) => {
+  const server = createServer((_request, response) => response.end());
+  t.after(async () => {
+    await new Promise((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+  });
+
+  const result = await listenWithPortFallback(server, {
+    host: '127.0.0.1',
+    requestedPort: 0,
+  });
+  const address = server.address();
+
+  assert.ok(address && typeof address === 'object');
+  assert.ok(address.port > 0);
+  assert.deepEqual(result, { fallback: false, port: address.port });
+});
 
 test('port fallback tries consecutive ports and reports the selected port', async () => {
   const server = new PortSequenceServer([4317, 4318]);
@@ -122,6 +152,49 @@ test('bootstrap writes discovery after listening and marks runtime state in orde
   bootstrap.installShutdownHandlers();
   processHandle.emit('SIGTERM');
   assert.deepEqual(calls.slice(-2), [['stopped', 'SIGTERM'], ['exit', 143]]);
+});
+
+test('bootstrap publishes the assigned ephemeral port consistently', async (t) => {
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), 'server-bootstrap-ephemeral-'));
+  const discoveryPath = path.join(rootDir, 'var', 'server.json');
+  const calls = [];
+  const runtimeStatus = {
+    markListening(payload) {
+      calls.push(['listening', payload]);
+    },
+    startRuntime(payload) {
+      calls.push(['starting', payload]);
+    },
+  };
+  const server = createServer((_request, response) => response.end());
+  t.after(async () => {
+    await new Promise((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+    fs.rmSync(rootDir, { force: true, recursive: true });
+  });
+
+  const bootstrap = createServerBootstrap({
+    discoveryPath,
+    host: '127.0.0.1',
+    requestedPort: 0,
+    rootDir,
+    runtimeStatus,
+  });
+  const result = await bootstrap.start(server);
+  const address = server.address();
+  const discovery = JSON.parse(fs.readFileSync(discoveryPath, 'utf8'));
+  const listeningStatus = calls.find(([name]) => name === 'listening')[1];
+
+  assert.ok(address && typeof address === 'object');
+  assert.ok(address.port > 0);
+  assert.equal(result.port, address.port);
+  assert.equal(result.url, `http://127.0.0.1:${address.port}`);
+  assert.equal(bootstrap.getActivePort(), address.port);
+  assert.equal(discovery.actualPort, address.port);
+  assert.equal(discovery.url, `http://127.0.0.1:${address.port}`);
+  assert.equal(listeningStatus.port, address.port);
+  assert.equal(listeningStatus.url, `http://127.0.0.1:${address.port}`);
 });
 
 test('shutdown still exits when runtime status persistence fails', () => {

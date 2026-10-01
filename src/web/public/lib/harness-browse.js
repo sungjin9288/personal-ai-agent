@@ -1,3 +1,16 @@
+const harnessDocumentBrowseRequestTokens = new WeakMap();
+const harnessMemoryBrowseRequestTokens = new WeakMap();
+
+function createBrowseRequestToken(requestTokens, state) {
+  const token = {};
+  requestTokens.set(state, token);
+  return token;
+}
+
+function isCurrentBrowseRequest(requestTokens, state, token, selectedMissionId) {
+  return requestTokens.get(state) === token && state.selectedMissionId === selectedMissionId;
+}
+
 export function buildHarnessDocumentsQueryParams(state) {
   return new URLSearchParams({
     limit: String(state.harnessDocumentVisibleCount || 12),
@@ -9,7 +22,9 @@ export function buildHarnessDocumentsQueryParams(state) {
 }
 
 export async function loadHarnessDocuments({ api, missionId, state }) {
-  const selectedMissionId = missionId === undefined ? state.selectedMissionId : missionId;
+  const selectedMissionIdAtStart = state.selectedMissionId;
+  const requestToken = createBrowseRequestToken(harnessDocumentBrowseRequestTokens, state);
+  const selectedMissionId = missionId === undefined ? selectedMissionIdAtStart : missionId;
   if (!selectedMissionId) {
     state.harnessDocumentResult = null;
     return null;
@@ -19,6 +34,15 @@ export async function loadHarnessDocuments({ api, missionId, state }) {
   const payload = await api(
     `/api/missions/${encodeURIComponent(selectedMissionId)}/harness/documents?${params.toString()}`,
   );
+  if (!isCurrentBrowseRequest(
+    harnessDocumentBrowseRequestTokens,
+    state,
+    requestToken,
+    selectedMissionIdAtStart,
+  )) {
+    return payload;
+  }
+
   state.harnessDocumentOffset = Number(payload.filters?.offset || 0);
   state.harnessDocumentResult = payload;
   return payload;
@@ -36,7 +60,9 @@ export function buildHarnessMemoryQueryParams(state) {
 }
 
 export async function loadHarnessMemory({ api, missionId, state }) {
-  const selectedMissionId = missionId === undefined ? state.selectedMissionId : missionId;
+  const selectedMissionIdAtStart = state.selectedMissionId;
+  const requestToken = createBrowseRequestToken(harnessMemoryBrowseRequestTokens, state);
+  const selectedMissionId = missionId === undefined ? selectedMissionIdAtStart : missionId;
   if (!selectedMissionId) {
     state.harnessMemoryResult = null;
     return null;
@@ -46,12 +72,22 @@ export async function loadHarnessMemory({ api, missionId, state }) {
   const payload = await api(
     `/api/missions/${encodeURIComponent(selectedMissionId)}/harness/memory?${params.toString()}`,
   );
+  if (!isCurrentBrowseRequest(
+    harnessMemoryBrowseRequestTokens,
+    state,
+    requestToken,
+    selectedMissionIdAtStart,
+  )) {
+    return payload;
+  }
+
   state.harnessMemoryOffset = Number(payload.filters?.offset || 0);
   state.harnessMemoryResult = payload;
   return payload;
 }
 
 export function resetHarnessDocumentBrowseState(state) {
+  createBrowseRequestToken(harnessDocumentBrowseRequestTokens, state);
   state.harnessDocumentFilter = 'all';
   state.harnessDocumentOffset = 0;
   state.harnessDocumentQuery = '';
@@ -60,6 +96,7 @@ export function resetHarnessDocumentBrowseState(state) {
 }
 
 export function resetHarnessMemoryBrowseState(state) {
+  createBrowseRequestToken(harnessMemoryBrowseRequestTokens, state);
   state.harnessAttachmentFocus = '';
   state.retrievalSourceFocusLabel = '';
   state.retrievalSourceFocusType = '';

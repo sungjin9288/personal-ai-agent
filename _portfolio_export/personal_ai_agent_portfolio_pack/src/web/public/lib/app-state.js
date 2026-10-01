@@ -51,6 +51,8 @@ export const state = {
   missionActionsFallbackStopReasonFilter: '',
   missionActionsView: null,
   missionDetail: null,
+  missionSelectionError: '',
+  missionSelectionStatus: 'idle',
   missionTimeline: null,
   missions: [],
   outputArtifactMetaExpanded: false,

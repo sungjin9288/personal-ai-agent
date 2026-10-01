@@ -48,9 +48,9 @@
     "moduleLoadCount": 166,
     "moduleLoadSetSha256": "f9409e9402856abe08a269cc23d3e7979cc191da8c85816be2c57f3831c54a47",
     "regularRuntimeImageCount": 4,
-    "runtimeImageCount": 347,
-    "runtimeImageSetSha256": "79b5bacb033ad0a7dae49468176f7586bfc50d42cad504ccac36ea278b1bf829",
-    "unresolvedRuntimeImageCount": 343
+    "runtimeImageCount": 389,
+    "runtimeImageSetSha256": "9a8c00c81cf12d2f5124bde68cf588877f6bca72f9357247d11a35244053e600",
+    "unresolvedRuntimeImageCount": 385
   },
   "observationContract": {
     "contractHash": "b4a063e09cfa9a4b5aa01ed169c510e8a035eaa60ecbe9cddc72d2dffcaa20fb",
@@ -59,6 +59,6 @@
   },
   "replayPlatform": "darwin",
   "schemaVersion": "personal-ai-agent-local-training-runtime-exec-observation-evidence/v1",
-  "evidenceHash": "64a61555968c68b46c4458e8ecf2ab0090cbd12f610aad8d5d6c0881215b4aa7",
-  "id": "local-training-runtime-exec-observation-evidence-64a61555968c68b46c4458e8ecf2ab0090cbd12f610aad8d5d6c0881215b4aa7"
+  "evidenceHash": "fe66359724ab66713af55e4ee162d85884f3d3c6acc909acddf3a21ddd141098",
+  "id": "local-training-runtime-exec-observation-evidence-fe66359724ab66713af55e4ee162d85884f3d3c6acc909acddf3a21ddd141098"
 }

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -13,6 +14,16 @@ import {
 } from '../scripts/local-v1-precloseout-verification.mjs';
 
 const implementationCommit = 'a'.repeat(40);
+
+test('Local v1 current verification policy matches the actual capped package scripts', () => {
+  const packageJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.equal(packageJson.scripts.test, 'node --test --test-concurrency=4 test/*.test.mjs');
+  for (const definition of LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS) {
+    if (definition.packageScript === null) continue;
+    assert.equal(definition.packageScriptCommand, packageJson.scripts[definition.packageScript]);
+  }
+  assert.equal(LOCAL_V1_VERIFICATION_SCHEMA_VERSION, 'personal-ai-agent-local-v1-completion-verification/v3');
+});
 
 test('Local v1 pre-closeout receipt runs the exact canonical commands in order', () => {
   const calls = [];
@@ -28,21 +39,26 @@ test('Local v1 pre-closeout receipt runs the exact canonical commands in order',
     },
   });
 
-  assert.deepEqual(
-    calls.map(({ command, args }) => [command, ...args]),
-    LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS.map(({ command }) => command),
-  );
-  assert.equal(report.schemaVersion, LOCAL_V1_VERIFICATION_SCHEMA_VERSION);
+  const expectedCommands = [
+    ['npm', 'test'],
+    ['npm', 'run', 'smoke:docs-gates', '--', '--exclude', 'smoke:local-v1-completion-closeout'],
+    ['npm', 'run', 'smoke:release-artifact-hygiene'],
+    ['git', 'diff', '--check'],
+  ];
+  assert.deepEqual(calls.map(({ command, args }) => [command, ...args]), expectedCommands);
+  assert.equal(report.schemaVersion, 'personal-ai-agent-local-v1-completion-verification/v3');
   assert.equal(report.implementationCommit, implementationCommit);
   assert.equal(report.packageJsonSha256, sha256Text(JSON.stringify(packageJson)));
-  assert.deepEqual(report.checks.map((check) => check.id), LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS.map(({ id }) => id));
+  assert.deepEqual(report.checks.map((check) => check.id), [
+    'unit-tests', 'docs-gates-precloseout', 'release-artifact-hygiene', 'git-diff-check',
+  ]);
   for (const [index, check] of report.checks.entries()) {
-    const definition = LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS[index];
-    assert.equal(check.command, definition.command.join(' '));
+    assert.equal(check.command, expectedCommands[index].join(' '));
     assert.equal(check.commandSha256, sha256Text(check.command));
-    assert.equal(check.packageScriptSha256, definition.packageScriptCommand === null
+    assert.equal(check.packageScriptSha256, check.packageScript === null
       ? null
-      : sha256Text(definition.packageScriptCommand));
+      : sha256Text(packageJson.scripts[check.packageScript]));
+    assert.equal(check.timeoutMs, index === 3 ? 60_000 : 600_000);
     assert.equal(check.exitCode, 0);
     assert.equal(check.timedOut, false);
     assert.match(check.stdoutSha256, /^[a-f0-9]{64}$/);
@@ -150,11 +166,11 @@ test('Local v1 closeout builder rejects the legacy caller-provided verification 
 
 function packageJsonFixture() {
   return {
-    scripts: Object.fromEntries(
-      LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS
-        .filter(({ packageScript }) => packageScript !== null)
-        .map(({ packageScript, packageScriptCommand }) => [packageScript, packageScriptCommand]),
-    ),
+    scripts: {
+      test: 'node --test --test-concurrency=4 test/*.test.mjs',
+      'smoke:docs-gates': 'node scripts/run-all-smokes.mjs --group docs-gates',
+      'smoke:release-artifact-hygiene': 'node scripts/smoke-release-artifact-hygiene.mjs',
+    },
   };
 }
 

@@ -41,6 +41,54 @@ function createContainer({ controls = {}, groups = {} } = {}) {
   };
 }
 
+function createDeferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, reject, resolve };
+}
+
+const browseLanes = [
+  {
+    load: loadHarnessDocuments,
+    name: 'document',
+    offsetKey: 'harnessDocumentOffset',
+    queryKey: 'harnessDocumentQuery',
+    reset: resetHarnessDocumentBrowseState,
+    resultKey: 'harnessDocumentResult',
+  },
+  {
+    load: loadHarnessMemory,
+    name: 'memory',
+    offsetKey: 'harnessMemoryOffset',
+    queryKey: 'harnessMemoryQuery',
+    reset: resetHarnessMemoryBrowseState,
+    resultKey: 'harnessMemoryResult',
+  },
+];
+
+function createBrowseFixture(lane, state = { selectedMissionId: 'mission-1' }) {
+  const requests = [];
+  const api = (path) => {
+    const deferred = createDeferred();
+    requests.push({ path, ...deferred });
+    return deferred.promise;
+  };
+  const load = (missionId) => lane.load({
+    api,
+    ...(missionId === undefined ? {} : { missionId }),
+    state,
+  });
+  return { load, requests, state };
+}
+
+function createBrowsePayload(id, offset) {
+  return { filters: { offset }, id };
+}
+
 test('harness document query preserves the API filter contract', () => {
   const params = buildHarnessDocumentsQueryParams({
     harnessDocumentFilter: 'devlog',
@@ -223,4 +271,211 @@ test('memory browse wiring clears retrieval focus and synchronizes URL state', a
   assert.equal(state.retrievalSourceFocusLabel, '');
   assert.equal(state.retrievalSourceFocusType, '');
   assert.deepEqual(calls, ['load', 'render', 'sync-url', 'edit:workspace:memory-1']);
+});
+
+for (const lane of browseLanes) {
+  test(`harness ${lane.name} browse keeps the newest response and offset`, async () => {
+    const { load, requests, state } = createBrowseFixture(lane, {
+      [lane.offsetKey]: 4,
+      selectedMissionId: 'mission-1',
+    });
+
+    const olderRequest = load();
+    state[lane.offsetKey] = 8;
+    const newerRequest = load();
+
+    assert.equal(requests.length, 2);
+    assert.match(requests[0].path, /offset=4/);
+    assert.match(requests[1].path, /offset=8/);
+
+    const newerPayload = createBrowsePayload('newer', 8);
+    requests[1].resolve(newerPayload);
+    assert.equal(await newerRequest, newerPayload);
+
+    const olderPayload = createBrowsePayload('older', 4);
+    requests[0].resolve(olderPayload);
+    assert.equal(await olderRequest, olderPayload);
+    assert.equal(state[lane.resultKey], newerPayload);
+    assert.equal(state[lane.offsetKey], 8);
+  });
+
+  test(`harness ${lane.name} browse treats identical queries as separate requests`, async () => {
+    const { load, requests, state } = createBrowseFixture(lane, {
+      [lane.queryKey]: 'duplicate query',
+      selectedMissionId: 'mission-1',
+    });
+
+    const olderRequest = load();
+    const newerRequest = load();
+
+    assert.equal(requests[0].path, requests[1].path);
+
+    const newerPayload = createBrowsePayload('newer', 7);
+    requests[1].resolve(newerPayload);
+    await newerRequest;
+
+    const olderPayload = createBrowsePayload('older', 3);
+    requests[0].resolve(olderPayload);
+    await olderRequest;
+
+    assert.equal(state[lane.resultKey], newerPayload);
+    assert.equal(state[lane.offsetKey], 7);
+  });
+
+  test(`harness ${lane.name} browse reset invalidates a pending response`, async () => {
+    const previousResult = { id: 'previous' };
+    const { load, requests, state } = createBrowseFixture(lane, {
+      [lane.offsetKey]: 24,
+      [lane.queryKey]: 'in flight',
+      [lane.resultKey]: previousResult,
+      selectedMissionId: 'mission-1',
+    });
+    const pendingRequest = load();
+
+    lane.reset(state);
+    requests[0].resolve(createBrowsePayload('stale', 12));
+    await pendingRequest;
+
+    assert.equal(state[lane.resultKey], previousResult);
+    assert.equal(state[lane.offsetKey], 0);
+    assert.equal(state[lane.queryKey], '');
+  });
+
+  test(`harness ${lane.name} browse without a selection invalidates a pending response`, async () => {
+    const { load, requests, state } = createBrowseFixture(lane, {
+      [lane.resultKey]: { id: 'previous' },
+      selectedMissionId: 'mission-1',
+    });
+    const pendingRequest = load();
+
+    state.selectedMissionId = '';
+    assert.equal(await load(), null);
+    requests[0].resolve(createBrowsePayload('stale', 12));
+    await pendingRequest;
+
+    assert.equal(state[lane.resultKey], null);
+  });
+
+  test(`harness ${lane.name} browse ignores a response after selection changes`, async () => {
+    const previousResult = { id: 'previous' };
+    const { load, requests, state } = createBrowseFixture(lane, {
+      [lane.offsetKey]: 5,
+      [lane.resultKey]: previousResult,
+      selectedMissionId: 'mission-1',
+    });
+    const pendingRequest = load();
+
+    state.selectedMissionId = 'mission-2';
+    requests[0].resolve(createBrowsePayload('stale', 12));
+    await pendingRequest;
+
+    assert.equal(state[lane.resultKey], previousResult);
+    assert.equal(state[lane.offsetKey], 5);
+  });
+
+  test(`harness ${lane.name} browse preserves explicit mission ID overrides`, async () => {
+    const { load, requests, state } = createBrowseFixture(lane, {
+      selectedMissionId: 'selected-mission',
+    });
+    const pendingRequest = load('override / mission');
+
+    assert.match(requests[0].path, /override%20%2F%20mission/);
+    const payload = createBrowsePayload('override', 6);
+    requests[0].resolve(payload);
+    assert.equal(await pendingRequest, payload);
+    assert.equal(state[lane.resultKey], payload);
+  });
+
+  test(`harness ${lane.name} browse latest failure prevents an older success from committing`, async () => {
+    const previousResult = { id: 'previous' };
+    const { load, requests, state } = createBrowseFixture(lane, {
+      [lane.offsetKey]: 2,
+      [lane.resultKey]: previousResult,
+      selectedMissionId: 'mission-1',
+    });
+    const olderRequest = load();
+    const newerRequest = load();
+    const failure = new Error('newest request failed');
+
+    requests[1].reject(failure);
+    await assert.rejects(newerRequest, failure);
+
+    requests[0].resolve(createBrowsePayload('older', 9));
+    await olderRequest;
+
+    assert.equal(state[lane.resultKey], previousResult);
+    assert.equal(state[lane.offsetKey], 2);
+  });
+}
+
+test('harness browse requests are independent across state objects and lanes', async () => {
+  const sharedState = { selectedMissionId: 'mission-a' };
+  const otherState = { selectedMissionId: 'mission-b' };
+  const documentA = createBrowseFixture(browseLanes[0], sharedState);
+  const documentB = createBrowseFixture(browseLanes[0], otherState);
+  const memoryA = createBrowseFixture(browseLanes[1], sharedState);
+
+  const pending = [
+    documentA.load(),
+    documentB.load(),
+    memoryA.load(),
+  ];
+  const payloads = [
+    createBrowsePayload('document-a', 1),
+    createBrowsePayload('document-b', 2),
+    createBrowsePayload('memory-a', 3),
+  ];
+  [documentA, documentB, memoryA].forEach((fixture, index) => {
+    fixture.requests[0].resolve(payloads[index]);
+  });
+  await Promise.all(pending);
+
+  assert.equal(sharedState.harnessDocumentResult, payloads[0]);
+  assert.equal(otherState.harnessDocumentResult, payloads[1]);
+  assert.equal(sharedState.harnessMemoryResult, payloads[2]);
+});
+
+test('harness memory input events keep the latest query response in state', async () => {
+  const search = createControl({ value: 'first query' });
+  const container = createContainer({ controls: { '#harness-memory-search': search } });
+  const state = {
+    harnessMemoryOffset: 0,
+    harnessMemoryQuery: '',
+    selectedMissionId: 'mission-1',
+  };
+  const requests = [];
+  const api = (path) => {
+    const deferred = createDeferred();
+    requests.push({ path, ...deferred });
+    return deferred.promise;
+  };
+
+  wireHarnessMemoryBrowseActions({
+    container,
+    loadMemory: () => loadHarnessMemory({ api, state }),
+    onDelete: async () => {},
+    onEdit: () => {},
+    onError: (error) => assert.fail(error.message),
+    renderPanel: () => {},
+    resetBrowse: () => resetHarnessMemoryBrowseState(state),
+    state,
+    syncUrl: () => {},
+  });
+
+  const olderEvent = search.emit('input');
+  search.value = 'second query';
+  const newerEvent = search.emit('input');
+  assert.equal(requests.length, 2);
+  assert.equal(new URL(requests[0].path, 'http://local').searchParams.get('query'), 'first query');
+  assert.equal(new URL(requests[1].path, 'http://local').searchParams.get('query'), 'second query');
+
+  const newerPayload = createBrowsePayload('newer', 8);
+  requests[1].resolve(newerPayload);
+  await newerEvent;
+
+  requests[0].resolve(createBrowsePayload('older', 3));
+  await olderEvent;
+
+  assert.equal(state.harnessMemoryResult, newerPayload);
+  assert.equal(state.harnessMemoryOffset, 8);
 });

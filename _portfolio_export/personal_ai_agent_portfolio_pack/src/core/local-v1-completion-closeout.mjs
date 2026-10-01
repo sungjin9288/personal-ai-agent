@@ -7,7 +7,7 @@ import {
 
 export const LOCAL_V1_COMPLETION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-closeout/v2';
 export const LOCAL_V1_COMPLETION_STATUS = 'local-v1-complete-external-evidence-open';
-export const LOCAL_V1_VERIFICATION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-verification/v2';
+export const LOCAL_V1_VERIFICATION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-verification/v3';
 
 export const LOCAL_V1_COMPLETION_MATRIX = Object.freeze({
   localProduct: 'complete',
@@ -51,7 +51,7 @@ export const LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS = [
     command: ['npm', 'test'],
     id: 'unit-tests',
     packageScript: 'test',
-    packageScriptCommand: 'node --test test/*.test.mjs',
+    packageScriptCommand: 'node --test --test-concurrency=4 test/*.test.mjs',
     timeoutMs: 10 * 60 * 1000,
   },
   {
@@ -77,6 +77,28 @@ export const LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS = [
   },
 ];
 export const LOCAL_V1_VERIFICATION_CHECK_IDS = LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS.map(({ id }) => id);
+const HISTORICAL_LOCAL_V1_VERIFICATION_SCHEMA_VERSION = 'personal-ai-agent-local-v1-completion-verification/v2';
+// Historical assertion policy must not change when the current command policy changes.
+const HISTORICAL_LOCAL_V1_VERIFICATION_COMMANDS = Object.freeze([
+  {
+    command: ['npm', 'test'], id: 'unit-tests', packageScript: 'test',
+    packageScriptCommand: 'node --test test/*.test.mjs', timeoutMs: 600_000,
+  },
+  {
+    command: ['npm', 'run', 'smoke:docs-gates', '--', '--exclude', 'smoke:local-v1-completion-closeout'],
+    id: 'docs-gates-precloseout', packageScript: 'smoke:docs-gates',
+    packageScriptCommand: 'node scripts/run-all-smokes.mjs --group docs-gates', timeoutMs: 600_000,
+  },
+  {
+    command: ['npm', 'run', 'smoke:release-artifact-hygiene'],
+    id: 'release-artifact-hygiene', packageScript: 'smoke:release-artifact-hygiene',
+    packageScriptCommand: 'node scripts/smoke-release-artifact-hygiene.mjs', timeoutMs: 600_000,
+  },
+  {
+    command: ['git', 'diff', '--check'], id: 'git-diff-check',
+    packageScript: null, packageScriptCommand: null, timeoutMs: 60_000,
+  },
+].map((definition) => Object.freeze({ ...definition, command: Object.freeze(definition.command) })));
 const LOCAL_V1_TIMEOUT_OVERHEAD_MS = 5_000;
 const AUTHORITY_KEYS = [
   'actualUserData',
@@ -111,6 +133,9 @@ export function buildLocalV1CompletionArtifact({
 }) {
   assertImplementationCommit(implementationCommit);
   assertLocalV1VerificationReport(verificationReport);
+  if (verificationReport.schemaVersion !== LOCAL_V1_VERIFICATION_SCHEMA_VERSION) {
+    throw new Error('Local v1 completion builder requires current verification schema.');
+  }
   if (verificationReport.implementationCommit !== implementationCommit) {
     throw new Error('Local v1 verification implementation commit binding failed.');
   }
@@ -203,21 +228,26 @@ export function assertLocalV1VerificationReport(report) {
   exactKeys(report, [
     'checks', 'implementationCommit', 'packageJsonSha256', 'schemaVersion', 'status',
   ], 'Local v1 verification report');
+  const commands = report.schemaVersion === LOCAL_V1_VERIFICATION_SCHEMA_VERSION
+    ? LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS
+    : report.schemaVersion === HISTORICAL_LOCAL_V1_VERIFICATION_SCHEMA_VERSION
+      ? HISTORICAL_LOCAL_V1_VERIFICATION_COMMANDS
+      : null;
   if (
-    report.schemaVersion !== LOCAL_V1_VERIFICATION_SCHEMA_VERSION ||
+    commands === null ||
     report.status !== 'passed' ||
     !isSha256(report.packageJsonSha256) ||
     !Array.isArray(report.checks) ||
-    report.checks.length !== LOCAL_V1_VERIFICATION_CHECK_IDS.length
+    report.checks.length !== commands.length
   ) throw new Error('Local v1 verification report is invalid.');
   assertImplementationCommit(report.implementationCommit);
   assertExactArray(
     report.checks.map((check) => check.id),
-    LOCAL_V1_VERIFICATION_CHECK_IDS,
+    commands.map(({ id }) => id),
     'Local v1 verification checks',
   );
   for (const [index, check] of report.checks.entries()) {
-    const expected = LOCAL_V1_PRE_CLOSEOUT_VERIFICATION_COMMANDS[index];
+    const expected = commands[index];
     exactKeys(check, [
       'command', 'commandSha256', 'durationMs', 'exitCode', 'id', 'packageScript',
       'packageScriptSha256', 'stderrSha256', 'stdoutSha256', 'timedOut', 'timeoutMs',
@@ -388,6 +418,13 @@ function assertVerificationPackageBinding(report, sourceDocumentTexts) {
   }
   if (report.packageJsonSha256 !== sha256Text(JSON.stringify(packageJson))) {
     throw new Error('Local v1 verification package.json binding failed.');
+  }
+  for (const check of report.checks) {
+    if (check.packageScript === null) continue;
+    const script = packageJson?.scripts?.[check.packageScript];
+    if (typeof script !== 'string' || check.packageScriptSha256 !== sha256Text(script)) {
+      throw new Error(`Local v1 verification package script binding failed: ${check.packageScript}.`);
+    }
   }
 }
 

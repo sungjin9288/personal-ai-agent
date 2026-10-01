@@ -1,5 +1,6 @@
 import { state, elements } from './app-state.js';
 import { escapeHtml } from './html-format.js';
+import { syncDeliveryWorkspaceSelection } from './delivery-evidence-review.js';
 import { getFormEditingId } from './text-format.js';
 import { writeUiStateToUrl } from './url-state.js';
 import {
@@ -97,6 +98,7 @@ export async function handleWorkspaceCreate(event) {
     const workspace = payload.workspace || null;
     if (workspace?.id) {
       elements.workspaceSelect.value = workspace.id;
+      syncDeliveryWorkspaceSelection();
     }
 
     clearMissionSelection({ syncUrl: false });
@@ -126,6 +128,7 @@ export function renderWorkspaceOptions() {
     ? previousValue
     : state.workspaces[0]?.id || '';
   elements.workspaceSelect.value = nextValue;
+  syncDeliveryWorkspaceSelection();
   renderWorkspaceCurrent();
 }
 
@@ -171,6 +174,7 @@ export async function loadWorkspaces() {
 export function restoreWorkspaceSelectionUrlState(urlState) {
   if (urlState.workspaceId && state.workspaces.some((workspace) => workspace.id === urlState.workspaceId)) {
     elements.workspaceSelect.value = urlState.workspaceId;
+    syncDeliveryWorkspaceSelection();
   }
 }
 

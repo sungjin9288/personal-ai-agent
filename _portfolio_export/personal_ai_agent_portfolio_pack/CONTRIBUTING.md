@@ -54,6 +54,14 @@ npm run smoke:release-artifact-hygiene
 
 For provider, release, or evidence changes, also run the relevant focused smoke commands from `package.json`. The PR template lists the Provider smoke CI command set that must stay green.
 
+For navigation or local server bootstrap changes, run the focused Node regression gate:
+
+```bash
+node --test test/action-inbox-ui.test.mjs test/harness-browse.test.mjs test/mission-selection.test.mjs test/server-bootstrap.test.mjs
+```
+
+This gate covers the repository's navigation and local bootstrap regressions. It does not replace real-browser validation or the remote GitHub Actions result.
+
 ## Claim Rules
 
 - Use evidence-backed wording only.
