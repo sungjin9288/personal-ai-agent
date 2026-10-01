@@ -56,6 +56,28 @@ impact 명령의 exit 2는 fixture의 `recheck-required`라는 정상적인 보�
 
 D4 입력은 상대 file identifier를 사용하며 파일을 열지 않는다. UTF-8 JSON을 최대 1 MiB로 받고 잘못된 경로·중복·알 수 없는 field·크기 초과를 거부한다. arbitrary input/output path 옵션은 제공하지 않는다. JSON 전체 결과는 demo/evaluation의 `--format json`으로 확인할 수 있다.
 
+### 혼자 점검할 때의 순서와 완료 기준
+
+먼저 위 demo·evaluation으로 [상태 차이](#데모에서-보이는-차이)를 확인하고, `npm run test:delivery-evidence`로 실제 Node receipt·HTTP·복원·오류 경로의 자동 회귀를 실행한다. demo의 정답을 미리 본 자가 점검은 blind 평가가 아니며, 자동 회귀 통과도 직접 화면을 사용했다는 뜻은 아니다.
+
+화면은 아래 사용 안내의 **실행을 승인받은 clean 대상과 독립 local runtime**에서 점검한다. 대상이 준비되지 않았다면 자동 회귀까지만 확인하고 화면 점검은 미실행으로 남긴다. 점검을 위해 작업 중인 repository를 commit·reset하거나 기존 runtime을 종료하지 않는다.
+
+| 직접 해 볼 동작 | 정상적으로 보여야 할 결과 |
+|---|---|
+| `현재 기준 읽기` | 근거가 없는 packet은 `blocked`다. 이 버튼이 새 시험을 실행하거나 PASS를 만들어서는 안 된다. |
+| 현재 대상에서 수집한 `imported.json` 열기 | 모든 검사가 PASS이고 mapping이 확인된 입력이면 `evidence-current`다. 현재 binding의 reported pass일 뿐 인수·배포·실행 허가는 아니다. |
+| 검토자·이유를 넣어 메모 반영 | 반영된 메모가 보이고 원래 evidence 판정은 유지된다. 예외 메모도 blocked를 PASS로 올리지 않는다. |
+| 메모가 있는 상태에서 영향 입력에 `{`만 넣고 반영 | 입력 오류를 알리고 마지막 반영 메모를 보존한다. JSON/Markdown 다운로드는 막혀야 한다. 영향 입력을 비우고 다시 반영하면 영향을 제거한 결과를 재확인할 수 있다. |
+| JSON과 Markdown 저장 후 새로고침, 같은 workspace에서 JSON 다시 열기 | 메모·원래 자기 선언 시각·선택적 영향이 복원된다. JSON/Markdown의 판정과 메모는 서로 맞아야 한다. source가 달라져 복원이 거부되면 과거 PASS나 메모를 새 기준에 수동으로 결속하지 않는다. |
+
+다른 workspace·revision의 거부는 기존 자동 회귀에도 포함된다. 직접 보겠다고 대상 source를 바꾸거나 새 commit을 만들 필요는 없다. 새 packet 입력은 이전 검토를 무효화하므로 이미 반영한 메모를 남기려면 먼저 JSON으로 저장한다. 서버에는 영속 검토 이력이 없다.
+
+점검 기록에는 `git rev-parse HEAD`, `git status --short`, `node --version`, 실행한 명령의 exit code와 직접 확인한 동작만 남긴다. 각 항목을 통과·실패·미실행으로 구분하고, 실패하면 원본 bundle을 보존한 채 재현 동작과 오류를 기록한다. 이름·경로·메모·화면에 민감정보가 없는지 확인하기 전에는 외부로 공유하지 않는다.
+
+HTTP 통합 검사가 timeout으로 취소되면 해당 실행은 통과가 아니다. `node --test test/delivery-evidence-http.test.mjs`로 현재 같은 테스트의 단독 실행을 비교할 수 있지만, 단독 PASS로 원래 병렬 실행 결과를 대체하지 않는다. 현재 HTTP 검사는 세 독립 scenario마다 25초를 허용한다. 이전 합산 25초에서 총 예산이 늘어난 사실과 supervisor 세 통합 사례의 test-local 5초 예산은 [후속 검증 기록](delivery-evidence-development-plan.md#supervisor-실패-분류-검증-계획--2026-10-01)에 명시했다. production deadline·권한·assertion은 유지했다. 제한이나 fixture를 바꿨다면 이유·영향을 공개하고 관련 전체 회귀를 다시 확인하며, 원래 실패를 지우거나 검사를 제외해 완료로 기록하지 않는다.
+
+이 점검은 포트폴리오 기술 사례를 이해하고 재현할 수 있는지 확인한다. 실제 reviewer의 false-ready·설정/유지/검토 시간·반복 사용 의사와 유료 수요는 측정하지 않는다. 기능 점검을 마쳤다고 원래 D5 사용자 효과 평가를 완료로 바꾸거나, 정답을 본 자가 점검을 독립 reviewer 평가로 기록하지 않는다.
+
 ### 실제 Node 결과를 web 검토로 연결하기
 
 위 synthetic demo와 다른 경로다. 자동 임시 fixture 재현은 `node --test test/delivery-evidence-http.test.mjs`로 확인할 수 있다. 이 검사는 native runner → receipt → importer CLI → 실제 HTTP 검토 → JSON/Markdown 결과 → revision 변경 후 거부를 실행한다. 임시 fixture의 Git commit은 검사 내부의 준비 동작이며 이 저장소나 실제 대상의 commit을 뜻하지 않는다.
@@ -134,9 +156,9 @@ always-block은 정상 처리를 놓치고 always-current는 오류를 current�
 
 ## 로컬 검증 상태
 
-Node `v24.18.0` / Darwin arm64, 2026-09-30~2026-10-01 source 단계의 실행 기록이다. 아래 수치는 정의된 test 함수 수가 아니라 각 명령의 실제 runner 결과다. 이 기록 시점에 원격 CI는 실행하지 않았다. source SHA에 결속한 후속 closeout과 원격 CI는 generated evidence와 해당 PR에서 구분해 기록한다.
+아래 표는 Node `v24.18.0` / Darwin arm64, 2026-09-30~2026-10-01 초기 source 단계의 역사적 실행 기록이다. 최신 portable round-trip·병합 후 보완과 전체 회귀 결과는 [개발 계획의 최신 로컬 마감](delivery-evidence-development-plan.md#현재-계약-정합성-마감--2026-10-01)에서 확인한다. 아래 수치는 정의된 test 함수 수가 아니라 각 명령의 실제 runner 결과다. 이 기록 시점에 원격 CI는 실행하지 않았다. source SHA에 결속한 후속 closeout과 원격 CI는 generated evidence와 해당 PR에서 구분해 기록한다.
 
-### 최종 마감 검사
+### 초기 source 단계의 마감 검사
 
 `npm test`는 같은 전체 glob에 file-level `--test-concurrency=4`를 고정했다. 실제 Darwin 검사를 제외하거나 timeout·assertion을 낮추지 않았다. 이는 재현 가능한 test scheduling 정책이며 무제한 host 부하에 대한 runtime 보증이 아니다.
 

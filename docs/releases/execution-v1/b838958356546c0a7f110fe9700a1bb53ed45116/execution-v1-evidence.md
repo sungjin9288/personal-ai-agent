@@ -1,5 +1,8 @@
 # Execution v1 Evidence
 
+- archivedAt: 2026-10-01T12:06:29.579Z
+- sourcePath: docs/execution-v1-evidence.md
+
 - generatedAt: 2026-10-01T12:06:12.677Z
 - branch: codex/delivery-evidence-reliability-closeout
 - commit: b838958356546c0a7f110fe9700a1bb53ed45116

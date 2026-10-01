@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import childProcess, { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { syncBuiltinESMExports } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
@@ -21,7 +23,7 @@ function git(repo, ...args) {
   return result.stdout.trim();
 }
 
-function fixture(t, body = "test('approval', () => assert.equal(1, 1));") {
+function fixture(t, body = "test('approval', () => assert.equal(1, 1));", objectFormat = 'sha1') {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'delivery-import-test-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const repo = path.join(root, 'repo');
@@ -34,7 +36,7 @@ function fixture(t, body = "test('approval', () => assert.equal(1, 1));") {
     testFiles: ['approval.test.mjs'], configFiles: ['package.json'],
     requirements: [{ id: 'REQ-1', criterion: 'Two approvers are required.', mappingConfirmed: true }],
   }, null, 2));
-  git(repo, 'init', '--quiet');
+  git(repo, 'init', '--quiet', `--object-format=${objectFormat}`);
   git(repo, 'add', 'approval.test.mjs', 'package.json', 'delivery-evidence.json');
   git(repo, '-c', 'core.hooksPath=/dev/null', 'commit', '--quiet', '-m', 'test fixture');
   const receiptPath = path.join(root, 'receipt.json');
@@ -48,6 +50,173 @@ function collect(f, options = []) {
   });
   if (run.stdout) fs.writeFileSync(f.receiptPath, run.stdout);
   return run;
+}
+
+test('source capture batches identity queries but retains two complete Git observations', t => {
+  const f = fixture(t);
+  const queries = [];
+  const resolutions = [];
+  const run = childProcess.spawnSync;
+  t.mock.method(childProcess, 'spawnSync', (command, args, options) => {
+    const result = run(command, args, options);
+    if (path.basename(command) === 'git') queries.push({ command, args, options });
+    if (command === '/usr/bin/xcrun') resolutions.push({ args, options, result });
+    return result;
+  });
+  syncBuiltinESMExports();
+  try {
+    captureDeliverySource(f.repo);
+    const observation = [
+      ['rev-parse', '--show-toplevel'],
+      ['rev-parse', '--path-format=absolute', '--git-common-dir', 'HEAD'],
+      ['ls-files', '--others', '--exclude-standard', '-z'],
+      ['ls-tree', '-rz', '--full-tree', 'HEAD'],
+      ['ls-files', '--stage', '-z'],
+    ];
+    assert.deepEqual(queries.map(query => query.args), [...observation, ...observation]
+      .map(args => ['--no-optional-locks', '-c', 'core.fsmonitor=false', ...args]));
+    assert.equal(resolutions.length, process.platform === 'darwin' ? 1 : 0);
+    if (resolutions.length) {
+      assert.deepEqual(resolutions[0].args, ['--find', 'git']);
+      assert.deepEqual(resolutions[0].options.env, queries[0].options.env);
+      assert.equal(resolutions[0].options.timeout, 10_000);
+      assert.ok(queries.every(query => query.command === resolutions[0].result.stdout.trim()));
+      assert.ok(path.isAbsolute(queries[0].command));
+    } else {
+      assert.ok(queries.every(query => query.command === 'git'));
+    }
+    for (const { options } of queries) {
+      assert.equal(options.timeout, 10_000);
+      assert.equal(options.maxBuffer, 4 * 1024 * 1024);
+      assert.equal(options.env.GIT_NO_REPLACE_OBJECTS, '1');
+      assert.equal(options.env.GIT_NO_LAZY_FETCH, '1');
+      assert.equal(options.env.GIT_CONFIG_GLOBAL, '/dev/null');
+      assert.equal(options.shell, undefined);
+    }
+    captureDeliverySource(f.repo);
+    assert.equal(queries.length, 20);
+    assert.equal(resolutions.length, process.platform === 'darwin' ? 2 : 0);
+  } finally {
+    t.mock.restoreAll();
+    syncBuiltinESMExports();
+  }
+});
+
+for (const name of ['repo with spaces', 'repo\nwith newline']) {
+  test(`source identity preserves canonical ${JSON.stringify(name)}`, t => {
+    const f = fixture(t);
+    const original = captureDeliverySource(f.repo);
+    const moved = path.join(f.root, name);
+    fs.renameSync(f.repo, moved);
+    const captured = captureDeliverySource(moved);
+    const repositoryIdentityDigest = createHash('sha256')
+      .update(JSON.stringify({ root: moved, commonDir: fs.realpathSync(path.join(moved, '.git')) })).digest('hex');
+    assert.deepEqual(captured, { ...original, repositoryIdentityDigest });
+  });
+}
+
+test('linked worktree retains its own root and shared common directory at detached HEAD', t => {
+  const f = fixture(t);
+  const original = captureDeliverySource(f.repo);
+  const linked = path.join(f.root, 'linked\nworktree');
+  git(f.repo, 'worktree', 'add', '--quiet', '--detach', linked, 'HEAD');
+  const repositoryIdentityDigest = createHash('sha256')
+    .update(JSON.stringify({ root: linked, commonDir: fs.realpathSync(path.join(f.repo, '.git')) })).digest('hex');
+  assert.deepEqual(captureDeliverySource(linked), { ...original, repositoryIdentityDigest });
+});
+
+test('source identity preserves the full SHA-256 revision and raw object checks', t => {
+  const f = fixture(t, undefined, 'sha256');
+  const source = captureDeliverySource(f.repo);
+  assert.equal(source.target.sourceRevision, git(f.repo, 'rev-parse', 'HEAD'));
+  assert.match(source.target.sourceRevision, /^[a-f0-9]{64}$/);
+  fs.appendFileSync(path.join(f.repo, 'approval.test.mjs'), '// dirty sha256 source\n');
+  assert.throws(() => captureDeliverySource(f.repo), /source-bytes-drift/);
+});
+
+test('source identity rejects an unborn HEAD', t => {
+  const f = fixture(t);
+  const unborn = path.join(f.root, 'unborn');
+  fs.mkdirSync(unborn);
+  git(unborn, 'init', '--quiet');
+  assert.throws(() => captureDeliverySource(unborn), /source-git-query/);
+});
+
+for (const fault of ['git-error', 'wrong-root', 'wrong-root-with-newline', 'invalid-revision', 'missing-common-dir', 'second-observation-drift']) {
+  test(`source identity fails closed for ${fault}`, t => {
+    const f = fixture(t);
+    if (fault === 'wrong-root-with-newline') {
+      fs.mkdirSync(`${f.root}/unexpected\n${path.join(f.repo, '.git')}`, { recursive: true });
+    }
+    const run = childProcess.spawnSync;
+    let observations = 0;
+    t.mock.method(childProcess, 'spawnSync', (command, args, options) => {
+      const result = run(command, args, options);
+      if (path.basename(command) !== 'git' || args[3] !== 'rev-parse') return result;
+      if (args.includes('--show-toplevel')) observations++;
+      if (fault === 'git-error') return { ...result, status: 1 };
+      if (fault === 'wrong-root' && args.includes('--show-toplevel')) {
+        return { ...result, stdout: result.stdout.replace(f.repo, `${f.repo}-other`) };
+      }
+      if (fault === 'wrong-root-with-newline' && args.includes('--show-toplevel')) {
+        return { ...result, stdout: result.stdout.replace(f.repo, `${f.repo}\n${f.root}/unexpected`) };
+      }
+      if (fault === 'invalid-revision' && args.includes('HEAD')) {
+        return { ...result, stdout: result.stdout.replace(/[a-f0-9]{40}\n$/, 'invalid\n') };
+      }
+      if (fault === 'missing-common-dir' && args.includes('--git-common-dir')) {
+        return { ...result, stdout: result.stdout.replace(path.join(f.repo, '.git'), path.join(f.repo, '.missing')) };
+      }
+      if (fault === 'second-observation-drift' && observations === 2 && args.includes('HEAD')) {
+        return { ...result, stdout: result.stdout.replace(/[a-f0-9]{40}\n$/, `${'f'.repeat(40)}\n`) };
+      }
+      return result;
+    });
+    syncBuiltinESMExports();
+    try {
+      const expected = {
+        'git-error': /source-git-query/,
+        'wrong-root': /source-root/,
+        'wrong-root-with-newline': /source-root/,
+        'invalid-revision': /source-revision/,
+        'missing-common-dir': /ENOENT/,
+        'second-observation-drift': /source-observation-drift/,
+      };
+      assert.throws(() => captureDeliverySource(f.repo), expected[fault]);
+    } finally {
+      t.mock.restoreAll();
+      syncBuiltinESMExports();
+    }
+  });
+}
+
+for (const fault of ['failed', 'spawn-error', 'timeout', 'relative', 'empty', 'missing', 'directory', 'wrong-name', 'not-executable']) {
+  test(`Darwin Git resolution rejects ${fault} without falling back to another tool`, { skip: process.platform !== 'darwin' }, t => {
+    const f = fixture(t);
+    const executable = path.join(f.root, 'git');
+    if (fault === 'directory') fs.mkdirSync(executable);
+    else fs.writeFileSync(executable, 'not executable', { mode: 0o600 });
+    const outputs = { relative: 'git\n', empty: '', missing: `${f.root}/missing/git\n`, 'wrong-name': `${process.execPath}\n` };
+    const run = childProcess.spawnSync;
+    let queries = 0;
+    t.mock.method(childProcess, 'spawnSync', (command, args, options) => {
+      if (command === '/usr/bin/xcrun') return {
+        status: fault === 'timeout' ? null : fault === 'failed' ? 1 : 0,
+        error: ['spawn-error', 'timeout'].includes(fault) ? new Error('unavailable') : undefined,
+        stdout: outputs[fault] ?? `${executable}\n`,
+      };
+      if (path.basename(command) === 'git') queries++;
+      return run(command, args, options);
+    });
+    syncBuiltinESMExports();
+    try {
+      assert.throws(() => captureDeliverySource(f.repo), /source-git-executable/);
+      assert.equal(queries, 0);
+    } finally {
+      t.mock.restoreAll();
+      syncBuiltinESMExports();
+    }
+  });
 }
 
 test('real Node tests flow through a bound receipt into the existing D1 gate', t => {

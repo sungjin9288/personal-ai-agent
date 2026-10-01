@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { EventEmitter, once } from 'node:events';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { PassThrough } from 'node:stream';
 import { test } from 'node:test';
 
 import {
@@ -20,6 +22,7 @@ const fixture = path.resolve(
 const lifecycleFixture = path.resolve(
   'fixtures/local-candidate-evaluation-process-worker.mjs',
 );
+const FIXTURE_COMPLETION_TIMEOUT_MS = 5_000;
 const expectedAuthority = {
   approvalHash: createHash('sha256')
     .update('supervisor-approval')
@@ -61,6 +64,32 @@ function supervise(options = {}) {
   });
 }
 
+function controlledProcess(t) {
+  t.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
+  const child = new EventEmitter();
+  child.pid = 42;
+  child.stdin = new PassThrough();
+  child.stdout = new PassThrough();
+  child.stderr = new PassThrough();
+  const started = once(child.stdin, 'finish');
+  const signals = [];
+  const execution = supervise({
+    monotonicNow: () => Date.now(),
+    processGroupState(processGroupId) {
+      assert.equal(processGroupId, child.pid);
+      return 'absent';
+    },
+    signalProcessGroup(processGroupId, signal) {
+      signals.push({ processGroupId, signal });
+    },
+    spawnProcess() {
+      queueMicrotask(() => child.emit('spawn'));
+      return child;
+    },
+  });
+  return { child, execution, signals, started };
+}
+
 function isProcessAlive(processId) {
   try {
     process.kill(processId, 0);
@@ -68,6 +97,14 @@ function isProcessAlive(processId) {
   } catch (error) {
     return error?.code !== 'ESRCH';
   }
+}
+
+function recordProcessGroupSignals(signals) {
+  return (processGroupId, signal) => {
+    signals.push({ processGroupId, signal });
+    // An unexpectedly early timeout must not leave this test's fixture running.
+    process.kill(-processGroupId, signal);
+  };
 }
 
 async function waitForFile(filePath) {
@@ -105,7 +142,7 @@ test('local training process supervisor contract is deterministic and non-author
 });
 
 test('local training process supervisor accepts a fixture result only after current authority and group absence', async () => {
-  const { lifecycle, result } = await supervise();
+  const { lifecycle, result } = await supervise({ timeoutMs: FIXTURE_COMPLETION_TIMEOUT_MS });
 
   assert.deepEqual(result, { status: 'completed' });
   assert.equal(lifecycle.authorityChecks.beforeSpawn, 1);
@@ -185,9 +222,11 @@ test('local training process supervisor rejects invalid launch input before auth
 });
 
 test('local training process supervisor kills a timed-out group and keeps raw stderr out of errors', async () => {
+  const signals = [];
   await assert.rejects(
     supervise({
       args: [fixture, 'hang'],
+      signalProcessGroup: recordProcessGroupSignals(signals),
       timeoutMs: 40,
     }),
     (error) => {
@@ -198,6 +237,8 @@ test('local training process supervisor kills a timed-out group and keeps raw st
       return true;
     },
   );
+  assert.equal(signals.length, 1);
+  assert.equal(signals[0].signal, 'SIGKILL');
 });
 
 test('local training process supervisor preserves the workspace without a late group signal', async (t) => {
@@ -208,6 +249,10 @@ test('local training process supervisor preserves the workspace without a late g
   const signals = [];
   let descendantPid;
   t.after(() => {
+    if (!descendantPid && fs.existsSync(pidFile)) {
+      descendantPid = Number(fs.readFileSync(pidFile, 'utf8'));
+      assert.ok(Number.isSafeInteger(descendantPid) && descendantPid > 0, 'invalid fixture descendant pid');
+    }
     if (descendantPid && isProcessAlive(descendantPid)) {
       process.kill(descendantPid, 'SIGKILL');
     }
@@ -224,10 +269,8 @@ test('local training process supervisor preserves the workspace without a late g
         pidFile,
       ],
       quiescenceTimeoutMs: 100,
-      signalProcessGroup(processGroupId, signal) {
-        signals.push({ processGroupId, signal });
-      },
-      timeoutMs: 1_000,
+      signalProcessGroup: recordProcessGroupSignals(signals),
+      timeoutMs: FIXTURE_COMPLETION_TIMEOUT_MS,
     }),
     (error) => {
       assert.equal(error.failureCode, 'timeout');
@@ -241,9 +284,64 @@ test('local training process supervisor preserves the workspace without a late g
   assert.equal(isProcessAlive(descendantPid), true);
 });
 
+test('local training process supervisor rejects invalid output before the deadline without terminating', async (t) => {
+  const { child, execution, signals, started } = controlledProcess(t);
+  const rejected = assert.rejects(execution, (error) => {
+    assert.equal(error.failureCode, 'invalid-result');
+    assert.equal(isLocalTrainingProcessCleanupAuthorized(error), true);
+    assert.equal(error.lifecycle.authorityChecks.beforeResult, 1);
+    assert.equal(error.lifecycle.processGroupAbsenceConfirmed, true);
+    assert.equal(error.lifecycle.terminationRequested, false);
+    assert.equal(error.lifecycle.terminationReason, 'invalid-result');
+    return true;
+  });
+
+  await started;
+  t.mock.timers.tick(999);
+  child.stdout.write('not-json');
+  child.emit('exit', 0, null);
+  child.emit('close', 0, null);
+  await rejected;
+  t.mock.timers.tick(1);
+  assert.deepEqual(signals, []);
+});
+
+for (const [kind, output] of [
+  ['invalid', 'not-json'],
+  ['valid', '{"status":"completed"}\n'],
+]) {
+  test(`local training process supervisor preserves timeout over late ${kind} output`, async (t) => {
+    const { child, execution, signals, started } = controlledProcess(t);
+    const rejected = assert.rejects(execution, (error) => {
+      assert.equal(error.failureCode, 'timeout');
+      assert.equal(isLocalTrainingProcessCleanupAuthorized(error), true);
+      assert.equal(error.lifecycle.authorityChecks.beforeResult, 0);
+      assert.equal(error.lifecycle.processGroupAbsenceConfirmed, true);
+      assert.equal(error.lifecycle.terminationRequested, true);
+      assert.equal(error.lifecycle.terminationReason, 'timeout');
+      return true;
+    });
+
+    await started;
+    t.mock.timers.tick(999);
+    assert.deepEqual(signals, []);
+    t.mock.timers.tick(1);
+    assert.deepEqual(signals, [{ processGroupId: child.pid, signal: 'SIGKILL' }]);
+    child.stdout.write(output);
+    child.emit('exit', 0, null);
+    child.emit('close', 0, null);
+    await rejected;
+    assert.deepEqual(signals, [{ processGroupId: child.pid, signal: 'SIGKILL' }]);
+  });
+}
+
 test('local training process supervisor rejects invalid output after safe quiescence', async () => {
   await assert.rejects(
-    supervise({ args: [fixture, 'invalid-result'] }),
+    supervise({
+      args: [fixture, 'invalid-result'],
+      // This integration checks parsing; exact deadline precedence is tested above.
+      timeoutMs: FIXTURE_COMPLETION_TIMEOUT_MS,
+    }),
     (error) => {
       assert.equal(error.failureCode, 'invalid-result');
       assert.equal(isLocalTrainingProcessCleanupAuthorized(error), true);

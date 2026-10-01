@@ -54,29 +54,49 @@ function readStableFile(filename, maxBytes, field) {
   }
 }
 
-function git(repoDir, args) {
-  const result = spawnSync('git', ['--no-optional-locks', '-c', 'core.fsmonitor=false', ...args], {
+function createGitQuery(repoDir) {
+  const options = {
     cwd: repoDir, encoding: 'utf8', timeout: 10_000, maxBuffer: 4 * 1024 * 1024,
     env: {
       PATH: '/usr/bin:/bin', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null',
       GIT_OPTIONAL_LOCKS: '0', GIT_NO_REPLACE_OBJECTS: '1', GIT_NO_LAZY_FETCH: '1',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
-  });
-  requireValue(result.status === 0 && !result.error, 'source-git-query');
-  return result.stdout;
+  };
+  let executable = 'git';
+  if (process.platform === 'darwin') {
+    // Resolve the system-selected tool once, not through the launcher on every query.
+    const resolved = spawnSync('/usr/bin/xcrun', ['--find', 'git'], options);
+    requireValue(resolved.status === 0 && !resolved.error, 'source-git-executable');
+    executable = resolved.stdout.trim();
+    requireValue(path.isAbsolute(executable) && path.basename(executable) === 'git', 'source-git-executable');
+    try {
+      requireValue(fs.statSync(executable).isFile(), 'source-git-executable');
+      fs.accessSync(executable, fs.constants.X_OK);
+    } catch {
+      throw new Error('Delivery import rejected: source-git-executable.');
+    }
+  }
+  return args => {
+    const result = spawnSync(executable, ['--no-optional-locks', '-c', 'core.fsmonitor=false', ...args], options);
+    requireValue(result.status === 0 && !result.error, 'source-git-query');
+    return result.stdout;
+  };
 }
 
-function readGitState(repoDir) {
-  requireValue(git(repoDir, ['rev-parse', '--show-toplevel']).trim() === repoDir, 'source-root');
-  const revision = git(repoDir, ['rev-parse', 'HEAD']).trim();
-  requireValue(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(revision), 'source-revision');
-  requireValue(!git(repoDir, ['ls-files', '--others', '--exclude-standard', '-z']), 'source-untracked');
+function readGitState(repoDir, git) {
+  requireValue(git(['rev-parse', '--show-toplevel']).trim() === repoDir, 'source-root');
+  const identity = git(['rev-parse', '--path-format=absolute', '--git-common-dir', 'HEAD']);
+  // The directory can contain newlines; only the final field is a full revision.
+  const fields = identity.match(/^([\s\S]+)\n([a-f0-9]{40}|[a-f0-9]{64})\n$/);
+  requireValue(fields, 'source-revision');
+  const [, commonDir, revision] = fields;
+  requireValue(!git(['ls-files', '--others', '--exclude-standard', '-z']), 'source-untracked');
   return {
     revision,
-    commonDir: fs.realpathSync(git(repoDir, ['rev-parse', '--path-format=absolute', '--git-common-dir']).trim()),
-    tree: git(repoDir, ['ls-tree', '-rz', '--full-tree', 'HEAD']),
-    index: git(repoDir, ['ls-files', '--stage', '-z']),
+    commonDir: fs.realpathSync(commonDir),
+    tree: git(['ls-tree', '-rz', '--full-tree', 'HEAD']),
+    index: git(['ls-files', '--stage', '-z']),
   };
 }
 
@@ -88,7 +108,8 @@ function parseJson(bytes, field) {
 export function captureDeliverySource(repoDir) {
   requireValue(typeof repoDir === 'string' && path.isAbsolute(repoDir) &&
     fs.realpathSync(repoDir) === repoDir, 'source-root');
-  const before = readGitState(repoDir);
+  const git = createGitQuery(repoDir);
+  const before = readGitState(repoDir, git);
   const entries = before.tree.split('\0').filter(Boolean).map(entry => {
     const match = /^(100644|100755) blob ([a-f0-9]+)\t(.+)$/.exec(entry);
     requireValue(match, 'source-regular-files-only');
@@ -135,7 +156,7 @@ export function captureDeliverySource(repoDir) {
     requireValue(hash(file.bytes) === files.get(entry.name).digest &&
       Boolean(file.mode & 0o111) === (entry.mode === '100755'), 'source-observation-drift');
   }
-  requireValue(isDeepStrictEqual(before, readGitState(repoDir)), 'source-observation-drift');
+  requireValue(isDeepStrictEqual(before, readGitState(repoDir, git)), 'source-observation-drift');
   return {
     target, requirements, environment,
     repositoryIdentityDigest: hash(JSON.stringify({ root: repoDir, commonDir: before.commonDir })),

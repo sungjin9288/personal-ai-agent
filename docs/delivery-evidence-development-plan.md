@@ -1,5 +1,7 @@
 # 변경 인계 검증 — 개발 계획과 실행 기록
 
+현재 포트폴리오 기술 범위는 **D1–D4 구현, D5 synthetic 평가, portable 검토 round-trip까지 로컬 검증 완료**다. 원래 D5의 사람 효과 평가는 미측정이다. 단계별 계약은 아래 현재 구현 기준을 따르며, 날짜가 있는 실행 기록은 당시 결과와 권한을 보존한다. 최신 로컬 회귀와 공개 마감의 잔여 조건은 [현재 계약 정합성 마감](#현재-계약-정합성-마감--2026-10-01)을 확인한다.
+
 ## 추가 완성 범위 — portable 검토 round-trip (2026-10-01)
 
 사용자는 포트폴리오 완성도를 위한 추가 로컬 개발을 요청했다. 이전 D1–D5 구현·공개 이력을 보존하고, 실제 사용자 흐름에서 남은 두 단절을 해결한다. 다운로드한 검토를 다시 열 때 메모가 사라지는 문제와 CLI에만 있던 D4 영향 판정을 기존 검토 화면에서 함께 처리한다. 서버 영속 history·자동 Git diff·dependency 추론·서명·실사용 효과 측정은 추가하지 않는다.
@@ -34,6 +36,98 @@
 
 기존 official local-v1 builder, execution refresh(`--reuse-existing-deterministic`), clean rehearsal, production-like drill, 최종 pilot export, Portfolio refresh/check를 순서대로 실행한다. fresh precloseout 검사와 재사용한 deterministic/live 증거의 원래 SHA·시각·상태를 구분한다. 기존 visual manifest는 외부에 보존한 뒤 pipeline이 재생성하는 해당 경로만 허용하며 stage하지 않는다. source 10개를 하나의 commit으로 고정하고 generated allowlist만 별도 commit으로 묶는다. 실제 source/evidence SHA와 최종 검증·CI 결과는 generated evidence와 PR에 남긴다. merge·배포·실제 provider 호출·학습·실데이터·기존 resource cleanup·history 재작성은 제외한다.
 
+## 병합 후 재현 안내 점검 — 2026-10-01
+
+사용자의 다음 단계 요청에 따라 main `55a60639bb3f4f4e876280784fd0ce6b582ac23d`의 계획·구현·사용 안내를 대조했다. 포트폴리오 기술 범위와 실제 사용자 효과 평가를 구분하고, 새 기능 대신 기존 case study에 직접 점검할 순서·예상 결과·중단 기준을 모았다. 이 절과 case study만 수정하며 runtime·test·README·release artifact는 변경하지 않는다.
+
+- `node scripts/demo-delivery-evidence.mjs --format markdown` 및 `--format json`: exit 0. current → stale/no-declared-impact → stale/recheck-required → stale/unknown과 권한 불변을 확인했다.
+- `node scripts/evaluate-delivery-evidence.mjs --format markdown` 및 `--format json`: exit 0. 기존 synthetic 12건에 candidate/reference가 모두 정답 12, 불일치 0을 출력했다. 새 사람 평가나 우위 측정이 아니다.
+- `node scripts/check-delivery-impact.mjs < examples/delivery-evidence/impact.json`: exit 2, `recheck-required`. fixture의 정상적인 보류 결과다.
+- `npm run test:delivery-evidence`: Node v24.18.0 / Darwin arm64에서 총 192, PASS 191, fail 0, cancelled 1, exit 1, 약 38.96초. `delivery-evidence-http.test.mjs`의 상위 통합 검사가 25초 timeout으로 취소됐다. 이 실행은 **미통과**이며 이전 192/192 기록으로 덮지 않는다.
+- 같은 파일을 `node --test test/delivery-evidence-http.test.mjs`로 단독 실행했을 때 2/2 PASS, exit 0, 약 16.47초였다. timeout·assertion·병렬 설정은 변경하지 않았다. 실패 후 관찰한 host load average는 31.97/27.82/24.74였으나, 부하 수치와 단독 PASS만으로 원인을 확정하거나 병렬 안정성을 입증하지 않는다.
+
+자가 점검 안내는 보완했지만 이번 관련 회귀 전체를 PASS로 마감하지 않는다. 남은 기술 확인은 **동일 병렬 조건의 HTTP timeout 원인 분리와 안정성 확인**이다. 새 browser 검증·전체 `npm test`·원격 CI·사람의 D5 효과 평가는 이번 단계에서 실행하지 않았다. commit·push·PR·merge·provider 호출·기존 resource cleanup도 하지 않았다. SHA-bound closeout과 Portfolio ZIP은 기존 병합본을 유지하며, 이번 미commit 문서 수정의 새 release evidence가 아니다.
+
+### HTTP timeout 후속 보완 — 2026-10-01
+
+사용자의 이어 진행 요청에 따라 위 미완료 검사를 조사하고 `src/core/delivery-evidence-import.mjs`와 대응 test만 보완했다. 앞 단계의 문서 변경과 실패 기록을 보존한다. timeout·assertion·file-level 병렬도 4는 바꾸지 않는다.
+
+- 수정 전 같은 `npm run test:delivery-evidence`에서 191 PASS / cancelled 1, exit 1로 25초 HTTP timeout을 재현했다. source capture 3회 계측에서는 Git 조회 36회가 약 1.06초를 차지했다. 이 수치가 모든 timeout의 단일 원인을 입증하지는 않는다.
+- 고정 metadata argv(`rev-parse --path-format=absolute --git-common-dir HEAD`)를 같은 synthetic repository와 제한 환경에서 10회씩 순차 실행했다. macOS 시스템 Git 런처는 약 725ms, `xcrun --find git`이 선택한 동일 Apple Git 실행 파일은 약 103ms였다. 단일 microbenchmark이며 일정한 host 부하나 제품 전체의 개선율을 입증하지 않는다.
+- common directory와 HEAD 조회만 묶어 capture당 Git 조회를 12회에서 10회로 줄였다. 첫 세-query 통합안은 LF가 있는 wrong-root를 잘못 허용하는 반례가 독립 review에서 발견됐고, 회귀 RED를 확인한 뒤 폐기했다. 최종안은 root의 기존 exact 비교, 두 Git 관찰, index 비교, raw bytes/mode 재독, source identity와 drift 거부를 유지한다.
+- Darwin에서는 capture마다 고정 `/usr/bin/xcrun --find git`으로 시스템 선택 Git을 한 번 확인하고 같은 실행 파일로 전후 조회한다. resolver도 기존 제한 환경·10초 timeout·4 MiB buffer를 사용한다. absolute regular executable 검사 실패는 `source-git-executable`로 거부하며 다른 Git으로 fallback하지 않는다. source나 실행 파일 경로를 전역 cache하지 않는다. 다른 OS의 제한 PATH를 이용한 Git 실행은 유지한다. Darwin은 시스템 개발 도구의 Git을 `xcrun`으로 찾을 수 있어야 하며 새 설치·Homebrew 전환은 하지 않았다.
+- TDD: query-count 계약의 RED(10 PASS / 1 FAIL), LF root 경계 반례의 RED(0 PASS / 1 FAIL), native Git 선택·거부의 RED(0 PASS / 7 FAIL)를 각각 확인했다. 최종 회귀는 공백/LF root·linked detached worktree·SHA-256·unborn HEAD·Git 오류·전후 drift·resolver 실패/timeout/경로·무fallback·capture마다 재조회까지 포함한다.
+- 최종 `npm run test:delivery-evidence`: Node v24.18.0 / Darwin arm64에서 **213/213 PASS**, fail/cancelled/skip 0, exit 0, 약 35.75초. HTTP 통합은 기존 25초 제한 안에서 약 14.62초였다. 조회 통합만 적용한 중간 실행의 HTTP timeout도 유지 기록이며, 최종안과 구분한다.
+- 별도 Agent의 최종 source/test 정적 review는 PASS였다. Agent review는 주관 Agent의 실제 테스트나 사람의 인수를 대신하지 않는다. 수정 파일 `node --check`와 `git diff --check`도 통과했다.
+
+- 전체 `npm test`: **총 2,200 / PASS 2,198 / fail 1 / cancelled 0 / skip 1**, exit 1, 약 778.71초였다. HTTP 통합은 약 22.72초로 통과했지만, 변경하지 않은 `local-training-process-supervisor.test.mjs`의 invalid-result 사례가 1초 제한에 걸려 `timeout`으로 종료돼 기대 코드와 달랐다. 기존 Linux 전용 skip 1개를 유지했다.
+- 해당 실패만 `node --test --test-name-pattern='rejects invalid output after safe quiescence' test/local-training-process-supervisor.test.mjs`로 실행하면 같은 1초 제한에서 **1/1 PASS**, exit 0였다. 이 경로는 변경한 delivery importer를 사용하지 않는다. 단독 PASS로 전체 실패를 대체하거나 host 부하만으로 원인을 확정하지 않는다. supervisor 코드·timeout은 변경하지 않았다.
+- `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout`: **59/59 PASS**, exit 0. 미commit source 단계의 기존 precloseout 계약이며 새 SHA의 official closeout을 생성한 것은 아니다. 최종 diff 검사에서 source/test hash가 검증 실행 때와 같고 기존 case study 변경도 그대로임을 확인했다.
+
+재현된 delivery HTTP 경로의 수정과 focused 검증은 완료했으나 **전체 suite는 위 supervisor 실패로 미통과**다. 다음 기술 확인은 해당 1초 fixture의 병렬 조건 분리다. 위 결과는 해당 로컬 기능·회귀 범위에 한하며 임의의 host 부하에 대한 시간 보장, Linux 실측, 원격 CI, D5 사용자 효과 또는 새 release evidence로 확대하지 않는다. repository commit·push·PR·merge·provider 호출·기존 resource cleanup은 이번 범위 밖이다.
+
+### Supervisor 실패 분류 검증 계획 — 2026-10-01
+
+현재 전체 회귀의 유일한 실패를 다음 순서로 보완한다. 시작 HEAD는 `55a60639bb3f4f4e876280784fd0ce6b582ac23d`이고 앞선 네 dirty 파일을 보존한다. 추가 수정은 `test/local-training-process-supervisor.test.mjs`와 이 기록으로 제한한다. 독립 Agent는 read-only 분석·review를 담당하고 주관 Agent가 수정·실행·결과를 확인한다.
+
+1. **원인 경계:** supervisor는 spawn에서 실행 timer를 시작하고 close·authority·group absence 확인 뒤 JSON을 파싱한다. 먼저 발생한 timeout을 invalid-result로 덮지 않는 것은 기존 fail-closed 계약이다. 약 1,115ms의 실패와 단독 PASS만으로 runtime 결함이나 host 부하의 단일 인과를 주장하지 않는다.
+2. **최소 보완:** 기존 spawn/process-group 주입 지점과 Node test mock timers로 999ms invalid close와 1,000ms timeout 우선순위를 결정적으로 검사한다. 실제 invalid JSON subprocess 통합은 유지하고 해당 사례에만 5초의 fixture 완료 예산을 명시한다. 앞선 단계의 timeout 불변 방침과 달리 이 test-local 예산만 의도적으로 변경하며, production deadline·기본 helper 예산·40ms 실제 timeout·권한 회수·descendant 보존·assertion은 완화하지 않는다.
+3. **검증:** focused supervisor와 관련 runtime 검사 → 같은 `--test-concurrency=4`의 전체 `npm test` → docs precloseout gate·문법·diff·독립 review 순서로 진행한다. 이전 실패는 유지하고 새 실행 결과와 구분한다. 새로운 실패는 원인과 범위를 확인하며 무관한 timeout을 일괄 늘리지 않는다.
+4. **종료선:** 현재 로컬 snapshot의 수정·회귀 결과와 잔여 조건을 이 문서에 기록한다. commit·push·PR·merge·새 release evidence·provider 호출·실제 학습·배포·기존 resource cleanup은 수행하지 않는다. D5 사람의 효과 평가는 이번 자동 검사로 대체하지 않는다.
+
+**전체 회귀에서 발견한 추가 범위:** supervisor 집중 검증 32/32 이후 전체 검사에서 기존 HTTP parent가 다시 25초 제한을 초과했다. 이 parent에는 fixture 준비, 각각 최대 15초인 reporter/importer, 성공 HTTP 13회와 거부·revision 변경 경로가 누적된다. 개별 요청의 25초 초과나 product source 검증의 결함을 입증한 것은 아니다. `test/delivery-evidence-http.test.mjs`도 보완 범위에 포함해 인증/실패 검토, native receipt/export/revision, impact/위조 거부의 세 독립 fixture로 나눈다. **전체 흐름의 합산 25초 제한을 각 독립 scenario의 25초 제한으로 변경**하므로 총 허용 시간이 늘어난다. source 관찰·권한·기존 assertion·reporter/importer 15초 제한·병렬도는 유지한다. 요청과 서버 준비 대기는 owning test의 abort signal에 연결하며, 준비 대기의 별도 `100 × 30ms` 횟수 제한 대신 scenario의 25초를 공유한다. 서버가 먼저 종료하면 즉시 실패한다. fixture 서버 → JWKS → 해당 임시 root 순으로 정리하며 기존 사용자 resource는 대상이 아니다.
+
+이 단계의 실행 기록:
+
+- 새 virtual-time 경계 검사: `node --test --test-name-pattern='before the deadline|preserves timeout' test/local-training-process-supervisor.test.mjs` **3/3 PASS**, exit 0. 실행 timer가 시작된 뒤 999ms invalid close와 1,000ms 이후 valid/invalid 결과를 구별했다. 실제 OS process-group 부재나 임의 host 부하에서의 완료 시간을 증명하는 검사는 아니다.
+- 외부 임시 loader가 테스트 프로세스 안에서만 supervisor deadline을 1ms 앞당긴 mutation은 0 PASS / 1 FAIL, 먼저 발생한 timeout을 제거한 mutation은 0 PASS / 2 FAIL로 거부됐다. 저장소 production 파일은 바뀌지 않았다. 실제 runtime 결함을 수정한 RED→GREEN으로 표현하지 않는다.
+- `node --test --test-concurrency=4 test/local-training-process-supervisor.test.mjs test/local-training-runtime.test.mjs test/local-candidate-evaluation-process-lifecycle.test.mjs`: **32/32 PASS**, exit 0. real subprocess invalid-result, 실제 timeout, 권한 회수와 descendant 보존 검사를 포함한다. supervisor 변경의 독립 정적 review에서 추가 지적은 없었다.
+- HTTP 분리 직후 `node --test test/delivery-evidence-http.test.mjs`는 **PASS 0 / fail 2 / cancelled 1**, exit 1이었다. 이 실행은 기존 전체 회귀와 겹쳤으며, 두 실패는 서버 discovery의 기존 횟수 제한, 나머지는 25초 scenario timeout이었다. 단순히 host 부하만을 원인으로 확정하지 않는다. discovery를 owning test deadline에 결속했고, review에서 지적한 plain bundle 복원 뒤 source clean assertion도 복원했다. 이후 검증 결과와 이 실패를 구분한다.
+- 이 단계 첫 전체 `npm test`는 **총 2,203 / PASS 2,196 / fail 4 / cancelled 2 / skip 1**, exit 1이었다. HTTP parent timeout과 하위 거부 응답의 기대값 불일치, Darwin CPU probe의 network-control JSON 오류와 15초 fixture timeout, supervisor 정상 결과의 1초 timeout 및 descendant PID 준비 실패를 기록했다. HTTP 분리 전 snapshot의 실행이며 최종 변경 전체의 검증 결과가 아니다.
+- 이 실행에서 supervisor test worker와 정확히 맞물린 stdout/stderr socket을 가진 synthetic descendant 하나가 남아 runner 종료를 막았다. signal spy가 이른 timeout의 신호를 기록만 한 채 전달하지 않아 worker가 이후 자식을 만들 수 있는 경로를 확인했다. PID·시작 시각·command·process group·양방향 socket identity를 재확인한 뒤 이번 fixture 하나만 SIGKILL해 결과를 회수했다. 기존 사용자 resource는 변경하지 않았다.
+- supervisor 정상 결과·invalid 결과·leader-exit 통합의 세 사례에만 5초 fixture 완료 예산을 적용한다. spy는 실제 live-leader signal을 전달하면서 기록하며, 40ms 실제 timeout 검사가 SIGKILL 1회와 안전한 정리를 확인한다. no-late 검사의 signal 0회·descendant 생존·cleanup 불허 assertion은 유지한다. assertion 실패 시에도 after hook이 해당 fixture PID 파일을 확인해 descendant를 정리한 뒤 임시 root를 제거한다. production supervisor와 기본 helper 1초·가상 999/1,000ms 경계는 바꾸지 않는다.
+- HTTP 최종 분리본의 단독 실행은 **3/3 PASS**, exit 0, 약 12.44초였다. 이 결과로 첫 전체 실패나 Darwin host 검증을 PASS로 대체하지 않는다.
+- `npm run test:delivery-evidence`: 최종 분리본에서 **214/214 PASS**, fail/cancelled/skip 0, exit 0, 약 17.23초. 별도 fixture들이 같은 file-level 병렬도 4에서 인증·native receipt·복원·영향·위조·revision 거부를 확인했다.
+- supervisor fixture 보완 후 단독 검사는 **11/11 PASS**, exit 0이었다. 이후 after hook의 PID 파일 fallback을 보완하고, 외부 loader로 PID 변수 설정 전 assertion 실패를 주입했다. 예상한 `synthetic cleanup failure` 1건과 exit 1을 약 5.2초에 반환해 열린 stdio로 runner를 붙잡지 않았다. production·test 파일 bytes는 failure injection으로 바뀌지 않았다. 최종 정적 review에서도 추가 지적은 없었다.
+- `node --test test/local-training-os-isolation.test.mjs`: 변경하지 않은 OS-isolation 검사 **5/5 PASS**, exit 0. 앞선 전체 실행의 실패와 구분하며 전체 병렬 조건의 안정성을 대신하지 않는다. 기존 CPU·network·POSIX 한도와 assertion은 수정하지 않았다.
+- 최종 `npm test`는 Node v24.18.0 / Darwin arm64, 기존 `node --test --test-concurrency=4 test/*.test.mjs`에서 **총 2,204 / PASS 2,203 / fail 0 / cancelled 0 / skip 1**, exit 0, 약 313.10초였다. 기존 Linux 전용 skip을 유지했다. HTTP 세 scenario는 각각 약 4.15/7.85/7.46초였으며, supervisor 11건과 앞서 실패했던 Darwin 검사도 같은 전체 실행에서 통과했다. 다른 test/smoke를 동시에 실행하지 않았고 검사 대상 source/test hash가 종료 후에도 동일했다. 이전 실패와 이번 PASS는 서로 다른 실행으로 보존한다.
+- 최종 `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout` **59/59 PASS**, `npm run smoke:release-artifact-hygiene`, 수정 executable의 `node --check`, `git diff --check` 모두 exit 0이었다. docs 제외 항목은 기존 precloseout 계약이며, hygiene는 기존 artifact 검사이지 현재 dirty source의 새 SHA-bound release 증거가 아니다.
+
+**이번 로컬 마감:** HTTP scenario 격리, supervisor deadline 분류와 실패 시 fixture 정리, 관련 회귀·전체 검사·독립 정적 review를 완료했다. main/원격 추적 ref·이전 branch/worktree·앞선 importer와 case study 변경을 보존했으며 index는 비어 있다. 변경 6개 파일은 uncommitted다. commit·push·PR·merge·새 release evidence·배포·provider 호출·실제 학습은 하지 않았다. D5 실제 사용자 효과, Linux host 실측 및 production 준비를 이번 PASS로 확대하지 않는다.
+
+### 현재 계약 정합성 마감 — 2026-10-01
+
+현재 코드·검사 로그와 별도 Astra read-only 검토를 대조했다. 추가 runtime 기능이 필요한 필수 계약 누락은 확인되지 않았지만, 아래 현재 단계표의 D4 예정 표시, D3의 복원 불가 설명, D5의 synthetic/사람 평가 구분 및 case study의 timeout 안내가 구현·검증 기록과 맞지 않았다.
+
+1. **범위:** 이 문서와 `docs/delivery-evidence-case-study.md`만 보완한다. 단계별 현재 계약을 수정하고, 과거 실패·PASS 수치와 실행 이력은 유지한다. 기존 importer·HTTP·supervisor source/test 변경은 byte-preserved 상태로 둔다.
+2. **완료 기준:** D4 구현 완료, D5 synthetic 완료, D5 사람 효과 미측정이 구분되고, POST bundle 복원·선택적 영향 입력·test-local 시간 예산이 실제 코드와 일치해야 한다. 문서 문자열만을 위한 새 테스트나 runtime 변경은 추가하지 않는다.
+3. **검증:** 실제 handler·UI·evaluation source와 문서를 대조하고 `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout`, `git diff --check`, 별도 read-only 문서 review를 수행한다. 앞선 전체·focused 검사 로그와 source/test hash를 확인하되 문서만 바뀐 상태에서 전체 suite를 새로 실행했다고 기록하지 않는다.
+4. **다음 경계:** 현재 6개 dirty 변경의 grouped source commit → 해당 SHA의 기존 deterministic evidence refresh → 별도 generated-evidence commit → push·ready PR·required CI는 명시 승인 후 진행한다. merge·배포·provider·실제 학습·실데이터·cleanup은 포함하지 않는다. D5 사람 평가는 동의한 참여자와 비민감 사례 범위가 정해질 때 별도로 수행하며 포트폴리오 기술 마감의 결과로 대체하지 않는다.
+
+**검증 결과:** 문서 보완 후 docs precloseout gate **59/59 PASS**, `node scripts/evaluate-delivery-evidence.mjs --format markdown`은 synthetic 12개에서 candidate/reference 모두 정답 일치 12·불일치 0, exit 0이었다. 별도 Astra 정적 review는 handler·core·UI와 현재 계약 및 문서 링크를 대조했으며 추가 지적은 없었다. `git diff --check`가 통과했고 기존 변경 source/test 4개와 production supervisor의 SHA-256이 직전 전체 검사 시점과 같았다. 따라서 앞선 전체 2,203 PASS / skip 1과 delivery 214/214 결과를 보존하되 이번 문서 단계에서 새로 실행한 결과로 표시하지 않는다. 새 source commit·SHA-bound artifact·원격 CI·browser 검증·사람 효과 측정은 하지 않았다.
+
+### 병합 후 보완의 공개 마감 — 2026-10-01
+
+사용자가 위 grouped source commit → SHA-bound evidence commit → push·ready PR·CI 계획의 진행을 승인했다. 시작 main과 원격 main은 `55a60639bb3f4f4e876280784fd0ce6b582ac23d`이며 index는 비어 있다. `codex/delivery-evidence-reliability-closeout`에서 이 문서·case study, `src/core/delivery-evidence-import.mjs`, `test/delivery-evidence-import.test.mjs`, `test/delivery-evidence-http.test.mjs`, `test/local-training-process-supervisor.test.mjs`의 6개 변경을 source commit 하나로 묶는다. 기존 branch·worktree는 보존한다.
+
+그 SHA의 clean tracked tree에서 official local-v1 closeout이 full test·docs precloseout·hygiene·diff 검사를 새로 실행한다. 이어 `refresh:execution-v1-artifacts -- --reuse-existing-deterministic` → clean rehearsal → production-like drill → final pilot export → Portfolio refresh/check → full smoke를 수행한다. 재사용 증거의 원래 source·시각·not-rerun 표시는 유지하며, 기존 visual manifest는 외부에 보존한 후 pipeline이 해당 경로를 재생성하도록 한다. Generated allowlist만 두 번째 commit으로 고정하고 두 commit을 push한 뒤 ready PR과 해당 head의 required CI를 확인한다. 후속 결과와 SHA는 generated evidence·PR에 기록한다. merge·deploy·publish·새 provider 호출·실제 학습·실데이터·기존 resource cleanup·history 재작성은 제외한다.
+
+**진행 결과와 중단 지점:** 6개 source/test/docs는 `a162a0e851d2ae2d7535a187b47e072ea2beaa5b`로 commit했다. exact staged scope·문법·diff·독립 정적 review와 새 docs precloseout 59/59는 통과했다. 그러나 그 SHA의 `npm run build:local-v1-completion-closeout -- --implementation-commit a162a0e851d2ae2d7535a187b47e072ea2beaa5b --output evidence/output-artifacts/local-v1-completion-closeout.json`은 내부 `npm test`가 600,000ms 한도를 넘겨 `timedOut:true`, `signal:SIGKILL`, exit 1로 중단됐다. 전체 PASS 수는 회수하지 못했으며 새 closeout artifact는 쓰지 않았다. 중간 출력의 HTTP 영향·bundle 사례 1건은 약 21.00초에 실패했다. 전체 종료 전에는 그 실패의 assertion stack이 출력되지 않아 원인을 확정하지 않는다.
+
+이후 `node --test --test-name-pattern='roundtrip declared impact' test/delivery-evidence-http.test.mjs`는 **1/1 PASS**, exit 0, 약 9.97초였다. 단독 결과로 전체 실패를 대체하지 않는다. Node v24.18.0 / Darwin arm64, logical CPU 10개에서 전체 실행 전후 load average 첫 값 33.52→53.67, 이후 68.10과 free memory 14%를 관측했지만 host 부하만을 단일 원인으로 확정하지 않는다. 다른 작업 종료·전역 설정 변경·timeout 증가·검사 제외·반복 full 실행은 하지 않았다. 기존 artifact와 visual manifest는 그대로이며 generated commit·push·PR·원격 CI는 미실행이다. 이 중단 기록만 source commit 이후 미커밋으로 남긴다. 재개 시 실패 상세를 회수할 수 있는 bounded 진단과 로컬 실행 여건을 먼저 확인하고, 관련 보완을 묶은 source 상태에 official gate가 실제 통과한 뒤에만 evidence phase로 넘어간다. 기존 승인 범위는 유지하며 merge·배포·provider·cleanup 권한으로 확대하지 않는다.
+
+### Darwin 경로 조회 실패의 진단 보완 — 2026-10-01
+
+사용자의 재개 요청에 따라 외부 임시 runner로 native TAP 출력 전체를 보존했다. 테스트 목록·file-level 병렬도 4·600초 한도는 canonical 검사와 같고 reporter만 진단용 TAP으로 지정했다. HTTP 세 사례는 단독 **3/3 PASS**, 전체 진단에서도 모두 PASS였다. 전체 진단은 약 469.48초에 **2,204건 / PASS 2,202 / fail 1 / skip 1**, exit 1로 끝났으며 timeout이 아니었다. 이 실행은 공식 SHA-bound closeout의 대체 증거가 아니다.
+
+이번 실패는 `test/local-training-darwin-suspended-exec.test.mjs`의 실제 signed fixture 검사였다. 약 5,008ms 뒤 `resolveSystemPython`에서 `could not resolve Python`을 반환했다. 고정 `/usr/bin/xcrun --find python3`의 5초 예산과 일치하는 시간이나 원래 오류에는 spawn error/status가 없어 timeout으로 확정하지 않는다. 단독 해당 파일은 **5/5 PASS**, 같은 제한·환경의 경로 조회는 약 75ms에 exit 0이었다. 전체 지연과 host 부하·메모리 관측은 함께 기록하되 단독 PASS나 load average로 과거 실패의 원인을 확정하지 않는다.
+
+후속 source 범위는 `scripts/probe-local-training-darwin-suspended-exec.mjs`, 대응 test와 이 기록이다. 기존 거부 조건 안에서 오류를 `timeout`, `spawn-error`, `exit-failure`, `invalid-path`로 구분하며 raw stdout/stderr·native error message는 노출하지 않는다. 5초 제한·깨끗한 환경·capture 한도·shell 비활성·서명/CDHash 검증·실제 fixture·권한은 바꾸지 않고 fallback/retry를 추가하지 않는다. 여섯 mock 오류 사례는 구현 전 **0 PASS / 6 FAIL**을 확인했고, 최소 수정 후 실제 fixture를 포함한 해당 파일은 **11/11 PASS**, exit 0이었다. 두 실행 파일의 `node --check`와 `git diff --check`도 통과했다. 이 변경은 진단 공백 보완이지 경로 조회 지연이나 전체 회귀 안정성 해결의 증명이 아니다.
+
+문서 precloseout은 **58/59 PASS**, exit 1이었다. 변경하지 않은 `smoke:target-secret-manager`의 npm child가 stdout/stderr 없이 `SIGABRT`로 종료됐으며 assertion 실패나 원인은 확인되지 않았다. 같은 command의 단독 진단은 약 1.21초에 exit 0이었다. 이 결과로 실패한 sweep을 PASS로 바꾸지 않고, 관련 문서나 검사 조건도 수정하지 않는다. 다른 프로세스를 종료하거나 전역 환경을 변경하지 않았다.
+
+기존 source commit은 보존하고 이 후속 검증 보완과 실패 이력을 하나의 source commit으로 묶는다. 새 SHA의 clean tracked tree에서 공식 closeout을 수행하며 통과할 때만 기존 evidence pipeline을 이어간다. 따라서 기존 source·후속 source·generated evidence의 이력으로 구성하고 amend/rebase는 하지 않는다. 원래 source/test 네 파일은 `a162a0e8`과 byte-identical이며 추가 기능·학습·provider·배포·기존 resource 변경은 없다.
+
 ## 목표와 개발 지속 조건
 
 여러 개발 도구가 만든 변경을 인계하는 사람이 현재 요구사항에 어떤 검증 근거가 있고 무엇을 더 확인해야 하는지 빠르게 판단하도록 돕는다. 범용 Agent runtime을 추가하지 않는다. 정확성·권한·이력 경계를 유지하되 문서와 승인 절차의 양을 성과로 삼지 않는다.
@@ -49,10 +143,10 @@
 | D1 로컬 구현 완료 | 요구사항별 누락·binding 불일치·실패를 로컬에서 확인 | 순수 판정 함수, bounded stdin JSON CLI, JSON/Markdown 출력, 사용 계약 | RED→GREEN 회귀 및 실제 CLI 실행; 모든 입력은 출처 미검증으로 표시 |
 | D2 로컬 구현 완료 | 기존 검사 결과를 수작업 복사 없이 연결 | Node 24 reporter와 read-only importer, source/test/config digest 수집 | 실제 Node 실행 fixture에서 잘못된 repository·revision·결과 차단; 원본 불변; D1 동일 계약 사용 |
 | D3 로컬 구현 완료 | 검토자가 연결과 예외를 확인하고 다음 작업을 판단 | 기존 UI에 요구사항별 근거·누락 표시, revision-bound 검토 기록, 인계 export | 두 revision·권한·stale response 회귀 및 browser 검증; 예외 메모는 PASS로 승격하지 않음; 상세 검증 범위는 아래 실행 기록 |
-| D4 후속 | 변경 후 필요한 재확인 대상을 알 수 있음 | 명시적 의존성 범위의 영향 판정과 불명확한 연결 표시 | known unrelated 변경과 unknown 영향 구별; 필수 CI 생략 권한 없음 |
-| D5 후속 | 계속 사용할 가치가 있는지 결정 | 강한 baseline과 동일 사례 비교, 설정·검토·유지 비용 및 재사용 의사 평가 | go / 축소 / stop 근거; 실측 전 우위·상용 준비 주장 없음 |
+| D4 로컬 구현 완료 | 변경 후 필요한 재확인 대상을 알 수 있음 | 선언된 의존성 범위의 영향 판정, CLI와 web 검토 통합 | known unrelated 변경과 unknown 영향 구별; 필수 CI 생략·PASS 재사용 권한 없음 |
+| D5 synthetic 완료 / 사람 효과 미측정 | 상태 분류를 재현하고, 실제 사용 가치는 별도 평가 | 독립 checklist reference와 synthetic 사례 비교 구현; 설정·검토·유지 비용 및 재사용 의사 평가 미실행 | 기술 평가와 사람의 go / 축소 / stop 근거를 구분; 실측 전 우위·상용 준비 주장 없음 |
 
-D1은 제품 전체의 완료를 대신하지 않는다. D2의 adapter 선택은 실제 검사 출력으로 결정하고, D3의 저장 schema와 UI 계약은 D1/D2 사용 결과를 확인한 뒤 고정한다. 의미적 요구 충족, 증거 진위, 배포 및 고객 인수는 각각 별도 판단이다.
+D1–D4와 D5 synthetic 평가의 구현은 제품 전체의 완료를 대신하지 않는다. D2는 Node 24 native test receipt를 지원하고, D3는 portable bundle과 다운로드를 지원하되 서버 영속 저장은 제공하지 않는다. 의미적 요구 충족, 증거 진위, 실제 사용자 효과, 배포 및 고객 인수는 각각 별도 판단이다.
 
 ## D1 입력 계약과 판정
 
@@ -116,7 +210,7 @@ exit code는 `0 = evidence-current`, `2 = blocked 또는 needs-review`, `1 = 입
 
 ## D2–D5의 구현 계약과 진행 조건
 
-D2는 아래 CLI 경로로 구현했고 D3는 기존 web surface에 통합한다. D4–D5는 예정 상태다. 제품 전체가 완료됐다고 공개하지 않는다.
+D2의 CLI, D3의 web 검토·portable 복원, D4의 CLI·web 영향 판정과 D5 synthetic 평가는 구현했다. 아래는 현재 계약이며 원래 D5의 사람 효과 평가는 미실행이다. 개별 구현·검증 이력은 날짜가 있는 실행 기록과 구분하고, 제품 전체가 완료됐다고 공개하지 않는다.
 
 ### D2 — 실제 증거 수집
 
@@ -167,35 +261,35 @@ node /absolute/path/scripts/import-delivery-evidence.mjs --repo /canonical/repos
 
 ### D3 — 검토와 인계
 
-기존 web surface의 `검토하기`에 workspace 단위의 변경 인계 근거 panel을 추가한다. mission 생성 없이 사용하며 별도 dashboard나 전역 approval 체계를 만들지 않는다. UI는 요구사항·기준·검사 상태·근거 ID·불일치 이유·다음 확인 항목을 표시한다. 성공 결과만 먼저 보여 실패·미검증을 숨기지 않는다.
+기존 web surface의 `검토하기`에서 workspace 단위의 변경 인계 근거 panel을 제공한다. mission 생성 없이 사용하며 별도 dashboard나 전역 approval 체계를 만들지 않는다. UI는 요구사항·기준·검사 상태·근거 ID·불일치 이유·다음 확인 항목을 표시한다. 성공 결과만 먼저 보여 실패·미검증을 숨기지 않는다.
 
-검토 기록은 대상 packet/revision, reviewer identity의 확인 수준, mapping/예외의 종류, 이유를 연결한다. 현재는 request-scoped 초안과 다운로드만 지원하며 서버 저장 이력·새로고침 후 복원·승인 증명을 제공하지 않는다. 기존 store schema를 변경하지 않는다. 기존 HTTP 요청 audit는 유지되지만 검토 기록의 영속 저장을 대신하지 않는다. 최종 source revision이나 packet이 바뀌면 과거 검토를 현재 검토로 자동 적용하지 않는다. JSON/Markdown export는 같은 판정 결과를 사용하며 외부 전송은 별도 행위다.
+검토 기록은 대상 packet/revision, reviewer identity의 확인 수준, mapping/예외의 종류, 이유를 연결한다. request-scoped 초안과 다운로드를 지원하고, 새로고침 뒤 저장한 `delivery-review-bundle/v1`을 다시 열어 현재 source가 일치할 때 메모·원래 자기 선언 시각·선택적 영향을 복원한다. 서버 저장 이력·자동 복원·승인 증명은 제공하지 않는다. 기존 store schema와 HTTP 요청 audit는 검토 기록의 영속 저장을 대신하지 않는다. 최종 source revision이나 packet이 바뀌면 과거 검토를 현재 검토로 자동 적용하지 않는다. JSON/Markdown export는 같은 판정 결과를 사용하며 외부 전송은 별도 행위다.
 
 #### D3 구현 계약
 
 - core: `src/core/delivery-evidence-review.mjs`, web handler: `src/web/delivery-evidence-handlers.mjs`, frontend: `src/web/public/lib/delivery-evidence-review.js`. 기존 server route registry, app bootstrap, workspace selection, review panel과 CSS만 연결한다. 테스트는 `test/delivery-evidence-review.test.mjs`, `test/delivery-evidence-ui.test.mjs`, `test/delivery-evidence-http.test.mjs`다.
 - `GET /api/workspaces/:workspaceId/delivery-evidence`는 등록된 workspace path에서 D2 source capture를 재사용해 현재 manifest의 요구사항과 빈 evidence packet을 반환한다. 현재 clean revision·manifest가 없으면 409로 거부하며 자동 commit·cleanup·검사 실행은 하지 않는다.
-- 같은 경로의 POST는 `{packet}` 또는 `{packet,review}`만 받는다. D1 판정과 review binding을 검증한 뒤 trusted source의 target/requirements와 동일한지, 읽기 전후 source가 동일한지 확인한다. 다른 revision·현재 요구사항 불일치·source drift는 409다. 이전 근거 행 자체는 현재 packet의 evidence로 제출할 수 있으며 D1이 stale/failed 등을 판정한다.
+- 같은 경로의 POST는 `{packet}` 또는 `{packet,review}`, 복원용 `{bundle}`을 받으며 두 방식 모두 선택적 `impactInput`을 허용한다. bundle과 packet/review를 함께 제출할 수 없다. D1 판정·review binding·bundle digest 및 선택적 D4 입력을 검증한 뒤 trusted source의 target/requirements와 동일한지, 읽기 전후 source가 동일한지 확인한다. 다른 revision·현재 요구사항 불일치·source drift는 409다. 이전 근거 행 자체는 현재 packet의 evidence로 제출할 수 있으며 D1이 stale/failed 등을 판정한다.
 - API 공통 auth/RBAC와 handler의 workspace tenant 검사를 모두 거친다. tenant 검사는 body/source 판독보다 먼저 수행한다. RBAC enforce에서 GET은 viewer, POST는 operator 이상이다. 경로는 등록 workspace에서만 가져오며 요청에 arbitrary filesystem path를 받지 않는다. body는 fatal UTF-8 JSON, 최대 1 MiB이며 계약 오류 400, 크기 초과 413이다.
 - `review`는 `{bindingDigest,reviewerName,entries}`다. binding은 workspaceId와 전체 packet의 key-sorted JSON SHA-256이다. entries는 요구사항별 하나씩 최대 100개이며 `{requirementId,kind,reason}`; kind는 `mapping-review` 또는 `exception-recorded`다. 이름 100자, 이유 1,000자 이하의 trim된 단일행 문자열을 사용한다. UI에서 같은 요구사항을 다시 반영하면 현재 초안만 교체한다.
 - 검토자 이름은 항상 `self-declared`다. OIDC 인증을 통과했어도 입력 이름을 실제 개인 identity로 인증했다는 주장을 하지 않는다. 메모는 D1의 mappingConfirmed·status·권한을 변경하지 않는다. `evidence-current`도 진위 인증·의미적 요구 충족·승인·인수를 뜻하지 않는다.
-- UI는 D1 packet과 D2 `{packet,report}` 출력을 받되 제출된 report는 폐기한다. 입력 변경·workspace 전환·재판정은 이전 검토와 초안을 초기화한다. epoch와 workspace를 함께 확인해 오래된 성공·오류·finally와 A→B→A 응답 재사용을 막는다. 요구사항 선택은 메모 반영 중 유지한다.
-- 내보내기 직전 같은 packet을 서버에서 재판정해 source/binding/report를 확인하고, 화면의 기존 검토 시각과 내용 그대로 JSON/Markdown을 다운로드한다. 미반영 메모가 있으면 다운로드를 막는다. 화면 문자열은 escape하고 Markdown은 D1과 같은 escape 계약을 따른다. 기준·이름·메모는 민감정보 자동 제거 대상이 아니므로 공유 전 사람이 확인한다.
+- UI는 D1 packet, D2 `{packet,report}` 출력, portable bundle을 받는다. 제출된 report는 재사용하지 않으며 bundle의 report·Markdown은 서버에서 다시 계산한다. 메모가 있는 이전 export 형식은 packet으로 자동 축소하지 않고 거부한다. 새 packet 입력·workspace 전환은 이전 검토와 초안을 초기화한다. 영향 편집·검토 반영 실패 시 이미 반영한 메모를 보존하되 재확인 전에는 내보내지 않는다. epoch와 workspace를 함께 확인해 오래된 성공·오류·finally와 A→B→A 응답 재사용을 막는다. 요구사항 선택은 메모 반영 중 유지한다.
+- 내보내기 직전 현재 bundle을 서버에서 재판정해 source/binding/report를 확인하고, 화면의 기존 검토 시각과 내용 그대로 JSON bundle/Markdown을 다운로드한다. 미반영 메모·영향 또는 재검증 필요 상태에서는 다운로드를 막는다. 화면 문자열은 escape하고 Markdown은 D1과 같은 escape 계약을 따른다. 기준·이름·메모는 민감정보 자동 제거 대상이 아니므로 공유 전 사람이 확인한다.
 - 예외 메모를 남겨도 missing/stale/failed/incomplete/conflicting은 그대로 남는다. 서버 DB 저장·review signature·자동 테스트·provider 호출·외부 제출·실행/배포 승인은 이번 범위가 아니다.
 
 RED 사례: 이전 revision 승인 재사용, foreign workspace 접근, 늦게 도착한 이전 요청이 새 화면을 덮음, markup injection, export와 화면 불일치. GREEN은 해당 회귀와 실제 keyboard/browser 흐름 검증 후다. 완성도나 인수 사실은 상태 이름만으로 만들어내지 않는다.
 
 ### D4 — 변경 영향
 
-예정 위치는 `src/core/delivery-evidence-impact.mjs`와 대응 테스트다. 자동으로 완전한 dependency graph를 추측하지 않는다. 사람이 확인한 requirement↔test/config/source 연결을 먼저 사용하며, 연결 정보가 불충분하면 unknown으로 분류한다. 변경 없음을 입증할 수 있는 범위에서만 이전 근거 재사용 후보를 제안한다.
+구현 위치는 `src/core/delivery-evidence-impact.mjs`, `scripts/check-delivery-impact.mjs`와 대응 테스트이며 web 검토에서도 같은 판정기를 사용한다. 자동으로 완전한 dependency graph를 추측하지 않는다. 선언된 requirement↔test/config/source 연결만 사용하며, 연결 정보가 불충분하면 unknown으로 분류한다. 선언 범위 안에서 영향이 없다는 결과도 실제 변경 부재나 이전 PASS의 재사용 허가가 아니다.
 
 RED 사례: config 변경을 code만 비교해 놓침, 간접 의존성 누락, 새 requirement에 과거 mapping 재사용, unknown edge를 unrelated로 처리. 필수 CI를 생략하는 결정은 구현하지 않는다.
 
 ### D5 — 가치 검증
 
-예정 위치는 `scripts/evaluate-delivery-evidence.mjs`와 대응 테스트이며 D1 단위 테스트 수를 효과 평가 사례 수로 사용하지 않는다. 별도 사전 정답표를 둔 paired 사례 12개(정상 4, 오류 8)를 제안한다. baseline과 candidate는 같은 자료·검토 기준을 받는다. 모델을 사용하면 같은 model/config와 예산으로 비교하며, 정답을 candidate 입력에 넣지 않는다.
+synthetic 평가는 `src/core/delivery-evidence-evaluation.mjs`, `scripts/evaluate-delivery-evidence.mjs`와 대응 테스트로 구현했다. `node scripts/evaluate-delivery-evidence.mjs --format markdown`은 별도 사전 정답표를 둔 paired 사례 12개(정상 4, 오류 8)를 평가한다. 독립 deterministic checklist reference와 candidate는 같은 입력을 받으며, 정답을 candidate 입력에 넣지 않는다. 모델 호출은 없고 D1 단위 테스트 수를 효과 평가 사례 수로 사용하지 않는다. 실제 사람의 false-ready·검토 시간·생산성 측정값은 `null`이다.
 
-사람의 onboarding, mapping 유지, 누락 조사, 보고서 작성 시간을 포함해 측정한다. 중요 누락, 불필요한 stale 판정, 독립 reviewer의 재확인, 반복 사용 의사도 기록한다. synthetic 통과 후 실제 비민감 사례 사용에는 참여자 동의와 데이터 범위를 확인한다. 품질·사용성이 개선되지 않으면 모델·문서·승인 수를 더 늘려 결과를 포장하지 않는다.
+사람 효과 평가는 아직 수행하지 않았다. 수행 시에는 onboarding, mapping 유지, 누락 조사, 보고서 작성 시간을 포함해 측정한다. 중요 누락, 불필요한 stale 판정, 독립 reviewer의 재확인, 반복 사용 의사도 기록한다. synthetic 통과 후 실제 비민감 사례 사용에는 참여자 동의와 데이터 범위를 확인한다. 품질·사용성이 개선되지 않으면 모델·문서·승인 수를 더 늘려 결과를 포장하지 않는다.
 
 false-ready는 제품이 승인 버튼을 갖는지 여부가 아니라, 도구를 사용한 reviewer가 근거 부족을 놓치고 인계 가능하다고 판단한 사례로 측정한다. 항상 `not-assessed` 또는 보류만 내놓아 0건을 만드는 방식은 성공이 아니다. 정상 사례의 처리율·불필요한 보류와 최종 사람 판단까지의 시간을 반드시 함께 비교한다. D1의 unit test PASS를 이 효과 평가의 PASS로 대체하지 않는다.
 
