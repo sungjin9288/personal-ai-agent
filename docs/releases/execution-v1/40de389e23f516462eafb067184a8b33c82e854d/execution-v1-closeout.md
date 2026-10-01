@@ -1,5 +1,8 @@
 # Execution v1 Closeout
 
+- archivedAt: 2026-10-01T15:51:31.555Z
+- sourcePath: docs/execution-v1-closeout.md
+
 - generatedAt: 2026-10-01T15:51:07.505Z
 - branch: codex/delivery-evidence-practice
 - commit: 40de389e23f516462eafb067184a8b33c82e854d

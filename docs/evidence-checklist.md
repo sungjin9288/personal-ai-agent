@@ -149,7 +149,7 @@
 | Provider adapter diagram | 완료 | `evidence/architecture/provider-adapter-structure.mmd` | Mermaid |
 | 민감정보 파일명 검사 | 완료 | `evidence/evidence_manifest.md` | 제외 대상 없음 |
 | API key 패턴 검사 | 완료 | `evidence/evidence_manifest.md` | 의심 패턴 없음 |
-| Repository-local portfolio ZIP 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | local candidate: 4,966,723 bytes, SHA-256 `9896d9f9082a57be32f00d7bfc3e3efd67b5a1f50b84c656e2a8745d61cd729a`; published v0.1.0 asset과 별도 |
+| Repository-local portfolio ZIP 갱신 | 완료 | `_portfolio_export/personal_ai_agent_portfolio_pack.zip` | local candidate: 4,969,771 bytes, SHA-256 `0942b4b35b8289ccce85861b883c8250ce2ba9bb9acef7ff5368e3a65bf93035`; published v0.1.0 asset과 별도 |
 
 ## 검증 실패 / 보류
 
