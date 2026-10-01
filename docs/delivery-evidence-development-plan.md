@@ -1,6 +1,20 @@
 # 변경 인계 검증 — 개발 계획과 실행 기록
 
-현재 포트폴리오 기술 범위는 **D1–D4 구현, D5 synthetic 평가, portable 검토 round-trip까지 로컬 검증 완료**다. 원래 D5의 사람 효과 평가는 미측정이다. 단계별 계약은 아래 현재 구현 기준을 따르며, 날짜가 있는 실행 기록은 당시 결과와 권한을 보존한다. 최신 로컬 회귀와 공개 마감의 잔여 조건은 [현재 계약 정합성 마감](#현재-계약-정합성-마감--2026-10-01)을 확인한다.
+현재 포트폴리오 기술 범위는 **D1–D4 구현, D5 synthetic 평가, portable 검토 round-trip까지 로컬 검증 완료**다. 원래 D5의 사람 효과 평가는 미측정이다. 단계별 계약은 아래 현재 구현 기준을 따르며, 날짜가 있는 실행 기록은 당시 결과와 권한을 보존한다. 기존 공개본의 검증 이력은 [현재 계약 정합성 마감](#현재-계약-정합성-마감--2026-10-01), 후속 준비 범위는 아래 연습 환경 절을 따른다.
+
+## 연습 환경과 평가 준비 — 2026-10-02
+
+새 평가 repository를 사용자에게 요청하는 절차를 없애고, 기존 D2/D3와 synthetic fixture로 직접 써볼 수 있는 환경을 만든다. `scripts/prepare-delivery-evidence-practice.mjs`는 새 임시 디렉터리 안에 clean Git fixture, 실제 native Node receipt/import 결과, 정상·누락·stale packet, 선언 영향 입력과 미작성 평가 기록지를 준비한다. 생성된 `start.mjs`는 별도 runtime에서 기존 web server를 loopback·port 0으로 시작하며 provider와 사용자 runtime 설정을 상속하지 않는다. 원본 repository·remote는 변경하지 않는다.
+
+완료 기준은 실제 생성 명령 → native tests → 등록된 workspace의 HTTP 판정 → launcher 종료와 source 보존 확인이다. 잘못된 옵션·준비 실패는 원본에 영향을 주지 않고, 부분 산출물의 위치와 단계를 보고해야 한다. 사례의 정답과 기록지는 synthetic 자가 점검용이며 사람 평가 결과를 생성하지 않는다. source 범위는 위 script, `test/delivery-evidence-practice.test.mjs`, 이 계획과 기존 case study다. 독립 review와 관련 회귀 후 로컬 마감하며 새 commit·push·PR·merge와 SHA-bound artifact 갱신은 별도 workflow다.
+
+**로컬 완료:** 준비 명령 부재로 2건 RED를 확인한 뒤 구현했고, 실패 시 부분 디렉터리 보존을 더한 전용 검사 3/3 PASS를 확인했다. 실제 Node fixture 3건 PASS → importer → current/missing/stale HTTP 판정, 영향 입력의 recheck-required, Git clean 유지, 환경변수 격리와 launcher 종료를 검증했다. `npm run test:delivery-evidence`는 217/217 PASS였고, `npm test`는 Node v24.18.0 / Darwin arm64에서 총 2,213, PASS 2,212, fail/cancelled 0, skip 1, exit 0, 약 261.47초였다.
+
+docs precloseout는 `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout` 59/59 PASS, Portfolio 문서 claim 검사·두 실행 파일의 `node --check`·`git diff --check`도 통과했다. 기존 SHA-bound closeout을 제외한 source 단계의 결과이며 새 release evidence는 아니다. Ego Lite에서는 생성된 세 JSON 파일을 실제로 열어 current/missing/stale 표시를 확인했다. 독립 read-only Agent review의 차단 지적은 없었고, 도구 revision 기록 안내·중복 launcher 실행 방지 안내·연습 범위를 보완했다.
+
+연습 자료와 실제 사용자 기록지는 준비됐으며 D5 사람 효과 평가는 여전히 미실시다. 실행 로그·화면 확인은 Agent 기술 QA이고, 참가자의 판단·시간·사용 의사는 대신 작성하지 않았다. 위 로컬 완료 시점에는 commit·push·원격 CI·merge를 수행하지 않았다.
+
+**후속 공개 workflow 승인:** 네 source 파일의 grouped commit을 먼저 고정하고, 해당 SHA에 official local-v1 closeout·execution reuse refresh·clean rehearsal·production-like drill·pilot export·Portfolio를 결속한 별도 generated evidence commit을 만든다. 기존 origin에 push한 뒤 ready PR과 required CI를 확인한다. merge·배포·새 live provider 실행은 제외한다. 이 문장은 실행 권한과 순서를 기록하며, 완료 여부는 생성 증적과 실제 PR head의 검사 결과로 확인한다.
 
 ## 추가 완성 범위 — portable 검토 round-trip (2026-10-01)
 

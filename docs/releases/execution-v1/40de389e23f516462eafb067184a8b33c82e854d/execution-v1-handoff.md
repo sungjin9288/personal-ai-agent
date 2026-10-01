@@ -1,5 +1,8 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-10-01T15:51:31.555Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-10-01T15:51:29.922Z
 - localDate: 2026-10-02
 - branch: codex/delivery-evidence-practice
@@ -7,7 +10,7 @@
 - boundImplementationCommit: 40de389e23f516462eafb067184a8b33c82e854d
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/40de389e23f516462eafb067184a8b33c82e854d](releases/execution-v1/40de389e23f516462eafb067184a8b33c82e854d)
+- immutableSnapshot: [docs/releases/execution-v1/40de389e23f516462eafb067184a8b33c82e854d](./)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
 - commitPushStatus: not pushed, origin/codex/delivery-evidence-practice not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
