@@ -1,0 +1,14 @@
+{
+  "archivedAt": "2026-10-01T12:06:29.579Z",
+  "snapshotDir": "docs/releases/execution-v1/b838958356546c0a7f110fe9700a1bb53ed45116",
+  "sourceCloseoutPath": "docs/execution-v1-closeout.md",
+  "sourceEvidencePath": "docs/execution-v1-evidence.md",
+  "sourceHandoffPath": "docs/execution-v1-handoff.md",
+  "snapshotHandoffPath": "docs/releases/execution-v1/b838958356546c0a7f110fe9700a1bb53ed45116/execution-v1-handoff.md",
+  "boundImplementationCommit": "b838958356546c0a7f110fe9700a1bb53ed45116",
+  "deterministicEvidenceStatus": "reused-existing-not-rerun",
+  "deterministicEvidenceSourceGeneratedAt": "2026-07-30T02:13:28.764Z",
+  "deterministicEvidenceSourceCommit": "05e5daa76c82d3204be9fbf7adac342c8bff653f",
+  "deterministicEvidenceReuseReason": "execution-v1-archived-evidence-browser-excluded",
+  "verifiedCommit": "b838958356546c0a7f110fe9700a1bb53ed45116"
+}
