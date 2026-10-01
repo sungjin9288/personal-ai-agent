@@ -1,5 +1,39 @@
 # 변경 인계 검증 — 개발 계획과 실행 기록
 
+## 추가 완성 범위 — portable 검토 round-trip (2026-10-01)
+
+사용자는 포트폴리오 완성도를 위한 추가 로컬 개발을 요청했다. 이전 D1–D5 구현·공개 이력을 보존하고, 실제 사용자 흐름에서 남은 두 단절을 해결한다. 다운로드한 검토를 다시 열 때 메모가 사라지는 문제와 CLI에만 있던 D4 영향 판정을 기존 검토 화면에서 함께 처리한다. 서버 영속 history·자동 Git diff·dependency 추론·서명·실사용 효과 측정은 추가하지 않는다.
+
+계획은 별도 Astra Agent가 실제 source를 읽고 비교했다. 주관 Agent와 backend Agent가 서로 다른 파일을 소유해 구현하며 독립 Agent가 다시 검토한다. 모델을 교체하기 위해 별도 Orca routing이나 Goal resource를 만들지 않는다.
+
+- **계약:** 기존 workspace+packet `bindingDigest`는 유지한다. `delivery-review-bundle/v1`은 workspace, packet, 검토 기록, 선택적 impactInput을 canonical SHA-256으로 결속한다. digest는 수정 탐지용이며 누구나 재계산할 수 있고, 서명·진위·개인 인증이 아니다. 복원된 이름과 원래 시각도 자기 선언 기록이다.
+- **복원:** 파일은 bounded UTF-8 JSON으로 읽고 기존 POST route에서 현재 등록 workspace의 clean source를 전후 확인한다. 제출한 report·Markdown은 복원 계약에 포함하지 않고 다시 계산한다. source·workspace·review binding이 다르면 복원하지 않는다. 이전 형식의 메모 포함 export는 자동으로 packet으로 축소하지 않고 명시적으로 거부한다. D1 packet과 D2 importer 입력은 계속 지원한다.
+- **영향:** 기존 D4 판정기를 재사용한다. project/current revision과 requirement ID·criterion digest가 현재 packet과 정확히 같아야 한다. baseRevision, 변경 경로, graph는 선언형이다. 영향 입력을 편집하면 내보내기를 막고 재판정 후 메모·원래 시각과 함께 새 bundle을 만든다. D4는 D1 판정·CI 생략·PASS 재사용·실행 권한을 바꾸지 않는다.
+- **실패:** 파일 읽기·HTTP의 오래된 응답은 epoch/workspace로 격리한다. 잘못된 영향 입력이나 네트워크 실패가 이미 반영한 메모를 지우지 않게 이전 결과를 보존하되, 다시 확인되기 전에는 내보내지 않는다. compact export의 크기는 다시 업로드 가능한 한도 안에 둔다.
+- **파일 범위:** `src/core/delivery-evidence-review.mjs`, `src/web/delivery-evidence-handlers.mjs`, `src/web/public/lib/delivery-evidence-review.js`, `src/web/public/index.html`, 대응 review/http/ui tests, 이 계획, case study, README의 사용 설명. 새 package·route·store schema·provider contract는 없다.
+- **완료 기준:** 복원·시각 보존·D4 cross-binding·오래된 응답·입력 한도·권한 회귀의 RED→GREEN, 실제 Node receipt→importer→HTTP→restore, 실제 desktop/mobile browser의 파일 열기·영향·메모·JSON/Markdown 다운로드, focused/full test 및 관련 UI smoke, 독립 diff review.
+- **권한 경계:** 로컬 source/test/docs와 임시 synthetic fixture만 변경한다. 이 repository의 commit·push·PR·merge, 유료 provider·학습·실데이터·공개 배포, 기존 resource cleanup은 제외한다. SHA-bound closeout와 Portfolio artifact는 source commit 승인 뒤 갱신하며 이번 미commit snapshot의 검증으로 취급하지 않는다.
+
+아래 이전 단계의 기록은 해당 시점의 이력이다. 이번 round-trip의 실제 검증 결과는 이 절에 추가하며 과거 검증 수치를 덮어쓰지 않는다.
+
+### Round-trip 구현과 검증 완료 — 2026-10-01
+
+- Backend TDD는 신규 core/handler 10건이 구현 전 모두 실패했고, core와 실제 HTTP 최종 검사는 `node --test --test-concurrency=4 test/delivery-evidence-review.test.mjs test/delivery-evidence-http.test.mjs` 28/28 PASS였다. 원래 메모·ISO 시각 보존, exact schema/digest/workspace, D1/D4 criterion 교차 결속, tenant/role, source drift, near-limit packet 거부를 확인했다.
+- UI 초기 RED는 `node --test test/delivery-evidence-ui.test.mjs` 9 PASS / 8 FAIL이었다. 독립 리뷰에서 추가로 발견한 오류 응답의 메모 손실은 별도 RED 17 PASS / 1 FAIL 뒤 수정했다. 마지막 UI gate는 20/20 PASS이며, 큰 graph 교체 시 이전·새 graph를 중복 전송하지 않는 native WebCrypto 결속과 같은 workspace의 지연 응답 회귀를 포함한다. 새 controls 13개의 literal ARIA/title 계약도 유지한다.
+- 최종 `npm run test:delivery-evidence`는 192/192 PASS, exit 0이다. 마지막 크기·비동기 수정 후 `npm test`를 다시 실행해 총 2,179 / PASS 2,178 / fail 0 / cancelled 0 / skip 1, exit 0, 약 208.28초를 확인했다. Node v24.18.0 / Darwin arm64이며 기존 Linux 전용 skip은 그대로다. 앞선 전체 실행 2,177건을 마지막 snapshot 결과로 재사용하지 않았다.
+- `npm run smoke:ui-harness-browse`, `npm run smoke:web-oidc-rbac`, `npm run smoke:web-tenant-isolation`, `npm run smoke:docs-gates -- --exclude smoke:local-v1-completion-closeout`(59/59), `npm run smoke:release-artifact-hygiene`, touched executable의 `node --check`, `git diff --check`가 통과했다. closeout 제외는 uncommitted source 단계의 기존 precloseout 계약이며 final release gate 통과를 뜻하지 않는다. Hygiene는 기존 e8e3c960 source evidence를 검사했으며 새 구현의 SHA-bound evidence가 아니다.
+- 실제 browser는 자체 임시 clean Git fixture에서 native Node receipt → importer 파일 → web 판정 → keyboard 메모 반영 → 선언 영향 → JSON/Markdown 다운로드 → 새로고침 → 파일 복원 → 재다운로드를 실행했다. 전후 JSON 파일의 SHA-256은 모두 `d8598543e759e1698f71f08320f360536ed722a90c673efbde17cee8f53a425e`였다. 메모·원래 시각·영향·digest가 byte-identical이며, 잘못된 영향 입력에 메모를 보존하고 export를 막는 것까지 확인했다. 이름과 사례는 synthetic이며 실제 참여자 효과 측정이 아니다.
+- Ego Lite에서 390px viewport/document width가 모두 390인 모바일 사용과 다운로드를 확인했다. 넓은 화면은 허용된 localhost in-app preview에서 1,910px viewport/document width 일치와 배치를 시각 확인했다. Desktop preview를 모바일 다운로드·keyboard 회귀나 screen-reader 검증으로 확대하지 않는다. 검증용 tab/server만 종료했고 자체 fixture·receipt·download·screenshot은 외부 임시 경로에 보존했다.
+- 별도 Astra Agent의 최종 정적 review는 PASS이며 메모 손실·큰 graph 중복 전송 지적의 수정도 재확인했다. 실제 테스트와 browser 실행은 주관 Agent의 별도 증거다. 새 dependency·store schema·route·provider contract는 추가하지 않았다.
+
+**로컬 구현 완료 당시:** portable 검토 round-trip과 D4 web 통합의 로컬 구현·회귀·실제 사용 검증을 완료했다. Branch는 `codex/delivery-review-roundtrip`, HEAD/main/origin-main은 `e71a70f9b4e421915cf82bf756c1f61ca5a9fead`, index는 비어 있었다. 승인 범위의 source/test/docs 10개만 dirty이며 기존 worktree와 visual manifest를 보존했다. 이 시점에는 source commit·SHA-bound evidence refresh·push·PR·CI·merge·공개 배포를 하지 않았다. 원래 제품 전체의 provider·실제 학습·hosted production 및 사람의 효과 검증이 완료됐다는 의미가 아니다.
+
+### Round-trip 공개 마감 — 2026-10-01
+
+사용자는 grouped source commit → 해당 SHA의 generated evidence → push → ready PR → CI 순서에 이어 진행을 승인했다. 실행 전 변경 10개의 SHA-256이 로컬 검증 receipt와 모두 일치하고, index가 비어 있으며 원격 main이 위 시작 SHA를 유지함을 확인했다. 이 문서의 실행 단계 기록 외에는 검증된 source를 바꾸지 않는다.
+
+기존 official local-v1 builder, execution refresh(`--reuse-existing-deterministic`), clean rehearsal, production-like drill, 최종 pilot export, Portfolio refresh/check를 순서대로 실행한다. fresh precloseout 검사와 재사용한 deterministic/live 증거의 원래 SHA·시각·상태를 구분한다. 기존 visual manifest는 외부에 보존한 뒤 pipeline이 재생성하는 해당 경로만 허용하며 stage하지 않는다. source 10개를 하나의 commit으로 고정하고 generated allowlist만 별도 commit으로 묶는다. 실제 source/evidence SHA와 최종 검증·CI 결과는 generated evidence와 PR에 남긴다. merge·배포·실제 provider 호출·학습·실데이터·기존 resource cleanup·history 재작성은 제외한다.
+
 ## 목표와 개발 지속 조건
 
 여러 개발 도구가 만든 변경을 인계하는 사람이 현재 요구사항에 어떤 검증 근거가 있고 무엇을 더 확인해야 하는지 빠르게 판단하도록 돕는다. 범용 Agent runtime을 추가하지 않는다. 정확성·권한·이력 경계를 유지하되 문서와 승인 절차의 양을 성과로 삼지 않는다.

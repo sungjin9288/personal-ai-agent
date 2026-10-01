@@ -11,6 +11,19 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { createStore } from '../src/core/store.mjs';
 
+function sealBundle(bundle) {
+  function canonical(value) {
+    if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+    if (value !== null && typeof value === 'object') {
+      return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}`;
+    }
+    return JSON.stringify(value);
+  }
+  const { bundleDigest: _digest, ...input } = bundle;
+  bundle.bundleDigest = createHash('sha256').update(canonical(input)).digest('hex');
+  return bundle;
+}
+
 test('actual web routes enforce identity, tenant, role and current revision before review/export', { timeout: 25_000 }, async t => {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'delivery-http-test-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -88,7 +101,7 @@ test('actual web routes enforce identity, tenant, role and current revision befo
   assert.equal(loaded.status, 200);
   assert.equal(loaded.payload.report.status, 'blocked');
 
-  let collectedPacket, collectedReview;
+  let collectedPacket, collectedReview, collectedBundle;
   await t.test('real Node receipt flows through importer and HTTP review into a bound export', async () => {
     const reporter = fileURLToPath(new URL('../scripts/delivery-node-test-reporter.mjs', import.meta.url));
     const receipt = spawnSync(process.execPath, ['--test', '--test-concurrency=4',
@@ -134,6 +147,70 @@ test('actual web routes enforce identity, tenant, role and current revision befo
     assert.ok(exported.payload.markdown.includes('Native suite receipt reviewed; mapping remains self\\-declared\\.'));
     assert.doesNotMatch(exported.payload.markdown, /<img/);
     assert.equal(git('status', '--porcelain'), '');
+
+    collectedBundle = JSON.parse(JSON.stringify(exported.payload.bundle));
+    const restored = await call(token('operator'), { bundle: collectedBundle });
+    assert.equal(restored.status, 200);
+    assert.deepEqual(restored.payload, exported.payload);
+    assert.equal((await call(token('viewer'), { bundle: collectedBundle })).status, 403);
+    assert.equal((await call(token('admin', 'tenant-b'), { bundle: collectedBundle })).status, 403);
+
+    const baseRevision = 'a'.repeat(40);
+    const criterionDigest = createHash('sha256').update(collectedPacket.requirements[0].criterion).digest('hex');
+    const impact = {
+      schemaVersion: 'delivery-impact-input/v1', target: { ...collectedPacket.target, baseRevision }, changedPaths: [],
+      graph: [{ path: 'approval.test.mjs', dependencies: ['package.json'], complete: true },
+        { path: 'package.json', dependencies: [], complete: true }],
+      requirements: [{ id: 'REQ-1', criterionDigest, roots: ['approval.test.mjs'], mapping: {
+        projectId: collectedPacket.target.projectId, sourceRevision: baseRevision, criterionDigest, confirmed: true,
+      } }],
+    };
+    for (const [status, mutate] of [
+      ['no-declared-impact', () => {}],
+      ['recheck-required', value => { value.changedPaths = ['package.json']; }],
+      ['unknown', value => { value.graph[1].complete = false; }],
+    ]) {
+      const impactInput = structuredClone(impact); mutate(impactInput);
+      const impacted = await call(token('operator'), { bundle: collectedBundle, impactInput });
+      assert.equal(impacted.status, 200);
+      assert.equal(impacted.payload.impactReport.status, status);
+      assert.deepEqual(impacted.payload.report, exported.payload.report);
+      assert.deepEqual(impacted.payload.review, exported.payload.review);
+      assert.equal(impacted.payload.bindingDigest, exported.payload.bindingDigest);
+      assert.equal(impacted.payload.impactReport.ciSkipAuthorized, false);
+      assert.equal(impacted.payload.impactReport.evidenceReuseAuthorized, false);
+      const roundtrip = await call(token('operator'), { bundle: impacted.payload.bundle });
+      assert.equal(roundtrip.status, 200);
+      assert.deepEqual(roundtrip.payload, impacted.payload);
+    }
+    for (const mutate of [
+      value => { value.target.projectId = 'foreign'; },
+      value => { value.target.sourceRevision = 'f'.repeat(40); },
+      value => { value.requirements[0].criterionDigest = 'f'.repeat(64); },
+      value => { value.requirements[0].id = 'UNKNOWN'; },
+    ]) {
+      const impactInput = structuredClone(impact); mutate(impactInput);
+      const rejected = await call(token('operator'), { bundle: collectedBundle, impactInput });
+      assert.equal(rejected.status, 409);
+      assert.equal(rejected.payload.error, 'delivery-evidence-impact-binding-mismatch');
+    }
+    const forged = structuredClone(collectedBundle); forged.review.entries[0].reason = 'forged memo';
+    const badDigest = await call(token('operator'), { bundle: forged });
+    assert.equal(badDigest.status, 409);
+    assert.equal(badDigest.payload.error, 'delivery-evidence-bundle-digest-mismatch');
+    sealBundle(forged); forged.review.bindingDigest = 'f'.repeat(64); sealBundle(forged);
+    const badBinding = await call(token('operator'), { bundle: forged });
+    assert.equal(badBinding.status, 409);
+    assert.equal(badBinding.payload.error, 'delivery-evidence-review-binding-mismatch');
+    const foreignBundle = structuredClone(collectedBundle); foreignBundle.workspaceId = 'foreign'; sealBundle(foreignBundle);
+    assert.equal((await call(token('operator'), { bundle: foreignBundle })).status, 409);
+    for (const body of [
+      { bundle: collectedBundle, packet: collectedPacket },
+      { bundle: collectedBundle, review: collectedReview },
+      { bundle: { ...collectedBundle, report: { status: 'evidence-current' } } },
+      { bundle: collectedBundle, impactReport: { status: 'no-declared-impact' } },
+    ]) assert.equal((await call(token('operator'), body)).status, 400);
+    assert.equal(git('status', '--porcelain'), '');
   });
 
   const packet = loaded.payload.packet;
@@ -157,10 +234,14 @@ test('actual web routes enforce identity, tenant, role and current revision befo
   manifest.requirements[0].criterion = 'Changed requirement';
   fs.writeFileSync(path.join(repo, 'delivery-evidence.json'), JSON.stringify(manifest));
   assert.equal((await call(token('operator'), { packet })).status, 409);
+  assert.equal((await call(token('operator'), { bundle: collectedBundle })).status, 409);
   git('add', 'delivery-evidence.json');
   git('-c', 'core.hooksPath=/dev/null', 'commit', '--quiet', '-m', 'second synthetic revision');
   assert.equal((await call(token('operator'), { packet, review })).status, 409);
   assert.equal((await call(token('operator'), { packet: collectedPacket, review: collectedReview })).status, 409);
+  const staleBundle = await call(token('operator'), { bundle: collectedBundle });
+  assert.equal(staleBundle.status, 409);
+  assert.equal(staleBundle.payload.error, 'delivery-evidence-source-mismatch');
   const next = await call(token('operator'));
   assert.notEqual(next.payload.packet.target.sourceRevision, packet.target.sourceRevision);
   assert.equal((await call(token('operator'), { packet: next.payload.packet, review })).status, 409);

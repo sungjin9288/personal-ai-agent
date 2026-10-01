@@ -518,12 +518,14 @@
                     <p>선택한 workspace의 clean Git revision과 delivery-evidence.json을 확인합니다. 테스트를 실행하지 않습니다.</p>
                   </div>
                 </div>
-                <p class="field-hint">Node 24 · commit된 manifest 필요. 증거 진위와 의미적 요구 충족은 별도 검토입니다. 서버 저장 이력·승인 증명은 없으며, 입력 변경·workspace 전환·새로고침 전에 필요한 결과를 다운로드하세요.</p>
+                <p class="field-hint">Node 24 · commit된 manifest 필요. 증거 진위와 의미적 요구 충족은 별도 검토입니다. 서버 저장 이력·승인 증명은 없습니다. 다운로드한 bundle로 검토를 이어 열 수 있습니다.</p>
                 <button id="delivery-current" class="secondary-button" type="button" aria-label="현재 기준 읽기" title="현재 기준 읽기">현재 기준 읽기</button>
+                <label class="compact-label" for="delivery-file">저장한 검토 JSON 파일 열기</label>
+                <input id="delivery-file" type="file" accept="application/json,.json" aria-label="저장한 검토 JSON 파일 열기" aria-describedby="delivery-input-hint" />
                 <form id="delivery-evaluate-form">
-                  <label class="compact-label" for="delivery-input">D1 packet 또는 D2 importer 출력 JSON</label>
-                  <textarea id="delivery-input" rows="7" maxlength="1048576" spellcheck="false" aria-label="D1 packet 또는 D2 importer 출력 JSON" aria-describedby="delivery-input-hint"></textarea>
-                  <p id="delivery-input-hint" class="field-hint">최대 1 MiB. 제출한 report는 신뢰하지 않고 서버에서 다시 판정합니다. 기준이나 증거를 수정하면 기존 검토는 무효화됩니다.</p>
+                  <label class="compact-label" for="delivery-input">Packet, importer 출력 또는 검토 bundle JSON</label>
+                  <textarea id="delivery-input" rows="7" maxlength="1048576" spellcheck="false" aria-label="Packet, importer 출력 또는 검토 bundle JSON" aria-describedby="delivery-input-hint"></textarea>
+                  <p id="delivery-input-hint" class="field-hint">최대 1 MiB. 현재 workspace와 source를 다시 확인합니다. bundle은 메모와 자기 선언 시각을 보존하며, digest는 서명이 아닙니다. 제출한 report는 신뢰하지 않습니다.</p>
                   <button id="delivery-evaluate" class="secondary-button" type="submit" aria-label="증거 판정하기" title="증거 판정하기">증거 판정하기</button>
                 </form>
                 <p id="delivery-status" role="status" aria-live="polite" tabindex="-1">현재 기준을 읽거나 packet을 입력하세요.</p>
@@ -544,6 +546,15 @@
                     <input id="delivery-reason" maxlength="1000" required autocomplete="off" aria-label="검토 이유와 다음 조치" />
                     <p class="field-hint">같은 요구사항의 메모를 다시 반영하면 현재 초안을 교체합니다. 실패·누락 판정이나 실행 권한은 바뀌지 않습니다.</p>
                     <button class="secondary-button" type="submit" aria-label="검토 메모 반영" title="검토 메모 반영">검토 메모 반영</button>
+                  </fieldset>
+                </form>
+                <form id="delivery-impact-form">
+                  <fieldset id="delivery-impact-fields" disabled>
+                    <legend>변경 영향 함께 검토 — 선택 사항</legend>
+                    <label class="compact-label" for="delivery-impact-input">선언된 변경 영향 JSON</label>
+                    <textarea id="delivery-impact-input" rows="7" maxlength="1048576" spellcheck="false" aria-label="선언된 변경 영향 JSON" aria-describedby="delivery-impact-hint"></textarea>
+                    <p id="delivery-impact-hint" class="field-hint">delivery-impact-input/v1의 project·현재 revision·요구사항 기준은 packet과 같아야 합니다. 변경 경로와 graph는 직접 선언합니다. 빈 입력을 반영하면 영향을 제거합니다. 메모 초안을 먼저 반영하세요.</p>
+                    <button id="delivery-impact-apply" class="secondary-button" type="submit" aria-label="변경 영향 반영" title="변경 영향 반영">변경 영향 반영</button>
                   </fieldset>
                 </form>
                 <div class="action-row">
