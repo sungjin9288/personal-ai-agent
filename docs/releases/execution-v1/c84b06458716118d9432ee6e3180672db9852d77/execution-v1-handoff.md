@@ -1,5 +1,8 @@
 # Execution v1 Handoff
 
+- archivedAt: 2026-10-02T04:19:50.894Z
+- sourcePath: docs/execution-v1-handoff.md
+
 - generatedAt: 2026-10-02T04:19:49.805Z
 - localDate: 2026-10-02
 - branch: codex/portfolio-readme-closeout
@@ -7,7 +10,7 @@
 - boundImplementationCommit: c84b06458716118d9432ee6e3180672db9852d77
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c84b06458716118d9432ee6e3180672db9852d77](releases/execution-v1/c84b06458716118d9432ee6e3180672db9852d77)
+- immutableSnapshot: [docs/releases/execution-v1/c84b06458716118d9432ee6e3180672db9852d77](./)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
 - commitPushStatus: not pushed, origin/codex/portfolio-readme-closeout not found
 - deterministicEvidenceStatus: reused-existing-not-rerun
