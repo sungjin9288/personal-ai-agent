@@ -1,10 +1,18 @@
 # Personal AI Agent
 
-Personal AI Agent is a local-first multi-agent engineering harness for planning, running, reviewing, and evidencing repository-based AI work.
+**From agent output to reviewable evidence.**
+
+Personal AI Agent is a local-first multi-agent engineering harness for planning, running, reviewing, and evidencing repository-based AI work. Its delivery-evidence workflow connects requirements to the current source revision and test results, so an old PASS cannot silently become proof for a new change.
 
 It is built around a controlled operator workflow: the system keeps human approval, provider state, artifacts, and release evidence visible instead of hiding them behind an unbounded autonomous loop.
 
+[Delivery evidence case study](docs/delivery-evidence-case-study.md) · [Architecture](#architecture) · [Try it locally](#getting-started) · [Scope & limitations](#scope--limitations)
+
 ## Portfolio Overview
+
+**Purpose: a completed portfolio technical project, maintained for reproducible review and defect fixes.** This repository demonstrates agent orchestration, approval boundaries, revision-bound evidence, and failure handling. It is not a new LLM or a replacement for a general-purpose coding agent.
+
+The completed scope includes the local harness, delivery-evidence collection and evaluation, web review, portable JSON/Markdown handoff, declared change-impact analysis, and synthetic evaluation. Actual user-effect measurements remain unperformed; they are disclosed limitations, not prerequisites for this portfolio closeout. See the [scope decision and implementation record](docs/delivery-evidence-development-plan.md#포트폴리오-전용-마감-결정--2026-10-02).
 
 Current validated claim: `provider-scoped pilot-ready` for an OpenAI-backed local-first/self-hosted path.
 
@@ -18,14 +26,18 @@ AI-assisted engineering work often fails at the operational boundary, not at tex
 - Which provider ran the task, and did it fail or fall back?
 - Which actions require human approval?
 - Where are the plan, execution output, review, and release evidence stored?
+- Does a reported PASS belong to this requirement, source revision, check definition, and environment?
 - Which readiness claims are supported by evidence, and which claims are blocked?
 
 Personal AI Agent explores that boundary as a local-first harness for engineers and operators who want auditable AI execution without giving up control.
+
+The design separates **executing work** from **judging its evidence**. A successful test run is not automatically proof of requirement coverage, customer acceptance, or deployment permission.
 
 ### What It Demonstrates
 
 | Area | Implemented surface | Evidence |
 |---|---|---|
+| Revision-bound delivery review | Native Node test receipt → importer → requirement/check binding → web review → portable handoff | `src/core/delivery-evidence-*.mjs`, [case study](docs/delivery-evidence-case-study.md), `npm run test:delivery-evidence` |
 | Managed agent workflow | Manager, planner, executor, reviewer, bounded specialist lanes, approval gates | `src/core/mission-service.mjs`, `src/harness/runtime-harness.mjs`, `npm run smoke:execution-flow` |
 | Operator control plane | CLI, local web UI/API, action inbox, provider overview, release overview | `src/cli.mjs`, `src/web/server.mjs`, `npm run smoke:ui-execution-console` |
 | Provider reliability | Provider registry, preflight, fallback policy, attention remediation, provider telemetry | `src/providers/*`, `npm run smoke:provider-fallback-policy`, `npm run smoke:provider-attention-remediation` |
@@ -73,6 +85,9 @@ npm run smoke:execution-v1-status
 npm run smoke:pilot-export-package
 ```
 
+<details>
+<summary>Representative demo evidence and supporting records</summary>
+
 Representative demo evidence:
 
 - Demo evidence index: [docs/demo-evidence-index-v1.md](docs/demo-evidence-index-v1.md)
@@ -96,12 +111,18 @@ Representative demo evidence:
 - Recorded walkthrough: [public video](https://github.com/sungjin9288/personal-ai-agent/releases/download/walkthrough-v1/personal-ai-agent-recorded-walkthrough-v1.mp4)
 - The public recorded walkthrough is access-verified; there is no hosted interactive demo.
 
+</details>
+
 ![Representative demo preview](evidence/screenshots/representative-release-demo-preview.png)
+
+*Recorded release-readiness console. This image documents the original harness walkthrough, not the newer delivery-evidence review screen.*
 
 ### Status Boundary
 
 | Status | Current state |
 |---|---|
+| Portfolio technical scope | Complete; further work is limited to confirmed defects unless a new goal is agreed |
+| Delivery evidence review | Implemented with portable restore/export and declared change-impact analysis; human-effect evaluation unperformed |
 | Local-first CLI/web MVP | Implemented and smoke-tested |
 | OpenAI-backed local-first pilot | Supported inside the documented pilot boundary |
 | Local provider pilot proof | Archived for the configured local rehearsal boundary |
@@ -148,12 +169,22 @@ node scripts/evaluate-delivery-evidence.mjs --format markdown
 npm run test:delivery-evidence
 ```
 
+For a hands-on web walkthrough without supplying another repository:
+
+```bash
+node scripts/prepare-delivery-evidence-practice.mjs
+```
+
+With the [Node 24 and Git prerequisites](#getting-started) below, this prepares a fresh temporary synthetic workspace, current/missing/stale cases, a guide, and an unfilled assessment. Run the printed `startCommand` to open a separate loopback-only console. No provider credentials or mission execution are needed; the preparation command does not start the server automatically. Stop that server with Ctrl+C when finished. The fixture is not a sandbox or an actual user-effect study.
+
 평가 명령은 별도 oracle의 synthetic 12개 사례(정상 4 / 오류 8)를 실제 실행해 상태를 비교합니다. 이는 test 함수 수나 사람의 생산성 측정이 아닙니다. 현재 binding에 맞는 reported pass, stale evidence, 선언된 영향의 `recheck-required`·`unknown`을 구분하지만 PASS 재사용·CI 생략·배포는 허가하지 않습니다. 기존 recorded walkthrough는 이 추가 기능의 증거가 아닙니다.
 
 설계·재현·측정 결과와 미측정 범위: [Delivery evidence case study](docs/delivery-evidence-case-study.md). 구현과 검증 기록: [개발 계획](docs/delivery-evidence-development-plan.md).
 
 ## Features
 
+- Revision-bound requirement evidence, native Node test receipt import, and JSON/Markdown reports
+- Web review with self-declared notes, portable bundle restore, and declared dependency impact
 - Workspace and mission model for repository-based work
 - Managed role flow for planning, execution, review, and handoff
 - Optional specialist lanes for research, implementation, verification, design, and documentation work
@@ -190,6 +221,17 @@ Operator
   -> Evidence Docs, Handoff, Release Readiness
 ```
 
+The delivery-evidence path is separate from provider execution:
+
+```text
+Committed requirements + Node test receipt
+  -> Read-only importer -> Revision-bound evidence gate
+  -> Web review + optional declared change impact
+  -> Portable JSON bundle / Markdown handoff
+```
+
+The gate compares declared bindings; it does not certify the truth of uploaded evidence. Review notes and impact analysis cannot turn a blocked result into execution or deployment authority.
+
 Key modules:
 
 - `src/cli.mjs`: command surface for workspaces, missions, providers, approvals, actions, and overviews
@@ -208,6 +250,8 @@ Reference architecture notes:
 
 ## Key Design Decisions
 
+- **Evidence belongs to an exact revision**: changing source, requirements, checks, or environment invalidates the old binding instead of carrying a PASS forward.
+- **Portable review, not hidden server history**: a bounded bundle preserves notes and declared impact; restore rechecks the current workspace. Its digest detects mismatches but is not a signature.
 - **Local-first by default**: the harness can be replayed with the stub provider before any external API key is configured.
 - **Operator control over autonomy**: risky execution paths are modeled through approvals, action queues, and release blockers.
 - **Provider boundaries are explicit**: provider readiness, fallback, account blockers, and target evidence are visible instead of collapsed into one success label.
@@ -215,6 +259,8 @@ Reference architecture notes:
 - **Claims stay bounded**: pilot readiness, hosted deployment, and provider validation are separated so the README does not overstate maturity.
 
 ## Getting Started
+
+Prerequisites: **Node.js 24 and Git**. On macOS, the delivery-evidence importer also requires the system development tools' Git to resolve through `/usr/bin/xcrun --find git`. The default stub demo needs no external provider credentials; the practice launcher uses a separate temporary runtime.
 
 Clone the repo and run the credential-free local bootstrap:
 
@@ -320,6 +366,9 @@ CI-safe documentation gate subset (the target/enterprise gates with no git-histo
 ```bash
 npm run smoke:docs-gates
 ```
+
+<details>
+<summary>Full verification command reference and target-evidence gates</summary>
 
 Recommended public-readiness checks:
 
@@ -559,6 +608,8 @@ Provider account and hosted-control target gates prove that the required evidenc
 
 The repository also includes many narrower smoke scripts in `package.json` for provider operations, release blocker handoff, UI flows, retention, backup, identity/session, tenant isolation, observability, and target evidence gates.
 
+</details>
+
 ## Release And Evidence
 
 - Current public release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
@@ -602,10 +653,18 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 
 ## Scope & Limitations
 
+- Portfolio completion means the documented local technical scope is complete, not that the project is a finished commercial service. Maintenance is limited to confirmed defects unless a new goal is agreed.
+- Delivery evidence verifies declared requirement/source/check/environment bindings, not evidence authenticity or semantic requirement coverage. Reviewer identity and timestamps are self-declared; bundles are not signatures or approval certificates.
+- Dependency impact is based on an explicitly supplied graph, not automatic dependency discovery. Review history is kept in downloaded files rather than a server-side review store.
+- The delivery-evidence synthetic evaluation is complete; actual human-effect evaluation, productivity gains, and business demand remain unmeasured and are not required for this portfolio closeout.
 - This is a PoC/MVP local-first harness, not a hosted SaaS product.
 - Production-ready claim is explicitly blocked by the release readiness documents.
 - Anthropic live validation is blocked until provider account billing/credit evidence is supplied.
 - Hermes live validation is blocked until target Hermes provider architecture, model, endpoint, parsing, session, telemetry, fallback, and approval evidence are supplied.
+
+<details>
+<summary>Detailed provider, deployment, RAG and training evidence boundaries</summary>
+
 - The local target provider operations can be verified with `npm run smoke:target-provider-operations`; it proves provider account approval proof, target secret injection proof, target-boundary live validation proof, model and endpoint pinning proof, quota, cost, and resource guard proof, fallback and disable path proof, provider fallback runtime audit proof, telemetry proof, incident triage proof, data and transcript handling proof, remediation and renewal review proof, and evidence retention proof requirements are present.
 - The target local provider architecture still requires endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence.
 - Hosted identity/session, hosted tenant isolation, target secret manager, target observability/SLO, and production clean deployment remain target evidence work.
@@ -684,8 +743,12 @@ evidence/       replay logs, screenshots, summaries, architecture artifacts
 - Q7 isolates that failure in a v5 review-action candidate. Summary-only objectives now require an evidence-bound owner and trigger when both are present; the same installed model retained Q4 at `10/10` and moved the synthetic Q6 suite from `11/12` to `12/12` without changing thresholds (`npm run smoke:local-answer-review-action-generalization`). The tracked artifact contains only hashes and metrics, and the current answer path, training, activation, rollout, actual-user quality, and production claims remain unchanged.
 - Q8 makes the next actual-user evaluation path executable without adding data to the repository. The intake CLI rejects tracked paths, unsafe links, oversized files, and non-owner-only actual-data files; actual runs use no-follow reads, atomic `0600` private outputs, the frozen Q6·Q7 all-pass threshold, the Q7 v5 baseline, and consent/retention reload before every model call (`npm run smoke:actual-user-query-evaluation-readiness`). Fake loopback tests verify the protocol and mid-run withdrawal boundary only. No actual user data or evaluation was used, and answer-path activation, training, rollout, actual-user quality, and production claims remain unchanged.
 
+</details>
+
 ## Links
 
+- Delivery evidence case study: [problem, design, replay and limitations](docs/delivery-evidence-case-study.md)
+- Portfolio closeout: [development scope and verification history](docs/delivery-evidence-development-plan.md)
 - Repository: [github.com/sungjin9288/personal-ai-agent](https://github.com/sungjin9288/personal-ai-agent)
 - Release: [v0.1.0](https://github.com/sungjin9288/personal-ai-agent/releases/tag/v0.1.0)
 - Demo walkthrough: [docs/demo-scenarios-v1.md](docs/demo-scenarios-v1.md)
