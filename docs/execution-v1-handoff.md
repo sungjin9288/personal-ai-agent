@@ -1,15 +1,15 @@
 # Execution v1 Handoff
 
-- generatedAt: 2026-10-02T04:19:49.805Z
-- localDate: 2026-10-02
-- branch: codex/portfolio-readme-closeout
-- commit: c84b06458716118d9432ee6e3180672db9852d77
-- boundImplementationCommit: c84b06458716118d9432ee6e3180672db9852d77
+- generatedAt: 2026-11-02T09:40:27.245Z
+- localDate: 2026-11-02
+- branch: chore/evidence-sync-95f2b0e
+- commit: 95f2b0eeb72be9db1224320ea2c4b694db616649
+- boundImplementationCommit: 95f2b0eeb72be9db1224320ea2c4b694db616649
 - evidence: [execution-v1-evidence.md](execution-v1-evidence.md)
 - closeout: [execution-v1-closeout.md](execution-v1-closeout.md)
-- immutableSnapshot: [releases/execution-v1/c84b06458716118d9432ee6e3180672db9852d77](releases/execution-v1/c84b06458716118d9432ee6e3180672db9852d77)
+- immutableSnapshot: [releases/execution-v1/95f2b0eeb72be9db1224320ea2c4b694db616649](releases/execution-v1/95f2b0eeb72be9db1224320ea2c4b694db616649)
 - visualArtifactSetSha256: b265065b0c5a25b0b46c909b9a651cb983c98f299b65d7fd3aa9357832c22c9d
-- commitPushStatus: not pushed, origin/codex/portfolio-readme-closeout not found
+- commitPushStatus: pushed to origin/main
 - deterministicEvidenceStatus: reused-existing-not-rerun
 - deterministicEvidenceSourceGeneratedAt: 2026-07-30T02:13:28.764Z
 - deterministicEvidenceSourceCommit: 05e5daa76c82d3204be9fbf7adac342c8bff653f
@@ -90,7 +90,7 @@ Expected pre-live state:
 3. Attach target local provider architecture evidence for endpoint ownership proof, LOCAL_PROVIDER_MODEL model pinning proof, network isolation proof, secret and credential policy proof, runtime lifecycle proof, session and artifact provenance proof with mission id, execution session id, provider response id or equivalent, retry lineage, artifact provenance, and handoff reference, data residency and transcript policy proof, quota and resource guard proof, telemetry proof, fallback and customer approval proof with fallback policy id, stop reason, and recoverable-provider-failure-only stop evidence, provider operations proof, target-boundary live:execution-v1:local proof, release artifact hygiene result, and regenerated execution snapshot evidence before adding local provider operation to a production claim.
 4. Run `npm run refresh:execution-v1-artifacts` after live validation or planning source-of-record changes so evidence, closeout, handoff, provider readiness, snapshot, and pilot export package stay aligned while preserving archived live proof by default.
 5. Use `node scripts/build-execution-v1-evidence.mjs --live-<provider>` first only when intentionally replacing live-provider proof for a selected provider.
-6. Commit and push the refreshed release artifacts when the operator explicitly resumes git publishing.
+6. Current verified commit is already contained in `origin/main`; only commit/push again after intentionally changing release artifacts.
 
 ## Completion Boundary
 

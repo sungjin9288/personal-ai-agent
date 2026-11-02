@@ -1,9 +1,9 @@
 # Execution v1 Evidence
 
-- generatedAt: 2026-10-02T04:19:41.156Z
-- branch: codex/portfolio-readme-closeout
-- commit: c84b06458716118d9432ee6e3180672db9852d77
-- boundImplementationCommit: c84b06458716118d9432ee6e3180672db9852d77
+- generatedAt: 2026-11-02T09:40:01.455Z
+- branch: chore/evidence-sync-95f2b0e
+- commit: 95f2b0eeb72be9db1224320ea2c4b694db616649
+- boundImplementationCommit: 95f2b0eeb72be9db1224320ea2c4b694db616649
 - mode: execution-v1-verification
 - liveFlags: none
 - deterministicEvidenceStatus: reused-existing-not-rerun
